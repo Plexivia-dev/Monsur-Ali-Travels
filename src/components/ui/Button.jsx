@@ -21,11 +21,11 @@ export const Button = ({
 
   const variantStyles = {
     primary: 'bg-primary hover:opacity-90 active:opacity-100 text-primary-foreground shadow-xs focus:ring-ring',
-    secondary: 'bg-secondary hover:opacity-90 text-secondary-foreground focus:ring-ring',
+    secondary: 'bg-secondary hover:opacity-90 active:opacity-100 text-secondary-foreground focus:ring-ring',
     outline: 'border border-border hover:bg-muted text-foreground focus:ring-ring',
     ghost: 'hover:bg-muted text-muted-foreground hover:text-foreground focus:ring-ring',
-    danger: 'bg-destructive hover:opacity-90 text-destructive-foreground focus:ring-ring',
-    success: 'bg-emerald-600 hover:opacity-90 text-white focus:ring-ring'
+    danger: 'bg-destructive hover:opacity-90 active:opacity-100 text-destructive-foreground focus:ring-ring',
+    success: 'bg-emerald-600 hover:bg-emerald-700 text-white focus:ring-emerald-500 dark:bg-emerald-600 dark:hover:bg-emerald-500'
   };
 
   return (
