@@ -19,15 +19,15 @@ export const ToastContainer = () => {
       {toasts.map((toast) => (
         <div
           key={toast.id}
-          className="pointer-events-auto flex items-center justify-between p-4 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl shadow-xl animate-in slide-in-from-bottom-5 duration-200"
+          className="pointer-events-auto flex items-center justify-between p-4 bg-card border border-border rounded-xl shadow-xl animate-in slide-in-from-bottom-5 duration-200"
         >
           <div className="flex items-center gap-3">
             {icons[toast.type] || icons.info}
-            <span className="text-sm font-medium text-slate-800 dark:text-slate-100">{toast.message}</span>
+            <span className="text-sm font-medium text-foreground">{toast.message}</span>
           </div>
           <button
             onClick={() => removeToast(toast.id)}
-            className="p-1 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 rounded-md transition-colors"
+            className="p-1 text-muted-foreground hover:text-foreground rounded-md transition-colors"
           >
             <X className="w-4 h-4" />
           </button>
