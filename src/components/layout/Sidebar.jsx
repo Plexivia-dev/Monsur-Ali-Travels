@@ -163,7 +163,7 @@ export const Sidebar = ({ isMobileOpen, setIsMobileOpen }) => {
             >
               <div className="flex items-center gap-2">
                 <Shield className="w-4 h-4 text-purple-500" />
-                <span>System Administration</span>
+                <span>Admin Panel</span>
               </div>
               {adminOpen ? <ChevronDown className="w-3.5 h-3.5" /> : <ChevronRight className="w-3.5 h-3.5" />}
             </button>
@@ -177,7 +177,7 @@ export const Sidebar = ({ isMobileOpen, setIsMobileOpen }) => {
                     <button
                       key={item.id}
                       onClick={() => handleNavClick('admin', item.id)}
-                      className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg text-xs font-medium transition-all cursor-pointer ${
+                      className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg text-xs font-medium text-left transition-all cursor-pointer ${
                         isActive
                           ? 'bg-purple-500/10 text-purple-500 font-semibold border-l-2 border-purple-500'
                           : 'text-sidebar-foreground/75 hover:text-sidebar-foreground hover:bg-sidebar-accent'
@@ -197,12 +197,12 @@ export const Sidebar = ({ isMobileOpen, setIsMobileOpen }) => {
         <div className="p-3 border-t border-sidebar-border bg-sidebar/50 flex items-center justify-between">
           <div className="flex items-center gap-2.5 min-w-0">
             <div className="w-8 h-8 rounded-full bg-sidebar-primary text-sidebar-primary-foreground flex items-center justify-center font-semibold text-xs shrink-0">
-              AW
+              IH
             </div>
             <div className="min-w-0">
-              <p className="text-xs font-semibold text-sidebar-foreground truncate">Alexander Wright</p>
+              <p className="text-xs font-semibold text-sidebar-foreground truncate">Ikramul Hossen</p>
               <p className="text-[10px] text-emerald-400 font-medium truncate flex items-center gap-1">
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" /> Super Admin
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" /> Owner
               </p>
             </div>
           </div>
