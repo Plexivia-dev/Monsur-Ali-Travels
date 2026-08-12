@@ -4,17 +4,17 @@ import { StatCard } from '../ui/StatCard';
 import { Card, CardHeader, CardTitle, CardContent } from '../ui/Card';
 import { Badge } from '../ui/Badge';
 import { Button } from '../ui/Button';
-import { Factory, Flame, Truck, Layers, Coins, AlertCircle, TrendingUp, Plus, ArrowUpRight } from 'lucide-react';
+import { Factory, Flame, Truck, Layers, Coins, AlertCircle, TrendingUp } from 'lucide-react';
 import { ResponsiveContainer, AreaChart, Area, XAxis, YAxis, Tooltip, CartesianGrid } from 'recharts';
 import { usePortal } from '../../context/PortalContext';
 
 export const FactoryDashboard = () => {
   const { data: factoryData, isLoading } = useFactoryData();
-  const { switchPortal, addToast } = usePortal();
+  const { switchPortal } = usePortal();
 
   if (isLoading || !factoryData) {
     return (
-      <div className="p-8 text-center text-slate-500 animate-pulse">
+      <div className="p-8 text-center text-muted-foreground animate-pulse">
         Loading Factory Telemetry & Production Records...
       </div>
     );
@@ -26,12 +26,12 @@ export const FactoryDashboard = () => {
     <div className="space-y-6">
       {/* Top Banner Alert if Coal Stock is low */}
       {metrics.coalStockTons < metrics.coalThresholdTons && (
-        <div className="p-4 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-900 dark:text-amber-200 flex items-center justify-between">
+        <div className="p-4 rounded-xl bg-amber-500/10 border border-amber-500/30 text-foreground flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <AlertCircle className="w-5 h-5 text-amber-600 shrink-0" />
+            <AlertCircle className="w-5 h-5 text-amber-555 shrink-0" />
             <div>
               <p className="text-sm font-semibold">Low Coal Stock Warning</p>
-              <p className="text-xs text-amber-700 dark:text-amber-300">
+              <p className="text-xs text-muted-foreground">
                 Current coal reserves ({metrics.coalStockTons} Tons) are below the minimum operational buffer ({metrics.coalThresholdTons} Tons).
               </p>
             </div>
@@ -98,7 +98,7 @@ export const FactoryDashboard = () => {
           <CardHeader>
             <div>
               <CardTitle icon={Factory}>Monthly Brick Production Trend</CardTitle>
-              <p className="text-xs text-slate-500 mt-0.5">Actual Molded Units vs Target (Year 2026)</p>
+              <p className="text-xs text-muted-foreground mt-0.5">Actual Molded Units vs Target (Year 2026)</p>
             </div>
             <Button variant="outline" size="sm" onClick={() => switchPortal('factory', 'reports')}>
               Full Analytics
@@ -110,18 +110,18 @@ export const FactoryDashboard = () => {
                 <AreaChart data={reports.monthlyProduction}>
                   <defs>
                     <linearGradient id="colorProd" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.4}/>
-                      <stop offset="95%" stopColor="#3b82f6" stopOpacity={0}/>
+                      <stop offset="5%" stopColor="var(--primary)" stopOpacity={0.4}/>
+                      <stop offset="95%" stopColor="var(--primary)" stopOpacity={0}/>
                     </linearGradient>
                   </defs>
-                  <CartesianGrid strokeDasharray="3 3" opacity={0.15} />
-                  <XAxis dataKey="month" stroke="#888888" fontSize={12} />
-                  <YAxis stroke="#888888" fontSize={12} tickFormatter={(v) => `${v / 1000}k`} />
+                  <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" opacity={0.15} />
+                  <XAxis dataKey="month" stroke="var(--muted-foreground)" fontSize={12} />
+                  <YAxis stroke="var(--muted-foreground)" fontSize={12} tickFormatter={(v) => `${v / 1000}k`} />
                   <Tooltip
-                    contentStyle={{ backgroundColor: '#0f172a', border: 'none', borderRadius: '8px', color: '#fff' }}
+                    contentStyle={{ backgroundColor: 'var(--card)', border: '1px solid var(--border)', borderRadius: '8px', color: 'var(--foreground)' }}
                     formatter={(val) => [`${val.toLocaleString()} Bricks`, 'Production']}
                   />
-                  <Area type="monotone" dataKey="produced" stroke="#3b82f6" strokeWidth={2} fillOpacity={1} fill="url(#colorProd)" />
+                  <Area type="monotone" dataKey="produced" stroke="var(--primary)" strokeWidth={2} fillOpacity={1} fill="url(#colorProd)" />
                 </AreaChart>
               </ResponsiveContainer>
             </div>
@@ -134,46 +134,46 @@ export const FactoryDashboard = () => {
             <CardTitle icon={Flame}>Active Kiln Telemetry</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div className="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-800 space-y-2">
+            <div className="p-3.5 rounded-xl bg-muted/50 border border-border space-y-2">
               <div className="flex items-center justify-between">
-                <span className="text-sm font-semibold text-slate-800 dark:text-slate-100">Kiln Chamber A</span>
+                <span className="text-sm font-semibold text-foreground">Kiln Chamber A</span>
                 <Badge variant="success">Firing (1,080°C)</Badge>
               </div>
-              <p className="text-xs text-slate-500">Batch #892 - Red Clay Solid Brick</p>
-              <div className="w-full bg-slate-200 dark:bg-slate-700 h-2 rounded-full overflow-hidden">
+              <p className="text-xs text-muted-foreground">Batch #892 - Red Clay Solid Brick</p>
+              <div className="w-full bg-muted h-2 rounded-full overflow-hidden">
                 <div className="bg-emerald-500 h-full rounded-full" style={{ width: '85%' }} />
               </div>
-              <div className="flex justify-between text-[11px] text-slate-400">
+              <div className="flex justify-between text-[11px] text-muted-foreground">
                 <span>Progress: 85%</span>
                 <span>Eta: 4 hrs</span>
               </div>
             </div>
 
-            <div className="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-800 space-y-2">
+            <div className="p-3.5 rounded-xl bg-muted/50 border border-border space-y-2">
               <div className="flex items-center justify-between">
-                <span className="text-sm font-semibold text-slate-800 dark:text-slate-100">Kiln Chamber B</span>
+                <span className="text-sm font-semibold text-foreground">Kiln Chamber B</span>
                 <Badge variant="warning">Molding Phase</Badge>
               </div>
-              <p className="text-xs text-slate-500">Batch #893 - Fly Ash Brick</p>
-              <div className="w-full bg-slate-200 dark:bg-slate-700 h-2 rounded-full overflow-hidden">
+              <p className="text-xs text-muted-foreground">Batch #893 - Fly Ash Brick</p>
+              <div className="w-full bg-muted h-2 rounded-full overflow-hidden">
                 <div className="bg-amber-500 h-full rounded-full" style={{ width: '45%' }} />
               </div>
-              <div className="flex justify-between text-[11px] text-slate-400">
+              <div className="flex justify-between text-[11px] text-muted-foreground">
                 <span>Progress: 45%</span>
                 <span>Eta: 12 hrs</span>
               </div>
             </div>
 
-            <div className="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-800 space-y-2">
+            <div className="p-3.5 rounded-xl bg-muted/50 border border-border space-y-2">
               <div className="flex items-center justify-between">
-                <span className="text-sm font-semibold text-slate-800 dark:text-slate-100">Kiln Chamber C</span>
+                <span className="text-sm font-semibold text-foreground">Kiln Chamber C</span>
                 <Badge variant="info">Cooling Stage</Badge>
               </div>
-              <p className="text-xs text-slate-500">Batch #894 - Perforated Hollow</p>
-              <div className="w-full bg-slate-200 dark:bg-slate-700 h-2 rounded-full overflow-hidden">
+              <p className="text-xs text-muted-foreground">Batch #894 - Perforated Hollow</p>
+              <div className="w-full bg-muted h-2 rounded-full overflow-hidden">
                 <div className="bg-blue-500 h-full rounded-full" style={{ width: '95%' }} />
               </div>
-              <div className="flex justify-between text-[11px] text-slate-400">
+              <div className="flex justify-between text-[11px] text-muted-foreground">
                 <span>Progress: 95%</span>
                 <span>Ready for unload</span>
               </div>
@@ -190,21 +190,21 @@ export const FactoryDashboard = () => {
             <CardTitle icon={Layers}>Active Production Batches</CardTitle>
           </CardHeader>
           <CardContent className="p-0">
-            <div className="divide-y divide-slate-100 dark:divide-slate-800">
+            <div className="divide-y divide-border">
               {productionBatches.map((batch) => (
-                <div key={batch.id} className="p-4 flex items-center justify-between hover:bg-slate-50 dark:hover:bg-slate-800/40 transition-colors">
+                <div key={batch.id} className="p-4 flex items-center justify-between hover:bg-muted/40 transition-colors">
                   <div>
                     <div className="flex items-center gap-2">
-                      <span className="font-semibold text-sm text-slate-900 dark:text-white">{batch.id}</span>
+                      <span className="font-semibold text-sm text-foreground">{batch.id}</span>
                       <Badge variant={batch.status === 'Firing' ? 'success' : batch.status === 'Cooling' ? 'info' : 'warning'}>
                         {batch.status}
                       </Badge>
                     </div>
-                    <p className="text-xs text-slate-500 mt-1">{batch.type} • {batch.quantity.toLocaleString()} units</p>
+                    <p className="text-xs text-muted-foreground mt-1">{batch.type} • {batch.quantity.toLocaleString()} units</p>
                   </div>
                   <div className="text-right">
-                    <p className="text-xs font-medium text-slate-700 dark:text-slate-300">{batch.kilnId}</p>
-                    <p className="text-[11px] text-slate-400">{batch.supervisor}</p>
+                    <p className="text-xs font-medium text-foreground">{batch.kilnId}</p>
+                    <p className="text-[11px] text-muted-foreground">{batch.supervisor}</p>
                   </div>
                 </div>
               ))}
@@ -221,15 +221,15 @@ export const FactoryDashboard = () => {
             </Button>
           </CardHeader>
           <CardContent className="p-0">
-            <div className="divide-y divide-slate-100 dark:divide-slate-800">
+            <div className="divide-y divide-border">
               {bills.slice(0, 4).map((bill) => (
-                <div key={bill.id} className="p-4 flex items-center justify-between hover:bg-slate-50 dark:hover:bg-slate-800/40 transition-colors">
+                <div key={bill.id} className="p-4 flex items-center justify-between hover:bg-muted/40 transition-colors">
                   <div>
-                    <p className="font-semibold text-sm text-slate-900 dark:text-white">{bill.vendor}</p>
-                    <p className="text-xs text-slate-500 mt-0.5">{bill.category} • {bill.items}</p>
+                    <p className="font-semibold text-sm text-foreground">{bill.vendor}</p>
+                    <p className="text-xs text-muted-foreground mt-0.5">{bill.category} • {bill.items}</p>
                   </div>
                   <div className="text-right">
-                    <p className="font-bold text-sm text-slate-900 dark:text-white">${bill.amount.toLocaleString()}</p>
+                    <p className="font-bold text-sm text-foreground">${bill.amount.toLocaleString()}</p>
                     <Badge variant={bill.status === 'Paid' ? 'success' : bill.status === 'Pending' ? 'warning' : 'danger'}>
                       {bill.status}
                     </Badge>

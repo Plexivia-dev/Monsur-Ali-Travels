@@ -5,7 +5,7 @@ import { Badge } from '../ui/Badge';
 import { Modal } from '../ui/Modal';
 import { Input, Select } from '../ui/Input';
 import { Button } from '../ui/Button';
-import { FileText, Plus, DollarSign, Calendar, Truck, Flame, Receipt, AlertCircle } from 'lucide-react';
+import { FileText, Plus } from 'lucide-react';
 import { usePortal } from '../../context/PortalContext';
 
 export const FactoryBills = () => {
@@ -23,7 +23,7 @@ export const FactoryBills = () => {
   });
 
   if (isLoading || !factoryData) {
-    return <div className="p-8 text-center text-slate-500 animate-pulse">Loading Factory Raw Material Bills...</div>;
+    return <div className="p-8 text-center text-muted-foreground animate-pulse">Loading Factory Raw Material Bills...</div>;
   }
 
   const handleSubmit = (e) => {
@@ -53,8 +53,8 @@ export const FactoryBills = () => {
       header: 'Bill Reference & Vendor',
       cell: (row) => (
         <div>
-          <p className="font-semibold text-slate-900 dark:text-white text-sm">{row.vendor}</p>
-          <p className="text-xs text-slate-500">{row.id} • {row.items}</p>
+          <p className="font-semibold text-foreground text-sm">{row.vendor}</p>
+          <p className="text-xs text-muted-foreground">{row.id} • {row.items}</p>
         </div>
       )
     },
@@ -68,14 +68,14 @@ export const FactoryBills = () => {
     },
     {
       header: 'Amount',
-      cell: (row) => <span className="font-bold text-sm text-slate-900 dark:text-white">${row.amount.toLocaleString()}</span>
+      cell: (row) => <span className="font-bold text-sm text-foreground">${row.amount.toLocaleString()}</span>
     },
     {
       header: 'Date Created / Due',
       cell: (row) => (
         <div className="text-xs">
-          <p className="text-slate-700 dark:text-slate-300">Issued: {row.date}</p>
-          <p className="text-slate-400">Due: {row.dueDate}</p>
+          <p className="text-foreground">Issued: {row.date}</p>
+          <p className="text-muted-foreground">Due: {row.dueDate}</p>
         </div>
       )
     },
@@ -93,13 +93,13 @@ export const FactoryBills = () => {
   return (
     <div className="space-y-6">
       {/* Header Bar */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white dark:bg-slate-900 p-5 border border-slate-200 dark:border-slate-800 rounded-2xl">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-card p-5 border border-border rounded-2xl">
         <div>
-          <h2 className="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
-            <FileText className="w-5 h-5 text-amber-500" />
+          <h2 className="text-lg font-bold text-foreground flex items-center gap-2">
+            <FileText className="w-5 h-5 text-primary" />
             Raw Material Bills & Supplier Invoices
           </h2>
-          <p className="text-xs text-slate-500 mt-1">
+          <p className="text-xs text-muted-foreground mt-1">
             Track Coal procurement, Red Soil/Clay quarry deliveries, Haulage logistics, and Utilities.
           </p>
         </div>

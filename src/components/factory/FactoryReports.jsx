@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useFactoryData } from '../../api/hooks';
 import { Card, CardHeader, CardTitle, CardContent } from '../ui/Card';
 import { Button } from '../ui/Button';
-import { BarChart3, Download, Layers, Flame, Coins, PieChart, TrendingUp } from 'lucide-react';
+import { BarChart3, Download, PieChart } from 'lucide-react';
 import {
   ResponsiveContainer,
   BarChart,
@@ -23,7 +23,7 @@ export const FactoryReports = () => {
   const [isExportOpen, setIsExportOpen] = useState(false);
 
   if (isLoading || !factoryData) {
-    return <div className="p-8 text-center text-slate-500 animate-pulse">Loading Factory Intelligence Reports...</div>;
+    return <div className="p-8 text-center text-muted-foreground animate-pulse">Loading Factory Intelligence Reports...</div>;
   }
 
   const { reports, metrics } = factoryData;
@@ -31,13 +31,13 @@ export const FactoryReports = () => {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white dark:bg-slate-900 p-5 border border-slate-200 dark:border-slate-800 rounded-2xl">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-card p-5 border border-border rounded-2xl">
         <div>
-          <h2 className="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
-            <BarChart3 className="w-5 h-5 text-amber-500" />
+          <h2 className="text-lg font-bold text-foreground flex items-center gap-2">
+            <BarChart3 className="w-5 h-5 text-primary" />
             Brick Factory Operational Reports & KPIs
           </h2>
-          <p className="text-xs text-slate-500 mt-1">
+          <p className="text-xs text-muted-foreground mt-1">
             Production output analysis, coal efficiency ratios, and material cost breakdown.
           </p>
         </div>
@@ -48,24 +48,24 @@ export const FactoryReports = () => {
 
       {/* KPI Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <div className="bg-white dark:bg-slate-900 p-4 rounded-xl border border-slate-200 dark:border-slate-800">
-          <p className="text-xs font-semibold uppercase text-slate-500">Total Year Production</p>
-          <h3 className="text-2xl font-bold text-slate-900 dark:text-white mt-1">
+        <div className="bg-card p-4 rounded-xl border border-border">
+          <p className="text-xs font-semibold uppercase text-muted-foreground">Total Year Production</p>
+          <h3 className="text-2xl font-bold text-foreground mt-1">
             {(metrics.monthlyProductionTotal / 1000000).toFixed(2)}M Units
           </h3>
-          <p className="text-xs text-emerald-600 font-medium mt-1">102% of Annual Target</p>
+          <p className="text-xs text-emerald-500 font-medium mt-1">102% of Annual Target</p>
         </div>
 
-        <div className="bg-white dark:bg-slate-900 p-4 rounded-xl border border-slate-200 dark:border-slate-800">
-          <p className="text-xs font-semibold uppercase text-slate-500">Avg Defective Rate</p>
-          <h3 className="text-2xl font-bold text-slate-900 dark:text-white mt-1">{metrics.defectiveRate}</h3>
-          <p className="text-xs text-emerald-600 font-medium mt-1">Industry standard benchmark &lt; 2.5%</p>
+        <div className="bg-card p-4 rounded-xl border border-border">
+          <p className="text-xs font-semibold uppercase text-muted-foreground">Avg Defective Rate</p>
+          <h3 className="text-2xl font-bold text-foreground mt-1">{metrics.defectiveRate}</h3>
+          <p className="text-xs text-emerald-500 font-medium mt-1">Industry standard benchmark &lt; 2.5%</p>
         </div>
 
-        <div className="bg-white dark:bg-slate-900 p-4 rounded-xl border border-slate-200 dark:border-slate-800">
-          <p className="text-xs font-semibold uppercase text-slate-500">Coal Consumption Ratio</p>
-          <h3 className="text-2xl font-bold text-slate-900 dark:text-white mt-1">32.8 Kg / 1,000 Bricks</h3>
-          <p className="text-xs text-blue-600 font-medium mt-1">Optimal Kiln Efficiency</p>
+        <div className="bg-card p-4 rounded-xl border border-border">
+          <p className="text-xs font-semibold uppercase text-muted-foreground">Coal Consumption Ratio</p>
+          <h3 className="text-2xl font-bold text-foreground mt-1">32.8 Kg / 1,000 Bricks</h3>
+          <p className="text-xs text-primary font-medium mt-1">Optimal Kiln Efficiency</p>
         </div>
       </div>
 
@@ -80,15 +80,15 @@ export const FactoryReports = () => {
             <div className="h-80 w-full">
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={reports.monthlyProduction}>
-                  <CartesianGrid strokeDasharray="3 3" opacity={0.15} />
-                  <XAxis dataKey="month" stroke="#888888" fontSize={12} />
-                  <YAxis stroke="#888888" fontSize={12} tickFormatter={(v) => `${v / 1000}k`} />
+                  <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" opacity={0.15} />
+                  <XAxis dataKey="month" stroke="var(--muted-foreground)" fontSize={12} />
+                  <YAxis stroke="var(--muted-foreground)" fontSize={12} tickFormatter={(v) => `${v / 1000}k`} />
                   <Tooltip
-                    contentStyle={{ backgroundColor: '#0f172a', border: 'none', borderRadius: '8px', color: '#fff' }}
+                    contentStyle={{ backgroundColor: 'var(--card)', border: '1px solid var(--border)', borderRadius: '8px', color: 'var(--foreground)' }}
                   />
                   <Legend />
-                  <Bar dataKey="produced" name="Molded Bricks Produced" fill="#3b82f6" radius={[4, 4, 0, 0]} />
-                  <Bar dataKey="target" name="Target Capacity" fill="#94a3b8" radius={[4, 4, 0, 0]} />
+                  <Bar dataKey="produced" name="Molded Bricks Produced" fill="var(--primary)" radius={[4, 4, 0, 0]} />
+                  <Bar dataKey="target" name="Target Capacity" fill="var(--secondary)" radius={[4, 4, 0, 0]} />
                 </BarChart>
               </ResponsiveContainer>
             </div>
@@ -117,7 +117,7 @@ export const FactoryReports = () => {
                       <Cell key={`cell-${index}`} fill={entry.color} />
                     ))}
                   </Pie>
-                  <Tooltip formatter={(val) => [`${val}%`, 'Expense Share']} />
+                  <Tooltip contentStyle={{ backgroundColor: 'var(--card)', border: '1px solid var(--border)', borderRadius: '8px', color: 'var(--foreground)' }} formatter={(val) => [`${val}%`, 'Expense Share']} />
                 </RePieChart>
               </ResponsiveContainer>
             </div>
@@ -126,9 +126,9 @@ export const FactoryReports = () => {
                 <div key={idx} className="flex items-center justify-between text-xs">
                   <div className="flex items-center gap-2">
                     <span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: item.color }} />
-                    <span className="text-slate-700 dark:text-slate-300 font-medium">{item.name}</span>
+                    <span className="text-foreground font-medium">{item.name}</span>
                   </div>
-                  <span className="font-bold text-slate-900 dark:text-white">{item.value}%</span>
+                  <span className="font-bold text-foreground">{item.value}%</span>
                 </div>
               ))}
             </div>

@@ -5,7 +5,7 @@ import { Badge } from '../ui/Badge';
 import { Modal } from '../ui/Modal';
 import { Input, Select } from '../ui/Input';
 import { Button } from '../ui/Button';
-import { CreditCard, Plus, CheckCircle, Clock, Banknote, ShieldCheck } from 'lucide-react';
+import { CreditCard, Plus } from 'lucide-react';
 import { usePortal } from '../../context/PortalContext';
 
 export const FactoryPayments = () => {
@@ -23,7 +23,7 @@ export const FactoryPayments = () => {
   });
 
   if (isLoading || !factoryData) {
-    return <div className="p-8 text-center text-slate-500 animate-pulse">Loading Factory Disbursement Logs...</div>;
+    return <div className="p-8 text-center text-muted-foreground animate-pulse">Loading Factory Disbursement Logs...</div>;
   }
 
   const handleSubmit = (e) => {
@@ -53,8 +53,8 @@ export const FactoryPayments = () => {
       header: 'Payment Reference & Beneficiary',
       cell: (row) => (
         <div>
-          <p className="font-semibold text-slate-900 dark:text-white text-sm">{row.recipient}</p>
-          <p className="text-xs text-slate-500">{row.id} • Ref: {row.ref}</p>
+          <p className="font-semibold text-foreground text-sm">{row.recipient}</p>
+          <p className="text-xs text-muted-foreground">{row.id} • Ref: {row.ref}</p>
         </div>
       )
     },
@@ -68,14 +68,14 @@ export const FactoryPayments = () => {
     },
     {
       header: 'Disbursement Amount',
-      cell: (row) => <span className="font-bold text-sm text-slate-900 dark:text-white">${row.amount.toLocaleString()}</span>
+      cell: (row) => <span className="font-bold text-sm text-foreground">${row.amount.toLocaleString()}</span>
     },
     {
       header: 'Method & Date',
       cell: (row) => (
         <div className="text-xs">
-          <p className="font-medium text-slate-800 dark:text-slate-200">{row.method}</p>
-          <p className="text-slate-400">{row.date}</p>
+          <p className="font-medium text-foreground">{row.method}</p>
+          <p className="text-muted-foreground">{row.date}</p>
         </div>
       )
     },
@@ -93,13 +93,13 @@ export const FactoryPayments = () => {
   return (
     <div className="space-y-6">
       {/* Header Bar */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white dark:bg-slate-900 p-5 border border-slate-200 dark:border-slate-800 rounded-2xl">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-card p-5 border border-border rounded-2xl">
         <div>
-          <h2 className="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
-            <CreditCard className="w-5 h-5 text-amber-500" />
+          <h2 className="text-lg font-bold text-foreground flex items-center gap-2">
+            <CreditCard className="w-5 h-5 text-primary" />
             Payout Schedules & Disbursement Logs
           </h2>
-          <p className="text-xs text-slate-500 mt-1">
+          <p className="text-xs text-muted-foreground mt-1">
             Weekly kiln worker wage payouts, vendor settlements, and cash book registers.
           </p>
         </div>

@@ -5,7 +5,7 @@ import { Badge } from '../ui/Badge';
 import { Modal } from '../ui/Modal';
 import { Input, Select } from '../ui/Input';
 import { Button } from '../ui/Button';
-import { Users, UserPlus, Calendar, Phone, DollarSign, Clock, CheckCircle2 } from 'lucide-react';
+import { Users, UserPlus } from 'lucide-react';
 import { usePortal } from '../../context/PortalContext';
 
 export const FactoryEmployees = () => {
@@ -25,7 +25,7 @@ export const FactoryEmployees = () => {
   });
 
   if (isLoading || !factoryData) {
-    return <div className="p-8 text-center text-slate-500 animate-pulse">Loading Factory Workforce Records...</div>;
+    return <div className="p-8 text-center text-muted-foreground animate-pulse">Loading Factory Workforce Records...</div>;
   }
 
   const handleSubmit = (e) => {
@@ -57,12 +57,12 @@ export const FactoryEmployees = () => {
       header: 'Employee Name & Role',
       cell: (row) => (
         <div className="flex items-center gap-3">
-          <div className="w-9 h-9 rounded-full bg-amber-100 dark:bg-amber-950/60 text-amber-700 dark:text-amber-300 font-bold flex items-center justify-center text-xs">
+          <div className="w-9 h-9 rounded-full bg-primary/10 text-primary font-bold flex items-center justify-center text-xs">
             {row.name.split(' ').map((n) => n[0]).join('')}
           </div>
           <div>
-            <p className="font-semibold text-slate-900 dark:text-white text-sm">{row.name}</p>
-            <p className="text-xs text-slate-500">{row.role} ({row.id})</p>
+            <p className="font-semibold text-foreground text-sm">{row.name}</p>
+            <p className="text-xs text-muted-foreground">{row.role} ({row.id})</p>
           </div>
         </div>
       )
@@ -79,21 +79,21 @@ export const FactoryEmployees = () => {
       header: 'Assigned Section & Shift',
       cell: (row) => (
         <div>
-          <p className="text-xs font-semibold text-slate-800 dark:text-slate-200">{row.assignedSection}</p>
-          <span className="text-[11px] text-slate-500 capitalize">{row.shift} Shift</span>
+          <p className="text-xs font-semibold text-foreground">{row.assignedSection}</p>
+          <span className="text-[11px] text-muted-foreground capitalize">{row.shift} Shift</span>
         </div>
       )
     },
     {
       header: 'Daily Rate',
-      cell: (row) => <span className="font-bold text-slate-900 dark:text-white">${row.dailyWage}/day</span>
+      cell: (row) => <span className="font-bold text-foreground">${row.dailyWage}/day</span>
     },
     {
       header: 'Attendance (This Month)',
       cell: (row) => (
         <div className="flex items-center gap-2">
-          <span className="text-xs font-semibold text-slate-700 dark:text-slate-300">{row.attendanceDays} Days</span>
-          <span className="text-[10px] px-1.5 py-0.5 rounded bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300 font-medium">
+          <span className="text-xs font-semibold text-foreground">{row.attendanceDays} Days</span>
+          <span className="text-[10px] px-1.5 py-0.5 rounded bg-emerald-555 font-medium">
             {Math.round((row.attendanceDays / 26) * 100)}%
           </span>
         </div>
@@ -109,13 +109,13 @@ export const FactoryEmployees = () => {
   return (
     <div className="space-y-6">
       {/* Header Info */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white dark:bg-slate-900 p-5 border border-slate-200 dark:border-slate-800 rounded-2xl">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-card p-5 border border-border rounded-2xl">
         <div>
-          <h2 className="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
-            <Users className="w-5 h-5 text-amber-500" />
+          <h2 className="text-lg font-bold text-foreground flex items-center gap-2">
+            <Users className="w-5 h-5 text-primary" />
             Brick Factory Workforce & Attendance
           </h2>
-          <p className="text-xs text-slate-500 mt-1">
+          <p className="text-xs text-muted-foreground mt-1">
             Track daily wage kiln operators, Supervisors, molding crews, and attendance ledger.
           </p>
         </div>
