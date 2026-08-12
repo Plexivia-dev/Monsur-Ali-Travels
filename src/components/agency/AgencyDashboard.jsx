@@ -4,7 +4,7 @@ import { StatCard } from '../ui/StatCard';
 import { Card, CardHeader, CardTitle, CardContent } from '../ui/Card';
 import { Badge } from '../ui/Badge';
 import { Button } from '../ui/Button';
-import { Users2, Building2, Clock, DollarSign, TrendingUp, Plus, Briefcase, ChevronRight } from 'lucide-react';
+import { Users2, Building2, Clock, DollarSign, TrendingUp, Briefcase } from 'lucide-react';
 import { ResponsiveContainer, AreaChart, Area, XAxis, YAxis, Tooltip, CartesianGrid } from 'recharts';
 import { usePortal } from '../../context/PortalContext';
 
@@ -14,7 +14,7 @@ export const AgencyDashboard = () => {
 
   if (isLoading || !agencyData) {
     return (
-      <div className="p-8 text-center text-slate-500 animate-pulse">
+      <div className="p-8 text-center text-muted-foreground animate-pulse">
         Loading Manpower Agency Placements & Client Contracts...
       </div>
     );
@@ -25,12 +25,12 @@ export const AgencyDashboard = () => {
   return (
     <div className="space-y-6">
       {/* Top Banner info */}
-      <div className="p-4 rounded-xl bg-sky-500/10 border border-sky-500/30 text-sky-900 dark:text-sky-200 flex items-center justify-between">
+      <div className="p-4 rounded-xl bg-primary/10 border border-primary/20 text-foreground flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <Briefcase className="w-5 h-5 text-sky-600 shrink-0" />
+          <Briefcase className="w-5 h-5 text-primary shrink-0" />
           <div>
             <p className="text-sm font-semibold">Manpower Operations Summary</p>
-            <p className="text-xs text-sky-700 dark:text-sky-300">
+            <p className="text-xs text-muted-foreground">
               {metrics.activePlacedWorkers} contractors currently deployed across {metrics.totalContracts} enterprise client contracts.
             </p>
           </div>
@@ -94,7 +94,7 @@ export const AgencyDashboard = () => {
           <CardHeader>
             <div>
               <CardTitle icon={TrendingUp}>Contractor Placement & Revenue Growth</CardTitle>
-              <p className="text-xs text-slate-500 mt-0.5">Active Workforce vs Agency Net Margin (Year 2026)</p>
+              <p className="text-xs text-muted-foreground mt-0.5">Active Workforce vs Agency Net Margin (Year 2026)</p>
             </div>
             <Button variant="outline" size="sm" onClick={() => switchPortal('agency', 'reports')}>
               Analytics
@@ -106,18 +106,18 @@ export const AgencyDashboard = () => {
                 <AreaChart data={reports.placementTrends}>
                   <defs>
                     <linearGradient id="colorAgency" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="#0284c7" stopOpacity={0.4}/>
-                      <stop offset="95%" stopColor="#0284c7" stopOpacity={0}/>
+                      <stop offset="5%" stopColor="var(--primary)" stopOpacity={0.4}/>
+                      <stop offset="95%" stopColor="var(--primary)" stopOpacity={0}/>
                     </linearGradient>
                   </defs>
-                  <CartesianGrid strokeDasharray="3 3" opacity={0.15} />
-                  <XAxis dataKey="month" stroke="#888888" fontSize={12} />
-                  <YAxis stroke="#888888" fontSize={12} />
+                  <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" opacity={0.15} />
+                  <XAxis dataKey="month" stroke="var(--muted-foreground)" fontSize={12} />
+                  <YAxis stroke="var(--muted-foreground)" fontSize={12} />
                   <Tooltip
-                    contentStyle={{ backgroundColor: '#0f172a', border: 'none', borderRadius: '8px', color: '#fff' }}
+                    contentStyle={{ backgroundColor: 'var(--card)', border: '1px solid var(--border)', borderRadius: '8px', color: 'var(--foreground)' }}
                     formatter={(val, name) => [name === 'workers' ? `${val} Placed Workers` : `$${val.toLocaleString()}`, name === 'workers' ? 'Workers' : 'Net Margin']}
                   />
-                  <Area type="monotone" dataKey="workers" stroke="#0284c7" strokeWidth={2} fillOpacity={1} fill="url(#colorAgency)" />
+                  <Area type="monotone" dataKey="workers" stroke="var(--primary)" strokeWidth={2} fillOpacity={1} fill="url(#colorAgency)" />
                 </AreaChart>
               </ResponsiveContainer>
             </div>
@@ -130,19 +130,19 @@ export const AgencyDashboard = () => {
             <CardTitle icon={Building2}>Key Client Contracts</CardTitle>
           </CardHeader>
           <CardContent className="p-0">
-            <div className="divide-y divide-slate-100 dark:divide-slate-800">
+            <div className="divide-y divide-border">
               {clientContracts.map((contract) => (
-                <div key={contract.id} className="p-3.5 hover:bg-slate-50 dark:hover:bg-slate-800/40 transition-colors">
+                <div key={contract.id} className="p-3.5 hover:bg-muted/40 transition-colors">
                   <div className="flex items-center justify-between">
-                    <h4 className="text-sm font-semibold text-slate-900 dark:text-white">{contract.clientName}</h4>
+                    <h4 className="text-sm font-semibold text-foreground">{contract.clientName}</h4>
                     <Badge variant={contract.status === 'Active' ? 'success' : 'warning'}>
                       {contract.status}
                     </Badge>
                   </div>
-                  <p className="text-xs text-slate-500 mt-1">{contract.industry} • {contract.workersDeployed} Workers</p>
-                  <div className="mt-2 flex items-center justify-between text-[11px] text-slate-400">
+                  <p className="text-xs text-muted-foreground mt-1">{contract.industry} • {contract.workersDeployed} Workers</p>
+                  <div className="mt-2 flex items-center justify-between text-[11px] text-muted-foreground">
                     <span>Rate: ${contract.hourlyRate}/hr</span>
-                    <span className="font-semibold text-emerald-600 dark:text-emerald-400">Margin: {contract.margin}</span>
+                    <span className="font-semibold text-emerald-555">Margin: {contract.margin}</span>
                   </div>
                 </div>
               ))}
@@ -162,16 +162,16 @@ export const AgencyDashboard = () => {
             </Button>
           </CardHeader>
           <CardContent className="p-0">
-            <div className="divide-y divide-slate-100 dark:divide-slate-800">
+            <div className="divide-y divide-border">
               {employees.slice(0, 4).map((emp) => (
-                <div key={emp.id} className="p-4 flex items-center justify-between hover:bg-slate-50 dark:hover:bg-slate-800/40 transition-colors">
+                <div key={emp.id} className="p-4 flex items-center justify-between hover:bg-muted/40 transition-colors">
                   <div>
-                    <p className="font-semibold text-sm text-slate-900 dark:text-white">{emp.name}</p>
-                    <p className="text-xs text-slate-500 mt-0.5">{emp.role} @ {emp.client}</p>
+                    <p className="font-semibold text-sm text-foreground">{emp.name}</p>
+                    <p className="text-xs text-muted-foreground mt-0.5">{emp.role} @ {emp.client}</p>
                   </div>
                   <div className="text-right">
-                    <p className="font-bold text-sm text-slate-900 dark:text-white">${emp.hourlyPay}/hr pay</p>
-                    <p className="text-[11px] text-emerald-600 font-medium">Billed: ${emp.billRate}/hr</p>
+                    <p className="font-bold text-sm text-foreground">${emp.hourlyPay}/hr pay</p>
+                    <p className="text-[11px] text-emerald-555 font-medium">Billed: ${emp.billRate}/hr</p>
                   </div>
                 </div>
               ))}
@@ -188,15 +188,15 @@ export const AgencyDashboard = () => {
             </Button>
           </CardHeader>
           <CardContent className="p-0">
-            <div className="divide-y divide-slate-100 dark:divide-slate-800">
+            <div className="divide-y divide-border">
               {bills.slice(0, 4).map((bill) => (
-                <div key={bill.id} className="p-4 flex items-center justify-between hover:bg-slate-50 dark:hover:bg-slate-800/40 transition-colors">
+                <div key={bill.id} className="p-4 flex items-center justify-between hover:bg-muted/40 transition-colors">
                   <div>
-                    <p className="font-semibold text-sm text-slate-900 dark:text-white">{bill.client}</p>
-                    <p className="text-xs text-slate-500 mt-0.5">{bill.hoursBilled} hrs • Period: {bill.period}</p>
+                    <p className="font-semibold text-sm text-foreground">{bill.client}</p>
+                    <p className="text-xs text-muted-foreground mt-0.5">{bill.hoursBilled} hrs • Period: {bill.period}</p>
                   </div>
                   <div className="text-right">
-                    <p className="font-bold text-sm text-slate-900 dark:text-white">${bill.amount.toLocaleString()}</p>
+                    <p className="font-bold text-sm text-foreground">${bill.amount.toLocaleString()}</p>
                     <Badge variant={bill.status === 'Paid' ? 'success' : bill.status === 'Pending' ? 'warning' : 'danger'}>
                       {bill.status}
                     </Badge>
