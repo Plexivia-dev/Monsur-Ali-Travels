@@ -37,7 +37,7 @@ export const ExportModal = ({ isOpen, onClose, title = 'Export Report Data', dat
       }
     >
       <div className="space-y-4">
-        <p className="text-sm text-slate-600 dark:text-slate-300">
+        <p className="text-sm text-muted-foreground">
           Select export format and date range parameters for {dataName}.
         </p>
 
@@ -46,17 +46,17 @@ export const ExportModal = ({ isOpen, onClose, title = 'Export Report Data', dat
             onClick={() => setFormat('csv')}
             className={`p-4 rounded-xl border text-left flex flex-col justify-between transition-all cursor-pointer ${
               format === 'csv'
-                ? 'border-blue-600 bg-blue-50/50 dark:bg-blue-950/40 text-blue-900 dark:text-blue-200'
-                : 'border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700'
+                ? 'border-primary bg-primary/10 text-foreground'
+                : 'border-border hover:border-muted-foreground/30'
             }`}
           >
             <div className="flex items-center justify-between">
               <FileSpreadsheet className="w-6 h-6 text-emerald-600" />
-              {format === 'csv' && <CheckCircle className="w-4 h-4 text-blue-600" />}
+              {format === 'csv' && <CheckCircle className="w-4 h-4 text-primary" />}
             </div>
             <div className="mt-3">
               <h4 className="text-sm font-semibold">CSV Excel</h4>
-              <p className="text-xs text-slate-500">Structured data spreadsheet</p>
+              <p className="text-xs text-muted-foreground">Structured data spreadsheet</p>
             </div>
           </button>
 
@@ -64,17 +64,17 @@ export const ExportModal = ({ isOpen, onClose, title = 'Export Report Data', dat
             onClick={() => setFormat('pdf')}
             className={`p-4 rounded-xl border text-left flex flex-col justify-between transition-all cursor-pointer ${
               format === 'pdf'
-                ? 'border-blue-600 bg-blue-50/50 dark:bg-blue-950/40 text-blue-900 dark:text-blue-200'
-                : 'border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700'
+                ? 'border-primary bg-primary/10 text-foreground'
+                : 'border-border hover:border-muted-foreground/30'
             }`}
           >
             <div className="flex items-center justify-between">
               <FileText className="w-6 h-6 text-rose-600" />
-              {format === 'pdf' && <CheckCircle className="w-4 h-4 text-blue-600" />}
+              {format === 'pdf' && <CheckCircle className="w-4 h-4 text-primary" />}
             </div>
             <div className="mt-3">
               <h4 className="text-sm font-semibold">PDF Document</h4>
-              <p className="text-xs text-slate-500">Formatted printable report</p>
+              <p className="text-xs text-muted-foreground">Formatted printable report</p>
             </div>
           </button>
         </div>
