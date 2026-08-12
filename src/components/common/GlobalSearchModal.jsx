@@ -33,26 +33,27 @@ export const GlobalSearchModal = () => {
 
   return (
     <div className="fixed inset-0 z-50 flex items-start justify-center pt-20 p-4">
+      {/* Backdrop */}
       <div
-        className="fixed inset-0 bg-slate-900/60 dark:bg-black/80 backdrop-blur-xs"
+        className="fixed inset-0 bg-black/40 backdrop-blur-xs"
         onClick={() => setSearchOpen(false)}
       />
 
-      <div className="relative w-full max-w-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-2xl overflow-hidden z-10 animate-in zoom-in-95 duration-150">
+      <div className="relative w-full max-w-xl bg-card border border-border rounded-2xl shadow-2xl overflow-hidden z-10 animate-in zoom-in-95 duration-150">
         {/* Input Bar */}
-        <div className="flex items-center px-4 border-b border-slate-100 dark:border-slate-800">
-          <Search className="w-5 h-5 text-slate-400 shrink-0 mr-3" />
+        <div className="flex items-center px-4 border-b border-border">
+          <Search className="w-5 h-5 text-muted-foreground shrink-0 mr-3" />
           <input
             autoFocus
             type="text"
             placeholder="Search modules, workers, bills, or portals..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full py-4 bg-transparent text-sm text-slate-900 dark:text-white placeholder-slate-400 focus:outline-hidden"
+            className="w-full py-4 bg-transparent text-sm text-foreground placeholder-muted-foreground focus:outline-hidden"
           />
           <button
             onClick={() => setSearchOpen(false)}
-            className="p-1.5 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800"
+            className="p-1.5 text-muted-foreground hover:text-foreground rounded-lg hover:bg-muted"
           >
             <X className="w-5 h-5" />
           </button>
@@ -67,36 +68,36 @@ export const GlobalSearchModal = () => {
                 <button
                   key={idx}
                   onClick={() => handleSelect(item.portal, item.submodule)}
-                  className="w-full flex items-center justify-between p-3 rounded-xl hover:bg-blue-50 dark:hover:bg-slate-800 text-left transition-colors group cursor-pointer"
+                  className="w-full flex items-center justify-between p-3 rounded-xl hover:bg-muted text-left transition-colors group cursor-pointer"
                 >
                   <div className="flex items-center gap-3">
-                    <div className="p-2 rounded-lg bg-slate-100 dark:bg-slate-800 group-hover:bg-blue-100 dark:group-hover:bg-blue-950 text-slate-600 dark:text-slate-300 group-hover:text-blue-600 dark:group-hover:text-blue-400">
+                    <div className="p-2 rounded-lg bg-muted group-hover:bg-primary/10 text-muted-foreground group-hover:text-primary transition-colors">
                       <Icon className="w-4 h-4" />
                     </div>
                     <div>
-                      <h4 className="text-sm font-semibold text-slate-900 dark:text-slate-100 group-hover:text-blue-600 dark:group-hover:text-blue-400">
+                      <h4 className="text-sm font-semibold text-foreground group-hover:text-primary transition-colors">
                         {item.title}
                       </h4>
-                      <p className="text-xs text-slate-500 dark:text-slate-400">{item.desc}</p>
+                      <p className="text-xs text-muted-foreground">{item.desc}</p>
                     </div>
                   </div>
                   <div className="flex items-center gap-2">
-                    <span className="text-[10px] uppercase tracking-wider font-semibold px-2 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-500">
+                    <span className="text-[10px] uppercase tracking-wider font-semibold px-2 py-0.5 rounded-full bg-muted text-muted-foreground">
                       {item.portal}
                     </span>
-                    <ArrowRight className="w-4 h-4 text-slate-400 group-hover:translate-x-1 transition-transform" />
+                    <ArrowRight className="w-4 h-4 text-muted-foreground group-hover:translate-x-1 transition-transform" />
                   </div>
                 </button>
               );
             })
           ) : (
-            <div className="py-8 text-center text-slate-400 text-sm">No matching portals or views found.</div>
+            <div className="py-8 text-center text-muted-foreground text-sm">No matching portals or views found.</div>
           )}
         </div>
 
         {/* Footer info */}
-        <div className="px-4 py-2.5 bg-slate-50 dark:bg-slate-950 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between text-xs text-slate-400">
-          <span>Press <kbd className="px-1.5 py-0.5 rounded bg-slate-200 dark:bg-slate-800 text-slate-600 dark:text-slate-300 font-mono text-[10px]">ESC</kbd> to close</span>
+        <div className="px-4 py-2.5 bg-muted/30 border-t border-border flex items-center justify-between text-xs text-muted-foreground">
+          <span>Press <kbd className="px-1.5 py-0.5 rounded bg-background border border-border text-muted-foreground font-mono text-[10px]">ESC</kbd> to close</span>
           <span>Smart ERP Quick Navigator</span>
         </div>
       </div>
