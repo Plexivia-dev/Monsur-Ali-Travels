@@ -34,7 +34,7 @@ export const StatCard = ({
         )}
       </div>
 
-      <div className="mt-4 flex items-center justify-between text-xs">
+      <div className="mt-4 flex flex-wrap items-center justify-between gap-y-2 gap-x-1 text-xs">
         {trend && (
           <div className="flex items-center gap-1 font-medium">
             {trendType === 'up' && (
@@ -57,7 +57,7 @@ export const StatCard = ({
           </div>
         )}
         {subtitle && (
-          <span className="text-muted-foreground truncate max-w-[180px]">
+          <span className="text-muted-foreground truncate">
             {subtitle}
           </span>
         )}
