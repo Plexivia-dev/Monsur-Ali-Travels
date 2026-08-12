@@ -20,12 +20,12 @@ export const Button = ({
   };
 
   const variantStyles = {
-    primary: 'bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white shadow-xs focus:ring-blue-500 dark:bg-blue-600 dark:hover:bg-blue-500',
-    secondary: 'bg-slate-100 hover:bg-slate-200 text-slate-800 dark:bg-slate-800 dark:hover:bg-slate-700 dark:text-slate-200 focus:ring-slate-400',
-    outline: 'border border-slate-300 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200 focus:ring-slate-400',
-    ghost: 'hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 focus:ring-slate-400',
-    danger: 'bg-red-600 hover:bg-red-700 text-white focus:ring-red-500 dark:bg-red-600 dark:hover:bg-red-500',
-    success: 'bg-emerald-600 hover:bg-emerald-700 text-white focus:ring-emerald-500 dark:bg-emerald-600 dark:hover:bg-emerald-500'
+    primary: 'bg-primary hover:opacity-90 active:opacity-100 text-primary-foreground shadow-xs focus:ring-ring',
+    secondary: 'bg-secondary hover:opacity-90 text-secondary-foreground focus:ring-ring',
+    outline: 'border border-border hover:bg-muted text-foreground focus:ring-ring',
+    ghost: 'hover:bg-muted text-muted-foreground hover:text-foreground focus:ring-ring',
+    danger: 'bg-destructive hover:opacity-90 text-destructive-foreground focus:ring-ring',
+    success: 'bg-emerald-600 hover:opacity-90 text-white focus:ring-ring'
   };
 
   return (
