@@ -85,7 +85,7 @@ export const Sidebar = ({ isMobileOpen, setIsMobileOpen }) => {
           <div className="space-y-1">
             <button
               onClick={() => setFactoryOpen(!factoryOpen)}
-              className="w-full flex items-center justify-between px-3 py-2 text-xs font-bold uppercase tracking-wider text-amber-500 hover:text-amber-400 transition-colors cursor-pointer"
+              className="w-full flex items-center justify-between px-3 py-2 text-xs font-bold uppercase tracking-wider text-left text-amber-500 hover:text-amber-400 transition-colors cursor-pointer"
             >
               <div className="flex items-center gap-2">
                 <Factory className="w-4 h-4 text-amber-500" />
@@ -103,7 +103,7 @@ export const Sidebar = ({ isMobileOpen, setIsMobileOpen }) => {
                     <button
                       key={item.id}
                       onClick={() => handleNavClick('factory', item.id)}
-                      className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg text-xs font-medium transition-all cursor-pointer ${
+                      className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg text-xs font-medium text-left transition-all cursor-pointer ${
                         isActive
                           ? 'bg-amber-500/10 text-amber-500 font-semibold border-l-2 border-amber-500'
                           : 'text-sidebar-foreground/75 hover:text-sidebar-foreground hover:bg-sidebar-accent'
@@ -122,7 +122,7 @@ export const Sidebar = ({ isMobileOpen, setIsMobileOpen }) => {
           <div className="space-y-1">
             <button
               onClick={() => setAgencyOpen(!agencyOpen)}
-              className="w-full flex items-center justify-between px-3 py-2 text-xs font-bold uppercase tracking-wider text-sky-500 hover:text-sky-400 transition-colors cursor-pointer"
+              className="w-full flex items-center justify-between px-3 py-2 text-xs font-bold uppercase tracking-wider text-left text-sky-500 hover:text-sky-400 transition-colors cursor-pointer"
             >
               <div className="flex items-center gap-2">
                 <Users2 className="w-4 h-4 text-sky-500" />
@@ -140,7 +140,7 @@ export const Sidebar = ({ isMobileOpen, setIsMobileOpen }) => {
                     <button
                       key={item.id}
                       onClick={() => handleNavClick('agency', item.id)}
-                      className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg text-xs font-medium transition-all cursor-pointer ${
+                      className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg text-xs font-medium text-left transition-all cursor-pointer ${
                         isActive
                           ? 'bg-sky-500/10 text-sky-500 font-semibold border-l-2 border-sky-500'
                           : 'text-sidebar-foreground/75 hover:text-sidebar-foreground hover:bg-sidebar-accent'
@@ -159,7 +159,7 @@ export const Sidebar = ({ isMobileOpen, setIsMobileOpen }) => {
           <div className="space-y-1">
             <button
               onClick={() => setAdminOpen(!adminOpen)}
-              className="w-full flex items-center justify-between px-3 py-2 text-xs font-bold uppercase tracking-wider text-purple-500 hover:text-purple-400 transition-colors cursor-pointer"
+              className="w-full flex items-center justify-between px-3 py-2 text-xs font-bold uppercase tracking-wider text-left text-purple-500 hover:text-purple-400 transition-colors cursor-pointer"
             >
               <div className="flex items-center gap-2">
                 <Shield className="w-4 h-4 text-purple-500" />
