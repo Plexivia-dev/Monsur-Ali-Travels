@@ -1,0 +1,96 @@
+import React, { useState } from 'react';
+import { Modal } from '../ui/Modal';
+import { Button } from '../ui/Button';
+import { Select } from '../ui/Input';
+import { Download, FileSpreadsheet, FileText, CheckCircle } from 'lucide-react';
+import { usePortal } from '../../context/PortalContext';
+
+export const ExportModal = ({ isOpen, onClose, title = 'Export Report Data', dataName = 'Records' }) => {
+  const [format, setFormat] = useState('csv');
+  const [dateRange, setDateRange] = useState('this_month');
+  const [isExporting, setIsExporting] = useState(false);
+  const { addToast } = usePortal();
+
+  const handleExport = () => {
+    setIsExporting(true);
+    setTimeout(() => {
+      setIsExporting(false);
+      addToast(`${dataName} successfully exported as ${format.toUpperCase()} (${dateRange.replace('_', ' ')})`, 'success');
+      onClose();
+    }, 800);
+  };
+
+  return (
+    <Modal
+      isOpen={isOpen}
+      onClose={onClose}
+      title={title}
+      footer={
+        <>
+          <Button variant="outline" onClick={onClose} disabled={isExporting}>
+            Cancel
+          </Button>
+          <Button variant="primary" icon={Download} onClick={handleExport} disabled={isExporting}>
+            {isExporting ? 'Generating File...' : 'Download Export'}
+          </Button>
+        </>
+      }
+    >
+      <div className="space-y-4">
+        <p className="text-sm text-slate-600 dark:text-slate-300">
+          Select export format and date range parameters for {dataName}.
+        </p>
+
+        <div className="grid grid-cols-2 gap-3">
+          <button
+            onClick={() => setFormat('csv')}
+            className={`p-4 rounded-xl border text-left flex flex-col justify-between transition-all cursor-pointer ${
+              format === 'csv'
+                ? 'border-blue-600 bg-blue-50/50 dark:bg-blue-950/40 text-blue-900 dark:text-blue-200'
+                : 'border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700'
+            }`}
+          >
+            <div className="flex items-center justify-between">
+              <FileSpreadsheet className="w-6 h-6 text-emerald-600" />
+              {format === 'csv' && <CheckCircle className="w-4 h-4 text-blue-600" />}
+            </div>
+            <div className="mt-3">
+              <h4 className="text-sm font-semibold">CSV Excel</h4>
+              <p className="text-xs text-slate-500">Structured data spreadsheet</p>
+            </div>
+          </button>
+
+          <button
+            onClick={() => setFormat('pdf')}
+            className={`p-4 rounded-xl border text-left flex flex-col justify-between transition-all cursor-pointer ${
+              format === 'pdf'
+                ? 'border-blue-600 bg-blue-50/50 dark:bg-blue-950/40 text-blue-900 dark:text-blue-200'
+                : 'border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700'
+            }`}
+          >
+            <div className="flex items-center justify-between">
+              <FileText className="w-6 h-6 text-rose-600" />
+              {format === 'pdf' && <CheckCircle className="w-4 h-4 text-blue-600" />}
+            </div>
+            <div className="mt-3">
+              <h4 className="text-sm font-semibold">PDF Document</h4>
+              <p className="text-xs text-slate-500">Formatted printable report</p>
+            </div>
+          </button>
+        </div>
+
+        <Select
+          label="Date Range Filter"
+          value={dateRange}
+          onChange={(e) => setDateRange(e.target.value)}
+          options={[
+            { label: 'Current Month (Aug 2026)', value: 'this_month' },
+            { label: 'Previous Month (Jul 2026)', value: 'last_month' },
+            { label: 'Last Quarter (Q2 2026)', value: 'last_quarter' },
+            { label: 'Year to Date (YTD 2026)', value: 'ytd' }
+          ]}
+        />
+      </div>
+    </Modal>
+  );
+};
