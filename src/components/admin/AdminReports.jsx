@@ -185,7 +185,7 @@ export const AdminReports = ({ adminData, addToast }) => {
                   </td>
 
                   <td className="py-4 px-4">
-                    <span className="px-2.5 py-1 rounded-lg text-xs font-semibold bg-muted text-foreground">
+                    <span className="px-2.5 py-1 rounded-lg text-xs font-semibold bg-muted text-foreground whitespace-nowrap">
                       {report.category}
                     </span>
                   </td>
