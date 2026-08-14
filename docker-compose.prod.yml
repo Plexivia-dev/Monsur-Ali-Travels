@@ -1,57 +1,54 @@
 services:
   mongodb:
     image: mongo:7.0
-    container_name: ${MONGODB_CONTAINER_NAME}
+    container_name: monsuralitravels-mongodb-live
     restart: always
     environment:
-      MONGO_INITDB_ROOT_USERNAME: ${MONGO_INITDB_ROOT_USERNAME}
-      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD}
-      MONGO_INITDB_DATABASE: ${MONGO_INITDB_DATABASE}
-    # MongoDB exposed publicly on dynamic MONGODB_PORT
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_INITDB_ROOT_USERNAME:-admin}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD:-MonsurAliSecPass2026!}
+      MONGO_INITDB_DATABASE: ${MONGO_INITDB_DATABASE:-monsur-ali-travels}
     ports:
-      - "${MONGODB_PORT:-27017}:27017"
+      - "27017:27017"
     volumes:
       - mongodb-data:/data/db
     networks:
-      - client-network
+      - monsuralitravels-net
 
   backend:
     build:
       context: ./backend
       dockerfile: Dockerfile
-    container_name: ${BACKEND_CONTAINER_NAME}
+    container_name: monsuralitravels-backend-live
     restart: always
-    # .env ফাইল VPS এর dynamically specified path বা default path থেকে mount করা হচ্ছে
+    env_file:
+      - ./backend/.env
     volumes:
-      - ${CLIENT_CONFIG_PATH:-/opt/${CLIENT_NAME}/configs}/backend.env:/app/.env:ro
-      - ${PUBLIC_UPLOADS_PATH:-/var/www/uploads}:/app/uploads
+      - /var/www/uploads:/app/uploads
     environment:
-      PORT: ${BACKEND_PORT:-5092}
+      NODE_ENV: production
+      PORT: 5092
     ports:
-      - "${BACKEND_PORT:-5092}:${BACKEND_PORT:-5092}"
+      - "5092:5092"
     depends_on:
       - mongodb
     networks:
-      - client-network
+      - monsuralitravels-net
 
   dashboard:
     build:
       context: ./dashboard
       dockerfile: Dockerfile
       args:
-        - VITE_API_BASE_URL=${VITE_API_BASE_URL}
-    container_name: ${DASHBOARD_CONTAINER_NAME}
+        - VITE_API_BASE_URL=${VITE_API_BASE_URL:-https://server.monsuralitravelsbd.com}
+    container_name: monsuralitravels-dashboard-live
     restart: always
-    # dashboard এর .env ও dynamically specified path বা default path থেকে mount
-    volumes:
-      - ${CLIENT_CONFIG_PATH:-/opt/${CLIENT_NAME}/configs}/dashboard.env:/app/.env:ro
     ports:
-      - "${DASHBOARD_PORT:-8005}:8005"
+      - "8005:80"
     networks:
-      - client-network
+      - monsuralitravels-net
 
 networks:
-  client-network:
+  monsuralitravels-net:
     driver: bridge
 
 volumes:

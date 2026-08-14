@@ -1,24 +1,23 @@
 #!/bin/bash
 
-# Production Update Script
-# Use on VPS to pull latest code and restart
+# ==============================================================================
+# Monsur Ali Travels ERP - Production Update Script
+# ==============================================================================
 
 set -e
 
-cd /opt/monsuralitravels
+PROJECT_DIR="/opt/monsuralitravels"
+cd "$PROJECT_DIR"
 
-echo "🔄 Pulling latest changes..."
-git pull origin main
+echo "🔄 Pulling latest changes from master..."
+git fetch origin master
+git reset --hard origin/master
 
-echo "📦 Building images..."
-docker compose -f docker-compose.prod.yml build --pull
+echo "🏗️ Rebuilding and restarting containers..."
+docker compose -f docker-compose.prod.yml up -d --build
 
-echo "🔄 Restarting services..."
-docker compose -f docker-compose.prod.yml down
-docker compose -f docker-compose.prod.yml up -d
+echo "🧹 Cleaning up dangling images..."
+docker image prune -f
 
-echo "✓ Update complete!"
-echo ""
+echo "✅ Update complete! Current status:"
 docker compose -f docker-compose.prod.yml ps
-echo ""
-echo "View logs: docker compose -f docker-compose.prod.yml logs -f"
