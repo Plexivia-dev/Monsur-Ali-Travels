@@ -1,5 +1,62 @@
 import { OrderModel } from '../models/order.model.js';
 import { MemberModel } from '../models/member.model.js';
+import { BillingModel } from '../models/billing.model.js';
+import { PaymentModel } from '../models/payment.model.js';
+import { UserModel } from '../models/user.model.js';
+
+export const getErpOverviewStats = async (req, res, next) => {
+  try {
+    const [
+      totalMembers,
+      totalUsers,
+      billingAgg,
+      paymentAgg,
+    ] = await Promise.all([
+      MemberModel.countDocuments({ isActive: true }),
+      UserModel.countDocuments({ isActive: true }),
+      BillingModel.aggregate([
+        {
+          $group: {
+            _id: null,
+            totalBilled: { $sum: '$totalAmount' },
+            totalPaid: { $sum: '$paidAmount' },
+            totalPending: { $sum: '$pendingAmount' },
+            billCount: { $sum: 1 },
+          },
+        },
+      ]),
+      PaymentModel.aggregate([
+        {
+          $group: {
+            _id: '$paymentType',
+            totalPaid: { $sum: '$paidAmount' },
+            totalPending: { $sum: '$pendingAmount' },
+            count: { $sum: 1 },
+          },
+        },
+      ]),
+    ]);
+
+    const billingStats = billingAgg[0] || {
+      totalBilled: 0,
+      totalPaid: 0,
+      totalPending: 0,
+      billCount: 0,
+    };
+
+    return res.json({
+      status: 'success',
+      data: {
+        totalMembers,
+        totalUsers,
+        billing: billingStats,
+        payments: paymentAgg,
+      },
+    });
+  } catch (err) {
+    next(err);
+  }
+};
 
 export const dailyOrders = async (req, res, next) => {
   try {
@@ -187,4 +244,4 @@ export const getOrderStatusDistribution = async (req, res, next) => {
   }
 };
 
-export default { dailyOrders, getKpiStats, getOrderStatusDistribution };
+export default { getErpOverviewStats, dailyOrders, getKpiStats, getOrderStatusDistribution };
