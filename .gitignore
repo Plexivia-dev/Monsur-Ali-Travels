@@ -36,8 +36,7 @@ dash_old/
 backups/
 *.gz
 
-# Frontend / Admin split repository folder
+# Frontend split repository folder
 frontend/
-admin/
 
 .agents
