@@ -24,6 +24,7 @@ services:
       - ./backend/.env
     volumes:
       - /var/www/uploads:/app/uploads
+      - /var/www/uploads:/app/src/uploads
     environment:
       NODE_ENV: production
       PORT: 5092
