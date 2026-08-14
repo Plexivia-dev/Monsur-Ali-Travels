@@ -9,8 +9,13 @@ export const createPayment = async (req, res, next) => {
   try {
     const {
       orderId,
+      billingId,
+      memberId,
+      paymentType,
       paymentMethod,
       paymentPhone,
+      transactionRef,
+      notes,
       amount,
       paymentStatus: requestedPaymentStatus,
       totalAmount: requestedTotalAmount,
@@ -18,8 +23,14 @@ export const createPayment = async (req, res, next) => {
       pendingAmount: requestedPendingAmount,
     } = req.body ?? {};
 
-    if (!orderId || !Types.ObjectId.isValid(orderId)) {
-      return res.status(400).json({ status: "error", message: "Invalid or missing orderId" });
+    if (orderId && !Types.ObjectId.isValid(orderId)) {
+      return res.status(400).json({ status: "error", message: "Invalid orderId" });
+    }
+    if (billingId && !Types.ObjectId.isValid(billingId)) {
+      return res.status(400).json({ status: "error", message: "Invalid billingId" });
+    }
+    if (memberId && !Types.ObjectId.isValid(memberId)) {
+      return res.status(400).json({ status: "error", message: "Invalid memberId" });
     }
     if (!paymentMethod || paymentMethod.trim() === "") {
       return res.status(400).json({ status: "error", message: "paymentMethod is required" });
@@ -34,9 +45,14 @@ export const createPayment = async (req, res, next) => {
     const status = (requestedPaymentStatus || (paidAmount >= totalAmount ? "paid" : paidAmount > 0 ? "partial" : "pending")).toString().trim().toLowerCase();
 
     const paymentData = {
-      orderId,
+      orderId: orderId || null,
+      billingId: billingId || null,
+      memberId: memberId || null,
+      paymentType: paymentType || (orderId ? "order" : billingId ? "billing" : "general"),
       paymentMethod: paymentMethod.trim(),
       paymentPhone: paymentPhone?.trim() || "",
+      transactionRef: transactionRef?.trim() || "",
+      notes: notes?.trim() || "",
       totalAmount,
       paidAmount,
       pendingAmount,
@@ -67,6 +83,15 @@ export const listPayments = async (req, res, next) => {
 
     if (req.query.orderId && Types.ObjectId.isValid(req.query.orderId)) {
       filter.orderId = req.query.orderId;
+    }
+    if (req.query.billingId && Types.ObjectId.isValid(req.query.billingId)) {
+      filter.billingId = req.query.billingId;
+    }
+    if (req.query.memberId && Types.ObjectId.isValid(req.query.memberId)) {
+      filter.memberId = req.query.memberId;
+    }
+    if (req.query.paymentType) {
+      filter.paymentType = req.query.paymentType.toString().trim();
     }
 
     if (req.query.paymentMethod) {
