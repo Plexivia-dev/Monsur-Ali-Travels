@@ -20,9 +20,15 @@ export const createBilling = async (req, res, next) => {
   try {
     const {
       orderId,
+      memberId,
+      billType,
+      invoiceNumber,
+      clientName,
+      category,
       billingMethod,
       billingPhone,
       billingEmail,
+      items,
       amount,
       status: requestedStatus,
       totalAmount: requestedTotalAmount,
@@ -36,8 +42,8 @@ export const createBilling = async (req, res, next) => {
     if (orderId && !Types.ObjectId.isValid(orderId)) {
       return res.status(400).json({ status: "error", message: "Invalid orderId" });
     }
-    if (!billingMethod || billingMethod.trim() === "") {
-      return res.status(400).json({ status: "error", message: "billingMethod is required" });
+    if (memberId && !Types.ObjectId.isValid(memberId)) {
+      return res.status(400).json({ status: "error", message: "Invalid memberId" });
     }
     if (amount === undefined || typeof amount !== "number" || amount < 0) {
       return res.status(400).json({ status: "error", message: "Valid amount is required" });
@@ -49,10 +55,16 @@ export const createBilling = async (req, res, next) => {
     const status = normalizeStatus(requestedStatus, paidAmount, totalAmount);
 
     const billingData = {
-      orderId,
-      billingMethod: billingMethod.trim(),
+      orderId: orderId || null,
+      memberId: memberId || null,
+      billType: billType || (orderId ? "client_invoice" : "general"),
+      invoiceNumber: invoiceNumber?.trim() || "",
+      clientName: clientName?.trim() || "",
+      category: category?.trim() || "",
+      billingMethod: billingMethod?.trim() || "Cash",
       billingPhone: billingPhone?.trim() || "",
       billingEmail: billingEmail?.trim().toLowerCase() || "",
+      items: Array.isArray(items) ? items : [],
       totalAmount,
       paidAmount,
       pendingAmount,
@@ -86,6 +98,15 @@ export const listBilling = async (req, res, next) => {
 
     if (req.query.orderId && Types.ObjectId.isValid(req.query.orderId)) {
       filter.orderId = req.query.orderId;
+    }
+    if (req.query.memberId && Types.ObjectId.isValid(req.query.memberId)) {
+      filter.memberId = req.query.memberId;
+    }
+    if (req.query.billType) {
+      filter.billType = req.query.billType.toString().trim();
+    }
+    if (req.query.category) {
+      filter.category = { $regex: req.query.category.toString().trim(), $options: "i" };
     }
 
     if (req.query.billingMethod) {

@@ -4,12 +4,35 @@ import { generateDid } from "../utils/generateDid.js";
 const billingSchema = new Schema(
   {
     orderId: { type: Schema.Types.ObjectId, ref: "Order", required: false, index: true },
+    memberId: { type: Schema.Types.ObjectId, ref: "Member", required: false, index: true },
     did: { type: String, default: () => generateDid(), unique: true, index: true },
-    billingMethod: { type: String, required: true, trim: true },
+    billType: {
+      type: String,
+      enum: ["supplier_bill", "client_invoice", "service", "raw_material", "placement", "general"],
+      default: "general",
+    },
+    invoiceNumber: { type: String, trim: true, default: "" },
+    clientName: { type: String, trim: true, default: "" },
+    category: { type: String, trim: true, default: "" },
+    billingMethod: { type: String, required: true, trim: true, default: "Cash" },
     billingPhone: { type: String, trim: true, default: "" },
     billingEmail: { type: String, trim: true, lowercase: true, default: "" },
     billingDate: { type: Date, default: () => new Date() },
     dueDate: { type: Date },
+    items: {
+      type: [
+        new Schema(
+          {
+            title: { type: String, required: true, trim: true },
+            quantity: { type: Number, required: true, min: 1, default: 1 },
+            unitPrice: { type: Number, required: true, min: 0, default: 0 },
+            amount: { type: Number, required: true, min: 0, default: 0 },
+          },
+          { _id: false }
+        ),
+      ],
+      default: [],
+    },
     totalAmount: { type: Number, required: true, min: 0 },
     paidAmount: { type: Number, required: true, min: 0, default: 0 },
     pendingAmount: { type: Number, required: true, min: 0, default: 0 },
