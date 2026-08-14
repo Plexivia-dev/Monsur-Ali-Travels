@@ -57,10 +57,16 @@ export const listMembers = async (req, res, next) => {
       filter.$or = [
         { name: searchRegex },
         { email: searchRegex },
-        { phone: searchRegex }
+        { phone: searchRegex },
+        { organization: searchRegex },
+        { passportNumber: searchRegex },
+        { nid: searchRegex },
       ];
     }
     
+    if (req.query.memberType && req.query.memberType !== 'All') {
+      filter.memberType = req.query.memberType;
+    }
     if (req.query.segment && req.query.segment !== 'All') {
       filter.segment = req.query.segment;
     }
