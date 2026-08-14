@@ -1,35 +1,6 @@
 import { create } from 'zustand';
 
-export type PortalType = 'factory' | 'agency' | 'admin';
-
-interface UserProfile {
-  name: string;
-  email: string;
-  role: string;
-  avatar?: string;
-}
-
-interface AppState {
-  // Navigation & Layout
-  activePortal: PortalType;
-  setActivePortal: (portal: PortalType) => void;
-  isSidebarOpen: boolean;
-  toggleSidebar: () => void;
-  setSidebarOpen: (isOpen: boolean) => void;
-
-  // Search
-  searchQuery: string;
-  setSearchQuery: (query: string) => void;
-  isSearchModalOpen: boolean;
-  setSearchModalOpen: (isOpen: boolean) => void;
-
-  // User Profile & Session
-  user: UserProfile | null;
-  setUser: (user: UserProfile | null) => void;
-  logout: () => void;
-}
-
-export const useAppStore = create<AppState>((set) => ({
+export const useAppStore = create((set) => ({
   activePortal: 'factory',
   setActivePortal: (portal) => set({ activePortal: portal }),
   isSidebarOpen: true,

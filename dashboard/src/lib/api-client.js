@@ -1,7 +1,7 @@
-import axios, { AxiosRequestConfig } from 'axios';
+import axios from 'axios';
 import { handleGlobalError } from './error-handler';
 
-let baseURL = (import.meta.env?.VITE_API_BASE_URL as string) || '';
+let baseURL = import.meta.env?.VITE_API_BASE_URL || '';
 
 if (!baseURL && typeof window !== 'undefined') {
   const hostname = window.location.hostname.toLowerCase();
@@ -31,12 +31,9 @@ apiClient.interceptors.request.use((config) => {
 });
 
 let isRefreshing = false;
-let failedQueue: Array<{
-  resolve: (value?: any) => void;
-  reject: (reason?: any) => void;
-}> = [];
+let failedQueue = [];
 
-const processQueue = (error: any, token: string | null = null) => {
+const processQueue = (error, token = null) => {
   failedQueue.forEach((promise) => {
     if (error) {
       promise.reject(error);
@@ -51,7 +48,7 @@ const processQueue = (error: any, token: string | null = null) => {
 apiClient.interceptors.response.use(
   (response) => response,
   async (error) => {
-    const originalRequest = error.config as AxiosRequestConfig & { _retry?: boolean };
+    const originalRequest = error.config;
     const requestUrl = originalRequest?.url || '';
     const isAuthRequest =
       requestUrl.includes('/auth/login') ||

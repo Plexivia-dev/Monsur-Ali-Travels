@@ -9,8 +9,16 @@ import { AgencyModule } from './components/agency/AgencyModule';
 import { AdminModule } from './components/admin/AdminModule';
 import { ToastContainer } from './components/common/ToastContainer';
 import { GlobalSearchModal } from './components/common/GlobalSearchModal';
+import { Toaster } from 'sonner';
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      refetchOnWindowFocus: false,
+      retry: 1,
+    },
+  },
+});
 
 function MainLayout() {
   const { activePortal, setSearchOpen } = usePortal();
@@ -18,7 +26,7 @@ function MainLayout() {
 
   // Global Keyboard Shortcut for Search (Ctrl+K or Cmd+K)
   useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
+    const handleKeyDown = (e) => {
       if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
         e.preventDefault();
         setSearchOpen(true);
@@ -51,6 +59,7 @@ function MainLayout() {
 
       {/* Global Utilities */}
       <ToastContainer />
+      <Toaster richColors position="top-right" />
       <GlobalSearchModal />
     </div>
   );

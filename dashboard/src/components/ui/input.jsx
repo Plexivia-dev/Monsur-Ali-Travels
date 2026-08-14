@@ -1,20 +1,52 @@
-import * as React from "react"
-import { Input as InputPrimitive } from "@base-ui/react/input"
+import * as React from "react";
+import { cn } from "@/lib/utils";
 
-import { cn } from "@/lib/utils"
-
-function Input({ className, type, ...props }) {
+function Input({ className, type, label, error, helperText, ...props }) {
   return (
-    <InputPrimitive
-      type={type}
-      data-slot="input"
-      className={cn(
-        "h-8 w-full min-w-0 rounded-lg border border-input bg-transparent px-2.5 py-1 text-base transition-colors outline-none file:inline-flex file:h-6 file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 disabled:pointer-events-none disabled:cursor-not-allowed disabled:bg-input/50 disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-3 aria-invalid:ring-destructive/20 md:text-sm dark:bg-input/30 dark:disabled:bg-input/80 dark:aria-invalid:border-destructive/50 dark:aria-invalid:ring-destructive/40",
-        className
+    <div className="w-full space-y-1.5">
+      {label && (
+        <label className="text-xs font-semibold text-foreground/80 tracking-wide">
+          {label}
+        </label>
       )}
-      {...props}
-    />
-  )
+      <input
+        type={type}
+        data-slot="input"
+        className={cn(
+          "w-full rounded-lg border border-input bg-card/60 px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground transition-all outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 disabled:opacity-50 disabled:cursor-not-allowed",
+          error && "border-destructive focus:border-destructive focus:ring-destructive/20",
+          className
+        )}
+        {...props}
+      />
+      {error && <p className="text-xs text-destructive">{error}</p>}
+      {helperText && !error && <p className="text-xs text-muted-foreground">{helperText}</p>}
+    </div>
+  );
 }
 
-export { Input }
+function Select({ className, label, error, children, ...props }) {
+  return (
+    <div className="w-full space-y-1.5">
+      {label && (
+        <label className="text-xs font-semibold text-foreground/80 tracking-wide">
+          {label}
+        </label>
+      )}
+      <select
+        className={cn(
+          "w-full rounded-lg border border-input bg-card/60 px-3 py-2 text-sm text-foreground transition-all outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer",
+          error && "border-destructive focus:border-destructive focus:ring-destructive/20",
+          className
+        )}
+        {...props}
+      >
+        {children}
+      </select>
+      {error && <p className="text-xs text-destructive">{error}</p>}
+    </div>
+  );
+}
+
+export { Input, Select };
+export default Input;

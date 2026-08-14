@@ -1,14 +1,8 @@
 import { toast } from 'sonner';
 
-/**
- * Generic user-friendly fallback error message
- */
 export const GENERIC_ERROR_MESSAGE = 'An unexpected error occurred. Please try again later.';
 
-/**
- * Safely extract a backend API error message from an unknown catch payload.
- */
-export function getApiErrorMessage(error: any, customFallback?: string): string {
+export function getApiErrorMessage(error, customFallback) {
   return (
     error?.response?.data?.message ||
     error?.response?.data?.errors?.join(', ') ||
@@ -18,10 +12,7 @@ export function getApiErrorMessage(error: any, customFallback?: string): string 
   );
 }
 
-/**
- * Sanitizes raw error payloads into clean, actionable notifications.
- */
-export function getGenericErrorMessage(error: any, customFallback?: string): string {
+export function getGenericErrorMessage(error, customFallback) {
   if (!error) {
     return customFallback || GENERIC_ERROR_MESSAGE;
   }
@@ -32,7 +23,6 @@ export function getGenericErrorMessage(error: any, customFallback?: string): str
 
   const lowerMsg = rawMessage.toLowerCase();
 
-  // Filter out any internal traces or database exceptions
   if (
     lowerMsg.includes('sql') ||
     lowerMsg.includes('syntaxerror') ||
@@ -45,7 +35,6 @@ export function getGenericErrorMessage(error: any, customFallback?: string): str
     return customFallback || GENERIC_ERROR_MESSAGE;
   }
 
-  // Handle common HTTP / network statuses
   if (lowerMsg.includes('network error') || lowerMsg.includes('econnrefused')) {
     return 'Unable to connect to the server. Please check your network connection.';
   }
@@ -69,11 +58,7 @@ export function getGenericErrorMessage(error: any, customFallback?: string): str
   return customFallback || GENERIC_ERROR_MESSAGE;
 }
 
-/**
- * Global Error Handler function
- * Displays a sanitized error toast using sonner.
- */
-export function handleGlobalError(error: any, customFallback?: string): string {
+export function handleGlobalError(error, customFallback) {
   const safeMessage = getGenericErrorMessage(error, customFallback);
   toast.error(safeMessage);
   return safeMessage;
