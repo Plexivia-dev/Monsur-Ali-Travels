@@ -1,8 +1,10 @@
 # Build Stage
 FROM node:22-alpine AS builder
 WORKDIR /app
-COPY package.json package-lock.json* ./
-RUN npm ci
+
+COPY package.json package-lock.json* bun.lock* ./
+RUN npm install
+
 COPY . .
 
 ARG VITE_API_BASE_URL=https://server.monsuralitravelsbd.com
@@ -16,6 +18,6 @@ COPY --from=builder /app/dist /usr/share/nginx/html
 COPY nginx.conf /etc/nginx/conf.d/default.conf
 
 EXPOSE 80
-EXPOSE 8005
+EXPOSE 3000
 
 CMD ["nginx", "-g", "daemon off;"]

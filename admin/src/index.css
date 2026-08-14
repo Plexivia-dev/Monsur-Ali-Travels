@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@import "tw-animate-css";
 
 @custom-variant dark (&:is(.dark *));
 
@@ -11,7 +12,7 @@
   --popover-foreground: #111827;
   --primary: #d87943;
   --primary-foreground: #ffffff;
-  --secondary: #527575;
+  --secondary: #c5a059;
   --secondary-foreground: #ffffff;
   --muted: #f3f4f6;
   --muted-foreground: #6b7280;
@@ -22,7 +23,7 @@
   --border: #e5e7eb;
   --input: #e5e7eb;
   --ring: #d87943;
-  --chart-1: #5f8787;
+  --chart-1: #c5a059;
   --chart-2: #e78a53;
   --chart-3: #fbcb97;
   --chart-4: #888888;
@@ -35,7 +36,7 @@
   --sidebar-accent-foreground: #111827;
   --sidebar-border: #e5e7eb;
   --sidebar-ring: #d87943;
-  --font-sans: Inter, ui-sans-serif, sans-serif, system-ui;
+  --font-sans: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
   --font-serif: serif;
   --font-mono: JetBrains Mono, monospace;
   --radius: 0.75rem;
@@ -66,18 +67,18 @@
   --popover-foreground: #c1c1c1;
   --primary: #e78a53;
   --primary-foreground: #121113;
-  --secondary: #5f8787;
+  --secondary: #c5a059;
   --secondary-foreground: #121113;
   --muted: #222222;
   --muted-foreground: #888888;
   --accent: #333333;
   --accent-foreground: #c1c1c1;
-  --destructive: #5f8787;
-  --destructive-foreground: #121113;
+  --destructive: #ef4444;
+  --destructive-foreground: #ffffff;
   --border: #222222;
   --input: #222222;
   --ring: #e78a53;
-  --chart-1: #5f8787;
+  --chart-1: #c5a059;
   --chart-2: #e78a53;
   --chart-3: #fbcb97;
   --chart-4: #888888;
@@ -90,6 +91,9 @@
   --sidebar-accent-foreground: #c1c1c1;
   --sidebar-border: #222222;
   --sidebar-ring: #e78a53;
+  --font-sans: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+  --font-serif: serif;
+  --font-mono: JetBrains Mono, monospace;
   --radius: 0.75rem;
   --shadow-x: 0px;
   --shadow-y: 1px;
@@ -170,41 +174,84 @@
 @layer base {
   * {
     @apply border-border outline-ring/50;
+    scrollbar-width: thin;
+    scrollbar-color: var(--border) transparent;
   }
   body {
-    @apply bg-background text-foreground font-sans;
+    @apply bg-background text-foreground;
     letter-spacing: var(--tracking-normal);
+  }
+  /* Webkit custom scrollbars */
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: var(--border);
+    border-radius: 9999px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--muted-foreground);
   }
 }
 
-/* Custom scrollbars */
-::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+.ProseMirror {
+  outline: none;
 }
 
-::-webkit-scrollbar-track {
-  background: transparent;
+.ProseMirror p {
+  margin: 0.5em 0;
 }
 
-::-webkit-scrollbar-thumb {
-  background: var(--border);
-  border-radius: 9999px;
+.ProseMirror h1 {
+  font-size: 1.8em;
+  font-weight: 700;
+  margin-top: 0.8em;
+  margin-bottom: 0.4em;
 }
 
-::-webkit-scrollbar-thumb:hover {
-  background: var(--muted-foreground);
+.ProseMirror h2 {
+  font-size: 1.4em;
+  font-weight: 600;
+  margin-top: 0.8em;
+  margin-bottom: 0.4em;
 }
 
-/* Glassmorphism helpers */
-.glass-panel {
-  background: rgba(255, 255, 255, 0.7);
-  backdrop-filter: blur(12px);
-  border: 1px solid var(--border);
+.ProseMirror h3 {
+  font-size: 1.2em;
+  font-weight: 600;
+  margin-top: 0.8em;
+  margin-bottom: 0.4em;
 }
 
-.dark .glass-panel {
-  background: rgba(18, 17, 19, 0.75);
-  backdrop-filter: blur(12px);
-  border: 1px solid var(--border);
+.ProseMirror ul {
+  list-style-type: disc !important;
+  padding-left: 1.5rem !important;
+  margin: 0.5em 0 !important;
 }
+
+.ProseMirror ol {
+  list-style-type: decimal !important;
+  padding-left: 1.5rem !important;
+  margin: 0.5em 0 !important;
+}
+
+.ProseMirror li {
+  margin: 0.25em 0;
+}
+
+.ProseMirror blockquote {
+  border-left: 3px solid var(--border);
+  padding-left: 1rem;
+  font-style: italic;
+  margin: 0.8em 0;
+  color: var(--muted-foreground);
+}
+
+button, [role="button"], [type="button"], [type="submit"], [type="reset"] {
+  cursor: pointer;
+}
+
