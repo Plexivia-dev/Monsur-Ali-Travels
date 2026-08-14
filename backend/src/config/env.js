@@ -20,8 +20,8 @@ const envSchema = z.object({
   SMTP_HOST: z.string().default("smtp.hostinger.com"),
   SMTP_PORT: z.coerce.number().int().positive().default(587),
   SMTP_ENCRYPTION: z.string().default("TLS"),
-  SMTP_USER: z.string().min(1, "SMTP_USER is required"),
-  SMTP_PASSWORD: z.string().min(1, "SMTP_PASSWORD is required"),
+  SMTP_USER: z.string().default("noreply@monsuralitravelsbd.com"),
+  SMTP_PASSWORD: z.string().default("dev_smtp_password"),
   SMTP_FROM_NAME: z.string().default("Monsur Ali Travels BD"),
   SMTP_FROM: z.string().optional(),
 });

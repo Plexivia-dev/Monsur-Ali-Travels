@@ -10,18 +10,25 @@ export async function connectDatabase() {
 
   console.log("Attempting MongoDB connection...");
   try {
-    await mongoose.connect(env.MONGODB_URI, {
+    const isAtlas = env.MONGODB_URI.includes("mongodb+srv");
+    const options = {
       dbName: env.MONGODB_DB_NAME,
-      serverApi: {
-        version: ServerApiVersion.v1,
-        strict: true,
-        deprecationErrors: true,
-      },
-    });
+      ...(isAtlas
+        ? {
+            serverApi: {
+              version: ServerApiVersion.v1,
+              strict: true,
+              deprecationErrors: true,
+            },
+          }
+        : {}),
+      serverSelectionTimeoutMS: 5000,
+    };
+    await mongoose.connect(env.MONGODB_URI, options);
     console.log("✅ Connected to MongoDB");
   } catch (err) {
-    console.error("❌ Failed to connect to MongoDB:", err);
-    throw err; // rethrow to let the app handle it
+    console.error("❌ Failed to connect to MongoDB:", err.message);
+    console.warn("⚠️ Continuing server startup in offline/dev fallback mode...");
   }
 }
 

@@ -1,3 +1,5 @@
+import { Router } from "express";
+
 // Retail / E-commerce routes commented out for standalone ERP operations
 // import productsRouter from "./routes/ProductsRoute.js";
 // import imagesRouter from "./routes/ImagesRoute.js";
