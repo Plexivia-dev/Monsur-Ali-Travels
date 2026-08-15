@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import logoImg from '../../assets/logo.png';
 import { usePortal } from '../../context/PortalContext';
 import {
   Factory,
@@ -17,37 +18,52 @@ import {
   FileSpreadsheet,
   Award,
   UserCheck,
-  PanelLeftClose
+  FileCheck,
+  FolderDown,
+  IdCard,
+  X,
+  Building2,
+  UserPlus
 } from 'lucide-react';
 
 export const Sidebar = () => {
   const { activePortal, activeSubmodule, switchPortal, isSidebarOpen, setIsSidebarOpen, toggleSidebar } = usePortal();
   const [factoryOpen, setFactoryOpen] = useState(true);
   const [agencyOpen, setAgencyOpen] = useState(true);
+  const [clientsSubOpen, setClientsSubOpen] = useState(true);
   const [docsOpen, setDocsOpen] = useState(true);
   const [adminOpen, setAdminOpen] = useState(true);
 
   const navItemsFactory = [
-    { id: 'dashboard', label: 'Dashboard Overview', icon: LayoutDashboard },
-    { id: 'employees', label: 'Workers & Attendance', icon: Users },
-    { id: 'bills', label: 'Raw Material Bills', icon: FileText },
-    { id: 'payments', label: 'Payouts & Ledger', icon: CreditCard },
-    { id: 'reports', label: 'Production Reports', icon: BarChart3 }
+    { id: 'dashboard', label: 'Factory Dashboard', icon: LayoutDashboard },
+    { id: 'employees', label: 'Molded Bricks & Labor', icon: Users },
+    { id: 'bills', label: 'Coal & Raw Material Bills', icon: Receipt },
+    { id: 'payments', label: 'Contractor Wages', icon: CreditCard },
+    { id: 'reports', label: 'Production & Sales Reports', icon: BarChart3 }
   ];
 
   const navItemsAgency = [
     { id: 'dashboard', label: 'Agency Dashboard', icon: LayoutDashboard },
     { id: 'candidates', label: 'Candidate & Agent Pipeline', icon: UserCheck },
     { id: 'employees', label: 'Placed Workers', icon: Users },
-    { id: 'bills', label: 'Client Invoicing', icon: Receipt },
+    {
+      id: 'clients',
+      label: 'Client Invoicing',
+      icon: Receipt,
+      children: [
+        { id: 'clients-add', label: 'Add new clients', icon: UserPlus },
+        { id: 'all-clients', label: 'All Clients', icon: Building2 },
+        { id: 'clients-payments', label: 'Payments', icon: CreditCard }
+      ]
+    },
     { id: 'payments', label: 'Contractor Payouts', icon: CreditCard },
     { id: 'reports', label: 'Placement Reports', icon: BarChart3 }
   ];
 
   const navItemsDocs = [
-    { id: 'resume', label: 'Resume & CV', icon: FileText },
-    { id: 'certificate', label: 'Character Certificate', icon: Award },
-    { id: 'invoice', label: 'Invoice Generator', icon: Receipt }
+    { id: 'templates', label: 'Templates', icon: FileCheck },
+    { id: 'idcard', label: 'ID Card Studio', icon: IdCard },
+    { id: 'downloads', label: 'Downloads', icon: FolderDown }
   ];
 
   const navItemsAdmin = [
@@ -79,66 +95,33 @@ export const Sidebar = () => {
         }`}
       >
         {/* Brand Header */}
-        <div className="h-16 px-5 border-b border-sidebar-border flex items-center justify-between shrink-0">
-          <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-primary to-ring flex items-center justify-center text-sidebar-primary-foreground shadow-md shadow-primary/20 font-bold">
-              <Layers className="w-5 h-5" />
-            </div>
-            <div>
-              <h1 className="text-base font-bold text-sidebar-foreground tracking-tight flex items-center gap-1.5">
-                Smart ERP <span className="text-[10px] px-1.5 py-0.5 rounded bg-primary/20 text-primary font-semibold uppercase">v2.5</span>
+        <div className="h-16 px-4 border-b border-sidebar-border flex items-center justify-between shrink-0">
+          <div className="flex items-center gap-2.5 min-w-0">
+            <img
+              src={logoImg}
+              alt="Monsur Ali Travels Logo"
+              className="w-9 h-9 object-contain rounded-lg shadow-sm shrink-0 bg-background/80 p-0.5 border border-sidebar-border"
+            />
+            <div className="min-w-0">
+              <h1 className="text-sm font-bold text-sidebar-foreground tracking-tight flex items-center gap-1.5 truncate">
+                Smart ERP <span className="text-[10px] px-1.5 py-0.5 rounded bg-primary/20 text-primary font-semibold uppercase shrink-0">v2.5</span>
               </h1>
-              <p className="text-[11px] text-sidebar-foreground/60">Enterprise Dashboard</p>
+              <p className="text-[10px] text-sidebar-foreground/60 truncate">Monsur Ali Travels</p>
             </div>
           </div>
           <button
             onClick={toggleSidebar}
-            className="p-1.5 rounded-lg text-sidebar-foreground/60 hover:text-sidebar-foreground hover:bg-sidebar-accent transition-colors cursor-pointer"
+            className="p-1.5 rounded-full bg-primary/10 hover:bg-primary/20 text-primary border border-primary/20 transition-all flex items-center justify-center shrink-0 cursor-pointer shadow-xs ml-1"
             title="Close Sidebar"
             aria-label="Close Sidebar"
           >
-            <PanelLeftClose className="w-5 h-5" />
+            <X className="w-4 h-4 stroke-[2.5]" />
           </button>
         </div>
 
         {/* Navigation Sections */}
         <div className="flex-1 overflow-y-auto px-3 py-4 space-y-6">
           {/* GROUP 1: BRICK FACTORY PORTAL (HIDDEN FOR NOW) */}
-          {/* <div className="space-y-1">
-            <button
-              onClick={() => setFactoryOpen(!factoryOpen)}
-              className="w-full flex items-center justify-between px-3 py-2 text-xs font-bold uppercase tracking-wider text-left text-amber-500 hover:text-amber-400 transition-colors cursor-pointer"
-            >
-              <div className="flex items-center gap-2">
-                <Factory className="w-4 h-4 text-amber-500" />
-                <span>Brick Factory Portal</span>
-              </div>
-              {factoryOpen ? <ChevronDown className="w-3.5 h-3.5" /> : <ChevronRight className="w-3.5 h-3.5" />}
-            </button>
-
-            {factoryOpen && (
-              <div className="space-y-0.5 pl-1">
-                {navItemsFactory.map((item) => {
-                  const Icon = item.icon;
-                  const isActive = activePortal === 'factory' && activeSubmodule === item.id;
-                  return (
-                    <button
-                      key={item.id}
-                      onClick={() => handleNavClick('factory', item.id)}
-                      className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg text-xs font-medium text-left transition-all cursor-pointer ${
-                        isActive
-                          ? 'bg-amber-500/10 text-amber-500 font-semibold border-l-2 border-amber-500'
-                          : 'text-sidebar-foreground/75 hover:text-sidebar-foreground hover:bg-sidebar-accent'
-                      }`}
-                    >
-                      <Icon className={`w-4 h-4 ${isActive ? 'text-amber-500' : 'text-sidebar-foreground/60'}`} />
-                      <span>{item.label}</span>
-                    </button>
-                  );
-                })}
-              </div>
-            )}
-          </div> */}
 
           {/* GROUP 2: MANPOWER AGENCY PORTAL */}
           <div className="space-y-1">
@@ -157,6 +140,78 @@ export const Sidebar = () => {
               <div className="space-y-0.5 pl-1">
                 {navItemsAgency.map((item) => {
                   const Icon = item.icon;
+                  const isParentActive =
+                    activePortal === 'agency' &&
+                    (activeSubmodule === item.id ||
+                      (item.children &&
+                        item.children.some(
+                          (child) =>
+                            child.id === activeSubmodule ||
+                            (child.id === 'all-clients' && activeSubmodule === 'bills')
+                        )));
+
+                  // Render nested item with sub-menu children
+                  if (item.children) {
+                    return (
+                      <div key={item.id} className="space-y-0.5">
+                        <button
+                          onClick={() => {
+                            setClientsSubOpen(!clientsSubOpen);
+                            if (!clientsSubOpen) {
+                              handleNavClick('agency', 'all-clients');
+                            }
+                          }}
+                          className={`w-full flex items-center justify-between px-3 py-2 rounded-lg text-xs font-medium text-left transition-all cursor-pointer ${
+                            isParentActive
+                              ? 'bg-sky-500/10 text-sky-500 font-semibold'
+                              : 'text-sidebar-foreground/75 hover:text-sidebar-foreground hover:bg-sidebar-accent'
+                          }`}
+                        >
+                          <div className="flex items-center gap-3">
+                            <Icon className={`w-4 h-4 ${isParentActive ? 'text-sky-500' : 'text-sidebar-foreground/60'}`} />
+                            <span>{item.label}</span>
+                          </div>
+                          {clientsSubOpen ? (
+                            <ChevronDown className="w-3.5 h-3.5 text-sidebar-foreground/60" />
+                          ) : (
+                            <ChevronRight className="w-3.5 h-3.5 text-sidebar-foreground/60" />
+                          )}
+                        </button>
+
+                        {/* Collapsible Sub-menu Items */}
+                        {clientsSubOpen && (
+                          <div className="pl-4 ml-2 border-l border-sidebar-border/60 space-y-0.5 my-1">
+                            {item.children.map((child) => {
+                              const ChildIcon = child.icon;
+                              const isChildActive =
+                                activePortal === 'agency' &&
+                                (activeSubmodule === child.id ||
+                                  (child.id === 'all-clients' && (activeSubmodule === 'bills' || activeSubmodule === 'clients-all')) ||
+                                  (child.id === 'clients-add' && activeSubmodule === 'add-client') ||
+                                  (child.id === 'clients-payments' && activeSubmodule === 'payments'));
+
+                              return (
+                                <button
+                                  key={child.id}
+                                  onClick={() => handleNavClick('agency', child.id)}
+                                  className={`w-full flex items-center gap-2.5 px-2.5 py-1.5 rounded-md text-[11px] font-medium text-left transition-all cursor-pointer ${
+                                    isChildActive
+                                      ? 'bg-sky-500/15 text-sky-500 font-bold border-l-2 border-sky-500 pl-2'
+                                      : 'text-sidebar-foreground/70 hover:text-sidebar-foreground hover:bg-sidebar-accent/70'
+                                  }`}
+                                >
+                                  <ChildIcon className={`w-3.5 h-3.5 ${isChildActive ? 'text-sky-500' : 'text-sidebar-foreground/50'}`} />
+                                  <span>{child.label}</span>
+                                </button>
+                              );
+                            })}
+                          </div>
+                        )}
+                      </div>
+                    );
+                  }
+
+                  // Normal single item
                   const isActive = activePortal === 'agency' && activeSubmodule === item.id;
                   return (
                     <button

@@ -1,6 +1,7 @@
 import React from 'react';
 import { PrintablePaper } from '../common/PrintablePaper';
 import { Printer, Receipt, CheckCircle, Clock, AlertTriangle } from 'lucide-react';
+import logoImg from '../../../assets/logo.png';
 
 export function InvoicePreview({ data, onPrint }) {
   const { invoiceNo, issueDate, dueDate, paymentStatus, currency, taxRate, biller, client, items, paymentTerms } = data;
@@ -38,10 +39,8 @@ export function InvoicePreview({ data, onPrint }) {
           {/* Header Biller Info & Document Title */}
           <div className="flex flex-col sm:flex-row justify-between items-start border-b-2 border-slate-900 pb-6 gap-4">
             <div className="space-y-1 max-w-md">
-              <div className="flex items-center gap-2">
-                <div className="w-8 h-8 rounded-lg bg-slate-900 text-white flex items-center justify-center font-bold text-sm">
-                  M
-                </div>
+              <div className="flex items-center gap-2.5">
+                <img src={logoImg} alt="Monsur Ali Travels Logo" className="w-9 h-9 object-contain rounded-md" />
                 <h1 className="text-xl font-black uppercase tracking-tight text-slate-900">{biller.name}</h1>
               </div>
               <p className="text-xs text-slate-700 font-semibold">{biller.subtitle}</p>

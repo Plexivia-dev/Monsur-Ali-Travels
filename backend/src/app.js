@@ -58,8 +58,16 @@ export async function createApp() {
   app.use(express.json());
   app.use(express.urlencoded({ extended: false }));
 
+  const docsPath = path.join(process.cwd(), "documents");
+  if (!fs.existsSync(docsPath)) {
+    fs.mkdirSync(docsPath, { recursive: true });
+  }
+
   app.use("/uploads", express.static(path.join(process.cwd(), "uploads")));
   app.use("/src/uploads", express.static(path.join(process.cwd(), "uploads")));
+  app.use("/documents", express.static(docsPath));
+  app.use("/uploads/documents", express.static(docsPath));
+  app.use("/src/documents", express.static(docsPath));
 
   // Helper to format transfer byte size
   function formatBytes(bytes) {

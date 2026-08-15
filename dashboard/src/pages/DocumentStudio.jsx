@@ -1,10 +1,10 @@
 import React from 'react';
-import { usePortal } from '../../context/PortalContext';
-import { TemplateStudio } from './templates/TemplateStudio';
-import { DocumentDownloads } from './downloads/DocumentDownloads';
-import { IdCardStudio } from './idcard/IdCardStudio';
+import { usePortal } from '../context/PortalContext';
+import { TemplateStudio } from '../components/docs/templates/TemplateStudio';
+import { DocumentDownloads } from '../components/docs/downloads/DocumentDownloads';
+import { IdCardStudio } from '../components/docs/idcard/IdCardStudio';
 
-export function DocumentStudioModule() {
+export default function DocumentStudio() {
   const { activeSubmodule } = usePortal();
 
   return (

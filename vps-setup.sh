@@ -56,7 +56,11 @@ echo -e "${GREEN}✓ UFW rules enabled (Ports 22, 80, 443 open).${NC}"
 # 5. Project Directory & Repository Clone/Pull
 echo -e "\n${YELLOW}Step 4/8: Setting up project repository...${NC}"
 mkdir -p "$UPLOADS_DIR"
+mkdir -p "/var/www/html/documents"
+mkdir -p "/var/www/documents"
 chmod -R 777 "$UPLOADS_DIR"
+chmod -R 777 "/var/www/html/documents"
+chmod -R 777 "/var/www/documents"
 
 if [ -d "$PROJECT_DIR/.git" ]; then
     echo "Existing repository found at $PROJECT_DIR, pulling latest changes..."

@@ -1,10 +1,32 @@
-import React, { createContext, useContext, useState } from 'react';
+import React, { createContext, useContext, useState, useEffect } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 const PortalContext = createContext();
 
 export const PortalProvider = ({ children }) => {
-  const [activePortal, setActivePortal] = useState('agency'); // 'agency' | 'admin' | 'docs' | 'factory'
-  const [activeSubmodule, setActiveSubmodule] = useState('dashboard'); // 'dashboard', 'employees', 'bills', 'payments', 'reports', 'resume', 'certificate', 'invoice'
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  // Helper to parse portal and submodule from URL pathname
+  const getPortalFromPath = (pathname) => {
+    const parts = pathname.split('/').filter(Boolean);
+    let portal = 'agency';
+    let submodule = 'dashboard';
+
+    if (parts[0] === 'dashboard') {
+      if (parts[1]) portal = parts[1];
+      if (parts[2]) submodule = parts[2];
+    } else if (parts[0] && parts[0] !== 'login') {
+      portal = parts[0];
+      if (parts[1]) submodule = parts[1];
+    }
+
+    return { portal, submodule };
+  };
+
+  const parsed = getPortalFromPath(location.pathname);
+  const [activePortal, setActivePortalState] = useState(parsed.portal);
+  const [activeSubmodule, setActiveSubmoduleState] = useState(parsed.submodule);
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [toasts, setToasts] = useState([]);
@@ -19,6 +41,15 @@ export const PortalProvider = ({ children }) => {
   ]);
 
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+
+  // Sync state when browser URL location changes (e.g. back/forward buttons, direct entry)
+  useEffect(() => {
+    const { portal, submodule } = getPortalFromPath(location.pathname);
+    if (location.pathname !== '/login') {
+      setActivePortalState(portal);
+      setActiveSubmoduleState(submodule);
+    }
+  }, [location.pathname]);
 
   const toggleSidebar = () => {
     setIsSidebarOpen((prev) => !prev);
@@ -41,8 +72,19 @@ export const PortalProvider = ({ children }) => {
   };
 
   const switchPortal = (portal, submodule = 'dashboard') => {
-    setActivePortal(portal);
-    setActiveSubmodule(submodule);
+    setActivePortalState(portal);
+    setActiveSubmoduleState(submodule);
+    navigate(`/dashboard/${portal}/${submodule}`);
+  };
+
+  const setActivePortal = (portal) => {
+    setActivePortalState(portal);
+    navigate(`/dashboard/${portal}/${activeSubmodule}`);
+  };
+
+  const setActiveSubmodule = (submodule) => {
+    setActiveSubmoduleState(submodule);
+    navigate(`/dashboard/${activePortal}/${submodule}`);
   };
 
   return (

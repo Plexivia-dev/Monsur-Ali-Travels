@@ -6,10 +6,10 @@ import { PortalProvider, usePortal } from './context/PortalContext';
 import { AuthProvider, useAuth } from './lib/auth-context';
 import { Sidebar } from './components/layout/Sidebar';
 import { Navbar } from './components/layout/Navbar';
-import { FactoryModule } from './components/factory/FactoryModule';
-import { AgencyModule } from './components/agency/AgencyModule';
-import { AdminModule } from './components/admin/AdminModule';
-import { DocumentStudioModule } from './components/docs/DocumentStudioModule';
+import Factory from './pages/Factory';
+import Agency from './pages/Agency';
+import Admin from './pages/Admin';
+import DocumentStudio from './pages/DocumentStudio';
 import { ToastContainer } from './components/common/ToastContainer';
 import { GlobalSearchModal } from './components/common/GlobalSearchModal';
 import { Toaster } from 'sonner';
@@ -74,10 +74,10 @@ function MainLayout() {
 
         {/* Dynamic Portal View Container */}
         <main className="flex-1 p-4 sm:p-6 lg:p-8 max-w-7xl w-full mx-auto">
-          {activePortal === 'factory' && <FactoryModule />}
-          {activePortal === 'agency' && <AgencyModule />}
-          {activePortal === 'admin' && <AdminModule />}
-          {activePortal === 'docs' && <DocumentStudioModule />}
+          {activePortal === 'factory' && <Factory />}
+          {activePortal === 'agency' && <Agency />}
+          {activePortal === 'admin' && <Admin />}
+          {activePortal === 'docs' && <DocumentStudio />}
         </main>
       </div>
 
@@ -94,8 +94,8 @@ export default function App() {
     <QueryClientProvider client={queryClient}>
       <ThemeProvider>
         <AuthProvider>
-          <PortalProvider>
-            <BrowserRouter>
+          <BrowserRouter>
+            <PortalProvider>
               <Routes>
                 <Route path="/login" element={<LoginPage />} />
                 <Route
@@ -107,8 +107,8 @@ export default function App() {
                   }
                 />
               </Routes>
-            </BrowserRouter>
-          </PortalProvider>
+            </PortalProvider>
+          </BrowserRouter>
         </AuthProvider>
       </ThemeProvider>
     </QueryClientProvider>

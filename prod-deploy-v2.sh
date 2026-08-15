@@ -38,10 +38,12 @@ if ! command -v docker-compose &> /dev/null; then
     chmod +x /usr/local/bin/docker-compose
 fi
 
-echo -e "${YELLOW}Step 4: Creating project and upload directories...${NC}"
+echo -e "${YELLOW}Step 4: Creating project, upload and document directories...${NC}"
 mkdir -p $PROJECT_DIR
 mkdir -p /var/www/uploads
+mkdir -p /var/www/html/documents
 chown -R 1001:1001 /var/www/uploads 2>/dev/null || chmod -R 777 /var/www/uploads
+chmod -R 777 /var/www/html/documents 2>/dev/null || true
 cd $PROJECT_DIR
 
 echo -e "${YELLOW}Step 5: Cloning/Updating repository...${NC}"

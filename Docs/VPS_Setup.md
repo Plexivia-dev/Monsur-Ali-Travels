@@ -14,24 +14,27 @@
 ## 2. Cloudflare DNS & Domain Integration
 
 - **Primary Domain:** `monsuralitravels.com`
-- **Cloudflare API Token:** *(Stored securely in Cloudflare account dashboard)*
+- **Cloudflare API Token:** _(Stored securely in Cloudflare account dashboard)_
 - **Cloudflare Zone ID:** `96601a82dcaad6ba15891d416e440706`
 
 ### Assigned Cloudflare Nameservers
+
 Point these 2 NameServers in your Domain Registrar (where you purchased `monsuralitravels.com`):
+
 1. `christian.ns.cloudflare.com`
 2. `laila.ns.cloudflare.com`
 
 ### Configured DNS Records (All Auto-Assigned to `144.79.218.241`)
-| Type | Record Name | Target IP | Description |
-| :--- | :--- | :--- | :--- |
-| **A** | `admin` (`admin.monsuralitravels.com`) | `144.79.218.241` | Primary ERP Admin Dashboard SPA |
-| **A** | `api` (`api.monsuralitravels.com`) | `144.79.218.241` | Primary Backend REST API |
-| **A** | `@` (`monsuralitravels.com`) | `144.79.218.241` | Root Domain |
-| **A** | `dashboard` (`dashboard.monsuralitravels.com`) | `144.79.218.241` | Dashboard Alias |
-| **A** | `server` (`server.monsuralitravels.com`) | `144.79.218.241` | Server Alias |
-| **A** | `service` (`service.monsuralitravels.com`) | `144.79.218.241` | Service Alias |
-| **A** | `www` (`www.monsuralitravels.com`) | `144.79.218.241` | WWW Subdomain |
+
+| Type  | Record Name                                    | Target IP        | Description                     |
+| :---- | :--------------------------------------------- | :--------------- | :------------------------------ |
+| **A** | `admin` (`admin.monsuralitravels.com`)         | `144.79.218.241` | Primary ERP Admin Dashboard SPA |
+| **A** | `api` (`api.monsuralitravels.com`)             | `144.79.218.241` | Primary Backend REST API        |
+| **A** | `@` (`monsuralitravels.com`)                   | `144.79.218.241` | Root Domain                     |
+| **A** | `dashboard` (`dashboard.monsuralitravels.com`) | `144.79.218.241` | Dashboard Alias                 |
+| **A** | `server` (`server.monsuralitravels.com`)       | `144.79.218.241` | Server Alias                    |
+| **A** | `service` (`service.monsuralitravels.com`)     | `144.79.218.241` | Service Alias                   |
+| **A** | `www` (`www.monsuralitravels.com`)             | `144.79.218.241` | WWW Subdomain                   |
 
 ---
 
@@ -47,11 +50,11 @@ curl -fsSL https://raw.githubusercontent.com/ikram3031/Smart_ERP/master/vps-setu
 
 ## 4. Production Container & Port Architecture
 
-| Container Name | Service | Host Port | Routing Domain |
-| :--- | :--- | :--- | :--- |
-| **`monsuralitravels-dashboard-live`** | Vite SPA Dashboard | `8005` | `https://admin.monsuralitravels.com` |
-| **`monsuralitravels-backend-live`** | Express Node.js API | `5092` | `https://api.monsuralitravels.com` |
-| **`monsuralitravels-mongodb-live`** | MongoDB Engine | `27017` | Local / Internal Bridge Network |
+| Container Name                        | Service             | Host Port | Routing Domain                       |
+| :------------------------------------ | :------------------ | :-------- | :----------------------------------- |
+| **`monsuralitravels-dashboard-live`** | Vite SPA Dashboard  | `8005`    | `https://admin.monsuralitravels.com` |
+| **`monsuralitravels-backend-live`**   | Express Node.js API | `5092`    | `https://api.monsuralitravels.com`   |
+| **`monsuralitravels-mongodb-live`**   | MongoDB Engine      | `27017`   | Local / Internal Bridge Network      |
 
 ---
 

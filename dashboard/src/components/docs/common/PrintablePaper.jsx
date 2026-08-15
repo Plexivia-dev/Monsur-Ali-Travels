@@ -9,7 +9,7 @@ export function PrintablePaper({ children, className = '', id = 'printable-docum
     <div className="w-full flex justify-center py-2 sm:py-4 no-print-padding">
       <div
         id={id}
-        className={`printable-a4-paper bg-white text-slate-900 shadow-2xl rounded-sm w-full max-w-[850px] min-h-[1120px] p-8 sm:p-10 transition-all print:shadow-none print:m-0 print:p-0 print:w-full print:max-w-none ${className}`}
+        className={`printable-a4-paper bg-white text-slate-900 shadow-2xl rounded-sm w-full max-w-[850px] p-6 sm:p-8 print:p-0 print:m-0 print:shadow-none print:w-full print:max-w-none ${className}`}
         style={{ color: '#111827' }}
       >
         {children}

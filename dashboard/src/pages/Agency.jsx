@@ -1,11 +1,11 @@
 import React from 'react';
-import { usePortal } from '../../context/PortalContext';
-import { AgencyDashboard } from './AgencyDashboard';
-import { AgencyEmployees } from './AgencyEmployees';
-import { CandidateCaseFiles } from './CandidateCaseFiles';
-import { ClientManagement } from './ClientManagement';
+import { usePortal } from '../context/PortalContext';
+import { AgencyDashboard } from '../components/agency/AgencyDashboard';
+import { AgencyEmployees } from '../components/agency/AgencyEmployees';
+import { CandidateCaseFiles } from '../components/agency/CandidateCaseFiles';
+import { ClientManagement } from '../components/agency/ClientManagement';
 
-export const AgencyModule = () => {
+export default function Agency() {
   const { activeSubmodule } = usePortal();
 
   switch (activeSubmodule) {
@@ -26,5 +26,5 @@ export const AgencyModule = () => {
     default:
       return <AgencyDashboard />;
   }
-};
+}
 

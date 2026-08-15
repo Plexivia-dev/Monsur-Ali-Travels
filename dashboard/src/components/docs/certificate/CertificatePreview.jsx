@@ -1,6 +1,7 @@
 import React from 'react';
 import { PrintablePaper } from '../common/PrintablePaper';
-import { Printer, Award, ShieldCheck } from 'lucide-react';
+import { Printer, Award, ShieldCheck, CheckCircle2 } from 'lucide-react';
+import logoImg from '../../../assets/logo.png';
 
 export function CertificatePreview({ data, onPrint }) {
   const { memoNo, issueDate, language, candidate, conduct, authority } = data;
@@ -38,8 +39,8 @@ export function CertificatePreview({ data, onPrint }) {
             {/* Header / Crest */}
             <div className="text-center space-y-2 border-b-2 border-slate-900 pb-4">
               <div className="flex justify-center">
-                <div className="w-14 h-14 rounded-full bg-slate-900 text-white flex items-center justify-center shadow-md">
-                  <ShieldCheck className="w-8 h-8" />
+                <div className="w-14 h-14 rounded-full bg-white flex items-center justify-center shadow-md border-2 border-slate-900 overflow-hidden p-1">
+                  <img src={logoImg} alt="Organization Logo" className="w-full h-full object-contain" />
                 </div>
               </div>
               
