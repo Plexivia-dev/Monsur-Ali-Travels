@@ -7,7 +7,7 @@ RUN npm install
 
 COPY . .
 
-ARG VITE_API_BASE_URL=https://server.monsuralitravelsbd.com
+ARG VITE_API_BASE_URL=https://api.monsuralitravels.com
 ENV VITE_API_BASE_URL=$VITE_API_BASE_URL
 
 RUN npm run build

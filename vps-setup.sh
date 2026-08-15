@@ -121,7 +121,7 @@ docker compose -f docker-compose.prod.yml ps
 echo ""
 echo -e "${BLUE}Next Steps for SSL Certificates:${NC}"
 echo "Run certbot to generate free HTTPS certificates for your domains:"
-echo -e "  ${YELLOW}certbot --nginx -d dashboard.monsuralitravelsbd.com -d server.monsuralitravelsbd.com -d service.monsuralitravelsbd.com${NC}"
+echo -e "  ${YELLOW}certbot --nginx -d admin.monsuralitravels.com -d api.monsuralitravels.com -d dashboard.monsuralitravels.com -d server.monsuralitravels.com -d service.monsuralitravels.com -d monsuralitravels.com -d www.monsuralitravels.com${NC}"
 echo ""
 echo -e "${BLUE}Useful Management Commands:${NC}"
 echo "  - View logs:   cd /opt/monsuralitravels && docker compose -f docker-compose.prod.yml logs -f"

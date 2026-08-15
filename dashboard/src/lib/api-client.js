@@ -8,7 +8,7 @@ if (!baseURL && typeof window !== 'undefined') {
   if (hostname.includes('localhost') || hostname.includes('127.0.0.1')) {
     baseURL = 'http://localhost:5092';
   } else {
-    baseURL = 'https://server.monsuralitravelsbd.com';
+    baseURL = 'https://api.monsuralitravels.com';
   }
 }
 

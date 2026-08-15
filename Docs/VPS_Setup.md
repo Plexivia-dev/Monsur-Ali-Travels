@@ -25,10 +25,12 @@ Point these 2 NameServers in your Domain Registrar (where you purchased `monsura
 ### Configured DNS Records (All Auto-Assigned to `144.79.218.241`)
 | Type | Record Name | Target IP | Description |
 | :--- | :--- | :--- | :--- |
+| **A** | `admin` (`admin.monsuralitravels.com`) | `144.79.218.241` | Primary ERP Admin Dashboard SPA |
+| **A** | `api` (`api.monsuralitravels.com`) | `144.79.218.241` | Primary Backend REST API |
 | **A** | `@` (`monsuralitravels.com`) | `144.79.218.241` | Root Domain |
-| **A** | `dashboard` (`dashboard.monsuralitravels.com`) | `144.79.218.241` | React/Vite ERP Dashboard SPA |
-| **A** | `server` (`server.monsuralitravels.com`) | `144.79.218.241` | Express Backend REST API |
-| **A** | `service` (`service.monsuralitravels.com`) | `144.79.218.241` | Backend Service Endpoint |
+| **A** | `dashboard` (`dashboard.monsuralitravels.com`) | `144.79.218.241` | Dashboard Alias |
+| **A** | `server` (`server.monsuralitravels.com`) | `144.79.218.241` | Server Alias |
+| **A** | `service` (`service.monsuralitravels.com`) | `144.79.218.241` | Service Alias |
 | **A** | `www` (`www.monsuralitravels.com`) | `144.79.218.241` | WWW Subdomain |
 
 ---
@@ -47,8 +49,8 @@ curl -fsSL https://raw.githubusercontent.com/ikram3031/Smart_ERP/master/vps-setu
 
 | Container Name | Service | Host Port | Routing Domain |
 | :--- | :--- | :--- | :--- |
-| **`monsuralitravels-dashboard-live`** | Vite SPA Dashboard | `8005` | `https://dashboard.monsuralitravels.com` |
-| **`monsuralitravels-backend-live`** | Express Node.js API | `5092` | `https://server.monsuralitravels.com` |
+| **`monsuralitravels-dashboard-live`** | Vite SPA Dashboard | `8005` | `https://admin.monsuralitravels.com` |
+| **`monsuralitravels-backend-live`** | Express Node.js API | `5092` | `https://api.monsuralitravels.com` |
 | **`monsuralitravels-mongodb-live`** | MongoDB Engine | `27017` | Local / Internal Bridge Network |
 
 ---
@@ -56,7 +58,7 @@ curl -fsSL https://raw.githubusercontent.com/ikram3031/Smart_ERP/master/vps-setu
 ## 5. Free SSL Certificate Command (Certbot)
 
 ```bash
-certbot --nginx -d dashboard.monsuralitravels.com -d server.monsuralitravels.com -d service.monsuralitravels.com -d monsuralitravels.com -d www.monsuralitravels.com
+certbot --nginx -d admin.monsuralitravels.com -d api.monsuralitravels.com -d dashboard.monsuralitravels.com -d server.monsuralitravels.com -d service.monsuralitravels.com -d monsuralitravels.com -d www.monsuralitravels.com
 ```
 
 ---

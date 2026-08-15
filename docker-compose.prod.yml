@@ -40,7 +40,7 @@ services:
       context: ./dashboard
       dockerfile: Dockerfile
       args:
-        - VITE_API_BASE_URL=${VITE_API_BASE_URL:-https://server.monsuralitravelsbd.com}
+        - VITE_API_BASE_URL=${VITE_API_BASE_URL:-https://api.monsuralitravels.com}
     container_name: monsuralitravels-dashboard-live
     restart: always
     ports:
