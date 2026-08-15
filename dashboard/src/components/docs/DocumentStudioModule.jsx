@@ -4,7 +4,8 @@ import { ResumeBuilder } from './resume/ResumeBuilder';
 import { CertificateBuilder } from './certificate/CertificateBuilder';
 import { InvoiceBuilder } from './invoice/InvoiceBuilder';
 import { TemplateStudio } from './templates/TemplateStudio';
-import { FileText, Award, Receipt, FileCheck } from 'lucide-react';
+import { DocumentDownloads } from './downloads/DocumentDownloads';
+import { FileText, Award, Receipt, FileCheck, FolderDown } from 'lucide-react';
 
 export function DocumentStudioModule() {
   const { activeSubmodule, setActiveSubmodule } = usePortal();
@@ -21,7 +22,7 @@ export function DocumentStudioModule() {
             </span>
           </h1>
           <p className="text-xs text-muted-foreground mt-1">
-            Create, customize, and print crisp A4 Resumes, Templates, Character Certificates, and Invoices.
+            Create, customize, print, and download server document backups, templates, resumes, and invoices.
           </p>
         </div>
 
@@ -29,6 +30,7 @@ export function DocumentStudioModule() {
         <div className="flex items-center space-x-1 bg-muted p-1 rounded-xl">
           {[
             { id: 'templates', label: 'Templates', icon: FileCheck },
+            { id: 'downloads', label: 'Downloads', icon: FolderDown },
             { id: 'resume', label: 'Resume & CV', icon: FileText },
             { id: 'certificate', label: 'Character Certificate', icon: Award },
             { id: 'invoice', label: 'Invoice Generator', icon: Receipt }
@@ -56,6 +58,7 @@ export function DocumentStudioModule() {
       {/* Render Active Document Builder Submodule */}
       <div>
         {activeSubmodule === 'templates' && <TemplateStudio />}
+        {activeSubmodule === 'downloads' && <DocumentDownloads />}
         {activeSubmodule === 'resume' && <ResumeBuilder />}
         {activeSubmodule === 'certificate' && <CertificateBuilder />}
         {activeSubmodule === 'invoice' && <InvoiceBuilder />}

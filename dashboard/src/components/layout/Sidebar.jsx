@@ -18,6 +18,7 @@ import {
   Award,
   UserCheck,
   FileCheck,
+  FolderDown,
   X
 } from 'lucide-react';
 
@@ -25,6 +26,7 @@ export const Sidebar = () => {
   const { activePortal, activeSubmodule, switchPortal, isSidebarOpen, setIsSidebarOpen, toggleSidebar } = usePortal();
   const [factoryOpen, setFactoryOpen] = useState(true);
   const [agencyOpen, setAgencyOpen] = useState(true);
+  const [docsOpen, setDocsOpen] = useState(true);
   const [adminOpen, setAdminOpen] = useState(true);
 
   const navItemsAgency = [
@@ -34,6 +36,22 @@ export const Sidebar = () => {
     { id: 'bills', label: 'Client Invoicing', icon: Receipt },
     { id: 'payments', label: 'Contractor Payouts', icon: CreditCard },
     { id: 'reports', label: 'Placement Reports', icon: BarChart3 }
+  ];
+
+  const navItemsDocs = [
+    { id: 'templates', label: 'Templates', icon: FileCheck },
+    { id: 'downloads', label: 'Downloads', icon: FolderDown },
+    { id: 'resume', label: 'Resume & CV', icon: FileText },
+    { id: 'certificate', label: 'Character Certificate', icon: Award },
+    { id: 'invoice', label: 'Invoice Generator', icon: Receipt }
+  ];
+
+  const navItemsFactory = [
+    { id: 'dashboard', label: 'Dashboard Overview', icon: LayoutDashboard },
+    { id: 'employees', label: 'Workers & Attendance', icon: Users },
+    { id: 'bills', label: 'Raw Material Bills', icon: FileText },
+    { id: 'payments', label: 'Payouts & Ledger', icon: CreditCard },
+    { id: 'reports', label: 'Production Reports', icon: BarChart3 }
   ];
 
   const navItemsAdmin = [
@@ -89,44 +107,8 @@ export const Sidebar = () => {
 
         {/* Navigation Sections */}
         <div className="flex-1 overflow-y-auto px-3 py-4 space-y-6">
-          {/* GROUP 1: BRICK FACTORY PORTAL (HIDDEN FOR NOW) */}
-          {/* <div className="space-y-1">
-            <button
-              onClick={() => setFactoryOpen(!factoryOpen)}
-              className="w-full flex items-center justify-between px-3 py-2 text-xs font-bold uppercase tracking-wider text-left text-amber-500 hover:text-amber-400 transition-colors cursor-pointer"
-            >
-              <div className="flex items-center gap-2">
-                <Factory className="w-4 h-4 text-amber-500" />
-                <span>Brick Factory Portal</span>
-              </div>
-              {factoryOpen ? <ChevronDown className="w-3.5 h-3.5" /> : <ChevronRight className="w-3.5 h-3.5" />}
-            </button>
-
-            {factoryOpen && (
-              <div className="space-y-0.5 pl-1">
-                {navItemsFactory.map((item) => {
-                  const Icon = item.icon;
-                  const isActive = activePortal === 'factory' && activeSubmodule === item.id;
-                  return (
-                    <button
-                      key={item.id}
-                      onClick={() => handleNavClick('factory', item.id)}
-                      className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg text-xs font-medium text-left transition-all cursor-pointer ${
-                        isActive
-                          ? 'bg-amber-500/10 text-amber-500 font-semibold border-l-2 border-amber-500'
-                          : 'text-sidebar-foreground/75 hover:text-sidebar-foreground hover:bg-sidebar-accent'
-                      }`}
-                    >
-                      <Icon className={`w-4 h-4 ${isActive ? 'text-amber-500' : 'text-sidebar-foreground/60'}`} />
-                      <span>{item.label}</span>
-                    </button>
-                  );
-                })}
-              </div>
-            )}
-          </div> */}
-
-          {/* GROUP 2: MANPOWER AGENCY PORTAL */}
+          
+          {/* GROUP 1: MANPOWER AGENCY PORTAL */}
           <div className="space-y-1">
             <button
               onClick={() => setAgencyOpen(!agencyOpen)}
@@ -163,7 +145,79 @@ export const Sidebar = () => {
             )}
           </div>
 
+          {/* GROUP 2: DOCUMENT STUDIO */}
+          <div className="space-y-1">
+            <button
+              onClick={() => setDocsOpen(!docsOpen)}
+              className="w-full flex items-center justify-between px-3 py-2 text-xs font-bold uppercase tracking-wider text-left text-emerald-500 hover:text-emerald-400 transition-colors cursor-pointer"
+            >
+              <div className="flex items-center gap-2">
+                <FileSpreadsheet className="w-4 h-4 text-emerald-500" />
+                <span>Document Studio</span>
+              </div>
+              {docsOpen ? <ChevronDown className="w-3.5 h-3.5" /> : <ChevronRight className="w-3.5 h-3.5" />}
+            </button>
 
+            {docsOpen && (
+              <div className="space-y-0.5 pl-1">
+                {navItemsDocs.map((item) => {
+                  const Icon = item.icon;
+                  const isActive = activePortal === 'docs' && activeSubmodule === item.id;
+                  return (
+                    <button
+                      key={item.id}
+                      onClick={() => handleNavClick('docs', item.id)}
+                      className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg text-xs font-medium text-left transition-all cursor-pointer ${
+                        isActive
+                          ? 'bg-emerald-500/10 text-emerald-500 font-semibold border-l-2 border-emerald-500'
+                          : 'text-sidebar-foreground/75 hover:text-sidebar-foreground hover:bg-sidebar-accent'
+                      }`}
+                    >
+                      <Icon className={`w-4 h-4 ${isActive ? 'text-emerald-500' : 'text-sidebar-foreground/60'}`} />
+                      <span>{item.label}</span>
+                    </button>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+
+          {/* GROUP 3: BRICK FACTORY PORTAL */}
+          <div className="space-y-1">
+            <button
+              onClick={() => setFactoryOpen(!factoryOpen)}
+              className="w-full flex items-center justify-between px-3 py-2 text-xs font-bold uppercase tracking-wider text-left text-amber-500 hover:text-amber-400 transition-colors cursor-pointer"
+            >
+              <div className="flex items-center gap-2">
+                <Factory className="w-4 h-4 text-amber-500" />
+                <span>Brick Factory Portal</span>
+              </div>
+              {factoryOpen ? <ChevronDown className="w-3.5 h-3.5" /> : <ChevronRight className="w-3.5 h-3.5" />}
+            </button>
+
+            {factoryOpen && (
+              <div className="space-y-0.5 pl-1">
+                {navItemsFactory.map((item) => {
+                  const Icon = item.icon;
+                  const isActive = activePortal === 'factory' && activeSubmodule === item.id;
+                  return (
+                    <button
+                      key={item.id}
+                      onClick={() => handleNavClick('factory', item.id)}
+                      className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg text-xs font-medium text-left transition-all cursor-pointer ${
+                        isActive
+                          ? 'bg-amber-500/10 text-amber-500 font-semibold border-l-2 border-amber-500'
+                          : 'text-sidebar-foreground/75 hover:text-sidebar-foreground hover:bg-sidebar-accent'
+                      }`}
+                    >
+                      <Icon className={`w-4 h-4 ${isActive ? 'text-amber-500' : 'text-sidebar-foreground/60'}`} />
+                      <span>{item.label}</span>
+                    </button>
+                  );
+                })}
+              </div>
+            )}
+          </div>
 
           {/* GROUP 4: SYSTEM ADMIN & GLOBAL SETTINGS */}
           <div className="space-y-1">
@@ -201,6 +255,7 @@ export const Sidebar = () => {
               </div>
             )}
           </div>
+
         </div>
 
         {/* Footer User Info */}
