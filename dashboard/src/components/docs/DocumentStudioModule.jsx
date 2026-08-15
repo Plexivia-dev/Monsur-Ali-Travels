@@ -1,14 +1,15 @@
 import React from 'react';
 import { usePortal } from '../../context/PortalContext';
-import { ResumeBuilder } from './resume/ResumeBuilder';
-import { CertificateBuilder } from './certificate/CertificateBuilder';
-import { InvoiceBuilder } from './invoice/InvoiceBuilder';
 import { TemplateStudio } from './templates/TemplateStudio';
 import { DocumentDownloads } from './downloads/DocumentDownloads';
-import { FileText, Award, Receipt, FileCheck, FolderDown } from 'lucide-react';
+import { FileCheck, FolderDown } from 'lucide-react';
 
 export function DocumentStudioModule() {
   const { activeSubmodule, setActiveSubmodule } = usePortal();
+
+  const currentSubmodule = (activeSubmodule === 'downloads' || activeSubmodule === 'templates') 
+    ? activeSubmodule 
+    : 'templates';
 
   return (
     <div className="space-y-5">
@@ -22,26 +23,23 @@ export function DocumentStudioModule() {
             </span>
           </h1>
           <p className="text-xs text-muted-foreground mt-1">
-            Create, customize, print, and download server document backups, templates, resumes, and invoices.
+            Official print templates and server document backups for clients.
           </p>
         </div>
 
         {/* Submodule Tab Selector */}
-        <div className="flex items-center space-x-1 bg-muted p-1 rounded-xl">
+        <div className="flex items-center space-x-1 bg-muted p-1 rounded-xl shrink-0">
           {[
             { id: 'templates', label: 'Templates', icon: FileCheck },
-            { id: 'downloads', label: 'Downloads', icon: FolderDown },
-            { id: 'resume', label: 'Resume & CV', icon: FileText },
-            { id: 'certificate', label: 'Character Certificate', icon: Award },
-            { id: 'invoice', label: 'Invoice Generator', icon: Receipt }
+            { id: 'downloads', label: 'Downloads', icon: FolderDown }
           ].map(tab => {
             const Icon = tab.icon;
-            const isActive = activeSubmodule === tab.id;
+            const isActive = currentSubmodule === tab.id;
             return (
               <button
                 key={tab.id}
                 onClick={() => setActiveSubmodule(tab.id)}
-                className={`flex items-center space-x-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
+                className={`flex items-center space-x-1.5 px-3.5 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
                   isActive
                     ? 'bg-background text-foreground shadow-2xs'
                     : 'text-muted-foreground hover:text-foreground'
@@ -57,11 +55,8 @@ export function DocumentStudioModule() {
 
       {/* Render Active Document Builder Submodule */}
       <div>
-        {activeSubmodule === 'templates' && <TemplateStudio />}
-        {activeSubmodule === 'downloads' && <DocumentDownloads />}
-        {activeSubmodule === 'resume' && <ResumeBuilder />}
-        {activeSubmodule === 'certificate' && <CertificateBuilder />}
-        {activeSubmodule === 'invoice' && <InvoiceBuilder />}
+        {currentSubmodule === 'templates' && <TemplateStudio />}
+        {currentSubmodule === 'downloads' && <DocumentDownloads />}
       </div>
     </div>
   );

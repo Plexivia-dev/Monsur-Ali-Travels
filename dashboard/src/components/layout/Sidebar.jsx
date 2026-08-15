@@ -40,10 +40,7 @@ export const Sidebar = () => {
 
   const navItemsDocs = [
     { id: 'templates', label: 'Templates', icon: FileCheck },
-    { id: 'downloads', label: 'Downloads', icon: FolderDown },
-    { id: 'resume', label: 'Resume & CV', icon: FileText },
-    { id: 'certificate', label: 'Character Certificate', icon: Award },
-    { id: 'invoice', label: 'Invoice Generator', icon: Receipt }
+    { id: 'downloads', label: 'Downloads', icon: FolderDown }
   ];
 
   const navItemsAdmin = [
