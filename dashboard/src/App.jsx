@@ -7,6 +7,7 @@ import { Navbar } from './components/layout/Navbar';
 import { FactoryModule } from './components/factory/FactoryModule';
 import { AgencyModule } from './components/agency/AgencyModule';
 import { AdminModule } from './components/admin/AdminModule';
+import { DocumentStudioModule } from './components/docs/DocumentStudioModule';
 import { ToastContainer } from './components/common/ToastContainer';
 import { GlobalSearchModal } from './components/common/GlobalSearchModal';
 import { Toaster } from 'sonner';
@@ -54,6 +55,7 @@ function MainLayout() {
           {activePortal === 'factory' && <FactoryModule />}
           {activePortal === 'agency' && <AgencyModule />}
           {activePortal === 'admin' && <AdminModule />}
+          {activePortal === 'docs' && <DocumentStudioModule />}
         </main>
       </div>
 

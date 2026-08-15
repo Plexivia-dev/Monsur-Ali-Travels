@@ -14,8 +14,8 @@ import {
   ChevronRight,
   ChevronDown,
   Layers,
-  Award,
-  FileSpreadsheet
+  FileSpreadsheet,
+  Award
 } from 'lucide-react';
 
 export const Sidebar = ({ isMobileOpen, setIsMobileOpen }) => {
