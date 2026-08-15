@@ -6,10 +6,10 @@ import { PortalProvider, usePortal } from './context/PortalContext';
 import { AuthProvider, useAuth } from './lib/auth-context';
 import { Sidebar } from './components/layout/Sidebar';
 import { Navbar } from './components/layout/Navbar';
-import { FactoryModule } from './components/factory/FactoryModule';
-import { AgencyModule } from './components/agency/AgencyModule';
-import { AdminModule } from './components/admin/AdminModule';
-import { DocumentStudioModule } from './components/docs/DocumentStudioModule';
+import Factory from './pages/Factory';
+import Agency from './pages/Agency';
+import Admin from './pages/Admin';
+import DocumentStudio from './pages/DocumentStudio';
 import { ToastContainer } from './components/common/ToastContainer';
 import { GlobalSearchModal } from './components/common/GlobalSearchModal';
 import { Toaster } from 'sonner';
@@ -74,10 +74,22 @@ function MainLayout() {
 
         {/* Dynamic Portal View Container */}
         <main className="flex-1 p-4 sm:p-6 lg:p-8 max-w-7xl w-full mx-auto">
-          {activePortal === 'factory' && <FactoryModule />}
-          {activePortal === 'agency' && <AgencyModule />}
-          {activePortal === 'admin' && <AdminModule />}
-          {activePortal === 'docs' && <DocumentStudioModule />}
+          <Routes>
+            <Route path="/dashboard/agency/*" element={<Agency />} />
+            <Route path="/dashboard/docs/*" element={<DocumentStudio />} />
+            <Route path="/dashboard/factory/*" element={<Factory />} />
+            <Route path="/dashboard/admin/*" element={<Admin />} />
+            <Route path="/dashboard" element={<Navigate to="/dashboard/agency/dashboard" replace />} />
+            <Route path="/" element={<Navigate to="/dashboard/agency/dashboard" replace />} />
+            <Route
+              path="*"
+              element={
+                activePortal === 'factory' ? <Factory /> :
+                activePortal === 'docs' ? <DocumentStudio /> :
+                activePortal === 'admin' ? <Admin /> : <Agency />
+              }
+            />
+          </Routes>
         </main>
       </div>
 
@@ -94,8 +106,8 @@ export default function App() {
     <QueryClientProvider client={queryClient}>
       <ThemeProvider>
         <AuthProvider>
-          <PortalProvider>
-            <BrowserRouter>
+          <BrowserRouter>
+            <PortalProvider>
               <Routes>
                 <Route path="/login" element={<LoginPage />} />
                 <Route
@@ -107,8 +119,8 @@ export default function App() {
                   }
                 />
               </Routes>
-            </BrowserRouter>
-          </PortalProvider>
+            </PortalProvider>
+          </BrowserRouter>
         </AuthProvider>
       </ThemeProvider>
     </QueryClientProvider>
