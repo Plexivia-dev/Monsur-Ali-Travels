@@ -28,6 +28,9 @@ services:
     environment:
       NODE_ENV: production
       PORT: 5092
+      MONGODB_URI: ${MONGODB_URI:-mongodb://admin:MonsurAliSecPass2026!@monsuralitravels-mongodb-live:27017/monsur-ali-travels?authSource=admin}
+      MONGODB_DB_NAME: monsur-ali-travels
+      ACCESS_TOKEN_SECRET: ${ACCESS_TOKEN_SECRET:-monsuralitravels_super_secret_access_token_jwt_2026}
     ports:
       - "5092:5092"
     depends_on:
