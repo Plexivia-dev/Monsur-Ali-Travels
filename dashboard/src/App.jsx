@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ThemeProvider } from './context/ThemeContext';
 import { PortalProvider, usePortal } from './context/PortalContext';
+import { AuthProvider, useAuth } from './lib/auth-context';
 import { Sidebar } from './components/layout/Sidebar';
 import { Navbar } from './components/layout/Navbar';
 import { FactoryModule } from './components/factory/FactoryModule';
@@ -11,6 +13,7 @@ import { DocumentStudioModule } from './components/docs/DocumentStudioModule';
 import { ToastContainer } from './components/common/ToastContainer';
 import { GlobalSearchModal } from './components/common/GlobalSearchModal';
 import { Toaster } from 'sonner';
+import LoginPage from './pages/LoginPage';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -20,6 +23,25 @@ const queryClient = new QueryClient({
     },
   },
 });
+
+function AuthGuard({ children }) {
+  const { user, isLoading } = useAuth();
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-background flex flex-col items-center justify-center gap-3">
+        <div className="h-8 w-8 border-4 border-muted border-t-primary rounded-full animate-spin" />
+        <span className="text-xs text-muted-foreground font-semibold font-sans">Booting secure session...</span>
+      </div>
+    );
+  }
+
+  if (!user) {
+    return <Navigate to="/login" replace />;
+  }
+
+  return <>{children}</>;
+}
 
 function MainLayout() {
   const { activePortal, setSearchOpen } = usePortal();
@@ -71,9 +93,23 @@ export default function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <ThemeProvider>
-        <PortalProvider>
-          <MainLayout />
-        </PortalProvider>
+        <AuthProvider>
+          <PortalProvider>
+            <BrowserRouter>
+              <Routes>
+                <Route path="/login" element={<LoginPage />} />
+                <Route
+                  path="/*"
+                  element={
+                    <AuthGuard>
+                      <MainLayout />
+                    </AuthGuard>
+                  }
+                />
+              </Routes>
+            </BrowserRouter>
+          </PortalProvider>
+        </AuthProvider>
       </ThemeProvider>
     </QueryClientProvider>
   );
