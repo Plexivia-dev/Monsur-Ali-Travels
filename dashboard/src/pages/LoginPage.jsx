@@ -127,7 +127,7 @@ const LoginPage = () => {
                     <Mail className="h-3.5 w-3.5" />
                   </span>
                   <Input
-                    type="email"
+                    type="text"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     className="pl-9 h-9 text-xs bg-background/60 border-border text-foreground focus:border-primary placeholder:text-muted-foreground/40 rounded-lg"

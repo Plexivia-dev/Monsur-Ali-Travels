@@ -15,7 +15,8 @@ import {
   ChevronDown,
   Layers,
   FileSpreadsheet,
-  Award
+  Award,
+  UserCheck
 } from 'lucide-react';
 
 export const Sidebar = ({ isMobileOpen, setIsMobileOpen }) => {
@@ -35,6 +36,7 @@ export const Sidebar = ({ isMobileOpen, setIsMobileOpen }) => {
 
   const navItemsAgency = [
     { id: 'dashboard', label: 'Agency Dashboard', icon: LayoutDashboard },
+    { id: 'candidates', label: 'Candidate & Agent Pipeline', icon: UserCheck },
     { id: 'employees', label: 'Placed Workers', icon: Users },
     { id: 'bills', label: 'Client Invoicing', icon: Receipt },
     { id: 'payments', label: 'Contractor Payouts', icon: CreditCard },
