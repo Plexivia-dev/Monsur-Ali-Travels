@@ -36,14 +36,16 @@ export const Navbar = () => {
     <header className="sticky top-0 z-30 h-16 bg-card/85 backdrop-blur-md border-b border-border px-4 sm:px-6 flex items-center justify-between transition-colors">
       {/* Left: Sidebar Toggle & Active Context */}
       <div className="flex items-center gap-3">
-        <button
-          onClick={toggleSidebar}
-          className="p-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted transition-colors cursor-pointer"
-          title={isSidebarOpen ? "Collapse Sidebar" : "Expand Sidebar"}
-          aria-label="Toggle Sidebar"
-        >
-          {isSidebarOpen ? <PanelLeftClose className="w-5 h-5" /> : <PanelLeftOpen className="w-5 h-5" />}
-        </button>
+        {!isSidebarOpen && (
+          <button
+            onClick={toggleSidebar}
+            className="p-2 rounded-xl bg-primary/10 hover:bg-primary/20 text-primary border border-primary/20 transition-all cursor-pointer flex items-center justify-center shadow-xs"
+            title="Expand Sidebar"
+            aria-label="Expand Sidebar"
+          >
+            <PanelLeftOpen className="w-5 h-5" />
+          </button>
+        )}
 
         {/* Portal Selector Dropdown Button */}
         <div className="relative">

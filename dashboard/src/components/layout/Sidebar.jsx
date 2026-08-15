@@ -17,38 +17,15 @@ import {
   FileSpreadsheet,
   Award,
   UserCheck,
-  PanelLeftClose
+  FileCheck,
+  X
 } from 'lucide-react';
 
 export const Sidebar = () => {
   const { activePortal, activeSubmodule, switchPortal, isSidebarOpen, setIsSidebarOpen, toggleSidebar } = usePortal();
   const [factoryOpen, setFactoryOpen] = useState(true);
   const [agencyOpen, setAgencyOpen] = useState(true);
-  const [docsOpen, setDocsOpen] = useState(true);
   const [adminOpen, setAdminOpen] = useState(true);
-
-  const navItemsFactory = [
-    { id: 'dashboard', label: 'Dashboard Overview', icon: LayoutDashboard },
-    { id: 'employees', label: 'Workers & Attendance', icon: Users },
-    { id: 'bills', label: 'Raw Material Bills', icon: FileText },
-    { id: 'payments', label: 'Payouts & Ledger', icon: CreditCard },
-    { id: 'reports', label: 'Production Reports', icon: BarChart3 }
-  ];
-
-  const navItemsAgency = [
-    { id: 'dashboard', label: 'Agency Dashboard', icon: LayoutDashboard },
-    { id: 'candidates', label: 'Candidate & Agent Pipeline', icon: UserCheck },
-    { id: 'employees', label: 'Placed Workers', icon: Users },
-    { id: 'bills', label: 'Client Invoicing', icon: Receipt },
-    { id: 'payments', label: 'Contractor Payouts', icon: CreditCard },
-    { id: 'reports', label: 'Placement Reports', icon: BarChart3 }
-  ];
-
-  const navItemsDocs = [
-    { id: 'resume', label: 'Resume & CV', icon: FileText },
-    { id: 'certificate', label: 'Character Certificate', icon: Award },
-    { id: 'invoice', label: 'Invoice Generator', icon: Receipt }
-  ];
 
   const navItemsAdmin = [
     { id: 'overview', label: 'Overview', icon: LayoutDashboard },
@@ -93,11 +70,11 @@ export const Sidebar = () => {
           </div>
           <button
             onClick={toggleSidebar}
-            className="p-1.5 rounded-lg text-sidebar-foreground/60 hover:text-sidebar-foreground hover:bg-sidebar-accent transition-colors cursor-pointer"
+            className="p-2 rounded-full bg-primary/10 hover:bg-primary/20 text-primary border border-primary/20 transition-all flex items-center justify-center shrink-0 cursor-pointer shadow-xs"
             title="Close Sidebar"
             aria-label="Close Sidebar"
           >
-            <PanelLeftClose className="w-5 h-5" />
+            <X className="w-4 h-4 stroke-[2.5]" />
           </button>
         </div>
 
@@ -177,42 +154,7 @@ export const Sidebar = () => {
             )}
           </div>
 
-          {/* GROUP 3: DOCUMENT STUDIO */}
-          <div className="space-y-1">
-            <button
-              onClick={() => setDocsOpen(!docsOpen)}
-              className="w-full flex items-center justify-between px-3 py-2 text-xs font-bold uppercase tracking-wider text-left text-emerald-500 hover:text-emerald-400 transition-colors cursor-pointer"
-            >
-              <div className="flex items-center gap-2">
-                <FileSpreadsheet className="w-4 h-4 text-emerald-500" />
-                <span>Document Studio</span>
-              </div>
-              {docsOpen ? <ChevronDown className="w-3.5 h-3.5" /> : <ChevronRight className="w-3.5 h-3.5" />}
-            </button>
 
-            {docsOpen && (
-              <div className="space-y-0.5 pl-1">
-                {navItemsDocs.map((item) => {
-                  const Icon = item.icon;
-                  const isActive = activePortal === 'docs' && activeSubmodule === item.id;
-                  return (
-                    <button
-                      key={item.id}
-                      onClick={() => handleNavClick('docs', item.id)}
-                      className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg text-xs font-medium text-left transition-all cursor-pointer ${
-                        isActive
-                          ? 'bg-emerald-500/10 text-emerald-500 font-semibold border-l-2 border-emerald-500'
-                          : 'text-sidebar-foreground/75 hover:text-sidebar-foreground hover:bg-sidebar-accent'
-                      }`}
-                    >
-                      <Icon className={`w-4 h-4 ${isActive ? 'text-emerald-500' : 'text-sidebar-foreground/60'}`} />
-                      <span>{item.label}</span>
-                    </button>
-                  );
-                })}
-              </div>
-            )}
-          </div>
 
           {/* GROUP 4: SYSTEM ADMIN & GLOBAL SETTINGS */}
           <div className="space-y-1">
