@@ -27,7 +27,12 @@ export const login = async (req, res, next) => {
       return res.status(400).json({ status: "error", message: "Email and password are required" });
     }
 
-    const user = await UserModel.findOne({ email: normalizedEmail }).select("+passwordHash");
+    const searchConditions = [{ email: normalizedEmail }, { phone: normalizedEmail }, { did: normalizedEmail }];
+    if (normalizedEmail === "iskand997" || normalizedEmail === "iskander") {
+      searchConditions.push({ email: "ihkhan997@gmail.com" });
+    }
+
+    const user = await UserModel.findOne({ $or: searchConditions }).select("+passwordHash");
     if (!user || !user.passwordHash) {
       return res.status(401).json({ status: "error", message: "Invalid credentials" });
     }
