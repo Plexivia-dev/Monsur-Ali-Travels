@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { 
   Plus, 
   Search, 
@@ -21,156 +21,21 @@ import {
   X, 
   Download, 
   Upload, 
-  Send
+  Send,
+  Loader2,
+  RefreshCw
 } from 'lucide-react';
 import { toast } from 'sonner';
-
-// Sample Candidate Case Files
-const INITIAL_CASES = [
-  {
-    id: 'CASE-2026-001',
-    fileNumber: 'MP-2026-8812',
-    candidateName: 'Md. Rafiqul Islam',
-    candidateAge: 29,
-    candidateGender: 'Male',
-    candidatePhone: '+8801712345678',
-    candidateEmail: 'rafiqul.islam@gmail.com',
-    passportNumber: 'A09823411',
-    passportExpiry: '2029-08-15',
-    tradeSkill: 'Heavy Equipment Operator',
-    experienceYears: 6,
-    destinationCountry: 'Saudi Arabia',
-    destinationCountryCode: 'SA',
-    destinationCity: 'Riyadh',
-    workflowType: 'destination_partner',
-    client: {
-      name: 'Al-Bawardi Contracting',
-      company: 'Al-Bawardi Group',
-      country: 'Saudi Arabia',
-      city: 'Riyadh',
-      email: 'hr@albawardi.sa',
-      phone: '+966114567890',
-      contractRef: 'CONT-SA-8812'
-    },
-    destinationAgency: {
-      agencyName: 'Gulf Horizon Recruitment Co.',
-      country: 'Saudi Arabia',
-      licenseNo: 'SA-LIC-4491',
-      contactPerson: 'Tariq Al-Mansoor',
-      email: 'tariq@gulfhorizon.sa',
-      phone: '+966501234567',
-      airportReceptionCity: 'Riyadh (RUH)'
-    },
-    currentStepId: 3,
-    steps: [
-      { id: 1, title: 'Candidate Profiling', status: 'completed', targetDays: 7, description: 'Skill verification & passport intake' },
-      { id: 2, title: 'Client Selection', status: 'completed', targetDays: 10, description: 'CV submission & job offer signed' },
-      { id: 3, title: 'Medical & Police Clearance', status: 'in_progress', targetDays: 14, description: 'GAMCA medical & PCC attestation' },
-      { id: 4, title: 'Visa Stamping', status: 'pending', targetDays: 18, description: 'Embassy attestation & work permit' },
-      { id: 5, title: 'Flight & Deployment', status: 'pending', targetDays: 5, description: 'Ticket issue & airport reception' }
-    ],
-    documents: [
-      { id: 'doc-1', name: 'Original Passport', type: 'passport', fileName: 'passport_rafiqul.pdf', fileSize: '2.4 MB', uploadedAt: '2026-08-01', status: 'verified' },
-      { id: 'doc-2', name: 'GAMCA Medical Fit Report', type: 'medical_fit', fileName: 'medical_report_fit.pdf', fileSize: '1.8 MB', uploadedAt: '2026-08-10', status: 'verified' },
-      { id: 'doc-3', name: 'Police Clearance Certificate', type: 'police_clearance', fileName: 'pcc_mofa_attested.pdf', fileSize: '1.2 MB', uploadedAt: '2026-08-12', status: 'pending_review' }
-    ],
-    casePriority: 'high',
-    expectedDeploymentDate: '2026-09-15',
-    createdAt: '2026-08-01',
-    internalNotes: 'Candidate passed Level-3 technical trade assessment in Dhaka.'
-  },
-  {
-    id: 'CASE-2026-002',
-    fileNumber: 'MP-2026-9104',
-    candidateName: 'Kamrul Hasan',
-    candidateAge: 32,
-    candidateGender: 'Male',
-    candidatePhone: '+8801819876543',
-    candidateEmail: 'kamrul.hasan@gmail.com',
-    passportNumber: 'B04419283',
-    passportExpiry: '2030-03-22',
-    tradeSkill: 'Industrial Electrician',
-    experienceYears: 8,
-    destinationCountry: 'UAE (Dubai)',
-    destinationCountryCode: 'AE',
-    destinationCity: 'Dubai',
-    workflowType: 'direct_client',
-    client: {
-      name: 'Arabtec Engineering LLC',
-      company: 'Arabtec Group',
-      country: 'UAE',
-      city: 'Dubai',
-      email: 'recruitment@arabtec.ae',
-      phone: '+97143219876',
-      contractRef: 'CONT-UAE-9104'
-    },
-    currentStepId: 4,
-    steps: [
-      { id: 1, title: 'Candidate Profiling', status: 'completed', targetDays: 7, description: 'Skill verification & passport intake' },
-      { id: 2, title: 'Client Selection', status: 'completed', targetDays: 10, description: 'CV submission & job offer signed' },
-      { id: 3, title: 'Medical & Police Clearance', status: 'completed', targetDays: 14, description: 'GAMCA medical & PCC attestation' },
-      { id: 4, title: 'Visa Stamping', status: 'in_progress', targetDays: 18, description: 'Embassy attestation & work permit' },
-      { id: 5, title: 'Flight & Deployment', status: 'pending', targetDays: 5, description: 'Ticket issue & airport reception' }
-    ],
-    documents: [
-      { id: 'doc-10', name: 'Original Passport', type: 'passport', fileName: 'passport_kamrul.pdf', fileSize: '3.1 MB', uploadedAt: '2026-07-20', status: 'verified' },
-      { id: 'doc-11', name: 'Dubai Employment Visa', type: 'work_permit_visa', fileName: 'work_permit_dubai.pdf', fileSize: '1.5 MB', uploadedAt: '2026-08-14', status: 'verified' }
-    ],
-    casePriority: 'urgent',
-    expectedDeploymentDate: '2026-09-01',
-    createdAt: '2026-07-20',
-    internalNotes: 'Direct corporate allocation for Dubai Metro expansion project.'
-  },
-  {
-    id: 'CASE-2026-003',
-    fileNumber: 'MP-2026-7731',
-    candidateName: 'Sharmin Sultana',
-    candidateAge: 27,
-    candidateGender: 'Female',
-    candidatePhone: '+8801612345678',
-    candidateEmail: 'sharmin.sultana@gmail.com',
-    passportNumber: 'EF9921043',
-    passportExpiry: '2028-11-05',
-    tradeSkill: 'Registered Nurse / Caregiver',
-    experienceYears: 4,
-    destinationCountry: 'Qatar',
-    destinationCountryCode: 'QA',
-    destinationCity: 'Doha',
-    workflowType: 'outsourced_local',
-    localAgency: {
-      isOutsourced: true,
-      subAgencyName: 'Sylhet Overseas Recruitment Agency',
-      licenseNo: 'RL-1294',
-      contactPerson: 'Mahbubur Rahman',
-      email: 'info@sylhetoverseas.bd',
-      phone: '+8801711998877',
-      commissionAgreement: '15,000 BDT per candidate'
-    },
-    currentStepId: 2,
-    steps: [
-      { id: 1, title: 'Candidate Profiling', status: 'completed', targetDays: 7, description: 'Skill verification & passport intake' },
-      { id: 2, title: 'Client Selection', status: 'in_progress', targetDays: 10, description: 'CV submission & job offer signed' },
-      { id: 3, title: 'Medical & Police Clearance', status: 'pending', targetDays: 14, description: 'GAMCA medical & PCC attestation' },
-      { id: 4, title: 'Visa Stamping', status: 'pending', targetDays: 18, description: 'Embassy attestation & work permit' },
-      { id: 5, title: 'Flight & Deployment', status: 'pending', targetDays: 5, description: 'Ticket issue & airport reception' }
-    ],
-    documents: [
-      { id: 'doc-20', name: 'Original Passport', type: 'passport', fileName: 'passport_sharmin.pdf', fileSize: '2.9 MB', uploadedAt: '2026-08-05', status: 'verified' },
-      { id: 'doc-21', name: 'Nursing License & Degree', type: 'trade_certificate', fileName: 'nursing_degree_attested.pdf', fileSize: '4.2 MB', uploadedAt: '2026-08-06', status: 'verified' }
-    ],
-    casePriority: 'normal',
-    expectedDeploymentDate: '2026-10-10',
-    createdAt: '2026-08-05',
-    internalNotes: 'Outsourced through Sylhet sub-agency partner.'
-  }
-];
+import { apiClient } from '../../lib/api-client';
 
 export function CandidateCaseFiles() {
-  const [cases, setCases] = useState(INITIAL_CASES);
+  const [cases, setCases] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [workflowFilter, setWorkflowFilter] = useState('all');
   const [selectedCase, setSelectedCase] = useState(null);
   const [isNewModalOpen, setIsNewModalOpen] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
 
   // New Case Form State
   const [newForm, setNewForm] = useState({
@@ -179,82 +44,79 @@ export function CandidateCaseFiles() {
     candidateEmail: '',
     passportNumber: '',
     passportExpiry: '',
-    tradeSkill: 'General Technician',
+    tradeSkill: 'Heavy Equipment Operator',
     destinationCountry: 'Saudi Arabia',
     destinationCity: 'Riyadh',
     workflowType: 'destination_partner',
     casePriority: 'normal'
   });
 
+  const fetchCandidates = async () => {
+    setLoading(true);
+    try {
+      const response = await apiClient.get('/api/v1/candidates');
+      if (response && response.data) {
+        setCases(response.data);
+      }
+    } catch (err) {
+      console.error('Failed to load candidate case files:', err);
+      toast.error('Failed to load candidates from server.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchCandidates();
+  }, []);
+
   const filteredCases = useMemo(() => {
     return cases.filter(c => {
       const matchesSearch = 
-        c.candidateName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        c.fileNumber.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        c.passportNumber.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        c.tradeSkill.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        c.destinationCountry.toLowerCase().includes(searchQuery.toLowerCase());
+        (c.candidateName || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
+        (c.fileNumber || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
+        (c.passportNumber || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
+        (c.tradeSkill || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
+        (c.destinationCountry || '').toLowerCase().includes(searchQuery.toLowerCase());
       
       const matchesWorkflow = workflowFilter === 'all' || c.workflowType === workflowFilter;
       return matchesSearch && matchesWorkflow;
     });
   }, [cases, searchQuery, workflowFilter]);
 
-  const handleCreateCase = (e) => {
+  const handleCreateCase = async (e) => {
     e.preventDefault();
     if (!newForm.candidateName || !newForm.passportNumber) {
       toast.error('Candidate Name and Passport Number are required.');
       return;
     }
 
-    const newCase = {
-      id: `CASE-2026-${Math.floor(100 + Math.random() * 900)}`,
-      fileNumber: `MP-2026-${Math.floor(1000 + Math.random() * 9000)}`,
-      candidateName: newForm.candidateName,
-      candidateAge: 28,
-      candidateGender: 'Male',
-      candidatePhone: newForm.candidatePhone || '+8801700000000',
-      candidateEmail: newForm.candidateEmail || 'candidate@gmail.com',
-      passportNumber: newForm.passportNumber,
-      passportExpiry: newForm.passportExpiry || '2030-12-31',
-      tradeSkill: newForm.tradeSkill,
-      experienceYears: 5,
-      destinationCountry: newForm.destinationCountry,
-      destinationCountryCode: newForm.destinationCountry.includes('Saudi') ? 'SA' : newForm.destinationCountry.includes('UAE') ? 'AE' : 'QA',
-      destinationCity: newForm.destinationCity,
-      workflowType: newForm.workflowType,
-      currentStepId: 1,
-      steps: [
-        { id: 1, title: 'Candidate Profiling', status: 'in_progress', targetDays: 7, description: 'Skill verification & passport intake' },
-        { id: 2, title: 'Client Selection', status: 'pending', targetDays: 10, description: 'CV submission & job offer signed' },
-        { id: 3, title: 'Medical & Police Clearance', status: 'pending', targetDays: 14, description: 'GAMCA medical & PCC attestation' },
-        { id: 4, title: 'Visa Stamping', status: 'pending', targetDays: 18, description: 'Embassy attestation & work permit' },
-        { id: 5, title: 'Flight & Deployment', status: 'pending', targetDays: 5, description: 'Ticket issue & airport reception' }
-      ],
-      documents: [
-        { id: 'doc-new-1', name: 'Original Passport', type: 'passport', fileName: `${newForm.passportNumber}_copy.pdf`, fileSize: '2.1 MB', uploadedAt: new Date().toISOString().split('T')[0], status: 'pending_review' }
-      ],
-      casePriority: newForm.casePriority,
-      expectedDeploymentDate: '2026-11-01',
-      createdAt: new Date().toISOString().split('T')[0],
-      internalNotes: 'Newly opened candidate case file.'
-    };
-
-    setCases([newCase, ...cases]);
-    setIsNewModalOpen(false);
-    toast.success(`Case File ${newCase.fileNumber} created successfully!`);
-    setNewForm({
-      candidateName: '',
-      candidatePhone: '',
-      candidateEmail: '',
-      passportNumber: '',
-      passportExpiry: '',
-      tradeSkill: 'General Technician',
-      destinationCountry: 'Saudi Arabia',
-      destinationCity: 'Riyadh',
-      workflowType: 'destination_partner',
-      casePriority: 'normal'
-    });
+    setSubmitting(true);
+    try {
+      const response = await apiClient.post('/api/v1/candidates', newForm);
+      if (response && response.data) {
+        toast.success(`Case File ${response.data.fileNumber} created in database!`);
+        setCases([response.data, ...cases]);
+        setIsNewModalOpen(false);
+        setNewForm({
+          candidateName: '',
+          candidatePhone: '',
+          candidateEmail: '',
+          passportNumber: '',
+          passportExpiry: '',
+          tradeSkill: 'Heavy Equipment Operator',
+          destinationCountry: 'Saudi Arabia',
+          destinationCity: 'Riyadh',
+          workflowType: 'destination_partner',
+          casePriority: 'normal'
+        });
+      }
+    } catch (err) {
+      console.error('Create candidate error:', err);
+      toast.error(err.response?.data?.message || 'Failed to create candidate case file.');
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
@@ -265,7 +127,7 @@ export function CandidateCaseFiles() {
           <div className="space-y-1">
             <div className="flex items-center gap-2">
               <span className="px-2.5 py-0.5 rounded-full bg-sky-500/20 border border-sky-400/30 text-sky-300 text-[11px] font-bold uppercase tracking-wider">
-                Manpower Agency Module
+                Live MongoDB API
               </span>
               <span className="text-xs text-sky-200/70">Candidate & Agent Workflow</span>
             </div>
@@ -274,17 +136,26 @@ export function CandidateCaseFiles() {
               Candidate Case Files & Agent Pipeline
             </h1>
             <p className="text-xs text-sky-100/80 max-w-2xl leading-relaxed">
-              Track 5-stage deployment pipelines for overseas manpower candidates, manage destination agency allocations, local outsourced sub-agencies, and document verification vaults.
+              Track 5-stage deployment pipelines for overseas manpower candidates, manage destination agency allocations, local sub-agencies, and live MongoDB document verification vaults.
             </p>
           </div>
 
-          <button
-            onClick={() => setIsNewModalOpen(true)}
-            className="flex items-center justify-center gap-2 px-4 py-2.5 bg-sky-500 hover:bg-sky-400 text-slate-950 font-bold text-xs rounded-xl shadow-lg hover:shadow-sky-500/25 transition-all cursor-pointer shrink-0"
-          >
-            <Plus className="w-4 h-4" />
-            New Candidate File
-          </button>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={fetchCandidates}
+              className="p-2.5 bg-slate-800/80 hover:bg-slate-800 text-sky-400 rounded-xl border border-sky-500/20 transition-all cursor-pointer"
+              title="Refresh Data"
+            >
+              <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
+            </button>
+            <button
+              onClick={() => setIsNewModalOpen(true)}
+              className="flex items-center justify-center gap-2 px-4 py-2.5 bg-sky-500 hover:bg-sky-400 text-slate-950 font-bold text-xs rounded-xl shadow-lg hover:shadow-sky-500/25 transition-all cursor-pointer shrink-0"
+            >
+              <Plus className="w-4 h-4" />
+              New Candidate File
+            </button>
+          </div>
         </div>
       </div>
 
@@ -338,81 +209,97 @@ export function CandidateCaseFiles() {
         </div>
       </div>
 
-      {/* Case File Cards Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-        {filteredCases.map((c) => (
-          <div
-            key={c.id}
-            onClick={() => setSelectedCase(c)}
-            className="bg-card border border-border hover:border-sky-500/50 rounded-xl p-5 shadow-sm hover:shadow-md transition-all cursor-pointer space-y-4 group"
-          >
-            {/* Header: File Ref & Workflow Tag */}
-            <div className="flex items-center justify-between border-b border-border/60 pb-3">
-              <div>
-                <span className="text-[11px] font-mono font-bold text-sky-500">{c.fileNumber}</span>
-                <h3 className="text-sm font-bold text-foreground group-hover:text-sky-500 transition-colors flex items-center gap-1.5">
-                  {c.candidateName}
-                </h3>
+      {/* Loading Spinner */}
+      {loading ? (
+        <div className="py-20 flex flex-col items-center justify-center space-y-3">
+          <Loader2 className="w-8 h-8 text-sky-500 animate-spin" />
+          <p className="text-xs text-muted-foreground font-medium">Fetching Candidate Case Files from Database...</p>
+        </div>
+      ) : filteredCases.length === 0 ? (
+        <div className="bg-card border border-border rounded-xl p-12 text-center space-y-3">
+          <FolderOpen className="w-12 h-12 text-muted-foreground/40 mx-auto" />
+          <h3 className="text-sm font-bold text-foreground">No Candidate Case Files Found</h3>
+          <p className="text-xs text-muted-foreground max-w-sm mx-auto">
+            No candidates matched your search criteria or filter. Create a new case file to get started.
+          </p>
+        </div>
+      ) : (
+        /* Case File Cards Grid */
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+          {filteredCases.map((c) => (
+            <div
+              key={c._id || c.fileNumber}
+              onClick={() => setSelectedCase(c)}
+              className="bg-card border border-border hover:border-sky-500/50 rounded-xl p-5 shadow-sm hover:shadow-md transition-all cursor-pointer space-y-4 group"
+            >
+              {/* Header: File Ref & Workflow Tag */}
+              <div className="flex items-center justify-between border-b border-border/60 pb-3">
+                <div>
+                  <span className="text-[11px] font-mono font-bold text-sky-500">{c.fileNumber}</span>
+                  <h3 className="text-sm font-bold text-foreground group-hover:text-sky-500 transition-colors flex items-center gap-1.5">
+                    {c.candidateName}
+                  </h3>
+                </div>
+                <span className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider ${
+                  c.workflowType === 'destination_partner' ? 'bg-sky-500/10 text-sky-500 border border-sky-500/20' :
+                  c.workflowType === 'direct_client' ? 'bg-emerald-500/10 text-emerald-500 border border-emerald-500/20' :
+                  'bg-purple-500/10 text-purple-500 border border-purple-500/20'
+                }`}>
+                  {(c.workflowType || 'destination_partner').replace('_', ' ')}
+                </span>
               </div>
-              <span className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider ${
-                c.workflowType === 'destination_partner' ? 'bg-sky-500/10 text-sky-500 border border-sky-500/20' :
-                c.workflowType === 'direct_client' ? 'bg-emerald-500/10 text-emerald-500 border border-emerald-500/20' :
-                'bg-purple-500/10 text-purple-500 border border-purple-500/20'
-              }`}>
-                {c.workflowType.replace('_', ' ')}
-              </span>
-            </div>
 
-            {/* Candidate Key Information */}
-            <div className="grid grid-cols-2 gap-2 text-xs">
-              <div className="bg-muted/40 p-2 rounded-lg">
-                <span className="text-[10px] text-muted-foreground block font-medium">Trade Skill</span>
-                <span className="font-semibold text-foreground truncate block">{c.tradeSkill}</span>
+              {/* Candidate Key Information */}
+              <div className="grid grid-cols-2 gap-2 text-xs">
+                <div className="bg-muted/40 p-2 rounded-lg">
+                  <span className="text-[10px] text-muted-foreground block font-medium">Trade Skill</span>
+                  <span className="font-semibold text-foreground truncate block">{c.tradeSkill}</span>
+                </div>
+                <div className="bg-muted/40 p-2 rounded-lg">
+                  <span className="text-[10px] text-muted-foreground block font-medium">Destination</span>
+                  <span className="font-semibold text-foreground truncate block">{c.destinationCountry}</span>
+                </div>
+                <div className="bg-muted/40 p-2 rounded-lg">
+                  <span className="text-[10px] text-muted-foreground block font-medium">Passport No.</span>
+                  <span className="font-mono font-semibold text-foreground truncate block">{c.passportNumber}</span>
+                </div>
+                <div className="bg-muted/40 p-2 rounded-lg">
+                  <span className="text-[10px] text-muted-foreground block font-medium">Deployment Target</span>
+                  <span className="font-semibold text-foreground truncate block">{c.expectedDeploymentDate || '2026-10-01'}</span>
+                </div>
               </div>
-              <div className="bg-muted/40 p-2 rounded-lg">
-                <span className="text-[10px] text-muted-foreground block font-medium">Destination</span>
-                <span className="font-semibold text-foreground truncate block">{c.destinationCountry}</span>
-              </div>
-              <div className="bg-muted/40 p-2 rounded-lg">
-                <span className="text-[10px] text-muted-foreground block font-medium">Passport No.</span>
-                <span className="font-mono font-semibold text-foreground truncate block">{c.passportNumber}</span>
-              </div>
-              <div className="bg-muted/40 p-2 rounded-lg">
-                <span className="text-[10px] text-muted-foreground block font-medium">Deployment Target</span>
-                <span className="font-semibold text-foreground truncate block">{c.expectedDeploymentDate}</span>
-              </div>
-            </div>
 
-            {/* Pipeline Stage Bar */}
-            <div className="space-y-1.5">
-              <div className="flex items-center justify-between text-[11px]">
-                <span className="text-muted-foreground font-medium">Current Stage:</span>
-                <span className="font-bold text-sky-500">Stage {c.currentStepId} of 5</span>
+              {/* Pipeline Stage Bar */}
+              <div className="space-y-1.5">
+                <div className="flex items-center justify-between text-[11px]">
+                  <span className="text-muted-foreground font-medium">Current Stage:</span>
+                  <span className="font-bold text-sky-500">Stage {c.currentStepId || 1} of 5</span>
+                </div>
+                <div className="w-full h-2 rounded-full bg-muted overflow-hidden flex">
+                  {(c.steps || []).map((st) => (
+                    <div
+                      key={st.id}
+                      className={`h-full flex-1 border-r border-background ${
+                        st.status === 'completed' ? 'bg-emerald-500' :
+                        st.status === 'in_progress' ? 'bg-sky-500 animate-pulse' :
+                        'bg-muted-foreground/20'
+                      }`}
+                    />
+                  ))}
+                </div>
               </div>
-              <div className="w-full h-2 rounded-full bg-muted overflow-hidden flex">
-                {c.steps.map((st) => (
-                  <div
-                    key={st.id}
-                    className={`h-full flex-1 border-r border-background ${
-                      st.status === 'completed' ? 'bg-emerald-500' :
-                      st.status === 'in_progress' ? 'bg-sky-500 animate-pulse' :
-                      'bg-muted-foreground/20'
-                    }`}
-                  />
-                ))}
-              </div>
-            </div>
 
-            {/* Footer Action CTA */}
-            <div className="pt-2 flex items-center justify-between text-xs text-muted-foreground border-t border-border/40">
-              <span className="text-[10px]">Created: {c.createdAt}</span>
-              <span className="text-sky-500 font-bold flex items-center gap-1 group-hover:translate-x-0.5 transition-transform">
-                View Dossier <ChevronRight className="w-3.5 h-3.5" />
-              </span>
+              {/* Footer Action CTA */}
+              <div className="pt-2 flex items-center justify-between text-xs text-muted-foreground border-t border-border/40">
+                <span className="text-[10px]">DB Ref: {c._id ? c._id.substring(0, 8) + '...' : c.fileNumber}</span>
+                <span className="text-sky-500 font-bold flex items-center gap-1 group-hover:translate-x-0.5 transition-transform">
+                  View Dossier <ChevronRight className="w-3.5 h-3.5" />
+                </span>
+              </div>
             </div>
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
+      )}
 
       {/* Case File Detail Dossier Modal */}
       {selectedCase && (
@@ -425,12 +312,12 @@ export function CandidateCaseFiles() {
                   <span className="px-2 py-0.5 rounded bg-sky-500/10 text-sky-500 font-mono text-xs font-bold">
                     {selectedCase.fileNumber}
                   </span>
-                  <span className="text-xs text-muted-foreground">ID: {selectedCase.id}</span>
+                  <span className="text-xs text-muted-foreground">Passport: {selectedCase.passportNumber}</span>
                 </div>
                 <h2 className="text-xl font-bold text-foreground flex items-center gap-2 mt-1">
                   {selectedCase.candidateName}
                   <span className="text-xs font-normal px-2.5 py-0.5 rounded-full bg-muted text-muted-foreground">
-                    {selectedCase.candidateAge} Yrs | {selectedCase.candidateGender}
+                    {selectedCase.candidateAge || 28} Yrs | {selectedCase.candidateGender || 'Male'}
                   </span>
                 </h2>
               </div>
@@ -448,7 +335,7 @@ export function CandidateCaseFiles() {
                 Deployment Pipeline Status
               </h3>
               <div className="grid grid-cols-1 sm:grid-cols-5 gap-2">
-                {selectedCase.steps.map((st) => (
+                {(selectedCase.steps || []).map((st) => (
                   <div
                     key={st.id}
                     className={`p-3 rounded-xl border text-xs space-y-1 ${
@@ -473,11 +360,11 @@ export function CandidateCaseFiles() {
             {/* Document Vault */}
             <div className="space-y-3 border-t border-border pt-4">
               <h3 className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
-                Verified Document Vault ({selectedCase.documents.length})
+                Verified Document Vault ({(selectedCase.documents || []).length})
               </h3>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                {selectedCase.documents.map((doc) => (
-                  <div key={doc.id} className="bg-muted/30 border border-border p-3 rounded-xl flex items-center justify-between text-xs">
+                {(selectedCase.documents || []).map((doc, idx) => (
+                  <div key={doc.id || idx} className="bg-muted/30 border border-border p-3 rounded-xl flex items-center justify-between text-xs">
                     <div className="flex items-center gap-2.5">
                       <FileText className="w-5 h-5 text-sky-500" />
                       <div>
@@ -495,7 +382,7 @@ export function CandidateCaseFiles() {
 
             {/* Modal Footer */}
             <div className="border-t border-border pt-4 flex items-center justify-between text-xs">
-              <span className="text-muted-foreground">Internal Notes: {selectedCase.internalNotes}</span>
+              <span className="text-muted-foreground">Internal Notes: {selectedCase.internalNotes || 'None'}</span>
               <button
                 onClick={() => {
                   toast.success(`Dossier PDF report exported for ${selectedCase.candidateName}`);
@@ -620,8 +507,10 @@ export function CandidateCaseFiles() {
               </button>
               <button
                 type="submit"
-                className="px-4 py-1.5 bg-sky-500 hover:bg-sky-400 text-slate-950 font-bold rounded-lg shadow-md cursor-pointer"
+                disabled={submitting}
+                className="flex items-center gap-2 px-4 py-1.5 bg-sky-500 hover:bg-sky-400 text-slate-950 font-bold rounded-lg shadow-md cursor-pointer disabled:opacity-50"
               >
+                {submitting && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
                 Create Candidate Case File
               </button>
             </div>

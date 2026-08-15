@@ -19,6 +19,8 @@ import systemRouter from "./routes/SystemRoute.js";
 // import searchRouter from "./routes/SearchRoute.js";
 // import { searchProducts } from "./controllers/SearchController.js";
 
+import candidateRouter from "./routes/CandidateRoute.js";
+
 const coreRouter = Router();
 
 // Core ERP Operational Routes
@@ -26,6 +28,7 @@ coreRouter.use("/auth", authRouter);
 coreRouter.use("/users", usersRouter);
 coreRouter.use("/assets", assetsRouter);
 coreRouter.use("/members", membersRouter);
+coreRouter.use("/candidates", candidateRouter);
 coreRouter.use("/sendEmail", emailRouter);
 coreRouter.use("/orders", ordersRouter);
 coreRouter.use("/payments", paymentsRouter);
