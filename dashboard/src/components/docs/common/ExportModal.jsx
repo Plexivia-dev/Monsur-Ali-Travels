@@ -9,7 +9,10 @@ export function ExportModal({ isOpen, onClose, documentTitle = 'Document', data 
 
   // 1. Native A4 Vector PDF Print
   const handlePrint = () => {
-    window.print();
+    onClose();
+    setTimeout(() => {
+      window.print();
+    }, 150);
   };
 
   // 2. Download JSON
@@ -67,7 +70,7 @@ export function ExportModal({ isOpen, onClose, documentTitle = 'Document', data 
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-xs animate-in fade-in duration-200">
+    <div className="no-print fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-xs animate-in fade-in duration-200">
       <div className="bg-card border border-border rounded-2xl max-w-lg w-full p-6 shadow-2xl relative text-foreground space-y-6">
         
         {/* Modal Header */}
