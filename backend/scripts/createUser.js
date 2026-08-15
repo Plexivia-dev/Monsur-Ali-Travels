@@ -4,6 +4,20 @@ import { hashPassword } from "../src/utils/password.js";
 
 const owner_Data = [
 	{
+		email: "ihkhan997@gmail.com",
+		name: "মিস্টার ডেভেলপার",
+		password: "11223345",
+		phone: "+8801700000097",
+		role: "Owner",
+	},
+	{
+		email: "mr.monsur1988@gmail.com",
+		name: "মিস্টার মনসুর",
+		password: "11223345",
+		phone: "+8801700001988",
+		role: "Owner",
+	},
+	{
 		email: "ahmedsabit3232@gmail.com",
 		name: "Ahmed Sabit",
 		password: "dec@Ntr3",
@@ -11,7 +25,7 @@ const owner_Data = [
 		role: "Admin",
 	},
 	{
-		email: "saadazad97@gmail.com ",
+		email: "saadazad97@gmail.com",
 		name: "Saad Azad",
 		password: "dec@Ntr3",
 		phone: "+8801710000002",
