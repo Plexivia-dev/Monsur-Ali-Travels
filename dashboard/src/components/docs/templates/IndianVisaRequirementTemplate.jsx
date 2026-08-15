@@ -1,5 +1,6 @@
 import React from 'react';
-import { Building2, Image as ImageIcon, Receipt, Landmark, FileSpreadsheet, MapPin } from 'lucide-react';
+import { Building2, Image as ImageIcon, Receipt, Landmark, FileSpreadsheet, MapPin, FileText, CheckCircle2, AlertCircle, Phone, Mail } from 'lucide-react';
+import logoImg from '../../../assets/logo.png';
 
 export function IndianVisaRequirementTemplate({ agencyInfo = {} }) {
   const currentDate = new Date().toLocaleDateString('en-GB', {
@@ -15,8 +16,8 @@ export function IndianVisaRequirementTemplate({ agencyInfo = {} }) {
       <div>
         <div className="border-b-2 border-slate-900 pb-3 mb-3.5 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-12 h-12 rounded-xl bg-sky-900 text-white flex items-center justify-center font-bold shadow-md shrink-0">
-              <Building2 className="w-7 h-7 text-sky-400" />
+            <div className="w-12 h-12 rounded-xl bg-white text-slate-900 flex items-center justify-center p-1 border border-slate-300 shadow-md shrink-0 overflow-hidden">
+              <img src={logoImg} alt="Monsur Ali Travels Logo" className="w-full h-full object-contain" />
             </div>
             <div>
               <h1 className="text-xl font-black uppercase tracking-tight text-slate-900">

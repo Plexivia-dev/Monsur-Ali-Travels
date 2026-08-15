@@ -74,22 +74,10 @@ function MainLayout() {
 
         {/* Dynamic Portal View Container */}
         <main className="flex-1 p-4 sm:p-6 lg:p-8 max-w-7xl w-full mx-auto">
-          <Routes>
-            <Route path="/dashboard/agency/*" element={<Agency />} />
-            <Route path="/dashboard/docs/*" element={<DocumentStudio />} />
-            <Route path="/dashboard/factory/*" element={<Factory />} />
-            <Route path="/dashboard/admin/*" element={<Admin />} />
-            <Route path="/dashboard" element={<Navigate to="/dashboard/agency/dashboard" replace />} />
-            <Route path="/" element={<Navigate to="/dashboard/agency/dashboard" replace />} />
-            <Route
-              path="*"
-              element={
-                activePortal === 'factory' ? <Factory /> :
-                activePortal === 'docs' ? <DocumentStudio /> :
-                activePortal === 'admin' ? <Admin /> : <Agency />
-              }
-            />
-          </Routes>
+          {activePortal === 'factory' && <Factory />}
+          {activePortal === 'agency' && <Agency />}
+          {activePortal === 'admin' && <Admin />}
+          {activePortal === 'docs' && <DocumentStudio />}
         </main>
       </div>
 

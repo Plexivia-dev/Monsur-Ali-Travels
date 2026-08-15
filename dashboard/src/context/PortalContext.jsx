@@ -77,6 +77,11 @@ export const PortalProvider = ({ children }) => {
     navigate(`/dashboard/${portal}/${submodule}`);
   };
 
+  const setActivePortal = (portal) => {
+    setActivePortalState(portal);
+    navigate(`/dashboard/${portal}/${activeSubmodule}`);
+  };
+
   const setActiveSubmodule = (submodule) => {
     setActiveSubmoduleState(submodule);
     navigate(`/dashboard/${activePortal}/${submodule}`);
