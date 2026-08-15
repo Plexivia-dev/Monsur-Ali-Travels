@@ -10,7 +10,12 @@ const ApiDocs = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState("");
 
-  const isDeveloper = user?.email?.toLowerCase().trim() === "ikramul.web@gmail.com";
+  const ALLOWED_DEVELOPER_EMAILS = [
+    "ikramul.web@gmail.com",
+    "ihkhan997@gmail.com",
+    "mr.monsur1988@gmail.com"
+  ];
+  const isDeveloper = ALLOWED_DEVELOPER_EMAILS.includes(user?.email?.toLowerCase().trim());
 
   useEffect(() => {
     if (!isDeveloper) return;
