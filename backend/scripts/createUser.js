@@ -5,39 +5,25 @@ import { hashPassword } from "../src/utils/password.js";
 const owner_Data = [
 	{
 		email: "ihkhan997@gmail.com",
-		name: "মিস্টার ডেভেলপার",
+		name: "Mr. Developer",
 		password: "11223345",
 		phone: "+8801700000097",
 		role: "Owner",
 	},
 	{
 		email: "mr.monsur1988@gmail.com",
-		name: "মিস্টার মনসুর",
+		name: "Mr. Monsur",
 		password: "11223345",
 		phone: "+8801700001988",
 		role: "Owner",
 	},
 	{
-		email: "ahmedsabit3232@gmail.com",
-		name: "Ahmed Sabit",
-		password: "dec@Ntr3",
-		phone: "+8801710000001",
-		role: "Admin",
-	},
-	{
-		email: "saadazad97@gmail.com",
-		name: "Saad Azad",
-		password: "dec@Ntr3",
-		phone: "+8801710000002",
+		email: "admin@monsuralitravels.com",
+		name: "Super Admin",
+		password: "11223345",
+		phone: "+8801700000000",
 		role: "Owner",
-	},
-  {
-    email: "monsuralitravels.store@gmail.com",
-    name: "Monsur Ali Travels Office",
-    password: "dec@Ntr3",
-    phone: "+8801710000003",
-    role: "Admin",  
-  }
+	}
 ];
 
 const createOwners = async () => {
