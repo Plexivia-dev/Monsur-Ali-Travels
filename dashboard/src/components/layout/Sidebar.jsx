@@ -27,6 +27,15 @@ export const Sidebar = () => {
   const [agencyOpen, setAgencyOpen] = useState(true);
   const [adminOpen, setAdminOpen] = useState(true);
 
+  const navItemsAgency = [
+    { id: 'dashboard', label: 'Agency Dashboard', icon: LayoutDashboard },
+    { id: 'candidates', label: 'Candidate & Agent Pipeline', icon: UserCheck },
+    { id: 'employees', label: 'Placed Workers', icon: Users },
+    { id: 'bills', label: 'Client Invoicing', icon: Receipt },
+    { id: 'payments', label: 'Contractor Payouts', icon: CreditCard },
+    { id: 'reports', label: 'Placement Reports', icon: BarChart3 }
+  ];
+
   const navItemsAdmin = [
     { id: 'overview', label: 'Overview', icon: LayoutDashboard },
     { id: 'activity', label: 'Activity Log', icon: History },
