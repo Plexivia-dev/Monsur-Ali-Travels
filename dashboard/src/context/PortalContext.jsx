@@ -3,7 +3,7 @@ import React, { createContext, useContext, useState } from 'react';
 const PortalContext = createContext();
 
 export const PortalProvider = ({ children }) => {
-  const [activePortal, setActivePortal] = useState('factory'); // 'factory' | 'agency' | 'admin' | 'docs'
+  const [activePortal, setActivePortal] = useState('agency'); // 'agency' | 'admin' | 'docs' | 'factory'
   const [activeSubmodule, setActiveSubmodule] = useState('dashboard'); // 'dashboard', 'employees', 'bills', 'payments', 'reports', 'resume', 'certificate', 'invoice'
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');

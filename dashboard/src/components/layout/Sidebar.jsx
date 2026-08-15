@@ -90,8 +90,8 @@ export const Sidebar = ({ isMobileOpen, setIsMobileOpen }) => {
 
         {/* Navigation Sections */}
         <div className="flex-1 overflow-y-auto px-3 py-4 space-y-6">
-          {/* GROUP 1: BRICK FACTORY PORTAL */}
-          <div className="space-y-1">
+          {/* GROUP 1: BRICK FACTORY PORTAL (HIDDEN FOR NOW) */}
+          {/* <div className="space-y-1">
             <button
               onClick={() => setFactoryOpen(!factoryOpen)}
               className="w-full flex items-center justify-between px-3 py-2 text-xs font-bold uppercase tracking-wider text-left text-amber-500 hover:text-amber-400 transition-colors cursor-pointer"
@@ -125,7 +125,7 @@ export const Sidebar = ({ isMobileOpen, setIsMobileOpen }) => {
                 })}
               </div>
             )}
-          </div>
+          </div> */}
 
           {/* GROUP 2: MANPOWER AGENCY PORTAL */}
           <div className="space-y-1">
