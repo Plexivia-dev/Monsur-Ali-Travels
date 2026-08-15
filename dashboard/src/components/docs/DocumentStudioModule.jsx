@@ -1,13 +1,17 @@
 import React from 'react';
 import { usePortal } from '../../context/PortalContext';
+import { ResumeBuilder } from './resume/ResumeBuilder';
+import { CertificateBuilder } from './certificate/CertificateBuilder';
+import { InvoiceBuilder } from './invoice/InvoiceBuilder';
+import { FileText, Award, Receipt } from 'lucide-react';
 
 export function DocumentStudioModule() {
-  const { activeSubmodule } = usePortal();
+  const { activeSubmodule, setActiveSubmodule } = usePortal();
 
   return (
-    <div className="space-y-6">
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-card border border-border p-5 rounded-2xl shadow-xs">
+    <div className="space-y-5">
+      {/* Header & Submodule Navigation */}
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-card border border-border p-5 rounded-2xl shadow-xs">
         <div>
           <h1 className="text-xl font-bold text-foreground tracking-tight flex items-center gap-2">
             📄 Document Studio
@@ -16,31 +20,42 @@ export function DocumentStudioModule() {
             </span>
           </h1>
           <p className="text-xs text-muted-foreground mt-1">
-            Create, preview, and print high-resolution A4 Resumes, Character Certificates, and Invoices.
+            Create, customize, and print crisp A4 Resumes, Character Certificates, and Invoices.
           </p>
+        </div>
+
+        {/* Submodule Tab Selector */}
+        <div className="flex items-center space-x-1 bg-muted p-1 rounded-xl">
+          {[
+            { id: 'resume', label: 'Resume & CV', icon: FileText },
+            { id: 'certificate', label: 'Character Certificate', icon: Award },
+            { id: 'invoice', label: 'Invoice Generator', icon: Receipt }
+          ].map(tab => {
+            const Icon = tab.icon;
+            const isActive = activeSubmodule === tab.id;
+            return (
+              <button
+                key={tab.id}
+                onClick={() => setActiveSubmodule(tab.id)}
+                className={`flex items-center space-x-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
+                  isActive
+                    ? 'bg-background text-foreground shadow-2xs'
+                    : 'text-muted-foreground hover:text-foreground'
+                }`}
+              >
+                <Icon className="w-3.5 h-3.5" />
+                <span>{tab.label}</span>
+              </button>
+            );
+          })}
         </div>
       </div>
 
-      {/* Submodule View */}
-      <div className="bg-card border border-border rounded-2xl p-6 shadow-xs">
-        {activeSubmodule === 'resume' && (
-          <div>
-            <h2 className="text-lg font-semibold mb-2">Resume & CV Builder</h2>
-            <p className="text-sm text-muted-foreground">Resume Generator Module Loading...</p>
-          </div>
-        )}
-        {activeSubmodule === 'certificate' && (
-          <div>
-            <h2 className="text-lg font-semibold mb-2">Character Certificate Generator</h2>
-            <p className="text-sm text-muted-foreground">Character Certificate Module Loading...</p>
-          </div>
-        )}
-        {activeSubmodule === 'invoice' && (
-          <div>
-            <h2 className="text-lg font-semibold mb-2">Invoice & Bill Generator</h2>
-            <p className="text-sm text-muted-foreground">Invoice Generator Module Loading...</p>
-          </div>
-        )}
+      {/* Render Active Document Builder Submodule */}
+      <div>
+        {activeSubmodule === 'resume' && <ResumeBuilder />}
+        {activeSubmodule === 'certificate' && <CertificateBuilder />}
+        {activeSubmodule === 'invoice' && <InvoiceBuilder />}
       </div>
     </div>
   );
