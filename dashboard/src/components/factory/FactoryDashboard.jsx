@@ -1,9 +1,9 @@
 import React from 'react';
 import { useFactoryData } from '../../api/hooks';
 import { StatCard } from '../ui/StatCard';
-import { Card, CardHeader, CardTitle, CardContent } from '../ui/Card';
-import { Badge } from '../ui/Badge';
-import { Button } from '../ui/Button';
+import { Card, CardHeader, CardTitle, CardContent } from "../ui/card";
+import { Badge } from "../ui/badge";
+import { Button } from "../ui/button";
 import { Factory, Flame, Truck, Layers, Coins, AlertCircle, TrendingUp } from 'lucide-react';
 import { ResponsiveContainer, AreaChart, Area, XAxis, YAxis, Tooltip, CartesianGrid } from 'recharts';
 import { usePortal } from '../../context/PortalContext';

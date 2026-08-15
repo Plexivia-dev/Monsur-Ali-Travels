@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 import { useFactoryData, useAddFactoryEmployee } from '../../api/hooks';
-import { DataTable } from '../ui/Table';
-import { Badge } from '../ui/Badge';
+import { DataTable } from "../ui/table";
+import { Badge } from "../ui/badge";
 import { Modal } from '../ui/Modal';
-import { Input, Select } from '../ui/Input';
-import { Button } from '../ui/Button';
+import { Input, Select } from "../ui/input";
+import { Button } from "../ui/button";
 import { Users, UserPlus } from 'lucide-react';
 import { usePortal } from '../../context/PortalContext';
 

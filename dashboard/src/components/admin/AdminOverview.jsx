@@ -23,7 +23,7 @@ import {
   Tooltip,
   CartesianGrid
 } from 'recharts';
-import { Card, CardHeader, CardTitle, CardContent } from '../ui/Card';
+import { Card, CardHeader, CardTitle, CardContent } from "../ui/card";
 
 export const AdminOverview = ({ adminData }) => {
   const [selectedTimeframe, setSelectedTimeframe] = useState('Today');

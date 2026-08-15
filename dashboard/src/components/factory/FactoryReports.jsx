@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useFactoryData } from '../../api/hooks';
-import { Card, CardHeader, CardTitle, CardContent } from '../ui/Card';
-import { Button } from '../ui/Button';
+import { Card, CardHeader, CardTitle, CardContent } from "../ui/card";
+import { Button } from "../ui/button";
 import { BarChart3, Download, PieChart } from 'lucide-react';
 import {
   ResponsiveContainer,
