@@ -208,3 +208,49 @@
   backdrop-filter: blur(12px);
   border: 1px solid var(--border);
 }
+
+/* ------------------------------------------------------------- */
+/* GLOBAL A4 PRINT SPECIFICATIONS FOR DOCUMENT STUDIO            */
+/* ------------------------------------------------------------- */
+@media print {
+  @page {
+    size: A4 portrait;
+    margin: 10mm;
+  }
+
+  body {
+    background: white !important;
+    color: black !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  /* Hide Dashboard chrome, navigation, sidebars and action controls */
+  aside, navbar, nav, header, footer, .no-print, button, [role="dialog"] {
+    display: none !important;
+  }
+
+  /* Ensure main layout container expands cleanly */
+  div, main {
+    margin: 0 !important;
+    padding: 0 !important;
+    border: none !important;
+    box-shadow: none !important;
+    max-width: none !important;
+    width: 100% !important;
+  }
+
+  /* Force printable paper element to full A4 proportions */
+  .printable-a4-paper {
+    display: block !important;
+    width: 210mm !important;
+    min-height: 297mm !important;
+    margin: 0 auto !important;
+    padding: 0 !important;
+    box-shadow: none !important;
+    border: none !important;
+    background: white !important;
+    color: #111827 !important;
+    page-break-after: avoid;
+  }
+}
