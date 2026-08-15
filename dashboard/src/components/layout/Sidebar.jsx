@@ -13,13 +13,16 @@ import {
   History,
   ChevronRight,
   ChevronDown,
-  Layers
+  Layers,
+  Award,
+  FileSpreadsheet
 } from 'lucide-react';
 
 export const Sidebar = ({ isMobileOpen, setIsMobileOpen }) => {
   const { activePortal, activeSubmodule, switchPortal } = usePortal();
   const [factoryOpen, setFactoryOpen] = useState(true);
   const [agencyOpen, setAgencyOpen] = useState(true);
+  const [docsOpen, setDocsOpen] = useState(true);
   const [adminOpen, setAdminOpen] = useState(true);
 
   const navItemsFactory = [
@@ -36,6 +39,12 @@ export const Sidebar = ({ isMobileOpen, setIsMobileOpen }) => {
     { id: 'bills', label: 'Client Invoicing', icon: Receipt },
     { id: 'payments', label: 'Contractor Payouts', icon: CreditCard },
     { id: 'reports', label: 'Placement Reports', icon: BarChart3 }
+  ];
+
+  const navItemsDocs = [
+    { id: 'resume', label: 'Resume & CV', icon: FileText },
+    { id: 'certificate', label: 'Character Certificate', icon: Award },
+    { id: 'invoice', label: 'Invoice Generator', icon: Receipt }
   ];
 
   const navItemsAdmin = [
@@ -155,7 +164,44 @@ export const Sidebar = ({ isMobileOpen, setIsMobileOpen }) => {
             )}
           </div>
 
-          {/* GROUP 3: SYSTEM ADMIN & GLOBAL SETTINGS */}
+          {/* GROUP 3: DOCUMENT STUDIO */}
+          <div className="space-y-1">
+            <button
+              onClick={() => setDocsOpen(!docsOpen)}
+              className="w-full flex items-center justify-between px-3 py-2 text-xs font-bold uppercase tracking-wider text-left text-emerald-500 hover:text-emerald-400 transition-colors cursor-pointer"
+            >
+              <div className="flex items-center gap-2">
+                <FileSpreadsheet className="w-4 h-4 text-emerald-500" />
+                <span>Document Studio</span>
+              </div>
+              {docsOpen ? <ChevronDown className="w-3.5 h-3.5" /> : <ChevronRight className="w-3.5 h-3.5" />}
+            </button>
+
+            {docsOpen && (
+              <div className="space-y-0.5 pl-1">
+                {navItemsDocs.map((item) => {
+                  const Icon = item.icon;
+                  const isActive = activePortal === 'docs' && activeSubmodule === item.id;
+                  return (
+                    <button
+                      key={item.id}
+                      onClick={() => handleNavClick('docs', item.id)}
+                      className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg text-xs font-medium text-left transition-all cursor-pointer ${
+                        isActive
+                          ? 'bg-emerald-500/10 text-emerald-500 font-semibold border-l-2 border-emerald-500'
+                          : 'text-sidebar-foreground/75 hover:text-sidebar-foreground hover:bg-sidebar-accent'
+                      }`}
+                    >
+                      <Icon className={`w-4 h-4 ${isActive ? 'text-emerald-500' : 'text-sidebar-foreground/60'}`} />
+                      <span>{item.label}</span>
+                    </button>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+
+          {/* GROUP 4: SYSTEM ADMIN & GLOBAL SETTINGS */}
           <div className="space-y-1">
             <button
               onClick={() => setAdminOpen(!adminOpen)}

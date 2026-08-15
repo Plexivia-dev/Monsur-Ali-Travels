@@ -3,8 +3,8 @@ import React, { createContext, useContext, useState } from 'react';
 const PortalContext = createContext();
 
 export const PortalProvider = ({ children }) => {
-  const [activePortal, setActivePortal] = useState('factory'); // 'factory' | 'agency' | 'admin'
-  const [activeSubmodule, setActiveSubmodule] = useState('dashboard'); // 'dashboard', 'employees', 'bills', 'payments', 'reports'
+  const [activePortal, setActivePortal] = useState('factory'); // 'factory' | 'agency' | 'docs' | 'admin'
+  const [activeSubmodule, setActiveSubmodule] = useState('dashboard'); // 'dashboard', 'employees', 'bills', 'payments', 'reports', 'resume', 'certificate', 'invoice'
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [toasts, setToasts] = useState([]);
