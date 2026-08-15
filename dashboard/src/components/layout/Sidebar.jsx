@@ -16,11 +16,12 @@ import {
   Layers,
   FileSpreadsheet,
   Award,
-  UserCheck
+  UserCheck,
+  PanelLeftClose
 } from 'lucide-react';
 
-export const Sidebar = ({ isMobileOpen, setIsMobileOpen }) => {
-  const { activePortal, activeSubmodule, switchPortal } = usePortal();
+export const Sidebar = () => {
+  const { activePortal, activeSubmodule, switchPortal, isSidebarOpen, setIsSidebarOpen, toggleSidebar } = usePortal();
   const [factoryOpen, setFactoryOpen] = useState(true);
   const [agencyOpen, setAgencyOpen] = useState(true);
   const [docsOpen, setDocsOpen] = useState(true);
@@ -57,22 +58,24 @@ export const Sidebar = ({ isMobileOpen, setIsMobileOpen }) => {
 
   const handleNavClick = (portal, submodule) => {
     switchPortal(portal, submodule);
-    if (setIsMobileOpen) setIsMobileOpen(false);
+    if (typeof window !== 'undefined' && window.innerWidth < 1024) {
+      setIsSidebarOpen(false);
+    }
   };
 
   return (
     <>
-      {/* Mobile Backdrop */}
-      {isMobileOpen && (
+      {/* Mobile Backdrop Overlay */}
+      {isSidebarOpen && (
         <div
           className="fixed inset-0 bg-black/40 backdrop-blur-xs z-40 lg:hidden"
-          onClick={() => setIsMobileOpen(false)}
+          onClick={() => setIsSidebarOpen(false)}
         />
       )}
 
       <aside
-        className={`fixed top-0 left-0 bottom-0 z-40 w-64 bg-sidebar text-sidebar-foreground border-r border-sidebar-border flex flex-col transition-transform duration-200 lg:translate-x-0 ${
-          isMobileOpen ? 'translate-x-0' : '-translate-x-full'
+        className={`fixed top-0 left-0 bottom-0 z-40 w-64 bg-sidebar text-sidebar-foreground border-r border-sidebar-border flex flex-col transition-transform duration-300 ease-in-out ${
+          isSidebarOpen ? 'translate-x-0' : '-translate-x-full'
         }`}
       >
         {/* Brand Header */}
@@ -88,6 +91,14 @@ export const Sidebar = ({ isMobileOpen, setIsMobileOpen }) => {
               <p className="text-[11px] text-sidebar-foreground/60">Enterprise Dashboard</p>
             </div>
           </div>
+          <button
+            onClick={toggleSidebar}
+            className="p-1.5 rounded-lg text-sidebar-foreground/60 hover:text-sidebar-foreground hover:bg-sidebar-accent transition-colors cursor-pointer"
+            title="Close Sidebar"
+            aria-label="Close Sidebar"
+          >
+            <PanelLeftClose className="w-5 h-5" />
+          </button>
         </div>
 
         {/* Navigation Sections */}

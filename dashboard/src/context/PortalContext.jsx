@@ -18,6 +18,12 @@ export const PortalProvider = ({ children }) => {
     { id: 5, portal: 'admin', title: 'System Backup Complete', message: 'Automated database snapshot created successfully.', time: '12 hours ago', unread: false, type: 'info' }
   ]);
 
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+
+  const toggleSidebar = () => {
+    setIsSidebarOpen((prev) => !prev);
+  };
+
   const addToast = (message, type = 'success') => {
     const id = Date.now();
     setToasts((prev) => [...prev, { id, message, type }]);
@@ -55,7 +61,10 @@ export const PortalProvider = ({ children }) => {
         addToast,
         removeToast,
         notifications,
-        markAllNotificationsRead
+        markAllNotificationsRead,
+        isSidebarOpen,
+        setIsSidebarOpen,
+        toggleSidebar
       }}
     >
       {children}

@@ -1,16 +1,7 @@
 import axios from 'axios';
 import { handleGlobalError } from './error-handler';
 
-let baseURL = import.meta.env?.VITE_API_BASE_URL || '';
-
-if (!baseURL && typeof window !== 'undefined') {
-  const hostname = window.location.hostname.toLowerCase();
-  if (hostname.includes('localhost') || hostname.includes('127.0.0.1')) {
-    baseURL = 'http://localhost:5092';
-  } else {
-    baseURL = 'https://api.monsuralitravels.com';
-  }
-}
+const baseURL = import.meta.env?.VITE_API_BASE_URL || 'https://api.monsuralitravels.com';
 
 export const apiClient = axios.create({
   baseURL,

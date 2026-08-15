@@ -6,16 +6,17 @@ import {
   Moon,
   Search,
   Bell,
-  Menu,
   Factory,
   Users2,
   Shield,
   CheckCheck,
-  ChevronDown
+  ChevronDown,
+  PanelLeftClose,
+  PanelLeftOpen
 } from 'lucide-react';
 
-export const Navbar = ({ onOpenMobileSidebar }) => {
-  const { activePortal, activeSubmodule, switchPortal, setSearchOpen, notifications, markAllNotificationsRead } = usePortal();
+export const Navbar = () => {
+  const { activePortal, activeSubmodule, switchPortal, setSearchOpen, notifications, markAllNotificationsRead, isSidebarOpen, toggleSidebar } = usePortal();
   const { isDark, toggleTheme } = useTheme();
   const [notifOpen, setNotifOpen] = useState(false);
   const [portalMenuOpen, setPortalMenuOpen] = useState(false);
@@ -33,13 +34,15 @@ export const Navbar = ({ onOpenMobileSidebar }) => {
 
   return (
     <header className="sticky top-0 z-30 h-16 bg-card/85 backdrop-blur-md border-b border-border px-4 sm:px-6 flex items-center justify-between transition-colors">
-      {/* Left: Mobile Toggle & Active Context */}
+      {/* Left: Sidebar Toggle & Active Context */}
       <div className="flex items-center gap-3">
         <button
-          onClick={onOpenMobileSidebar}
-          className="lg:hidden p-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted"
+          onClick={toggleSidebar}
+          className="p-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted transition-colors cursor-pointer"
+          title={isSidebarOpen ? "Collapse Sidebar" : "Expand Sidebar"}
+          aria-label="Toggle Sidebar"
         >
-          <Menu className="w-5 h-5" />
+          {isSidebarOpen ? <PanelLeftClose className="w-5 h-5" /> : <PanelLeftOpen className="w-5 h-5" />}
         </button>
 
         {/* Portal Selector Dropdown Button */}
