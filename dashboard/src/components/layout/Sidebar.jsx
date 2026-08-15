@@ -46,14 +46,6 @@ export const Sidebar = () => {
     { id: 'invoice', label: 'Invoice Generator', icon: Receipt }
   ];
 
-  const navItemsFactory = [
-    { id: 'dashboard', label: 'Dashboard Overview', icon: LayoutDashboard },
-    { id: 'employees', label: 'Workers & Attendance', icon: Users },
-    { id: 'bills', label: 'Raw Material Bills', icon: FileText },
-    { id: 'payments', label: 'Payouts & Ledger', icon: CreditCard },
-    { id: 'reports', label: 'Production Reports', icon: BarChart3 }
-  ];
-
   const navItemsAdmin = [
     { id: 'overview', label: 'Overview', icon: LayoutDashboard },
     { id: 'activity', label: 'Activity Log', icon: History },
@@ -107,8 +99,21 @@ export const Sidebar = () => {
 
         {/* Navigation Sections */}
         <div className="flex-1 overflow-y-auto px-3 py-4 space-y-6">
-          
-          {/* GROUP 1: MANPOWER AGENCY PORTAL */}
+          {/* GROUP 1: BRICK FACTORY PORTAL (HIDDEN) */}
+          {/* <div className="space-y-1">
+            <button
+              onClick={() => setFactoryOpen(!factoryOpen)}
+              className="w-full flex items-center justify-between px-3 py-2 text-xs font-bold uppercase tracking-wider text-left text-amber-500 hover:text-amber-400 transition-colors cursor-pointer"
+            >
+              <div className="flex items-center gap-2">
+                <Factory className="w-4 h-4 text-amber-500" />
+                <span>Brick Factory Portal</span>
+              </div>
+              {factoryOpen ? <ChevronDown className="w-3.5 h-3.5" /> : <ChevronRight className="w-3.5 h-3.5" />}
+            </button>
+          </div> */}
+
+          {/* GROUP 2: MANPOWER AGENCY PORTAL */}
           <div className="space-y-1">
             <button
               onClick={() => setAgencyOpen(!agencyOpen)}
@@ -145,7 +150,7 @@ export const Sidebar = () => {
             )}
           </div>
 
-          {/* GROUP 2: DOCUMENT STUDIO */}
+          {/* GROUP 3: DOCUMENT STUDIO */}
           <div className="space-y-1">
             <button
               onClick={() => setDocsOpen(!docsOpen)}
@@ -174,43 +179,6 @@ export const Sidebar = () => {
                       }`}
                     >
                       <Icon className={`w-4 h-4 ${isActive ? 'text-emerald-500' : 'text-sidebar-foreground/60'}`} />
-                      <span>{item.label}</span>
-                    </button>
-                  );
-                })}
-              </div>
-            )}
-          </div>
-
-          {/* GROUP 3: BRICK FACTORY PORTAL */}
-          <div className="space-y-1">
-            <button
-              onClick={() => setFactoryOpen(!factoryOpen)}
-              className="w-full flex items-center justify-between px-3 py-2 text-xs font-bold uppercase tracking-wider text-left text-amber-500 hover:text-amber-400 transition-colors cursor-pointer"
-            >
-              <div className="flex items-center gap-2">
-                <Factory className="w-4 h-4 text-amber-500" />
-                <span>Brick Factory Portal</span>
-              </div>
-              {factoryOpen ? <ChevronDown className="w-3.5 h-3.5" /> : <ChevronRight className="w-3.5 h-3.5" />}
-            </button>
-
-            {factoryOpen && (
-              <div className="space-y-0.5 pl-1">
-                {navItemsFactory.map((item) => {
-                  const Icon = item.icon;
-                  const isActive = activePortal === 'factory' && activeSubmodule === item.id;
-                  return (
-                    <button
-                      key={item.id}
-                      onClick={() => handleNavClick('factory', item.id)}
-                      className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg text-xs font-medium text-left transition-all cursor-pointer ${
-                        isActive
-                          ? 'bg-amber-500/10 text-amber-500 font-semibold border-l-2 border-amber-500'
-                          : 'text-sidebar-foreground/75 hover:text-sidebar-foreground hover:bg-sidebar-accent'
-                      }`}
-                    >
-                      <Icon className={`w-4 h-4 ${isActive ? 'text-amber-500' : 'text-sidebar-foreground/60'}`} />
                       <span>{item.label}</span>
                     </button>
                   );
@@ -255,7 +223,6 @@ export const Sidebar = () => {
               </div>
             )}
           </div>
-
         </div>
 
         {/* Footer User Info */}
