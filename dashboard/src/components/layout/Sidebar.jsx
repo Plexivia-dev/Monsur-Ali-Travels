@@ -39,7 +39,8 @@ export const Sidebar = () => {
   ];
 
   const navItemsDocs = [
-    { id: 'templates', label: 'Templates', icon: FileCheck }
+    { id: 'templates', label: 'Templates', icon: FileCheck },
+    { id: 'downloads', label: 'Downloads', icon: FolderDown }
   ];
 
   const navItemsAdmin = [
