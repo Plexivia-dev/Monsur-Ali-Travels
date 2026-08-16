@@ -38,11 +38,11 @@ export function PassportSubmissionPreview({ data, onPrint }) {
   return (
     <div className="w-full flex flex-col items-center">
       <PrintablePaper id="printable-passport-canvas">
-        <div className="border-2 border-slate-900 p-6 flex flex-col justify-between bg-white text-slate-900 font-sans print:p-0 print:border-0 space-y-6">
+        <div className="flex-1 flex flex-col justify-between text-slate-900 min-h-[960px] print:min-h-[270mm]">
           
-          {/* Header Section */}
-          <div>
-            <div className="border-b-2 border-slate-900 pb-3 mb-4 flex items-center justify-between">
+          <div className="space-y-4 flex-1">
+            {/* Header Section */}
+            <div className="border-b-2 border-slate-900 pb-3 flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <div className="w-12 h-12 rounded-xl bg-white text-slate-900 flex items-center justify-center p-1 border border-slate-300 shadow-sm shrink-0 overflow-hidden">
                   <img src={logoImg} alt="Monsur Ali Travels Logo" className="w-full h-full object-contain" />
@@ -67,7 +67,7 @@ export function PassportSubmissionPreview({ data, onPrint }) {
             </div>
 
             {/* Title Banner */}
-            <div className="bg-slate-900 text-white py-2 px-4 rounded-md text-center shadow-sm mb-4">
+            <div className="bg-slate-900 text-white py-2 px-4 rounded-md text-center shadow-sm">
               <h2 className="text-base font-extrabold tracking-wider uppercase flex items-center justify-center gap-2">
                 <ShieldCheck className="w-5 h-5 text-emerald-400" />
                 PASSPORT SUBMISSION & APPLICATION ACKNOWLEDGEMENT
@@ -78,7 +78,7 @@ export function PassportSubmissionPreview({ data, onPrint }) {
             </div>
 
             {/* SECTION 1: APPLICANT INFORMATION */}
-            <div className="mb-4 space-y-2">
+            <div className="space-y-2">
               <div className="flex items-center gap-1.5 border-b border-slate-900 pb-1">
                 <UserCheck className="w-4 h-4 text-slate-900 shrink-0" />
                 <h3 className="text-xs font-bold uppercase tracking-wide text-slate-900">
@@ -120,7 +120,7 @@ export function PassportSubmissionPreview({ data, onPrint }) {
             </div>
 
             {/* SECTION 2: GUARDIAN & SPECIFICATIONS */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               
               {/* Guardian Info */}
               <div className="space-y-1.5">
@@ -158,7 +158,7 @@ export function PassportSubmissionPreview({ data, onPrint }) {
             </div>
 
             {/* SECTION 3: CHECKLIST OF RECEIVED DOCUMENTS */}
-            <div className="mb-4 space-y-2">
+            <div className="space-y-2">
               <div className="flex items-center justify-between border-b border-slate-900 pb-1">
                 <h3 className="text-xs font-bold uppercase tracking-wide text-slate-900">
                   ৪. জমাকৃত ফাইল ও ডকুমেন্টস চেকলিস্ট (Submitted Files Checklist)
@@ -185,7 +185,7 @@ export function PassportSubmissionPreview({ data, onPrint }) {
             </div>
 
             {remarks && (
-              <div className="p-2.5 border border-slate-300 bg-slate-50 rounded text-xs mb-4">
+              <div className="p-2.5 border border-slate-300 bg-slate-50 rounded text-xs">
                 <span className="font-bold text-slate-700 block text-[11px] uppercase">মন্তব্য / নোট (Remarks):</span>
                 <p className="text-slate-800 mt-0.5">{remarks}</p>
               </div>
@@ -193,8 +193,8 @@ export function PassportSubmissionPreview({ data, onPrint }) {
 
           </div>
 
-          {/* Footer Signatures */}
-          <div className="pt-10 border-t border-slate-300 grid grid-cols-2 gap-6 items-end text-xs">
+          {/* Footer Signatures Pushed to Bottom via mt-auto */}
+          <div className="mt-auto pt-8 border-t border-slate-300 grid grid-cols-2 gap-6 items-end text-xs print:break-inside-avoid page-break-inside-avoid">
             <div className="text-center space-y-1">
               <div className="w-16 h-16 rounded-full border border-dashed border-slate-400 mx-auto flex items-center justify-center text-[9px] text-slate-400 font-mono">
                 [ এজেন্সির সিল ]
