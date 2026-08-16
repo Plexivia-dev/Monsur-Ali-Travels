@@ -74,23 +74,21 @@ export const Sidebar = () => {
 
   const handleNavClick = (portal, submodule) => {
     switchPortal(portal, submodule);
-    if (typeof window !== 'undefined' && window.innerWidth < 1024) {
-      setIsSidebarOpen(false);
-    }
+    setIsSidebarOpen(false);
   };
 
   return (
     <>
-      {/* Mobile Backdrop Overlay */}
-      {isSidebarOpen && (
-        <div
-          className="fixed inset-0 bg-black/40 backdrop-blur-xs z-40 lg:hidden"
-          onClick={() => setIsSidebarOpen(false)}
-        />
-      )}
+      {/* Backdrop Overlay with smooth transition */}
+      <div
+        className={`fixed inset-0 bg-black/40 backdrop-blur-xs z-40 lg:hidden transition-opacity duration-300 ease-in-out ${
+          isSidebarOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
+        }`}
+        onClick={() => setIsSidebarOpen(false)}
+      />
 
       <aside
-        className={`fixed top-0 left-0 bottom-0 z-40 w-64 bg-sidebar text-sidebar-foreground border-r border-sidebar-border flex flex-col transition-transform duration-300 ease-in-out ${
+        className={`fixed top-0 left-0 bottom-0 z-40 w-64 bg-sidebar text-sidebar-foreground border-r border-sidebar-border flex flex-col shadow-xl transition-transform duration-300 ease-in-out ${
           isSidebarOpen ? 'translate-x-0' : '-translate-x-full'
         }`}
       >
@@ -124,7 +122,7 @@ export const Sidebar = () => {
           {/* GROUP 1: BRICK FACTORY PORTAL (HIDDEN FOR NOW) */}
 
           {/* GROUP 2: MANPOWER AGENCY PORTAL */}
-          <div className="space-y-1">
+          {/* <div className="space-y-1">
             <button
               onClick={() => setAgencyOpen(!agencyOpen)}
               className="w-full flex items-center justify-between px-3 py-2 text-xs font-bold uppercase tracking-wider text-left text-sky-500 hover:text-sky-400 transition-colors cursor-pointer"
@@ -150,17 +148,11 @@ export const Sidebar = () => {
                             (child.id === 'all-clients' && activeSubmodule === 'bills')
                         )));
 
-                  // Render nested item with sub-menu children
                   if (item.children) {
                     return (
                       <div key={item.id} className="space-y-0.5">
                         <button
-                          onClick={() => {
-                            setClientsSubOpen(!clientsSubOpen);
-                            if (!clientsSubOpen) {
-                              handleNavClick('agency', 'all-clients');
-                            }
-                          }}
+                          onClick={() => setClientsSubOpen(!clientsSubOpen)}
                           className={`w-full flex items-center justify-between px-3 py-2 rounded-lg text-xs font-medium text-left transition-all cursor-pointer ${
                             isParentActive
                               ? 'bg-sky-500/10 text-sky-500 font-semibold'
@@ -178,7 +170,6 @@ export const Sidebar = () => {
                           )}
                         </button>
 
-                        {/* Collapsible Sub-menu Items */}
                         {clientsSubOpen && (
                           <div className="pl-4 ml-2 border-l border-sidebar-border/60 space-y-0.5 my-1">
                             {item.children.map((child) => {
@@ -230,7 +221,7 @@ export const Sidebar = () => {
                 })}
               </div>
             )}
-          </div>
+          </div> */}
 
           {/* GROUP 3: DOCUMENT STUDIO */}
           <div className="space-y-1">
