@@ -49,7 +49,7 @@ export function EmploymentAgreementStudio() {
       joiningDate: '০১ সেপ্টেম্বর ২০২৬',
       location: 'হেড অফিস, নাদampur',
       jobType: 'স্থায়ী / পূর্ণকালীন (Full-Time)',
-      workSchedule: 'সকাল ৯:০০ - সন্ধ্যা ৬:০০, রবিবার হতে বৃহস্পতিবার'
+      workSchedule: 'সকাল ৯:০০ - সন্ধ্যা ৬:০০, রবিবার হতেবৃহস্পতিবার'
     },
     salary: {
       basicSalary: '15000',
@@ -88,7 +88,10 @@ export function EmploymentAgreementStudio() {
   const handleFormSubmit = async () => {
     try {
       setIsSubmitting(true);
-      const res = await apiClient.post('/api/v1/docs/employment-agreement', formData);
+      const isEdit = Boolean(formData._id);
+      const res = isEdit
+        ? await apiClient.put(`/api/v1/docs/employment-agreement/${formData._id}`, formData)
+        : await apiClient.post('/api/v1/docs/employment-agreement', formData);
 
       if (res.data?.status === 'success' && res.data?.data) {
         const savedDoc = res.data.data;
@@ -98,14 +101,18 @@ export function EmploymentAgreementStudio() {
           agreementId: savedDoc.agreementId,
         }));
 
-        toast.success(`চুক্তিপত্র সফলভাবে ডাটাবেজে সংরক্ষণ করা হয়েছে! (চুক্তিপত্র আইডি: ${savedDoc.agreementId})`);
+        toast.success(
+          isEdit
+            ? `চুক্তিপত্র ডাটাবেজে সফলভাবে আপডেট করা হয়েছে! (আইডি: ${savedDoc.agreementId})`
+            : `চুক্তিপত্র সফলভাবে ডাটাবেজে সংরক্ষণ করা হয়েছে! (আইডি: ${savedDoc.agreementId})`
+        );
         setViewMode('preview');
       } else {
-        throw new Error(res.data?.message || 'ডাটাবেজে সংরক্ষণ করতে ব্যর্থ হয়েছে।');
+        throw new Error(res.data?.message || 'ডাটাবেজে সংরক্ষণ/আপডেট করতে ব্যর্থ হয়েছে।');
       }
     } catch (err) {
-      console.error('Agreement save error:', err);
-      const msg = err.response?.data?.message || err.message || 'সার্ভারে সংরক্ষণ ব্যর্থ হয়েছে। অনুগ্রহ করে পুনরায় চেষ্টা করুন।';
+      console.error('Agreement save/update error:', err);
+      const msg = err.response?.data?.message || err.message || 'সার্ভারে সংরক্ষণ/আপডেট ব্যর্থ হয়েছে। অনুগ্রহ করে পুনরায় চেষ্টা করুন।';
       toast.error(msg);
     } finally {
       setIsSubmitting(false);
@@ -164,7 +171,7 @@ export function EmploymentAgreementStudio() {
                 নিয়োগ চুক্তিপত্র প্রস্তুত (আইডি: <span className="font-mono text-emerald-600 font-bold">{formData.agreementId}</span>)
               </h2>
               <p className="text-xs text-muted-foreground mt-0.5">
-                চুক্তিপত্রটি ডাটাবেজে সংরক্ষিত হয়েছে। সরাসরি প্রিন্ট/পিডিএফ ডাউনলোড করুন অথবা তথ্যে পরিবর্তন আনতে এডিট করুন।
+                চুক্তিপত্রটি ডাটাবেজে সংরক্ষিত রয়েছে। সরাসরি প্রিন্ট/পিডিএফ ডাউনলোড করুন অথবা তথ্যে পরিবর্তন আনতে এডিট করুন।
               </p>
             </div>
 

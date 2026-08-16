@@ -6,24 +6,17 @@ import { Printer, Edit3, CheckCircle2 } from 'lucide-react';
 import { apiClient } from '../../../lib/api-client';
 import { toast } from 'sonner';
 
-// Generates unique Slip Number: SLIP- + 2 letters at start + 4 digits + 1 middle letter + 3 digits (total 7 digits) e.g. "SLIP-AB4829K513"
+// Generates unique Slip Number: "SLIP-" + 2 letters + 4 digits + 1 letter + 3 digits (e.g. "SLIP-AB4829K513")
 export function generateUniqueSlipNumber() {
   const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-  const getChar = () => letters.charAt(Math.floor(Math.random() * letters.length));
-  const getDigits = (len) => {
-    let res = '';
-    for (let i = 0; i < len; i++) {
-      res += Math.floor(Math.random() * 10);
-    }
-    return res;
-  };
-
-  const prefixLetters = getChar() + getChar(); // 2 letters at beginning
-  const firstDigits = getDigits(4);            // 4 digits
-  const midLetter = getChar();                 // 1 letter in the middle
-  const lastDigits = getDigits(3);             // 3 digits (4+3=7 digits total)
-
-  return `SLIP-${prefixLetters}${firstDigits}${midLetter}${lastDigits}`;
+  let prefix = '';
+  for (let i = 0; i < 2; i++) {
+    prefix += letters.charAt(Math.floor(Math.random() * letters.length));
+  }
+  const midNum = Math.floor(1000 + Math.random() * 9000);
+  const midChar = letters.charAt(Math.floor(Math.random() * letters.length));
+  const endNum = Math.floor(100 + Math.random() * 900);
+  return `SLIP-${prefix}${midNum}${midChar}${endNum}`;
 }
 
 export function SalarySlipStudio() {
@@ -39,29 +32,27 @@ export function SalarySlipStudio() {
     // Employee Info
     employeeName: '',
     employeeId: '',
-    designation: 'অফিস এক্সিকিউটিভ',
-    department: 'ভিসা ও পাসপোর্ট উইং',
-    joiningDate: '01-10-2025',
-
-    // Control Info
-    salaryMonth: new Date().toLocaleDateString('en-BD', { month: 'long', year: 'numeric' }),
-    payDate: new Date().toLocaleDateString('en-BD', { day: '2-digit', month: '2-digit', year: 'numeric' }),
+    designation: '',
+    department: '',
+    joiningDate: '',
+    salaryMonth: '',
+    payDate: new Date().toISOString().split('T')[0],
     paymentMode: 'Cash',
-    attendanceDays: 30,
+    bankAccountNo: '',
 
     // Earnings
-    basicSalary: 20000,
+    basicSalary: 15000,
     houseRentAllowance: 5000,
     medicalAllowance: 2000,
     conveyanceAllowance: 1500,
-    otherAllowance: 0,
-    overtimeExtraDuty: 0,
-    grossEarnings: 28500,
+    otherAllowance: 1500,
+    overtimeAmount: 3500,
+    grossEarnings: 25000,
 
     // Deductions
     advanceSalary: 0,
-    unpaidLeaveAbsence: 0,
-    loanAuthorizedDeduction: 0,
+    unpaidLeaveDeduction: 0,
+    loanDeduction: 0,
     taxStatutoryDeduction: 0,
     otherAuthorizedDeduction: 0,
     totalDeduction: 0,
@@ -88,6 +79,7 @@ export function SalarySlipStudio() {
   const handleReset = () => {
     setFormData({
       ...sampleData,
+      _id: null,
       slipNo: generateUniqueSlipNumber()
     });
     toast.info('ফর্ম রিসেট করা হয়েছে। নতুন স্লিপ আইডি জেনারেট হয়েছে।');
@@ -99,7 +91,10 @@ export function SalarySlipStudio() {
 
     try {
       setIsSubmitting(true);
-      const res = await apiClient.post('/api/v1/docs/payrolls', payload);
+      const isEdit = Boolean(formData._id);
+      const res = isEdit
+        ? await apiClient.put(`/api/v1/docs/payrolls/${formData._id}`, payload)
+        : await apiClient.post('/api/v1/docs/payrolls', payload);
 
       if (res.data?.success && res.data?.data) {
         const savedDoc = res.data.data;
@@ -108,13 +103,17 @@ export function SalarySlipStudio() {
           _id: savedDoc._id,
           slipNo: savedDoc.slipNo || finalSlipNo,
         }));
-        toast.success(`স্যালারি স্লিপ ডাটাবেজে সংরক্ষিত হয়েছে! (স্লিপ নং: ${savedDoc.slipNo || finalSlipNo})`);
+        toast.success(
+          isEdit
+            ? `স্যালারি স্লিপ ডাটাবেজে সফলভাবে আপডেট করা হয়েছে! (স্লিপ নং: ${savedDoc.slipNo || finalSlipNo})`
+            : `স্যালারি স্লিপ ডাটাবেজে সংরক্ষণ করা হয়েছে! (স্লিপ নং: ${savedDoc.slipNo || finalSlipNo})`
+        );
       } else {
         setFormData(payload);
         toast.success(`স্যালারি স্লিপ প্রস্তুত হয়েছে! (স্লিপ নং: ${finalSlipNo})`);
       }
     } catch (err) {
-      console.warn('Backend save notice (offline fallback):', err);
+      console.warn('Backend save/update notice (offline fallback):', err);
       setFormData(payload);
       toast.success(`স্যালারি স্লিপ প্রস্তুত হয়েছে! (স্লিপ নং: ${finalSlipNo})`);
     } finally {
@@ -129,10 +128,8 @@ export function SalarySlipStudio() {
 
   const handleWhatsAppShare = () => {
     const employee = formData.employeeName || 'কর্মচারী';
-    const id = formData.employeeId || '-';
-    const month = formData.salaryMonth || '';
-    const gross = formData.grossEarnings || 0;
-    const net = formData.netSalaryPayable || 0;
+    const id = formData.employeeId || 'N/A';
+    const month = formData.salaryMonth || 'চলতি মাস';
 
     const msg =
       `*📄 মুনসুর আলী ট্রাভেলস (MANSUR ALI TRAVELS)*\n` +
@@ -141,18 +138,22 @@ export function SalarySlipStudio() {
       `👤 *কর্মচারীর নাম:* ${employee} (ID: ${id})\n` +
       `💼 *পদবী:* ${formData.designation || 'কর্মকর্তা'}\n` +
       `📅 *বেতনের মাস:* ${month}\n` +
-      `💰 *মূল ও অন্যান্য ভাতা (Gross):* ${Number(gross).toLocaleString('en-BD')} ৳\n` +
-      `🔻 *মোট কর্তন (Deductions):* ${Number(formData.totalDeduction).toLocaleString('en-BD')} ৳\n` +
-      `💵 *সর্বমোট প্রদেয় নিট বেতন (Net Payable):* ${Number(net).toLocaleString('en-BD')} ৳\n` +
-      `📝 *কথায়:* ${formData.netSalaryInWords || ''}\n\n` +
-      `📌 মূল স্বাক্ষরিত স্যালারি স্লিপ প্রিন্ট কপি অফিসে সংরক্ষিত রয়েছে।`;
+      `💰 *মূল বেতন (Basic):* ${formData.basicSalary} ৳\n` +
+      `💵 *গ্রস অর্জিত বেতন:* ${formData.grossEarnings} ৳\n` +
+      `⏰ *ওভারটাইম:* ${formData.overtimeAmount} ৳\n` +
+      `🔻 *মোট কর্তন:* ${formData.totalDeduction} ৳\n` +
+      `✅ *সর্বমোট প্রদেয় বেতন (Net Salary):* ${formData.netSalaryPayable} ৳ (${formData.netSalaryInWords || ''})\n\n` +
+      `📌 *স্লিপ ও পেমেন্ট স্ট্যাটাস:* পরিশোধিত (Paid via ${formData.paymentMode || 'Cash'})\n\n` +
+      `🏢 *মনসুর আলী ট্রাভেলস*\n` +
+      `📍 ঠিকানা: Nadampur, Jagannathpur, Sunamganj - 3060, Sylhet, Bangladesh\n` +
+      `📞 যোগাযোগ: +8801345579534`;
 
     window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(msg)}`, '_blank');
   };
 
   return (
     <div className="space-y-6">
-      {/* Form View Mode */}
+      {/* Form Mode */}
       {viewMode === 'form' && (
         <SalarySlipForm
           formData={formData}
@@ -163,7 +164,7 @@ export function SalarySlipStudio() {
         />
       )}
 
-      {/* Preview & Print View Mode */}
+      {/* Preview Mode */}
       {viewMode === 'preview' && (
         <div className="space-y-6">
           {/* Action Header in Preview Mode */}
@@ -174,7 +175,7 @@ export function SalarySlipStudio() {
                 স্যালারি স্লিপ প্রস্তুত (স্লিপ নং: <span className="font-mono text-emerald-600 font-bold">{formData.slipNo}</span>)
               </h2>
               <p className="text-xs text-muted-foreground mt-0.5">
-                স্লিপটি প্রস্তুত রয়েছে। সরাসরি প্রিন্ট/পিডিএফ ডাউনলোড করুন অথবা তথ্যে পরিবর্তন আনতে এডিট করুন।
+                স্লিপটি ডাটাবেজে সংরক্ষিত রয়েছে। সরাসরি প্রিন্ট/পিডিএফ ডাউনলোড করুন অথবা তথ্যে পরিবর্তন আনতে এডিট করুন।
               </p>
             </div>
 
@@ -211,9 +212,9 @@ export function SalarySlipStudio() {
             </div>
           </div>
 
-          {/* Printable A4 Paper Container */}
-          <div className="w-full flex justify-center pb-8">
-            <PrintablePaper id="salary-slip-printable-paper">
+          {/* Printable A4 Canvas Container */}
+          <div className="w-full flex justify-center">
+            <PrintablePaper id="printable-salary-canvas">
               <SalarySlipPreview data={formData} />
             </PrintablePaper>
           </div>
