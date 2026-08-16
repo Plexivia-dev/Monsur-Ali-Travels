@@ -27,7 +27,7 @@ export function PassportRequirementTemplate({ agencyInfo = {} }) {
                 Government Approved Overseas Manpower & Passport Processing Agency
               </p>
               <p className="text-[10px] text-slate-600 font-mono mt-0.5">
-                License No: RL-1842 | Head Office: Dhaka, Bangladesh | Cell: +880 1700-000000
+                License No: RL-1842 | Head Office: Nadampur, Jagannathpur, Sunamganj - 3060, Sylhet, Bangladesh | Cell: +8801345579534
               </p>
             </div>
           </div>

@@ -17,11 +17,35 @@ export async function createApp() {
   app.set("trust proxy", true);
 
   const defaultOrigins = [
+    "https://admin.monsuralitravels.com",
+    "https://admin.monsuralitravels.com/",
+    "http://admin.monsuralitravels.com",
+    "http://admin.monsuralitravels.com/",
+    "https://api.monsuralitravels.com",
+    "https://api.monsuralitravels.com/",
+    "http://api.monsuralitravels.com",
+    "http://api.monsuralitravels.com/",
+    "https://monsuralitravels.com",
+    "https://monsuralitravels.com/",
+    "https://www.monsuralitravels.com",
+    "https://www.monsuralitravels.com/",
+    "http://monsuralitravels.com",
+    "http://monsuralitravels.com/",
+    "http://www.monsuralitravels.com",
+    "http://www.monsuralitravels.com/",
     "https://monsuralitravelsbd.com",
     "https://www.monsuralitravelsbd.com",
     "https://dashboard.monsuralitravelsbd.com",
     "http://dashboard.monsuralitravelsbd.com",
     "http://localhost:8001",
+    "http://localhost:5173",
+    "http://localhost:5173/",
+    "http://127.0.0.1:5173",
+    "http://127.0.0.1:5173/",
+    "http://localhost:5174",
+    "http://localhost:5174/",
+    "http://127.0.0.1:5174",
+    "http://127.0.0.1:5174/",
   ];
 
   const envOrigins = env.ALLOWED_ORIGINS
@@ -30,16 +54,41 @@ export async function createApp() {
 
   const allowedOrigins = Array.from(new Set([...defaultOrigins, ...envOrigins]));
 
+  // Bulletproof custom CORS middleware to guarantee preflight OPTIONS & response headers
+  app.use((req, res, next) => {
+    const origin = req.headers.origin;
+    if (origin) {
+      res.setHeader("Access-Control-Allow-Origin", origin);
+      res.setHeader("Access-Control-Allow-Credentials", "true");
+      res.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, PATCH, OPTIONS");
+      res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization, X-Requested-With, Accept, Origin");
+    }
+    if (req.method === "OPTIONS") {
+      return res.status(204).end();
+    }
+    next();
+  });
+
   const corsOptions = {
     origin: (origin, callback) => {
       // Allow requests with no origin (like mobile apps or curl requests)
       if (!origin) return callback(null, true);
-      if (allowedOrigins.includes("*") || allowedOrigins.indexOf(origin) !== -1) {
-        callback(null, true);
-      } else {
-        logger.warn(`CORS request from origin ${origin} - allowed`);
-        callback(null, true);
+
+      const cleanOrigin = origin.replace(/\/$/, "");
+
+      if (
+        allowedOrigins.includes("*") ||
+        allowedOrigins.includes(origin) ||
+        allowedOrigins.includes(cleanOrigin) ||
+        cleanOrigin.includes("monsuralitravels") ||
+        cleanOrigin.includes("localhost") ||
+        cleanOrigin.includes("127.0.0.1")
+      ) {
+        return callback(null, true);
       }
+
+      logger.warn(`CORS request from unlisted origin ${origin} - allowing fallback`);
+      return callback(null, true);
     },
     methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
     allowedHeaders: [
@@ -47,6 +96,7 @@ export async function createApp() {
       "Authorization",
       "X-Requested-With",
       "Accept",
+      "Origin",
     ],
     credentials: true,
     optionsSuccessStatus: 204,
@@ -59,8 +109,12 @@ export async function createApp() {
   app.use(express.urlencoded({ extended: false }));
 
   const docsPath = path.join(process.cwd(), "documents");
-  if (!fs.existsSync(docsPath)) {
-    fs.mkdirSync(docsPath, { recursive: true });
+  try {
+    if (!fs.existsSync(docsPath)) {
+      fs.mkdirSync(docsPath, { recursive: true });
+    }
+  } catch (err) {
+    logger.warn(`Could not create documents directory at ${docsPath}: ${err.message}`);
   }
 
   app.use("/uploads", express.static(path.join(process.cwd(), "uploads")));
@@ -84,10 +138,10 @@ export async function createApp() {
 
     const dashboardKeywords = env.DASHBOARD_DOMAIN_KEYWORDS
       ? env.DASHBOARD_DOMAIN_KEYWORDS.split(",").map((kw) => kw.trim().toLowerCase())
-      : ["dashboard"];
+      : ["dashboard", "admin", "5173", "5174", "localhost", "127.0.0.1", "monsuralitravels"];
     const frontendKeywords = env.FRONTEND_DOMAIN_KEYWORDS
       ? env.FRONTEND_DOMAIN_KEYWORDS.split(",").map((kw) => kw.trim().toLowerCase())
-      : ["localhost", "monsuralitravelsbd.com"];
+      : ["localhost", "monsuralitravels"];
 
     const isDashboard = dashboardKeywords.some((kw) => origin.includes(kw)) ||
       (req.originalUrl && req.originalUrl.includes("/dashboard/"));

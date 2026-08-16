@@ -20,6 +20,7 @@ import systemRouter from "./routes/SystemRoute.js";
 // import { searchProducts } from "./controllers/SearchController.js";
 
 import candidateRouter from "./routes/CandidateRoute.js";
+import docsRouter from "./routes/DocsRoute.js";
 
 const coreRouter = Router();
 
@@ -29,6 +30,7 @@ coreRouter.use("/users", usersRouter);
 coreRouter.use("/assets", assetsRouter);
 coreRouter.use("/members", membersRouter);
 coreRouter.use("/candidates", candidateRouter);
+coreRouter.use("/docs", docsRouter);
 coreRouter.use("/sendEmail", emailRouter);
 coreRouter.use("/orders", ordersRouter);
 coreRouter.use("/payments", paymentsRouter);

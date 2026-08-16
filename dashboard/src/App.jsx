@@ -5,7 +5,7 @@ import { ThemeProvider } from './context/ThemeContext';
 import { PortalProvider, usePortal } from './context/PortalContext';
 import { AuthProvider, useAuth } from './lib/auth-context';
 import { Sidebar } from './components/layout/Sidebar';
-import { Navbar } from './components/layout/Navbar';
+import { PanelLeftOpen } from 'lucide-react';
 import Factory from './pages/Factory';
 import Agency from './pages/Agency';
 import Admin from './pages/Admin';
@@ -44,7 +44,7 @@ function AuthGuard({ children }) {
 }
 
 function MainLayout() {
-  const { activePortal, setSearchOpen, isSidebarOpen } = usePortal();
+  const { activePortal, setSearchOpen, isSidebarOpen, toggleSidebar } = usePortal();
 
   // Global Keyboard Shortcut for Search (Ctrl+K or Cmd+K)
   useEffect(() => {
@@ -60,6 +60,18 @@ function MainLayout() {
 
   return (
     <div className="min-h-screen bg-background text-foreground flex transition-colors">
+      {/* Floating Sidebar Open Trigger when closed */}
+      {!isSidebarOpen && (
+        <button
+          onClick={toggleSidebar}
+          className="fixed top-4 left-4 z-30 p-2.5 rounded-xl bg-white text-slate-800 hover:text-primary border border-slate-200 shadow-md hover:shadow-lg hover:bg-slate-50 transition-all cursor-pointer flex items-center justify-center"
+          title="Open Sidebar"
+          aria-label="Open Sidebar"
+        >
+          <PanelLeftOpen className="w-5 h-5" />
+        </button>
+      )}
+
       {/* Navigation Sidebar */}
       <Sidebar />
 
@@ -69,9 +81,6 @@ function MainLayout() {
           isSidebarOpen ? 'lg:pl-64' : 'lg:pl-0'
         }`}
       >
-        {/* Sticky Header Navbar */}
-        <Navbar />
-
         {/* Dynamic Portal View Container */}
         <main className="flex-1 p-4 sm:p-6 lg:p-8 max-w-7xl w-full mx-auto">
           {activePortal === 'factory' && <Factory />}

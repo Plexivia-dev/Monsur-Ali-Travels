@@ -26,13 +26,13 @@ COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/src ./src
 COPY --from=builder /app/scripts ./scripts
 
-# Create public and uploads directories for compatibility with existing deployments
-RUN mkdir -p /app/public /app/uploads /app/src/uploads
+# Create public, uploads, and documents directories for compatibility
+RUN mkdir -p /app/public /app/uploads /app/src/uploads /app/documents /app/src/documents
 
 # Create non-root user for security and set ownership of app directories
 RUN addgroup -g 1001 -S nodejs && \
     adduser -S nodejs -u 1001 && \
-    chown -R nodejs:nodejs /app/public /app/uploads /app/src/uploads
+    chown -R nodejs:nodejs /app
 
 USER nodejs
 
