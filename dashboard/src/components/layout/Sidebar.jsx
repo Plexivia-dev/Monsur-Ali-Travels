@@ -121,8 +121,9 @@ export const Sidebar = () => {
         <div className="flex-1 overflow-y-auto px-3 py-4 space-y-6">
           {/* GROUP 1: BRICK FACTORY PORTAL (HIDDEN FOR NOW) */}
 
-          {/* GROUP 2: MANPOWER AGENCY PORTAL */}
-          {/* <div className="space-y-1">
+          {/* GROUP 2: MANPOWER AGENCY PORTAL (HIDDEN FOR NOW) */}
+          {/*
+          <div className="space-y-1">
             <button
               onClick={() => setAgencyOpen(!agencyOpen)}
               className="w-full flex items-center justify-between px-3 py-2 text-xs font-bold uppercase tracking-wider text-left text-sky-500 hover:text-sky-400 transition-colors cursor-pointer"
@@ -221,7 +222,8 @@ export const Sidebar = () => {
                 })}
               </div>
             )}
-          </div> */}
+          </div>
+          */}
 
           {/* GROUP 3: DOCUMENT STUDIO */}
           <div className="space-y-1">
