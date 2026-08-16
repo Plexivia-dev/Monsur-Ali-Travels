@@ -53,6 +53,7 @@ export const Sidebar = () => {
   const navItemsDocs = [
     { id: 'agreement', label: 'Employment Agreement', icon: FileText },
     { id: 'payroll', label: 'Salary Slip', icon: Receipt },
+    { id: 'invoice', label: 'Invoice', icon: FileSpreadsheet },
     { id: 'templates', label: 'Templates', icon: FileCheck },
     { id: 'idcard', label: 'ID Card', icon: IdCard },
     { id: 'downloads', label: 'Downloads', icon: FolderDown }
