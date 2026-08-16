@@ -1,5 +1,7 @@
 import React from 'react';
 import { User, IdCard, Calendar, Droplets, Phone, Mail, MapPin, Upload, RefreshCw, Globe, PenTool } from 'lucide-react';
+import { BdPhoneInput } from '../../common/BdPhoneInput';
+import { DatePicker } from '../../ui/date-picker';
 
 export function IdCardForm({ cardData, setCardData, onResetSample }) {
   const handleChange = (field, value) => {
@@ -70,7 +72,6 @@ export function IdCardForm({ cardData, setCardData, onResetSample }) {
                 type="text"
                 value={cardData.fullName}
                 onChange={(e) => handleChange('fullName', e.target.value)}
-                placeholder="MD HAKIMUL ISLAM"
                 className="w-full pl-9 pr-3 py-1.5 bg-muted/50 border border-border rounded-lg text-foreground text-xs focus:outline-hidden focus:ring-1 focus:ring-primary font-bold"
               />
             </div>
@@ -82,7 +83,6 @@ export function IdCardForm({ cardData, setCardData, onResetSample }) {
               type="text"
               value={cardData.role}
               onChange={(e) => handleChange('role', e.target.value)}
-              placeholder="EMPLOYEE"
               className="w-full px-3 py-1.5 bg-muted/50 border border-border rounded-lg text-foreground text-xs focus:outline-hidden focus:ring-1 focus:ring-primary font-bold uppercase"
             />
           </div>
@@ -96,23 +96,16 @@ export function IdCardForm({ cardData, setCardData, onResetSample }) {
               type="text"
               value={cardData.idNumber}
               onChange={(e) => handleChange('idNumber', e.target.value)}
-              placeholder="123"
               className="w-full px-3 py-1.5 bg-muted/50 border border-border rounded-lg text-foreground text-xs focus:outline-hidden focus:ring-1 focus:ring-primary font-mono font-bold"
             />
           </div>
 
           <div>
             <label className="block font-bold text-foreground mb-1">Joining Date</label>
-            <div className="relative">
-              <Calendar className="w-3.5 h-3.5 absolute left-3 top-2.5 text-muted-foreground" />
-              <input
-                type="text"
-                value={cardData.joiningDate}
-                onChange={(e) => handleChange('joiningDate', e.target.value)}
-                placeholder="01-10-2025"
-                className="w-full pl-9 pr-3 py-1.5 bg-muted/50 border border-border rounded-lg text-foreground text-xs focus:outline-hidden focus:ring-1 focus:ring-primary font-mono"
-              />
-            </div>
+            <DatePicker
+              value={cardData.joiningDate}
+              onChange={(val) => handleChange('joiningDate', val)}
+            />
           </div>
         </div>
 
@@ -126,7 +119,6 @@ export function IdCardForm({ cardData, setCardData, onResetSample }) {
                 type="text"
                 value={cardData.bloodGroup}
                 onChange={(e) => handleChange('bloodGroup', e.target.value)}
-                placeholder="B+"
                 className="w-full pl-9 pr-3 py-1.5 bg-muted/50 border border-border rounded-lg text-foreground text-xs focus:outline-hidden focus:ring-1 focus:ring-primary font-bold text-rose-600"
               />
             </div>
@@ -134,16 +126,10 @@ export function IdCardForm({ cardData, setCardData, onResetSample }) {
 
           <div>
             <label className="block font-bold text-foreground mb-1">Contact Phone</label>
-            <div className="relative">
-              <Phone className="w-3.5 h-3.5 absolute left-3 top-2.5 text-muted-foreground" />
-              <input
-                type="text"
-                value={cardData.contactPhone}
-                onChange={(e) => handleChange('contactPhone', e.target.value)}
-                placeholder="01345579534"
-                className="w-full pl-9 pr-3 py-1.5 bg-muted/50 border border-border rounded-lg text-foreground text-xs focus:outline-hidden focus:ring-1 focus:ring-primary font-mono"
-              />
-            </div>
+            <BdPhoneInput
+              value={cardData.contactPhone}
+              onChange={(val) => handleChange('contactPhone', val)}
+            />
           </div>
         </div>
 
@@ -156,7 +142,6 @@ export function IdCardForm({ cardData, setCardData, onResetSample }) {
               type="email"
               value={cardData.email}
               onChange={(e) => handleChange('email', e.target.value)}
-              placeholder="monsuralitravels@gmail.com"
               className="w-full pl-9 pr-3 py-1.5 bg-muted/50 border border-border rounded-lg text-foreground text-xs focus:outline-hidden focus:ring-1 focus:ring-primary"
             />
           </div>
@@ -171,7 +156,6 @@ export function IdCardForm({ cardData, setCardData, onResetSample }) {
               type="text"
               value={cardData.address}
               onChange={(e) => handleChange('address', e.target.value)}
-              placeholder="Nadampur, Jagannathpur, Sunamganj - 3060, Sylhet, Bangladesh"
               className="w-full pl-9 pr-3 py-1.5 bg-muted/50 border border-border rounded-lg text-foreground text-xs focus:outline-hidden focus:ring-1 focus:ring-primary"
             />
           </div>
@@ -187,7 +171,6 @@ export function IdCardForm({ cardData, setCardData, onResetSample }) {
                 type="text"
                 value={cardData.website}
                 onChange={(e) => handleChange('website', e.target.value)}
-                placeholder="www.monsuralitravels.com"
                 className="w-full pl-9 pr-3 py-1.5 bg-muted/50 border border-border rounded-lg text-foreground text-xs focus:outline-hidden focus:ring-1 focus:ring-primary font-mono text-[11px]"
               />
             </div>
@@ -201,7 +184,6 @@ export function IdCardForm({ cardData, setCardData, onResetSample }) {
                 type="text"
                 value={cardData.signatureName}
                 onChange={(e) => handleChange('signatureName', e.target.value)}
-                placeholder="M. Ali"
                 className="w-full pl-9 pr-3 py-1.5 bg-muted/50 border border-border rounded-lg text-foreground text-xs focus:outline-hidden focus:ring-1 focus:ring-primary font-bold"
               />
             </div>

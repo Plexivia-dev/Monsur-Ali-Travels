@@ -19,7 +19,7 @@ export function generateUniqueSlipNumber() {
   return `SLIP-${prefix}${midNum}${midChar}${endNum}`;
 }
 
-export function SalarySlipStudio() {
+export function SalarySlip() {
   const [viewMode, setViewMode] = useState('form'); // 'form' | 'preview'
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -132,7 +132,7 @@ export function SalarySlipStudio() {
     const month = formData.salaryMonth || 'চলতি মাস';
 
     const msg =
-      `*📄 মুনসুর আলী ট্রাভেলস (MANSUR ALI TRAVELS)*\n` +
+      `*📄 মনসুর আলী ট্রাভেলস (MANSUR ALI TRAVELS)*\n` +
       `*মাসিক স্যালারি স্লিপ বিবরণী (${formData.slipNo || 'Official Slip'})*\n` +
       `-----------------------------------------\n` +
       `👤 *কর্মচারীর নাম:* ${employee} (ID: ${id})\n` +

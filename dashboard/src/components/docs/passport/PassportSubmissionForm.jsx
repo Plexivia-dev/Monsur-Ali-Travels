@@ -1,6 +1,8 @@
 import React from 'react';
 import { RotateCcw, Eye, ShieldCheck, UserCheck, FileCheck, PhoneCall, Sparkles } from 'lucide-react';
 import { generateUniquePassportTrackingNo } from './sampleData';
+import { BdPhoneInput } from '../../common/BdPhoneInput';
+import { DatePicker } from '../../ui/date-picker';
 
 export function PassportSubmissionForm({ data, onChange, onSubmit, onReset, isSubmitting = false }) {
   const handleChecklistChange = (key, checked) => {
@@ -45,11 +47,9 @@ export function PassportSubmissionForm({ data, onChange, onSubmit, onReset, isSu
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 bg-muted/20 p-4.5 rounded-[4px] border border-border">
           <div>
             <label className="block font-bold text-foreground text-sm mb-1.5">জমার তারিখ (Submission Date)</label>
-            <input
-              type="text"
+            <DatePicker
               value={data.submissionDate}
-              onChange={e => onChange({ ...data, submissionDate: e.target.value })}
-              className="w-full bg-background border border-border rounded-[4px] px-3 py-2.5 text-foreground text-sm outline-none focus:ring-1 focus:ring-primary"
+              onChange={val => onChange({ ...data, submissionDate: val })}
             />
           </div>
 
@@ -81,7 +81,6 @@ export function PassportSubmissionForm({ data, onChange, onSubmit, onReset, isSu
                 required
                 value={data.applicantName}
                 onChange={e => onChange({ ...data, applicantName: e.target.value })}
-                placeholder=""
                 className="w-full bg-background border border-border rounded-[4px] px-3 py-2.5 text-foreground font-bold text-sm outline-none focus:ring-1 focus:ring-primary"
               />
             </div>
@@ -92,7 +91,6 @@ export function PassportSubmissionForm({ data, onChange, onSubmit, onReset, isSu
                 type="text"
                 value={data.nidBirthCertNo}
                 onChange={e => onChange({ ...data, nidBirthCertNo: e.target.value })}
-                placeholder=""
                 className="w-full bg-background border border-border rounded-[4px] px-3 py-2.5 text-foreground font-mono text-sm outline-none focus:ring-1 focus:ring-primary"
               />
             </div>
@@ -103,20 +101,16 @@ export function PassportSubmissionForm({ data, onChange, onSubmit, onReset, isSu
                 type="text"
                 value={data.previousPassportNo}
                 onChange={e => onChange({ ...data, previousPassportNo: e.target.value })}
-                placeholder=""
                 className="w-full bg-background border border-border rounded-[4px] px-3 py-2.5 text-foreground font-mono text-sm outline-none focus:ring-1 focus:ring-primary"
               />
             </div>
 
             <div>
               <label className="block font-bold text-foreground text-sm mb-1.5">ব্যক্তিগত মোবাইল নম্বর (Phone Number) *</label>
-              <input
-                type="text"
-                required
+              <BdPhoneInput
                 value={data.applicantPhone}
-                onChange={e => onChange({ ...data, applicantPhone: e.target.value })}
-                placeholder=""
-                className="w-full bg-background border border-border rounded-[4px] px-3 py-2.5 text-foreground font-mono text-sm outline-none focus:ring-1 focus:ring-primary"
+                onChange={(val) => onChange({ ...data, applicantPhone: val })}
+                required
               />
             </div>
 
@@ -126,7 +120,6 @@ export function PassportSubmissionForm({ data, onChange, onSubmit, onReset, isSu
                 type="email"
                 value={data.applicantEmail}
                 onChange={e => onChange({ ...data, applicantEmail: e.target.value })}
-                placeholder=""
                 className="w-full bg-background border border-border rounded-[4px] px-3 py-2.5 text-foreground text-sm outline-none focus:ring-1 focus:ring-primary"
               />
             </div>
@@ -137,7 +130,6 @@ export function PassportSubmissionForm({ data, onChange, onSubmit, onReset, isSu
                 type="text"
                 value={data.address}
                 onChange={e => onChange({ ...data, address: e.target.value })}
-                placeholder=""
                 className="w-full bg-background border border-border rounded-[4px] px-3 py-2.5 text-foreground text-sm outline-none focus:ring-1 focus:ring-primary"
               />
             </div>
@@ -158,7 +150,6 @@ export function PassportSubmissionForm({ data, onChange, onSubmit, onReset, isSu
                 type="text"
                 value={data.guardianName}
                 onChange={e => onChange({ ...data, guardianName: e.target.value })}
-                placeholder=""
                 className="w-full bg-background border border-border rounded-[4px] px-3 py-2.5 text-foreground text-sm outline-none focus:ring-1 focus:ring-primary"
               />
             </div>
@@ -180,12 +171,9 @@ export function PassportSubmissionForm({ data, onChange, onSubmit, onReset, isSu
 
             <div>
               <label className="block font-bold text-foreground text-sm mb-1.5">অভিভাবকের ফোন নম্বর</label>
-              <input
-                type="text"
+              <BdPhoneInput
                 value={data.guardianPhone}
-                onChange={e => onChange({ ...data, guardianPhone: e.target.value })}
-                placeholder=""
-                className="w-full bg-background border border-border rounded-[4px] px-3 py-2.5 text-foreground font-mono text-sm outline-none focus:ring-1 focus:ring-primary"
+                onChange={(val) => onChange({ ...data, guardianPhone: val })}
               />
             </div>
           </div>
@@ -289,7 +277,6 @@ export function PassportSubmissionForm({ data, onChange, onSubmit, onReset, isSu
             rows={2}
             value={data.remarks}
             onChange={e => onChange({ ...data, remarks: e.target.value })}
-            placeholder=""
             className="w-full bg-background border border-border rounded-[4px] p-3 text-foreground text-sm outline-none resize-none focus:ring-1 focus:ring-primary"
           />
         </div>

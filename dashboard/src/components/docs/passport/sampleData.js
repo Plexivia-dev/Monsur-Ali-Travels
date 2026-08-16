@@ -21,7 +21,7 @@ export function getDefaultPassportData() {
   return {
     _id: null,
     trackingNo: '',
-    submissionDate: new Date().toLocaleDateString('bn-BD', { day: 'numeric', month: 'long', year: 'numeric' }),
+    submissionDate: new Date().toISOString().split('T')[0],
 
     agencyInfo: {
       name: agencyInfo.agencyName || 'মনসুর আলী ট্রাভেলস (MONSUR ALI TRAVELS)',
@@ -62,3 +62,6 @@ export function getDefaultPassportData() {
     status: 'pending'
   };
 }
+
+export const getDefaultPassportSubmissionData = getDefaultPassportData;
+

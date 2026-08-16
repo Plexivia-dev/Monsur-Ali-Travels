@@ -1,12 +1,10 @@
 import React from 'react';
 import { usePortal } from '../../context/PortalContext';
-import { EmploymentAgreementStudio } from './agreement/EmploymentAgreementStudio';
-import { TemplateStudio } from './templates/TemplateStudio';
-import { DocumentDownloads } from './downloads/DocumentDownloads';
-import { IdCardStudio } from './idcard/IdCardStudio';
-import { SalarySlipStudio } from './payroll/SalarySlipStudio';
-import { InvoiceBuilder } from './invoice/InvoiceBuilder';
-import { PassportSubmissionStudio } from './passport/PassportSubmissionStudio';
+import { EmploymentAgreement } from './agreement/EmploymentAgreement';
+import { IdCard } from './idcard/IdCard';
+import { SalarySlip } from './payroll/SalarySlip';
+import { Invoice } from './invoice/Invoice';
+import { PassportSubmission } from './passport/PassportSubmission';
 import { IndianVisa } from './indian-visa/IndianVisa';
 
 export function DocumentStudioModule() {
@@ -14,16 +12,15 @@ export function DocumentStudioModule() {
 
   return (
     <div className="space-y-5">
-      {(activeSubmodule === 'agreement' || !activeSubmodule || (activeSubmodule !== 'templates' && activeSubmodule !== 'idcard' && activeSubmodule !== 'downloads' && activeSubmodule !== 'payroll' && activeSubmodule !== 'invoice' && activeSubmodule !== 'passport-sub' && activeSubmodule !== 'indian-visa')) && (
-        <EmploymentAgreementStudio />
+      {(activeSubmodule === 'agreement' || !activeSubmodule || (activeSubmodule !== 'idcard' && activeSubmodule !== 'payroll' && activeSubmodule !== 'invoice' && activeSubmodule !== 'passport-sub' && activeSubmodule !== 'indian-visa')) && (
+        <EmploymentAgreement />
       )}
-      {activeSubmodule === 'payroll' && <SalarySlipStudio />}
-      {activeSubmodule === 'invoice' && <InvoiceBuilder />}
-      {activeSubmodule === 'passport-sub' && <PassportSubmissionStudio />}
+      {activeSubmodule === 'payroll' && <SalarySlip />}
+      {activeSubmodule === 'invoice' && <Invoice />}
+      {activeSubmodule === 'passport-sub' && <PassportSubmission />}
       {activeSubmodule === 'indian-visa' && <IndianVisa />}
-      {activeSubmodule === 'templates' && <TemplateStudio />}
-      {activeSubmodule === 'idcard' && <IdCardStudio />}
-      {activeSubmodule === 'downloads' && <DocumentDownloads />}
+      {activeSubmodule === 'idcard' && <IdCard />}
     </div>
   );
 }
+

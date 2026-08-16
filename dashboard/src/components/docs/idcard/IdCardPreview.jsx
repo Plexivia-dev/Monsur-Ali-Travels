@@ -1,6 +1,7 @@
 import React from 'react';
 import { User, MapPin, Phone, Mail, Globe, Plane, ShieldCheck, Award, Calendar, Droplets } from 'lucide-react';
 import logoImg from '../../../assets/logo.png';
+import { formatToDdMmYyyy } from '../../../lib/utils';
 
 export function IdCardPreview({ cardData, frontRef, backRef }) {
   // Generate QR code URL
@@ -126,7 +127,7 @@ export function IdCardPreview({ cardData, frontRef, backRef }) {
               </span>
               <span className="font-extrabold text-[#0b2341] text-[11px] mr-2">:</span>
               <span className="font-bold text-slate-900 text-[11px]">
-                {cardData.joiningDate || '01-10-2025'}
+                {formatToDdMmYyyy(cardData.joiningDate) || '01-10-2025'}
               </span>
             </div>
 

@@ -1,6 +1,8 @@
 import React from 'react';
 import { Plus, Trash2, Eye, RotateCcw } from 'lucide-react';
 import { generateUniqueInvoiceNo } from './sampleData';
+import { BdPhoneInput } from '../../common/BdPhoneInput';
+import { DatePicker } from '../../ui/date-picker';
 
 export function InvoiceForm({ data, onChange, onSubmit, onReset, isSubmitting = false }) {
   const handleClientChange = (field, value) => {
@@ -73,21 +75,17 @@ export function InvoiceForm({ data, onChange, onSubmit, onReset, isSubmitting = 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
           <div>
             <label className="block font-bold text-foreground text-sm mb-1.5">ইস্যুর তারিখ (Issue Date)</label>
-            <input
-              type="date"
+            <DatePicker
               value={data.issueDate}
-              onChange={e => onChange({ ...data, issueDate: e.target.value })}
-              className="w-full bg-background border border-border rounded-[4px] px-3 py-2.5 text-foreground text-sm outline-none focus:ring-1 focus:ring-primary"
+              onChange={val => onChange({ ...data, issueDate: val })}
             />
           </div>
 
           <div>
             <label className="block font-bold text-foreground text-sm mb-1.5">পরিশোধের শেষ তারিখ (Due Date)</label>
-            <input
-              type="date"
+            <DatePicker
               value={data.dueDate}
-              onChange={e => onChange({ ...data, dueDate: e.target.value })}
-              className="w-full bg-background border border-border rounded-[4px] px-3 py-2.5 text-foreground text-sm outline-none focus:ring-1 focus:ring-primary"
+              onChange={val => onChange({ ...data, dueDate: val })}
             />
           </div>
         </div>
@@ -104,7 +102,6 @@ export function InvoiceForm({ data, onChange, onSubmit, onReset, isSubmitting = 
                 required
                 value={data.client.name}
                 onChange={e => handleClientChange('name', e.target.value)}
-                placeholder=""
                 className="w-full bg-background border border-border rounded-[4px] px-3 py-2.5 text-foreground font-bold text-sm outline-none focus:ring-1 focus:ring-primary"
               />
             </div>
@@ -115,19 +112,15 @@ export function InvoiceForm({ data, onChange, onSubmit, onReset, isSubmitting = 
                 type="text"
                 value={data.client.contactPerson}
                 onChange={e => handleClientChange('contactPerson', e.target.value)}
-                placeholder=""
                 className="w-full bg-background border border-border rounded-[4px] px-3 py-2.5 text-foreground text-sm outline-none focus:ring-1 focus:ring-primary"
               />
             </div>
 
             <div>
               <label className="block font-bold text-foreground text-sm mb-1.5">ফোন নম্বর</label>
-              <input
-                type="text"
+              <BdPhoneInput
                 value={data.client.phone}
-                onChange={e => handleClientChange('phone', e.target.value)}
-                placeholder=""
-                className="w-full bg-background border border-border rounded-[4px] px-3 py-2.5 text-foreground font-mono text-sm outline-none focus:ring-1 focus:ring-primary"
+                onChange={(val) => handleClientChange('phone', val)}
               />
             </div>
 
@@ -137,7 +130,6 @@ export function InvoiceForm({ data, onChange, onSubmit, onReset, isSubmitting = 
                 type="email"
                 value={data.client.email}
                 onChange={e => handleClientChange('email', e.target.value)}
-                placeholder=""
                 className="w-full bg-background border border-border rounded-[4px] px-3 py-2.5 text-foreground text-sm outline-none focus:ring-1 focus:ring-primary"
               />
             </div>
@@ -148,7 +140,6 @@ export function InvoiceForm({ data, onChange, onSubmit, onReset, isSubmitting = 
                 type="text"
                 value={data.client.address}
                 onChange={e => handleClientChange('address', e.target.value)}
-                placeholder=""
                 className="w-full bg-background border border-border rounded-[4px] px-3 py-2.5 text-foreground text-sm outline-none focus:ring-1 focus:ring-primary"
               />
             </div>
@@ -196,7 +187,6 @@ export function InvoiceForm({ data, onChange, onSubmit, onReset, isSubmitting = 
                     required
                     value={item.title || ''}
                     onChange={e => handleUpdateItem(item.id, 'title', e.target.value)}
-                    placeholder=""
                     className="w-full bg-background border border-border rounded-[4px] px-3 py-2.5 text-foreground font-semibold text-sm outline-none focus:ring-1 focus:ring-primary"
                   />
                 </div>
@@ -207,7 +197,6 @@ export function InvoiceForm({ data, onChange, onSubmit, onReset, isSubmitting = 
                     type="text"
                     value={item.description || ''}
                     onChange={e => handleUpdateItem(item.id, 'description', e.target.value)}
-                    placeholder=""
                     className="w-full bg-background border border-border rounded-[4px] px-3 py-2.5 text-foreground text-sm outline-none focus:ring-1 focus:ring-primary"
                   />
                 </div>
@@ -219,7 +208,6 @@ export function InvoiceForm({ data, onChange, onSubmit, onReset, isSubmitting = 
                     min="0"
                     value={item.quantity !== undefined && item.quantity !== null ? item.quantity : ''}
                     onChange={e => handleUpdateItem(item.id, 'quantity', e.target.value !== '' ? parseFloat(e.target.value) : '')}
-                    placeholder=""
                     className="w-full bg-background border border-border rounded-[4px] px-3 py-2.5 text-foreground font-mono text-sm outline-none focus:ring-1 focus:ring-primary"
                   />
                 </div>
@@ -232,7 +220,6 @@ export function InvoiceForm({ data, onChange, onSubmit, onReset, isSubmitting = 
                     required
                     value={item.unitPrice}
                     onChange={e => handleUpdateItem(item.id, 'unitPrice', parseFloat(e.target.value) || 0)}
-                    placeholder=""
                     className="w-full bg-background border border-border rounded-[4px] px-3 py-2.5 text-foreground font-mono font-bold text-sm outline-none focus:ring-1 focus:ring-primary"
                   />
                 </div>

@@ -1,6 +1,7 @@
 import React from 'react';
 import logoImg from '../../../assets/logo.png';
 import infoData from '../../../lib/information.json';
+import { formatToDdMmYyyy } from '../../../lib/utils';
 
 export function SalarySlipPreview({ data }) {
   const currentDate = new Date().toLocaleDateString('en-GB', {
@@ -48,7 +49,7 @@ export function SalarySlipPreview({ data }) {
 
           <div className="text-right font-mono text-[10px]">
             <div className="font-bold text-slate-900">Slip No: {data.slipNo || 'SLIP-2026-001'}</div>
-            <div className="text-slate-600">Date: {data.payDate || currentDate}</div>
+            <div className="text-slate-600">Date: {formatToDdMmYyyy(data.payDate) || currentDate}</div>
           </div>
         </div>
 
@@ -87,7 +88,7 @@ export function SalarySlipPreview({ data }) {
 
             <div className="flex justify-between">
               <span className="text-slate-600 font-semibold">Joining Date:</span>
-              <span className="font-bold text-slate-900 font-mono">{data.joiningDate || '01-10-2025'}</span>
+              <span className="font-bold text-slate-900 font-mono">{formatToDdMmYyyy(data.joiningDate) || '01-10-2025'}</span>
             </div>
           </div>
 
@@ -104,7 +105,7 @@ export function SalarySlipPreview({ data }) {
 
             <div className="flex justify-between">
               <span className="text-slate-600 font-semibold">Pay Date:</span>
-              <span className="font-bold text-slate-900 font-mono">{data.payDate || currentDate}</span>
+              <span className="font-bold text-slate-900 font-mono">{formatToDdMmYyyy(data.payDate) || currentDate}</span>
             </div>
 
             <div className="flex justify-between">

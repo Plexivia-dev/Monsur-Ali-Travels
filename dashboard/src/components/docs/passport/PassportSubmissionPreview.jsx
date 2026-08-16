@@ -2,6 +2,7 @@ import React from 'react';
 import { PrintablePaper } from '../common/PrintablePaper';
 import { ShieldCheck, CheckCircle2, XCircle, PhoneCall, Mail, UserCheck, FileCheck } from 'lucide-react';
 import logoImg from '../../../assets/logo.png';
+import { formatToDdMmYyyy } from '../../../lib/utils';
 
 export function PassportSubmissionPreview({ data, onPrint }) {
   const {
@@ -62,7 +63,7 @@ export function PassportSubmissionPreview({ data, onPrint }) {
               
               <div className="text-right font-mono text-xs space-y-0.5">
                 <div className="font-bold text-slate-900">Ref #: <span className="text-emerald-700">{trackingNo || 'PASS-0000'}</span></div>
-                <div className="text-slate-600 text-[11px]">Date: {submissionDate || 'N/A'}</div>
+                <div className="text-slate-600 text-[11px]">Date: {formatToDdMmYyyy(submissionDate) || 'N/A'}</div>
               </div>
             </div>
 

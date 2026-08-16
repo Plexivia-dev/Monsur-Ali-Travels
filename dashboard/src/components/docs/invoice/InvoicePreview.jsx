@@ -87,8 +87,8 @@ export function InvoicePreview({ data, onPrint }) {
                 
                 <div className="text-xs font-mono text-slate-800 space-y-0.5">
                   <div><strong>Invoice #:</strong> <span className="font-bold text-emerald-800">{invoiceNo}</span></div>
-                  <div><strong>Date:</strong> {issueDate}</div>
-                  <div><strong>Due Date:</strong> {dueDate}</div>
+                  <div><strong>Date:</strong> {formatToDdMmYyyy(issueDate)}</div>
+                  <div><strong>Due Date:</strong> {formatToDdMmYyyy(dueDate)}</div>
                 </div>
 
                 {/* Status Badge */}

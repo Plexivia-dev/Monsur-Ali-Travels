@@ -1,18 +1,18 @@
 import React, { useState } from 'react';
 import { PassportSubmissionForm } from './PassportSubmissionForm';
 import { PassportSubmissionPreview } from './PassportSubmissionPreview';
-import { getDefaultPassportData, generateUniquePassportTrackingNo } from './sampleData';
+import { getDefaultPassportSubmissionData, generateUniquePassportTrackingNo } from './sampleData';
 import { Printer, Edit3, CheckCircle2 } from 'lucide-react';
-import { apiClient } from '../../../lib/api-client';
 import { toast } from 'sonner';
+import { apiClient } from '../../../lib/api-client';
 
-export function PassportSubmissionStudio() {
+export function PassportSubmission() {
+  const [data, setData] = useState(getDefaultPassportSubmissionData());
   const [viewMode, setViewMode] = useState('form'); // 'form' | 'preview'
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [data, setData] = useState(getDefaultPassportData());
 
   const handleReset = () => {
-    setData(getDefaultPassportData());
+    setData(getDefaultPassportSubmissionData());
     toast.info('পাসপোর্ট ফাইলের তথ্য রিসেট করা হয়েছে।');
   };
 
@@ -26,8 +26,8 @@ export function PassportSubmissionStudio() {
       setIsSubmitting(true);
       const isEdit = Boolean(data._id);
       const res = isEdit
-        ? await apiClient.put(`/api/v1/docs/passport-submissions/${data._id}`, payload)
-        : await apiClient.post('/api/v1/docs/passport-submissions', payload);
+        ? await apiClient.put(`/api/v1/docs/passports/${data._id}`, payload)
+        : await apiClient.post('/api/v1/docs/passports', payload);
 
       const savedDoc = res.data?.data;
       if ((res.data?.status === 'success' || res.data?.success) && savedDoc) {
@@ -39,8 +39,8 @@ export function PassportSubmissionStudio() {
         }));
         toast.success(
           isEdit
-            ? `পাসপোর্ট ফাইল আপডেট করা হয়েছে! (ট্র্যাকিং নং: ${returnedTrackingNo})`
-            : `পাসপোর্ট ফাইল ডাটাবেজে সংরক্ষণ করা হয়েছে! (ট্র্যাকিং নং: ${returnedTrackingNo})`
+            ? `পাসপোর্ট সাবমিশন আপডেট করা হয়েছে! (ট্র্যাকিং নং: ${returnedTrackingNo})`
+            : `পাসপোর্ট সাবমিশন ডাটাবেজে সংরক্ষণ করা হয়েছে! (ট্র্যাকিং নং: ${returnedTrackingNo})`
         );
         setViewMode('preview');
       } else {
@@ -53,7 +53,7 @@ export function PassportSubmissionStudio() {
         ...prev,
         trackingNo: fallbackTrackingNo,
       }));
-      toast.info(`পাসপোর্ট ফাইল প্রিভিউ প্রস্তুত! (ট্র্যাকিং নং: ${fallbackTrackingNo})`);
+      toast.info(`পাসপোর্ট ফাইল প্রস্তুত! (ট্র্যাকিং নং: ${fallbackTrackingNo})`);
       setViewMode('preview');
     } finally {
       setIsSubmitting(false);
@@ -68,15 +68,15 @@ export function PassportSubmissionStudio() {
     const applicantName = data.applicantName || 'সম্মানিত আবেদনকারী';
 
     const msg =
-      `*📄 মুনসুর আলী ট্রাভেলস (MONSUR ALI TRAVELS)*\n` +
-      `*পাসপোর্ট আবেদন ও জমা ট্র্যাকিং স্লিপ (${data.trackingNo || 'PASS-0000'})*\n` +
+      `*📄 মনসুর আলী ট্রাভেলস (MONSUR ALI TRAVELS)*\n` +
+      `*পাসপোর্ট জমা ও আবেদন ট্র্যাকিং স্লিপ (${data.trackingNo || 'PASS-0000'})*\n` +
       `-----------------------------------------\n` +
       `👤 *আবেদনকারীর নাম:* ${applicantName}\n` +
-      `🆔 *NID/জন্ম সনদ:* ${data.nidBirthCertNo || 'N/A'}\n` +
-      `🛂 *পাসপোর্ট ধরন:* ${data.passportType || 'ই-পাসপোর্ট'}\n` +
+      `🛂 *পাসপোর্ট টাইপ:* ${data.passportType || 'ই-পাসপোর্ট'}\n` +
+      `📌 *ক্যাটাগরি:* ${data.applicationCategory || 'নতুন পাসপোর্ট'}\n` +
       `📅 *জমার তারিখ:* ${data.submissionDate || 'আজ'}\n` +
       `📞 *ফোন নম্বর:* ${data.applicantPhone || 'N/A'}\n\n` +
-      `📌 *অফিসিয়াল ফাইল:* প্রয়োজনীয় কাগজপত্র গ্রহনের রসিদ প্রস্তুত রয়েছে।\n\n` +
+      `📌 *অফিসিয়াল আপডেট:* আপনার পাসপোর্ট আবেদন সফলভাবে রিসিভ করা হয়েছে।\n\n` +
       `🏢 *মনসুর আলী ট্রাভেলস*\n` +
       `📍 ঠিকানা: Nadampur, Jagannathpur, Sunamganj - 3060, Sylhet, Bangladesh\n` +
       `📞 যোগাযোগ: +8801345579534`;
@@ -101,14 +101,14 @@ export function PassportSubmissionStudio() {
       {viewMode === 'preview' && (
         <div className="space-y-6">
           {/* Action Header in Preview Mode */}
-          <div className="no-print bg-card border border-border p-4 sm:p-5 rounded-md shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div className="no-print bg-card border border-border p-4 sm:p-5 rounded-[4px] shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
               <h2 className="text-base font-bold text-foreground tracking-tight flex items-center gap-2">
                 <CheckCircle2 className="w-5 h-5 text-emerald-500" />
-                পাসপোর্ট জমা স্লিপ প্রস্তুত (ট্র্যাকিং নং: <span className="font-mono text-emerald-600 font-bold">{data.trackingNo}</span>)
+                পাসপোর্ট জমা রসিদ প্রস্তুত (ট্র্যাকিং নং: <span className="font-mono text-emerald-600 font-bold">{data.trackingNo}</span>)
               </h2>
               <p className="text-xs text-muted-foreground mt-0.5">
-                পাসপোর্ট ফাইলের তথ্য ডাটাবেজে সফলভাবে সংরক্ষণ করা হয়েছে। সরাসরি A4 প্রিন্ট বা হোয়াটসঅ্যাপে পাঠান।
+                পাসপোর্ট ফাইল ডাটাবেজে সংরক্ষণ করা হয়েছে। সরাসরি A4 প্রিন্ট বা হোয়াটসঅ্যাপে পাঠান।
               </p>
             </div>
 
@@ -116,7 +116,7 @@ export function PassportSubmissionStudio() {
               <button
                 type="button"
                 onClick={() => setViewMode('form')}
-                className="flex items-center gap-1.5 px-4 py-2 rounded-md text-xs font-semibold border border-border bg-muted/40 hover:bg-muted text-foreground transition-all cursor-pointer"
+                className="flex items-center gap-1.5 px-4 py-2 rounded-[4px] text-xs font-semibold border border-border bg-muted/40 hover:bg-muted text-foreground transition-all cursor-pointer"
               >
                 <Edit3 className="w-4 h-4 text-primary" />
                 <span>তথ্য পরিবর্তন (Edit Form)</span>
@@ -125,7 +125,7 @@ export function PassportSubmissionStudio() {
               <button
                 type="button"
                 onClick={handleWhatsAppShare}
-                className="flex items-center gap-2 bg-[#25D366] hover:bg-[#20bd5a] text-white text-xs font-bold px-4 py-2 rounded-md shadow-xs hover:shadow-sm transition-all cursor-pointer shrink-0"
+                className="flex items-center gap-2 bg-[#25D366] hover:bg-[#20bd5a] text-white text-xs font-bold px-4 py-2 rounded-[4px] shadow-xs hover:shadow-sm transition-all cursor-pointer shrink-0"
                 title="Share Summary on WhatsApp"
               >
                 <svg className="w-4 h-4 fill-white shrink-0" viewBox="0 0 24 24">
@@ -137,7 +137,7 @@ export function PassportSubmissionStudio() {
               <button
                 type="button"
                 onClick={handlePrint}
-                className="flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-5 py-2 rounded-md shadow-xs hover:shadow-sm transition-all cursor-pointer shrink-0"
+                className="flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-5 py-2 rounded-[4px] shadow-xs hover:shadow-sm transition-all cursor-pointer shrink-0"
               >
                 <Printer className="w-4 h-4" />
                 <span>Download / Print PDF</span>
