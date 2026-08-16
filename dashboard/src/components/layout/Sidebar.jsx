@@ -64,6 +64,7 @@ export const Sidebar = () => {
   ];
 
   const navItemsData = [
+    { id: 'customer-profiles', label: 'Customers (কাস্টমার)', icon: User },
     { id: 'customer-guardians', label: 'Customer Files (কাস্টমার ফাইল)', icon: Users },
     { id: 'agreements', label: 'Agreements (এগ্রিমেন্টস)', icon: FileText },
     { id: 'indian-visas', label: 'Visa Applications (ভিসা)', icon: FileCheck },

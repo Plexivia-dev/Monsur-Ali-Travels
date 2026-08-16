@@ -14,6 +14,7 @@ export class CustomerGuardianController {
       const { search, status, serviceType } = req.query;
 
       const query = {};
+      query.isActive = { $ne: false };
 
       if (status && status !== "all") {
         query.status = status;
@@ -71,7 +72,7 @@ export class CustomerGuardianController {
   // GET /api/v1/docs/customer-guardians/:id
   static async getById(req, res) {
     try {
-      const doc = await CustomerGuardianModel.findById(req.params.id);
+      const doc = await CustomerGuardianModel.findOne({ _id: req.params.id, isActive: { $ne: false } });
       if (!doc) {
         return res.status(404).json({
           status: "fail",
@@ -262,7 +263,11 @@ export class CustomerGuardianController {
   // DELETE /api/v1/docs/customer-guardians/:id
   static async delete(req, res) {
     try {
-      const doc = await CustomerGuardianModel.findByIdAndDelete(req.params.id);
+      const doc = await CustomerGuardianModel.findByIdAndUpdate(
+        req.params.id,
+        { isActive: false },
+        { new: true }
+      );
       if (!doc) {
         return res.status(404).json({
           status: "fail",

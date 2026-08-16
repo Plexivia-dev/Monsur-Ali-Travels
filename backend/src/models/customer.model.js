@@ -157,6 +157,7 @@ const customerSchema = new Schema(
     totalDueAmount: { type: Number, default: 0 },
     remarks: { type: String, default: "" },
     
+    isActive: { type: Boolean, default: true },
     createdBy: { type: Schema.Types.ObjectId, ref: "User", default: null },
     updatedBy: { type: Schema.Types.ObjectId, ref: "User", default: null },
   },

@@ -1,5 +1,6 @@
 import React from 'react';
 import { usePortal } from '../context/PortalContext';
+import { CustomerDataTable } from '../components/data/CustomerDataTable';
 import { AgreementDataTable } from '../components/data/AgreementDataTable';
 import { IndianVisaDataTable } from '../components/data/IndianVisaDataTable';
 import { PassportSubmissionDataTable } from '../components/data/PassportSubmissionDataTable';
@@ -12,6 +13,9 @@ export default function DocumentData() {
 
   return (
     <div className="space-y-6">
+      {(activeSubmodule === 'customer-profiles' || activeSubmodule === 'customer-add') && (
+        <CustomerDataTable />
+      )}
       {(activeSubmodule === 'agreements' || activeSubmodule === 'agreement' || activeSubmodule === 'dashboard') && (
         <AgreementDataTable />
       )}

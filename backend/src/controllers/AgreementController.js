@@ -82,7 +82,7 @@ export const getEmploymentAgreements = async (req, res, next) => {
     const skip = req.query.skip !== undefined ? Math.max(0, parseInt(req.query.skip, 10)) : (page - 1) * limit;
     const { search, status } = req.query;
 
-    const query = { isActive: true };
+    const query = { isActive: { $ne: false } };
 
     if (status && status !== "all") {
       query.স্ট্যাটাস = status;
@@ -134,8 +134,8 @@ export const getEmploymentAgreementById = async (req, res, next) => {
 
     const isMongoId = mongoose.isValidObjectId(id);
     const query = isMongoId
-      ? { _id: id, isActive: true }
-      : { agreementId: id, isActive: true };
+      ? { _id: id, isActive: { $ne: false } }
+      : { agreementId: id, isActive: { $ne: false } };
 
     const agreement = await EmploymentAgreementModel.findOne(query);
     if (!agreement) {

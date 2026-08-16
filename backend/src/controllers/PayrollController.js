@@ -10,6 +10,7 @@ export const getSalarySlips = async (req, res) => {
     const { search, month } = req.query;
 
     const query = {};
+    query.isActive = { $ne: false };
 
     if (month && month !== "all") {
       query.salaryMonth = new RegExp(month.trim(), "i");
@@ -64,7 +65,7 @@ export const getSalarySlips = async (req, res) => {
 // @route   GET /api/v1/docs/payrolls/:id
 export const getSalarySlipById = async (req, res) => {
   try {
-    const slip = await SalarySlip.findById(req.params.id);
+    const slip = await SalarySlip.findOne({ _id: req.params.id, isActive: { $ne: false } });
     if (!slip) {
       return res.status(404).json({
         success: false,
@@ -142,7 +143,7 @@ export const updateSalarySlip = async (req, res) => {
 // @route   DELETE /api/v1/docs/payrolls/:id
 export const deleteSalarySlip = async (req, res) => {
   try {
-    const deletedSlip = await SalarySlip.findByIdAndDelete(req.params.id);
+    const deletedSlip = await SalarySlip.findByIdAndUpdate(req.params.id, { isActive: false }, { new: true });
     if (!deletedSlip) {
       return res.status(404).json({
         success: false,

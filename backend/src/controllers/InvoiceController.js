@@ -10,6 +10,7 @@ export const getInvoices = async (req, res, next) => {
     const { search, status } = req.query;
 
     const query = {};
+    query.isActive = { $ne: false };
 
     if (status && status !== "all") {
       query.paymentStatus = status;
@@ -60,7 +61,7 @@ export const getInvoiceById = async (req, res, next) => {
   try {
     const { id } = req.params;
     const isMongoId = id.match(/^[0-9a-fA-F]{24}$/);
-    const query = isMongoId ? { _id: id } : { invoiceNo: id };
+    const query = isMongoId ? { _id: id, isActive: { $ne: false } } : { invoiceNo: id, isActive: { $ne: false } };
 
     const invoice = await InvoiceModel.findOne(query);
     if (!invoice) {
@@ -136,7 +137,7 @@ export const deleteInvoice = async (req, res, next) => {
     const isMongoId = id.match(/^[0-9a-fA-F]{24}$/);
     const query = isMongoId ? { _id: id } : { invoiceNo: id };
 
-    const deletedInvoice = await InvoiceModel.findOneAndDelete(query);
+    const deletedInvoice = await InvoiceModel.findOneAndUpdate(query, { isActive: false }, { new: true });
     if (!deletedInvoice) {
       return res.status(404).json({
         status: "error",

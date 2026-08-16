@@ -107,6 +107,7 @@ const passportSubmissionSchema = new mongoose.Schema(
       enum: ["pending", "processing", "submitted", "delivered"],
       default: "pending",
     },
+    isActive: { type: Boolean, default: true },
   },
   {
     timestamps: true,

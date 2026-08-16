@@ -13,6 +13,7 @@ class CustomerController {
       const { search, status, customerType } = req.query;
 
       const query = {};
+      query.isActive = { $ne: false };
 
       if (status && status !== "all") {
         query.status = status;
@@ -72,7 +73,7 @@ class CustomerController {
   // GET /api/v1/customers/:id
   async getById(req, res) {
     try {
-      const customer = await Customer.findById(req.params.id)
+      const customer = await Customer.findOne({ _id: req.params.id, isActive: { $ne: false } })
         .populate("applications")
         .populate("visaSubmissions")
         .populate("passportSubmissions")
@@ -168,7 +169,11 @@ class CustomerController {
   // DELETE /api/v1/customers/:id
   async delete(req, res) {
     try {
-      const customer = await Customer.findByIdAndDelete(req.params.id);
+      const customer = await Customer.findByIdAndUpdate(
+        req.params.id,
+        { isActive: false },
+        { new: true }
+      );
       if (!customer) {
         return res.status(404).json({
           status: "fail",
@@ -209,6 +214,7 @@ class CustomerController {
       const regex = new RegExp(q, "i");
 
       const customers = await Customer.find({
+        isActive: { $ne: false },
         $or: [
           { passportNumber: q.toUpperCase() },
           { phone: regex },

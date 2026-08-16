@@ -14,6 +14,7 @@ export class IndianVisaController {
       const { search, status, visaType } = req.query;
 
       const query = {};
+      query.isActive = { $ne: false };
 
       if (status && status !== "all") {
         query.status = status;
@@ -70,7 +71,7 @@ export class IndianVisaController {
   // GET /api/v1/docs/indian-visas/:id
   static async getById(req, res) {
     try {
-      const doc = await IndianVisaSubmissionModel.findById(req.params.id);
+      const doc = await IndianVisaSubmissionModel.findOne({ _id: req.params.id, isActive: { $ne: false } });
       if (!doc) {
         return res.status(404).json({
           status: "fail",
@@ -241,7 +242,11 @@ export class IndianVisaController {
   // DELETE /api/v1/docs/indian-visas/:id
   static async delete(req, res) {
     try {
-      const deletedDoc = await IndianVisaSubmissionModel.findByIdAndDelete(req.params.id);
+      const deletedDoc = await IndianVisaSubmissionModel.findByIdAndUpdate(
+        req.params.id,
+        { isActive: false },
+        { new: true }
+      );
       if (!deletedDoc) {
         return res.status(404).json({
           status: "fail",

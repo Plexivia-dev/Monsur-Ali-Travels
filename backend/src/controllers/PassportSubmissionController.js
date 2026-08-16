@@ -10,6 +10,7 @@ export const getPassportSubmissions = async (req, res, next) => {
     const { search, status, passportType } = req.query;
 
     const query = {};
+    query.isActive = { $ne: false };
 
     if (status && status !== "all") {
       query.status = status;
@@ -65,7 +66,7 @@ export const getPassportSubmissionById = async (req, res, next) => {
   try {
     const { id } = req.params;
     const isMongoId = id.match(/^[0-9a-fA-F]{24}$/);
-    const query = isMongoId ? { _id: id } : { trackingNo: id };
+    const query = isMongoId ? { _id: id, isActive: { $ne: false } } : { trackingNo: id, isActive: { $ne: false } };
 
     const submission = await PassportSubmissionModel.findOne(query);
     if (!submission) {
@@ -141,7 +142,7 @@ export const deletePassportSubmission = async (req, res, next) => {
     const isMongoId = id.match(/^[0-9a-fA-F]{24}$/);
     const query = isMongoId ? { _id: id } : { trackingNo: id };
 
-    const deletedSubmission = await PassportSubmissionModel.findOneAndDelete(query);
+    const deletedSubmission = await PassportSubmissionModel.findOneAndUpdate(query, { isActive: false }, { new: true });
     if (!deletedSubmission) {
       return res.status(404).json({
         status: "error",
