@@ -1,29 +1,18 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { AgreementForm } from './AgreementForm';
 import { AgreementPreview } from './AgreementPreview';
 import { PrintablePaper } from '../common/PrintablePaper';
 import agencyInfo from '../../../lib/information.json';
 import { apiClient } from '../../../lib/api-client';
-import { toast } from 'sonner';
 import {
   FileText,
   Printer,
   Edit3,
-  RotateCcw,
-  CheckCircle2,
-  Share2,
-  FolderOpen,
-  PlusCircle,
-  Loader2,
-  Save
+  CheckCircle2
 } from 'lucide-react';
 
 export function EmploymentAgreementStudio() {
   const [viewMode, setViewMode] = useState('form'); // 'form' | 'preview'
-  const [savedAgreements, setSavedAgreements] = useState([]);
-  const [loadingList, setLoadingList] = useState(false);
-  const [saving, setSaving] = useState(false);
-  const [currentId, setCurrentId] = useState(null);
 
   const initialData = {
     header: {
@@ -87,131 +76,18 @@ export function EmploymentAgreementStudio() {
 
   const [formData, setFormData] = useState(initialData);
 
-  // Fetch saved agreements list from backend API
-  const fetchAgreements = async () => {
-    try {
-      setLoadingList(true);
-      const res = await apiClient.get('/api/v1/docs/employment-agreement');
-      if (res.data?.data) {
-        setSavedAgreements(res.data.data);
-      }
-    } catch (err) {
-      console.warn('API fetch warning (operating in local state mode):', err.message);
-    } finally {
-      setLoadingList(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchAgreements();
-  }, []);
-
-  // Map backend Bengali schema back to frontend form state
-  const loadSavedAgreement = (item) => {
-    if (!item) return;
-    setCurrentId(item._id);
-
-    setFormData({
-      header: {
-        companyName: item.প্রতিষ্ঠানের_তথ্য?.প্রতিষ্ঠানের_নাম || initialData.header.companyName,
-        officeAddress: item.প্রতিষ্ঠানের_তথ্য?.অফিসের_ঠিকানা || initialData.header.officeAddress,
-        phone: item.প্রতিষ্ঠানের_তথ্য?.মোবাইল_নম্বর || initialData.header.phone,
-        email: item.প্রতিষ্ঠানের_তথ্য?.ইমেইল_অ্যাড্রেস || initialData.header.email,
-      },
-      parties: {
-        agreementDate: item.সাধারণ_তথ্য?.চুক্তির_তারিখ || '',
-        nidPassport: item.সাধারণ_তথ্য?.জাতীয়_পরিচয়পত্র_পাসপোর্ট || '',
-        employerName: item.সাধারণ_তথ্য?.নিয়োগকর্তা_কর্তৃপক্ষ || initialData.parties.employerName,
-        employerPhone: item.সাধারণ_তথ্য?.কর্তৃপক্ষের_মোবাইল_নম্বর || initialData.parties.employerPhone,
-        employeeName: item.সাধারণ_তথ্য?.কর্মচারীর_পূর্ণ_নাম || '',
-        employeeEmail: item.সাধারণ_তথ্য?.কর্মচারীর_ইমেইল || '',
-        fatherHusbandName: item.সাধারণ_তথ্য?.পিতা_স্বামীর_নাম || '',
-        address: item.সাধারণ_তথ্য?.বর্তমান_স্থায়ী_ঠিকানা || '',
-      },
-      guardian: {
-        guardianName: item.অভিভাবকের_তথ্য?.অভিভাবকের_নাম || '',
-        guardianPhone: item.অভিভাবকের_তথ্য?.মোবাইল_নম্বর || '',
-        relationship: item.অভিভাবকের_তথ্য?.সম্পর্ক || 'পিতা',
-        emergencyPhone: item.অভিভাবকের_তথ্য?.বিকল্প_জরুরি_নম্বর || '',
-        guardianNid: item.অভিভাবকের_তথ্য?.জাতীয়_পরিচয়পত্র_নং || '',
-        guardianAddress: item.অভিভাবকের_তথ্য?.ঠিকানা || '',
-      },
-      position: {
-        designation: item.পদের_বিবরণ?.পদের_নাম || '',
-        department: item.পদের_বিবরণ?.বিভাগ || '',
-        joiningDate: item.পদের_বিবরণ?.যোগদানের_তারিখ || '',
-        location: item.পদের_বিবরণ?.কর্মস্থল || '',
-        jobType: item.পদের_বিবরণ?.নিয়োগের_ধরন || 'স্থায়ী / পূর্ণকালীন (Full-Time)',
-        workSchedule: item.পদের_বিবরণ?.কাজের_সময়_ও_ছুটি || '',
-      },
-      salary: {
-        basicSalary: item.বেতন_কাঠামো?.মূল_বেতন || '',
-        houseRent: item.বেতন_কাঠামো?.বাড়ি_ভাড়া_ভাতা || '',
-        medical: item.বেতন_কাঠামো?.চিকিৎসা_ভাতা || '',
-        conveyance: item.বেতন_কাঠামো?.যাতায়াত_ভাতা || '',
-        specialAllowance: item.বেতন_কাঠামো?.বিশেষ_ভাতা || '',
-        grossSalary: item.বেতন_কাঠামো?.সর্বমোট_মাসিক_বেতন || '',
-        grossSalaryInWords: item.বেতন_কাঠামো?.বেতন_কথায় || '',
-      },
-      leave: {
-        casualDays: item.ছুটি_ও_সুবিধা?.নৈমিত্তিক_ছুটি_দিন || '10',
-        sickDays: item.ছুটি_ও_সুবিধা?.অসুস্থতাজনিত_ছুটি_দিন || '14',
-        earnedDays: item.ছুটি_ও_সুবিধা?.অর্জিত_ছুটি_দিন || '18',
-        lunchProvided: item.ছুটি_ও_সুবিধা?.ফ্রি_লাঞ্চ_সুবিধা ?? true,
-        teaSnacks: item.ছুটি_ও_সুবিধা?.চা_নাস্তা_সুবিধা ?? true,
-        lunchAllowance: item.ছুটি_ও_সুবিধা?.লাঞ্চ_ভাতা || '',
-      },
-      witnesses: {
-        firstWitnessName: item.স্বাক্ষীগণের_তথ্য?.প্রথম_পক্ষের_সাক্ষী?.নাম || '',
-        firstWitnessPhone: item.স্বাক্ষীগণের_তথ্য?.প্রথম_পক্ষের_সাক্ষী?.মোবাইল_নম্বর || '',
-        firstWitnessAddress: item.স্বাক্ষীগণের_তথ্য?.প্রথম_পক্ষের_সাক্ষী?.ঠিকানা || '',
-        secondWitnessName: item.স্বাক্ষীগণের_তথ্য?.দ্বিতীয়_পক্ষের_সাক্ষী?.নাম || '',
-        secondWitnessPhone: item.স্বাক্ষীগণের_তথ্য?.দ্বিতীয়_পক্ষের_সাক্ষী?.মোবাইল_নম্বর || '',
-        secondWitnessAddress: item.স্বাক্ষীগণের_তথ্য?.দ্বিতীয়_পক্ষের_সাক্ষী?.ঠিকানা || '',
-      },
-    });
-
-    toast.success(`${item.সাধারণ_তথ্য?.কর্মচারীর_পূর্ণ_নাম || 'চুক্তিপত্র'} লোড করা হয়েছে।`);
-  };
-
-  const handleCreateNew = () => {
-    setCurrentId(null);
-    setFormData(initialData);
-    setViewMode('form');
-    toast.info('নতুন চুক্তিপত্রের জন্য ফর্ম প্রস্তুত করা হয়েছে।');
-  };
-
   const handleReset = () => {
     if (window.confirm('আপনি কি ফর্মের সকল তথ্য রিসেট করতে চান?')) {
-      setCurrentId(null);
       setFormData(initialData);
     }
   };
 
-  const handleFormSubmit = async () => {
-    // Switch to preview mode immediately for instant response
+  const handleFormSubmit = () => {
+    // 1. Immediately switch to print-ready preview mode
     setViewMode('preview');
 
-    // Save/persist to backend API
-    try {
-      setSaving(true);
-      if (currentId) {
-        await apiClient.put(`/api/v1/docs/employment-agreement/${currentId}`, formData);
-        toast.success('নিয়োগ চুক্তিপত্র সফলভাবে আপডেট করা হয়েছে।');
-      } else {
-        const res = await apiClient.post('/api/v1/docs/employment-agreement', formData);
-        if (res.data?.data?._id) {
-          setCurrentId(res.data.data._id);
-        }
-        toast.success('নিয়োগ চুক্তিপত্র ডাটাবেজে সফলভাবে সংরক্ষণ করা হয়েছে।');
-      }
-      fetchAgreements();
-    } catch (err) {
-      console.warn('API save notice:', err.message);
-      // Local state is still preserved completely
-    } finally {
-      setSaving(false);
-    }
+    // 2. Silently save to backend API in background if online
+    apiClient.post('/api/v1/docs/employment-agreement', formData).catch(() => {});
   };
 
   const handlePrint = () => {
@@ -244,46 +120,6 @@ export function EmploymentAgreementStudio() {
 
   return (
     <div className="space-y-6">
-      {/* Top Saved Records / Quick Action Toolbar */}
-      <div className="no-print bg-card border border-border p-3.5 sm:p-4 rounded-2xl shadow-xs flex flex-wrap items-center justify-between gap-3">
-        <div className="flex items-center gap-2">
-          <FolderOpen className="w-4 h-4 text-primary shrink-0" />
-          <span className="text-xs font-bold text-foreground">সংরক্ষিত চুক্তিপত্র তালিকা:</span>
-          {savedAgreements.length > 0 ? (
-            <select
-              value={currentId || ''}
-              onChange={(e) => {
-                const sel = savedAgreements.find((a) => a._id === e.target.value);
-                if (sel) loadSavedAgreement(sel);
-              }}
-              className="px-2.5 py-1.5 rounded-lg border border-border bg-background text-foreground text-xs focus:ring-2 focus:ring-primary/20 outline-none max-w-[220px] sm:max-w-xs truncate"
-            >
-              <option value="">-- পূর্ববর্তী চুক্তিপত্র নির্বাচন করুন --</option>
-              {savedAgreements.map((a) => (
-                <option key={a._id} value={a._id}>
-                  {a.সাধারণ_তথ্য?.কর্মচারীর_পূর্ণ_নাম || 'নামহীন'} - {a.পদের_বিবরণ?.পদের_নাম || 'পদবী'}
-                </option>
-              ))}
-            </select>
-          ) : (
-            <span className="text-xs text-muted-foreground italic">
-              {loadingList ? 'লোড হচ্ছে...' : 'কোনো সংরক্ষিত চুক্তিপত্র পাওয়া যায়নি'}
-            </span>
-          )}
-        </div>
-
-        <div className="flex items-center gap-2">
-          <button
-            type="button"
-            onClick={handleCreateNew}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold bg-primary/10 text-primary hover:bg-primary/20 border border-primary/20 transition-all cursor-pointer"
-          >
-            <PlusCircle className="w-3.5 h-3.5" />
-            <span>নতুন ফরম (New)</span>
-          </button>
-        </div>
-      </div>
-
       {/* Form Mode */}
       {viewMode === 'form' && (
         <AgreementForm

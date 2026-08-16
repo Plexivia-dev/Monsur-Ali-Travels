@@ -5,14 +5,14 @@ import {
   createEmploymentAgreement,
   updateEmploymentAgreement,
   deleteEmploymentAgreement,
-} from "../controllers/DocsAgreementController.js";
+} from "../controllers/AgreementController.js";
 import {
   getSalarySlips,
   getSalarySlipById,
   createSalarySlip,
   updateSalarySlip,
   deleteSalarySlip,
-} from "../controllers/DocsPayrollController.js";
+} from "../controllers/PayrollController.js";
 
 const docsRouter = Router();
 
