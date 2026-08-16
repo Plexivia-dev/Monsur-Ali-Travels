@@ -109,8 +109,12 @@ export async function createApp() {
   app.use(express.urlencoded({ extended: false }));
 
   const docsPath = path.join(process.cwd(), "documents");
-  if (!fs.existsSync(docsPath)) {
-    fs.mkdirSync(docsPath, { recursive: true });
+  try {
+    if (!fs.existsSync(docsPath)) {
+      fs.mkdirSync(docsPath, { recursive: true });
+    }
+  } catch (err) {
+    logger.warn(`Could not create documents directory at ${docsPath}: ${err.message}`);
   }
 
   app.use("/uploads", express.static(path.join(process.cwd(), "uploads")));
