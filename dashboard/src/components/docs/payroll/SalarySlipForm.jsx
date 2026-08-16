@@ -45,7 +45,7 @@ export function numberToWords(num) {
   return `${words} Taka Only`;
 }
 
-export function SalarySlipForm({ formData, setFormData, onSubmit, onReset }) {
+export function SalarySlipForm({ formData, setFormData, onSubmit, onReset, isSubmitting = false }) {
   const [currentStep, setCurrentStep] = useState(1);
   const [resetDialogOpen, setResetDialogOpen] = useState(false);
 
@@ -287,13 +287,30 @@ export function SalarySlipForm({ formData, setFormData, onSubmit, onReset }) {
               </div>
 
               <div>
-                <label className="block font-semibold text-foreground mb-1">স্লিপ নম্বর (Slip No.)</label>
+                <div className="flex items-center justify-between mb-1">
+                  <label className="block font-semibold text-foreground">স্লিপ নম্বর (Slip No.)</label>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+                      let alpha = '';
+                      for (let i = 0; i < 3; i++) {
+                        alpha += letters.charAt(Math.floor(Math.random() * letters.length));
+                      }
+                      const randomNum = Math.floor(10000 + Math.random() * 90000);
+                      handleChange('slipNo', `SLIP-${alpha}${randomNum}`);
+                    }}
+                    className="text-[10px] text-emerald-600 hover:underline font-semibold cursor-pointer"
+                  >
+                    নতুন কোড জেনারেট
+                  </button>
+                </div>
                 <input
                   type="text"
                   value={formData.slipNo}
                   onChange={(e) => handleChange('slipNo', e.target.value)}
-                  placeholder="SLIP-2026-001"
-                  className="w-full px-3 py-2 bg-background border border-border rounded-md text-foreground text-xs font-mono focus:ring-1 focus:ring-primary outline-none"
+                  placeholder="SLIP-KRT84920"
+                  className="w-full px-3 py-2 bg-background border border-border rounded-md text-foreground text-xs font-mono font-bold focus:ring-1 focus:ring-primary outline-none"
                 />
               </div>
 
@@ -597,10 +614,20 @@ export function SalarySlipForm({ formData, setFormData, onSubmit, onReset }) {
           ) : (
             <button
               type="submit"
-              className="flex items-center gap-2 px-5 py-2.5 rounded-md text-xs font-bold bg-emerald-600 hover:bg-emerald-700 text-white shadow-xs transition-all cursor-pointer"
+              disabled={isSubmitting}
+              className="flex items-center gap-2 px-5 py-2.5 rounded-md text-xs font-bold bg-emerald-600 hover:bg-emerald-700 disabled:opacity-60 text-white shadow-xs transition-all cursor-pointer"
             >
-              <Eye className="w-4 h-4" />
-              <span>স্যালারি স্লিপ তৈরি ও প্রিভিউ দেখুন</span>
+              {isSubmitting ? (
+                <>
+                  <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin shrink-0" />
+                  <span>ডাটাবেজে সংরক্ষণ ও আইডি জেনারেট হচ্ছে...</span>
+                </>
+              ) : (
+                <>
+                  <Eye className="w-4 h-4" />
+                  <span>স্যালারি স্লিপ তৈরি ও প্রিভিউ দেখুন</span>
+                </>
+              )}
             </button>
           )}
         </div>

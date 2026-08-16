@@ -2,16 +2,19 @@ import React, { useState } from 'react';
 import { PrintablePaper } from '../common/PrintablePaper';
 import { SalarySlipForm } from './SalarySlipForm';
 import { SalarySlipPreview } from './SalarySlipPreview';
-import { Printer, Edit3, CheckCircle2, FileText } from 'lucide-react';
+import { Printer, Edit3, CheckCircle2, Loader2 } from 'lucide-react';
 import { apiClient } from '../../../lib/api-client';
+import { toast } from 'sonner';
 
 export function SalarySlipStudio() {
   const [viewMode, setViewMode] = useState('form'); // 'form' | 'preview'
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const sampleData = {
+    _id: null,
     companyName: 'MANSUR ALI TOURS & TRAVELS',
     companyAddress: 'Nadampur, Jagannathpur, Sunamganj - 3060, Sylhet, Bangladesh',
-    slipNo: `SLIP-${new Date().getFullYear()}-001`,
+    slipNo: '',
 
     // Employee Info
     employeeName: '',
@@ -64,14 +67,35 @@ export function SalarySlipStudio() {
 
   const handleReset = () => {
     setFormData(sampleData);
+    toast.info('ফর্ম রিসেট করা হয়েছে।');
   };
 
-  const handleFormSubmit = () => {
-    // 1. Switch to preview mode immediately
-    setViewMode('preview');
-
-    // 2. Silently save to backend API in background if online
-    apiClient.post('/api/v1/docs/payrolls', formData).catch(() => {});
+  // Form submission strictly waits for backend MongoDB persistence and official slipNo
+  const handleFormSubmit = async () => {
+    try {
+      setIsSubmitting(true);
+      const res = await apiClient.post('/api/v1/docs/payrolls', formData);
+      
+      if (res.data?.success && res.data?.data) {
+        const savedDoc = res.data.data;
+        setFormData((prev) => ({
+          ...prev,
+          _id: savedDoc._id,
+          slipNo: savedDoc.slipNo,
+        }));
+        
+        toast.success(`স্যালারি স্লিপ ডাটাবেজে সংরক্ষিত হয়েছে! (স্লিপ নং: ${savedDoc.slipNo})`);
+        setViewMode('preview');
+      } else {
+        throw new Error(res.data?.message || 'ডাটাবেজে সেভ হতে ব্যর্থ হয়েছে।');
+      }
+    } catch (err) {
+      console.error('Salary slip save error:', err);
+      const msg = err.response?.data?.message || err.message || 'সার্ভারে সংরক্ষণ ব্যর্থ হয়েছে। অনুগ্রহ করে পুনরায় চেষ্টা করুন।';
+      toast.error(msg);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handlePrint = () => {
@@ -87,7 +111,7 @@ export function SalarySlipStudio() {
 
     const msg =
       `*📄 মুনসুর আলী ট্রাভেলস (MANSUR ALI TRAVELS)*\n` +
-      `*মাসিক স্যালারি স্লিপ বিবরণী (Monthly Salary Slip)*\n` +
+      `*মাসিক স্যালারি স্লিপ বিবরণী (${formData.slipNo || 'Official Slip'})*\n` +
       `-----------------------------------------\n` +
       `👤 *কর্মচারীর নাম:* ${employee} (ID: ${id})\n` +
       `💼 *পদবী:* ${formData.designation || 'কর্মকর্তা'}\n` +
@@ -110,6 +134,7 @@ export function SalarySlipStudio() {
           setFormData={setFormData}
           onSubmit={handleFormSubmit}
           onReset={handleReset}
+          isSubmitting={isSubmitting}
         />
       )}
 
@@ -117,14 +142,14 @@ export function SalarySlipStudio() {
       {viewMode === 'preview' && (
         <div className="space-y-6">
           {/* Action Header in Preview Mode */}
-          <div className="no-print bg-card border border-border p-4 sm:p-5 rounded-2xl shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div className="no-print bg-card border border-border p-4 sm:p-5 rounded-md shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
               <h2 className="text-base font-bold text-foreground tracking-tight flex items-center gap-2">
                 <CheckCircle2 className="w-5 h-5 text-emerald-500" />
-                স্যালারি স্লিপ প্রস্তুত (Print Ready A4 Preview)
+                স্যালারি স্লিপ প্রস্তুত (স্লিপ নং: <span className="font-mono text-emerald-600 font-bold">{formData.slipNo}</span>)
               </h2>
               <p className="text-xs text-muted-foreground mt-0.5">
-                নিচে মাসিক স্যালারি স্লিপটি প্রস্তুত রয়েছে। সরাসরি প্রিন্ট/পিডিএফ ডাউনলোড করুন অথবা তথ্যে পরিবর্তন আনতে এডিট করুন।
+                স্লিপটি ডাটাবেজে সংরক্ষিত হয়েছে। সরাসরি প্রিন্ট/পিডিএফ ডাউনলোড করুন অথবা তথ্যে পরিবর্তন আনতে এডিট করুন।
               </p>
             </div>
 
@@ -132,7 +157,7 @@ export function SalarySlipStudio() {
               <button
                 type="button"
                 onClick={() => setViewMode('form')}
-                className="flex items-center gap-1.5 px-4 py-2.5 rounded-xl text-xs font-semibold border border-border bg-muted/40 hover:bg-muted text-foreground transition-all cursor-pointer"
+                className="flex items-center gap-1.5 px-4 py-2 rounded-md text-xs font-semibold border border-border bg-muted/40 hover:bg-muted text-foreground transition-all cursor-pointer"
               >
                 <Edit3 className="w-4 h-4 text-primary" />
                 <span>তথ্য পরিবর্তন (Edit Form)</span>
@@ -141,7 +166,7 @@ export function SalarySlipStudio() {
               <button
                 type="button"
                 onClick={handleWhatsAppShare}
-                className="flex items-center gap-2 bg-[#25D366] hover:bg-[#20bd5a] text-white text-xs font-bold px-4 py-2.5 rounded-xl shadow-md hover:shadow-lg transition-all cursor-pointer shrink-0"
+                className="flex items-center gap-2 bg-[#25D366] hover:bg-[#20bd5a] text-white text-xs font-bold px-4 py-2 rounded-md shadow-xs hover:shadow-sm transition-all cursor-pointer shrink-0"
                 title="Share Salary Slip Summary on WhatsApp"
               >
                 <svg className="w-4 h-4 fill-white shrink-0" viewBox="0 0 24 24">
@@ -153,7 +178,7 @@ export function SalarySlipStudio() {
               <button
                 type="button"
                 onClick={handlePrint}
-                className="flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-5 py-2.5 rounded-xl shadow-md hover:shadow-lg transition-all cursor-pointer shrink-0"
+                className="flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-5 py-2 rounded-md shadow-xs hover:shadow-sm transition-all cursor-pointer shrink-0"
               >
                 <Printer className="w-4 h-4" />
                 <span>Download / Print PDF</span>

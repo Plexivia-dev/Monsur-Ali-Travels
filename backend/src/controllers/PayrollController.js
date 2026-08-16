@@ -45,20 +45,11 @@ export const getSalarySlipById = async (req, res) => {
   }
 };
 
-// @desc    Create new salary slip
+// @desc    Create new salary slip (Schema automatically generates unique slipNo: 3 uppercase letters + 5 digits)
 // @route   POST /api/v1/docs/payrolls
 export const createSalarySlip = async (req, res) => {
   try {
-    const body = req.body;
-
-    // Generate slipNo if not provided
-    if (!body.slipNo) {
-      const year = new Date().getFullYear();
-      const count = await SalarySlip.countDocuments();
-      body.slipNo = `SLIP-${year}-${String(count + 1).padStart(3, "0")}`;
-    }
-
-    const newSlip = await SalarySlip.create(body);
+    const newSlip = await SalarySlip.create(req.body);
 
     return res.status(201).json({
       success: true,
