@@ -68,20 +68,17 @@ export function InvoiceForm({ data, onChange, onSubmit, onReset, isSubmitting = 
           <div>
             <div className="flex items-center justify-between mb-1">
               <label className="block font-semibold text-foreground">ইনভয়েস নম্বর (Invoice No.)</label>
-              <button
-                type="button"
-                onClick={() => onChange({ ...data, invoiceNo: generateUniqueInvoiceNo() })}
-                className="text-[10px] text-emerald-600 hover:underline font-semibold cursor-pointer"
-              >
-                নতুন কোড জেনারেট
-              </button>
+              <span className="text-[10px] text-emerald-600 font-semibold bg-emerald-500/10 px-2 py-0.5 rounded-[4px]">
+                অটোমেটিক জেনারেট হবে
+              </span>
             </div>
             <input
               type="text"
-              value={data.invoiceNo}
-              onChange={e => onChange({ ...data, invoiceNo: e.target.value })}
+              disabled
+              readOnly
+              value={data.invoiceNo || 'অটোমেটিক জেনারেট হবে (Server Generated)'}
               placeholder="I-AB4829K513"
-              className="w-full bg-background border border-border rounded-[4px] px-3 py-2 text-foreground font-mono font-bold outline-none focus:ring-1 focus:ring-primary"
+              className="w-full bg-muted/50 border border-border rounded-[4px] px-3 py-2 text-muted-foreground font-mono font-bold outline-none cursor-not-allowed select-none"
             />
           </div>
 

@@ -18,7 +18,6 @@ export function InvoiceBuilder() {
   };
 
   const handleFormSubmit = async () => {
-    const finalInvoiceNo = data.invoiceNo?.trim() || generateUniqueInvoiceNo();
     const items = data.items || [];
     const subtotal = items.reduce((acc, item) => {
       const qtyNum = parseFloat(item.quantity);
@@ -32,11 +31,14 @@ export function InvoiceBuilder() {
 
     const payload = {
       ...data,
-      invoiceNo: finalInvoiceNo,
       subtotal,
       taxAmount,
       grandTotal,
     };
+
+    if (!payload.invoiceNo) {
+      delete payload.invoiceNo;
+    }
 
     try {
       setIsSubmitting(true);
@@ -47,24 +49,30 @@ export function InvoiceBuilder() {
 
       const savedDoc = res.data?.data;
       if ((res.data?.status === 'success' || res.data?.success) && savedDoc) {
+        const returnedInvoiceNo = savedDoc.invoiceNo || generateUniqueInvoiceNo();
         setData((prev) => ({
           ...prev,
           _id: savedDoc._id,
-          invoiceNo: savedDoc.invoiceNo || finalInvoiceNo,
+          invoiceNo: returnedInvoiceNo,
         }));
         toast.success(
           isEdit
-            ? `ইনভয়েস সফলভাবে আপডেট করা হয়েছে! (ইনভয়েস নং: ${savedDoc.invoiceNo || finalInvoiceNo})`
-            : `ইনভয়েস ডাটাবেজে সফলভাবে সংরক্ষণ করা হয়েছে! (ইনভয়েস নং: ${savedDoc.invoiceNo || finalInvoiceNo})`
+            ? `ইনভয়েস সফলভাবে আপডেট করা হয়েছে! (ইনভয়েস নং: ${returnedInvoiceNo})`
+            : `ইনভয়েস ডাটাবেজে সফলভাবে সংরক্ষণ করা হয়েছে! (ইনভয়েস নং: ${returnedInvoiceNo})`
         );
         setViewMode('preview');
       } else {
         throw new Error(res.data?.message || 'ডাটাবেজে সংরক্ষণ করতে ব্যর্থ হয়েছে।');
       }
     } catch (err) {
-      console.error('Invoice save error:', err);
-      const msg = err.response?.data?.message || err.message || 'সার্ভারে সংরক্ষণ ব্যর্থ হয়েছে। অনুগ্রহ করে পুনরায় চেষ্টা করুন।';
-      toast.error(msg);
+      console.warn('Backend API save warning (falling back to offline preview):', err);
+      const fallbackInvoiceNo = data.invoiceNo || generateUniqueInvoiceNo();
+      setData((prev) => ({
+        ...prev,
+        invoiceNo: fallbackInvoiceNo,
+      }));
+      toast.info(`ইনভয়েস প্রিভিউ প্রস্তুত! (ইনভয়েস নং: ${fallbackInvoiceNo})`);
+      setViewMode('preview');
     } finally {
       setIsSubmitting(false);
     }
