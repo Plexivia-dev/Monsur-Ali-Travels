@@ -1,10 +1,11 @@
 import mongoose from "mongoose";
-import { EmploymentAgreementModel } from "../models/employmentAgreement.model.js";
+import { EmploymentAgreementModel, generateUniqueAgreementId } from "../models/employmentAgreement.model.js";
 import { logger } from "../config/logger.js";
 
 // Helper to normalize payload into Bengali Schema format
 function mapPayloadToBengaliSchema(body = {}) {
-  return {
+  const mapped = {
+    agreementId: body.agreementId || generateUniqueAgreementId(),
     প্রতিষ্ঠানের_তথ্য: {
       প্রতিষ্ঠানের_নাম: body.header?.companyName || body.প্রতিষ্ঠানের_তথ্য?.প্রতিষ্ঠানের_নাম || "মনসুর আলী ট্রাভেলস (MONSUR ALI TRAVELS)",
       অফিসের_ঠিকানা: body.header?.officeAddress || body.প্রতিষ্ঠানের_তথ্য?.অফিসের_ঠিকানা || "Nadampur, Jagannathpur, Sunamganj - 3060, Sylhet, Bangladesh",
@@ -69,6 +70,8 @@ function mapPayloadToBengaliSchema(body = {}) {
     স্ট্যাটাস: body.status || body.স্ট্যাটাস || "active",
     isActive: true,
   };
+
+  return mapped;
 }
 
 // GET /api/v1/docs/employment-agreement - List agreements
@@ -84,6 +87,7 @@ export const getEmploymentAgreements = async (req, res, next) => {
     if (search) {
       const searchRegex = new RegExp(search.trim(), "i");
       query.$or = [
+        { agreementId: searchRegex },
         { "সাধারণ_তথ্য.কর্মচারীর_পূর্ণ_নাম": searchRegex },
         { "সাধারণ_তথ্য.জাতীয়_পরিচয়পত্র_পাসপোর্ট": searchRegex },
         { "সাধারণ_তথ্য.কর্মচারীর_ইমেইল": searchRegex },
@@ -108,11 +112,12 @@ export const getEmploymentAgreementById = async (req, res, next) => {
   try {
     const { id } = req.params;
 
-    if (!mongoose.isValidObjectId(id)) {
-      return res.status(400).json({ status: "error", message: "Invalid agreement ID" });
-    }
+    const isMongoId = mongoose.isValidObjectId(id);
+    const query = isMongoId
+      ? { _id: id, isActive: true }
+      : { agreementId: id, isActive: true };
 
-    const agreement = await EmploymentAgreementModel.findOne({ _id: id, isActive: true });
+    const agreement = await EmploymentAgreementModel.findOne(query);
     if (!agreement) {
       return res.status(404).json({ status: "error", message: "Employment agreement not found" });
     }
@@ -142,7 +147,7 @@ export const createEmploymentAgreement = async (req, res, next) => {
     const mappedData = mapPayloadToBengaliSchema(body);
     const agreement = await EmploymentAgreementModel.create(mappedData);
 
-    logger.info({ agreementId: agreement._id, employeeName }, "Created Employment Agreement");
+    logger.info({ agreementId: agreement.agreementId, _id: agreement._id, employeeName }, "Created Employment Agreement");
 
     res.status(201).json({
       status: "success",
@@ -159,14 +164,13 @@ export const updateEmploymentAgreement = async (req, res, next) => {
   try {
     const { id } = req.params;
 
-    if (!mongoose.isValidObjectId(id)) {
-      return res.status(400).json({ status: "error", message: "Invalid agreement ID" });
-    }
+    const isMongoId = mongoose.isValidObjectId(id);
+    const query = isMongoId ? { _id: id } : { agreementId: id };
 
     const body = req.body ?? {};
     const mappedData = mapPayloadToBengaliSchema(body);
 
-    const agreement = await EmploymentAgreementModel.findByIdAndUpdate(id, mappedData, {
+    const agreement = await EmploymentAgreementModel.findOneAndUpdate(query, mappedData, {
       new: true,
       runValidators: true,
     });
@@ -190,12 +194,11 @@ export const deleteEmploymentAgreement = async (req, res, next) => {
   try {
     const { id } = req.params;
 
-    if (!mongoose.isValidObjectId(id)) {
-      return res.status(400).json({ status: "error", message: "Invalid agreement ID" });
-    }
+    const isMongoId = mongoose.isValidObjectId(id);
+    const query = isMongoId ? { _id: id } : { agreementId: id };
 
-    const agreement = await EmploymentAgreementModel.findByIdAndUpdate(
-      id,
+    const agreement = await EmploymentAgreementModel.findOneAndUpdate(
+      query,
       { isActive: false },
       { new: true }
     );

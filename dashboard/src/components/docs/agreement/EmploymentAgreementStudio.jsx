@@ -4,6 +4,7 @@ import { AgreementPreview } from './AgreementPreview';
 import { PrintablePaper } from '../common/PrintablePaper';
 import agencyInfo from '../../../lib/information.json';
 import { apiClient } from '../../../lib/api-client';
+import { toast } from 'sonner';
 import {
   FileText,
   Printer,
@@ -13,8 +14,11 @@ import {
 
 export function EmploymentAgreementStudio() {
   const [viewMode, setViewMode] = useState('form'); // 'form' | 'preview'
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const initialData = {
+    _id: null,
+    agreementId: '',
     header: {
       companyName: agencyInfo.agencyName || 'মনসুর আলী ট্রাভেলস (MONSUR ALI TRAVELS)',
       officeAddress: agencyInfo.address?.full || 'Nadampur, Jagannathpur, Sunamganj - 3060, Sylhet, Bangladesh',
@@ -77,17 +81,35 @@ export function EmploymentAgreementStudio() {
   const [formData, setFormData] = useState(initialData);
 
   const handleReset = () => {
-    if (window.confirm('আপনি কি ফর্মের সকল তথ্য রিসেট করতে চান?')) {
-      setFormData(initialData);
-    }
+    setFormData(initialData);
+    toast.info('ফর্মের সকল তথ্য রিসেট করা হয়েছে।');
   };
 
-  const handleFormSubmit = () => {
-    // 1. Immediately switch to print-ready preview mode
-    setViewMode('preview');
+  const handleFormSubmit = async () => {
+    try {
+      setIsSubmitting(true);
+      const res = await apiClient.post('/api/v1/docs/employment-agreement', formData);
 
-    // 2. Silently save to backend API in background if online
-    apiClient.post('/api/v1/docs/employment-agreement', formData).catch(() => {});
+      if (res.data?.status === 'success' && res.data?.data) {
+        const savedDoc = res.data.data;
+        setFormData((prev) => ({
+          ...prev,
+          _id: savedDoc._id,
+          agreementId: savedDoc.agreementId,
+        }));
+
+        toast.success(`চুক্তিপত্র সফলভাবে ডাটাবেজে সংরক্ষণ করা হয়েছে! (চুক্তিপত্র আইডি: ${savedDoc.agreementId})`);
+        setViewMode('preview');
+      } else {
+        throw new Error(res.data?.message || 'ডাটাবেজে সংরক্ষণ করতে ব্যর্থ হয়েছে।');
+      }
+    } catch (err) {
+      console.error('Agreement save error:', err);
+      const msg = err.response?.data?.message || err.message || 'সার্ভারে সংরক্ষণ ব্যর্থ হয়েছে। অনুগ্রহ করে পুনরায় চেষ্টা করুন।';
+      toast.error(msg);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handlePrint = () => {
@@ -102,7 +124,7 @@ export function EmploymentAgreementStudio() {
 
     const msg =
       `*📄 মুনসুর আলী ট্রাভেলস (MONSUR ALI TRAVELS)*\n` +
-      `*নিয়োগ ও চাকরির পূর্ণাঙ্গ চুক্তিপত্র (Employment Agreement)*\n` +
+      `*নিয়োগ ও চাকরির চুক্তিপত্র (${formData.agreementId || 'Official Agreement'})*\n` +
       `-----------------------------------------\n` +
       `👤 *কর্মচারীর নাম:* ${employee}\n` +
       `💼 *পদবী:* ${designation}\n` +
@@ -127,6 +149,7 @@ export function EmploymentAgreementStudio() {
           setFormData={setFormData}
           onSubmit={handleFormSubmit}
           onReset={handleReset}
+          isSubmitting={isSubmitting}
         />
       )}
 
@@ -134,14 +157,14 @@ export function EmploymentAgreementStudio() {
       {viewMode === 'preview' && (
         <div className="space-y-6">
           {/* Action Header in Preview Mode */}
-          <div className="no-print bg-card border border-border p-4 sm:p-5 rounded-2xl shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div className="no-print bg-card border border-border p-4 sm:p-5 rounded-md shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
               <h2 className="text-base font-bold text-foreground tracking-tight flex items-center gap-2">
                 <CheckCircle2 className="w-5 h-5 text-emerald-500" />
-                নিয়োগ ও চাকরির চুক্তিপত্র প্রস্তুত (Print Ready A4 Preview)
+                নিয়োগ চুক্তিপত্র প্রস্তুত (আইডি: <span className="font-mono text-emerald-600 font-bold">{formData.agreementId}</span>)
               </h2>
               <p className="text-xs text-muted-foreground mt-0.5">
-                নিচে চুক্তিপত্রটি সম্পূর্ণ প্রস্তুত অবস্থায় দেখতে পাচ্ছেন। সরাসরি প্রিন্ট/পিডিএফ ডাউনলোড করুন অথবা তথ্যে পরিবর্তন আনতে এডিট করুন।
+                চুক্তিপত্রটি ডাটাবেজে সংরক্ষিত হয়েছে। সরাসরি প্রিন্ট/পিডিএফ ডাউনলোড করুন অথবা তথ্যে পরিবর্তন আনতে এডিট করুন।
               </p>
             </div>
 
@@ -149,7 +172,7 @@ export function EmploymentAgreementStudio() {
               <button
                 type="button"
                 onClick={() => setViewMode('form')}
-                className="flex items-center gap-1.5 px-4 py-2.5 rounded-xl text-xs font-semibold border border-border bg-muted/40 hover:bg-muted text-foreground transition-all cursor-pointer"
+                className="flex items-center gap-1.5 px-4 py-2 rounded-md text-xs font-semibold border border-border bg-muted/40 hover:bg-muted text-foreground transition-all cursor-pointer"
               >
                 <Edit3 className="w-4 h-4 text-primary" />
                 <span>তথ্য পরিবর্তন (Edit Form)</span>
@@ -158,7 +181,7 @@ export function EmploymentAgreementStudio() {
               <button
                 type="button"
                 onClick={handleWhatsAppShare}
-                className="flex items-center gap-2 bg-[#25D366] hover:bg-[#20bd5a] text-white text-xs font-bold px-4 py-2.5 rounded-xl shadow-md hover:shadow-lg transition-all cursor-pointer shrink-0"
+                className="flex items-center gap-2 bg-[#25D366] hover:bg-[#20bd5a] text-white text-xs font-bold px-4 py-2 rounded-md shadow-xs hover:shadow-sm transition-all cursor-pointer shrink-0"
                 title="Share Contract Summary on WhatsApp"
               >
                 <svg className="w-4 h-4 fill-white shrink-0" viewBox="0 0 24 24">
@@ -170,7 +193,7 @@ export function EmploymentAgreementStudio() {
               <button
                 type="button"
                 onClick={handlePrint}
-                className="flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-5 py-2.5 rounded-xl shadow-md hover:shadow-lg transition-all cursor-pointer shrink-0"
+                className="flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-5 py-2 rounded-md shadow-xs hover:shadow-sm transition-all cursor-pointer shrink-0"
               >
                 <Printer className="w-4 h-4" />
                 <span>Download / Print PDF</span>

@@ -28,7 +28,7 @@ import {
   DialogFooter
 } from '@/components/ui/dialog';
 
-export function AgreementForm({ formData, setFormData, onSubmit, onReset }) {
+export function AgreementForm({ formData, setFormData, onSubmit, onReset, isSubmitting = false }) {
   const [currentStep, setCurrentStep] = useState(1);
   const [resetDialogOpen, setResetDialogOpen] = useState(false);
 
@@ -758,10 +758,20 @@ export function AgreementForm({ formData, setFormData, onSubmit, onReset }) {
           ) : (
             <button
               type="submit"
-              className="flex items-center gap-2 px-5 py-2.5 rounded-md text-xs font-bold bg-emerald-600 hover:bg-emerald-700 text-white shadow-xs transition-all cursor-pointer"
+              disabled={isSubmitting}
+              className="flex items-center gap-2 px-5 py-2.5 rounded-md text-xs font-bold bg-emerald-600 hover:bg-emerald-700 disabled:opacity-60 text-white shadow-xs transition-all cursor-pointer"
             >
-              <Eye className="w-4 h-4" />
-              <span>চুক্তিপত্র তৈরি ও প্রিভিউ দেখুন</span>
+              {isSubmitting ? (
+                <>
+                  <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin shrink-0" />
+                  <span>ডাটাবেজে সংরক্ষণ ও আইডি জেনারেট হচ্ছে...</span>
+                </>
+              ) : (
+                <>
+                  <Eye className="w-4 h-4" />
+                  <span>চুক্তিপত্র তৈরি ও প্রিভিউ দেখুন</span>
+                </>
+              )}
             </button>
           )}
         </div>

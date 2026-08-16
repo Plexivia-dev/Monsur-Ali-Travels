@@ -40,13 +40,21 @@ export function AgreementPreview({ data }) {
       </div>
 
       {/* Document Title Banner */}
-      <div className="text-center py-2 px-3 bg-slate-900 text-white rounded-md shadow-xs space-y-0.5">
-        <h2 className="text-sm sm:text-base font-black tracking-wide">
-          নিয়োগ ও চাকরির পূর্ণাঙ্গ চুক্তিপত্র (Employment Agreement)
-        </h2>
-        <p className="text-[10px] text-amber-300 font-medium">
-          বাংলাদেশ শ্রম আইন এবং প্রচলিত বিধিমালা অনুযায়ী উভয় পক্ষের সম্মতিক্রমে সম্পাদিত আইনি চুক্তি
-        </p>
+      <div className="py-2 px-4 bg-[#0b2341] text-white rounded-md shadow-xs flex items-center justify-between gap-2">
+        <div className="text-[10.5px] text-amber-300 font-mono font-bold shrink-0">
+          {data.agreementId ? `আইডি: ${data.agreementId}` : ''}
+        </div>
+        <div className="text-center">
+          <h2 className="text-xs sm:text-sm font-black tracking-wide uppercase">
+            নিয়োগ ও চাকরির পূর্ণাঙ্গ চুক্তিপত্র (Employment Agreement)
+          </h2>
+          <p className="text-[9.5px] text-amber-300 font-medium">
+            বাংলাদেশ শ্রম আইন এবং প্রচলিত বিধিমালা অনুযায়ী উভয় পক্ষের সম্মতিক্রমে সম্পাদিত আইনি চুক্তি
+          </p>
+        </div>
+        <div className="text-[10.5px] text-slate-300 font-mono shrink-0">
+          তারিখ: {currentDate}
+        </div>
       </div>
 
       {/* ১. কর্মচারী ও নিয়োগকারীর সাধারণ তথ্য (Parties Details) */}

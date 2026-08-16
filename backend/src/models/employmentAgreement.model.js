@@ -2,8 +2,26 @@ import mongoose, { Schema, model } from "mongoose";
 
 const { models } = mongoose;
 
+// Generates unique Agreement ID: 3 random uppercase English letters + 5 random digits (e.g. "AGR-ABC84920")
+export function generateUniqueAgreementId() {
+  const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+  let alpha = "";
+  for (let i = 0; i < 3; i++) {
+    alpha += letters.charAt(Math.floor(Math.random() * letters.length));
+  }
+  const randomNum = Math.floor(10000 + Math.random() * 90000);
+  return `AGR-${alpha}${randomNum}`;
+}
+
 const employmentAgreementSchema = new Schema(
   {
+    // unique agreement ID (3 letters + 5 digits e.g. AGR-ABC84920)
+    agreementId: {
+      type: String,
+      trim: true,
+      default: generateUniqueAgreementId,
+    },
+
     // ১. প্রতিষ্ঠানের তথ্য (Header)
     প্রতিষ্ঠানের_তথ্য: {
       প্রতিষ্ঠানের_নাম: { type: String, default: "মনসুর আলী ট্রাভেলস (MONSUR ALI TRAVELS)" },
@@ -96,6 +114,13 @@ const employmentAgreementSchema = new Schema(
     collection: "employment-agreement",
   }
 );
+
+employmentAgreementSchema.pre("save", function (next) {
+  if (!this.agreementId) {
+    this.agreementId = generateUniqueAgreementId();
+  }
+  next();
+});
 
 export const EmploymentAgreementModel =
   models.EmploymentAgreement ||
