@@ -13,6 +13,13 @@ import {
   updateSalarySlip,
   deleteSalarySlip,
 } from "../controllers/PayrollController.js";
+import {
+  getInvoices,
+  getInvoiceById,
+  createInvoice,
+  updateInvoice,
+  deleteInvoice,
+} from "../controllers/InvoiceController.js";
 
 const docsRouter = Router();
 
@@ -39,5 +46,17 @@ docsRouter
   .get(getSalarySlipById)
   .put(updateSalarySlip)
   .delete(deleteSalarySlip);
+
+// /api/v1/docs/invoices
+docsRouter
+  .route("/invoices")
+  .get(getInvoices)
+  .post(createInvoice);
+
+docsRouter
+  .route("/invoices/:id")
+  .get(getInvoiceById)
+  .put(updateInvoice)
+  .delete(deleteInvoice);
 
 export default docsRouter;

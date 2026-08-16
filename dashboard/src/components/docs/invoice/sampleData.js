@@ -1,49 +1,61 @@
-export const SAMPLE_INVOICE = {
-  invoiceNo: "INV-2026-0842",
-  issueDate: "2026-08-16",
-  dueDate: "2026-08-30",
-  paymentStatus: "Paid", // 'Paid' | 'Pending' | 'Overdue'
-  currency: "BDT",
-  taxRate: 5, // Tax percentage
+import agencyInfo from '../../../lib/information.json';
 
-  biller: {
-    name: "MANSUR ALI TOURS & TRAVELS",
-    subtitle: "Air Ticketing, Overseas Placement & Logistics Services",
-    address: "Nadampur, Jagannathpur, Sunamganj - 3060, Sylhet, Bangladesh",
-    city: "Sunamganj, Sylhet, Bangladesh",
-    phone: "+8801345579534",
-    email: "monsuralitravels@gmail.com",
-    binNo: "RL-1842"
-  },
+export function generateUniqueInvoiceNo() {
+  const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+  const getChar = () => letters.charAt(Math.floor(Math.random() * letters.length));
+  const getDigits = (len) => {
+    let res = '';
+    for (let i = 0; i < len; i++) res += Math.floor(Math.random() * 10);
+    return res;
+  };
 
-  client: {
-    name: "Apex Engineering & Construction Ltd.",
-    contactPerson: "Engr. Mahmudul Hassan",
-    address: "Plot #45, Industrial Zone, Gazipur",
-    phone: "+8801819998877",
-    email: "accounts@apexengineering.bd"
-  },
+  const prefixLetters = getChar() + getChar();
+  const firstDigits = getDigits(4);
+  const midLetter = getChar();
+  const lastDigits = getDigits(3);
 
-  items: [
-    {
-      id: "item-1",
-      description: "Overseas Manpower Processing & Placement Fee (Batch #42)",
-      quantity: 5,
-      unitPrice: 45000
+  return `I-${prefixLetters}${firstDigits}${midLetter}${lastDigits}`;
+}
+
+export function getDefaultInvoiceData() {
+  return {
+    _id: null,
+    invoiceNo: generateUniqueInvoiceNo(),
+    issueDate: new Date().toISOString().split('T')[0],
+    dueDate: new Date(Date.now() + 15 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+    paymentStatus: "Paid", // 'Paid' | 'Pending' | 'Overdue'
+    currency: "BDT",
+    taxRate: 0,
+
+    biller: {
+      name: agencyInfo.agencyName?.toUpperCase() || "MANSUR ALI TOURS & TRAVELS",
+      subtitle: "Air Ticketing, Overseas Placement & Logistics Services",
+      address: agencyInfo.address?.full || "Nadampur, Jagannathpur, Sunamganj - 3060, Sylhet, Bangladesh",
+      city: `${agencyInfo.address?.district || 'Sunamganj'}, ${agencyInfo.address?.division || 'Sylhet'}, ${agencyInfo.address?.country || 'Bangladesh'}`,
+      phone: agencyInfo.phone || "+8801345579534",
+      email: agencyInfo.email || "monsuralitravels@gmail.com",
+      binNo: agencyInfo.licenseNo || "RL-1842"
     },
-    {
-      id: "item-2",
-      description: "Air Ticket Reservation & Flight Coordination (Dhaka - Jeddah)",
-      quantity: 5,
-      unitPrice: 65000
-    },
-    {
-      id: "item-3",
-      description: "Medical Clearance & Biometric Documentation Service",
-      quantity: 5,
-      unitPrice: 8500
-    }
-  ],
 
-  paymentTerms: "Payment due within 15 days of invoice date. Bank Wire Transfer to Islami Bank Bangladesh. Account A/C: 2050-1849-019283."
-};
+    client: {
+      name: "",
+      contactPerson: "",
+      address: "",
+      phone: "",
+      email: ""
+    },
+
+    items: [
+      {
+        id: "item-1",
+        description: "",
+        quantity: 1,
+        unitPrice: 0
+      }
+    ],
+
+    paymentTerms: "Payment due within 15 days of invoice date. Bank Wire Transfer to Islami Bank Bangladesh."
+  };
+}
+
+export const SAMPLE_INVOICE = getDefaultInvoiceData();

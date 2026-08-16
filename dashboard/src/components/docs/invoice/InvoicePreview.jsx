@@ -83,8 +83,8 @@ export function InvoicePreview({ data, onPrint }) {
 
           {/* Client Billed-To Info */}
           <div className="bg-slate-50 p-4 rounded-lg border border-slate-200 text-xs space-y-1">
-            <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500 block">BILLED TO / CUSTOMER:</span>
-            <div className="font-bold text-sm text-slate-900">{client.name}</div>
+            <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500 block">BILLED TO:</span>
+            <div className="font-bold text-sm text-slate-900">{client.name || 'নিয়মিত গ্রাহক / কাস্টমার'}</div>
             {client.contactPerson && <div>Attn: {client.contactPerson}</div>}
             <div>{client.address}</div>
             <div>Phone: {client.phone} | Email: {client.email}</div>
