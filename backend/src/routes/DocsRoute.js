@@ -28,6 +28,7 @@ import {
   deletePassportSubmission,
 } from "../controllers/PassportSubmissionController.js";
 import { IndianVisaController } from "../controllers/IndianVisaController.js";
+import { CustomerGuardianController } from "../controllers/CustomerGuardianController.js";
 
 const docsRouter = Router();
 
@@ -90,5 +91,21 @@ docsRouter
   .get(IndianVisaController.getById)
   .put(IndianVisaController.update)
   .delete(IndianVisaController.delete);
+
+// /api/v1/docs/customer-guardians & /api/v1/docs/customer-forms
+docsRouter
+  .route(["/customer-guardians", "/customer-forms"])
+  .get(CustomerGuardianController.getAll)
+  .post(CustomerGuardianController.create);
+
+docsRouter
+  .route(["/customer-guardians/:id", "/customer-forms/:id"])
+  .get(CustomerGuardianController.getById)
+  .put(CustomerGuardianController.update)
+  .delete(CustomerGuardianController.delete);
+
+docsRouter
+  .route(["/customer-guardians/:id/status", "/customer-forms/:id/status"])
+  .patch(CustomerGuardianController.updateStatus);
 
 export default docsRouter;

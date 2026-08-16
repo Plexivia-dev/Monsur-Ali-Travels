@@ -29,12 +29,30 @@ export function IdCard() {
 
   const [cardData, setCardData] = useState(defaultSampleData);
 
+  const isFormValid = Boolean(
+    cardData.photo &&
+    cardData.fullName?.trim() &&
+    cardData.role?.trim() &&
+    cardData.idNumber?.trim() &&
+    cardData.joiningDate?.trim() &&
+    cardData.bloodGroup?.trim() &&
+    cardData.contactPhone?.trim() &&
+    cardData.email?.trim() &&
+    cardData.address?.trim() &&
+    cardData.website?.trim() &&
+    cardData.signatureName?.trim()
+  );
+
   const handleResetSample = () => {
     setCardData(defaultSampleData);
     toast.info('আইডি কার্ডের তথ্য রিসেট করা হয়েছে।');
   };
 
   const handleExportPNG = async (side) => {
+    if (!isFormValid) {
+      toast.error('আইডি কার্ড ডাউনলোড করার জন্য সবগুলো ফিল্ড এবং ছবি আবশ্যক!');
+      return;
+    }
     const targetRef = side === 'front' ? frontCardRef.current : backCardRef.current;
     if (!targetRef) return;
 
@@ -55,6 +73,10 @@ export function IdCard() {
   };
 
   const handlePrint = () => {
+    if (!isFormValid) {
+      toast.error('আইডি কার্ড প্রিন্ট বা ডাউনলোড করার জন্য সবগুলো ফিল্ড এবং ছবি আবশ্যক!');
+      return;
+    }
     window.print();
   };
 
@@ -73,11 +95,22 @@ export function IdCard() {
         </div>
 
         <div className="flex items-center gap-2 shrink-0 flex-wrap">
+          {!isFormValid ? (
+            <span className="text-[11px] font-medium text-amber-600 dark:text-amber-400 bg-amber-500/10 border border-amber-500/20 px-2.5 py-1 rounded-md">
+              ⚠️ সব ফিল্ড ও ছবি পূরণ আবশ্যক
+            </span>
+          ) : (
+            <span className="text-[11px] font-medium text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2.5 py-1 rounded-md">
+              ✓ ডাউনলোড ও প্রিন্ট করতে প্রস্তুত
+            </span>
+          )}
+
           <button
             type="button"
             onClick={() => handleExportPNG('front')}
-            disabled={isExporting}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold border border-border bg-muted/40 hover:bg-muted text-foreground transition-all cursor-pointer"
+            disabled={!isFormValid || isExporting}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold border border-border bg-muted/40 hover:bg-muted text-foreground transition-all cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
+            title={!isFormValid ? 'সব ফিল্ড ও ছবি আবশ্যক' : 'Front PNG ডাউনলোড করুন'}
           >
             <Download className="w-3.5 h-3.5" />
             <span>Front PNG</span>
@@ -86,8 +119,9 @@ export function IdCard() {
           <button
             type="button"
             onClick={() => handleExportPNG('back')}
-            disabled={isExporting}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold border border-border bg-muted/40 hover:bg-muted text-foreground transition-all cursor-pointer"
+            disabled={!isFormValid || isExporting}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold border border-border bg-muted/40 hover:bg-muted text-foreground transition-all cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
+            title={!isFormValid ? 'সব ফিল্ড ও ছবি আবশ্যক' : 'Back PNG ডাউনলোড করুন'}
           >
             <Download className="w-3.5 h-3.5" />
             <span>Back PNG</span>
@@ -96,10 +130,12 @@ export function IdCard() {
           <button
             type="button"
             onClick={handlePrint}
-            className="flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-4 py-2 rounded-lg shadow-xs hover:shadow-sm transition-all cursor-pointer shrink-0"
+            disabled={!isFormValid}
+            className="flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-4 py-2 rounded-lg shadow-xs hover:shadow-sm transition-all cursor-pointer shrink-0 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-emerald-600"
+            title={!isFormValid ? 'সব ফিল্ড ও ছবি আবশ্যক' : 'আইডি কার্ড প্রিন্ট বা ডাউনলোড করুন'}
           >
             <Printer className="w-4 h-4" />
-            <span>Print ID Card</span>
+            <span>Download PDF / Print</span>
           </button>
         </div>
       </div>

@@ -55,6 +55,7 @@ export const Sidebar = () => {
 
   const navItemsDocs = [
     { id: 'agreement', label: 'Employment Agreement', icon: FileText },
+    { id: 'customer-form', label: 'Customer & Guardian Form', icon: UserCheck },
     { id: 'payroll', label: 'Salary Slip', icon: Receipt },
     { id: 'invoice', label: 'Invoice', icon: FileSpreadsheet },
     { id: 'passport-sub', label: 'Passport Submission', icon: ShieldCheck },
@@ -63,6 +64,7 @@ export const Sidebar = () => {
   ];
 
   const navItemsData = [
+    { id: 'customer-guardians', label: 'Customer Files (কাস্টমার ফাইল)', icon: Users },
     { id: 'agreements', label: 'Agreements (এগ্রিমেন্টস)', icon: FileText },
     { id: 'indian-visas', label: 'Visa Applications (ভিসা)', icon: FileCheck },
     { id: 'passports', label: 'Passport Submissions (পাসপোর্ট)', icon: ShieldCheck },
