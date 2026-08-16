@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import { generateDid } from "../utils/generateDid.js";
 
 // Generates unique Passport Submission Tracking Number: PASS- + 2 letters + 4 digits + 1 middle letter + 3 digits (e.g. "PASS-AB4829K513")
 export function generateUniquePassportTrackingNo() {
@@ -20,6 +21,12 @@ export function generateUniquePassportTrackingNo() {
 
 const passportSubmissionSchema = new mongoose.Schema(
   {
+    did: {
+      type: String,
+      default: () => generateDid(),
+      unique: true,
+      index: true,
+    },
     trackingNo: {
       type: String,
       trim: true,

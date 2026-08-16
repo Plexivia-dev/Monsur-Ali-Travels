@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import { generateDid } from "../utils/generateDid.js";
 
 // Generates unique Invoice Number starting strictly with "I-": I- + 2 letters + 4 digits + 1 middle letter + 3 digits (e.g. "I-AB4829K513")
 export function generateUniqueInvoiceNo() {
@@ -28,6 +29,12 @@ const invoiceItemSchema = new mongoose.Schema({
 
 const invoiceSchema = new mongoose.Schema(
   {
+    did: {
+      type: String,
+      default: () => generateDid(),
+      unique: true,
+      index: true,
+    },
     invoiceNo: {
       type: String,
       trim: true,

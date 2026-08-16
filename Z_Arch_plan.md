@@ -1,0 +1,94 @@
+Side Question: full database design and achitecture plan banaoCustomer er route, controller banano. Root er Docs folder follow koro.
+
+# Monsur Ali Travels ERP — Database Architecture & Customer Module Plan
+
+---
+
+## ১. ডাটাবেজ ডিজাইন ও আর্কিটেকচার প্ল্যান (Database Entity-Relationship & Flow)
+
+মনসুর আলী ট্রাভেলস ইআরপি-তে **Customer** হচ্ছে কেন্দ্রীয় সত্ত্বা (Single Source of Truth)। একজন কাস্টমার একাধিক সার্ভিস গ্রহণ করতে পারেন (যেমন: ভিসা প্রসেসিং, পাসপোর্ট নবায়ন, ম্যানপাওয়ার কেস বা ইনভয়েস)। এই সম্পর্কযুক্ত আর্কিটেকচার নিচে তুলে ধরা হলো:
+
+```
+                            ┌─────────────────────────────────────────┐
+                            │            CUSTOMER (কেন্দ্রীয়)          │
+                            │  _id, customerCode (CUST-XXXXXX)        │
+                            │  fullName, phone, passportNumber, NID   │
+                            │  fatherName, motherName, guardian, etc. │
+                            │  attachments: { photo, passport, NID }  │
+                            │  ledger: { billed, paid, due }          │
+                            └────────────────────┬────────────────────┘
+                                                 │ 1:N (One-to-Many)
+         ┌───────────────────┬───────────────────┼───────────────────┬───────────────────┐
+         │                   │                   │                   │                   │
+         ▼                   ▼                   ▼                   ▼                   ▼
+┌──────────────────┐ ┌──────────────────┐ ┌────────────────┐ ┌──────────────────┐ ┌────────────────┐
+│ CustomerGuardian │ │ IndianVisa       │ │ Passport       │ │ CandidateCase    │ │ Invoice        │
+│ Application      │ │ Submission       │ │ Submission     │ │ File (Agency)    │ │ & Billing      │
+│ (customerId Ref) │ │ (customerId Ref) │ │(customerId Ref)│ │ (customerId Ref) │ │(customerId Ref)│
+└──────────────────┘ └──────────────────┘ └────────────────┘ └──────────────────┘ └────────────────┘
+```
+
+---
+
+## ২. কালেকশন স্কিমা বিস্তারিত (Schema Design)
+
+### ১. Central `Customer` Collection (`customers`)
+* **আইডেন্টিফায়ার:** `_id`, `customerCode` (`CUST-100001` ইউনিক ইনডেক্স)।
+* **বায়োমেট্রিক ও পার্সোনাল ডাটা:** `fullName`, `nidNumber`, `passportNumber`, `passportExpiryDate`, `birthDate`, `gender`, `bloodGroup`, `maritalStatus`।
+* **যোগাযোগ ও ঠিকানা:** `phone`, `altPhone`, `email`, `presentAddress`, `permanentAddress`, `district`, `policeStation`।
+* **অভিভাবকের তথ্য:** `guardian: { name, relationship, phone, nidNumber, address }`।
+* **ফাইল রিপোজিটরি:** `attachments: { photo, passportScan, nidScan, otherDocuments: [] }`।
+* **রিলেশনাল রেফারেন্স (Array of ObjectIds):**
+  - `applications`: `[{ type: ObjectId, ref: 'CustomerGuardianApplication' }]`
+  - `visaSubmissions`: `[{ type: ObjectId, ref: 'IndianVisaSubmission' }]`
+  - `passportSubmissions`: `[{ type: ObjectId, ref: 'PassportSubmission' }]`
+  - `candidateCases`: `[{ type: ObjectId, ref: 'CandidateCaseFile' }]`
+  - `agreements`: `[{ type: ObjectId, ref: 'EmploymentAgreement' }]`
+  - `invoices`: `[{ type: ObjectId, ref: 'Invoice' }]`
+* **লেজার সামারি:** `totalBilledAmount`, `totalPaidAmount`, `totalDueAmount`, `status` (`Active` / `Lead` / `Inactive` / `Blacklisted`)।
+
+---
+
+## ৩. কাস্টমার রাউট ডিজাইন (`/api/v1/customers`)
+
+| মেথড | এন্ডপয়েন্ট | বিবরণ | রেসপন্স টাইপ |
+| :--- | :--- | :--- | :--- |
+| **GET** | `/api/v1/customers/lookup?query=...` | পাসপোর্ট, ফোন বা NID দিয়ে লাইভ সার্চ ও ফর্ম অটো-কমপ্লিট | কাস্টমার অবজেক্টের শর্ট ডাটা |
+| **GET** | `/api/v1/customers` | পেজিনেশন, মাল্টি-ফিল্ড সার্চ এবং পপুলেটেড রিলেশনসহ তালিকা | `{ data: [...], pagination: {...} }` |
+| **POST** | `/api/v1/customers` | সরাসরি নতুন কাস্টমার প্রোফাইল তৈরি | `{ status: 'success', data: {...} }` |
+| **GET** | `/api/v1/customers/:id` | কাস্টমারের প্রোফাইল ও লিংকড সব ফাইল ও লেজার হিস্ট্রি | সম্পূর্ণ পপুলেটেড কাস্টমার প্রোফাইল |
+| **PUT** | `/api/v1/customers/:id` | কাস্টমার প্রোফাইলের যেকোনো তথ্য আপডেট | আপডেট হওয়া কাস্টমার অবজেক্ট |
+| **DELETE**| `/api/v1/customers/:id` | কাস্টমার প্রোফাইল মুছে ফেলা | কনফার্মেশন মেসেজ |
+
+---
+
+## ৪. কন্ট্রোলার ও অটো-সিঙ্ক আর্কিটেকচার (Controller & Relational Sync Logic)
+
+1. **`CustomerController`**:
+   - `getAll`: `query.$or` দিয়ে নাম, ফোন, পাসপোর্ট ও NID-তে রেজেক্স সার্চ চালায় এবং `.populate('applications visaSubmissions passportSubmissions candidateCases')` এক্সিকিউট করে সম্পূর্ণ হিস্ট্রি একসাথে দেয়।
+   - `getById`: নির্দিষ্ট কাস্টমারের সমস্ত ডকুমেন্টস, কেস ফাইল, এবং ইনভয়েস একত্র করে ফুল প্রোফাইল ভিউ রিটার্ন করে।
+   - `lookup`: ডকুমেন্টস ফর্মে কাস্টমার টাইপ করার সময় ২-৩ ক্যারেক্টারে দ্রুত ম্যাচ খুঁজে অটো-ফিল করতে সাহায্য করে।
+
+2. **`customerSyncHelper` (স্বয়ংক্রিয় রিলেশন লিংকার)**:
+   - যখনই `CustomerGuardianApplication`, `IndianVisaSubmission`, অথবা `PassportSubmission` জমা পড়বে, হেল্পার স্বয়ংক্রিয়ভাবে পাসপোর্ট/NID/ফোন দিয়ে কাস্টমার খুঁজবে।
+   - কাস্টমার উপস্থিত থাকলে নতুন ফাইলের আইডি কাস্টমারের রিলেশন অ্যারেতে পুশ করবে এবং অ্যাডভান্স পেমেন্ট থেকে লেজার আপডেট করবে।
+   - কাস্টমার নতুন হলে স্বয়ংক্রিয়ভাবে মূল `Customer` টেবিলে প্রোফাইল তৈরি করে লিঙ্কড আইডি যুক্ত করে দেবে।
+
+---
+
+## ৫. রুট `Docs` ফোল্ডারের ডকুমেন্টেশন স্ট্রাকচার
+
+রুট `Docs` ডিরেক্টরির স্ট্যান্ডার্ড কনভেনশন অনুযায়ী ডাটাবেজ আর্কিটেকচার ও চেঞ্জলগ রেকর্ড করার বিন্যাস:
+
+```
+Docs/
+├── 00_Architecture.md         # সিস্টেম ও রিলেশনাল ডাটাবেজ মডেল ওভারভিউ
+├── 01_Git_architecture_guide.md # গিট ব্রাঞ্চ ও কমিট মেসেজ কনভেনশন
+├── 09_Image-upload-pipeline.md  # সেন্ট্রাল আপলোড ও ফাইল স্টোরেজ আর্কিটেকচার
+├── Backend/
+│   └── MB01-100.md            # ব্যাকএন্ডের সমস্ত মডেল, কন্ট্রোলার ও রাউটের ভার্সন চেঞ্জলগ (MB15-MB17)
+└── Dashboard/
+    └── MD01-100.md            # ফ্রন্টএন্ড ফর্ম, প্রিভিউ ও ডাটা টেবিলের চেঞ্জলগ (MD92-MD94)
+```
+
+এই আর্কিটেকচারের ফলে পুরো মনসুর আলী ট্রাভেলস সিস্টেমে কোনো ডাটা ডুপ্লিকেট হবে না এবং একজন কাস্টমারের সমস্ত ট্রাভেল হিস্ট্রি, ফাইল ও পেমেন্ট এক জায়গা থেকেই স্বয়ংক্রিয়ভাবে নিয়ন্ত্রণ করা যাবে।

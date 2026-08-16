@@ -1,4 +1,5 @@
 import mongoose, { Schema, model } from "mongoose";
+import { generateDid } from "../utils/generateDid.js";
 
 const { models } = mongoose;
 
@@ -10,6 +11,12 @@ export function generateCustomerCode() {
 
 const customerSchema = new Schema(
   {
+    did: {
+      type: String,
+      default: () => generateDid(),
+      unique: true,
+      index: true,
+    },
     customerCode: {
       type: String,
       unique: true,

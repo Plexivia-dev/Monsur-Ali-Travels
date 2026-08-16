@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import { generateDid } from "../utils/generateDid.js";
 
 // Generates unique Indian Visa Application Tracking Number: IVISA- + 2 letters + 4 digits + 1 middle letter + 3 digits (e.g. "IVISA-AB4829K513")
 export function generateUniqueIndianVisaTrackingNo() {
@@ -20,6 +21,12 @@ export function generateUniqueIndianVisaTrackingNo() {
 
 const indianVisaSubmissionSchema = new mongoose.Schema(
   {
+    did: {
+      type: String,
+      default: () => generateDid(),
+      unique: true,
+      index: true,
+    },
     trackingNo: {
       type: String,
       trim: true,

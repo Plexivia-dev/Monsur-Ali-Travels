@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   User,
   Users,
@@ -26,21 +26,110 @@ import {
   Download,
   Camera,
   ExternalLink,
-  X
+  X,
+  UserCheck
 } from 'lucide-react';
 import { BdPhoneInput } from '../../common/BdPhoneInput';
 import { DatePicker } from '../../ui/date-picker';
 import { SERVICE_TYPES, STATUS_OPTIONS } from './sampleData';
+import { ExistingCustomerAlertModal } from '../common/ExistingCustomerAlertModal';
+import { apiClient } from '../../../lib/api-client';
 import { toast } from 'sonner';
 
 export function CustomerGuardianForm({ data, onChange, onReset, onSave, onPreview, isSubmitting }) {
   const [selectedPreviewDoc, setSelectedPreviewDoc] = useState(null);
+  const [detectedCustomer, setDetectedCustomer] = useState(null);
+  const [hasPromptedFor, setHasPromptedFor] = useState(new Set());
+  const lookupTimeoutRef = useRef(null);
+
+  // Auto-detect existing customer by mobile or passport
+  const checkExistingCustomer = async (queryValue) => {
+    if (!queryValue || queryValue.length < 8) return;
+    if (hasPromptedFor.has(queryValue.trim())) return;
+
+    try {
+      const res = await apiClient.get('/api/v1/customers/lookup', {
+        params: { query: queryValue.trim() }
+      });
+      if (res.data?.success && res.data?.data && res.data.data.length > 0) {
+        const matched = res.data.data[0];
+        setDetectedCustomer(matched);
+        setHasPromptedFor(prev => new Set(prev).add(queryValue.trim()));
+      }
+    } catch (err) {
+      console.warn('Customer lookup skipped:', err.message);
+    }
+  };
 
   const handleCustomerChange = (field, value) => {
     onChange(prev => ({
       ...prev,
       customer: { ...prev.customer, [field]: value }
     }));
+
+    // Trigger lookup for mobileNumber or passportNumber
+    if (field === 'mobileNumber' || field === 'passportNumber') {
+      if (lookupTimeoutRef.current) clearTimeout(lookupTimeoutRef.current);
+      lookupTimeoutRef.current = setTimeout(() => {
+        checkExistingCustomer(value);
+      }, 700);
+    }
+  };
+
+  // Option 1: Auto Fill from Existing Profile
+  const handleAutoFillCustomer = () => {
+    if (!detectedCustomer) return;
+    onChange(prev => ({
+      ...prev,
+      customerId: detectedCustomer._id,
+      customer: {
+        ...prev.customer,
+        fullName: detectedCustomer.fullName || prev.customer.fullName,
+        nidNumber: detectedCustomer.nidNumber || prev.customer.nidNumber,
+        passportNumber: detectedCustomer.passportNumber || prev.customer.passportNumber,
+        mobileNumber: detectedCustomer.phone || prev.customer.mobileNumber,
+        email: detectedCustomer.email || prev.customer.email,
+        fatherName: detectedCustomer.fatherName || prev.customer.fatherName,
+        motherName: detectedCustomer.motherName || prev.customer.motherName,
+      },
+      guardian: {
+        ...prev.guardian,
+        fullName: detectedCustomer.guardian?.name || prev.guardian.fullName,
+        mobileNumber: detectedCustomer.guardian?.phone || prev.guardian.mobileNumber,
+        nidNumber: detectedCustomer.guardian?.nidNumber || prev.guardian.nidNumber,
+        relationship: detectedCustomer.guardian?.relationship || prev.guardian.relationship,
+        address: detectedCustomer.guardian?.address || prev.guardian.address,
+      },
+      attachments: {
+        ...prev.attachments,
+        passportPhoto: detectedCustomer.attachments?.photo || prev.attachments.passportPhoto,
+        passportScan: detectedCustomer.attachments?.passportScan || prev.attachments.passportScan,
+        nidScan: detectedCustomer.attachments?.nidScan || prev.attachments.nidScan,
+      }
+    }));
+    toast.success(`"${detectedCustomer.fullName}" এর সংরক্ষিত তথ্য ফর্মে অটো-ফিল করা হয়েছে!`);
+    setDetectedCustomer(null);
+  };
+
+  // Option 2: Update Existing Profile with current form data
+  const handleUpdateExistingCustomer = () => {
+    if (!detectedCustomer) return;
+    onChange(prev => ({
+      ...prev,
+      customerId: detectedCustomer._id,
+    }));
+    toast.success(`কাস্টমার "${detectedCustomer.fullName}" এর সাথে লিংক করা হয়েছে। সেভ করলে প্রোফাইল আপডেট হবে!`);
+    setDetectedCustomer(null);
+  };
+
+  // Option 3: Ignore & Proceed as New Unlinked
+  const handleProceedAsNew = () => {
+    onChange(prev => ({
+      ...prev,
+      customerId: null,
+    }));
+    toast.info('নতুন আনলিংকড ডকুমেন্ট হিসেবে সংরক্ষণ মোড সক্রিয় করা হয়েছে।');
+    setDetectedCustomer(null);
   };
 
   const handleGuardianChange = (field, value) => {
@@ -1023,6 +1112,16 @@ export function CustomerGuardianForm({ data, onChange, onReset, onSave, onPrevie
             </div>
           </div>
         </div>
+      )}
+
+      {/* Screen Freeze Modal: Duplicate / Existing Customer Prompt */}
+      {detectedCustomer && (
+        <ExistingCustomerAlertModal
+          customer={detectedCustomer}
+          onAutoFill={handleAutoFillCustomer}
+          onUpdateExisting={handleUpdateExistingCustomer}
+          onProceedAsNew={handleProceedAsNew}
+        />
       )}
     </div>
   );

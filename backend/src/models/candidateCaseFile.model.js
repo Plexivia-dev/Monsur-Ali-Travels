@@ -1,4 +1,5 @@
 import mongoose, { Schema, model } from "mongoose";
+import { generateDid } from "../utils/generateDid.js";
 
 const { models } = mongoose;
 
@@ -40,6 +41,12 @@ const documentItemSchema = new Schema(
 
 const candidateCaseFileSchema = new Schema(
   {
+    did: {
+      type: String,
+      default: () => generateDid(),
+      unique: true,
+      index: true,
+    },
     fileNumber: { type: String, required: true, unique: true, index: true },
     candidateName: { type: String, required: true, trim: true },
     candidateAge: { type: Number, default: 25 },

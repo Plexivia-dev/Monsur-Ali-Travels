@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import { generateDid } from "../utils/generateDid.js";
 
 // Generates unique Customer Guardian Application Tracking Number: CGA- + 6 digits
 export function generateUniqueCustomerAppNo() {
@@ -10,6 +11,12 @@ export function generateUniqueCustomerAppNo() {
 
 const customerGuardianSchema = new mongoose.Schema(
   {
+    did: {
+      type: String,
+      default: () => generateDid(),
+      unique: true,
+      index: true,
+    },
     applicationNo: {
       type: String,
       trim: true,
