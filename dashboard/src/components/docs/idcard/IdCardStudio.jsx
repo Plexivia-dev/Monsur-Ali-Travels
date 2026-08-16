@@ -92,14 +92,6 @@ export function IdCardStudio() {
             <ImageIcon className="w-3.5 h-3.5" />
             <span>Export Back (JPG)</span>
           </button>
-
-          <button
-            onClick={handlePrint}
-            className="flex items-center space-x-1.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-3.5 py-2 rounded-xl transition-all cursor-pointer shadow-xs"
-          >
-            <Printer className="w-3.5 h-3.5" />
-            <span>Print Card</span>
-          </button>
         </div>
       </div>
 
