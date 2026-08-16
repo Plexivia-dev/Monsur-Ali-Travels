@@ -255,45 +255,61 @@ export function SalarySlipPreview({ data }) {
         </div>
       </div>
 
-      {/* Signatures & Seal Block (Bottom Fixed on Page) */}
-      <div className="pt-4 border-t border-slate-300">
-        <div className="grid grid-cols-4 gap-4 text-center text-[10px] items-end">
+      {/* Signatures & Seal Block (Strict Horizontal Alignment Matching Reference Image) */}
+      <div className="pt-5 border-t border-slate-300">
+        <div className="grid grid-cols-4 gap-4 text-center items-start">
           {/* Employee Acknowledgement */}
-          <div className="space-y-1">
-            <div className="border-b-2 border-slate-900 w-28 mx-auto mb-1" />
-            <div className="font-bold text-slate-900 uppercase">EMPLOYEE ACKNOWLEDGEMENT</div>
-            <div className="text-slate-600 text-[9px]">Signature & Date</div>
+          <div className="flex flex-col items-center">
+            <div className="border-b-2 border-slate-900 w-32 mb-2" />
+            <div className="font-[900] text-slate-900 text-[10px] uppercase tracking-tight leading-tight min-h-[22px] flex items-center justify-center">
+              EMPLOYEE ACKNOWLEDGEMENT
+            </div>
+            <div className="text-slate-600 text-[9.5px] font-medium leading-none mt-1">
+              Signature & Date
+            </div>
           </div>
 
           {/* Prepared By */}
-          <div className="space-y-1">
-            <div className="border-b-2 border-slate-900 w-28 mx-auto mb-1" />
-            <div className="font-bold text-slate-900 uppercase">PREPARED BY</div>
-            <div className="text-slate-600 text-[9px]">{data.preparedBy || 'HR Department'}</div>
+          <div className="flex flex-col items-center">
+            <div className="border-b-2 border-slate-900 w-32 mb-2" />
+            <div className="font-[900] text-slate-900 text-[10px] uppercase tracking-tight leading-tight min-h-[22px] flex items-center justify-center">
+              PREPARED BY
+            </div>
+            <div className="text-slate-600 text-[9.5px] font-medium leading-none mt-1">
+              {data.preparedBy || 'HR Department'}
+            </div>
           </div>
 
           {/* Checked By */}
-          <div className="space-y-1">
-            <div className="border-b-2 border-slate-900 w-28 mx-auto mb-1" />
-            <div className="font-bold text-slate-900 uppercase">CHECKED BY</div>
-            <div className="text-slate-600 text-[9px]">{data.checkedBy || 'Accounts Dept'}</div>
+          <div className="flex flex-col items-center">
+            <div className="border-b-2 border-slate-900 w-32 mb-2" />
+            <div className="font-[900] text-slate-900 text-[10px] uppercase tracking-tight leading-tight min-h-[22px] flex items-center justify-center">
+              CHECKED BY
+            </div>
+            <div className="text-slate-600 text-[9.5px] font-medium leading-none mt-1">
+              {data.checkedBy || 'Accounts Department'}
+            </div>
           </div>
 
           {/* Authorized Signatory */}
-          <div className="space-y-1">
-            <div className="border-b-2 border-slate-900 w-28 mx-auto mb-1" />
-            <div className="font-bold text-slate-900 uppercase">AUTHORIZED SIGNATORY</div>
-            <div className="text-slate-600 text-[9px]">Managing Director</div>
+          <div className="flex flex-col items-center">
+            <div className="border-b-2 border-slate-900 w-32 mb-2" />
+            <div className="font-[900] text-slate-900 text-[10px] uppercase tracking-tight leading-tight min-h-[22px] flex items-center justify-center">
+              AUTHORIZED SIGNATORY
+            </div>
+            <div className="text-slate-600 text-[9.5px] font-medium leading-none mt-1">
+              {data.authorizedSignatory || 'Managing Director'}
+            </div>
           </div>
         </div>
 
-        {/* Company Seal Box */}
-        <div className="mt-4 flex items-center justify-between border-t border-slate-200 pt-3">
-          <div className="text-[9.5px] text-slate-500 font-medium">
+        {/* Company Seal Box & Footer Statement (Perfectly Centered Horizontal Row Alignment) */}
+        <div className="mt-6 border-t border-slate-200 pt-4 flex items-center justify-between">
+          <div className="text-[9.5px] text-slate-500 font-medium tracking-tight">
             Mansur Ali Tours & Travels • Confidential Payroll Document • One Employee
           </div>
 
-          <div className="w-28 h-12 border-2 border-dashed border-slate-400 rounded-lg flex items-center justify-center text-[8.5px] text-slate-400 font-mono text-center leading-tight">
+          <div className="w-36 h-12 border-2 border-dashed border-slate-400 rounded-2xl flex items-center justify-center text-[8.5px] text-slate-400 font-mono text-center leading-tight tracking-wider uppercase font-bold">
             COMPANY SEAL / STAMP
           </div>
         </div>
