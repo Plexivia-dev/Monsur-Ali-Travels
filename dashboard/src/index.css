@@ -166,6 +166,8 @@
 @layer base {
   * {
     @apply border-border outline-ring/50;
+  }
+  *:not(table):not(tr):not(th):not(td):not(thead):not(tbody):not(tfoot):not(.printable-a4-paper) {
     border-radius: 4px !important;
   }
   body {
