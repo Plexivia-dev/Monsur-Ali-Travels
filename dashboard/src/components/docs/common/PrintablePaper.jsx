@@ -7,10 +7,10 @@ import React from 'react';
  */
 export function PrintablePaper({ children, className = '', id = 'printable-document-canvas' }) {
   return (
-    <div className="w-full flex justify-center py-2 sm:py-4 no-print-padding">
+    <div className="w-full flex justify-center py-2 sm:py-4 no-print-padding print:p-0 print:m-0">
       <div
         id={id}
-        className={`printable-a4-paper bg-white text-slate-900 shadow-2xl rounded-[4px] w-full max-w-[850px] p-6 sm:p-8 min-h-[1050px] flex flex-col justify-between print:min-h-[297mm] print:p-0 print:m-0 print:shadow-none print:w-full print:max-w-none ${className}`}
+        className={`printable-a4-paper bg-white text-slate-900 shadow-2xl rounded-[4px] w-full max-w-[850px] p-6 sm:p-8 min-h-[1050px] flex flex-col justify-between print:min-h-0 print:h-auto print:p-0 print:m-0 print:shadow-none print:w-full print:max-w-none ${className}`}
         style={{ color: '#111827' }}
       >
         {children}

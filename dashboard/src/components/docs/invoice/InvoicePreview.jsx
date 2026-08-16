@@ -87,7 +87,7 @@ export function InvoicePreview({ data = {}, onPrint }) {
 
       {/* Printable A4 Paper Wrapper */}
       <PrintablePaper id="printable-invoice-canvas">
-        <div className="flex-1 flex flex-col justify-between text-slate-900 min-h-[960px] print:min-h-[270mm]">
+        <div className="flex-1 flex flex-col justify-between text-slate-900 min-h-[960px] print:min-h-0 print:h-auto">
           
           <div className="space-y-6 flex-1">
             {/* Header Biller Info & Document Title */}
