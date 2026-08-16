@@ -1,9 +1,12 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { PrintablePaper } from '../common/PrintablePaper';
 import { formatToDdMmYyyy } from '../../../lib/utils';
 import { STATUS_OPTIONS } from './sampleData';
+import { Paperclip, FileText, Download, Eye, X, Image as ImageIcon, Camera, CreditCard, FileCheck } from 'lucide-react';
 
 export function CustomerGuardianPreview({ data }) {
+  const [selectedPreviewDoc, setSelectedPreviewDoc] = useState(null);
+
   const {
     applicationNo,
     dateReceived,
@@ -14,6 +17,7 @@ export function CustomerGuardianPreview({ data }) {
     guardian = {},
     requirementDocuments = [],
     payment = {},
+    attachments = {},
     officeNotes,
     declarationDate
   } = data;
@@ -21,11 +25,11 @@ export function CustomerGuardianPreview({ data }) {
   const currentStatusObj = STATUS_OPTIONS.find(s => s.id === status) || STATUS_OPTIONS[0];
 
   return (
-    <div className="w-full flex flex-col items-center select-none">
+    <div className="w-full flex flex-col items-center select-none space-y-6">
       <PrintablePaper id="printable-customer-form-canvas">
         <div className="flex-1 flex flex-col justify-between text-slate-900 font-sans min-h-[990px] print:min-h-0 print:h-auto">
           
-          <div className="space-y-3.5">
+          <div className="space-y-3">
             {/* Top Bar with Tracking & Service Type in preview */}
             <div className="flex items-center justify-between border-b border-slate-300 pb-1 text-[11px] font-mono text-slate-600">
               <div>
@@ -40,14 +44,32 @@ export function CustomerGuardianPreview({ data }) {
               </div>
             </div>
 
-            {/* Main Form Header */}
-            <div className="text-center pt-1 pb-1">
-              <h1 className="text-[19px] font-[900] uppercase tracking-wide text-slate-950 font-sans leading-tight">
-                CUSTOMER &amp; GUARDIAN INFORMATION APPLICATION FORM
-              </h1>
-              <p className="text-[11px] text-slate-600 font-medium mt-0.5">
-                Please complete all applicable information accurately and submit the required supporting documents.
-              </p>
+            {/* Main Form Header with Photo Box */}
+            <div className="flex items-center justify-between gap-4 pt-1 pb-1">
+              <div className="flex-1 text-center sm:text-left">
+                <h1 className="text-[18px] sm:text-[19px] font-[900] uppercase tracking-wide text-slate-950 font-sans leading-tight">
+                  CUSTOMER &amp; GUARDIAN INFORMATION APPLICATION FORM
+                </h1>
+                <p className="text-[10.5px] text-slate-600 font-medium mt-0.5">
+                  Please complete all applicable information accurately and submit the required supporting documents.
+                </p>
+              </div>
+
+              {/* Photo Box in Top Right */}
+              <div className="w-20 h-24 border-2 border-dashed border-slate-400 rounded-sm bg-slate-50 flex flex-col items-center justify-center shrink-0 overflow-hidden text-center p-1 relative">
+                {attachments?.passportPhoto ? (
+                  <img
+                    src={attachments.passportPhoto}
+                    alt="Applicant Photo"
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  <div className="flex flex-col items-center justify-center text-slate-400 p-0.5">
+                    <Camera className="w-4 h-4 mb-0.5" />
+                    <span className="text-[8px] font-bold uppercase leading-tight">2 × 2 Inch Photo</span>
+                  </div>
+                )}
+              </div>
             </div>
 
             {/* 1. CUSTOMER DETAILS */}
@@ -336,6 +358,187 @@ export function CustomerGuardianPreview({ data }) {
 
         </div>
       </PrintablePaper>
+
+      {/* On-Screen Attached Documents Viewer Gallery (No-print) */}
+      <div className="no-print w-full max-w-[850px] bg-card border border-border rounded-2xl p-5 shadow-xs space-y-3">
+        <div className="flex items-center justify-between border-b border-border pb-3">
+          <h3 className="font-bold text-sm text-foreground flex items-center gap-2">
+            <Paperclip className="w-4 h-4 text-primary" />
+            <span>Attached Documents &amp; Scans (সংযুক্ত ফাইলসমূহ)</span>
+          </h3>
+          <span className="text-xs text-muted-foreground">
+            {attachments?.passportPhoto || attachments?.passportScan || attachments?.nidScan || (attachments?.otherFiles || []).length > 0
+              ? 'ডকুমেন্ট দেখতে বা ডাউনলোড করতে ক্লিক করুন'
+              : 'কোনো ফাইল সংযুক্ত নেই'}
+          </span>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          {/* Photo */}
+          {attachments?.passportPhoto && (
+            <div className="p-3 bg-muted/30 border border-border rounded-xl flex items-center justify-between gap-2">
+              <div className="flex items-center gap-2 min-w-0">
+                <img
+                  src={attachments.passportPhoto}
+                  alt="Photo"
+                  className="w-10 h-12 object-cover rounded border border-border shrink-0"
+                />
+                <div className="min-w-0">
+                  <p className="font-bold text-xs text-foreground truncate">Passport Photo</p>
+                  <p className="text-[10px] text-muted-foreground">2 × 2 Inch Picture</p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setSelectedPreviewDoc({ title: 'Passport Size Photo', url: attachments.passportPhoto })}
+                className="p-1.5 bg-primary/10 hover:bg-primary/20 text-primary rounded-lg text-xs font-semibold cursor-pointer"
+                title="View Full"
+              >
+                <Eye className="w-4 h-4" />
+              </button>
+            </div>
+          )}
+
+          {/* Passport Scan */}
+          {attachments?.passportScan && (
+            <div className="p-3 bg-muted/30 border border-border rounded-xl flex items-center justify-between gap-2">
+              <div className="flex items-center gap-2 min-w-0">
+                <div className="w-10 h-12 bg-emerald-500/10 text-emerald-600 rounded flex items-center justify-center shrink-0 border border-emerald-500/20">
+                  <FileCheck className="w-5 h-5" />
+                </div>
+                <div className="min-w-0">
+                  <p className="font-bold text-xs text-foreground truncate">Passport Scan</p>
+                  <p className="text-[10px] text-muted-foreground">Main Info Page</p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setSelectedPreviewDoc({ title: 'Passport Scan Copy', url: attachments.passportScan })}
+                className="p-1.5 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-600 rounded-lg text-xs font-semibold cursor-pointer"
+                title="View Full"
+              >
+                <Eye className="w-4 h-4" />
+              </button>
+            </div>
+          )}
+
+          {/* NID Scan */}
+          {attachments?.nidScan && (
+            <div className="p-3 bg-muted/30 border border-border rounded-xl flex items-center justify-between gap-2">
+              <div className="flex items-center gap-2 min-w-0">
+                <div className="w-10 h-12 bg-purple-500/10 text-purple-600 rounded flex items-center justify-center shrink-0 border border-purple-500/20">
+                  <CreditCard className="w-5 h-5" />
+                </div>
+                <div className="min-w-0">
+                  <p className="font-bold text-xs text-foreground truncate">NID Scan Copy</p>
+                  <p className="text-[10px] text-muted-foreground">National ID Card</p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setSelectedPreviewDoc({ title: 'NID Scan Copy', url: attachments.nidScan })}
+                className="p-1.5 bg-purple-500/10 hover:bg-purple-500/20 text-purple-600 rounded-lg text-xs font-semibold cursor-pointer"
+                title="View Full"
+              >
+                <Eye className="w-4 h-4" />
+              </button>
+            </div>
+          )}
+        </div>
+
+        {/* Other Files */}
+        {(attachments?.otherFiles || []).length > 0 && (
+          <div className="space-y-2 pt-2">
+            <p className="text-xs font-bold text-foreground">Other Attached Documents:</p>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+              {attachments.otherFiles.map((of, i) => (
+                <div key={i} className="flex items-center justify-between p-2 bg-muted/20 border border-border rounded-lg text-xs">
+                  <div className="flex items-center gap-2 min-w-0">
+                    <FileText className="w-4 h-4 text-sky-500 shrink-0" />
+                    <span className="font-medium text-foreground truncate">{of.name}</span>
+                  </div>
+                  <div className="flex items-center gap-1 shrink-0">
+                    <button
+                      type="button"
+                      onClick={() => setSelectedPreviewDoc({ title: of.name, url: of.fileData })}
+                      className="p-1 text-muted-foreground hover:text-foreground rounded cursor-pointer"
+                    >
+                      <Eye className="w-3.5 h-3.5" />
+                    </button>
+                    <a
+                      href={of.fileData}
+                      download={of.name}
+                      className="p-1 text-muted-foreground hover:text-foreground rounded cursor-pointer"
+                    >
+                      <Download className="w-3.5 h-3.5" />
+                    </a>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* Attachment Modal */}
+      {selectedPreviewDoc && (
+        <div className="fixed inset-0 z-50 bg-black/75 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="bg-card border border-border rounded-2xl max-w-3xl w-full p-5 shadow-2xl space-y-4 max-h-[90vh] flex flex-col">
+            <div className="flex items-center justify-between border-b border-border pb-3">
+              <h3 className="font-bold text-sm text-foreground flex items-center gap-2">
+                <Paperclip className="w-4 h-4 text-primary" />
+                <span>{selectedPreviewDoc.title}</span>
+              </h3>
+              <div className="flex items-center gap-2">
+                <a
+                  href={selectedPreviewDoc.url}
+                  download={selectedPreviewDoc.title}
+                  className="flex items-center gap-1 bg-muted hover:bg-muted/80 text-foreground px-3 py-1.5 rounded-lg text-xs font-semibold"
+                >
+                  <Download className="w-3.5 h-3.5" />
+                  <span>Download</span>
+                </a>
+                <button
+                  type="button"
+                  onClick={() => setSelectedPreviewDoc(null)}
+                  className="p-1.5 text-muted-foreground hover:text-foreground rounded-lg hover:bg-muted"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
+            </div>
+
+            <div className="flex-1 overflow-auto flex items-center justify-center bg-black/20 rounded-xl p-3 min-h-[300px]">
+              {selectedPreviewDoc.url?.startsWith('data:image') || selectedPreviewDoc.url?.match(/\.(jpeg|jpg|gif|png|webp)/i) ? (
+                <img
+                  src={selectedPreviewDoc.url}
+                  alt={selectedPreviewDoc.title}
+                  className="max-h-[70vh] w-auto max-w-full object-contain rounded-lg shadow-md"
+                />
+              ) : selectedPreviewDoc.url?.startsWith('data:application/pdf') ? (
+                <iframe
+                  src={selectedPreviewDoc.url}
+                  title={selectedPreviewDoc.title}
+                  className="w-full h-[65vh] rounded-lg border border-border"
+                />
+              ) : (
+                <div className="text-center p-6 space-y-3">
+                  <FileText className="w-12 h-12 text-muted-foreground mx-auto" />
+                  <p className="text-sm font-semibold text-foreground">{selectedPreviewDoc.title}</p>
+                  <a
+                    href={selectedPreviewDoc.url}
+                    download={selectedPreviewDoc.title}
+                    className="inline-flex items-center gap-2 bg-primary text-primary-foreground text-xs font-bold px-4 py-2 rounded-xl shadow-xs"
+                  >
+                    <Download className="w-4 h-4" />
+                    <span>ডাউনলোড করে ফাইলটি দেখুন</span>
+                  </a>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

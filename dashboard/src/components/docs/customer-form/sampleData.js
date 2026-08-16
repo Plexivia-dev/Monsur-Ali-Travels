@@ -72,6 +72,12 @@ export function getDefaultCustomerGuardianData() {
       paymentDate: new Date().toISOString().split('T')[0],
       receiptNo: ''
     },
+    attachments: {
+      passportPhoto: '',
+      passportScan: '',
+      nidScan: '',
+      otherFiles: []
+    },
     officeNotes: '',
     activityLogs: [],
     declarationDate: new Date().toISOString().split('T')[0]

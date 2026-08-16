@@ -82,6 +82,21 @@ const customerGuardianSchema = new mongoose.Schema(
       receiptNo: { type: String, default: "" },
     },
 
+    // 5. Document Attachments (Passport size photo, Passport scan, NID scan & other files)
+    attachments: {
+      passportPhoto: { type: String, default: "" }, // 2x2 Passport Size Picture
+      passportScan: { type: String, default: "" }, // Main Passport Scan
+      nidScan: { type: String, default: "" }, // NID Card Scan
+      otherFiles: [
+        {
+          name: { type: String, default: "" },
+          fileType: { type: String, default: "" },
+          fileData: { type: String, default: "" },
+          uploadedAt: { type: Date, default: Date.now },
+        },
+      ],
+    },
+
     // Workflow / File Processing Status
     status: {
       type: String,

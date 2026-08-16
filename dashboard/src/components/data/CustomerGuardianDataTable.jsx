@@ -270,6 +270,25 @@ export function CustomerGuardianDataTable({ onEditItem }) {
                           {item.customer?.passportNumber && <span>Passport: {item.customer.passportNumber}</span>}
                           {item.customer?.mobileNumber && <span>📞 {item.customer.mobileNumber}</span>}
                         </div>
+                        {/* Attachments Indicator */}
+                        {(item.attachments?.passportPhoto || item.attachments?.passportScan || item.attachments?.nidScan || (item.attachments?.otherFiles || []).length > 0) && (
+                          <div className="flex items-center gap-1 mt-1 text-[9.5px]">
+                            {item.attachments?.passportPhoto && (
+                              <span className="bg-primary/10 text-primary px-1.5 py-0.5 rounded font-semibold">📷 Photo</span>
+                            )}
+                            {item.attachments?.passportScan && (
+                              <span className="bg-emerald-500/10 text-emerald-600 px-1.5 py-0.5 rounded font-semibold">🛂 Passport</span>
+                            )}
+                            {item.attachments?.nidScan && (
+                              <span className="bg-purple-500/10 text-purple-600 px-1.5 py-0.5 rounded font-semibold">🪪 NID</span>
+                            )}
+                            {(item.attachments?.otherFiles || []).length > 0 && (
+                              <span className="bg-sky-500/10 text-sky-600 px-1.5 py-0.5 rounded font-semibold">
+                                📁 {item.attachments.otherFiles.length} Docs
+                              </span>
+                            )}
+                          </div>
+                        )}
                       </td>
 
                       {/* Service Type */}

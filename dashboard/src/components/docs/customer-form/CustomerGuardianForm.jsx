@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   User,
   Users,
@@ -18,13 +18,24 @@ import {
   Save,
   DollarSign,
   Activity,
-  Layers
+  Layers,
+  Paperclip,
+  Upload,
+  Image as ImageIcon,
+  FileCheck,
+  Download,
+  Camera,
+  ExternalLink,
+  X
 } from 'lucide-react';
 import { BdPhoneInput } from '../../common/BdPhoneInput';
 import { DatePicker } from '../../ui/date-picker';
 import { SERVICE_TYPES, STATUS_OPTIONS } from './sampleData';
+import { toast } from 'sonner';
 
 export function CustomerGuardianForm({ data, onChange, onReset, onSave, onPreview, isSubmitting }) {
+  const [selectedPreviewDoc, setSelectedPreviewDoc] = useState(null);
+
   const handleCustomerChange = (field, value) => {
     onChange(prev => ({
       ...prev,
@@ -56,6 +67,77 @@ export function CustomerGuardianForm({ data, onChange, onReset, onSave, onPrevie
 
       return { ...prev, payment: updatedPayment };
     });
+  };
+
+  const handleAttachmentUpload = (field, e) => {
+    const file = e.target.files[0];
+    if (file) {
+      if (file.size > 8 * 1024 * 1024) {
+        toast.error('ফাইলের সাইজ ৮ MB এর কম হতে হবে!');
+        return;
+      }
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        onChange(prev => ({
+          ...prev,
+          attachments: {
+            ...(prev.attachments || {}),
+            [field]: reader.result
+          }
+        }));
+        toast.success('ডকুমেন্ট সফলভাবে আপলোড হয়েছে!');
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleRemoveAttachment = (field) => {
+    onChange(prev => ({
+      ...prev,
+      attachments: {
+        ...(prev.attachments || {}),
+        [field]: ''
+      }
+    }));
+    toast.info('ডকুমেন্ট মুছে ফেলা হয়েছে।');
+  };
+
+  const handleOtherFileUpload = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      if (file.size > 10 * 1024 * 1024) {
+        toast.error('ফাইলের সাইজ ১০ MB এর কম হতে হবে!');
+        return;
+      }
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        const newFile = {
+          name: file.name,
+          fileType: file.type || 'document',
+          fileData: reader.result,
+          uploadedAt: new Date().toISOString()
+        };
+        onChange(prev => ({
+          ...prev,
+          attachments: {
+            ...(prev.attachments || {}),
+            otherFiles: [...(prev.attachments?.otherFiles || []), newFile]
+          }
+        }));
+        toast.success(`"${file.name}" যুক্ত হয়েছে!`);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleRemoveOtherFile = (index) => {
+    onChange(prev => ({
+      ...prev,
+      attachments: {
+        ...(prev.attachments || {}),
+        otherFiles: (prev.attachments?.otherFiles || []).filter((_, idx) => idx !== index)
+      }
+    }));
   };
 
   const handleDocChange = (index, field, value) => {
@@ -524,7 +606,301 @@ export function CustomerGuardianForm({ data, onChange, onReset, onSave, onPrevie
         </div>
       </div>
 
-      {/* 5. OFFICE NOTES & DECLARATION */}
+      {/* 5. DOCUMENT ATTACHMENTS (ছবি, পাসপোর্ট ও অন্যান্য ফাইল) */}
+      <div className="space-y-3">
+        <div className="flex items-center justify-between bg-[#103058] text-white px-3.5 py-2 rounded-xl text-xs font-bold uppercase tracking-wider">
+          <div className="flex items-center gap-2">
+            <Paperclip className="w-4 h-4" />
+            <span>5. Document Attachments (ছবি, পাসপোর্ট ও অন্যান্য ফাইল সংযুক্ত করুন)</span>
+          </div>
+          <span className="text-[10px] font-normal opacity-80">Images / PDF (Max 10MB)</span>
+        </div>
+
+        {/* 3 Main Specific Attachment Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
+          {/* Card 1: Passport Size Picture */}
+          <div className="p-3.5 rounded-xl border border-border bg-muted/20 flex flex-col justify-between space-y-3">
+            <div>
+              <div className="flex items-center justify-between mb-1.5">
+                <span className="font-bold text-foreground flex items-center gap-1.5">
+                  <Camera className="w-4 h-4 text-primary" />
+                  Passport Size Photo (২x২ ছবি)
+                </span>
+                {data.attachments?.passportPhoto && (
+                  <span className="text-[10px] font-bold text-emerald-600 bg-emerald-500/10 px-2 py-0.5 rounded-md">
+                    Attached ✓
+                  </span>
+                )}
+              </div>
+              <p className="text-[11px] text-muted-foreground">কাস্টমারের ল্যাব প্রিন্ট পাসপোর্ট সাইজের ছবি</p>
+            </div>
+
+            <div className="flex items-center gap-3">
+              <div className="w-16 h-20 rounded-xl border-2 border-dashed border-border overflow-hidden bg-background flex items-center justify-center shrink-0 shadow-2xs relative">
+                {data.attachments?.passportPhoto ? (
+                  <img
+                    src={data.attachments.passportPhoto}
+                    alt="Passport Photo"
+                    className="w-full h-full object-cover cursor-pointer"
+                    onClick={() => setSelectedPreviewDoc({ title: 'Passport Size Photo', url: data.attachments.passportPhoto })}
+                  />
+                ) : (
+                  <ImageIcon className="w-6 h-6 text-muted-foreground/50" />
+                )}
+              </div>
+
+              <div className="flex-1 space-y-1.5">
+                <label className="inline-flex items-center gap-1.5 bg-primary/10 hover:bg-primary/20 text-primary px-3 py-1.5 rounded-lg text-xs font-semibold cursor-pointer transition-colors w-full justify-center">
+                  <Upload className="w-3.5 h-3.5" />
+                  <span>{data.attachments?.passportPhoto ? 'Change Photo' : 'Upload Photo'}</span>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={(e) => handleAttachmentUpload('passportPhoto', e)}
+                    className="hidden"
+                  />
+                </label>
+                {data.attachments?.passportPhoto && (
+                  <button
+                    type="button"
+                    onClick={() => handleRemoveAttachment('passportPhoto')}
+                    className="inline-flex items-center gap-1 text-rose-500 hover:text-rose-600 text-[11px] font-medium w-full justify-center cursor-pointer"
+                  >
+                    <Trash2 className="w-3 h-3" />
+                    <span>Remove</span>
+                  </button>
+                )}
+              </div>
+            </div>
+          </div>
+
+          {/* Card 2: Passport Scan Copy */}
+          <div className="p-3.5 rounded-xl border border-border bg-muted/20 flex flex-col justify-between space-y-3">
+            <div>
+              <div className="flex items-center justify-between mb-1.5">
+                <span className="font-bold text-foreground flex items-center gap-1.5">
+                  <FileCheck className="w-4 h-4 text-emerald-500" />
+                  Passport Scan (পাসপোর্ট কপি)
+                </span>
+                {data.attachments?.passportScan && (
+                  <span className="text-[10px] font-bold text-emerald-600 bg-emerald-500/10 px-2 py-0.5 rounded-md">
+                    Attached ✓
+                  </span>
+                )}
+              </div>
+              <p className="text-[11px] text-muted-foreground">পাসপোর্টের ইনফরমেশন ও সাইন পেজের কপি</p>
+            </div>
+
+            <div className="flex items-center gap-3">
+              <div className="w-16 h-20 rounded-xl border-2 border-dashed border-border overflow-hidden bg-background flex items-center justify-center shrink-0 shadow-2xs relative">
+                {data.attachments?.passportScan ? (
+                  data.attachments.passportScan.startsWith('data:image') ? (
+                    <img
+                      src={data.attachments.passportScan}
+                      alt="Passport Scan"
+                      className="w-full h-full object-cover cursor-pointer"
+                      onClick={() => setSelectedPreviewDoc({ title: 'Passport Scan Copy', url: data.attachments.passportScan })}
+                    />
+                  ) : (
+                    <FileText className="w-7 h-7 text-emerald-500" />
+                  )
+                ) : (
+                  <FileText className="w-6 h-6 text-muted-foreground/50" />
+                )}
+              </div>
+
+              <div className="flex-1 space-y-1.5">
+                <label className="inline-flex items-center gap-1.5 bg-primary/10 hover:bg-primary/20 text-primary px-3 py-1.5 rounded-lg text-xs font-semibold cursor-pointer transition-colors w-full justify-center">
+                  <Upload className="w-3.5 h-3.5" />
+                  <span>{data.attachments?.passportScan ? 'Change File' : 'Upload Passport'}</span>
+                  <input
+                    type="file"
+                    accept="image/*,application/pdf"
+                    onChange={(e) => handleAttachmentUpload('passportScan', e)}
+                    className="hidden"
+                  />
+                </label>
+                {data.attachments?.passportScan && (
+                  <div className="flex items-center justify-between text-[11px]">
+                    <button
+                      type="button"
+                      onClick={() => setSelectedPreviewDoc({ title: 'Passport Scan Copy', url: data.attachments.passportScan })}
+                      className="text-primary hover:underline flex items-center gap-0.5 cursor-pointer"
+                    >
+                      <Eye className="w-3 h-3" />
+                      <span>View</span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => handleRemoveAttachment('passportScan')}
+                      className="text-rose-500 hover:text-rose-600 flex items-center gap-0.5 cursor-pointer"
+                    >
+                      <Trash2 className="w-3 h-3" />
+                      <span>Remove</span>
+                    </button>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+
+          {/* Card 3: NID Card Scan Copy */}
+          <div className="p-3.5 rounded-xl border border-border bg-muted/20 flex flex-col justify-between space-y-3">
+            <div>
+              <div className="flex items-center justify-between mb-1.5">
+                <span className="font-bold text-foreground flex items-center gap-1.5">
+                  <CreditCard className="w-4 h-4 text-purple-500" />
+                  NID Card Scan (NID কপি)
+                </span>
+                {data.attachments?.nidScan && (
+                  <span className="text-[10px] font-bold text-emerald-600 bg-emerald-500/10 px-2 py-0.5 rounded-md">
+                    Attached ✓
+                  </span>
+                )}
+              </div>
+              <p className="text-[11px] text-muted-foreground">কাস্টমার বা অভিভাবকের NID কার্ডের স্ক্যান</p>
+            </div>
+
+            <div className="flex items-center gap-3">
+              <div className="w-16 h-20 rounded-xl border-2 border-dashed border-border overflow-hidden bg-background flex items-center justify-center shrink-0 shadow-2xs relative">
+                {data.attachments?.nidScan ? (
+                  data.attachments.nidScan.startsWith('data:image') ? (
+                    <img
+                      src={data.attachments.nidScan}
+                      alt="NID Scan"
+                      className="w-full h-full object-cover cursor-pointer"
+                      onClick={() => setSelectedPreviewDoc({ title: 'NID Card Scan Copy', url: data.attachments.nidScan })}
+                    />
+                  ) : (
+                    <FileText className="w-7 h-7 text-purple-500" />
+                  )
+                ) : (
+                  <CreditCard className="w-6 h-6 text-muted-foreground/50" />
+                )}
+              </div>
+
+              <div className="flex-1 space-y-1.5">
+                <label className="inline-flex items-center gap-1.5 bg-primary/10 hover:bg-primary/20 text-primary px-3 py-1.5 rounded-lg text-xs font-semibold cursor-pointer transition-colors w-full justify-center">
+                  <Upload className="w-3.5 h-3.5" />
+                  <span>{data.attachments?.nidScan ? 'Change File' : 'Upload NID'}</span>
+                  <input
+                    type="file"
+                    accept="image/*,application/pdf"
+                    onChange={(e) => handleAttachmentUpload('nidScan', e)}
+                    className="hidden"
+                  />
+                </label>
+                {data.attachments?.nidScan && (
+                  <div className="flex items-center justify-between text-[11px]">
+                    <button
+                      type="button"
+                      onClick={() => setSelectedPreviewDoc({ title: 'NID Card Scan Copy', url: data.attachments.nidScan })}
+                      className="text-primary hover:underline flex items-center gap-0.5 cursor-pointer"
+                    >
+                      <Eye className="w-3 h-3" />
+                      <span>View</span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => handleRemoveAttachment('nidScan')}
+                      className="text-rose-500 hover:text-rose-600 flex items-center gap-0.5 cursor-pointer"
+                    >
+                      <Trash2 className="w-3 h-3" />
+                      <span>Remove</span>
+                    </button>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Other Supporting Documents Multi-File Section */}
+        <div className="p-4 bg-muted/20 border border-border rounded-xl space-y-3">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+            <div>
+              <h4 className="font-bold text-foreground flex items-center gap-1.5">
+                <FileText className="w-4 h-4 text-sky-500" />
+                Other Supporting Documents (অন্যান্য কাগজপত্র)
+              </h4>
+              <p className="text-[11px] text-muted-foreground">
+                ব্যাংক স্টেটমেন্ট, বিদ্যুৎ বিল, ট্রেড লাইসেন্স, পূর্ববর্তী ভিসা কপি বা অন্যান্য ফাইল আপলোড করুন।
+              </p>
+            </div>
+
+            <label className="inline-flex items-center gap-1.5 bg-primary hover:bg-primary/90 text-primary-foreground px-3 py-1.5 rounded-lg text-xs font-semibold cursor-pointer transition-colors shadow-2xs shrink-0">
+              <Plus className="w-3.5 h-3.5" />
+              <span>+ Add Other File</span>
+              <input
+                type="file"
+                accept="image/*,application/pdf,.doc,.docx"
+                onChange={handleOtherFileUpload}
+                className="hidden"
+              />
+            </label>
+          </div>
+
+          {/* List of uploaded other files */}
+          {(data.attachments?.otherFiles || []).length > 0 ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5 pt-1">
+              {data.attachments.otherFiles.map((f, idx) => (
+                <div
+                  key={idx}
+                  className="flex items-center justify-between p-2.5 bg-card border border-border rounded-xl text-xs hover:border-primary/40 transition-colors shadow-2xs"
+                >
+                  <div
+                    className="flex items-center gap-2 min-w-0 cursor-pointer flex-1"
+                    onClick={() => setSelectedPreviewDoc({ title: f.name, url: f.fileData })}
+                  >
+                    <div className="p-1.5 bg-primary/10 text-primary rounded-lg shrink-0">
+                      <FileText className="w-4 h-4" />
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <p className="font-semibold text-foreground truncate text-[11.5px]">{f.name}</p>
+                      <p className="text-[10px] text-muted-foreground">
+                        {f.uploadedAt ? new Date(f.uploadedAt).toLocaleDateString() : 'Attached'}
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-1 ml-2 shrink-0">
+                    <button
+                      type="button"
+                      onClick={() => setSelectedPreviewDoc({ title: f.name, url: f.fileData })}
+                      className="p-1 text-muted-foreground hover:text-foreground hover:bg-muted rounded transition-colors cursor-pointer"
+                      title="View Document"
+                    >
+                      <Eye className="w-3.5 h-3.5" />
+                    </button>
+                    <a
+                      href={f.fileData}
+                      download={f.name}
+                      className="p-1 text-muted-foreground hover:text-foreground hover:bg-muted rounded transition-colors cursor-pointer"
+                      title="Download File"
+                    >
+                      <Download className="w-3.5 h-3.5" />
+                    </a>
+                    <button
+                      type="button"
+                      onClick={() => handleRemoveOtherFile(idx)}
+                      className="p-1 text-muted-foreground hover:text-rose-500 hover:bg-rose-500/10 rounded transition-colors cursor-pointer"
+                      title="Delete File"
+                    >
+                      <Trash2 className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="text-center py-4 text-muted-foreground text-[11.5px] border border-dashed border-border rounded-lg bg-background/50">
+              কোনো অতিরিক্ত ফাইল সংযুক্ত করা হয়নি। প্রয়োজন হলে "+ Add Other File" বাটনে ক্লিক করে ফাইল যুক্ত করুন।
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* 6. OFFICE NOTES & DECLARATION */}
       <div className="p-4 bg-muted/30 border border-border rounded-xl space-y-3">
         <div className="flex items-center gap-2 text-xs font-bold text-foreground">
           <Building className="w-4 h-4 text-primary" />
@@ -588,6 +964,66 @@ export function CustomerGuardianForm({ data, onChange, onReset, onSave, onPrevie
           </button>
         </div>
       </div>
+
+      {/* Attachment Document Lightbox / Preview Modal */}
+      {selectedPreviewDoc && (
+        <div className="fixed inset-0 z-50 bg-black/75 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="bg-card border border-border rounded-2xl max-w-3xl w-full p-5 shadow-2xl space-y-4 max-h-[90vh] flex flex-col">
+            <div className="flex items-center justify-between border-b border-border pb-3">
+              <h3 className="font-bold text-sm text-foreground flex items-center gap-2">
+                <Paperclip className="w-4 h-4 text-primary" />
+                <span>{selectedPreviewDoc.title}</span>
+              </h3>
+              <div className="flex items-center gap-2">
+                <a
+                  href={selectedPreviewDoc.url}
+                  download={selectedPreviewDoc.title}
+                  className="flex items-center gap-1 bg-muted hover:bg-muted/80 text-foreground px-3 py-1.5 rounded-lg text-xs font-semibold"
+                >
+                  <Download className="w-3.5 h-3.5" />
+                  <span>Download</span>
+                </a>
+                <button
+                  type="button"
+                  onClick={() => setSelectedPreviewDoc(null)}
+                  className="p-1.5 text-muted-foreground hover:text-foreground rounded-lg hover:bg-muted"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
+            </div>
+
+            <div className="flex-1 overflow-auto flex items-center justify-center bg-black/20 rounded-xl p-3 min-h-[300px]">
+              {selectedPreviewDoc.url?.startsWith('data:image') || selectedPreviewDoc.url?.match(/\.(jpeg|jpg|gif|png|webp)/i) ? (
+                <img
+                  src={selectedPreviewDoc.url}
+                  alt={selectedPreviewDoc.title}
+                  className="max-h-[70vh] w-auto max-w-full object-contain rounded-lg shadow-md"
+                />
+              ) : selectedPreviewDoc.url?.startsWith('data:application/pdf') ? (
+                <iframe
+                  src={selectedPreviewDoc.url}
+                  title={selectedPreviewDoc.title}
+                  className="w-full h-[65vh] rounded-lg border border-border"
+                />
+              ) : (
+                <div className="text-center p-6 space-y-3">
+                  <FileText className="w-12 h-12 text-muted-foreground mx-auto" />
+                  <p className="text-sm font-semibold text-foreground">{selectedPreviewDoc.title}</p>
+                  <a
+                    href={selectedPreviewDoc.url}
+                    download={selectedPreviewDoc.title}
+                    className="inline-flex items-center gap-2 bg-primary text-primary-foreground text-xs font-bold px-4 py-2 rounded-xl shadow-xs"
+                  >
+                    <Download className="w-4 h-4" />
+                    <span>ডাউনলোড করে ফাইলটি দেখুন</span>
+                  </a>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
