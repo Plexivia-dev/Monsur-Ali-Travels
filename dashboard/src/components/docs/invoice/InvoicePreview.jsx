@@ -15,11 +15,27 @@ export function InvoicePreview({ data, onPrint }) {
 
     return {
       ...item,
+      isEmpty: false,
       hasQty,
       qtyDisplay: hasQty ? qtyNum : '-',
       lineTotal
     };
   });
+
+  // Ensure a minimum of 4 rows are always rendered in the A4 table
+  const MIN_ROWS = 4;
+  const displayItems = [...processedItems];
+  while (displayItems.length < MIN_ROWS) {
+    displayItems.push({
+      id: `empty-row-${displayItems.length}`,
+      isEmpty: true,
+      title: '',
+      description: '',
+      qtyDisplay: '-',
+      unitPrice: 0,
+      lineTotal: 0
+    });
+  }
 
   const subtotal = processedItems.reduce((acc, item) => acc + item.lineTotal, 0);
   const taxAmount = (subtotal * (taxRate || 0)) / 100;
@@ -120,14 +136,14 @@ export function InvoicePreview({ data, onPrint }) {
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-300">
-                {processedItems.map((item, idx) => (
-                  <tr key={item.id || idx} className="hover:bg-slate-50/80 font-medium">
-                    <td className="p-2.5 text-center text-slate-600 font-mono border border-slate-300">{idx + 1}</td>
-                    <td className="p-2.5 text-slate-900 font-bold border border-slate-300">{item.title || 'Service Item'}</td>
-                    <td className="p-2.5 text-slate-800 border border-slate-300">{item.description || '—'}</td>
+                {displayItems.map((item, idx) => (
+                  <tr key={item.id || idx} className="hover:bg-slate-50/80 font-medium h-9">
+                    <td className="p-2.5 text-center text-slate-500 font-mono border border-slate-300">{idx + 1}</td>
+                    <td className="p-2.5 text-slate-900 font-bold border border-slate-300">{item.isEmpty ? '—' : (item.title || 'Service Item')}</td>
+                    <td className="p-2.5 text-slate-800 border border-slate-300">{item.isEmpty ? '—' : (item.description || '—')}</td>
                     <td className="p-2.5 text-center font-mono font-bold text-slate-900 border border-slate-300">{item.qtyDisplay}</td>
-                    <td className="p-2.5 text-right font-mono border border-slate-300">{(parseFloat(item.unitPrice) || 0).toLocaleString('en-IN')}</td>
-                    <td className="p-2.5 text-right font-mono font-bold text-slate-900 border border-slate-300">{item.lineTotal.toLocaleString('en-IN')}</td>
+                    <td className="p-2.5 text-right font-mono border border-slate-300">{item.isEmpty ? '-' : (parseFloat(item.unitPrice) || 0).toLocaleString('en-IN')}</td>
+                    <td className="p-2.5 text-right font-mono font-bold text-slate-900 border border-slate-300">{item.isEmpty ? '-' : item.lineTotal.toLocaleString('en-IN')}</td>
                   </tr>
                 ))}
               </tbody>

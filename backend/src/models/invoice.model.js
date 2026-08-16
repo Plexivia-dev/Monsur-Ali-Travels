@@ -44,8 +44,8 @@ const invoiceSchema = new mongoose.Schema(
     taxRate: { type: Number, default: 0 },
 
     biller: {
-      name: { type: String, default: "MANSUR ALI TOURS & TRAVELS" },
-      subtitle: { type: String, default: "Air Ticketing, Overseas Placement & Logistics Services" },
+      name: { type: String, default: "MONSUR ALI TOURS & TRAVELS" },
+      subtitle: { type: String, default: "Your Trusted Travel Partner" },
       address: { type: String, default: "Nadampur, Jagannathpur, Sunamganj - 3060, Sylhet, Bangladesh" },
       city: { type: String, default: "Sunamganj, Sylhet, Bangladesh" },
       phone: { type: String, default: "+8801345579534" },

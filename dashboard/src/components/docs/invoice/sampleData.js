@@ -28,8 +28,8 @@ export function getDefaultInvoiceData() {
     taxRate: 0,
 
     biller: {
-      name: agencyInfo.agencyName?.toUpperCase() || "MANSUR ALI TOURS & TRAVELS",
-      subtitle: "Air Ticketing, Overseas Placement & Logistics Services",
+      name: agencyInfo.agencyName?.toUpperCase() || "MONSUR ALI TOURS & TRAVELS",
+      subtitle: agencyInfo.tagline || "Your Trusted Travel Partner",
       address: agencyInfo.address?.full || "Nadampur, Jagannathpur, Sunamganj - 3060, Sylhet, Bangladesh",
       city: `${agencyInfo.address?.district || 'Sunamganj'}, ${agencyInfo.address?.division || 'Sylhet'}, ${agencyInfo.address?.country || 'Bangladesh'}`,
       phone: agencyInfo.phone || "+8801345579534",
