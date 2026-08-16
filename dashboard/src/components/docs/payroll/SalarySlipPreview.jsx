@@ -9,9 +9,16 @@ export function SalarySlipPreview({ data }) {
     year: 'numeric',
   });
 
-  const grossEarnings = Number(data.grossEarnings) || 0;
+  const basic = Number(data.basicSalary) || 0;
+  const houseRent = Number(data.houseRentAllowance) || 0;
+  const medical = Number(data.medicalAllowance) || 0;
+  const conveyance = Number(data.conveyanceAllowance) || 0;
+  const other = Number(data.otherAllowance) || 0;
+  const overtime = Number(data.overtimeExtraDuty) || 0;
+
+  const grossEarnings = Number(data.grossEarnings) || (basic + houseRent + medical + conveyance + other);
   const totalDeduction = Number(data.totalDeduction) || 0;
-  const netPayable = Number(data.netSalaryPayable) || 0;
+  const netPayable = Number(data.netSalaryPayable) || (grossEarnings + overtime - totalDeduction);
 
   return (
     <div 

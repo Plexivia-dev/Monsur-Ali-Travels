@@ -60,14 +60,15 @@ export function SalarySlipForm({ formData, setFormData, onSubmit, onReset }) {
     setFormData((prev) => {
       const updated = { ...prev, [field]: value };
       
-      // Calculate Gross Earnings
+      // Calculate Gross Salary (Basic + House Rent + Medical + Conveyance + Other Allowance) - excluding overtime
       const gross = 
         (Number(updated.basicSalary) || 0) +
         (Number(updated.houseRentAllowance) || 0) +
         (Number(updated.medicalAllowance) || 0) +
         (Number(updated.conveyanceAllowance) || 0) +
-        (Number(updated.otherAllowance) || 0) +
-        (Number(updated.overtimeExtraDuty) || 0);
+        (Number(updated.otherAllowance) || 0);
+
+      const overtime = Number(updated.overtimeExtraDuty) || 0;
 
       // Calculate Total Deductions
       const totalDed = 
@@ -77,7 +78,8 @@ export function SalarySlipForm({ formData, setFormData, onSubmit, onReset }) {
         (Number(updated.taxStatutoryDeduction) || 0) +
         (Number(updated.otherAuthorizedDeduction) || 0);
 
-      const netPayable = gross - totalDed;
+      // Net Salary = Gross Salary + Overtime - Total Deductions
+      const netPayable = gross + overtime - totalDed;
 
       return {
         ...updated,

@@ -22,6 +22,10 @@ export async function createApp() {
     "https://dashboard.monsuralitravelsbd.com",
     "http://dashboard.monsuralitravelsbd.com",
     "http://localhost:8001",
+    "http://localhost:5173",
+    "http://127.0.0.1:5173",
+    "http://localhost:5174",
+    "http://127.0.0.1:5174",
   ];
 
   const envOrigins = env.ALLOWED_ORIGINS
@@ -84,7 +88,7 @@ export async function createApp() {
 
     const dashboardKeywords = env.DASHBOARD_DOMAIN_KEYWORDS
       ? env.DASHBOARD_DOMAIN_KEYWORDS.split(",").map((kw) => kw.trim().toLowerCase())
-      : ["dashboard"];
+      : ["dashboard", "5173", "5174", "localhost", "127.0.0.1"];
     const frontendKeywords = env.FRONTEND_DOMAIN_KEYWORDS
       ? env.FRONTEND_DOMAIN_KEYWORDS.split(",").map((kw) => kw.trim().toLowerCase())
       : ["localhost", "monsuralitravelsbd.com"];
