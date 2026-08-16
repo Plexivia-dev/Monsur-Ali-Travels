@@ -1,14 +1,21 @@
 import mongoose from "mongoose";
 
-// Generates unique Slip Number: 3 random uppercase English letters + 5 random digits (e.g. "SLIP-ABC84920")
+// Generates unique Slip Number: SLIP- + 2 letters + 4 digits + 1 middle letter + 3 digits (e.g. "SLIP-AB4829K513")
 export function generateUniqueSlipNumber() {
   const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-  let alpha = "";
-  for (let i = 0; i < 3; i++) {
-    alpha += letters.charAt(Math.floor(Math.random() * letters.length));
-  }
-  const randomNum = Math.floor(10000 + Math.random() * 90000);
-  return `SLIP-${alpha}${randomNum}`;
+  const getChar = () => letters.charAt(Math.floor(Math.random() * letters.length));
+  const getDigits = (len) => {
+    let res = "";
+    for (let i = 0; i < len; i++) res += Math.floor(Math.random() * 10);
+    return res;
+  };
+
+  const prefixLetters = getChar() + getChar();
+  const firstDigits = getDigits(4);
+  const midLetter = getChar();
+  const lastDigits = getDigits(3);
+
+  return `SLIP-${prefixLetters}${firstDigits}${midLetter}${lastDigits}`;
 }
 
 const salarySlipSchema = new mongoose.Schema(

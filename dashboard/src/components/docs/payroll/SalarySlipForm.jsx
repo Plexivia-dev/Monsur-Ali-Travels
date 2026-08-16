@@ -293,12 +293,14 @@ export function SalarySlipForm({ formData, setFormData, onSubmit, onReset, isSub
                     type="button"
                     onClick={() => {
                       const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-                      let alpha = '';
-                      for (let i = 0; i < 3; i++) {
-                        alpha += letters.charAt(Math.floor(Math.random() * letters.length));
-                      }
-                      const randomNum = Math.floor(10000 + Math.random() * 90000);
-                      handleChange('slipNo', `SLIP-${alpha}${randomNum}`);
+                      const getChar = () => letters.charAt(Math.floor(Math.random() * letters.length));
+                      const getDigits = (len) => {
+                        let res = '';
+                        for (let i = 0; i < len; i++) res += Math.floor(Math.random() * 10);
+                        return res;
+                      };
+                      const code = `SLIP-${getChar()}${getChar()}${getDigits(4)}${getChar()}${getDigits(3)}`;
+                      handleChange('slipNo', code);
                     }}
                     className="text-[10px] text-emerald-600 hover:underline font-semibold cursor-pointer"
                   >
@@ -309,7 +311,7 @@ export function SalarySlipForm({ formData, setFormData, onSubmit, onReset, isSub
                   type="text"
                   value={formData.slipNo}
                   onChange={(e) => handleChange('slipNo', e.target.value)}
-                  placeholder="SLIP-KRT84920"
+                  placeholder="SLIP-AB4829K513"
                   className="w-full px-3 py-2 bg-background border border-border rounded-md text-foreground text-xs font-mono font-bold focus:ring-1 focus:ring-primary outline-none"
                 />
               </div>

@@ -17,6 +17,14 @@ export async function createApp() {
   app.set("trust proxy", true);
 
   const defaultOrigins = [
+    "https://admin.monsuralitravels.com",
+    "http://admin.monsuralitravels.com",
+    "https://api.monsuralitravels.com",
+    "http://api.monsuralitravels.com",
+    "https://monsuralitravels.com",
+    "https://www.monsuralitravels.com",
+    "http://monsuralitravels.com",
+    "http://www.monsuralitravels.com",
     "https://monsuralitravelsbd.com",
     "https://www.monsuralitravelsbd.com",
     "https://dashboard.monsuralitravelsbd.com",
@@ -38,12 +46,19 @@ export async function createApp() {
     origin: (origin, callback) => {
       // Allow requests with no origin (like mobile apps or curl requests)
       if (!origin) return callback(null, true);
-      if (allowedOrigins.includes("*") || allowedOrigins.indexOf(origin) !== -1) {
-        callback(null, true);
-      } else {
-        logger.warn(`CORS request from origin ${origin} - allowed`);
-        callback(null, true);
+
+      if (
+        allowedOrigins.includes("*") ||
+        allowedOrigins.includes(origin) ||
+        origin.includes("monsuralitravels") ||
+        origin.includes("localhost") ||
+        origin.includes("127.0.0.1")
+      ) {
+        return callback(null, true);
       }
+
+      logger.warn(`CORS request from unlisted origin ${origin} - allowing fallback`);
+      return callback(null, true);
     },
     methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
     allowedHeaders: [
@@ -51,6 +66,7 @@ export async function createApp() {
       "Authorization",
       "X-Requested-With",
       "Accept",
+      "Origin",
     ],
     credentials: true,
     optionsSuccessStatus: 204,
@@ -88,10 +104,10 @@ export async function createApp() {
 
     const dashboardKeywords = env.DASHBOARD_DOMAIN_KEYWORDS
       ? env.DASHBOARD_DOMAIN_KEYWORDS.split(",").map((kw) => kw.trim().toLowerCase())
-      : ["dashboard", "5173", "5174", "localhost", "127.0.0.1"];
+      : ["dashboard", "admin", "5173", "5174", "localhost", "127.0.0.1", "monsuralitravels"];
     const frontendKeywords = env.FRONTEND_DOMAIN_KEYWORDS
       ? env.FRONTEND_DOMAIN_KEYWORDS.split(",").map((kw) => kw.trim().toLowerCase())
-      : ["localhost", "monsuralitravelsbd.com"];
+      : ["localhost", "monsuralitravels"];
 
     const isDashboard = dashboardKeywords.some((kw) => origin.includes(kw)) ||
       (req.originalUrl && req.originalUrl.includes("/dashboard/"));
