@@ -7,7 +7,7 @@ import { IdCardStudio } from '../components/docs/idcard/IdCardStudio';
 import { SalarySlipStudio } from '../components/docs/payroll/SalarySlipStudio';
 import { InvoiceBuilder } from '../components/docs/invoice/InvoiceBuilder';
 import { PassportSubmissionStudio } from '../components/docs/passport/PassportSubmissionStudio';
-import { IndianVisaStudio } from '../components/docs/indian-visa/IndianVisaStudio';
+import { IndianVisa } from '../components/docs/indian-visa/IndianVisa';
 
 export default function DocumentStudio() {
   const { activeSubmodule } = usePortal();
@@ -20,7 +20,7 @@ export default function DocumentStudio() {
       {activeSubmodule === 'payroll' && <SalarySlipStudio />}
       {activeSubmodule === 'invoice' && <InvoiceBuilder />}
       {activeSubmodule === 'passport-sub' && <PassportSubmissionStudio />}
-      {activeSubmodule === 'indian-visa' && <IndianVisaStudio />}
+      {activeSubmodule === 'indian-visa' && <IndianVisa />}
       {activeSubmodule === 'templates' && <TemplateStudio />}
       {activeSubmodule === 'idcard' && <IdCardStudio />}
       {activeSubmodule === 'downloads' && <DocumentDownloads />}
