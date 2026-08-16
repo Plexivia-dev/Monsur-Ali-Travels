@@ -69,7 +69,7 @@ export function IdCardStudio() {
       <div className="no-print bg-card border border-border p-4 sm:p-5 rounded-2xl shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <h2 className="text-lg font-bold text-foreground tracking-tight flex items-center gap-2">
-            🆔 Dynamic ID Card Studio
+            🆔 Dynamic ID Card
             <span className="text-[11px] font-semibold px-2.5 py-0.5 rounded-full bg-emerald-500/10 text-emerald-600 border border-emerald-500/20">
               Exact Image Replica & HD Export
             </span>
