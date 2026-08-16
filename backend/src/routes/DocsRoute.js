@@ -27,6 +27,7 @@ import {
   updatePassportSubmission,
   deletePassportSubmission,
 } from "../controllers/PassportSubmissionController.js";
+import { IndianVisaController } from "../controllers/IndianVisaController.js";
 
 const docsRouter = Router();
 
@@ -77,5 +78,17 @@ docsRouter
   .get(getPassportSubmissionById)
   .put(updatePassportSubmission)
   .delete(deletePassportSubmission);
+
+// /api/v1/docs/indian-visas
+docsRouter
+  .route("/indian-visas")
+  .get(IndianVisaController.getAll)
+  .post(IndianVisaController.create);
+
+docsRouter
+  .route("/indian-visas/:id")
+  .get(IndianVisaController.getById)
+  .put(IndianVisaController.update)
+  .delete(IndianVisaController.delete);
 
 export default docsRouter;
