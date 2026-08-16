@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { IndianVisaForm } from './IndianVisaForm';
 import { IndianVisaPreview } from './IndianVisaPreview';
 import { getDefaultIndianVisaData, generateUniqueIndianVisaTrackingNo } from './sampleData';
-import { Stamp, Eye, Edit3, Share2, Printer } from 'lucide-react';
+import { FileCheck, Eye, Edit3, Share2, Printer } from 'lucide-react';
 import { toast } from 'sonner';
 import { apiClient } from '../../../lib/api-client';
 
@@ -92,7 +92,7 @@ export function IndianVisa() {
       <div className="no-print bg-card border border-border p-4 sm:p-5 rounded-[4px] shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <h2 className="text-xl sm:text-2xl font-black text-foreground tracking-tight flex items-center gap-2">
-            <Stamp className="w-6 h-6 text-emerald-600 shrink-0" />
+            <FileCheck className="w-6 h-6 text-emerald-600 shrink-0" />
             Indian Visa Application
           </h2>
         </div>

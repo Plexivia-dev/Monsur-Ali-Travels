@@ -1,5 +1,5 @@
 import React from 'react';
-import { RotateCcw, Eye, Stamp, UserCheck, FileCheck, PhoneCall } from 'lucide-react';
+import { RotateCcw, Eye, FileCheck, UserCheck, PhoneCall } from 'lucide-react';
 
 export function IndianVisaForm({ data, onChange, onSubmit, onReset, isSubmitting = false }) {
   const handleChecklistChange = (key, checked) => {
@@ -20,7 +20,7 @@ export function IndianVisaForm({ data, onChange, onSubmit, onReset, isSubmitting
         <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b-2 border-border pb-4 gap-3">
           <div>
             <h2 className="font-black text-foreground text-xl sm:text-2xl tracking-tight flex items-center gap-2">
-              <Stamp className="w-6 h-6 text-emerald-600 shrink-0" />
+              <FileCheck className="w-6 h-6 text-emerald-600 shrink-0" />
               Indian Visa Application Form
             </h2>
           </div>

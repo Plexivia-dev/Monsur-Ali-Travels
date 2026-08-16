@@ -1,6 +1,6 @@
 import React from 'react';
 import { PrintablePaper } from '../common/PrintablePaper';
-import { Stamp, CheckCircle2, XCircle, UserCheck, FileCheck } from 'lucide-react';
+import { FileCheck, CheckCircle2, XCircle, UserCheck } from 'lucide-react';
 import logoImg from '../../../assets/logo.png';
 
 export function IndianVisaPreview({ data, onPrint }) {
@@ -66,7 +66,7 @@ export function IndianVisaPreview({ data, onPrint }) {
             {/* Title Banner */}
             <div className="bg-slate-900 text-white py-2 px-4 rounded-md text-center shadow-sm">
               <h2 className="text-base font-extrabold tracking-wider uppercase flex items-center justify-center gap-2">
-                <Stamp className="w-5 h-5 text-emerald-400" />
+                <FileCheck className="w-5 h-5 text-emerald-400" />
                 INDIAN VISA APPLICATION ACKNOWLEDGEMENT
               </h2>
               <p className="text-[11px] font-semibold text-emerald-300">
