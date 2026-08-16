@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { Search, RefreshCw, FileCheck, Trash2 } from 'lucide-react';
+import { Search, RefreshCw, FileCheck, Trash2, Printer, Download, X } from 'lucide-react';
 import { apiClient } from '../../lib/api-client';
 import { DataTablePagination } from './DataTablePagination';
 import { toast } from 'sonner';
 import { formatToDdMmYyyy } from '../../lib/utils';
 import { usePortal } from '../../context/PortalContext';
+import { IndianVisaPreview } from '../docs/indian-visa/IndianVisaPreview';
 
 export function IndianVisaDataTable() {
   const { switchPortal } = usePortal();
@@ -13,6 +14,7 @@ export function IndianVisaDataTable() {
   const [search, setSearch] = useState('');
   const [status, setStatus] = useState('all');
   const [isLoading, setIsLoading] = useState(false);
+  const [previewItem, setPreviewItem] = useState(null);
 
   const fetchData = async (page = 1, limit = pagination.limit, searchQuery = search, statusFilter = status) => {
     try {
@@ -58,6 +60,10 @@ export function IndianVisaDataTable() {
       console.error('Failed to delete visa record:', err);
       toast.error('ভিসা আবেদন মুছতে সমস্যা হয়েছে।');
     }
+  };
+
+  const handlePrint = () => {
+    window.print();
   };
 
   return (
@@ -183,14 +189,25 @@ export function IndianVisaDataTable() {
                       </span>
                     </td>
                     <td className="p-3 text-right">
-                      <button
-                        type="button"
-                        onClick={() => handleDelete(item._id, item.trackingNo)}
-                        className="p-1.5 rounded hover:bg-rose-500/10 text-rose-500 transition-colors cursor-pointer"
-                        title="Delete Record"
-                      >
-                        <Trash2 className="w-3.5 h-3.5" />
-                      </button>
+                      <div className="flex items-center justify-end gap-1.5">
+                        <button
+                          type="button"
+                          onClick={() => setPreviewItem(item)}
+                          className="p-1.5 rounded hover:bg-emerald-500/10 text-emerald-600 transition-colors cursor-pointer flex items-center gap-1 text-[11px] font-bold"
+                          title="View & Download/Print Visa Receipt"
+                        >
+                          <Download className="w-3.5 h-3.5" />
+                          <span>Download / Print</span>
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => handleDelete(item._id, item.trackingNo)}
+                          className="p-1.5 rounded hover:bg-rose-500/10 text-rose-500 transition-colors cursor-pointer"
+                          title="Delete Record"
+                        >
+                          <Trash2 className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 ))
@@ -207,6 +224,48 @@ export function IndianVisaDataTable() {
           onLimitChange={(l) => fetchData(1, l, search, status)}
         />
       </div>
+
+      {/* Full Preview & Download Modal */}
+      {previewItem && (
+        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 overflow-y-auto">
+          <div className="bg-background border border-border rounded-xl shadow-2xl max-w-4xl w-full max-h-[90vh] flex flex-col overflow-hidden">
+            {/* Modal Header */}
+            <div className="px-5 py-3.5 border-b border-border bg-card flex items-center justify-between gap-3">
+              <div>
+                <h3 className="text-sm font-bold text-foreground">
+                  ইন্ডিয়ান ভিসা আবেদন রশিদ — {previewItem.trackingNo || ''}
+                </h3>
+                <p className="text-[11px] text-muted-foreground">
+                  আবেদনকারী: {previewItem.applicantName || '—'} | পাসপোর্ট: {previewItem.passportNo || '—'}
+                </p>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={handlePrint}
+                  className="flex items-center gap-1.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-4 py-2 rounded-lg shadow-xs transition-all cursor-pointer"
+                >
+                  <Printer className="w-4 h-4" />
+                  <span>Download / Print PDF</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setPreviewItem(null)}
+                  className="p-2 rounded-lg hover:bg-muted text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
+            </div>
+
+            {/* Modal Body */}
+            <div className="flex-1 overflow-y-auto p-4 sm:p-6 bg-slate-100 dark:bg-slate-900/50 flex justify-center">
+              <IndianVisaPreview data={previewItem} />
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
