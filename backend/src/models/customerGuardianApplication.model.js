@@ -25,6 +25,14 @@ const customerGuardianSchema = new mongoose.Schema(
       default: "ইন্ডিয়ান ভিসা (Indian Visa)",
     },
 
+    // Central Customer Profile Reference (Relationship)
+    customerId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Customer",
+      default: null,
+      index: true,
+    },
+
     // 1. Customer Details
     customer: {
       fullName: {

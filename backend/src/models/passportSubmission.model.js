@@ -36,6 +36,14 @@ const passportSubmissionSchema = new mongoose.Schema(
       licenseNo: { type: String, default: "RL-1842" },
     },
 
+    // Central Customer Profile Reference (Relationship)
+    customerId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Customer",
+      default: null,
+      index: true,
+    },
+
     // Applicant Details
     applicantName: {
       type: String,

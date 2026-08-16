@@ -1,4 +1,5 @@
 import { CustomerGuardianModel } from "../models/customerGuardianApplication.model.js";
+import { syncCustomerProfile } from "../helper/customerSyncHelper.js";
 
 /**
  * Controller for Customer & Guardian Application Form Submissions
@@ -119,11 +120,33 @@ export class CustomerGuardianController {
 
       const doc = await CustomerGuardianModel.create(payload);
 
+      // Automatically sync with central Customer collection (relational link)
+      const syncedCustomer = await syncCustomerProfile({
+        fullName: payload.customer?.fullName,
+        phone: payload.customer?.mobileNumber,
+        nidNumber: payload.customer?.nidNumber,
+        passportNumber: payload.customer?.passportNumber,
+        fatherName: payload.customer?.fatherName,
+        motherName: payload.customer?.motherName,
+        email: payload.customer?.email,
+        guardian: payload.guardian,
+        attachments: payload.attachments,
+        relationType: "application",
+        relationId: doc._id,
+        payment: payload.payment,
+      });
+
+      if (syncedCustomer && !doc.customerId) {
+        doc.customerId = syncedCustomer._id;
+        await doc.save();
+      }
+
       return res.status(201).json({
         status: "success",
         success: true,
         data: doc,
-        message: "Customer application created successfully.",
+        customerId: syncedCustomer?._id || null,
+        message: "Customer application created and synced successfully.",
       });
     } catch (err) {
       console.error("CustomerGuardianController create error:", err);

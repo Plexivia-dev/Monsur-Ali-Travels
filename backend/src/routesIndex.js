@@ -4,6 +4,7 @@ import { Router } from "express";
 import authRouter from "./routes/AuthRoute.js";
 import usersRouter from "./routes/UsersRoute.js";
 import candidateRouter from "./routes/CandidateRoute.js";
+import customerRouter from "./routes/CustomerRoute.js";
 
 // Document Studio & Data List Routes
 import agreementRouter from "./routes/AgreementRoute.js";
@@ -21,9 +22,10 @@ import uploadRouter from "./routes/UploadRoute.js";
 
 const coreRouter = Router();
 
-// Authentication & Users
+// Authentication & Users & Central Customers
 coreRouter.use("/auth", authRouter);
 coreRouter.use("/users", usersRouter);
+coreRouter.use("/customers", customerRouter);
 coreRouter.use("/candidates", candidateRouter);
 
 // Document Records & Data Lists (Direct top-level endpoints)
