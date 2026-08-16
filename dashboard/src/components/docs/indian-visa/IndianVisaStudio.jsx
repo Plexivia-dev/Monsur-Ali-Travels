@@ -4,7 +4,7 @@ import { IndianVisaPreview } from './IndianVisaPreview';
 import { getDefaultIndianVisaData, generateUniqueIndianVisaTrackingNo } from './sampleData';
 import { FileText, Eye, Edit3, Share2, Printer, CheckCircle } from 'lucide-react';
 import { toast } from 'sonner';
-import apiClient from '../../../lib/apiClient';
+import { apiClient } from '../../../lib/api-client';
 
 export function IndianVisaStudio() {
   const [data, setData] = useState(getDefaultIndianVisaData());
