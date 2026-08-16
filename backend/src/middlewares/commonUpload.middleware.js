@@ -3,23 +3,46 @@ import path from 'path';
 import fs from 'fs';
 import sharp from 'sharp';
 
-// Configure Multer Storage for general and document uploads
+// Configure Multer Storage with dynamic daily folders:
+// Images => uploads/YYMMDD/ (or uploads/<folder>/YYMMDD)
+// Documents => documents/YYMMDD/ (or uploads/documents/YYMMDD)
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    // Dynamic folder name from request query, body, or fallback to 'documents'
-    const folder = (req.query.folder || req.body.folder || 'documents').replace(/[^a-zA-Z0-9_-]/g, '');
-    
+    const isDocument = file.mimetype?.includes('pdf') ||
+      file.mimetype?.includes('word') ||
+      file.mimetype?.includes('excel') ||
+      file.mimetype?.includes('spreadsheet') ||
+      file.mimetype?.includes('text') ||
+      file.mimetype?.includes('csv') ||
+      req.query.type === 'document' ||
+      req.body.type === 'document';
+
+    // Root folder: 'documents' or 'uploads'
+    const defaultRoot = isDocument ? 'documents' : 'uploads';
+    const subFolder = (req.query.folder || req.body.folder || '').replace(/[^a-zA-Z0-9_-]/g, '');
+
+    // 6-digit YYMMDD date format (e.g. 260817)
     const now = new Date();
-    const yearMonth = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
-    
-    // Target directory: uploads/<folder>/<YYYY-MM>
-    const targetDir = path.join(process.cwd(), 'uploads', folder, yearMonth);
+    const yy = String(now.getFullYear()).slice(-2);
+    const mm = String(now.getMonth() + 1).padStart(2, '0');
+    const dd = String(now.getDate()).padStart(2, '0');
+    const dateFolder = `${yy}${mm}${dd}`;
+
+    const folderParts = [process.cwd(), defaultRoot];
+    if (subFolder) folderParts.push(subFolder);
+    folderParts.push(dateFolder);
+
+    const targetDir = path.join(...folderParts);
 
     if (!fs.existsSync(targetDir)) {
       fs.mkdirSync(targetDir, { recursive: true });
     }
 
-    req.uploadRelativePath = `/uploads/${folder}/${yearMonth}`;
+    const relParts = [`/${defaultRoot}`];
+    if (subFolder) relParts.push(subFolder);
+    relParts.push(dateFolder);
+
+    req.uploadRelativePath = relParts.join('/');
     cb(null, targetDir);
   },
   filename: (req, file, cb) => {

@@ -1,4 +1,5 @@
 import { IndianVisaSubmissionModel } from "../models/indianVisaSubmission.model.js";
+import { syncCustomerProfile } from "../helper/customerSyncHelper.js";
 
 /**
  * Controller for Indian Visa Application Submissions
@@ -100,14 +101,43 @@ export class IndianVisaController {
         createdBy: req.user?._id || req.user?.id || null,
       };
 
+      // Initial activity log
+      payload.activityLogs = [
+        {
+          timestamp: new Date(),
+          statusChangedTo: payload.status || "pending",
+          note: "Indian visa submission created.",
+          updatedBy: req.user?.name || "Staff",
+        },
+      ];
+
       const newDoc = new IndianVisaSubmissionModel(payload);
       const savedDoc = await newDoc.save();
+
+      // Automatically sync with Central Customer Collection
+      const syncedCustomer = await syncCustomerProfile({
+        fullName: payload.applicantName,
+        phone: payload.applicantPhone,
+        nidNumber: payload.nidBirthCertNo,
+        passportNumber: payload.passportNo,
+        presentAddress: payload.address,
+        email: payload.applicantEmail,
+        attachments: payload.attachments,
+        relationType: "visa",
+        relationId: savedDoc._id,
+      });
+
+      if (syncedCustomer && !savedDoc.customerId) {
+        savedDoc.customerId = syncedCustomer._id;
+        await savedDoc.save();
+      }
 
       return res.status(201).json({
         status: "success",
         success: true,
         data: savedDoc,
-        message: "Indian visa application submitted successfully.",
+        customerId: syncedCustomer?._id || null,
+        message: "Indian visa application submitted and customer synced successfully.",
       });
     } catch (err) {
       console.error("IndianVisaController create error:", err);
@@ -115,6 +145,62 @@ export class IndianVisaController {
         status: "fail",
         success: false,
         message: err.message || "Failed to save Indian visa application.",
+      });
+    }
+  }
+
+  // PATCH /api/v1/docs/indian-visas/:id/stage
+  // Update Stage & Add Stage Documents
+  static async updateStage(req, res) {
+    try {
+      const { status, note, document } = req.body;
+      const doc = await IndianVisaSubmissionModel.findById(req.params.id);
+
+      if (!doc) {
+        return res.status(404).json({
+          status: "fail",
+          success: false,
+          message: "Indian visa submission not found.",
+        });
+      }
+
+      if (status) {
+        doc.status = status;
+      }
+
+      // Add attached document if uploaded during stage update
+      if (document && document.fileUrl) {
+        doc.attachments = doc.attachments || {};
+        doc.attachments.supportingDocs = doc.attachments.supportingDocs || [];
+        doc.attachments.supportingDocs.push({
+          name: document.name || `Document-${status}`,
+          fileUrl: document.fileUrl,
+          fileType: document.fileType || "document",
+          uploadedAt: new Date(),
+        });
+      }
+
+      doc.activityLogs.push({
+        timestamp: new Date(),
+        statusChangedTo: status || doc.status,
+        note: note || `Stage updated to ${status}`,
+        updatedBy: req.user?.name || "Staff",
+      });
+
+      await doc.save();
+
+      return res.status(200).json({
+        status: "success",
+        success: true,
+        data: doc,
+        message: `Visa processing status updated to ${status}.`,
+      });
+    } catch (err) {
+      console.error("IndianVisaController updateStage error:", err);
+      return res.status(400).json({
+        status: "error",
+        success: false,
+        message: err.message || "Failed to update visa stage.",
       });
     }
   }

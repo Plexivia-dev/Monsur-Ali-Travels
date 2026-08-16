@@ -98,11 +98,39 @@ const indianVisaSubmissionSchema = new mongoose.Schema(
 
     remarks: { type: String, default: "" },
 
+    // Status Stages: pending -> submitted -> accepted -> rejected -> delivered
     status: {
       type: String,
-      enum: ["pending", "processing", "submitted", "delivered"],
+      enum: ["pending", "submitted", "accepted", "rejected", "delivered", "processing"],
       default: "pending",
+      index: true,
     },
+
+    // Attachments uploaded at any stage
+    attachments: {
+      photo: { type: String, default: "" },
+      passportScan: { type: String, default: "" },
+      nidScan: { type: String, default: "" },
+      visaCopy: { type: String, default: "" },
+      supportingDocs: [
+        {
+          name: { type: String, default: "" },
+          fileUrl: { type: String, default: "" },
+          fileType: { type: String, default: "" },
+          uploadedAt: { type: Date, default: Date.now },
+        },
+      ],
+    },
+
+    // Stage updates / Activity History
+    activityLogs: [
+      {
+        timestamp: { type: Date, default: Date.now },
+        statusChangedTo: { type: String, default: "" },
+        note: { type: String, default: "" },
+        updatedBy: { type: String, default: "Admin" },
+      },
+    ],
 
     createdBy: {
       type: mongoose.Schema.Types.ObjectId,

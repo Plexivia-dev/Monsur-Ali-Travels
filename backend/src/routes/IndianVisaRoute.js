@@ -10,10 +10,24 @@ indianVisaRouter
   .post(IndianVisaController.create);
 
 // GET /api/v1/indian-visas/:id & PUT/DELETE /api/v1/indian-visas/:id
-indianVisaRouter
-  .route("/:id")
-  .get(IndianVisaController.getById)
-  .put(IndianVisaController.update)
-  .delete(IndianVisaController.delete);
+indianVisaRouter.get('/:id', (req, res) => {
+  IndianVisaController.getById(req, res);
+});
+
+indianVisaRouter.patch('/:id/stage', (req, res) => {
+  IndianVisaController.updateStage(req, res);
+});
+
+indianVisaRouter.patch('/:id', (req, res) => {
+  IndianVisaController.update(req, res);
+});
+
+indianVisaRouter.put('/:id', (req, res) => {
+  IndianVisaController.update(req, res);
+});
+
+indianVisaRouter.delete('/:id', (req, res) => {
+  IndianVisaController.delete(req, res);
+});
 
 export default indianVisaRouter;

@@ -1,11 +1,19 @@
 import React, { useState, useEffect } from 'react';
-import { Search, RefreshCw, FileCheck, Trash2, Printer, Download, X } from 'lucide-react';
+import { Search, RefreshCw, FileCheck, Trash2, Printer, Download, X, Edit3, Upload, Paperclip, CheckCircle2, Clock, Check, AlertCircle } from 'lucide-react';
 import { apiClient } from '../../lib/api-client';
 import { DataTablePagination } from './DataTablePagination';
 import { toast } from 'sonner';
 import { formatToDdMmYyyy } from '../../lib/utils';
 import { usePortal } from '../../context/PortalContext';
 import { IndianVisaPreview } from '../docs/indian-visa/IndianVisaPreview';
+
+const VISA_STAGES = [
+  { id: 'pending', label: 'আবেদন গ্রহণ (Pending)', color: 'bg-amber-500/10 text-amber-600 border-amber-500/20' },
+  { id: 'submitted', label: 'ফাইল সাবমিটেড (Submitted)', color: 'bg-blue-500/10 text-blue-600 border-blue-500/20' },
+  { id: 'accepted', label: 'ভিসা এক্সেপ্টেড (Visa Accepted)', color: 'bg-emerald-500/10 text-emerald-600 border-emerald-500/20' },
+  { id: 'rejected', label: 'ভিসা রিজেক্টেড (Visa Rejected)', color: 'bg-rose-500/10 text-rose-600 border-rose-500/20' },
+  { id: 'delivered', label: 'ডেলিভারি সম্পন্ন (Delivered)', color: 'bg-purple-500/10 text-purple-600 border-purple-500/20' },
+];
 
 export function IndianVisaDataTable() {
   const { switchPortal } = usePortal();
@@ -15,6 +23,13 @@ export function IndianVisaDataTable() {
   const [status, setStatus] = useState('all');
   const [isLoading, setIsLoading] = useState(false);
   const [previewItem, setPreviewItem] = useState(null);
+  
+  // Stage Status Update Modal State
+  const [stageModalItem, setStageModalItem] = useState(null);
+  const [newStage, setNewStage] = useState('pending');
+  const [stageNote, setStageNote] = useState('');
+  const [stageDocument, setStageDocument] = useState({ name: '', fileUrl: '', fileType: 'pdf' });
+  const [isUpdatingStage, setIsUpdatingStage] = useState(false);
 
   const fetchData = async (page = 1, limit = pagination.limit, searchQuery = search, statusFilter = status) => {
     try {
@@ -26,7 +41,7 @@ export function IndianVisaDataTable() {
         status: statusFilter !== 'all' ? statusFilter : undefined,
       };
 
-      const res = await apiClient.get('/api/v1/docs/indian-visas', { params });
+      const res = await apiClient.get('/api/v1/indian-visas', { params });
       if (res.data?.success || res.data?.status === 'success') {
         setData(res.data.data || []);
         if (res.data.pagination) {
@@ -50,10 +65,65 @@ export function IndianVisaDataTable() {
     fetchData(1, pagination.limit, search, status);
   };
 
+  const handleOpenStageModal = (item) => {
+    setStageModalItem(item);
+    setNewStage(item.status || 'pending');
+    setStageNote('');
+    setStageDocument({ name: '', fileUrl: '', fileType: 'pdf' });
+  };
+
+  const handleSaveStageUpdate = async () => {
+    if (!stageModalItem) return;
+    try {
+      setIsUpdatingStage(true);
+      const payload = {
+        status: newStage,
+        note: stageNote || `স্ট্যাটাস পরিবর্তন করে "${newStage}" করা হয়েছে।`,
+        document: stageDocument.fileUrl ? stageDocument : null,
+      };
+
+      await apiClient.patch(`/api/v1/indian-visas/${stageModalItem._id}/stage`, payload);
+      toast.success(`ভিসা স্ট্যাটাস সফলভাবে "${newStage}" এ আপডেট করা হয়েছে!`);
+      setStageModalItem(null);
+      fetchData(pagination.page, pagination.limit, search, status);
+    } catch (err) {
+      console.error('Failed to update stage:', err);
+      toast.error('ভিসা স্ট্যাটাস আপডেট করতে সমস্যা হয়েছে।');
+    } finally {
+      setIsUpdatingStage(false);
+    }
+  };
+
+  const handleFileUpload = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+
+      const res = await apiClient.post('/api/v1/upload/single?folder=visa-docs', formData, {
+        headers: { 'Content-Type': 'multipart/form-data' }
+      });
+
+      if (res.data?.success) {
+        setStageDocument({
+          name: file.name,
+          fileUrl: res.data.data.url,
+          fileType: file.type.includes('image') ? 'image' : 'pdf'
+        });
+        toast.success(`ডকুমেন্ট "${file.name}" সফলভাবে আপলোড হয়েছে!`);
+      }
+    } catch (err) {
+      console.error('Upload failed:', err);
+      toast.error('ফাইল আপলোড করতে ব্যর্থ হয়েছে।');
+    }
+  };
+
   const handleDelete = async (id, trackingNo) => {
     if (!window.confirm(`আপনি কি ভিসা আবেদন "${trackingNo || id}" মুছে ফেলতে চান?`)) return;
     try {
-      await apiClient.delete(`/api/v1/docs/indian-visas/${id}`);
+      await apiClient.delete(`/api/v1/indian-visas/${id}`);
       toast.success('ভিসা আবেদন রেকর্ড মুছে ফেলা হয়েছে।');
       fetchData(pagination.page, pagination.limit, search, status);
     } catch (err) {
@@ -184,12 +254,32 @@ export function IndianVisaDataTable() {
                       {formatToDdMmYyyy(item.submissionDate) || '—'}
                     </td>
                     <td className="p-3 text-center">
-                      <span className="inline-block px-2 py-0.5 rounded text-[10px] font-bold uppercase bg-emerald-500/10 text-emerald-600 border border-emerald-500/20">
-                        {item.status || 'Pending'}
-                      </span>
+                      {(() => {
+                        const stageInfo = VISA_STAGES.find(s => s.id === item.status) || VISA_STAGES[0];
+                        return (
+                          <button
+                            type="button"
+                            onClick={() => handleOpenStageModal(item)}
+                            className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10.5px] font-bold border transition-all hover:scale-105 cursor-pointer shadow-2xs ${stageInfo.color}`}
+                            title="ক্লিক করে স্ট্যাটাস ও ডকুমেন্ট পরিবর্তন করুন"
+                          >
+                            <Edit3 className="w-3 h-3" />
+                            <span>{stageInfo.label.split(' ')[0]}</span>
+                          </button>
+                        );
+                      })()}
                     </td>
                     <td className="p-3 text-right">
                       <div className="flex items-center justify-end gap-1.5">
+                        <button
+                          type="button"
+                          onClick={() => handleOpenStageModal(item)}
+                          className="p-1.5 rounded hover:bg-primary/10 text-primary transition-colors cursor-pointer flex items-center gap-1 text-[11px] font-bold"
+                          title="Update Status / Add Stage Document"
+                        >
+                          <Edit3 className="w-3.5 h-3.5" />
+                          <span>আপডেট</span>
+                        </button>
                         <button
                           type="button"
                           onClick={() => setPreviewItem(item)}
@@ -262,6 +352,116 @@ export function IndianVisaDataTable() {
             {/* Modal Body */}
             <div className="flex-1 overflow-y-auto p-4 sm:p-6 bg-slate-100 dark:bg-slate-900/50 flex justify-center">
               <IndianVisaPreview data={previewItem} />
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Stage Status & Stage Document Update Modal */}
+      {stageModalItem && (
+        <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="bg-card border border-border rounded-2xl max-w-lg w-full p-6 shadow-2xl space-y-4 text-foreground">
+            <div className="flex items-center justify-between border-b border-border pb-3">
+              <div className="flex items-center gap-2">
+                <div className="p-2 bg-emerald-500/10 text-emerald-600 rounded-lg">
+                  <Edit3 className="w-5 h-5" />
+                </div>
+                <div>
+                  <h3 className="text-sm font-bold text-foreground">ভিসা প্রসেসিং স্টেজ আপডেট</h3>
+                  <p className="text-xs text-muted-foreground">
+                    ট্র্যাকিং: <span className="font-mono font-bold text-emerald-600">{stageModalItem.trackingNo}</span> | {stageModalItem.applicantName}
+                  </p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setStageModalItem(null)}
+                className="p-1.5 rounded-lg hover:bg-muted text-muted-foreground hover:text-foreground"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            {/* Stage Dropdown Selector */}
+            <div className="space-y-1.5">
+              <label className="block text-xs font-bold text-foreground">
+                নতুন স্ট্যাটাস / স্টেজ নির্বাচন করুন:
+              </label>
+              <select
+                value={newStage}
+                onChange={(e) => setNewStage(e.target.value)}
+                className="w-full px-3.5 py-2.5 bg-background border border-border rounded-xl text-foreground font-bold text-xs focus:ring-1 focus:ring-primary outline-hidden cursor-pointer"
+              >
+                {VISA_STAGES.map((st) => (
+                  <option key={st.id} value={st.id}>
+                    {st.label}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            {/* Stage Document Upload Option */}
+            <div className="space-y-1.5 bg-muted/40 p-3.5 rounded-xl border border-border text-xs">
+              <label className="block font-bold text-foreground flex items-center gap-1.5">
+                <Paperclip className="w-4 h-4 text-primary" />
+                <span>স্টেজের ডকুমেন্ট / ভিসা কপি সংযুক্ত করুন (ঐচ্ছিক):</span>
+              </label>
+              
+              <div className="flex items-center gap-2 pt-1">
+                <label className="flex items-center gap-2 bg-background border border-border hover:bg-muted/80 text-foreground px-3 py-2 rounded-lg text-xs font-semibold cursor-pointer transition-colors shrink-0">
+                  <Upload className="w-4 h-4 text-primary" />
+                  <span>ফাইল সিলেক্ট করুন</span>
+                  <input
+                    type="file"
+                    className="hidden"
+                    onChange={handleFileUpload}
+                    accept=".pdf,.png,.jpg,.jpeg,.doc,.docx"
+                  />
+                </label>
+                
+                {stageDocument.fileUrl ? (
+                  <div className="flex items-center gap-1.5 text-xs text-emerald-600 font-medium truncate">
+                    <CheckCircle2 className="w-4 h-4 shrink-0" />
+                    <span className="truncate">{stageDocument.name}</span>
+                  </div>
+                ) : (
+                  <span className="text-[11px] text-muted-foreground">কোনো ফাইল যুক্ত করা হয়নি</span>
+                )}
+              </div>
+            </div>
+
+            {/* Note / Remarks */}
+            <div className="space-y-1.5">
+              <label className="block text-xs font-bold text-foreground">
+                মন্তব্য / রিমার্কস (ঐচ্ছিক):
+              </label>
+              <textarea
+                value={stageNote}
+                onChange={(e) => setStageNote(e.target.value)}
+                placeholder="যেমন: এম্বাসিতে ফাইল জমা হয়েছে / ভিসা অনুমোদন হয়েছে"
+                rows={2}
+                className="w-full px-3 py-2 bg-background border border-border rounded-xl text-xs text-foreground focus:ring-1 focus:ring-primary outline-hidden"
+              />
+            </div>
+
+            {/* Action Buttons */}
+            <div className="flex items-center justify-end gap-2 pt-2 border-t border-border">
+              <button
+                type="button"
+                onClick={() => setStageModalItem(null)}
+                className="px-4 py-2 rounded-xl text-xs font-semibold text-muted-foreground hover:bg-muted cursor-pointer"
+              >
+                বাতিল
+              </button>
+              <button
+                type="button"
+                onClick={handleSaveStageUpdate}
+                disabled={isUpdatingStage}
+                className="flex items-center gap-1.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-5 py-2 rounded-xl shadow-xs transition-all cursor-pointer disabled:opacity-50"
+              >
+                <Check className="w-4 h-4" />
+                <span>{isUpdatingStage ? 'আপডেট হচ্ছে...' : 'স্টেজ পরিবর্তন করুন'}</span>
+              </button>
             </div>
           </div>
         </div>
