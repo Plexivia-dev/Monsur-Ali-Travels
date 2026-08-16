@@ -213,10 +213,8 @@ export function SalarySlip() {
           </div>
 
           {/* Printable A4 Canvas Container */}
-          <div className="w-full flex justify-center">
-            <PrintablePaper id="printable-salary-canvas">
-              <SalarySlipPreview data={formData} />
-            </PrintablePaper>
+          <div className="w-full flex justify-center py-4 no-print-padding">
+            <SalarySlipPreview data={formData} />
           </div>
         </div>
       )}

@@ -297,8 +297,9 @@ export function SalarySlipForm({ formData, setFormData, onSubmit, onReset, isSub
                 <input
                   type="text"
                   value={formData.slipNo}
-                  onChange={(e) => handleChange('slipNo', e.target.value)}
-                  className="w-full px-3 py-2 bg-background border border-border rounded-md text-foreground text-xs font-mono font-bold focus:ring-1 focus:ring-primary outline-none"
+                  readOnly
+                  className="w-full px-3 py-2 bg-muted/60 border border-border rounded-md text-foreground/80 text-xs font-mono font-bold outline-none cursor-not-allowed select-none"
+                  placeholder="System Generated"
                 />
               </div>
 
