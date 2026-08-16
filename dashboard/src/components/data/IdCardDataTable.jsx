@@ -1,0 +1,208 @@
+import React, { useState, useEffect } from 'react';
+import { Search, RefreshCw, UserCheck, Trash2 } from 'lucide-react';
+import { apiClient } from '../../lib/api-client';
+import { DataTablePagination } from './DataTablePagination';
+import { toast } from 'sonner';
+import { formatToDdMmYyyy } from '../../lib/utils';
+import { usePortal } from '../../context/PortalContext';
+
+export function IdCardDataTable() {
+  const { switchPortal } = usePortal();
+  const [data, setData] = useState([]);
+  const [pagination, setPagination] = useState({ page: 1, limit: 10, skip: 0, totalCount: 0, totalPages: 1 });
+  const [search, setSearch] = useState('');
+  const [status, setStatus] = useState('all');
+  const [isLoading, setIsLoading] = useState(false);
+
+  const fetchData = async (page = 1, limit = pagination.limit, searchQuery = search, statusFilter = status) => {
+    try {
+      setIsLoading(true);
+      const params = {
+        page,
+        limit,
+        search: searchQuery.trim() || undefined,
+        status: statusFilter !== 'all' ? statusFilter : undefined,
+      };
+
+      const res = await apiClient.get('/api/v1/id-cards', { params });
+      if (res.data?.success || res.data?.status === 'success') {
+        setData(res.data.data || []);
+        if (res.data.pagination) {
+          setPagination(res.data.pagination);
+        }
+      }
+    } catch (err) {
+      console.error('Failed to fetch ID cards:', err);
+      toast.error('আইডি কার্ড তালিকা লোড করতে সমস্যা হয়েছে।');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchData(1);
+  }, [status]);
+
+  const handleSearchSubmit = (e) => {
+    e.preventDefault();
+    fetchData(1, pagination.limit, search, status);
+  };
+
+  const handleDelete = async (id, name) => {
+    if (!window.confirm(`আপনি কি আইডি কার্ড "${name || id}" মুছে ফেলতে চান?`)) return;
+    try {
+      await apiClient.delete(`/api/v1/id-cards/${id}`);
+      toast.success('আইডি কার্ড মুছে ফেলা হয়েছে।');
+      fetchData(pagination.page, pagination.limit, search, status);
+    } catch (err) {
+      console.error('Failed to delete ID card:', err);
+      toast.error('আইডি কার্ড মুছতে সমস্যা হয়েছে।');
+    }
+  };
+
+  return (
+    <div className="space-y-4">
+      {/* Header Bar */}
+      <div className="bg-card border border-border p-5 rounded-xl shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+          <h2 className="text-lg font-bold text-foreground tracking-tight flex items-center gap-2">
+            <UserCheck className="w-5 h-5 text-emerald-500" />
+            Employee ID Cards (কর্মচারী আইডি কার্ড তালিকা)
+          </h2>
+          <p className="text-xs text-muted-foreground mt-0.5">
+            প্রতিষ্ঠানের সকল কর্মকর্তা ও কর্মচারীদের ডিজিটাল আইডি কার্ড ডাটাবেজ রেকর্ড।
+          </p>
+        </div>
+
+        <button
+          type="button"
+          onClick={() => switchPortal('docs', 'idcard')}
+          className="flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-4 py-2 rounded-lg shadow-xs transition-all cursor-pointer shrink-0"
+        >
+          <span>+ নতুন আইডি কার্ড তৈরি</span>
+        </button>
+      </div>
+
+      {/* Filter Toolbar */}
+      <div className="bg-card border border-border p-3.5 rounded-xl shadow-xs flex flex-col sm:flex-row items-center justify-between gap-3">
+        <form onSubmit={handleSearchSubmit} className="relative w-full sm:w-80">
+          <Search className="w-4 h-4 text-muted-foreground absolute left-3 top-2.5" />
+          <input
+            type="text"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="w-full pl-9 pr-3 py-1.5 bg-background border border-border rounded-lg text-xs font-medium text-foreground outline-none focus:ring-1 focus:ring-primary"
+          />
+        </form>
+
+        <div className="flex items-center gap-2 w-full sm:w-auto justify-end">
+          <select
+            value={status}
+            onChange={(e) => setStatus(e.target.value)}
+            className="bg-background border border-border rounded-lg px-3 py-1.5 text-xs font-bold text-foreground outline-none cursor-pointer"
+          >
+            <option value="all">সকল স্ট্যাটাস</option>
+            <option value="active">Active (সক্রিয়)</option>
+            <option value="inactive">Inactive (নিষ্ক্রিয়)</option>
+          </select>
+
+          <button
+            type="button"
+            onClick={() => fetchData(pagination.page, pagination.limit, search, status)}
+            disabled={isLoading}
+            className="p-2 rounded-lg border border-border bg-muted/40 hover:bg-muted text-foreground transition-all cursor-pointer"
+            title="Refresh Data"
+          >
+            <RefreshCw className={`w-3.5 h-3.5 ${isLoading ? 'animate-spin text-primary' : ''}`} />
+          </button>
+        </div>
+      </div>
+
+      {/* Table Container */}
+      <div className="bg-card border border-border rounded-xl shadow-xs overflow-hidden">
+        <div className="overflow-x-auto">
+          <table className="w-full text-left text-xs border-collapse">
+            <thead>
+              <tr className="bg-muted/50 text-muted-foreground font-bold border-b border-border">
+                <th className="p-3 w-12 text-center">#</th>
+                <th className="p-3">আইডি নম্বর</th>
+                <th className="p-3">কর্মচারীর নাম</th>
+                <th className="p-3">পদবী (Role)</th>
+                <th className="p-3">যোগদানের তারিখ</th>
+                <th className="p-3">রক্তের গ্রুপ</th>
+                <th className="p-3">ফোন নম্বর</th>
+                <th className="p-3 text-center">স্ট্যাটাস</th>
+                <th className="p-3 text-right">অ্যাকশন</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-border">
+              {isLoading ? (
+                <tr>
+                  <td colSpan={9} className="text-center py-10 text-muted-foreground">
+                    <RefreshCw className="w-5 h-5 animate-spin mx-auto text-primary mb-2" />
+                    <span>ডাটা লোড হচ্ছে...</span>
+                  </td>
+                </tr>
+              ) : data.length === 0 ? (
+                <tr>
+                  <td colSpan={9} className="text-center py-10 text-muted-foreground font-medium">
+                    কোনো আইডি কার্ড রেকর্ড পাওয়া যায়নি।
+                  </td>
+                </tr>
+              ) : (
+                data.map((item, idx) => (
+                  <tr key={item._id || idx} className="hover:bg-muted/30 transition-colors">
+                    <td className="p-3 text-center font-mono text-muted-foreground">
+                      {pagination.skip + idx + 1}
+                    </td>
+                    <td className="p-3 font-mono font-bold text-emerald-600">
+                      {item.idNumber || '—'}
+                    </td>
+                    <td className="p-3 font-bold text-foreground">
+                      {item.fullName || '—'}
+                    </td>
+                    <td className="p-3 font-medium text-foreground">
+                      {item.role || '—'}
+                    </td>
+                    <td className="p-3 font-mono text-muted-foreground">
+                      {formatToDdMmYyyy(item.joiningDate) || '—'}
+                    </td>
+                    <td className="p-3 font-bold text-rose-600">
+                      {item.bloodGroup || '—'}
+                    </td>
+                    <td className="p-3 font-mono text-muted-foreground">
+                      {item.contactPhone || '—'}
+                    </td>
+                    <td className="p-3 text-center">
+                      <span className="inline-block px-2 py-0.5 rounded text-[10px] font-bold uppercase bg-emerald-500/10 text-emerald-600 border border-emerald-500/20">
+                        {item.status || 'Active'}
+                      </span>
+                    </td>
+                    <td className="p-3 text-right">
+                      <button
+                        type="button"
+                        onClick={() => handleDelete(item._id, item.fullName)}
+                        className="p-1.5 rounded hover:bg-rose-500/10 text-rose-500 transition-colors cursor-pointer"
+                        title="Delete Record"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </button>
+                    </td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+        </div>
+
+        {/* Pagination Footer */}
+        <DataTablePagination
+          pagination={pagination}
+          isLoading={isLoading}
+          onPageChange={(p) => fetchData(p, pagination.limit, search, status)}
+          onLimitChange={(l) => fetchData(1, l, search, status)}
+        />
+      </div>
+    </div>
+  );
+}

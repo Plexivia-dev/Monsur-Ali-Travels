@@ -29,7 +29,8 @@ import {
   Moon,
   User,
   ShieldCheck,
-  Stamp
+  Stamp,
+  Database
 } from 'lucide-react';
 
 export const Sidebar = () => {
@@ -40,6 +41,7 @@ export const Sidebar = () => {
   const [agencyOpen, setAgencyOpen] = useState(true);
   const [clientsSubOpen, setClientsSubOpen] = useState(false);
   const [docsOpen, setDocsOpen] = useState(true);
+  const [dataOpen, setDataOpen] = useState(true);
   const [adminOpen, setAdminOpen] = useState(false);
   const [showProfileCard, setShowProfileCard] = useState(false);
 
@@ -58,6 +60,15 @@ export const Sidebar = () => {
     { id: 'passport-sub', label: 'Passport Submission', icon: ShieldCheck },
     { id: 'indian-visa', label: 'Indian Visa Application', icon: FileCheck },
     { id: 'idcard', label: 'ID Card', icon: IdCard }
+  ];
+
+  const navItemsData = [
+    { id: 'agreements', label: 'Agreements (এগ্রিমেন্টস)', icon: FileText },
+    { id: 'indian-visas', label: 'Visa Applications (ভিসা)', icon: FileCheck },
+    { id: 'passports', label: 'Passport Submissions (পাসপোর্ট)', icon: ShieldCheck },
+    { id: 'payrolls', label: 'Salary Slips (স্যালারি)', icon: Receipt },
+    { id: 'invoices', label: 'Invoices (ইনভয়েস)', icon: FileSpreadsheet },
+    { id: 'id-cards', label: 'Employee ID Cards (আইডি কার্ড)', icon: IdCard }
   ];
 
   const navItemsAdmin = [
@@ -144,6 +155,43 @@ export const Sidebar = () => {
                       }`}
                     >
                       <Icon className={`w-4 h-4 ${isActive ? 'text-emerald-500' : 'text-sidebar-foreground/60'}`} />
+                      <span>{item.label}</span>
+                    </button>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+
+          {/* GROUP: DATA (ডকুমেন্ট ডাটা রেকর্ডস) */}
+          <div className="space-y-1">
+            <button
+              onClick={() => setDataOpen(!dataOpen)}
+              className="w-full flex items-center justify-between px-3 py-2 text-xs font-bold uppercase tracking-wider text-left text-blue-500 hover:text-blue-400 transition-colors cursor-pointer"
+            >
+              <div className="flex items-center gap-2">
+                <Database className="w-4 h-4 text-blue-500" />
+                <span>Data Records (ডাটা)</span>
+              </div>
+              {dataOpen ? <ChevronDown className="w-3.5 h-3.5" /> : <ChevronRight className="w-3.5 h-3.5" />}
+            </button>
+
+            {dataOpen && (
+              <div className="space-y-0.5 pl-1">
+                {navItemsData.map((item) => {
+                  const Icon = item.icon;
+                  const isActive = activePortal === 'data' && activeSubmodule === item.id;
+                  return (
+                    <button
+                      key={item.id}
+                      onClick={() => handleNavClick('data', item.id)}
+                      className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg text-xs font-medium text-left transition-all cursor-pointer ${
+                        isActive
+                          ? 'bg-blue-500/10 text-blue-500 font-semibold border-l-2 border-blue-500'
+                          : 'text-sidebar-foreground/75 hover:text-sidebar-foreground hover:bg-sidebar-accent'
+                      }`}
+                    >
+                      <Icon className={`w-4 h-4 ${isActive ? 'text-blue-500' : 'text-sidebar-foreground/60'}`} />
                       <span>{item.label}</span>
                     </button>
                   );

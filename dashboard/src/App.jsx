@@ -10,6 +10,7 @@ import Factory from './pages/Factory';
 import Agency from './pages/Agency';
 import Admin from './pages/Admin';
 import DocumentStudio from './pages/DocumentStudio';
+import DocumentData from './pages/DocumentData';
 import { ToastContainer } from './components/common/ToastContainer';
 import { GlobalSearchModal } from './components/common/GlobalSearchModal';
 import { Toaster } from 'sonner';
@@ -87,6 +88,7 @@ function MainLayout() {
           {activePortal === 'agency' && <Agency />}
           {activePortal === 'admin' && <Admin />}
           {activePortal === 'docs' && <DocumentStudio />}
+          {activePortal === 'data' && <DocumentData />}
         </main>
       </div>
 
