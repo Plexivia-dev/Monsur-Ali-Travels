@@ -2,6 +2,7 @@ import React from 'react';
 import { PrintablePaper } from '../common/PrintablePaper';
 import { Printer, CheckCircle, Clock, AlertTriangle } from 'lucide-react';
 import logoImg from '../../../assets/logo.png';
+import { formatToDdMmYyyy } from '../../../lib/utils';
 
 export function InvoicePreview({ data = {}, onPrint }) {
   const {
