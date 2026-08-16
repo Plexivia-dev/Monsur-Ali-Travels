@@ -18,22 +18,34 @@ export async function createApp() {
 
   const defaultOrigins = [
     "https://admin.monsuralitravels.com",
+    "https://admin.monsuralitravels.com/",
     "http://admin.monsuralitravels.com",
+    "http://admin.monsuralitravels.com/",
     "https://api.monsuralitravels.com",
+    "https://api.monsuralitravels.com/",
     "http://api.monsuralitravels.com",
+    "http://api.monsuralitravels.com/",
     "https://monsuralitravels.com",
+    "https://monsuralitravels.com/",
     "https://www.monsuralitravels.com",
+    "https://www.monsuralitravels.com/",
     "http://monsuralitravels.com",
+    "http://monsuralitravels.com/",
     "http://www.monsuralitravels.com",
+    "http://www.monsuralitravels.com/",
     "https://monsuralitravelsbd.com",
     "https://www.monsuralitravelsbd.com",
     "https://dashboard.monsuralitravelsbd.com",
     "http://dashboard.monsuralitravelsbd.com",
     "http://localhost:8001",
     "http://localhost:5173",
+    "http://localhost:5173/",
     "http://127.0.0.1:5173",
+    "http://127.0.0.1:5173/",
     "http://localhost:5174",
+    "http://localhost:5174/",
     "http://127.0.0.1:5174",
+    "http://127.0.0.1:5174/",
   ];
 
   const envOrigins = env.ALLOWED_ORIGINS
@@ -47,12 +59,15 @@ export async function createApp() {
       // Allow requests with no origin (like mobile apps or curl requests)
       if (!origin) return callback(null, true);
 
+      const cleanOrigin = origin.replace(/\/$/, "");
+
       if (
         allowedOrigins.includes("*") ||
         allowedOrigins.includes(origin) ||
-        origin.includes("monsuralitravels") ||
-        origin.includes("localhost") ||
-        origin.includes("127.0.0.1")
+        allowedOrigins.includes(cleanOrigin) ||
+        cleanOrigin.includes("monsuralitravels") ||
+        cleanOrigin.includes("localhost") ||
+        cleanOrigin.includes("127.0.0.1")
       ) {
         return callback(null, true);
       }
