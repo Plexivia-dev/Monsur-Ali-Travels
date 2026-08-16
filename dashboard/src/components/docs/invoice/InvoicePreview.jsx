@@ -50,7 +50,7 @@ export function InvoicePreview({ data, onPrint }) {
           <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
           <span className="font-bold text-foreground">Live Invoice Canvas</span>
           <span>•</span>
-          <span className="text-[11px]">A4 Vector Print Ready</span>
+          <span className="text-xs">A4 Vector Print Ready</span>
         </div>
 
         <button
@@ -77,7 +77,7 @@ export function InvoicePreview({ data, onPrint }) {
                 <p className="text-xs text-slate-700 font-bold">{biller.subtitle}</p>
                 <p className="text-xs text-slate-600">{biller.address}</p>
                 <p className="text-xs text-slate-600">Phone: {biller.phone} | Email: {biller.email}</p>
-                {biller.binNo && <p className="text-[11px] font-mono text-slate-500 font-semibold">License / BIN: {biller.binNo}</p>}
+                {biller.binNo && <p className="text-xs font-mono text-slate-500 font-semibold">License / BIN: {biller.binNo}</p>}
               </div>
 
               <div className="text-right space-y-2">
@@ -113,9 +113,9 @@ export function InvoicePreview({ data, onPrint }) {
             </div>
 
             {/* Client Billed-To Info */}
-            <div className="bg-slate-50 p-3.5 rounded-[4px] border border-slate-300 text-xs space-y-1">
-              <span className="text-[10px] font-extrabold uppercase tracking-wider text-slate-600 block">BILLED TO:</span>
-              <div className="font-bold text-sm text-slate-900">{client.name || 'সম্মানিত কাস্টমার'}</div>
+            <div className="bg-slate-50 p-4 rounded-[4px] border border-slate-300 text-sm space-y-1">
+              <span className="text-xs font-extrabold uppercase tracking-wider text-slate-600 block">BILLED TO:</span>
+              <div className="font-bold text-base text-slate-900">{client.name || 'সম্মানিত কাস্টমার'}</div>
               {client.contactPerson && <div>Attn: {client.contactPerson}</div>}
               {client.address && <div>Address: {client.address}</div>}
               {(client.phone || client.email) && (
@@ -124,27 +124,27 @@ export function InvoicePreview({ data, onPrint }) {
             </div>
 
             {/* Line Items Table with Visible Cell Grid Borders */}
-            <div className="border border-slate-900 rounded-[4px] overflow-hidden text-xs">
+            <div className="border border-slate-900 rounded-[4px] overflow-hidden text-sm">
               <table className="w-full text-left border-collapse border border-slate-900">
                 <thead>
-                  <tr className="bg-slate-900 text-white uppercase text-[11px] font-bold">
-                    <th className="p-2.5 w-10 text-center border border-slate-900">#</th>
-                    <th className="p-2.5 w-44 border border-slate-900">Item Title</th>
-                    <th className="p-2.5 border border-slate-900">Description</th>
-                    <th className="p-2.5 text-center w-16 border border-slate-900">Qty</th>
-                    <th className="p-2.5 text-right w-24 border border-slate-900">Rate ({currency})</th>
-                    <th className="p-2.5 text-right w-28 border border-slate-900">Total ({currency})</th>
+                  <tr className="bg-slate-900 text-white uppercase text-xs font-bold">
+                    <th className="p-3 w-10 text-center border border-slate-900">#</th>
+                    <th className="p-3 w-48 border border-slate-900">Item Title</th>
+                    <th className="p-3 border border-slate-900">Description</th>
+                    <th className="p-3 text-center w-20 border border-slate-900">Qty</th>
+                    <th className="p-3 text-right w-28 border border-slate-900">Rate ({currency})</th>
+                    <th className="p-3 text-right w-32 border border-slate-900">Total ({currency})</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-300">
                   {displayItems.map((item, idx) => (
-                    <tr key={item.id || idx} className="hover:bg-slate-50/80 font-medium h-9">
-                      <td className="p-2.5 text-center text-slate-500 font-mono border border-slate-300">{idx + 1}</td>
-                      <td className="p-2.5 text-slate-900 font-bold border border-slate-300">{item.isEmpty ? '—' : (item.title || 'Service Item')}</td>
-                      <td className="p-2.5 text-slate-800 border border-slate-300">{item.isEmpty ? '—' : (item.description || '—')}</td>
-                      <td className="p-2.5 text-center font-mono font-bold text-slate-900 border border-slate-300">{item.qtyDisplay}</td>
-                      <td className="p-2.5 text-right font-mono border border-slate-300">{item.isEmpty ? '-' : (parseFloat(item.unitPrice) || 0).toLocaleString('en-IN')}</td>
-                      <td className="p-2.5 text-right font-mono font-bold text-slate-900 border border-slate-300">{item.isEmpty ? '-' : item.lineTotal.toLocaleString('en-IN')}</td>
+                    <tr key={item.id || idx} className="hover:bg-slate-50/80 font-medium h-10">
+                      <td className="p-3 text-center text-slate-500 font-mono border border-slate-300">{idx + 1}</td>
+                      <td className="p-3 text-slate-900 font-bold border border-slate-300">{item.isEmpty ? '—' : (item.title || 'Service Item')}</td>
+                      <td className="p-3 text-slate-800 border border-slate-300">{item.isEmpty ? '—' : (item.description || '—')}</td>
+                      <td className="p-3 text-center font-mono font-bold text-slate-900 border border-slate-300">{item.qtyDisplay}</td>
+                      <td className="p-3 text-right font-mono border border-slate-300">{item.isEmpty ? '-' : (parseFloat(item.unitPrice) || 0).toLocaleString('en-IN')}</td>
+                      <td className="p-3 text-right font-mono font-bold text-slate-900 border border-slate-300">{item.isEmpty ? '-' : item.lineTotal.toLocaleString('en-IN')}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -154,13 +154,13 @@ export function InvoicePreview({ data, onPrint }) {
             {/* Summary Financial Totals */}
             <div className="flex flex-col sm:flex-row justify-between items-start gap-6 pt-1">
               <div className="max-w-md text-xs space-y-1.5">
-                <span className="font-bold text-slate-700 uppercase tracking-wider text-[11px]">Payment Terms & Notes:</span>
-                <p className="bg-slate-50 p-2.5 rounded-[4px] border border-slate-300 text-slate-700 leading-relaxed text-[11px]">
+                <span className="font-bold text-slate-700 uppercase tracking-wider text-xs">Payment Terms & Notes:</span>
+                <p className="bg-slate-50 p-3 rounded-[4px] border border-slate-300 text-slate-700 leading-relaxed text-xs">
                   {paymentTerms || 'Payment due within 15 days of invoice date.'}
                 </p>
               </div>
 
-              <div className="w-full sm:w-64 space-y-1.5 text-xs font-mono border-t border-slate-400 pt-2">
+              <div className="w-full sm:w-72 space-y-1.5 text-sm font-mono border-t border-slate-400 pt-2">
                 <div className="flex justify-between text-slate-700">
                   <span>Subtotal:</span>
                   <span>{subtotal.toLocaleString('en-IN')} {currency}</span>
@@ -173,7 +173,7 @@ export function InvoicePreview({ data, onPrint }) {
                   </div>
                 )}
 
-                <div className="flex justify-between text-sm font-bold text-slate-900 border-t-2 border-slate-900 pt-1.5 bg-slate-100 p-2 rounded-[4px]">
+                <div className="flex justify-between text-base font-bold text-slate-900 border-t-2 border-slate-900 pt-2 bg-slate-100 p-2.5 rounded-[4px]">
                   <span>Grand Total:</span>
                   <span>{grandTotal.toLocaleString('en-IN')} {currency}</span>
                 </div>
@@ -184,14 +184,14 @@ export function InvoicePreview({ data, onPrint }) {
           {/* Signature Block Pushed to Bottom via mt-auto */}
           <div className="mt-auto pt-8 flex justify-between items-end text-xs text-slate-900 print:break-inside-avoid page-break-inside-avoid">
             <div className="text-center space-y-1">
-              <div className="border-b border-slate-400 w-40 mb-1"></div>
-              <div className="text-[11px] text-slate-500 font-medium">Customer Signature</div>
+              <div className="border-b border-slate-400 w-44 mb-1"></div>
+              <div className="text-xs text-slate-500 font-medium">Customer Signature</div>
             </div>
 
             <div className="text-center space-y-1">
-              <div className="border-b-2 border-slate-900 w-48 mb-1"></div>
-              <div className="font-bold text-xs">{biller.name}</div>
-              <div className="text-[11px] text-slate-600">Authorized Signature & Seal</div>
+              <div className="border-b-2 border-slate-900 w-52 mb-1"></div>
+              <div className="font-bold text-sm text-slate-900">{biller.name}</div>
+              <div className="text-xs text-slate-600">Authorized Signature & Seal</div>
             </div>
           </div>
 

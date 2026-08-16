@@ -68,15 +68,9 @@ export function IdCardStudio() {
       {/* Top Header & Export Toolbar */}
       <div className="no-print bg-card border border-border p-4 sm:p-5 rounded-2xl shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h2 className="text-lg font-bold text-foreground tracking-tight flex items-center gap-2">
+          <h2 className="text-xl sm:text-2xl font-black text-foreground tracking-tight flex items-center gap-2">
             🆔 Dynamic ID Card
-            <span className="text-[11px] font-semibold px-2.5 py-0.5 rounded-full bg-emerald-500/10 text-emerald-600 border border-emerald-500/20">
-              Exact Image Replica & HD Export
-            </span>
           </h2>
-          <p className="text-xs text-muted-foreground mt-0.5">
-            Fill in candidate / employee details, upload custom photo, and export double-sided ID cards.
-          </p>
         </div>
 
         {/* Action Buttons */}

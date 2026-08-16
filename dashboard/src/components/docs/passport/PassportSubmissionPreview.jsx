@@ -195,11 +195,8 @@ export function PassportSubmissionPreview({ data, onPrint }) {
 
           {/* Footer Signatures Pushed to Bottom via mt-auto */}
           <div className="mt-auto pt-8 border-t border-slate-300 grid grid-cols-2 gap-6 items-end text-xs print:break-inside-avoid page-break-inside-avoid">
-            <div className="text-center space-y-1">
-              <div className="w-16 h-16 rounded-full border border-dashed border-slate-400 mx-auto flex items-center justify-center text-[9px] text-slate-400 font-mono">
-                [ এজেন্সির সিল ]
-              </div>
-              <div className="text-[10px] text-slate-600 font-semibold">অফিসিয়াল সিল / Stamp</div>
+            <div className="flex flex-col items-center justify-center">
+              <img src={logoImg} alt="Monsur Ali Travels Logo" className="w-16 h-16 object-contain rounded-[4px]" />
             </div>
 
             <div className="text-center space-y-1">

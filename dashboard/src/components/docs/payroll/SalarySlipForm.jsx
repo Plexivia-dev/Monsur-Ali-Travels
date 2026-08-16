@@ -125,17 +125,14 @@ export function SalarySlipForm({ formData, setFormData, onSubmit, onReset, isSub
   const progressPercent = ((currentStep - 1) / (steps.length - 1)) * 100;
 
   return (
-    <div className="space-y-4 max-w-4xl mx-auto">
+    <div className="space-y-5 max-w-[850px] mx-auto">
       {/* Top Header Card */}
-      <div className="bg-card border border-border p-4 rounded-md shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+      <div className="bg-card border border-border p-6 rounded-[4px] shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b-2 border-border">
         <div>
-          <h2 className="text-base font-bold text-foreground flex items-center gap-2">
-            <FileText className="w-4 h-4 text-emerald-600" />
-            মাসিক স্যালারি স্লিপ ইনপুট ফরম (Step {currentStep} of 4)
+          <h2 className="text-xl sm:text-2xl font-black text-foreground flex items-center gap-2 tracking-tight">
+            <FileText className="w-6 h-6 text-emerald-600 shrink-0" />
+            Salary Slip Generator (Step {currentStep} of 4)
           </h2>
-          <p className="text-xs text-muted-foreground mt-0.5">
-            প্রতিটি ধাপ সঠিকভাবে সম্পন্ন করে সবশেষে প্রিন্ট-রেডি স্যালারি স্লিপ প্রিভিউ তৈরি করুন।
-          </p>
         </div>
 
         <button

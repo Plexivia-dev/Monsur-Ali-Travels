@@ -14,7 +14,7 @@ export function InvoiceBuilder() {
 
   const handleReset = () => {
     setData(getDefaultInvoiceData());
-    toast.info('ইনভয়েসের তথ্য রিসেট করা হয়েছে। নতুন ইনভয়েস আইডি জেনারেট হয়েছে।');
+    toast.info('ইনভয়েসের তথ্য রিসেট করা হয়েছে।');
   };
 
   const handleFormSubmit = async () => {

@@ -20,7 +20,7 @@ export function generateUniquePassportTrackingNo() {
 export function getDefaultPassportData() {
   return {
     _id: null,
-    trackingNo: generateUniquePassportTrackingNo(),
+    trackingNo: '',
     submissionDate: new Date().toLocaleDateString('bn-BD', { day: 'numeric', month: 'long', year: 'numeric' }),
 
     agencyInfo: {
