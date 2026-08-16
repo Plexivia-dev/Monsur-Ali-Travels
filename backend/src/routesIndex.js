@@ -17,6 +17,7 @@ import docsRouter from "./routes/DocsRoute.js";
 import emailRouter from "./routes/EmailRoute.js";
 import dashboardRouter from "./routes/DashboardRoute.js";
 import systemRouter from "./routes/SystemRoute.js";
+import uploadRouter from "./routes/UploadRoute.js";
 
 const coreRouter = Router();
 
@@ -31,6 +32,9 @@ coreRouter.use("/indian-visas", indianVisaRouter);
 coreRouter.use("/passports", passportRouter);
 coreRouter.use("/payrolls", payrollRouter);
 coreRouter.use("/invoices", invoiceRouter);
+
+// Common Dedicated File Upload Endpoints
+coreRouter.use("/upload", uploadRouter);
 
 // Backward-compatible Document Studio routes (/docs/*)
 coreRouter.use("/docs", docsRouter);

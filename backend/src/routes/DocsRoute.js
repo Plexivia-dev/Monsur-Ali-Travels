@@ -108,4 +108,8 @@ docsRouter
   .route(["/customer-guardians/:id/status", "/customer-forms/:id/status"])
   .patch(CustomerGuardianController.updateStatus);
 
+// Common Dedicated File Upload Endpoints under /api/v1/docs/upload
+import uploadRouter from "./UploadRoute.js";
+docsRouter.use("/upload", uploadRouter);
+
 export default docsRouter;
