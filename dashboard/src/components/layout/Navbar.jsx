@@ -9,6 +9,7 @@ import {
   Factory,
   Users2,
   Shield,
+  FileSpreadsheet,
   CheckCheck,
   ChevronDown,
   PanelLeftClose,
@@ -26,10 +27,11 @@ export const Navbar = () => {
   const portalDetails = {
     factory: { title: 'Brick Factory Portal', subtitle: 'Kiln Production, Coal Stock & Raw Materials', icon: Factory, badgeBg: 'bg-amber-500/15 text-amber-500' },
     agency: { title: 'Manpower Agency Portal', subtitle: 'Placements, Client Invoicing & Contractor Payroll', icon: Users2, badgeBg: 'bg-sky-500/15 text-sky-500' },
+    docs: { title: 'Document Studio', subtitle: 'Employment Agreement, Templates & ID Card', icon: FileSpreadsheet, badgeBg: 'bg-emerald-500/15 text-emerald-500' },
     admin: { title: 'System Administration', subtitle: 'Global Users, Financial Reconciliation & Audit Logs', icon: Shield, badgeBg: 'bg-purple-500/15 text-purple-500' }
   };
 
-  const currentPortal = portalDetails[activePortal] || portalDetails.factory;
+  const currentPortal = portalDetails[activePortal] || portalDetails.docs;
   const PortalIcon = currentPortal.icon;
 
   return (
@@ -72,15 +74,15 @@ export const Navbar = () => {
 
               <button
                 onClick={() => {
-                  switchPortal('factory', 'dashboard');
+                  switchPortal('docs', 'agreement');
                   setPortalMenuOpen(false);
                 }}
                 className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg text-xs font-medium transition-colors cursor-pointer ${
-                  activePortal === 'factory' ? 'bg-amber-500/10 text-amber-500 font-semibold' : 'hover:bg-muted text-foreground'
+                  activePortal === 'docs' ? 'bg-emerald-500/10 text-emerald-500 font-semibold' : 'hover:bg-muted text-foreground'
                 }`}
               >
-                <Factory className="w-4 h-4 text-amber-500" />
-                <span>Brick Factory Portal</span>
+                <FileSpreadsheet className="w-4 h-4 text-emerald-500" />
+                <span>Document Studio</span>
               </button>
 
               <button
@@ -94,6 +96,19 @@ export const Navbar = () => {
               >
                 <Users2 className="w-4 h-4 text-sky-500" />
                 <span>Manpower Agency Portal</span>
+              </button>
+
+              <button
+                onClick={() => {
+                  switchPortal('factory', 'dashboard');
+                  setPortalMenuOpen(false);
+                }}
+                className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg text-xs font-medium transition-colors cursor-pointer ${
+                  activePortal === 'factory' ? 'bg-amber-500/10 text-amber-500 font-semibold' : 'hover:bg-muted text-foreground'
+                }`}
+              >
+                <Factory className="w-4 h-4 text-amber-500" />
+                <span>Brick Factory Portal</span>
               </button>
 
               <button
