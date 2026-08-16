@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import logoImg from '../../assets/logo.png';
 import { usePortal } from '../../context/PortalContext';
 import { useAuth } from '../../lib/auth-context';
+import { useTheme } from '../../context/ThemeContext';
 import {
   Factory,
   Users2,
@@ -23,43 +24,29 @@ import {
   FolderDown,
   IdCard,
   X,
-  Building2,
-  UserPlus,
-  LogOut
+  LogOut,
+  Settings,
+  Sun,
+  Moon,
+  User
 } from 'lucide-react';
 
 export const Sidebar = () => {
   const { activePortal, activeSubmodule, switchPortal, isSidebarOpen, setIsSidebarOpen, toggleSidebar } = usePortal();
   const { user, logout } = useAuth();
-  const [factoryOpen, setFactoryOpen] = useState(true);
-  const [agencyOpen, setAgencyOpen] = useState(true);
-  const [clientsSubOpen, setClientsSubOpen] = useState(true);
-  const [docsOpen, setDocsOpen] = useState(true);
-  const [adminOpen, setAdminOpen] = useState(true);
+  const { theme, toggleTheme, isDark } = useTheme();
 
-  const navItemsFactory = [
-    { id: 'dashboard', label: 'Factory Dashboard', icon: LayoutDashboard },
-    { id: 'employees', label: 'Molded Bricks & Labor', icon: Users },
-    { id: 'bills', label: 'Coal & Raw Material Bills', icon: Receipt },
-    { id: 'payments', label: 'Contractor Wages', icon: CreditCard },
-    { id: 'reports', label: 'Production & Sales Reports', icon: BarChart3 }
-  ];
+  const [agencyOpen, setAgencyOpen] = useState(true);
+  const [clientsSubOpen, setClientsSubOpen] = useState(false);
+  const [docsOpen, setDocsOpen] = useState(true);
+  const [adminOpen, setAdminOpen] = useState(false);
+  const [showProfileCard, setShowProfileCard] = useState(false);
 
   const navItemsAgency = [
-    { id: 'dashboard', label: 'Agency Dashboard', icon: LayoutDashboard },
-    { id: 'candidates', label: 'Candidate & Agent Pipeline', icon: UserCheck },
-    { id: 'employees', label: 'Placed Workers', icon: Users },
-    {
-      id: 'clients',
-      label: 'Client Invoicing',
-      icon: Receipt,
-      children: [
-        { id: 'clients-add', label: 'Add new clients', icon: UserPlus },
-        { id: 'all-clients', label: 'All Clients', icon: Building2 },
-        { id: 'clients-payments', label: 'Payments', icon: CreditCard }
-      ]
-    },
-    { id: 'payments', label: 'Contractor Payouts', icon: CreditCard },
+    { id: 'candidates-all', label: 'All Candidates', icon: Users },
+    { id: 'candidates-add', label: 'Add New Candidate', icon: Users },
+    { id: 'cases', label: 'Candidate Case Files', icon: FileText },
+    { id: 'passport-tracking', label: 'Passport & Visa Tracking', icon: CreditCard },
     { id: 'reports', label: 'Placement Reports', icon: BarChart3 }
   ];
 
@@ -102,10 +89,10 @@ export const Sidebar = () => {
           <div className="flex items-center gap-2.5 min-w-0">
             <div className="bg-white w-10 h-10 rounded-lg flex items-center justify-center shrink-0">
               <img
-              src={logoImg}
-              alt="Monsur Ali Travels Logo"
-              className="w-9 h-9 object-contain rounded-lg shrink-0"
-            />
+                src={logoImg}
+                alt="Monsur Ali Travels Logo"
+                className="w-9 h-9 object-contain rounded-lg shrink-0"
+              />
             </div>
             <div className="min-w-0">
               <h1 className="text-sm font-bold text-sidebar-foreground tracking-tight flex items-center gap-1.5 truncate">
@@ -126,112 +113,6 @@ export const Sidebar = () => {
 
         {/* Navigation Sections */}
         <div className="flex-1 overflow-y-auto px-3 py-4 space-y-6">
-          {/* GROUP 1: BRICK FACTORY PORTAL (HIDDEN FOR NOW) */}
-
-          {/* GROUP 2: MANPOWER AGENCY PORTAL (HIDDEN FOR NOW) */}
-          {/*
-          <div className="space-y-1">
-            <button
-              onClick={() => setAgencyOpen(!agencyOpen)}
-              className="w-full flex items-center justify-between px-3 py-2 text-xs font-bold uppercase tracking-wider text-left text-sky-500 hover:text-sky-400 transition-colors cursor-pointer"
-            >
-              <div className="flex items-center gap-2">
-                <Users2 className="w-4 h-4 text-sky-500" />
-                <span>Manpower Agency</span>
-              </div>
-              {agencyOpen ? <ChevronDown className="w-3.5 h-3.5" /> : <ChevronRight className="w-3.5 h-3.5" />}
-            </button>
-
-            {agencyOpen && (
-              <div className="space-y-0.5 pl-1">
-                {navItemsAgency.map((item) => {
-                  const Icon = item.icon;
-                  const isParentActive =
-                    activePortal === 'agency' &&
-                    (activeSubmodule === item.id ||
-                      (item.children &&
-                        item.children.some(
-                          (child) =>
-                            child.id === activeSubmodule ||
-                            (child.id === 'all-clients' && activeSubmodule === 'bills')
-                        )));
-
-                  if (item.children) {
-                    return (
-                      <div key={item.id} className="space-y-0.5">
-                        <button
-                          onClick={() => setClientsSubOpen(!clientsSubOpen)}
-                          className={`w-full flex items-center justify-between px-3 py-2 rounded-lg text-xs font-medium text-left transition-all cursor-pointer ${
-                            isParentActive
-                              ? 'bg-sky-500/10 text-sky-500 font-semibold'
-                              : 'text-sidebar-foreground/75 hover:text-sidebar-foreground hover:bg-sidebar-accent'
-                          }`}
-                        >
-                          <div className="flex items-center gap-3">
-                            <Icon className={`w-4 h-4 ${isParentActive ? 'text-sky-500' : 'text-sidebar-foreground/60'}`} />
-                            <span>{item.label}</span>
-                          </div>
-                          {clientsSubOpen ? (
-                            <ChevronDown className="w-3.5 h-3.5 text-sidebar-foreground/60" />
-                          ) : (
-                            <ChevronRight className="w-3.5 h-3.5 text-sidebar-foreground/60" />
-                          )}
-                        </button>
-
-                        {clientsSubOpen && (
-                          <div className="pl-4 ml-2 border-l border-sidebar-border/60 space-y-0.5 my-1">
-                            {item.children.map((child) => {
-                              const ChildIcon = child.icon;
-                              const isChildActive =
-                                activePortal === 'agency' &&
-                                (activeSubmodule === child.id ||
-                                  (child.id === 'all-clients' && (activeSubmodule === 'bills' || activeSubmodule === 'clients-all')) ||
-                                  (child.id === 'clients-add' && activeSubmodule === 'add-client') ||
-                                  (child.id === 'clients-payments' && activeSubmodule === 'payments'));
-
-                              return (
-                                <button
-                                  key={child.id}
-                                  onClick={() => handleNavClick('agency', child.id)}
-                                  className={`w-full flex items-center gap-2.5 px-2.5 py-1.5 rounded-md text-[11px] font-medium text-left transition-all cursor-pointer ${
-                                    isChildActive
-                                      ? 'bg-sky-500/15 text-sky-500 font-bold border-l-2 border-sky-500 pl-2'
-                                      : 'text-sidebar-foreground/70 hover:text-sidebar-foreground hover:bg-sidebar-accent/70'
-                                  }`}
-                                >
-                                  <ChildIcon className={`w-3.5 h-3.5 ${isChildActive ? 'text-sky-500' : 'text-sidebar-foreground/50'}`} />
-                                  <span>{child.label}</span>
-                                </button>
-                              );
-                            })}
-                          </div>
-                        )}
-                      </div>
-                    );
-                  }
-
-                  // Normal single item
-                  const isActive = activePortal === 'agency' && activeSubmodule === item.id;
-                  return (
-                    <button
-                      key={item.id}
-                      onClick={() => handleNavClick('agency', item.id)}
-                      className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg text-xs font-medium text-left transition-all cursor-pointer ${
-                        isActive
-                          ? 'bg-sky-500/10 text-sky-500 font-semibold border-l-2 border-sky-500'
-                          : 'text-sidebar-foreground/75 hover:text-sidebar-foreground hover:bg-sidebar-accent'
-                      }`}
-                    >
-                      <Icon className={`w-4 h-4 ${isActive ? 'text-sky-500' : 'text-sidebar-foreground/60'}`} />
-                      <span>{item.label}</span>
-                    </button>
-                  );
-                })}
-              </div>
-            )}
-          </div>
-          */}
-
           {/* GROUP 3: DOCUMENT STUDIO */}
           <div className="space-y-1">
             <button
@@ -307,30 +188,61 @@ export const Sidebar = () => {
           </div>
         </div>
 
-        {/* Footer User Info & Logout Button */}
-        <div className="p-3 border-t border-sidebar-border bg-sidebar/50 flex items-center justify-between gap-2">
-          <div className="flex items-center gap-2.5 min-w-0">
-            <div className="w-8 h-8 rounded-full bg-sidebar-primary text-sidebar-primary-foreground flex items-center justify-center font-semibold text-xs shrink-0">
-              {user?.name ? user.name.split(' ').map((n) => n[0]).join('').slice(0, 2).toUpperCase() : 'IH'}
-            </div>
-            <div className="min-w-0">
-              <p className="text-xs font-semibold text-sidebar-foreground truncate">
-                {user?.name || 'Ikramul Hossen'}
-              </p>
-              <p className="text-[10px] text-emerald-400 font-medium truncate flex items-center gap-1">
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" /> {user?.role || 'Owner'}
-              </p>
-            </div>
+        {/* Minimalist 4-Icon Action Footer Row */}
+        <div className="p-3 border-t border-sidebar-border bg-sidebar/50 flex items-center justify-around gap-1 relative">
+          {/* 1. User Profile Icon Button */}
+          <div className="relative">
+            <button
+              onClick={() => setShowProfileCard(!showProfileCard)}
+              className={`w-9 h-9 rounded-full bg-sky-500 text-white flex items-center justify-center font-bold text-xs shrink-0 cursor-pointer border border-sky-400/40 shadow-xs hover:ring-2 hover:ring-sky-400/50 transition-all ${
+                showProfileCard ? 'ring-2 ring-sky-400' : ''
+              }`}
+              title="View User Profile"
+            >
+              {user?.name ? user.name.split(' ').map((n) => n[0]).join('').slice(0, 2).toUpperCase() : 'মড'}
+            </button>
+
+            {/* Profile Details Popover Modal */}
+            {showProfileCard && (
+              <div className="absolute bottom-12 left-0 w-48 bg-card border border-border p-3 rounded-xl shadow-xl z-50 animate-in fade-in-50 duration-150 text-foreground">
+                <p className="text-xs font-bold text-foreground truncate">
+                  {user?.name || 'মিস্টার ডেভেলপার'}
+                </p>
+                <p className="text-[10px] text-emerald-500 font-semibold truncate flex items-center gap-1 mt-0.5">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" /> {user?.role || 'Owner'}
+                </p>
+              </div>
+            )}
           </div>
+
+          {/* 2. Settings Icon Button */}
+          <button
+            onClick={() => switchPortal('admin', 'overview')}
+            className="p-2 rounded-xl text-sidebar-foreground/70 hover:text-sidebar-foreground hover:bg-sidebar-accent transition-all cursor-pointer"
+            title="Settings"
+          >
+            <Settings className="w-4.5 h-4.5" />
+          </button>
+
+          {/* 3. Dark/Light Mode Switcher Icon (Left of Logout) */}
+          <button
+            onClick={toggleTheme}
+            className="p-2 rounded-xl text-sidebar-foreground/70 hover:text-amber-400 hover:bg-sidebar-accent transition-all cursor-pointer"
+            title={isDark ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
+          >
+            {isDark ? <Sun className="w-4.5 h-4.5 text-amber-400" /> : <Moon className="w-4.5 h-4.5 text-indigo-400" />}
+          </button>
+
+          {/* 4. Logout Icon Button (Active highlight default, smooth hover transition) */}
           <button
             onClick={logout}
-            className="p-1.5 rounded-lg text-sidebar-foreground/60 hover:text-rose-500 hover:bg-rose-500/10 transition-colors cursor-pointer shrink-0 border border-transparent hover:border-rose-500/20"
+            className="p-2 rounded-xl bg-rose-500/15 text-rose-500 border border-rose-500/30 hover:bg-rose-600 hover:text-white hover:border-rose-600 transition-all duration-300 cursor-pointer shadow-xs"
             title="Logout"
-            aria-label="Logout"
           >
-            <LogOut className="w-4 h-4" />
+            <LogOut className="w-4.5 h-4.5" />
           </button>
         </div>
+
       </aside>
     </>
   );
