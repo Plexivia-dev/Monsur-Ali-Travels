@@ -20,8 +20,9 @@ export function generateUniqueInvoiceNo() {
 
 const invoiceItemSchema = new mongoose.Schema({
   id: String,
-  description: { type: String, required: true },
-  quantity: { type: Number, default: 1 },
+  title: { type: String, default: "" },
+  description: { type: String, default: "" },
+  quantity: { type: Number, default: null },
   unitPrice: { type: Number, default: 0 },
 });
 

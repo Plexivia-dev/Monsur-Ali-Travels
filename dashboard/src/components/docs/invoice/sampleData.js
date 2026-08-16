@@ -48,8 +48,9 @@ export function getDefaultInvoiceData() {
     items: [
       {
         id: "item-1",
+        title: "",
         description: "",
-        quantity: 1,
+        quantity: "",
         unitPrice: 0
       }
     ],

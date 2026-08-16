@@ -20,6 +20,13 @@ import {
   updateInvoice,
   deleteInvoice,
 } from "../controllers/InvoiceController.js";
+import {
+  getPassportSubmissions,
+  getPassportSubmissionById,
+  createPassportSubmission,
+  updatePassportSubmission,
+  deletePassportSubmission,
+} from "../controllers/PassportSubmissionController.js";
 
 const docsRouter = Router();
 
@@ -58,5 +65,17 @@ docsRouter
   .get(getInvoiceById)
   .put(updateInvoice)
   .delete(deleteInvoice);
+
+// /api/v1/docs/passport-submissions
+docsRouter
+  .route("/passport-submissions")
+  .get(getPassportSubmissions)
+  .post(createPassportSubmission);
+
+docsRouter
+  .route("/passport-submissions/:id")
+  .get(getPassportSubmissionById)
+  .put(updatePassportSubmission)
+  .delete(deletePassportSubmission);
 
 export default docsRouter;
