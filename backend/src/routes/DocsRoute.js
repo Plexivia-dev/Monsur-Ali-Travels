@@ -28,7 +28,6 @@ import {
   deletePassportSubmission,
 } from "../controllers/PassportSubmissionController.js";
 import { IndianVisaController } from "../controllers/IndianVisaController.js";
-import { IdCardController } from "../controllers/IdCardController.js";
 
 const docsRouter = Router();
 
@@ -91,17 +90,5 @@ docsRouter
   .get(IndianVisaController.getById)
   .put(IndianVisaController.update)
   .delete(IndianVisaController.delete);
-
-// /api/v1/docs/id-cards
-docsRouter
-  .route("/id-cards")
-  .get(IdCardController.getAll)
-  .post(IdCardController.create);
-
-docsRouter
-  .route("/id-cards/:id")
-  .get(IdCardController.getById)
-  .put(IdCardController.update)
-  .delete(IdCardController.delete);
 
 export default docsRouter;

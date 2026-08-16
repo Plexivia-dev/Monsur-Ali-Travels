@@ -68,7 +68,6 @@ export const Sidebar = () => {
     { id: 'passports', label: 'Passport Submissions (পাসপোর্ট)', icon: ShieldCheck },
     { id: 'payrolls', label: 'Salary Slips (স্যালারি)', icon: Receipt },
     { id: 'invoices', label: 'Invoices (ইনভয়েস)', icon: FileSpreadsheet },
-    { id: 'id-cards', label: 'Employee ID Cards (আইডি কার্ড)', icon: IdCard }
   ];
 
   const navItemsAdmin = [

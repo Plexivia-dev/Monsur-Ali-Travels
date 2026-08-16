@@ -5,7 +5,6 @@ import { IndianVisaDataTable } from '../components/data/IndianVisaDataTable';
 import { PassportSubmissionDataTable } from '../components/data/PassportSubmissionDataTable';
 import { SalarySlipDataTable } from '../components/data/SalarySlipDataTable';
 import { InvoiceDataTable } from '../components/data/InvoiceDataTable';
-import { IdCardDataTable } from '../components/data/IdCardDataTable';
 
 export default function DocumentData() {
   const { activeSubmodule } = usePortal();
@@ -26,9 +25,6 @@ export default function DocumentData() {
       )}
       {(activeSubmodule === 'invoices' || activeSubmodule === 'invoice') && (
         <InvoiceDataTable />
-      )}
-      {(activeSubmodule === 'id-cards' || activeSubmodule === 'idcard') && (
-        <IdCardDataTable />
       )}
     </div>
   );

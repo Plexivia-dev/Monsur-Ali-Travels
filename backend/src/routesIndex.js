@@ -12,7 +12,6 @@ import indianVisaRouter from "./routes/IndianVisaRoute.js";
 import passportRouter from "./routes/PassportSubmissionRoute.js";
 import payrollRouter from "./routes/PayrollRoute.js";
 import invoiceRouter from "./routes/InvoiceRoute.js";
-import idCardRouter from "./routes/IdCardRoute.js";
 import docsRouter from "./routes/DocsRoute.js";
 
 // Finance, Operations & Utilities
@@ -38,7 +37,6 @@ coreRouter.use("/indian-visas", indianVisaRouter);
 coreRouter.use("/passports", passportRouter);
 coreRouter.use("/payrolls", payrollRouter);
 coreRouter.use("/invoices", invoiceRouter);
-coreRouter.use("/id-cards", idCardRouter);
 
 // Backward-compatible Document Studio routes (/docs/*)
 coreRouter.use("/docs", docsRouter);
