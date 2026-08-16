@@ -28,17 +28,18 @@ import {
   deletePassportSubmission,
 } from "../controllers/PassportSubmissionController.js";
 import { IndianVisaController } from "../controllers/IndianVisaController.js";
+import { IdCardController } from "../controllers/IdCardController.js";
 
 const docsRouter = Router();
 
-// /api/v1/docs/employment-agreement
+// /api/v1/docs/employment-agreement & /api/v1/docs/agreements
 docsRouter
-  .route("/employment-agreement")
+  .route(["/employment-agreement", "/agreements"])
   .get(getEmploymentAgreements)
   .post(createEmploymentAgreement);
 
 docsRouter
-  .route("/employment-agreement/:id")
+  .route(["/employment-agreement/:id", "/agreements/:id"])
   .get(getEmploymentAgreementById)
   .put(updateEmploymentAgreement)
   .delete(deleteEmploymentAgreement);
@@ -67,14 +68,14 @@ docsRouter
   .put(updateInvoice)
   .delete(deleteInvoice);
 
-// /api/v1/docs/passport-submissions
+// /api/v1/docs/passport-submissions & /api/v1/docs/passports
 docsRouter
-  .route("/passport-submissions")
+  .route(["/passport-submissions", "/passports"])
   .get(getPassportSubmissions)
   .post(createPassportSubmission);
 
 docsRouter
-  .route("/passport-submissions/:id")
+  .route(["/passport-submissions/:id", "/passports/:id"])
   .get(getPassportSubmissionById)
   .put(updatePassportSubmission)
   .delete(deletePassportSubmission);
@@ -90,5 +91,17 @@ docsRouter
   .get(IndianVisaController.getById)
   .put(IndianVisaController.update)
   .delete(IndianVisaController.delete);
+
+// /api/v1/docs/id-cards
+docsRouter
+  .route("/id-cards")
+  .get(IdCardController.getAll)
+  .post(IdCardController.create);
+
+docsRouter
+  .route("/id-cards/:id")
+  .get(IdCardController.getById)
+  .put(IdCardController.update)
+  .delete(IdCardController.delete);
 
 export default docsRouter;

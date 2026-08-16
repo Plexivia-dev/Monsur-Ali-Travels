@@ -7,11 +7,54 @@ export class IndianVisaController {
   // GET /api/v1/docs/indian-visas
   static async getAll(req, res) {
     try {
-      const docs = await IndianVisaSubmissionModel.find().sort({ createdAt: -1 });
+      const page = Math.max(1, parseInt(req.query.page, 10) || 1);
+      const limit = req.query.limit !== undefined ? Math.max(1, parseInt(req.query.limit, 10) || 10) : 10;
+      const skip = req.query.skip !== undefined ? Math.max(0, parseInt(req.query.skip, 10)) : (page - 1) * limit;
+      const { search, status, visaType } = req.query;
+
+      const query = {};
+
+      if (status && status !== "all") {
+        query.status = status;
+      }
+
+      if (visaType && visaType !== "all") {
+        query.visaType = visaType;
+      }
+
+      if (search && search.trim()) {
+        const searchRegex = new RegExp(search.trim(), "i");
+        query.$or = [
+          { trackingNo: searchRegex },
+          { applicantName: searchRegex },
+          { passportNo: searchRegex },
+          { applicantPhone: searchRegex },
+          { nidBirthCertNo: searchRegex },
+          { entryPort: searchRegex },
+        ];
+      }
+
+      const totalCount = await IndianVisaSubmissionModel.countDocuments(query);
+      const docs = await IndianVisaSubmissionModel.find(query)
+        .sort({ createdAt: -1 })
+        .skip(skip)
+        .limit(limit);
+
+      const totalPages = Math.ceil(totalCount / limit) || 1;
+
       return res.status(200).json({
         status: "success",
         success: true,
         data: docs,
+        pagination: {
+          skip,
+          limit,
+          totalCount,
+          page,
+          totalPages,
+          hasNextPage: skip + docs.length < totalCount,
+          hasPrevPage: skip > 0,
+        },
       });
     } catch (err) {
       console.error("IndianVisaController getAll error:", err);

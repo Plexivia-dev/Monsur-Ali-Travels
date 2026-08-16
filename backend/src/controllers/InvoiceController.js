@@ -4,11 +4,50 @@ import { InvoiceModel, generateUniqueInvoiceNo } from "../models/invoice.model.j
 // @route   GET /api/v1/docs/invoices
 export const getInvoices = async (req, res, next) => {
   try {
-    const invoices = await InvoiceModel.find().sort({ createdAt: -1 });
+    const page = Math.max(1, parseInt(req.query.page, 10) || 1);
+    const limit = req.query.limit !== undefined ? Math.max(1, parseInt(req.query.limit, 10) || 10) : 10;
+    const skip = req.query.skip !== undefined ? Math.max(0, parseInt(req.query.skip, 10)) : (page - 1) * limit;
+    const { search, status } = req.query;
+
+    const query = {};
+
+    if (status && status !== "all") {
+      query.paymentStatus = status;
+    }
+
+    if (search && search.trim()) {
+      const searchRegex = new RegExp(search.trim(), "i");
+      query.$or = [
+        { invoiceNo: searchRegex },
+        { "client.name": searchRegex },
+        { "client.phone": searchRegex },
+        { "client.email": searchRegex },
+        { "client.contactPerson": searchRegex },
+      ];
+    }
+
+    const totalCount = await InvoiceModel.countDocuments(query);
+    const invoices = await InvoiceModel.find(query)
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limit);
+
+    const totalPages = Math.ceil(totalCount / limit) || 1;
+
     return res.status(200).json({
       status: "success",
+      success: true,
       results: invoices.length,
       data: invoices,
+      pagination: {
+        skip,
+        limit,
+        totalCount,
+        page,
+        totalPages,
+        hasNextPage: skip + invoices.length < totalCount,
+        hasPrevPage: skip > 0,
+      },
     });
   } catch (error) {
     next(error);
