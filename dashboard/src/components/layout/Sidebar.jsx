@@ -95,14 +95,16 @@ export const Sidebar = () => {
         {/* Brand Header */}
         <div className="h-16 px-4 border-b border-sidebar-border flex items-center justify-between shrink-0">
           <div className="flex items-center gap-2.5 min-w-0">
-            <img
+            <div className="bg-white w-10 h-10 rounded-lg flex items-center justify-center shrink-0">
+              <img
               src={logoImg}
               alt="Monsur Ali Travels Logo"
-              className="w-9 h-9 object-contain rounded-lg shadow-sm shrink-0 bg-background/80 p-0.5 border border-sidebar-border"
+              className="w-9 h-9 object-contain rounded-lg shrink-0"
             />
+            </div>
             <div className="min-w-0">
               <h1 className="text-sm font-bold text-sidebar-foreground tracking-tight flex items-center gap-1.5 truncate">
-                Smart ERP <span className="text-[10px] px-1.5 py-0.5 rounded bg-primary/20 text-primary font-semibold uppercase shrink-0">v2.5</span>
+                Admin Portal
               </h1>
               <p className="text-[10px] text-sidebar-foreground/60 truncate">Monsur Ali Travels</p>
             </div>
