@@ -1,10 +1,76 @@
 import React, { useState, useEffect } from 'react';
-import { Search, RefreshCw, FileText, Trash2, Eye, ExternalLink } from 'lucide-react';
+import { Search, RefreshCw, FileText, Trash2, Printer, Eye, X, Download } from 'lucide-react';
 import { apiClient } from '../../lib/api-client';
 import { DataTablePagination } from './DataTablePagination';
 import { toast } from 'sonner';
 import { formatToDdMmYyyy } from '../../lib/utils';
 import { usePortal } from '../../context/PortalContext';
+import { AgreementPreview } from '../docs/agreement/AgreementPreview';
+import { PrintablePaper } from '../docs/common/PrintablePaper';
+
+function normalizeAgreementData(item = {}) {
+  return {
+    _id: item._id,
+    agreementId: item.agreementId || '',
+    header: {
+      companyName: item.প্রতিষ্ঠানের_তথ্য?.প্রতিষ্ঠানের_নাম || item.header?.companyName || 'মনসুর আলী ট্রাভেলস (MONSUR ALI TRAVELS)',
+      officeAddress: item.প্রতিষ্ঠানের_তথ্য?.অফিসের_ঠিকানা || item.header?.officeAddress || 'Nadampur, Jagannathpur, Sunamganj - 3060, Sylhet, Bangladesh',
+      phone: item.প্রতিষ্ঠানের_তথ্য?.মোবাইল_নম্বর || item.header?.phone || '+8801345579534',
+      email: item.প্রতিষ্ঠানের_তথ্য?.ইমেইল_অ্যাড্রেস || item.header?.email || 'monsuralitravels@gmail.com',
+    },
+    parties: {
+      agreementDate: item.সাধারণ_তথ্য?.চুক্তির_তারিখ || item.parties?.agreementDate || '',
+      nidPassport: item.সাধারণ_তথ্য?.জাতীয়_পরিচয়পত্র_পাসপোর্ট || item.parties?.nidPassport || '',
+      employerName: item.সাধারণ_তথ্য?.নিয়োগকর্তা_কর্তৃপক্ষ || item.parties?.employerName || 'মো: ইকরামুল হোসেন (ব্যবস্থাপনা পরিচালক)',
+      employerPhone: item.সাধারণ_তথ্য?.কর্তৃপক্ষের_মোবাইল_নম্বর || item.parties?.employerPhone || '+8801345579534',
+      employeeName: item.সাধারণ_তথ্য?.কর্মচারীর_পূর্ণ_নাম || item.parties?.employeeName || '',
+      employeeEmail: item.সাধারণ_তথ্য?.কর্মচারীর_ইমেইল || item.parties?.employeeEmail || '',
+      fatherHusbandName: item.সাধারণ_তথ্য?.পিতা_স্বামীর_নাম || item.parties?.fatherHusbandName || '',
+      address: item.সাধারণ_তথ্য?.বর্তমান_স্থায়ী_ঠিকানা || item.parties?.address || '',
+    },
+    guardian: {
+      guardianName: item.অভিভাবকের_তথ্য?.অভিভাবকের_নাম || item.guardian?.guardianName || '',
+      guardianPhone: item.অভিভাবকের_তথ্য?.মোবাইল_নম্বর || item.guardian?.guardianPhone || '',
+      relationship: item.অভিভাবকের_তথ্য?.সম্পর্ক || item.guardian?.relationship || 'পিতা',
+      emergencyPhone: item.অভিভাবকের_তথ্য?.বিকল্প_জরুরি_নম্বর || item.guardian?.emergencyPhone || '',
+      guardianNid: item.অভিভাবকের_তথ্য?.জাতীয়_পরিচয়পত্র_নং || item.guardian?.guardianNid || '',
+      guardianAddress: item.অভিভাবকের_তথ্য?.ঠিকানা || item.guardian?.guardianAddress || '',
+    },
+    position: {
+      designation: item.পদের_বিবরণ?.পদের_নাম || item.position?.designation || '',
+      department: item.পদের_বিবরণ?.বিভাগ || item.position?.department || '',
+      joiningDate: item.পদের_বিবরণ?.যোগদানের_তারিখ || item.position?.joiningDate || '',
+      location: item.পদের_বিবরণ?.কর্মস্থল || item.position?.location || 'হেড অফিস, নাদampur',
+      jobType: item.পদের_বিবরণ?.নিয়োগের_ধরন || item.position?.jobType || 'স্থায়ী / পূর্ণকালীন (Full-Time)',
+      workSchedule: item.পদের_বিবরণ?.কাজের_সময়_ও_ছুটি || item.position?.workSchedule || 'সকাল ৯:০০ - সন্ধ্যা ৬:০০, রবিবার হতে বৃহস্পতিবার',
+    },
+    salary: {
+      basicSalary: item.বেতন_কাঠামো?.মূল_বেতন || item.salary?.basicSalary || '0',
+      houseRent: item.বেতন_কাঠামো?.বাড়ি_ভাড়া_ভাতা || item.salary?.houseRent || '0',
+      medical: item.বেতন_কাঠামো?.চিকিৎসা_ভাতা || item.salary?.medical || '0',
+      conveyance: item.বেতন_কাঠামো?.যাতায়াত_ভাতা || item.salary?.conveyance || '0',
+      specialAllowance: item.বেতন_কাঠামো?.বিশেষ_ভাতা || item.salary?.specialAllowance || '0',
+      grossSalary: item.বেতন_কাঠামো?.সর্বমোট_মাসিক_বেতন || item.salary?.grossSalary || '0',
+      grossSalaryInWords: item.বেতন_কাঠামো?.বেতন_কথায় || item.salary?.grossSalaryInWords || '',
+    },
+    leave: {
+      casualDays: item.ছুটি_ও_সুবিধা?.নৈমিত্তিক_ছুটি_দিন || item.leave?.casualDays || '10',
+      sickDays: item.ছুটি_ও_সুবিধা?.অসুস্থতাজনিত_ছুটি_দিন || item.leave?.sickDays || '14',
+      earnedDays: item.ছুটি_ও_সুবিধা?.অর্জিত_ছুটি_দিন || item.leave?.earnedDays || '18',
+      lunchProvided: item.ছুটি_ও_সুবিধা?.ফ্রি_লাঞ্চ_সুবিধা ?? item.leave?.lunchProvided ?? true,
+      teaSnacks: item.ছুটি_ও_সুবিধা?.চা_নাস্তা_সুবিধা ?? item.leave?.teaSnacks ?? true,
+      lunchAllowance: item.ছুটি_ও_সুবিধা?.লাঞ্চ_ভাতা || item.leave?.lunchAllowance || '',
+    },
+    witnesses: {
+      firstWitnessName: item.স্বাক্ষীগণের_তথ্য?.প্রথম_পক্ষের_সাক্ষী?.নাম || item.witnesses?.firstWitnessName || '',
+      firstWitnessPhone: item.স্বাক্ষীগণের_তথ্য?.প্রথম_পক্ষের_সাক্ষী?.মোবাইল_নম্বর || item.witnesses?.firstWitnessPhone || '',
+      firstWitnessAddress: item.স্বাক্ষীগণের_তথ্য?.প্রথম_পক্ষের_সাক্ষী?.ঠিকানা || item.witnesses?.firstWitnessAddress || '',
+      secondWitnessName: item.স্বাক্ষীগণের_তথ্য?.দ্বিতীয়_পক্ষের_সাক্ষী?.নাম || item.witnesses?.secondWitnessName || '',
+      secondWitnessPhone: item.স্বাক্ষীগণের_তথ্য?.দ্বিতীয়_পক্ষের_সাক্ষী?.মোবাইল_নম্বর || item.witnesses?.secondWitnessPhone || '',
+      secondWitnessAddress: item.স্বাক্ষীগণের_তথ্য?.দ্বিতীয়_পক্ষের_সাক্ষী?.ঠিকানা || item.witnesses?.secondWitnessAddress || '',
+    },
+  };
+}
 
 export function AgreementDataTable() {
   const { switchPortal } = usePortal();
@@ -13,6 +79,7 @@ export function AgreementDataTable() {
   const [search, setSearch] = useState('');
   const [status, setStatus] = useState('all');
   const [isLoading, setIsLoading] = useState(false);
+  const [previewItem, setPreviewItem] = useState(null);
 
   const fetchData = async (page = 1, limit = pagination.limit, searchQuery = search, statusFilter = status) => {
     try {
@@ -58,6 +125,10 @@ export function AgreementDataTable() {
       console.error('Failed to delete agreement:', err);
       toast.error('চুক্তিপত্র মুছতে সমস্যা হয়েছে।');
     }
+  };
+
+  const handlePrint = () => {
+    window.print();
   };
 
   return (
@@ -186,6 +257,15 @@ export function AgreementDataTable() {
                         <div className="flex items-center justify-end gap-1.5">
                           <button
                             type="button"
+                            onClick={() => setPreviewItem(item)}
+                            className="p-1.5 rounded hover:bg-emerald-500/10 text-emerald-600 transition-colors cursor-pointer flex items-center gap-1 text-[11px] font-bold"
+                            title="View & Download/Print Agreement PDF"
+                          >
+                            <Download className="w-3.5 h-3.5" />
+                            <span>Download / Print</span>
+                          </button>
+                          <button
+                            type="button"
                             onClick={() => handleDelete(item._id, item.agreementId)}
                             className="p-1.5 rounded hover:bg-rose-500/10 text-rose-500 transition-colors cursor-pointer"
                             title="Delete Record"
@@ -210,6 +290,50 @@ export function AgreementDataTable() {
           onLimitChange={(l) => fetchData(1, l, search, status)}
         />
       </div>
+
+      {/* Full Preview & Download Modal */}
+      {previewItem && (
+        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 overflow-y-auto">
+          <div className="bg-background border border-border rounded-xl shadow-2xl max-w-4xl w-full max-h-[90vh] flex flex-col overflow-hidden">
+            {/* Modal Header */}
+            <div className="px-5 py-3.5 border-b border-border bg-card flex items-center justify-between gap-3">
+              <div>
+                <h3 className="text-sm font-bold text-foreground">
+                  চুক্তিপত্র প্রিভিউ ও ডাউনলোড — {previewItem.agreementId || ''}
+                </h3>
+                <p className="text-[11px] text-muted-foreground">
+                  কর্মচারী: {previewItem.সাধারণ_তথ্য?.কর্মচারীর_পূর্ণ_নাম || previewItem.parties?.employeeName || '—'}
+                </p>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={handlePrint}
+                  className="flex items-center gap-1.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-4 py-2 rounded-lg shadow-xs transition-all cursor-pointer"
+                >
+                  <Printer className="w-4 h-4" />
+                  <span>Download / Print PDF</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setPreviewItem(null)}
+                  className="p-2 rounded-lg hover:bg-muted text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
+            </div>
+
+            {/* Modal Body with Printable Paper Canvas */}
+            <div className="flex-1 overflow-y-auto p-4 sm:p-6 bg-slate-100 dark:bg-slate-900/50 flex justify-center">
+              <PrintablePaper id="printable-agreement-canvas">
+                <AgreementPreview data={normalizeAgreementData(previewItem)} />
+              </PrintablePaper>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
