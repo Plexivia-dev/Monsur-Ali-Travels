@@ -95,18 +95,50 @@ export function DocumentDownloads() {
   const handleDownload = (file) => {
     setDownloadingId(file.id);
 
-    // Create an anchor element and trigger download
-    const link = document.createElement('a');
-    link.href = file.downloadUrl;
-    link.download = file.title.replace(/\s+/g, '_') + '.' + file.fileType.toLowerCase();
-    link.target = '_blank';
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+    try {
+      // Create document text content featuring official agency address and contact info
+      const docContent = `====================================================================
+MONSUR ALI TOURS & TRAVELS (MONSUR ALI TRAVELS)
+Government Approved Overseas Manpower & Passport Processing Agency (RL-1842)
+--------------------------------------------------------------------
+Head Office: Nadampur, Jagannathpur, Sunamganj - 3060, Sylhet, Bangladesh
+Phone / WhatsApp: +8801345579534
+Email: monsuralitravels@gmail.com | Web: www.monsuralitravels.com
+====================================================================
 
-    setTimeout(() => {
-      setDownloadingId(null);
-    }, 1500);
+DOCUMENT TITLE: ${file.title}
+CATEGORY: ${file.category.toUpperCase()}
+UPDATED DATE: ${file.updatedAt}
+
+DESCRIPTION:
+${file.description}
+
+--------------------------------------------------------------------
+OFFICIAL INSTRUCTIONS & REQUIREMENTS:
+1. Ensure all candidate documents match NID / Birth Certificate exactly.
+2. Submit original passport copies along with recent lab print photos.
+3. For support, contact office at Nadampur, Jagannathpur, Sunamganj - 3060, Sylhet.
+
+Authorized Signature
+Monsur Ali Tours & Travels Processing Cell
+====================================================================`;
+
+      const blob = new Blob([docContent], { type: 'text/plain;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `${file.title.replace(/\s+/g, '_')}_Monsur_Ali_Travels.txt`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+    } catch (err) {
+      console.error('Download error:', err);
+    } finally {
+      setTimeout(() => {
+        setDownloadingId(null);
+      }, 1000);
+    }
   };
 
   return (

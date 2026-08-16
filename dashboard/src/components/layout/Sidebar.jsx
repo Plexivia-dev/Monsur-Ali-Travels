@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import logoImg from '../../assets/logo.png';
 import { usePortal } from '../../context/PortalContext';
+import { useAuth } from '../../lib/auth-context';
 import {
   Factory,
   Users2,
@@ -23,11 +24,13 @@ import {
   IdCard,
   X,
   Building2,
-  UserPlus
+  UserPlus,
+  LogOut
 } from 'lucide-react';
 
 export const Sidebar = () => {
   const { activePortal, activeSubmodule, switchPortal, isSidebarOpen, setIsSidebarOpen, toggleSidebar } = usePortal();
+  const { user, logout } = useAuth();
   const [factoryOpen, setFactoryOpen] = useState(true);
   const [agencyOpen, setAgencyOpen] = useState(true);
   const [clientsSubOpen, setClientsSubOpen] = useState(true);
@@ -302,19 +305,29 @@ export const Sidebar = () => {
           </div>
         </div>
 
-        {/* Footer User Info */}
-        <div className="p-3 border-t border-sidebar-border bg-sidebar/50 flex items-center justify-between">
+        {/* Footer User Info & Logout Button */}
+        <div className="p-3 border-t border-sidebar-border bg-sidebar/50 flex items-center justify-between gap-2">
           <div className="flex items-center gap-2.5 min-w-0">
             <div className="w-8 h-8 rounded-full bg-sidebar-primary text-sidebar-primary-foreground flex items-center justify-center font-semibold text-xs shrink-0">
-              IH
+              {user?.name ? user.name.split(' ').map((n) => n[0]).join('').slice(0, 2).toUpperCase() : 'IH'}
             </div>
             <div className="min-w-0">
-              <p className="text-xs font-semibold text-sidebar-foreground truncate">Ikramul Hossen</p>
+              <p className="text-xs font-semibold text-sidebar-foreground truncate">
+                {user?.name || 'Ikramul Hossen'}
+              </p>
               <p className="text-[10px] text-emerald-400 font-medium truncate flex items-center gap-1">
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" /> Owner
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" /> {user?.role || 'Owner'}
               </p>
             </div>
           </div>
+          <button
+            onClick={logout}
+            className="p-1.5 rounded-lg text-sidebar-foreground/60 hover:text-rose-500 hover:bg-rose-500/10 transition-colors cursor-pointer shrink-0 border border-transparent hover:border-rose-500/20"
+            title="Logout"
+            aria-label="Logout"
+          >
+            <LogOut className="w-4 h-4" />
+          </button>
         </div>
       </aside>
     </>

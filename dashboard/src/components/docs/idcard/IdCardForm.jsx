@@ -133,14 +133,14 @@ export function IdCardForm({ cardData, setCardData, onResetSample }) {
           </div>
 
           <div>
-            <label className="block font-bold text-foreground mb-1">Contact Number</label>
+            <label className="block font-bold text-foreground mb-1">Contact Phone</label>
             <div className="relative">
               <Phone className="w-3.5 h-3.5 absolute left-3 top-2.5 text-muted-foreground" />
               <input
                 type="text"
                 value={cardData.contactPhone}
                 onChange={(e) => handleChange('contactPhone', e.target.value)}
-                placeholder="0134557934"
+                placeholder="01345579534"
                 className="w-full pl-9 pr-3 py-1.5 bg-muted/50 border border-border rounded-lg text-foreground text-xs focus:outline-hidden focus:ring-1 focus:ring-primary font-mono"
               />
             </div>
@@ -171,7 +171,7 @@ export function IdCardForm({ cardData, setCardData, onResetSample }) {
               type="text"
               value={cardData.address}
               onChange={(e) => handleChange('address', e.target.value)}
-              placeholder="Mominpur Jagannathpur Road Sunamganj"
+              placeholder="Nadampur, Jagannathpur, Sunamganj - 3060, Sylhet, Bangladesh"
               className="w-full pl-9 pr-3 py-1.5 bg-muted/50 border border-border rounded-lg text-foreground text-xs focus:outline-hidden focus:ring-1 focus:ring-primary"
             />
           </div>

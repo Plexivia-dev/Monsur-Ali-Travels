@@ -27,7 +27,7 @@ export function IndianVisaRequirementTemplate({ agencyInfo = {} }) {
                 Indian Visa Processing & Embassy Appointment Facilitation Desk
               </p>
               <p className="text-[10px] text-slate-600 font-mono mt-0.5">
-                Authorized Visa Facilitator | Head Office: Dhaka, Bangladesh | Cell: +880 1700-000000
+                Authorized Visa Facilitator | Head Office: Nadampur, Jagannathpur, Sunamganj - 3060, Sylhet, Bangladesh | Cell: +8801345579534
               </p>
             </div>
           </div>

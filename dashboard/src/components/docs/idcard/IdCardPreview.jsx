@@ -154,7 +154,7 @@ export function IdCardPreview({ cardData, frontRef, backRef }) {
               </span>
               <span className="font-extrabold text-[#0b2341] text-[11px] mr-2">:</span>
               <span className="font-bold text-slate-900 text-[11px]">
-                {cardData.contactPhone || '0134557934'}
+                {cardData.contactPhone || '01345579534'}
               </span>
             </div>
           </div>
@@ -241,7 +241,7 @@ export function IdCardPreview({ cardData, frontRef, backRef }) {
               <div>
                 <h4 className="font-extrabold text-[#0b2341] text-[11px] leading-tight">Address</h4>
                 <p className="text-slate-700 text-[10px] font-medium leading-snug mt-0.5">
-                  {cardData.address || 'Mominpur Jagannathpur Road Sunamganj'}
+                  {cardData.address || 'Nadampur, Jagannathpur, Sunamganj - 3060, Sylhet, Bangladesh'}
                 </p>
               </div>
             </div>
@@ -254,7 +254,7 @@ export function IdCardPreview({ cardData, frontRef, backRef }) {
               <div>
                 <h4 className="font-extrabold text-[#0b2341] text-[11px] leading-tight">Contact Number</h4>
                 <p className="text-slate-800 text-[10.5px] font-bold font-mono mt-0.5">
-                  {cardData.contactPhone || '0134557934'}
+                  {cardData.contactPhone || '01345579534'}
                 </p>
               </div>
             </div>
