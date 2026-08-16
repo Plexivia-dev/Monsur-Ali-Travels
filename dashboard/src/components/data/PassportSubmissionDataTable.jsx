@@ -26,7 +26,7 @@ export function PassportSubmissionDataTable() {
         status: statusFilter !== 'all' ? statusFilter : undefined,
       };
 
-      const res = await apiClient.get('/api/v1/passports', { params });
+      const res = await apiClient.get('/api/v1/docs/passports', { params });
       if (res.data?.success || res.data?.status === 'success') {
         setData(res.data.data || []);
         if (res.data.pagination) {
@@ -53,7 +53,7 @@ export function PassportSubmissionDataTable() {
   const handleDelete = async (id, trackingNo) => {
     if (!window.confirm(`আপনি কি পাসপোর্ট ফাইল "${trackingNo || id}" মুছে ফেলতে চান?`)) return;
     try {
-      await apiClient.delete(`/api/v1/passports/${id}`);
+      await apiClient.delete(`/api/v1/docs/passports/${id}`);
       toast.success('পাসপোর্ট ফাইল রেকর্ড মুছে ফেলা হয়েছে।');
       fetchData(pagination.page, pagination.limit, search, status);
     } catch (err) {

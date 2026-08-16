@@ -26,7 +26,7 @@ export function SalarySlipDataTable() {
         month: monthFilter !== 'all' ? monthFilter : undefined,
       };
 
-      const res = await apiClient.get('/api/v1/payrolls', { params });
+      const res = await apiClient.get('/api/v1/docs/payrolls', { params });
       if (res.data?.success || res.data?.status === 'success') {
         setData(res.data.data || []);
         if (res.data.pagination) {
@@ -53,7 +53,7 @@ export function SalarySlipDataTable() {
   const handleDelete = async (id, slipNo) => {
     if (!window.confirm(`আপনি কি স্যালারি স্লিপ "${slipNo || id}" মুছে ফেলতে চান?`)) return;
     try {
-      await apiClient.delete(`/api/v1/payrolls/${id}`);
+      await apiClient.delete(`/api/v1/docs/payrolls/${id}`);
       toast.success('স্যালারি স্লিপ মুছে ফেলা হয়েছে।');
       fetchData(pagination.page, pagination.limit, search, month);
     } catch (err) {

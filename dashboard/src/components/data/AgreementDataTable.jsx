@@ -91,7 +91,7 @@ export function AgreementDataTable() {
         status: statusFilter !== 'all' ? statusFilter : undefined,
       };
 
-      const res = await apiClient.get('/api/v1/agreements', { params });
+      const res = await apiClient.get('/api/v1/docs/agreements', { params });
       if (res.data?.success || res.data?.status === 'success') {
         setData(res.data.data || []);
         if (res.data.pagination) {
@@ -118,7 +118,7 @@ export function AgreementDataTable() {
   const handleDelete = async (id, agreementId) => {
     if (!window.confirm(`আপনি কি চুক্তিপত্র "${agreementId || id}" মুছে ফেলতে চান?`)) return;
     try {
-      await apiClient.delete(`/api/v1/agreements/${id}`);
+      await apiClient.delete(`/api/v1/docs/agreements/${id}`);
       toast.success('চুক্তিপত্র মুছে ফেলা হয়েছে।');
       fetchData(pagination.page, pagination.limit, search, status);
     } catch (err) {

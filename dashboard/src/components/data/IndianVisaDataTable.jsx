@@ -26,7 +26,7 @@ export function IndianVisaDataTable() {
         status: statusFilter !== 'all' ? statusFilter : undefined,
       };
 
-      const res = await apiClient.get('/api/v1/indian-visas', { params });
+      const res = await apiClient.get('/api/v1/docs/indian-visas', { params });
       if (res.data?.success || res.data?.status === 'success') {
         setData(res.data.data || []);
         if (res.data.pagination) {
@@ -53,7 +53,7 @@ export function IndianVisaDataTable() {
   const handleDelete = async (id, trackingNo) => {
     if (!window.confirm(`আপনি কি ভিসা আবেদন "${trackingNo || id}" মুছে ফেলতে চান?`)) return;
     try {
-      await apiClient.delete(`/api/v1/indian-visas/${id}`);
+      await apiClient.delete(`/api/v1/docs/indian-visas/${id}`);
       toast.success('ভিসা আবেদন রেকর্ড মুছে ফেলা হয়েছে।');
       fetchData(pagination.page, pagination.limit, search, status);
     } catch (err) {

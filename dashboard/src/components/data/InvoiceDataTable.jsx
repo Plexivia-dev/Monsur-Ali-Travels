@@ -26,7 +26,7 @@ export function InvoiceDataTable() {
         status: statusFilter !== 'all' ? statusFilter : undefined,
       };
 
-      const res = await apiClient.get('/api/v1/invoices', { params });
+      const res = await apiClient.get('/api/v1/docs/invoices', { params });
       if (res.data?.success || res.data?.status === 'success') {
         setData(res.data.data || []);
         if (res.data.pagination) {
@@ -53,7 +53,7 @@ export function InvoiceDataTable() {
   const handleDelete = async (id, invoiceNo) => {
     if (!window.confirm(`আপনি কি ইনভয়েস "${invoiceNo || id}" মুছে ফেলতে চান?`)) return;
     try {
-      await apiClient.delete(`/api/v1/invoices/${id}`);
+      await apiClient.delete(`/api/v1/docs/invoices/${id}`);
       toast.success('ইনভয়েস মুছে ফেলা হয়েছে।');
       fetchData(pagination.page, pagination.limit, search, status);
     } catch (err) {

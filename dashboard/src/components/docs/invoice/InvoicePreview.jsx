@@ -3,11 +3,33 @@ import { PrintablePaper } from '../common/PrintablePaper';
 import { Printer, CheckCircle, Clock, AlertTriangle } from 'lucide-react';
 import logoImg from '../../../assets/logo.png';
 
-export function InvoicePreview({ data, onPrint }) {
-  const { invoiceNo, issueDate, dueDate, paymentStatus, currency, taxRate, biller = {}, client = {}, items = [], paymentTerms } = data;
+export function InvoicePreview({ data = {}, onPrint }) {
+  const {
+    invoiceNo = 'INV-0000',
+    issueDate = new Date().toISOString(),
+    dueDate = new Date().toISOString(),
+    paymentStatus = 'Pending',
+    currency = 'BDT',
+    taxRate = 0,
+    biller = {},
+    client = {},
+    items = [],
+    paymentTerms = 'Payment due within 15 days of invoice date.'
+  } = data || {};
+
+  const billerInfo = {
+    name: biller?.name || 'মনসুর আলী ট্রাভেলস (MONSUR ALI TRAVELS)',
+    subtitle: biller?.subtitle || 'Government Approved Overseas Manpower & Travel Agency',
+    address: biller?.address || 'Nadampur, Jagannathpur, Sunamganj - 3060, Sylhet, Bangladesh',
+    phone: biller?.phone || '+8801345579534',
+    email: biller?.email || 'monsuralitravels@gmail.com',
+    binNo: biller?.binNo || 'RL-1842',
+  };
+
+  const handlePrintAction = onPrint || (() => window.print());
 
   // Calculate line items and totals
-  const processedItems = items.map(item => {
+  const processedItems = (items || []).map(item => {
     const qtyNum = parseFloat(item.quantity);
     const hasQty = !isNaN(qtyNum) && qtyNum > 0;
     const priceNum = parseFloat(item.unitPrice) || 0;
@@ -54,7 +76,8 @@ export function InvoicePreview({ data, onPrint }) {
         </div>
 
         <button
-          onClick={onPrint}
+          type="button"
+          onClick={handlePrintAction}
           className="flex items-center space-x-1.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-3.5 py-1.5 rounded-[4px] shadow-xs transition-all cursor-pointer"
         >
           <Printer className="w-3.5 h-3.5" />
@@ -72,12 +95,12 @@ export function InvoicePreview({ data, onPrint }) {
               <div className="space-y-1 max-w-md">
                 <div className="flex items-center gap-2.5">
                   <img src={logoImg} alt="Monsur Ali Travels Logo" className="w-9 h-9 object-contain rounded-[4px]" />
-                  <h1 className="text-xl font-black uppercase tracking-tight text-slate-900">{biller.name}</h1>
+                  <h1 className="text-xl font-black uppercase tracking-tight text-slate-900">{billerInfo.name}</h1>
                 </div>
-                <p className="text-xs text-slate-700 font-bold">{biller.subtitle}</p>
-                <p className="text-xs text-slate-600">{biller.address}</p>
-                <p className="text-xs text-slate-600">Phone: {biller.phone} | Email: {biller.email}</p>
-                {biller.binNo && <p className="text-xs font-mono text-slate-500 font-semibold">License / BIN: {biller.binNo}</p>}
+                <p className="text-xs text-slate-700 font-bold">{billerInfo.subtitle}</p>
+                <p className="text-xs text-slate-600">{billerInfo.address}</p>
+                <p className="text-xs text-slate-600">Phone: {billerInfo.phone} | Email: {billerInfo.email}</p>
+                {billerInfo.binNo && <p className="text-xs font-mono text-slate-500 font-semibold">License / BIN: {billerInfo.binNo}</p>}
               </div>
 
               <div className="text-right space-y-2">
@@ -190,7 +213,7 @@ export function InvoicePreview({ data, onPrint }) {
 
             <div className="text-center space-y-1">
               <div className="border-b-2 border-slate-900 w-52 mb-1"></div>
-              <div className="font-bold text-sm text-slate-900">{biller.name}</div>
+              <div className="font-bold text-sm text-slate-900">{billerInfo.name}</div>
               <div className="text-xs text-slate-600">Authorized Signature & Seal</div>
             </div>
           </div>

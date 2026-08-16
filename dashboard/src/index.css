@@ -257,12 +257,21 @@
 }
 
 /* ------------------------------------------------------------- */
+/* ------------------------------------------------------------- */
 /* GLOBAL A4 PRINT SPECIFICATIONS FOR DOCUMENT STUDIO            */
 /* ------------------------------------------------------------- */
 @media print {
   @page {
     size: A4 portrait;
-    margin: 8mm 8mm !important;
+    margin: 6mm 8mm !important;
+  }
+
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box !important;
+    text-shadow: none !important;
+    box-shadow: none !important;
   }
 
   html, body {
@@ -284,20 +293,53 @@
     visibility: hidden !important;
   }
 
+  /* Reset all modal containers and parent wrappers so printable canvas flows naturally */
+  .fixed,
+  [role="dialog"],
+  .overflow-y-auto,
+  .overflow-hidden,
+  .max-h-\[90vh\],
+  .max-h-\[85vh\],
+  .max-h-\[80vh\] {
+    position: static !important;
+    overflow: visible !important;
+    max-height: none !important;
+    height: auto !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    background: transparent !important;
+    backdrop-filter: none !important;
+    box-shadow: none !important;
+    border: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    inset: auto !important;
+    transform: none !important;
+  }
+
   /* SHOW ONLY THE PRINTABLE DOCUMENT & ITS CHILDREN */
   .printable-a4-paper,
   .printable-a4-paper *,
+  #printable-invoice-canvas,
+  #printable-invoice-canvas *,
   #salary-slip-canvas,
   #salary-slip-canvas *,
   #employment-agreement-canvas,
-  #employment-agreement-canvas * {
+  #employment-agreement-canvas *,
+  #printable-indian-visa-canvas,
+  #printable-indian-visa-canvas *,
+  #printable-passport-canvas,
+  #printable-passport-canvas * {
     visibility: visible !important;
   }
 
-  /* Position printable paper to allow natural multi-page printing */
+  /* Position printable paper to take full print canvas */
   .printable-a4-paper,
+  #printable-invoice-canvas,
   #salary-slip-canvas,
-  #employment-agreement-canvas {
+  #employment-agreement-canvas,
+  #printable-indian-visa-canvas,
+  #printable-passport-canvas {
     position: relative !important;
     left: auto !important;
     top: auto !important;
@@ -329,9 +371,11 @@
   input,
   textarea,
   select,
-  button,
-  [role="dialog"] {
+  button {
     display: none !important;
     visibility: hidden !important;
+    height: 0 !important;
+    padding: 0 !important;
+    margin: 0 !important;
   }
 }
