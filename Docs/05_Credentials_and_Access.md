@@ -53,7 +53,7 @@ ssh -i C:\Users\mdikr\.ssh\id_ed25519_ikramul root@144.79.218.241 "cd /opt/monsu
 | Field              | Value                        |
 | :----------------- | :--------------------------- |
 | **Email Address**  | `info@monsuralitravels.com`  |
-| **SMTP Host**      | `mail.monsuralitravels.com`  |
+| **SMTP Host**      | `aberi.us.svlogins.com`      |
 | **SMTP Port**      | `587` (TLS)                  |
 | **SMTP User**      | `info@monsuralitravels.com`  |
 | **SMTP Password**  | `[REDACTED_FOR_SECURITY]`    |
@@ -62,7 +62,7 @@ ssh -i C:\Users\mdikr\.ssh\id_ed25519_ikramul root@144.79.218.241 "cd /opt/monsu
 
 ### Backend `.env.production` SMTP Block
 ```env
-SMTP_HOST=mail.monsuralitravels.com
+SMTP_HOST=aberi.us.svlogins.com
 SMTP_PORT=587
 SMTP_ENCRYPTION=TLS
 SMTP_USER=info@monsuralitravels.com
