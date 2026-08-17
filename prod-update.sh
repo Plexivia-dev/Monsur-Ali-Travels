@@ -12,6 +12,8 @@ cd "$PROJECT_DIR"
 echo "🔄 Pulling latest changes from live..."
 git fetch origin live
 git reset --hard origin/live
+chmod +x ./*.sh
+cp backend/.env.production backend/.env
 
 echo "🏗️ Rebuilding and restarting containers..."
 docker compose -f docker-compose.prod.yml up -d --build
