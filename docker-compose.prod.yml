@@ -1,0 +1,60 @@
+services:
+  mongodb:
+    image: mongo:7.0
+    container_name: monsuralitravels-mongodb-live
+    restart: always
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_INITDB_ROOT_USERNAME:-admin}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD:-MonsurAliSecPass2026!}
+      MONGO_INITDB_DATABASE: ${MONGO_INITDB_DATABASE:-monsur-ali-travels}
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb-data:/data/db
+    networks:
+      - monsuralitravels-net
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: monsuralitravels-backend-live
+    restart: always
+    env_file:
+      - ./backend/.env
+    volumes:
+      - /var/www/uploads:/app/src/uploads
+      - /var/www/documents:/app/src/documents
+    environment:
+      NODE_ENV: production
+      PORT: 5092
+      MONGODB_URI: ${MONGODB_URI:-mongodb://admin:MonsurAliSecPass2026!@monsuralitravels-mongodb-live:27017/monsur-ali-travels?authSource=admin}
+      MONGODB_DB_NAME: monsur-ali-travels
+      ACCESS_TOKEN_SECRET: ${ACCESS_TOKEN_SECRET:-monsuralitravels_super_secret_access_token_jwt_2026}
+    ports:
+      - "5092:5092"
+    depends_on:
+      - mongodb
+    networks:
+      - monsuralitravels-net
+
+  dashboard:
+    build:
+      context: ./dashboard
+      dockerfile: Dockerfile
+      args:
+        - VITE_API_BASE_URL=${VITE_API_BASE_URL:-https://api.monsuralitravels.com}
+    container_name: monsuralitravels-dashboard-live
+    restart: always
+    ports:
+      - "8005:80"
+    networks:
+      - monsuralitravels-net
+
+networks:
+  monsuralitravels-net:
+    driver: bridge
+
+volumes:
+  mongodb-data:
+    driver: local
