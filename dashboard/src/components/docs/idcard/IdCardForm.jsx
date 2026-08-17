@@ -1,5 +1,7 @@
 import React from 'react';
 import { User, IdCard, Calendar, Droplets, Phone, Mail, MapPin, Upload, RefreshCw, Globe, PenTool } from 'lucide-react';
+import { BdPhoneInput } from '../../common/BdPhoneInput';
+import { DatePicker } from '../../ui/date-picker';
 
 export function IdCardForm({ cardData, setCardData, onResetSample }) {
   const handleChange = (field, value) => {
@@ -35,16 +37,16 @@ export function IdCardForm({ cardData, setCardData, onResetSample }) {
 
       <div className="space-y-3 text-xs">
         {/* Photo Upload Box */}
-        <div className="bg-muted/30 p-3 rounded-xl border border-border">
+        <div className={`p-3 rounded-xl border transition-all ${!cardData.photo ? 'bg-rose-500/5 border-rose-500/30' : 'bg-muted/30 border-border'}`}>
           <label className="block font-bold text-foreground mb-1">
-            📷 Photo Upload (ছবি সিলেক্ট করুন)
+            📷 Photo Upload (ছবি আপলোড) <span className="text-rose-500 font-bold">*</span>
           </label>
           <div className="flex items-center gap-3">
-            <div className="w-14 h-16 rounded-xl border-2 border-primary/30 overflow-hidden bg-background flex items-center justify-center shrink-0 shadow-xs relative">
+            <div className={`w-14 h-16 rounded-xl border-2 overflow-hidden bg-background flex items-center justify-center shrink-0 shadow-xs relative ${!cardData.photo ? 'border-rose-500/50 border-dashed' : 'border-primary/30'}`}>
               {cardData.photo ? (
                 <img src={cardData.photo} alt="Preview" className="w-full h-full object-cover" />
               ) : (
-                <User className="w-6 h-6 text-muted-foreground" />
+                <User className="w-6 h-6 text-rose-400" />
               )}
             </div>
             <div className="flex-1 space-y-1.5">
@@ -54,7 +56,7 @@ export function IdCardForm({ cardData, setCardData, onResetSample }) {
                 <input type="file" accept="image/*" onChange={handlePhotoUpload} className="hidden" />
               </label>
               <p className="text-[10px] text-muted-foreground">
-                Upload clear passport size photo (JPG/PNG).
+                Upload clear passport size photo (JPG/PNG). <span className="text-rose-500 font-medium">(আবশ্যক)</span>
               </p>
             </div>
           </div>
@@ -63,26 +65,30 @@ export function IdCardForm({ cardData, setCardData, onResetSample }) {
         {/* Full Name & Designation */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div>
-            <label className="block font-bold text-foreground mb-1">Full Name (পূর্ণ নাম)</label>
+            <label className="block font-bold text-foreground mb-1">
+              Full Name (পূর্ণ নাম) <span className="text-rose-500 font-bold">*</span>
+            </label>
             <div className="relative">
               <User className="w-3.5 h-3.5 absolute left-3 top-2.5 text-muted-foreground" />
               <input
                 type="text"
+                placeholder="যেমন: MD. HAKIMUL ISLAM"
                 value={cardData.fullName}
                 onChange={(e) => handleChange('fullName', e.target.value)}
-                placeholder="MD HAKIMUL ISLAM"
                 className="w-full pl-9 pr-3 py-1.5 bg-muted/50 border border-border rounded-lg text-foreground text-xs focus:outline-hidden focus:ring-1 focus:ring-primary font-bold"
               />
             </div>
           </div>
 
           <div>
-            <label className="block font-bold text-foreground mb-1">Role / Designation (পদবি)</label>
+            <label className="block font-bold text-foreground mb-1">
+              Role / Designation (পদবি) <span className="text-rose-500 font-bold">*</span>
+            </label>
             <input
               type="text"
+              placeholder="যেমন: EMPLOYEE / MANAGER"
               value={cardData.role}
               onChange={(e) => handleChange('role', e.target.value)}
-              placeholder="EMPLOYEE"
               className="w-full px-3 py-1.5 bg-muted/50 border border-border rounded-lg text-foreground text-xs focus:outline-hidden focus:ring-1 focus:ring-primary font-bold uppercase"
             />
           </div>
@@ -91,72 +97,70 @@ export function IdCardForm({ cardData, setCardData, onResetSample }) {
         {/* Employee ID & Joining Date */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div>
-            <label className="block font-bold text-foreground mb-1">Employee ID</label>
+            <label className="block font-bold text-foreground mb-1">
+              Employee ID <span className="text-rose-500 font-bold">*</span>
+            </label>
             <input
               type="text"
+              placeholder="যেমন: MAT-0123"
               value={cardData.idNumber}
               onChange={(e) => handleChange('idNumber', e.target.value)}
-              placeholder="123"
               className="w-full px-3 py-1.5 bg-muted/50 border border-border rounded-lg text-foreground text-xs focus:outline-hidden focus:ring-1 focus:ring-primary font-mono font-bold"
             />
           </div>
 
           <div>
-            <label className="block font-bold text-foreground mb-1">Joining Date</label>
-            <div className="relative">
-              <Calendar className="w-3.5 h-3.5 absolute left-3 top-2.5 text-muted-foreground" />
-              <input
-                type="text"
-                value={cardData.joiningDate}
-                onChange={(e) => handleChange('joiningDate', e.target.value)}
-                placeholder="01-10-2025"
-                className="w-full pl-9 pr-3 py-1.5 bg-muted/50 border border-border rounded-lg text-foreground text-xs focus:outline-hidden focus:ring-1 focus:ring-primary font-mono"
-              />
-            </div>
+            <label className="block font-bold text-foreground mb-1">
+              Joining Date <span className="text-rose-500 font-bold">*</span>
+            </label>
+            <DatePicker
+              value={cardData.joiningDate}
+              onChange={(val) => handleChange('joiningDate', val)}
+            />
           </div>
         </div>
 
         {/* Blood Group & Contact Phone */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div>
-            <label className="block font-bold text-foreground mb-1">Blood Group</label>
+            <label className="block font-bold text-foreground mb-1">
+              Blood Group <span className="text-rose-500 font-bold">*</span>
+            </label>
             <div className="relative">
-              <Droplets className="w-3.5 h-3.5 absolute left-3 top-2.5 text-rose-500" />
+              <Droplets className="w-3.5 h-3.5 absolute left-3 top-2.5 text-muted-foreground" />
               <input
                 type="text"
+                placeholder="যেমন: B+, A+, O+"
                 value={cardData.bloodGroup}
                 onChange={(e) => handleChange('bloodGroup', e.target.value)}
-                placeholder="B+"
-                className="w-full pl-9 pr-3 py-1.5 bg-muted/50 border border-border rounded-lg text-foreground text-xs focus:outline-hidden focus:ring-1 focus:ring-primary font-bold text-rose-600"
+                className="w-full pl-9 pr-3 py-1.5 bg-muted/50 border border-border rounded-lg text-foreground text-xs focus:outline-hidden focus:ring-1 focus:ring-primary font-bold"
               />
             </div>
           </div>
 
           <div>
-            <label className="block font-bold text-foreground mb-1">Contact Phone</label>
-            <div className="relative">
-              <Phone className="w-3.5 h-3.5 absolute left-3 top-2.5 text-muted-foreground" />
-              <input
-                type="text"
-                value={cardData.contactPhone}
-                onChange={(e) => handleChange('contactPhone', e.target.value)}
-                placeholder="01345579534"
-                className="w-full pl-9 pr-3 py-1.5 bg-muted/50 border border-border rounded-lg text-foreground text-xs focus:outline-hidden focus:ring-1 focus:ring-primary font-mono"
-              />
-            </div>
+            <label className="block font-bold text-foreground mb-1">
+              Contact Phone <span className="text-rose-500 font-bold">*</span>
+            </label>
+            <BdPhoneInput
+              value={cardData.contactPhone}
+              onChange={(val) => handleChange('contactPhone', val)}
+            />
           </div>
         </div>
 
         {/* Email Address */}
         <div>
-          <label className="block font-bold text-foreground mb-1">Email Address</label>
+          <label className="block font-bold text-foreground mb-1">
+            Email Address <span className="text-rose-500 font-bold">*</span>
+          </label>
           <div className="relative">
             <Mail className="w-3.5 h-3.5 absolute left-3 top-2.5 text-muted-foreground" />
             <input
               type="email"
+              placeholder="example@mail.com"
               value={cardData.email}
               onChange={(e) => handleChange('email', e.target.value)}
-              placeholder="monsuralitravels@gmail.com"
               className="w-full pl-9 pr-3 py-1.5 bg-muted/50 border border-border rounded-lg text-foreground text-xs focus:outline-hidden focus:ring-1 focus:ring-primary"
             />
           </div>
@@ -164,14 +168,16 @@ export function IdCardForm({ cardData, setCardData, onResetSample }) {
 
         {/* Office Address */}
         <div>
-          <label className="block font-bold text-foreground mb-1">Office Address</label>
+          <label className="block font-bold text-foreground mb-1">
+            Office Address <span className="text-rose-500 font-bold">*</span>
+          </label>
           <div className="relative">
             <MapPin className="w-3.5 h-3.5 absolute left-3 top-2.5 text-muted-foreground" />
             <input
               type="text"
+              placeholder="Office full address"
               value={cardData.address}
               onChange={(e) => handleChange('address', e.target.value)}
-              placeholder="Nadampur, Jagannathpur, Sunamganj - 3060, Sylhet, Bangladesh"
               className="w-full pl-9 pr-3 py-1.5 bg-muted/50 border border-border rounded-lg text-foreground text-xs focus:outline-hidden focus:ring-1 focus:ring-primary"
             />
           </div>
@@ -180,28 +186,32 @@ export function IdCardForm({ cardData, setCardData, onResetSample }) {
         {/* Website & Signature Name */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1 border-t border-border">
           <div>
-            <label className="block font-bold text-foreground mb-1">Website URL</label>
+            <label className="block font-bold text-foreground mb-1">
+              Website URL <span className="text-rose-500 font-bold">*</span>
+            </label>
             <div className="relative">
               <Globe className="w-3.5 h-3.5 absolute left-3 top-2.5 text-muted-foreground" />
               <input
                 type="text"
+                placeholder="www.monsuralitravels.com"
                 value={cardData.website}
                 onChange={(e) => handleChange('website', e.target.value)}
-                placeholder="www.monsuralitravels.com"
                 className="w-full pl-9 pr-3 py-1.5 bg-muted/50 border border-border rounded-lg text-foreground text-xs focus:outline-hidden focus:ring-1 focus:ring-primary font-mono text-[11px]"
               />
             </div>
           </div>
 
           <div>
-            <label className="block font-bold text-foreground mb-1">Signature Text</label>
+            <label className="block font-bold text-foreground mb-1">
+              Signature Text <span className="text-rose-500 font-bold">*</span>
+            </label>
             <div className="relative">
               <PenTool className="w-3.5 h-3.5 absolute left-3 top-2.5 text-muted-foreground" />
               <input
                 type="text"
+                placeholder="Authorized Signatory Name"
                 value={cardData.signatureName}
                 onChange={(e) => handleChange('signatureName', e.target.value)}
-                placeholder="M. Ali"
                 className="w-full pl-9 pr-3 py-1.5 bg-muted/50 border border-border rounded-lg text-foreground text-xs focus:outline-hidden focus:ring-1 focus:ring-primary font-bold"
               />
             </div>

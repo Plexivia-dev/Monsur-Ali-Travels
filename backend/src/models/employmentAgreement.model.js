@@ -1,4 +1,5 @@
 import mongoose, { Schema, model } from "mongoose";
+import { generateDid } from "../utils/generateDid.js";
 
 const { models } = mongoose;
 
@@ -15,6 +16,12 @@ export function generateUniqueAgreementId() {
 
 const employmentAgreementSchema = new Schema(
   {
+    did: {
+      type: String,
+      default: () => generateDid(),
+      unique: true,
+      index: true,
+    },
     // unique agreement ID (3 letters + 5 digits e.g. AGR-ABC84920)
     agreementId: {
       type: String,

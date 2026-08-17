@@ -1,20 +1,20 @@
 {
   "agencyName": "Monsur Ali Tours & Travels",
-  "brandTitle": "MANSUR ALI",
+  "brandTitle": "MONSUR ALI",
   "brandSubtitle": "TOURS & TRAVELS",
   "tagline": "Your Trusted Travel Partner",
   "phone": "+8801345579534",
-  "phoneLocal": "01345579534",
-  "email": "monsuralitravels@gmail.com",
+  "phoneLocal": "01345-579534",
+  "email": "contact@monsuralitravels.com",
+  "domain": "monsuralitravels.com",
   "website": "www.monsuralitravels.com",
-  "licenseNo": "RL-1842",
   "address": {
-    "village": "Nadampur",
-    "upazila": "Jagannathpur",
+    "village": "Mominpur",
+    "road": "Jagannathpur Road",
     "district": "Sunamganj",
     "postcode": "3060",
-    "division": "Sylhet",
     "country": "Bangladesh",
-    "full": "Nadampur, Jagannathpur, Sunamganj - 3060, Sylhet, Bangladesh"
+    "full": "Mominpur Jagannathpur Road, Sunamganj, Post Code 3060",
+    "fullBn": "মমিনপুর জগন্নাথপুর রোড, সুনামগঞ্জ, পোস্ট কোড ৩০৬০"
   }
 }

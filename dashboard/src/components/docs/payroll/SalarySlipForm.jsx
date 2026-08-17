@@ -21,6 +21,7 @@ import {
   DialogDescription,
   DialogFooter,
 } from '@/components/ui/dialog';
+import { DatePicker } from '../../ui/date-picker';
 
 // Number to Words converter for BDT currency
 export function numberToWords(num) {
@@ -125,17 +126,14 @@ export function SalarySlipForm({ formData, setFormData, onSubmit, onReset, isSub
   const progressPercent = ((currentStep - 1) / (steps.length - 1)) * 100;
 
   return (
-    <div className="space-y-4 max-w-4xl mx-auto">
+    <div className="space-y-5 max-w-[850px] mx-auto">
       {/* Top Header Card */}
-      <div className="bg-card border border-border p-4 rounded-md shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+      <div className="bg-card border border-border p-6 rounded-[4px] shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b-2 border-border">
         <div>
-          <h2 className="text-base font-bold text-foreground flex items-center gap-2">
-            <FileText className="w-4 h-4 text-emerald-600" />
-            মাসিক স্যালারি স্লিপ ইনপুট ফরম (Step {currentStep} of 4)
+          <h2 className="text-xl sm:text-2xl font-black text-foreground flex items-center gap-2 tracking-tight">
+            <FileText className="w-6 h-6 text-emerald-600 shrink-0" />
+            Salary Slip Generator (Step {currentStep} of 4)
           </h2>
-          <p className="text-xs text-muted-foreground mt-0.5">
-            প্রতিটি ধাপ সঠিকভাবে সম্পন্ন করে সবশেষে প্রিন্ট-রেডি স্যালারি স্লিপ প্রিভিউ তৈরি করুন।
-          </p>
         </div>
 
         <button
@@ -213,7 +211,6 @@ export function SalarySlipForm({ formData, setFormData, onSubmit, onReset, isSub
                   required
                   value={formData.employeeName}
                   onChange={(e) => handleChange('employeeName', e.target.value)}
-                  placeholder="MD Hakimul Islam"
                   className="w-full px-3 py-2 bg-background border border-border rounded-md text-foreground text-xs font-bold focus:ring-1 focus:ring-primary outline-none"
                 />
               </div>
@@ -225,7 +222,6 @@ export function SalarySlipForm({ formData, setFormData, onSubmit, onReset, isSub
                   required
                   value={formData.employeeId}
                   onChange={(e) => handleChange('employeeId', e.target.value)}
-                  placeholder="123"
                   className="w-full px-3 py-2 bg-background border border-border rounded-md text-foreground text-xs font-mono font-bold focus:ring-1 focus:ring-primary outline-none"
                 />
               </div>
@@ -236,7 +232,6 @@ export function SalarySlipForm({ formData, setFormData, onSubmit, onReset, isSub
                   type="text"
                   value={formData.designation}
                   onChange={(e) => handleChange('designation', e.target.value)}
-                  placeholder="Managing Director"
                   className="w-full px-3 py-2 bg-background border border-border rounded-md text-foreground text-xs focus:ring-1 focus:ring-primary outline-none"
                 />
               </div>
@@ -247,19 +242,15 @@ export function SalarySlipForm({ formData, setFormData, onSubmit, onReset, isSub
                   type="text"
                   value={formData.department}
                   onChange={(e) => handleChange('department', e.target.value)}
-                  placeholder="Management"
                   className="w-full px-3 py-2 bg-background border border-border rounded-md text-foreground text-xs focus:ring-1 focus:ring-primary outline-none"
                 />
               </div>
 
               <div>
                 <label className="block font-semibold text-foreground mb-1">যোগদানের তারিখ (Joining Date)</label>
-                <input
-                  type="text"
+                <DatePicker
                   value={formData.joiningDate}
-                  onChange={(e) => handleChange('joiningDate', e.target.value)}
-                  placeholder="01-10-2025"
-                  className="w-full px-3 py-2 bg-background border border-border rounded-md text-foreground text-xs font-mono focus:ring-1 focus:ring-primary outline-none"
+                  onChange={(val) => handleChange('joiningDate', val)}
                 />
               </div>
 
@@ -270,19 +261,15 @@ export function SalarySlipForm({ formData, setFormData, onSubmit, onReset, isSub
                   required
                   value={formData.salaryMonth}
                   onChange={(e) => handleChange('salaryMonth', e.target.value)}
-                  placeholder="October 2025"
                   className="w-full px-3 py-2 bg-background border border-border rounded-md text-foreground text-xs font-bold focus:ring-1 focus:ring-primary outline-none"
                 />
               </div>
 
               <div>
                 <label className="block font-semibold text-foreground mb-1">পরিশোধের তারিখ (Pay Date)</label>
-                <input
-                  type="text"
+                <DatePicker
                   value={formData.payDate}
-                  onChange={(e) => handleChange('payDate', e.target.value)}
-                  placeholder="01-11-2025"
-                  className="w-full px-3 py-2 bg-background border border-border rounded-md text-foreground text-xs font-mono focus:ring-1 focus:ring-primary outline-none"
+                  onChange={(val) => handleChange('payDate', val)}
                 />
               </div>
 
@@ -310,9 +297,9 @@ export function SalarySlipForm({ formData, setFormData, onSubmit, onReset, isSub
                 <input
                   type="text"
                   value={formData.slipNo}
-                  onChange={(e) => handleChange('slipNo', e.target.value)}
-                  placeholder="SLIP-AB4829K513"
-                  className="w-full px-3 py-2 bg-background border border-border rounded-md text-foreground text-xs font-mono font-bold focus:ring-1 focus:ring-primary outline-none"
+                  readOnly
+                  className="w-full px-3 py-2 bg-muted/60 border border-border rounded-md text-foreground/80 text-xs font-mono font-bold outline-none cursor-not-allowed select-none"
+                  placeholder="System Generated"
                 />
               </div>
 
@@ -336,7 +323,6 @@ export function SalarySlipForm({ formData, setFormData, onSubmit, onReset, isSub
                   type="number"
                   value={formData.attendanceDays}
                   onChange={(e) => handleChange('attendanceDays', e.target.value)}
-                  placeholder="30"
                   className="w-full px-3 py-2 bg-background border border-border rounded-md text-foreground text-xs font-mono focus:ring-1 focus:ring-primary outline-none"
                 />
               </div>
@@ -358,7 +344,6 @@ export function SalarySlipForm({ formData, setFormData, onSubmit, onReset, isSub
                   type="number"
                   value={formData.basicSalary}
                   onChange={(e) => handleChange('basicSalary', e.target.value)}
-                  placeholder="40000"
                   className="w-full px-3 py-2 bg-background border border-border rounded-md text-foreground text-xs font-mono focus:ring-1 focus:ring-primary outline-none"
                 />
               </div>
@@ -369,7 +354,6 @@ export function SalarySlipForm({ formData, setFormData, onSubmit, onReset, isSub
                   type="number"
                   value={formData.houseRentAllowance}
                   onChange={(e) => handleChange('houseRentAllowance', e.target.value)}
-                  placeholder="10000"
                   className="w-full px-3 py-2 bg-background border border-border rounded-md text-foreground text-xs font-mono focus:ring-1 focus:ring-primary outline-none"
                 />
               </div>
@@ -380,7 +364,6 @@ export function SalarySlipForm({ formData, setFormData, onSubmit, onReset, isSub
                   type="number"
                   value={formData.medicalAllowance}
                   onChange={(e) => handleChange('medicalAllowance', e.target.value)}
-                  placeholder="3000"
                   className="w-full px-3 py-2 bg-background border border-border rounded-md text-foreground text-xs font-mono focus:ring-1 focus:ring-primary outline-none"
                 />
               </div>
@@ -391,7 +374,6 @@ export function SalarySlipForm({ formData, setFormData, onSubmit, onReset, isSub
                   type="number"
                   value={formData.conveyanceAllowance}
                   onChange={(e) => handleChange('conveyanceAllowance', e.target.value)}
-                  placeholder="2000"
                   className="w-full px-3 py-2 bg-background border border-border rounded-md text-foreground text-xs font-mono focus:ring-1 focus:ring-primary outline-none"
                 />
               </div>
@@ -402,7 +384,6 @@ export function SalarySlipForm({ formData, setFormData, onSubmit, onReset, isSub
                   type="number"
                   value={formData.otherAllowance}
                   onChange={(e) => handleChange('otherAllowance', e.target.value)}
-                  placeholder="0"
                   className="w-full px-3 py-2 bg-background border border-border rounded-md text-foreground text-xs font-mono focus:ring-1 focus:ring-primary outline-none"
                 />
               </div>
@@ -413,7 +394,6 @@ export function SalarySlipForm({ formData, setFormData, onSubmit, onReset, isSub
                   type="number"
                   value={formData.overtimeExtraDuty}
                   onChange={(e) => handleChange('overtimeExtraDuty', e.target.value)}
-                  placeholder="0"
                   className="w-full px-3 py-2 bg-background border border-border rounded-md text-foreground text-xs font-mono focus:ring-1 focus:ring-primary outline-none"
                 />
               </div>
@@ -442,7 +422,6 @@ export function SalarySlipForm({ formData, setFormData, onSubmit, onReset, isSub
                   type="number"
                   value={formData.advanceSalary}
                   onChange={(e) => handleChange('advanceSalary', e.target.value)}
-                  placeholder="0"
                   className="w-full px-3 py-2 bg-background border border-border rounded-md text-foreground text-xs font-mono focus:ring-1 focus:ring-primary outline-none"
                 />
               </div>
@@ -453,7 +432,6 @@ export function SalarySlipForm({ formData, setFormData, onSubmit, onReset, isSub
                   type="number"
                   value={formData.unpaidLeaveAbsence}
                   onChange={(e) => handleChange('unpaidLeaveAbsence', e.target.value)}
-                  placeholder="0"
                   className="w-full px-3 py-2 bg-background border border-border rounded-md text-foreground text-xs font-mono focus:ring-1 focus:ring-primary outline-none"
                 />
               </div>
@@ -464,7 +442,6 @@ export function SalarySlipForm({ formData, setFormData, onSubmit, onReset, isSub
                   type="number"
                   value={formData.loanAuthorizedDeduction}
                   onChange={(e) => handleChange('loanAuthorizedDeduction', e.target.value)}
-                  placeholder="0"
                   className="w-full px-3 py-2 bg-background border border-border rounded-md text-foreground text-xs font-mono focus:ring-1 focus:ring-primary outline-none"
                 />
               </div>
@@ -475,7 +452,6 @@ export function SalarySlipForm({ formData, setFormData, onSubmit, onReset, isSub
                   type="number"
                   value={formData.taxStatutoryDeduction}
                   onChange={(e) => handleChange('taxStatutoryDeduction', e.target.value)}
-                  placeholder="0"
                   className="w-full px-3 py-2 bg-background border border-border rounded-md text-foreground text-xs font-mono focus:ring-1 focus:ring-primary outline-none"
                 />
               </div>
@@ -486,7 +462,6 @@ export function SalarySlipForm({ formData, setFormData, onSubmit, onReset, isSub
                   type="number"
                   value={formData.otherAuthorizedDeduction}
                   onChange={(e) => handleChange('otherAuthorizedDeduction', e.target.value)}
-                  placeholder="0"
                   className="w-full px-3 py-2 bg-background border border-border rounded-md text-foreground text-xs font-mono focus:ring-1 focus:ring-primary outline-none"
                 />
               </div>
@@ -517,7 +492,6 @@ export function SalarySlipForm({ formData, setFormData, onSubmit, onReset, isSub
                     type="number"
                     value={formData.workingDays}
                     onChange={(e) => handleChange('workingDays', e.target.value)}
-                    placeholder="30"
                     className="w-full px-3 py-2 bg-background border border-border rounded-md text-foreground text-xs font-mono focus:ring-1 focus:ring-primary outline-none"
                   />
                 </div>
@@ -528,7 +502,6 @@ export function SalarySlipForm({ formData, setFormData, onSubmit, onReset, isSub
                     type="number"
                     value={formData.presentDays}
                     onChange={(e) => handleChange('presentDays', e.target.value)}
-                    placeholder="30"
                     className="w-full px-3 py-2 bg-background border border-border rounded-md text-foreground text-xs font-mono focus:ring-1 focus:ring-primary outline-none"
                   />
                 </div>
@@ -539,7 +512,6 @@ export function SalarySlipForm({ formData, setFormData, onSubmit, onReset, isSub
                     type="number"
                     value={formData.paidLeave}
                     onChange={(e) => handleChange('paidLeave', e.target.value)}
-                    placeholder="0"
                     className="w-full px-3 py-2 bg-background border border-border rounded-md text-foreground text-xs font-mono focus:ring-1 focus:ring-primary outline-none"
                   />
                 </div>
@@ -550,7 +522,6 @@ export function SalarySlipForm({ formData, setFormData, onSubmit, onReset, isSub
                     type="number"
                     value={formData.unpaidLeave}
                     onChange={(e) => handleChange('unpaidLeave', e.target.value)}
-                    placeholder="0"
                     className="w-full px-3 py-2 bg-background border border-border rounded-md text-foreground text-xs font-mono focus:ring-1 focus:ring-primary outline-none"
                   />
                 </div>

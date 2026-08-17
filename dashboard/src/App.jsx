@@ -10,8 +10,10 @@ import Factory from './pages/Factory';
 import Agency from './pages/Agency';
 import Admin from './pages/Admin';
 import DocumentStudio from './pages/DocumentStudio';
+import DocumentData from './pages/DocumentData';
 import { ToastContainer } from './components/common/ToastContainer';
 import { GlobalSearchModal } from './components/common/GlobalSearchModal';
+import { TopBreadcrumbBar } from './components/common/TopBreadcrumbBar';
 import { Toaster } from 'sonner';
 import LoginPage from './pages/LoginPage';
 
@@ -83,10 +85,14 @@ function MainLayout() {
       >
         {/* Dynamic Portal View Container */}
         <main className="flex-1 p-4 sm:p-6 lg:p-8 max-w-7xl w-full mx-auto">
+          {/* Top Breadcrumb & Back Navigation Bar for Every Page */}
+          <TopBreadcrumbBar />
+
           {activePortal === 'factory' && <Factory />}
           {activePortal === 'agency' && <Agency />}
           {activePortal === 'admin' && <Admin />}
           {activePortal === 'docs' && <DocumentStudio />}
+          {activePortal === 'data' && <DocumentData />}
         </main>
       </div>
 

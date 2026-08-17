@@ -27,6 +27,8 @@ import {
   DialogDescription,
   DialogFooter
 } from '@/components/ui/dialog';
+import { BdPhoneInput } from '../../common/BdPhoneInput';
+import { DatePicker } from '../../ui/date-picker';
 
 export function AgreementForm({ formData, setFormData, onSubmit, onReset, isSubmitting = false }) {
   const [currentStep, setCurrentStep] = useState(1);
@@ -103,17 +105,14 @@ export function AgreementForm({ formData, setFormData, onSubmit, onReset, isSubm
   const progressPercent = ((currentStep - 1) / (steps.length - 1)) * 100;
 
   return (
-    <div className="space-y-4 max-w-4xl mx-auto">
+    <div className="space-y-5 max-w-[850px] mx-auto">
       {/* Top Header Card */}
-      <div className="bg-card border border-border p-4 rounded-md shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+      <div className="bg-card border border-border p-6 rounded-[4px] shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b-2 border-border">
         <div>
-          <h2 className="text-base font-bold text-foreground flex items-center gap-2">
-            <FileText className="w-4 h-4 text-emerald-600" />
-            নিয়োগ ও চাকরির চুক্তিপত্র ইনপুট ফরম (Step {currentStep} of 4)
+          <h2 className="text-xl sm:text-2xl font-black text-foreground flex items-center gap-2 tracking-tight">
+            <FileText className="w-6 h-6 text-emerald-600 shrink-0" />
+            Employment Agreement Form (Step {currentStep} of 4)
           </h2>
-          <p className="text-xs text-muted-foreground mt-0.5">
-            প্রতিটি ধাপের আইনি তথ্য সঠিকভাবে পূরণ করুন। সবশেষে সম্পূর্ণ এগ্রিমেন্টের প্রিন্ট-রেডি লিগ্যাল কপি তৈরি হবে।
-          </p>
         </div>
 
         <button
@@ -191,7 +190,6 @@ export function AgreementForm({ formData, setFormData, onSubmit, onReset, isSubm
                     type="text"
                     value={formData.header?.companyName || ''}
                     onChange={(e) => updateNested('header', 'companyName', e.target.value)}
-                    placeholder="মনসুর আলী ট্রাভেলস (MONSUR ALI TRAVELS)"
                     className="w-full px-3 py-2 bg-background border border-border rounded-md text-foreground text-xs font-bold focus:ring-1 focus:ring-primary outline-none"
                   />
                 </div>
@@ -201,18 +199,14 @@ export function AgreementForm({ formData, setFormData, onSubmit, onReset, isSubm
                     type="text"
                     value={formData.header?.officeAddress || ''}
                     onChange={(e) => updateNested('header', 'officeAddress', e.target.value)}
-                    placeholder="Nadampur, Jagannathpur, Sunamganj - 3060, Sylhet, Bangladesh"
                     className="w-full px-3 py-2 bg-background border border-border rounded-md text-foreground text-xs focus:ring-1 focus:ring-primary outline-none"
                   />
                 </div>
                 <div>
                   <label className="block font-semibold text-foreground mb-1">মোবাইল নম্বর :</label>
-                  <input
-                    type="text"
+                  <BdPhoneInput
                     value={formData.header?.phone || ''}
-                    onChange={(e) => updateNested('header', 'phone', e.target.value)}
-                    placeholder="+8801345579534"
-                    className="w-full px-3 py-2 bg-background border border-border rounded-md text-foreground text-xs font-mono focus:ring-1 focus:ring-primary outline-none"
+                    onChange={(val) => updateNested('header', 'phone', val)}
                   />
                 </div>
                 <div>
@@ -221,7 +215,6 @@ export function AgreementForm({ formData, setFormData, onSubmit, onReset, isSubm
                     type="email"
                     value={formData.header?.email || ''}
                     onChange={(e) => updateNested('header', 'email', e.target.value)}
-                    placeholder="monsuralitravels@gmail.com"
                     className="w-full px-3 py-2 bg-background border border-border rounded-md text-foreground text-xs focus:ring-1 focus:ring-primary outline-none"
                   />
                 </div>
@@ -236,12 +229,9 @@ export function AgreementForm({ formData, setFormData, onSubmit, onReset, isSubm
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
                 <div>
                   <label className="block font-semibold text-foreground mb-1">চুক্তির তারিখ :</label>
-                  <input
-                    type="text"
+                  <DatePicker
                     value={formData.parties?.agreementDate || ''}
-                    onChange={(e) => updateNested('parties', 'agreementDate', e.target.value)}
-                    placeholder="১৬ আগস্ট ২০২৬"
-                    className="w-full px-3 py-2 bg-background border border-border rounded-md text-foreground text-xs font-bold focus:ring-1 focus:ring-primary outline-none"
+                    onChange={(val) => updateNested('parties', 'agreementDate', val)}
                   />
                 </div>
                 <div>
@@ -251,7 +241,6 @@ export function AgreementForm({ formData, setFormData, onSubmit, onReset, isSubm
                     required
                     value={formData.parties?.nidPassport || ''}
                     onChange={(e) => updateNested('parties', 'nidPassport', e.target.value)}
-                    placeholder="NID: 1992837482928 / Passport"
                     className="w-full px-3 py-2 bg-background border border-border rounded-md text-foreground text-xs font-mono font-bold focus:ring-1 focus:ring-primary outline-none"
                   />
                 </div>
@@ -261,18 +250,14 @@ export function AgreementForm({ formData, setFormData, onSubmit, onReset, isSubm
                     type="text"
                     value={formData.parties?.employerName || ''}
                     onChange={(e) => updateNested('parties', 'employerName', e.target.value)}
-                    placeholder="মো: ইকরামুল হোসেন (ব্যবস্থাপনা পরিচালক)"
                     className="w-full px-3 py-2 bg-background border border-border rounded-md text-foreground text-xs focus:ring-1 focus:ring-primary outline-none"
                   />
                 </div>
                 <div>
                   <label className="block font-semibold text-foreground mb-1">কর্তৃপক্ষের মোবাইল নম্বর :</label>
-                  <input
-                    type="text"
+                  <BdPhoneInput
                     value={formData.parties?.employerPhone || ''}
-                    onChange={(e) => updateNested('parties', 'employerPhone', e.target.value)}
-                    placeholder="+8801345579534"
-                    className="w-full px-3 py-2 bg-background border border-border rounded-md text-foreground text-xs font-mono focus:ring-1 focus:ring-primary outline-none"
+                    onChange={(val) => updateNested('parties', 'employerPhone', val)}
                   />
                 </div>
                 <div>
@@ -282,7 +267,6 @@ export function AgreementForm({ formData, setFormData, onSubmit, onReset, isSubm
                     required
                     value={formData.parties?.employeeName || ''}
                     onChange={(e) => updateNested('parties', 'employeeName', e.target.value)}
-                    placeholder="মো: রাহিমুল ইসলাম"
                     className="w-full px-3 py-2 bg-background border border-border rounded-md text-foreground text-xs font-bold focus:ring-1 focus:ring-primary outline-none"
                   />
                 </div>
@@ -292,7 +276,6 @@ export function AgreementForm({ formData, setFormData, onSubmit, onReset, isSubm
                     type="email"
                     value={formData.parties?.employeeEmail || ''}
                     onChange={(e) => updateNested('parties', 'employeeEmail', e.target.value)}
-                    placeholder="rahimul@gmail.com"
                     className="w-full px-3 py-2 bg-background border border-border rounded-md text-foreground text-xs focus:ring-1 focus:ring-primary outline-none"
                   />
                 </div>
@@ -302,7 +285,6 @@ export function AgreementForm({ formData, setFormData, onSubmit, onReset, isSubm
                     type="text"
                     value={formData.parties?.fatherHusbandName || ''}
                     onChange={(e) => updateNested('parties', 'fatherHusbandName', e.target.value)}
-                    placeholder="মোঃ আব্দুল করিম"
                     className="w-full px-3 py-2 bg-background border border-border rounded-md text-foreground text-xs focus:ring-1 focus:ring-primary outline-none"
                   />
                 </div>
@@ -312,7 +294,6 @@ export function AgreementForm({ formData, setFormData, onSubmit, onReset, isSubm
                     type="text"
                     value={formData.parties?.address || ''}
                     onChange={(e) => updateNested('parties', 'address', e.target.value)}
-                    placeholder="গ্রাম: সৈয়দপুর, ডাকঘর: সৈয়দপুর, থানা: জগন্নাথপুর, সুনামগঞ্জ"
                     className="w-full px-3 py-2 bg-background border border-border rounded-md text-foreground text-xs focus:ring-1 focus:ring-primary outline-none"
                   />
                 </div>
@@ -331,18 +312,14 @@ export function AgreementForm({ formData, setFormData, onSubmit, onReset, isSubm
                     type="text"
                     value={formData.guardian?.guardianName || ''}
                     onChange={(e) => updateNested('guardian', 'guardianName', e.target.value)}
-                    placeholder="মোঃ আব্দুল করিম"
                     className="w-full px-3 py-2 bg-background border border-border rounded-md text-foreground text-xs font-bold focus:ring-1 focus:ring-primary outline-none"
                   />
                 </div>
                 <div>
                   <label className="block font-semibold text-foreground mb-1">মোবাইল নম্বর (প্রধান) :</label>
-                  <input
-                    type="text"
+                  <BdPhoneInput
                     value={formData.guardian?.guardianPhone || ''}
-                    onChange={(e) => updateNested('guardian', 'guardianPhone', e.target.value)}
-                    placeholder="01712-XXXXXX"
-                    className="w-full px-3 py-2 bg-background border border-border rounded-md text-foreground text-xs font-mono focus:ring-1 focus:ring-primary outline-none"
+                    onChange={(val) => updateNested('guardian', 'guardianPhone', val)}
                   />
                 </div>
                 <div>
@@ -360,12 +337,9 @@ export function AgreementForm({ formData, setFormData, onSubmit, onReset, isSubm
                 </div>
                 <div>
                   <label className="block font-semibold text-foreground mb-1">বিকল্প জরুরি নম্বর :</label>
-                  <input
-                    type="text"
+                  <BdPhoneInput
                     value={formData.guardian?.emergencyPhone || ''}
-                    onChange={(e) => updateNested('guardian', 'emergencyPhone', e.target.value)}
-                    placeholder="01812-XXXXXX"
-                    className="w-full px-3 py-2 bg-background border border-border rounded-md text-foreground text-xs font-mono focus:ring-1 focus:ring-primary outline-none"
+                    onChange={(val) => updateNested('guardian', 'emergencyPhone', val)}
                   />
                 </div>
                 <div>
@@ -374,7 +348,6 @@ export function AgreementForm({ formData, setFormData, onSubmit, onReset, isSubm
                     type="text"
                     value={formData.guardian?.guardianNid || ''}
                     onChange={(e) => updateNested('guardian', 'guardianNid', e.target.value)}
-                    placeholder="NID: 198273645281"
                     className="w-full px-3 py-2 bg-background border border-border rounded-md text-foreground text-xs font-mono focus:ring-1 focus:ring-primary outline-none"
                   />
                 </div>
@@ -384,7 +357,6 @@ export function AgreementForm({ formData, setFormData, onSubmit, onReset, isSubm
                     type="text"
                     value={formData.guardian?.guardianAddress || ''}
                     onChange={(e) => updateNested('guardian', 'guardianAddress', e.target.value)}
-                    placeholder="জগন্নাথপুর, সুনামগঞ্জ"
                     className="w-full px-3 py-2 bg-background border border-border rounded-md text-foreground text-xs focus:ring-1 focus:ring-primary outline-none"
                   />
                 </div>
@@ -407,7 +379,6 @@ export function AgreementForm({ formData, setFormData, onSubmit, onReset, isSubm
                     type="text"
                     value={formData.position?.designation || ''}
                     onChange={(e) => updateNested('position', 'designation', e.target.value)}
-                    placeholder="অফিস এক্সিকিউটিভ / প্রসেসিং অফিসার"
                     className="w-full px-3 py-2 bg-background border border-border rounded-md text-foreground text-xs font-bold focus:ring-1 focus:ring-primary outline-none"
                   />
                 </div>
@@ -417,18 +388,14 @@ export function AgreementForm({ formData, setFormData, onSubmit, onReset, isSubm
                     type="text"
                     value={formData.position?.department || ''}
                     onChange={(e) => updateNested('position', 'department', e.target.value)}
-                    placeholder="পাসপোর্ট ও ভিসা প্রসেসিং উইং"
                     className="w-full px-3 py-2 bg-background border border-border rounded-md text-foreground text-xs focus:ring-1 focus:ring-primary outline-none"
                   />
                 </div>
                 <div>
                   <label className="block font-semibold text-foreground mb-1">যোগদানের তারিখ :</label>
-                  <input
-                    type="text"
+                  <DatePicker
                     value={formData.position?.joiningDate || ''}
-                    onChange={(e) => updateNested('position', 'joiningDate', e.target.value)}
-                    placeholder="০১ সেপ্টেম্বর ২০২৬"
-                    className="w-full px-3 py-2 bg-background border border-border rounded-md text-foreground text-xs font-mono focus:ring-1 focus:ring-primary outline-none"
+                    onChange={(val) => updateNested('position', 'joiningDate', val)}
                   />
                 </div>
                 <div>
@@ -437,7 +404,6 @@ export function AgreementForm({ formData, setFormData, onSubmit, onReset, isSubm
                     type="text"
                     value={formData.position?.location || ''}
                     onChange={(e) => updateNested('position', 'location', e.target.value)}
-                    placeholder="হেড অফিস, নাদampur"
                     className="w-full px-3 py-2 bg-background border border-border rounded-md text-foreground text-xs focus:ring-1 focus:ring-primary outline-none"
                   />
                 </div>
@@ -459,7 +425,6 @@ export function AgreementForm({ formData, setFormData, onSubmit, onReset, isSubm
                     type="text"
                     value={formData.position?.workSchedule || ''}
                     onChange={(e) => updateNested('position', 'workSchedule', e.target.value)}
-                    placeholder="সকাল ৯:০০ - সন্ধ্যা ৬:০০, রবিবার হতে বৃহস্পতিবার (অন্যান্য: সাপ্তাহিক ছুটি শুক্রবার/শনিবার)"
                     className="w-full px-3 py-2 bg-background border border-border rounded-md text-foreground text-xs focus:ring-1 focus:ring-primary outline-none"
                   />
                 </div>
@@ -483,7 +448,6 @@ export function AgreementForm({ formData, setFormData, onSubmit, onReset, isSubm
                     type="number"
                     value={formData.salary?.basicSalary || ''}
                     onChange={(e) => handleSalaryChange('basicSalary', e.target.value)}
-                    placeholder="15000"
                     className="w-full px-3 py-2 bg-background border border-border rounded-md text-foreground text-xs font-mono focus:ring-1 focus:ring-primary outline-none"
                   />
                 </div>
@@ -493,7 +457,6 @@ export function AgreementForm({ formData, setFormData, onSubmit, onReset, isSubm
                     type="number"
                     value={formData.salary?.houseRent || ''}
                     onChange={(e) => handleSalaryChange('houseRent', e.target.value)}
-                    placeholder="5000"
                     className="w-full px-3 py-2 bg-background border border-border rounded-md text-foreground text-xs font-mono focus:ring-1 focus:ring-primary outline-none"
                   />
                 </div>
@@ -503,7 +466,6 @@ export function AgreementForm({ formData, setFormData, onSubmit, onReset, isSubm
                     type="number"
                     value={formData.salary?.medical || ''}
                     onChange={(e) => handleSalaryChange('medical', e.target.value)}
-                    placeholder="2000"
                     className="w-full px-3 py-2 bg-background border border-border rounded-md text-foreground text-xs font-mono focus:ring-1 focus:ring-primary outline-none"
                   />
                 </div>
@@ -513,7 +475,6 @@ export function AgreementForm({ formData, setFormData, onSubmit, onReset, isSubm
                     type="number"
                     value={formData.salary?.conveyance || ''}
                     onChange={(e) => handleSalaryChange('conveyance', e.target.value)}
-                    placeholder="1500"
                     className="w-full px-3 py-2 bg-background border border-border rounded-md text-foreground text-xs font-mono focus:ring-1 focus:ring-primary outline-none"
                   />
                 </div>
@@ -523,7 +484,6 @@ export function AgreementForm({ formData, setFormData, onSubmit, onReset, isSubm
                     type="number"
                     value={formData.salary?.specialAllowance || ''}
                     onChange={(e) => handleSalaryChange('specialAllowance', e.target.value)}
-                    placeholder="1500"
                     className="w-full px-3 py-2 bg-background border border-border rounded-md text-foreground text-xs font-mono focus:ring-1 focus:ring-primary outline-none"
                   />
                 </div>
@@ -533,7 +493,6 @@ export function AgreementForm({ formData, setFormData, onSubmit, onReset, isSubm
                     type="text"
                     value={formData.salary?.grossSalary || ''}
                     onChange={(e) => handleSalaryChange('grossSalary', e.target.value)}
-                    placeholder="25,000"
                     className="w-full px-3 py-2 bg-emerald-500/10 border border-emerald-500/30 rounded-md text-emerald-600 font-bold text-xs font-mono focus:ring-1 focus:ring-primary outline-none"
                   />
                 </div>
@@ -543,7 +502,6 @@ export function AgreementForm({ formData, setFormData, onSubmit, onReset, isSubm
                     type="text"
                     value={formData.salary?.grossSalaryInWords || ''}
                     onChange={(e) => updateNested('salary', 'grossSalaryInWords', e.target.value)}
-                    placeholder="পঁচিশ হাজার টাকা মাত্র"
                     className="w-full px-3 py-2 bg-background border border-border rounded-md text-foreground text-xs focus:ring-1 focus:ring-primary outline-none"
                   />
                 </div>
@@ -562,7 +520,6 @@ export function AgreementForm({ formData, setFormData, onSubmit, onReset, isSubm
                     type="number"
                     value={formData.leave?.casualDays || '10'}
                     onChange={(e) => updateNested('leave', 'casualDays', e.target.value)}
-                    placeholder="10"
                     className="w-full px-3 py-2 bg-background border border-border rounded-md text-foreground text-xs font-mono focus:ring-1 focus:ring-primary outline-none"
                   />
                 </div>
@@ -572,7 +529,6 @@ export function AgreementForm({ formData, setFormData, onSubmit, onReset, isSubm
                     type="number"
                     value={formData.leave?.sickDays || '14'}
                     onChange={(e) => updateNested('leave', 'sickDays', e.target.value)}
-                    placeholder="14"
                     className="w-full px-3 py-2 bg-background border border-border rounded-md text-foreground text-xs font-mono focus:ring-1 focus:ring-primary outline-none"
                   />
                 </div>
@@ -582,7 +538,6 @@ export function AgreementForm({ formData, setFormData, onSubmit, onReset, isSubm
                     type="number"
                     value={formData.leave?.earnedDays || '18'}
                     onChange={(e) => updateNested('leave', 'earnedDays', e.target.value)}
-                    placeholder="18"
                     className="w-full px-3 py-2 bg-background border border-border rounded-md text-foreground text-xs font-mono focus:ring-1 focus:ring-primary outline-none"
                   />
                 </div>
@@ -642,18 +597,14 @@ export function AgreementForm({ formData, setFormData, onSubmit, onReset, isSubm
                       type="text"
                       value={formData.witnesses?.firstWitnessName || ''}
                       onChange={(e) => updateNested('witnesses', 'firstWitnessName', e.target.value)}
-                      placeholder="সাক্ষীর নাম"
                       className="w-full px-2.5 py-1.5 bg-background border border-border rounded-md text-foreground text-xs focus:ring-1 focus:ring-primary outline-none"
                     />
                   </div>
                   <div>
                     <label className="block text-[11px] text-muted-foreground mb-1">ফোন নম্বর :</label>
-                    <input
-                      type="text"
+                    <BdPhoneInput
                       value={formData.witnesses?.firstWitnessPhone || ''}
-                      onChange={(e) => updateNested('witnesses', 'firstWitnessPhone', e.target.value)}
-                      placeholder="01712-XXXXXX"
-                      className="w-full px-2.5 py-1.5 bg-background border border-border rounded-md text-foreground text-xs font-mono focus:ring-1 focus:ring-primary outline-none"
+                      onChange={(val) => updateNested('witnesses', 'firstWitnessPhone', val)}
                     />
                   </div>
                   <div>
@@ -662,7 +613,6 @@ export function AgreementForm({ formData, setFormData, onSubmit, onReset, isSubm
                       type="text"
                       value={formData.witnesses?.firstWitnessAddress || ''}
                       onChange={(e) => updateNested('witnesses', 'firstWitnessAddress', e.target.value)}
-                      placeholder="ঠিকানা"
                       className="w-full px-2.5 py-1.5 bg-background border border-border rounded-md text-foreground text-xs focus:ring-1 focus:ring-primary outline-none"
                     />
                   </div>
@@ -677,18 +627,14 @@ export function AgreementForm({ formData, setFormData, onSubmit, onReset, isSubm
                       type="text"
                       value={formData.witnesses?.secondWitnessName || ''}
                       onChange={(e) => updateNested('witnesses', 'secondWitnessName', e.target.value)}
-                      placeholder="সাক্ষীর নাম"
                       className="w-full px-2.5 py-1.5 bg-background border border-border rounded-md text-foreground text-xs focus:ring-1 focus:ring-primary outline-none"
                     />
                   </div>
                   <div>
                     <label className="block text-[11px] text-muted-foreground mb-1">ফোন নম্বর :</label>
-                    <input
-                      type="text"
+                    <BdPhoneInput
                       value={formData.witnesses?.secondWitnessPhone || ''}
-                      onChange={(e) => updateNested('witnesses', 'secondWitnessPhone', e.target.value)}
-                      placeholder="01812-XXXXXX"
-                      className="w-full px-2.5 py-1.5 bg-background border border-border rounded-md text-foreground text-xs font-mono focus:ring-1 focus:ring-primary outline-none"
+                      onChange={(val) => updateNested('witnesses', 'secondWitnessPhone', val)}
                     />
                   </div>
                   <div>
@@ -697,7 +643,6 @@ export function AgreementForm({ formData, setFormData, onSubmit, onReset, isSubm
                       type="text"
                       value={formData.witnesses?.secondWitnessAddress || ''}
                       onChange={(e) => updateNested('witnesses', 'secondWitnessAddress', e.target.value)}
-                      placeholder="ঠিকানা"
                       className="w-full px-2.5 py-1.5 bg-background border border-border rounded-md text-foreground text-xs focus:ring-1 focus:ring-primary outline-none"
                     />
                   </div>

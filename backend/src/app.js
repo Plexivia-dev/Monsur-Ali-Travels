@@ -6,7 +6,6 @@ import { authenticateToken, authorizeRoles } from "./middlewares/auth.middleware
 import fs from "fs";
 import { logger } from "./config/logger.js";
 import coreRouter from "./routesIndex.js";
-import attributeRouter from "./dashboard/routes/attribute.route.js";
 import developerRouter, { broadcastLogToClients } from "./routes/DeveloperRoute.js";
 import { env } from "./config/env.js";
 
@@ -266,7 +265,6 @@ export async function createApp() {
   });
 
   app.use("/api/v1", coreRouter);
-  app.use("/api/v1", attributeRouter);
   app.use("/api/v1/developer", developerRouter);
 
   app.get("/api/v1/version", authenticateToken, authorizeRoles("Owner", "Admin"), (req, res) => {

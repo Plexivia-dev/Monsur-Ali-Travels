@@ -1,14 +1,10 @@
 import React from 'react';
-import { Plus, Trash2 } from 'lucide-react';
+import { Plus, Trash2, Eye, RotateCcw } from 'lucide-react';
+import { generateUniqueInvoiceNo } from './sampleData';
+import { BdPhoneInput } from '../../common/BdPhoneInput';
+import { DatePicker } from '../../ui/date-picker';
 
-export function InvoiceForm({ data, onChange }) {
-  const handleBillerChange = (field, value) => {
-    onChange({
-      ...data,
-      biller: { ...data.biller, [field]: value }
-    });
-  };
-
+export function InvoiceForm({ data, onChange, onSubmit, onReset, isSubmitting = false }) {
   const handleClientChange = (field, value) => {
     onChange({
       ...data,
@@ -19,9 +15,10 @@ export function InvoiceForm({ data, onChange }) {
   const handleAddItem = () => {
     const newItem = {
       id: `item-${Date.now()}`,
-      description: 'Service / Product Item',
-      quantity: 1,
-      unitPrice: 1000
+      title: '',
+      description: '',
+      quantity: '',
+      unitPrice: 0
     };
     onChange({ ...data, items: [...data.items, newItem] });
   };
@@ -40,205 +37,254 @@ export function InvoiceForm({ data, onChange }) {
     });
   };
 
+  const getStatusColor = (status) => {
+    if (status === 'Paid') return 'bg-emerald-500/15 text-emerald-600 border-emerald-500/40 font-bold';
+    if (status === 'Pending') return 'bg-amber-500/15 text-amber-600 border-amber-500/40 font-bold';
+    if (status === 'Overdue') return 'bg-rose-500/15 text-rose-600 border-rose-500/40 font-bold';
+    return 'bg-background text-foreground border-border';
+  };
+
   return (
-    <div className="bg-card border border-border rounded-xl p-4 sm:p-5 space-y-4 text-xs">
-      <div className="flex items-center justify-between border-b border-border pb-3">
-        <h3 className="font-bold text-foreground text-sm">ইনভয়েস / বিল ইনপুট ফর্ম</h3>
-        <div className="flex items-center space-x-2">
-          <label className="text-muted-foreground font-medium">Status:</label>
-          <select
-            value={data.paymentStatus}
-            onChange={e => onChange({ ...data, paymentStatus: e.target.value })}
-            className="bg-background border border-input rounded-lg px-2.5 py-1 text-foreground font-semibold outline-none"
-          >
-            <option value="Paid">Paid</option>
-            <option value="Pending">Pending</option>
-            <option value="Overdue">Overdue</option>
-          </select>
-        </div>
-      </div>
-
-      {/* METADATA */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-        <div>
-          <label className="block text-muted-foreground mb-1">Invoice Number</label>
-          <input
-            type="text"
-            value={data.invoiceNo}
-            onChange={e => onChange({ ...data, invoiceNo: e.target.value })}
-            className="w-full bg-background border border-input rounded-lg px-3 py-2 text-foreground font-mono outline-none"
-          />
-        </div>
-
-        <div>
-          <label className="block text-muted-foreground mb-1">Issue Date</label>
-          <input
-            type="date"
-            value={data.issueDate}
-            onChange={e => onChange({ ...data, issueDate: e.target.value })}
-            className="w-full bg-background border border-input rounded-lg px-3 py-2 text-foreground outline-none"
-          />
-        </div>
-
-        <div>
-          <label className="block text-muted-foreground mb-1">Due Date</label>
-          <input
-            type="date"
-            value={data.dueDate}
-            onChange={e => onChange({ ...data, dueDate: e.target.value })}
-            className="w-full bg-background border border-input rounded-lg px-3 py-2 text-foreground outline-none"
-          />
-        </div>
-      </div>
-
-      {/* CLIENT DETAILS */}
-      <div className="border-t border-border pt-3 space-y-2">
-        <h4 className="font-semibold text-foreground text-xs uppercase tracking-wider">ক্লায়েন্ট / বিল গ্রাহকের তথ্য (Client Details)</h4>
+    <form onSubmit={(e) => { e.preventDefault(); onSubmit(); }} className="w-full max-w-[850px] mx-auto space-y-5">
+      <div className="bg-card border border-border rounded-[4px] p-6 sm:p-7 space-y-5 text-sm shadow-xs">
         
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        {/* Form Title & Header Bar */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b-2 border-border pb-4 gap-3">
           <div>
-            <label className="block text-muted-foreground mb-1">কোম্পানি / ক্লায়েন্টের নাম</label>
-            <input
-              type="text"
-              value={data.client.name}
-              onChange={e => handleClientChange('name', e.target.value)}
-              className="w-full bg-background border border-input rounded-lg px-3 py-2 text-foreground font-semibold outline-none"
+            <h2 className="font-black text-foreground text-xl sm:text-2xl tracking-tight">
+              Create Invoice
+            </h2>
+          </div>
+          
+          {/* Status Dropdown */}
+          <div className="flex items-center space-x-2 shrink-0">
+            <label className="text-foreground font-bold text-sm">পেমেন্ট স্ট্যাটাস (Status): *</label>
+            <select
+              value={data.paymentStatus}
+              onChange={e => onChange({ ...data, paymentStatus: e.target.value })}
+              className={`border rounded-[4px] px-3 py-2 text-sm font-bold outline-none cursor-pointer transition-colors ${getStatusColor(data.paymentStatus)}`}
+            >
+              <option value="Paid" className="bg-white text-emerald-600 font-bold">Paid (পরিশোধিত)</option>
+              <option value="Pending" className="bg-white text-amber-600 font-bold">Pending (অপেক্ষমান)</option>
+              <option value="Overdue" className="bg-white text-rose-600 font-bold">Overdue (বকেয়া)</option>
+            </select>
+          </div>
+        </div>
+
+        {/* METADATA */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+          <div>
+            <label className="block font-bold text-foreground text-sm mb-1.5">ইস্যুর তারিখ (Issue Date)</label>
+            <DatePicker
+              value={data.issueDate}
+              onChange={val => onChange({ ...data, issueDate: val })}
             />
           </div>
 
           <div>
-            <label className="block text-muted-foreground mb-1">যোগাযোগকারীর নাম</label>
-            <input
-              type="text"
-              value={data.client.contactPerson}
-              onChange={e => handleClientChange('contactPerson', e.target.value)}
-              className="w-full bg-background border border-input rounded-lg px-3 py-2 text-foreground outline-none"
-            />
-          </div>
-
-          <div>
-            <label className="block text-muted-foreground mb-1">ফোন নম্বর</label>
-            <input
-              type="text"
-              value={data.client.phone}
-              onChange={e => handleClientChange('phone', e.target.value)}
-              className="w-full bg-background border border-input rounded-lg px-3 py-2 text-foreground outline-none"
-            />
-          </div>
-
-          <div>
-            <label className="block text-muted-foreground mb-1">ইমেইল</label>
-            <input
-              type="email"
-              value={data.client.email}
-              onChange={e => handleClientChange('email', e.target.value)}
-              className="w-full bg-background border border-input rounded-lg px-3 py-2 text-foreground outline-none"
-            />
-          </div>
-
-          <div className="sm:col-span-2">
-            <label className="block text-muted-foreground mb-1">ঠিকানা</label>
-            <input
-              type="text"
-              value={data.client.address}
-              onChange={e => handleClientChange('address', e.target.value)}
-              className="w-full bg-background border border-input rounded-lg px-3 py-2 text-foreground outline-none"
+            <label className="block font-bold text-foreground text-sm mb-1.5">পরিশোধের শেষ তারিখ (Due Date)</label>
+            <DatePicker
+              value={data.dueDate}
+              onChange={val => onChange({ ...data, dueDate: val })}
             />
           </div>
         </div>
-      </div>
 
-      {/* DYNAMIC LINE ITEMS */}
-      <div className="border-t border-border pt-3 space-y-3">
-        <div className="flex items-center justify-between">
-          <h4 className="font-semibold text-foreground text-xs uppercase tracking-wider">বিল আইটেমস (Invoice Line Items)</h4>
-          <button
-            onClick={handleAddItem}
-            className="flex items-center gap-1 bg-primary/10 text-primary hover:bg-primary/20 font-semibold px-2.5 py-1 rounded-lg transition-colors cursor-pointer"
-          >
-            <Plus className="w-3.5 h-3.5" />
-            <span>Add Item</span>
-          </button>
-        </div>
-
-        {data.items.map((item, idx) => (
-          <div key={item.id} className="bg-muted/40 border border-border p-3 rounded-xl space-y-2">
-            <div className="flex items-center justify-between">
-              <span className="font-bold text-foreground">Item #{idx + 1}</span>
-              {data.items.length > 1 && (
-                <button
-                  onClick={() => handleRemoveItem(item.id)}
-                  className="text-destructive hover:text-destructive/80 p-1 cursor-pointer"
-                >
-                  <Trash2 className="w-3.5 h-3.5" />
-                </button>
-              )}
+        {/* BILLED TO */}
+        <div className="border-t border-border pt-5 space-y-3">
+          <h4 className="font-bold text-foreground text-base uppercase tracking-wider text-emerald-600">বিল টু (BILLED TO)</h4>
+          
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+            <div>
+              <label className="block font-bold text-foreground text-sm mb-1.5">কাস্টমার / প্রতিষ্ঠানের নাম *</label>
+              <input
+                type="text"
+                required
+                value={data.client.name}
+                onChange={e => handleClientChange('name', e.target.value)}
+                className="w-full bg-background border border-border rounded-[4px] px-3 py-2.5 text-foreground font-bold text-sm outline-none focus:ring-1 focus:ring-primary"
+              />
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-12 gap-2 items-center">
-              <div className="sm:col-span-6">
-                <label className="block text-muted-foreground mb-0.5">Description</label>
-                <input
-                  type="text"
-                  value={item.description}
-                  onChange={e => handleUpdateItem(item.id, 'description', e.target.value)}
-                  className="w-full bg-background border border-input rounded-lg px-2.5 py-1.5 text-foreground outline-none"
-                />
-              </div>
+            <div>
+              <label className="block font-bold text-foreground text-sm mb-1.5">যোগাযোগকারীর নাম (Attn)</label>
+              <input
+                type="text"
+                value={data.client.contactPerson}
+                onChange={e => handleClientChange('contactPerson', e.target.value)}
+                className="w-full bg-background border border-border rounded-[4px] px-3 py-2.5 text-foreground text-sm outline-none focus:ring-1 focus:ring-primary"
+              />
+            </div>
 
-              <div className="sm:col-span-3">
-                <label className="block text-muted-foreground mb-0.5">Quantity</label>
-                <input
-                  type="number"
-                  min="1"
-                  value={item.quantity}
-                  onChange={e => handleUpdateItem(item.id, 'quantity', parseFloat(e.target.value) || 1)}
-                  className="w-full bg-background border border-input rounded-lg px-2.5 py-1.5 text-foreground font-mono outline-none"
-                />
-              </div>
+            <div>
+              <label className="block font-bold text-foreground text-sm mb-1.5">ফোন নম্বর</label>
+              <BdPhoneInput
+                value={data.client.phone}
+                onChange={(val) => handleClientChange('phone', val)}
+              />
+            </div>
 
-              <div className="sm:col-span-3">
-                <label className="block text-muted-foreground mb-0.5">Unit Price (BDT)</label>
-                <input
-                  type="number"
-                  min="0"
-                  value={item.unitPrice}
-                  onChange={e => handleUpdateItem(item.id, 'unitPrice', parseFloat(e.target.value) || 0)}
-                  className="w-full bg-background border border-input rounded-lg px-2.5 py-1.5 text-foreground font-mono outline-none"
-                />
-              </div>
+            <div>
+              <label className="block font-bold text-foreground text-sm mb-1.5">ইমেইল অ্যাড্রেস</label>
+              <input
+                type="email"
+                value={data.client.email}
+                onChange={e => handleClientChange('email', e.target.value)}
+                className="w-full bg-background border border-border rounded-[4px] px-3 py-2.5 text-foreground text-sm outline-none focus:ring-1 focus:ring-primary"
+              />
+            </div>
+
+            <div className="sm:col-span-2">
+              <label className="block font-bold text-foreground text-sm mb-1.5">ঠিকানা (Address)</label>
+              <input
+                type="text"
+                value={data.client.address}
+                onChange={e => handleClientChange('address', e.target.value)}
+                className="w-full bg-background border border-border rounded-[4px] px-3 py-2.5 text-foreground text-sm outline-none focus:ring-1 focus:ring-primary"
+              />
             </div>
           </div>
-        ))}
-      </div>
+        </div>
 
-      {/* TAX RATE & TERMS */}
-      <div className="border-t border-border pt-3 space-y-3">
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        {/* DYNAMIC MULTIPLE LINE ITEMS */}
+        <div className="border-t border-border pt-5 space-y-4">
+          <div className="flex items-center justify-between">
+            <h4 className="font-bold text-foreground text-base uppercase tracking-wider text-emerald-600">
+              বিল আইটেমস (Dynamic Invoice Line Items)
+            </h4>
+            <button
+              type="button"
+              onClick={handleAddItem}
+              className="flex items-center gap-1.5 bg-emerald-500/10 text-emerald-600 hover:bg-emerald-500/20 font-bold text-xs px-3.5 py-2 rounded-[4px] transition-colors cursor-pointer"
+            >
+              <Plus className="w-4 h-4" />
+              <span>আইটেম যোগ করুন (+ Add Item)</span>
+            </button>
+          </div>
+
+          {data.items.map((item, idx) => (
+            <div key={item.id} className="bg-muted/30 border border-border p-4 rounded-[4px] space-y-3">
+              <div className="flex items-center justify-between border-b border-border/50 pb-1.5">
+                <span className="font-bold text-foreground text-sm">আইটেম #{idx + 1} (Item {idx + 1})</span>
+                {data.items.length > 1 && (
+                  <button
+                    type="button"
+                    onClick={() => handleRemoveItem(item.id)}
+                    className="text-rose-500 hover:text-rose-600 text-xs font-semibold flex items-center gap-1 cursor-pointer"
+                    title="Remove Item"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                    <span>মুছে ফেলুন</span>
+                  </button>
+                )}
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-12 gap-4 items-center">
+                <div className="sm:col-span-4">
+                  <label className="block font-semibold text-foreground text-sm mb-1">আইটেম টাইটেল (Short Title) *</label>
+                  <input
+                    type="text"
+                    required
+                    value={item.title || ''}
+                    onChange={e => handleUpdateItem(item.id, 'title', e.target.value)}
+                    className="w-full bg-background border border-border rounded-[4px] px-3 py-2.5 text-foreground font-semibold text-sm outline-none focus:ring-1 focus:ring-primary"
+                  />
+                </div>
+
+                <div className="sm:col-span-4">
+                  <label className="block font-semibold text-foreground text-sm mb-1">বিবরণ (Description)</label>
+                  <input
+                    type="text"
+                    value={item.description || ''}
+                    onChange={e => handleUpdateItem(item.id, 'description', e.target.value)}
+                    className="w-full bg-background border border-border rounded-[4px] px-3 py-2.5 text-foreground text-sm outline-none focus:ring-1 focus:ring-primary"
+                  />
+                </div>
+
+                <div className="sm:col-span-2">
+                  <label className="block font-semibold text-foreground text-sm mb-1">পরিমাণ (Qty)</label>
+                  <input
+                    type="number"
+                    min="0"
+                    value={item.quantity !== undefined && item.quantity !== null ? item.quantity : ''}
+                    onChange={e => handleUpdateItem(item.id, 'quantity', e.target.value !== '' ? parseFloat(e.target.value) : '')}
+                    className="w-full bg-background border border-border rounded-[4px] px-3 py-2.5 text-foreground font-mono text-sm outline-none focus:ring-1 focus:ring-primary"
+                  />
+                </div>
+
+                <div className="sm:col-span-2">
+                  <label className="block font-semibold text-foreground text-sm mb-1">মূল্য (Price ৳) *</label>
+                  <input
+                    type="number"
+                    min="0"
+                    required
+                    value={item.unitPrice}
+                    onChange={e => handleUpdateItem(item.id, 'unitPrice', parseFloat(e.target.value) || 0)}
+                    className="w-full bg-background border border-border rounded-[4px] px-3 py-2.5 text-foreground font-mono font-bold text-sm outline-none focus:ring-1 focus:ring-primary"
+                  />
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* TAX RATE & TERMS */}
+        <div className="border-t border-border pt-5 space-y-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+            <div>
+              <label className="block font-bold text-foreground text-sm mb-1.5">ট্যাক্স / ভ্যাট হার (Tax Rate %)</label>
+              <input
+                type="number"
+                min="0"
+                max="100"
+                value={data.taxRate}
+                onChange={e => onChange({ ...data, taxRate: parseFloat(e.target.value) || 0 })}
+                className="w-full bg-background border border-border rounded-[4px] px-3 py-2.5 text-foreground font-mono text-sm outline-none focus:ring-1 focus:ring-primary"
+              />
+            </div>
+          </div>
+
           <div>
-            <label className="block text-muted-foreground mb-1">Tax / VAT Rate (%)</label>
-            <input
-              type="number"
-              min="0"
-              max="100"
-              value={data.taxRate}
-              onChange={e => onChange({ ...data, taxRate: parseFloat(e.target.value) || 0 })}
-              className="w-full bg-background border border-input rounded-lg px-3 py-2 text-foreground font-mono outline-none"
+            <label className="block font-bold text-foreground text-sm mb-1.5">পেমেন্ট নির্দেশনাবলী ও শর্তাবলী (Payment Instructions & Terms)</label>
+            <textarea
+              rows={2}
+              value={data.paymentTerms}
+              onChange={e => onChange({ ...data, paymentTerms: e.target.value })}
+              className="w-full bg-background border border-border rounded-[4px] p-3 text-foreground text-sm outline-none resize-none focus:ring-1 focus:ring-primary"
             />
           </div>
         </div>
-
-        <div>
-          <label className="block text-muted-foreground mb-1">Payment Instructions & Terms</label>
-          <textarea
-            rows={3}
-            value={data.paymentTerms}
-            onChange={e => onChange({ ...data, paymentTerms: e.target.value })}
-            className="w-full bg-background border border-input rounded-lg p-2.5 text-foreground outline-none resize-none"
-          />
-        </div>
       </div>
 
-    </div>
+      {/* Action Footer Bar */}
+      <div className="bg-card border border-border p-4.5 rounded-[4px] flex items-center justify-between gap-3 shadow-xs">
+        <button
+          type="button"
+          onClick={onReset}
+          className="flex items-center gap-1.5 px-4 py-2.5 rounded-[4px] text-sm font-bold border border-border bg-muted/40 hover:bg-muted text-foreground transition-all cursor-pointer"
+        >
+          <RotateCcw className="w-4 h-4 text-muted-foreground" />
+          <span>ফর্ম রিসেট (Reset)</span>
+        </button>
+
+        <button
+          type="submit"
+          disabled={isSubmitting}
+          className="flex items-center gap-2 px-6 py-2.5 rounded-[4px] text-sm font-bold bg-emerald-600 hover:bg-emerald-700 disabled:opacity-60 text-white shadow-xs transition-all cursor-pointer"
+        >
+          {isSubmitting ? (
+            <>
+              <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin shrink-0" />
+              <span>সংরক্ষণ করা হচ্ছে...</span>
+            </>
+          ) : (
+            <>
+              <Eye className="w-4 h-4" />
+              <span>ইনভয়েস তৈরি ও প্রিভিউ দেখুন</span>
+            </>
+          )}
+        </button>
+      </div>
+    </form>
   );
 }

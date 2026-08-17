@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import { generateDid } from "../utils/generateDid.js";
 
 // Generates unique Slip Number: SLIP- + 2 letters + 4 digits + 1 middle letter + 3 digits (e.g. "SLIP-AB4829K513")
 export function generateUniqueSlipNumber() {
@@ -20,9 +21,15 @@ export function generateUniqueSlipNumber() {
 
 const salarySlipSchema = new mongoose.Schema(
   {
+    did: {
+      type: String,
+      default: () => generateDid(),
+      unique: true,
+      index: true,
+    },
     companyName: {
       type: String,
-      default: "MANSUR ALI TOURS & TRAVELS",
+      default: "MONSUR ALI TOURS & TRAVELS",
     },
     companyAddress: {
       type: String,
@@ -106,6 +113,7 @@ const salarySlipSchema = new mongoose.Schema(
     checkedBy: { type: String, default: "Accounts Department" },
     authorizedSignatory: { type: String, default: "Managing Director" },
     remarks: { type: String, default: "" },
+    isActive: { type: Boolean, default: true },
   },
   {
     timestamps: true,
@@ -121,3 +129,4 @@ salarySlipSchema.pre("save", function (next) {
 });
 
 export const SalarySlip = mongoose.model("SalarySlip", salarySlipSchema);
+export const SalarySlipModel = SalarySlip;

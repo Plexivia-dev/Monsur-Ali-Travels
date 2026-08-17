@@ -4,16 +4,57 @@ import { SalarySlip } from "../models/salarySlip.model.js";
 // @route   GET /api/v1/docs/payrolls
 export const getSalarySlips = async (req, res) => {
   try {
-    const slips = await SalarySlip.find().sort({ createdAt: -1 });
+    const page = Math.max(1, parseInt(req.query.page, 10) || 1);
+    const limit = req.query.limit !== undefined ? Math.max(1, parseInt(req.query.limit, 10) || 10) : 10;
+    const skip = req.query.skip !== undefined ? Math.max(0, parseInt(req.query.skip, 10)) : (page - 1) * limit;
+    const { search, month } = req.query;
+
+    const query = {};
+    query.isActive = { $ne: false };
+
+    if (month && month !== "all") {
+      query.salaryMonth = new RegExp(month.trim(), "i");
+    }
+
+    if (search && search.trim()) {
+      const searchRegex = new RegExp(search.trim(), "i");
+      query.$or = [
+        { slipNo: searchRegex },
+        { employeeName: searchRegex },
+        { employeeId: searchRegex },
+        { designation: searchRegex },
+        { department: searchRegex },
+      ];
+    }
+
+    const totalCount = await SalarySlip.countDocuments(query);
+    const slips = await SalarySlip.find(query)
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limit);
+
+    const totalPages = Math.ceil(totalCount / limit) || 1;
+
     return res.status(200).json({
       success: true,
+      status: "success",
       count: slips.length,
       data: slips,
+      pagination: {
+        skip,
+        limit,
+        totalCount,
+        page,
+        totalPages,
+        hasNextPage: skip + slips.length < totalCount,
+        hasPrevPage: skip > 0,
+      },
     });
   } catch (error) {
     console.error("Error fetching salary slips:", error);
     return res.status(500).json({
       success: false,
+      status: "error",
       message: "Server Error: Could not fetch salary slips",
       error: error.message,
     });
@@ -24,7 +65,7 @@ export const getSalarySlips = async (req, res) => {
 // @route   GET /api/v1/docs/payrolls/:id
 export const getSalarySlipById = async (req, res) => {
   try {
-    const slip = await SalarySlip.findById(req.params.id);
+    const slip = await SalarySlip.findOne({ _id: req.params.id, isActive: { $ne: false } });
     if (!slip) {
       return res.status(404).json({
         success: false,
@@ -102,7 +143,7 @@ export const updateSalarySlip = async (req, res) => {
 // @route   DELETE /api/v1/docs/payrolls/:id
 export const deleteSalarySlip = async (req, res) => {
   try {
-    const deletedSlip = await SalarySlip.findByIdAndDelete(req.params.id);
+    const deletedSlip = await SalarySlip.findByIdAndUpdate(req.params.id, { isActive: false }, { new: true });
     if (!deletedSlip) {
       return res.status(404).json({
         success: false,

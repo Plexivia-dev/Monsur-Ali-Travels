@@ -1,8 +1,9 @@
 import React from 'react';
 import logoImg from '../../../assets/logo.png';
+import { formatToBengaliDate } from '../../../lib/utils';
 
 export function AgreementPreview({ data }) {
-  const currentDate = data.parties?.agreementDate || new Date().toLocaleDateString('bn-BD', {
+  const currentDate = formatToBengaliDate(data.parties?.agreementDate) || new Date().toLocaleDateString('bn-BD', {
     day: 'numeric',
     month: 'long',
     year: 'numeric'
@@ -63,7 +64,7 @@ export function AgreementPreview({ data }) {
           ১. কর্মচারী ও নিয়োগকারীর সাধারণ তথ্য (Parties Details)
         </h3>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-1.5 text-[11px] px-1">
-          <div><span className="text-slate-600 font-medium">চুক্তির তারিখ :</span> <span className="font-bold">{data.parties?.agreementDate || '____________________'}</span></div>
+          <div><span className="text-slate-600 font-medium">চুক্তির তারিখ :</span> <span className="font-bold">{formatToBengaliDate(data.parties?.agreementDate) || '____________________'}</span></div>
           <div><span className="text-slate-600 font-medium">জাতীয় পরিচয়পত্র/পাসপোর্ট :</span> <span className="font-bold font-mono">{data.parties?.nidPassport || '____________________'}</span></div>
           <div><span className="text-slate-600 font-medium">নিয়োগকর্তা/কর্তৃপক্ষ :</span> <span className="font-bold">{data.parties?.employerName || 'মো: ইকরামুল হোসেন (ব্যবস্থাপনা পরিচালক)'}</span></div>
           <div><span className="text-slate-600 font-medium">মোবাইল নম্বর :</span> <span className="font-bold font-mono">{data.parties?.employerPhone || '+8801345579534'}</span></div>
@@ -102,7 +103,7 @@ export function AgreementPreview({ data }) {
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-1.5 text-[11px] px-1">
           <div><span className="text-slate-600 font-medium">পদের নাম (Designation) :</span> <span className="font-bold">{data.position?.designation || '____________________'}</span></div>
           <div><span className="text-slate-600 font-medium">বিভাগ (Department) :</span> <span className="font-bold">{data.position?.department || '____________________'}</span></div>
-          <div><span className="text-slate-600 font-medium">যোগদানের তারিখ :</span> <span className="font-bold">{data.position?.joiningDate || '____________________'}</span></div>
+          <div><span className="text-slate-600 font-medium">যোগদানের তারিখ :</span> <span className="font-bold">{formatToBengaliDate(data.position?.joiningDate) || '____________________'}</span></div>
           <div><span className="text-slate-600 font-medium">কর্মস্থল (Location) :</span> <span className="font-bold">{data.position?.location || 'হেড অফিস, নাদampur'}</span></div>
           <div className="sm:col-span-2">
             <span className="text-slate-600 font-medium">নিয়োগের ধরন :</span>{' '}

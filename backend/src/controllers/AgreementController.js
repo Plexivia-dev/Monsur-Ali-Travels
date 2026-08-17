@@ -77,14 +77,18 @@ function mapPayloadToBengaliSchema(body = {}) {
 // GET /api/v1/docs/employment-agreement - List agreements
 export const getEmploymentAgreements = async (req, res, next) => {
   try {
+    const page = Math.max(1, parseInt(req.query.page, 10) || 1);
+    const limit = req.query.limit !== undefined ? Math.max(1, parseInt(req.query.limit, 10) || 10) : 10;
+    const skip = req.query.skip !== undefined ? Math.max(0, parseInt(req.query.skip, 10)) : (page - 1) * limit;
     const { search, status } = req.query;
-    const query = { isActive: true };
+
+    const query = { isActive: { $ne: false } };
 
     if (status && status !== "all") {
       query.স্ট্যাটাস = status;
     }
 
-    if (search) {
+    if (search && search.trim()) {
       const searchRegex = new RegExp(search.trim(), "i");
       query.$or = [
         { agreementId: searchRegex },
@@ -95,12 +99,28 @@ export const getEmploymentAgreements = async (req, res, next) => {
       ];
     }
 
-    const agreements = await EmploymentAgreementModel.find(query).sort({ createdAt: -1 });
+    const totalCount = await EmploymentAgreementModel.countDocuments(query);
+    const agreements = await EmploymentAgreementModel.find(query)
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limit);
+
+    const totalPages = Math.ceil(totalCount / limit) || 1;
 
     res.json({
       status: "success",
+      success: true,
       results: agreements.length,
       data: agreements,
+      pagination: {
+        skip,
+        limit,
+        totalCount,
+        page,
+        totalPages,
+        hasNextPage: skip + agreements.length < totalCount,
+        hasPrevPage: skip > 0,
+      },
     });
   } catch (err) {
     next(err);
@@ -114,8 +134,8 @@ export const getEmploymentAgreementById = async (req, res, next) => {
 
     const isMongoId = mongoose.isValidObjectId(id);
     const query = isMongoId
-      ? { _id: id, isActive: true }
-      : { agreementId: id, isActive: true };
+      ? { _id: id, isActive: { $ne: false } }
+      : { agreementId: id, isActive: { $ne: false } };
 
     const agreement = await EmploymentAgreementModel.findOne(query);
     if (!agreement) {

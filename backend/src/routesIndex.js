@@ -1,50 +1,49 @@
 import { Router } from "express";
 
-// Retail / E-commerce routes commented out for standalone ERP operations
-// import productsRouter from "./routes/ProductsRoute.js";
-// import imagesRouter from "./routes/ImagesRoute.js";
+// Authentication & Core ERP User Routes
 import authRouter from "./routes/AuthRoute.js";
 import usersRouter from "./routes/UsersRoute.js";
-import assetsRouter from "./routes/AssetsRoute.js";
-import membersRouter from "./routes/MembersRoute.js";
-import emailRouter from "./routes/EmailRoute.js";
-import ordersRouter from "./routes/OrdersRoute.js";
-import paymentsRouter from "./routes/PaymentsRoute.js";
-import billingRouter from "./routes/BillingRoute.js";
-// import categoriesRouter from "./routes/CategoryRoute.js";
-// import brandRouter from "./routes/BrandRoute.js";
-import dashboardRouter from "./routes/DashboardRoute.js";
-// import couponRouter from "./routes/CouponRoute.js";
-import systemRouter from "./routes/SystemRoute.js";
-// import searchRouter from "./routes/SearchRoute.js";
-// import { searchProducts } from "./controllers/SearchController.js";
-
 import candidateRouter from "./routes/CandidateRoute.js";
+import customerRouter from "./routes/CustomerRoute.js";
+
+// Document Studio & Data List Routes
+import agreementRouter from "./routes/AgreementRoute.js";
+import indianVisaRouter from "./routes/IndianVisaRoute.js";
+import passportRouter from "./routes/PassportSubmissionRoute.js";
+import payrollRouter from "./routes/PayrollRoute.js";
+import invoiceRouter from "./routes/InvoiceRoute.js";
 import docsRouter from "./routes/DocsRoute.js";
+
+// Utilities & System
+import emailRouter from "./routes/EmailRoute.js";
+import dashboardRouter from "./routes/DashboardRoute.js";
+import systemRouter from "./routes/SystemRoute.js";
+import uploadRouter from "./routes/UploadRoute.js";
 
 const coreRouter = Router();
 
-// Core ERP Operational Routes
+// Authentication & Users & Central Customers
 coreRouter.use("/auth", authRouter);
 coreRouter.use("/users", usersRouter);
-coreRouter.use("/assets", assetsRouter);
-coreRouter.use("/members", membersRouter);
+coreRouter.use("/customers", customerRouter);
 coreRouter.use("/candidates", candidateRouter);
-coreRouter.use("/docs", docsRouter);
-coreRouter.use("/sendEmail", emailRouter);
-coreRouter.use("/orders", ordersRouter);
-coreRouter.use("/payments", paymentsRouter);
-coreRouter.use("/billing", billingRouter);
-coreRouter.use("/dashboard", dashboardRouter);
-coreRouter.use("/system", systemRouter);
 
-// Inventory & Retail Routes (Preserved/Commented Out for Future ERP Stock Integration)
-// coreRouter.use("/products", productsRouter);
-// coreRouter.use("/images", imagesRouter);
-// coreRouter.use("/categories", categoriesRouter);
-// coreRouter.use("/brands", brandRouter);
-// coreRouter.use("/coupons", couponRouter);
-// coreRouter.use("/search", searchRouter);
-// coreRouter.get("/search-products", searchProducts);
+// Document Records & Data Lists (Direct top-level endpoints)
+coreRouter.use("/agreements", agreementRouter);
+coreRouter.use("/indian-visas", indianVisaRouter);
+coreRouter.use("/passports", passportRouter);
+coreRouter.use("/payrolls", payrollRouter);
+coreRouter.use("/invoices", invoiceRouter);
+
+// Common Dedicated File Upload Endpoints
+coreRouter.use("/upload", uploadRouter);
+
+// Backward-compatible Document Studio routes (/docs/*)
+coreRouter.use("/docs", docsRouter);
+
+// ERP Dashboard & System
+coreRouter.use("/dashboard", dashboardRouter);
+coreRouter.use("/sendEmail", emailRouter);
+coreRouter.use("/system", systemRouter);
 
 export default coreRouter;

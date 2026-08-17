@@ -1,5 +1,4 @@
 import { UserModel } from "../models/user.model.js";
-import { AssetModel } from "../models/asset.model.js";
 import { hashPassword } from "../utils/password.js";
 import {
   validateCreateUserPayload,
@@ -28,7 +27,7 @@ export const getUserById = async (req, res, next) => {
   }
 };
 
-// Create a new user with role-aware permission checks and asset validation.
+// Create a new user with role-aware permission checks.
 export const createUser = async (req, res, next) => {
   try {
     const payload = req.body ?? {};
@@ -48,23 +47,12 @@ export const createUser = async (req, res, next) => {
       return res.status(409).json({ status: "error", message: "A user with this email already exists" });
     }
 
-    // If Employee, validate assets exist
-    let assignedAssets = [];
-    if (payload.role === "Employee") {
-      assignedAssets = Array.isArray(payload.assets) ? payload.assets : [];
-      const found = await AssetModel.find({ did: { $in: assignedAssets } }).lean();
-      if (found.length !== assignedAssets.length) {
-        return res.status(400).json({ status: "error", message: "One or more assigned assets not found" });
-      }
-    }
-
     const user = await UserModel.create({
       name: payload.name.trim(),
       email: payload.email.toLowerCase().trim(),
       phone: payload.phone.trim(),
       role: payload.role,
       passwordHash: await hashPassword(payload.password),
-      assets: assignedAssets,
     });
 
     res.status(201).json({ status: "success", data: user });
@@ -105,18 +93,6 @@ export const updateUser = async (req, res, next) => {
 
     if (payload.password) {
       user.passwordHash = await hashPassword(payload.password);
-    }
-
-    if (payload.role === "Employee" && payload.assets) {
-      const assignedAssets = Array.isArray(payload.assets) ? payload.assets : [];
-      if (assignedAssets.length > 2) {
-        return res.status(400).json({ status: "error", message: "An employee may have at most 2 assets assigned" });
-      }
-      const found = await AssetModel.find({ did: { $in: assignedAssets } }).lean();
-      if (found.length !== assignedAssets.length) {
-        return res.status(400).json({ status: "error", message: "One or more assigned assets not found" });
-      }
-      user.assets = assignedAssets;
     }
 
     await user.save();

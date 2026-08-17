@@ -1,23 +1,28 @@
 import React from 'react';
 import { usePortal } from '../../context/PortalContext';
-import { EmploymentAgreementStudio } from './agreement/EmploymentAgreementStudio';
-import { TemplateStudio } from './templates/TemplateStudio';
-import { DocumentDownloads } from './downloads/DocumentDownloads';
-import { IdCardStudio } from './idcard/IdCardStudio';
-import { SalarySlipStudio } from './payroll/SalarySlipStudio';
+import { EmploymentAgreement } from './agreement/EmploymentAgreement';
+import { IdCard } from './idcard/IdCard';
+import { SalarySlip } from './payroll/SalarySlip';
+import { Invoice } from './invoice/Invoice';
+import { PassportSubmission } from './passport/PassportSubmission';
+import { IndianVisa } from './indian-visa/IndianVisa';
+import { CustomerGuardian } from './customer-form/CustomerGuardian';
 
 export function DocumentStudioModule() {
   const { activeSubmodule } = usePortal();
 
   return (
     <div className="space-y-5">
-      {(activeSubmodule === 'agreement' || !activeSubmodule || (activeSubmodule !== 'templates' && activeSubmodule !== 'idcard' && activeSubmodule !== 'downloads' && activeSubmodule !== 'payroll')) && (
-        <EmploymentAgreementStudio />
+      {(activeSubmodule === 'agreement' || !activeSubmodule || (activeSubmodule !== 'idcard' && activeSubmodule !== 'payroll' && activeSubmodule !== 'invoice' && activeSubmodule !== 'passport-sub' && activeSubmodule !== 'indian-visa' && activeSubmodule !== 'customer-form')) && (
+        <EmploymentAgreement />
       )}
-      {activeSubmodule === 'templates' && <TemplateStudio />}
-      {activeSubmodule === 'idcard' && <IdCardStudio />}
-      {activeSubmodule === 'downloads' && <DocumentDownloads />}
-      {activeSubmodule === 'payroll' && <SalarySlipStudio />}
+      {activeSubmodule === 'payroll' && <SalarySlip />}
+      {activeSubmodule === 'invoice' && <Invoice />}
+      {activeSubmodule === 'passport-sub' && <PassportSubmission />}
+      {activeSubmodule === 'indian-visa' && <IndianVisa />}
+      {activeSubmodule === 'idcard' && <IdCard />}
+      {activeSubmodule === 'customer-form' && <CustomerGuardian />}
     </div>
   );
 }
+

@@ -1,7 +1,6 @@
 import jwt from "jsonwebtoken";
 import { env } from "../config/env.js";
 import { UserModel } from "../models/user.model.js";
-import { MemberModel } from "../models/member.model.js";
 
 export const authenticateToken = async (req, res, next) => {
   const authHeader = req.headers.authorization;
@@ -22,10 +21,7 @@ export const authenticateToken = async (req, res, next) => {
       return res.status(401).json({ status: "error", message: "Invalid token payload" });
     }
 
-    let user = await UserModel.findById(userId).lean();
-    if (!user) {
-      user = await MemberModel.findById(userId).lean();
-    }
+    const user = await UserModel.findById(userId).lean();
 
     if (!user || user.isActive === false) {
       return res.status(401).json({ status: "error", message: "User not found or account deactivated" });

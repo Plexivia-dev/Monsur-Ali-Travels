@@ -27,7 +27,7 @@ export const Navbar = () => {
   const portalDetails = {
     factory: { title: 'Brick Factory Portal', subtitle: 'Kiln Production, Coal Stock & Raw Materials', icon: Factory, badgeBg: 'bg-amber-500/15 text-amber-500' },
     agency: { title: 'Manpower Agency Portal', subtitle: 'Placements, Client Invoicing & Contractor Payroll', icon: Users2, badgeBg: 'bg-sky-500/15 text-sky-500' },
-    docs: { title: 'Document Center', subtitle: 'Employment Agreement, Templates & ID Card', icon: FileSpreadsheet, badgeBg: 'bg-emerald-500/15 text-emerald-500' },
+    docs: { title: 'Document Center', subtitle: 'Employment Agreement, Invoice & ID Card', icon: FileSpreadsheet, badgeBg: 'bg-emerald-500/15 text-emerald-500' },
     admin: { title: 'System Administration', subtitle: 'Global Users, Financial Reconciliation & Audit Logs', icon: Shield, badgeBg: 'bg-purple-500/15 text-purple-500' }
   };
 
