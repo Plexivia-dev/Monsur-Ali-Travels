@@ -36,7 +36,7 @@ export function SalarySlipPreview({ data }) {
             </div>
             <div>
               <h1 className="text-lg font-[900] uppercase tracking-tight text-slate-900 leading-none">
-                {infoData.agencyName || 'MANSUR ALI TOURS & TRAVELS'}
+                {infoData.agencyName || 'MONSUR ALI TOURS & TRAVELS'}
               </h1>
               <p className="text-[9.5px] font-bold text-slate-700 mt-0.5">
                 Government Approved Overseas Manpower Agency ({infoData.licenseNo || 'RL-1842'})
@@ -300,7 +300,7 @@ export function SalarySlipPreview({ data }) {
         {/* Company Seal Box & Footer Statement (Perfectly Centered Horizontal Row Alignment) */}
         <div className="mt-4 border-t border-slate-200 pt-3 flex items-center justify-between">
           <div className="text-[9px] text-slate-500 font-medium tracking-tight">
-            Mansur Ali Tours & Travels • Confidential Payroll Document • One Employee
+            Monsur Ali Tours & Travels • Confidential Payroll Document • One Employee
           </div>
 
           <div className="w-32 h-10 border-2 border-dashed border-slate-400 rounded-md flex items-center justify-center text-[8px] text-slate-400 font-mono text-center leading-tight tracking-wider uppercase font-bold">

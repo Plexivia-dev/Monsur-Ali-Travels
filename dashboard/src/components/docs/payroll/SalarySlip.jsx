@@ -25,7 +25,7 @@ export function SalarySlip() {
 
   const sampleData = {
     _id: null,
-    companyName: 'MANSUR ALI TOURS & TRAVELS',
+    companyName: 'MONSUR ALI TOURS & TRAVELS',
     companyAddress: 'Nadampur, Jagannathpur, Sunamganj - 3060, Sylhet, Bangladesh',
     slipNo: generateUniqueSlipNumber(),
 
@@ -132,7 +132,7 @@ export function SalarySlip() {
     const month = formData.salaryMonth || 'চলতি মাস';
 
     const msg =
-      `*📄 মনসুর আলী ট্রাভেলস (MANSUR ALI TRAVELS)*\n` +
+      `*📄 মনসুর আলী ট্রাভেলস (MONSUR ALI TRAVELS)*\n` +
       `*মাসিক স্যালারি স্লিপ বিবরণী (${formData.slipNo || 'Official Slip'})*\n` +
       `-----------------------------------------\n` +
       `👤 *কর্মচারীর নাম:* ${employee} (ID: ${id})\n` +

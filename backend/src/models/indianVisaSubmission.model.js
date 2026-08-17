@@ -36,7 +36,7 @@ const indianVisaSubmissionSchema = new mongoose.Schema(
 
     // Agency Header Info
     agencyInfo: {
-      name: { type: String, default: "MANSUR ALI TOURS & TRAVELS" },
+      name: { type: String, default: "MONSUR ALI TOURS & TRAVELS" },
       address: { type: String, default: "Nadampur, Jagannathpur, Sunamganj - 3060, Sylhet, Bangladesh" },
       phone: { type: String, default: "+8801345579534" },
       email: { type: String, default: "monsuralitravels@gmail.com" },

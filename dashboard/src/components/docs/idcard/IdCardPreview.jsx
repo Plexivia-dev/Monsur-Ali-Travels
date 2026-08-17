@@ -63,7 +63,7 @@ export function IdCardPreview({ cardData, frontRef, backRef }) {
 
             {/* Brand Titles */}
             <h1 className="text-[17px] font-[900] tracking-[0.3px] text-[#0b2341] uppercase leading-none mt-0.5">
-              MANSUR ALI
+              MONSUR ALI
             </h1>
             
             <div className="text-[10px] font-[800] tracking-[1.2px] text-[#0088ba] uppercase flex items-center justify-center gap-1.5 mt-1">
@@ -219,7 +219,7 @@ export function IdCardPreview({ cardData, frontRef, backRef }) {
             {/* Right Brand Text */}
             <div>
               <h2 className="text-sm font-[900] tracking-[0.5px] uppercase leading-none text-white">
-                MANSUR ALI
+                MONSUR ALI
               </h2>
               <div className="text-[9px] font-[800] tracking-[1px] text-[#0088ba] uppercase flex items-center gap-1 mt-0.5">
                 <span className="w-3 h-[1.5px] bg-[#ee6c00] rounded-full inline-block" />
@@ -282,7 +282,7 @@ export function IdCardPreview({ cardData, frontRef, backRef }) {
             <ul className="space-y-0.5 text-[9.5px] text-slate-800 font-medium leading-tight pl-0">
               <li className="flex items-start gap-1.5">
                 <span className="text-slate-900 font-black text-xs leading-none">•</span>
-                <span>This ID card is the property of Mansur Ali Tours & Travels.</span>
+                <span>This ID card is the property of Monsur Ali Tours & Travels.</span>
               </li>
               <li className="flex items-start gap-1.5">
                 <span className="text-slate-900 font-black text-xs leading-none">•</span>

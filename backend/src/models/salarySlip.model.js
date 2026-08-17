@@ -29,7 +29,7 @@ const salarySlipSchema = new mongoose.Schema(
     },
     companyName: {
       type: String,
-      default: "MANSUR ALI TOURS & TRAVELS",
+      default: "MONSUR ALI TOURS & TRAVELS",
     },
     companyAddress: {
       type: String,
