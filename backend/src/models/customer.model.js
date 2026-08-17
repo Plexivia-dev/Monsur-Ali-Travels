@@ -140,6 +140,12 @@ const customerSchema = new Schema(
         ref: "Invoice",
       },
     ],
+    cases: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "CaseFile",
+      },
+    ],
 
     // Customer Status & Notes
     status: {

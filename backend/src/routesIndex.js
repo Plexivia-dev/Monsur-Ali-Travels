@@ -5,6 +5,7 @@ import authRouter from "./routes/AuthRoute.js";
 import usersRouter from "./routes/UsersRoute.js";
 import candidateRouter from "./routes/CandidateRoute.js";
 import customerRouter from "./routes/CustomerRoute.js";
+import caseFileRouter from "./routes/CaseFileRoute.js";
 
 // Document Studio & Data List Routes
 import agreementRouter from "./routes/AgreementRoute.js";
@@ -21,6 +22,9 @@ import systemRouter from "./routes/SystemRoute.js";
 import uploadRouter from "./routes/UploadRoute.js";
 
 const coreRouter = Router();
+
+// Universal Case Management (Greece, N-Macedonia, Indian BSF, etc.)
+coreRouter.use("/cases", caseFileRouter);
 
 // Authentication & Users & Central Customers
 coreRouter.use("/auth", authRouter);
