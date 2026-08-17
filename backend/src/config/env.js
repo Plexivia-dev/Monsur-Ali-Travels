@@ -17,12 +17,12 @@ const envSchema = z.object({
   ALLOWED_ORIGINS: z.string().default("http://localhost:8001,http://localhost:8005,http://localhost:3000"),
   FRONTEND_DOMAIN_KEYWORDS: z.string().default("localhost,monsuralitravelsbd.com"),
   DASHBOARD_DOMAIN_KEYWORDS: z.string().default("dashboard,localhost:8005"),
-  SMTP_HOST: z.string().default("smtp.hostinger.com"),
-  SMTP_PORT: z.coerce.number().int().positive().default(587),
-  SMTP_ENCRYPTION: z.string().default("TLS"),
-  SMTP_USER: z.string().default("noreply@monsuralitravelsbd.com"),
-  SMTP_PASSWORD: z.string().default("dev_smtp_password"),
-  SMTP_FROM_NAME: z.string().default("Monsur Ali Travels BD"),
+  SMTP_HOST: z.string().default("roxy.us.webxlogin.com"),
+  SMTP_PORT: z.coerce.number().int().positive().default(465),
+  SMTP_ENCRYPTION: z.string().default("SSL"),
+  SMTP_USER: z.string().default("info@monsuralitravels.com"),
+  SMTP_PASSWORD: z.string().default(""),
+  SMTP_FROM_NAME: z.string().default("Monsur Ali Travels"),
   SMTP_FROM: z.string().optional(),
 });
 
