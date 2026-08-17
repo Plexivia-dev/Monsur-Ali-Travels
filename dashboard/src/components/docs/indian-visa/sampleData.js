@@ -25,10 +25,9 @@ export function getDefaultIndianVisaData() {
 
     agencyInfo: {
       name: agencyInfo.agencyName || 'মনসুর আলী ট্রাভেলস (MONSUR ALI TRAVELS)',
-      address: agencyInfo.address?.full || 'Nadampur, Jagannathpur, Sunamganj - 3060, Sylhet, Bangladesh',
+      address: agencyInfo.address?.full || 'Mominpur Jagannathpur Road, Sunamganj, Post Code 3060',
       phone: agencyInfo.phone || '+8801345579534',
-      email: agencyInfo.email || 'monsuralitravels@gmail.com',
-      licenseNo: agencyInfo.licenseNo || 'RL-1842'
+      email: agencyInfo.email || 'contact@monsuralitravels.com'
     },
 
     applicantName: '',

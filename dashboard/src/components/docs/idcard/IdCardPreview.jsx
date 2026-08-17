@@ -242,7 +242,7 @@ export function IdCardPreview({ cardData, frontRef, backRef }) {
               <div>
                 <h4 className="font-extrabold text-[#0b2341] text-[11px] leading-tight">Address</h4>
                 <p className="text-slate-700 text-[10px] font-medium leading-snug mt-0.5">
-                  {cardData.address || 'Nadampur, Jagannathpur, Sunamganj - 3060, Sylhet, Bangladesh'}
+                  {cardData.address || 'Mominpur Jagannathpur Road, Sunamganj, Post Code 3060'}
                 </p>
               </div>
             </div>

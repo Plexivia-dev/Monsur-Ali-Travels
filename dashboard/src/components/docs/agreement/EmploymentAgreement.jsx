@@ -5,6 +5,7 @@ import { PrintablePaper } from '../common/PrintablePaper';
 import { Printer, Edit3, CheckCircle2 } from 'lucide-react';
 import { apiClient } from '../../../lib/api-client';
 import { toast } from 'sonner';
+import agencyInfoJson from '../../../lib/information.json';
 
 // Generates unique agreement number e.g. "AGR-10294"
 export function generateUniqueAgreementId() {
@@ -18,10 +19,10 @@ export function EmploymentAgreement() {
   const [viewMode, setViewMode] = useState('form'); // 'form' | 'preview'
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [agencyInfo, setAgencyInfo] = useState({
-    name: 'মনসুর আলী ট্রাভেলস (MONSUR ALI TRAVELS)',
-    address: 'Nadampur, Jagannathpur, Sunamganj - 3060, Sylhet, Bangladesh',
-    phone: '+8801345579534',
-    email: 'monsuralitravels@gmail.com'
+    name: agencyInfoJson.agencyName ? `${agencyInfoJson.agencyName} (MONSUR ALI TRAVELS)` : 'মনসুর আলী ট্রাভেলস (MONSUR ALI TRAVELS)',
+    address: agencyInfoJson.address?.full || 'Mominpur Jagannathpur Road, Sunamganj, Post Code 3060',
+    phone: agencyInfoJson.phone || '+8801345579534',
+    email: agencyInfoJson.email || 'contact@monsuralitravels.com'
   });
 
   const defaultData = {
@@ -29,9 +30,9 @@ export function EmploymentAgreement() {
     agreementId: generateUniqueAgreementId(),
     header: {
       companyName: agencyInfo.name || 'মনসুর আলী ট্রাভেলস (MONSUR ALI TRAVELS)',
-      officeAddress: agencyInfo.address || 'Nadampur, Jagannathpur, Sunamganj - 3060, Sylhet, Bangladesh',
+      officeAddress: agencyInfo.address || 'Mominpur Jagannathpur Road, Sunamganj, Post Code 3060',
       phone: agencyInfo.phone || '+8801345579534',
-      email: agencyInfo.email || 'monsuralitravels@gmail.com'
+      email: agencyInfo.email || 'contact@monsuralitravels.com'
     },
     parties: {
       agreementDate: new Date().toISOString().split('T')[0],
@@ -156,7 +157,7 @@ export function EmploymentAgreement() {
       `💰 *সর্বমোট মাসিক বেতন:* ${gross} ৳\n` +
       `📌 *চুক্তির ন্যূনতম মেয়াদ:* ২ (দুই) বছর বাধ্যতামূলক\n\n` +
       `🏢 *মনসুর আলী ট্রাভেলস*\n` +
-      `📍 ঠিকানা: Nadampur, Jagannathpur, Sunamganj - 3060, Sylhet, Bangladesh\n` +
+      `📍 ঠিকানা: ${formData.header?.officeAddress || 'Mominpur Jagannathpur Road, Sunamganj, Post Code 3060'}\n` +
       `📞 যোগাযোগ: ${formData.header?.phone || '+8801345579534'}`;
 
     window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(msg)}`, '_blank');

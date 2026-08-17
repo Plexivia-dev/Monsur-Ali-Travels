@@ -27,7 +27,7 @@ export function AgreementPreview({ data }) {
                 {data.header?.companyName || 'মনসুর আলী ট্রাভেলস (MONSUR ALI TRAVELS)'}
               </h1>
               <p className="text-[11px] text-slate-700 font-medium">
-                অফিসের ঠিকানা : {data.header?.officeAddress || 'Nadampur, Jagannathpur, Sunamganj - 3060, Sylhet, Bangladesh'}
+                অফিসের ঠিকানা : {data.header?.officeAddress || 'Mominpur Jagannathpur Road, Sunamganj, Post Code 3060'}
               </p>
             </div>
           </div>
@@ -35,8 +35,7 @@ export function AgreementPreview({ data }) {
 
         <div className="flex flex-wrap items-center justify-between text-[11px] text-slate-700 font-medium border-t border-slate-200 pt-1.5 gap-2">
           <div>মোবাইল নম্বর : <span className="font-bold text-slate-900">{data.header?.phone || '+8801345579534'}</span></div>
-          <div>ইমেইল অ্যাড্রেস : <span className="font-bold text-slate-900">{data.header?.email || 'monsuralitravels@gmail.com'}</span></div>
-          <div>লাইসেন্স নং : <span className="font-bold text-slate-900">RL-1842</span></div>
+          <div>ইমেইল অ্যাড্রেস : <span className="font-bold text-slate-900">{data.header?.email || 'contact@monsuralitravels.com'}</span></div>
         </div>
       </div>
 

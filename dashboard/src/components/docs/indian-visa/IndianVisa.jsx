@@ -79,7 +79,7 @@ export function IndianVisa() {
       `📞 *ফোন নম্বর:* ${data.applicantPhone || 'N/A'}\n\n` +
       `📌 *অফিসিয়াল আপডেট:* আপনার ইন্ডিয়ান ভিসা ফাইল জমা ও আবেদনের তথ্য রসিদ প্রস্তুত করা হয়েছে।\n\n` +
       `🏢 *মনসুর আলী ট্রাভেলস*\n` +
-      `📍 ঠিকানা: Nadampur, Jagannathpur, Sunamganj - 3060, Sylhet, Bangladesh\n` +
+      `📍 ঠিকানা: Mominpur Jagannathpur Road, Sunamganj, Post Code 3060\n` +
       `📞 যোগাযোগ: +8801345579534`;
 
     window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(msg)}`, '_blank');

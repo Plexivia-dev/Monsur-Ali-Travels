@@ -91,7 +91,7 @@ export function CustomerGuardian({ initialData = null, onSavedSuccess = null }) 
       `📅 *তারিখ:* ${data.dateReceived || 'আজ'}\n\n` +
       `📌 *অফিসিয়াল আপডেট:* আপনার কাস্টমার ফাইল ও অগ্রিম জমার মানি রসিদ ডাটাবেজে সংরক্ষণ করা হয়েছে।\n\n` +
       `🏢 *মনসুর আলী ট্রাভেলস*\n` +
-      `📍 ঠিকানা: Nadampur, Jagannathpur, Sunamganj - 3060, Sylhet\n` +
+      `📍 ঠিকানা: Mominpur Jagannathpur Road, Sunamganj, Post Code 3060\n` +
       `📞 যোগাযোগ: +8801345579534`;
 
     window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(msg)}`, '_blank');

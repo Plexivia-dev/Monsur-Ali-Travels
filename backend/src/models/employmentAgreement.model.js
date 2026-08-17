@@ -32,9 +32,9 @@ const employmentAgreementSchema = new Schema(
     // ১. প্রতিষ্ঠানের তথ্য (Header)
     প্রতিষ্ঠানের_তথ্য: {
       প্রতিষ্ঠানের_নাম: { type: String, default: "মনসুর আলী ট্রাভেলস (MONSUR ALI TRAVELS)" },
-      অফিসের_ঠিকানা: { type: String, default: "Nadampur, Jagannathpur, Sunamganj - 3060, Sylhet, Bangladesh" },
+      অফিসের_ঠিকানা: { type: String, default: "Mominpur Jagannathpur Road, Sunamganj, Post Code 3060" },
       মোবাইল_নম্বর: { type: String, default: "+8801345579534" },
-      ইমেইল_অ্যাড্রেস: { type: String, default: "monsuralitravels@gmail.com" },
+      ইমেইল_অ্যাড্রেস: { type: String, default: "contact@monsuralitravels.com" },
     },
 
     // ২. কর্মচারী ও নিয়োগকারীর সাধারণ তথ্য (Parties Details)

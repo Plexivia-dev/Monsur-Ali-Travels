@@ -30,11 +30,10 @@ export function getDefaultInvoiceData() {
     biller: {
       name: agencyInfo.agencyName?.toUpperCase() || "MONSUR ALI TOURS & TRAVELS",
       subtitle: agencyInfo.tagline || "Your Trusted Travel Partner",
-      address: agencyInfo.address?.full || "Nadampur, Jagannathpur, Sunamganj - 3060, Sylhet, Bangladesh",
-      city: `${agencyInfo.address?.district || 'Sunamganj'}, ${agencyInfo.address?.division || 'Sylhet'}, ${agencyInfo.address?.country || 'Bangladesh'}`,
+      address: agencyInfo.address?.full || "Mominpur Jagannathpur Road, Sunamganj, Post Code 3060",
+      city: `${agencyInfo.address?.district || 'Sunamganj'}, ${agencyInfo.address?.country || 'Bangladesh'}`,
       phone: agencyInfo.phone || "+8801345579534",
-      email: agencyInfo.email || "monsuralitravels@gmail.com",
-      binNo: agencyInfo.licenseNo || "RL-1842"
+      email: agencyInfo.email || "contact@monsuralitravels.com"
     },
 
     client: {

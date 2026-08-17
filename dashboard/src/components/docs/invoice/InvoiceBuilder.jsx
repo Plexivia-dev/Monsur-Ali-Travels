@@ -100,7 +100,7 @@ export function InvoiceBuilder() {
       `💰 *সর্বমোট প্রদেয় বিল:* ${grandTotal.toLocaleString('en-IN')} ${data.currency || 'BDT'}\n\n` +
       `📌 *অফিসিয়াল ইনভয়েস:* মূল ইনভয়েসের প্রিন্ট কপি প্রস্তুত রয়েছে।\n\n` +
       `🏢 *মনসুর আলী ট্রাভেলস*\n` +
-      `📍 ঠিকানা: ${data.biller?.address || 'Nadampur, Jagannathpur, Sunamganj - 3060, Sylhet, Bangladesh'}\n` +
+      `📍 ঠিকানা: ${data.biller?.address || 'Mominpur Jagannathpur Road, Sunamganj, Post Code 3060'}\n` +
       `📞 যোগাযোগ: ${data.biller?.phone || '+8801345579534'}`;
 
     window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(msg)}`, '_blank');

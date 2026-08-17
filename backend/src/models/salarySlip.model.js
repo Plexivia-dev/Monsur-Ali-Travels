@@ -33,7 +33,7 @@ const salarySlipSchema = new mongoose.Schema(
     },
     companyAddress: {
       type: String,
-      default: "Nadampur, Jagannathpur, Sunamganj - 3060, Sylhet, Bangladesh",
+      default: "Mominpur Jagannathpur Road, Sunamganj, Post Code 3060",
     },
     slipNo: {
       type: String,

@@ -5,6 +5,7 @@ import { SalarySlipPreview } from './SalarySlipPreview';
 import { Printer, Edit3, CheckCircle2 } from 'lucide-react';
 import { apiClient } from '../../../lib/api-client';
 import { toast } from 'sonner';
+import agencyInfo from '../../../lib/information.json';
 
 // Generates unique Slip Number: "SLIP-" + 2 letters + 4 digits + 1 letter + 3 digits (e.g. "SLIP-AB4829K513")
 export function generateUniqueSlipNumber() {
@@ -25,8 +26,8 @@ export function SalarySlip() {
 
   const sampleData = {
     _id: null,
-    companyName: 'MONSUR ALI TOURS & TRAVELS',
-    companyAddress: 'Nadampur, Jagannathpur, Sunamganj - 3060, Sylhet, Bangladesh',
+    companyName: agencyInfo.agencyName?.toUpperCase() || 'MONSUR ALI TOURS & TRAVELS',
+    companyAddress: agencyInfo.address?.full || 'Mominpur Jagannathpur Road, Sunamganj, Post Code 3060',
     slipNo: generateUniqueSlipNumber(),
 
     // Employee Info
@@ -145,7 +146,7 @@ export function SalarySlip() {
       `✅ *সর্বমোট প্রদেয় বেতন (Net Salary):* ${formData.netSalaryPayable} ৳ (${formData.netSalaryInWords || ''})\n\n` +
       `📌 *স্লিপ ও পেমেন্ট স্ট্যাটাস:* পরিশোধিত (Paid via ${formData.paymentMode || 'Cash'})\n\n` +
       `🏢 *মনসুর আলী ট্রাভেলস*\n` +
-      `📍 ঠিকানা: Nadampur, Jagannathpur, Sunamganj - 3060, Sylhet, Bangladesh\n` +
+      `📍 ঠিকানা: Mominpur Jagannathpur Road, Sunamganj, Post Code 3060\n` +
       `📞 যোগাযোগ: +8801345579534`;
 
     window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(msg)}`, '_blank');

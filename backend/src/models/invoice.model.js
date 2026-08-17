@@ -53,11 +53,10 @@ const invoiceSchema = new mongoose.Schema(
     biller: {
       name: { type: String, default: "MONSUR ALI TOURS & TRAVELS" },
       subtitle: { type: String, default: "Your Trusted Travel Partner" },
-      address: { type: String, default: "Nadampur, Jagannathpur, Sunamganj - 3060, Sylhet, Bangladesh" },
-      city: { type: String, default: "Sunamganj, Sylhet, Bangladesh" },
+      address: { type: String, default: "Mominpur Jagannathpur Road, Sunamganj, Post Code 3060" },
+      city: { type: String, default: "Sunamganj, Bangladesh" },
       phone: { type: String, default: "+8801345579534" },
-      email: { type: String, default: "monsuralitravels@gmail.com" },
-      binNo: { type: String, default: "RL-1842" },
+      email: { type: String, default: "contact@monsuralitravels.com" },
     },
 
     client: {

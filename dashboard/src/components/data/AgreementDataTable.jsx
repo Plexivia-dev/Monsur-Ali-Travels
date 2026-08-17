@@ -14,9 +14,9 @@ function normalizeAgreementData(item = {}) {
     agreementId: item.agreementId || '',
     header: {
       companyName: item.প্রতিষ্ঠানের_তথ্য?.প্রতিষ্ঠানের_নাম || item.header?.companyName || 'মনসুর আলী ট্রাভেলস (MONSUR ALI TRAVELS)',
-      officeAddress: item.প্রতিষ্ঠানের_তথ্য?.অফিসের_ঠিকানা || item.header?.officeAddress || 'Nadampur, Jagannathpur, Sunamganj - 3060, Sylhet, Bangladesh',
+      officeAddress: item.প্রতিষ্ঠানের_তথ্য?.অফিসের_ঠিকানা || item.header?.officeAddress || 'Mominpur Jagannathpur Road, Sunamganj, Post Code 3060',
       phone: item.প্রতিষ্ঠানের_তথ্য?.মোবাইল_নম্বর || item.header?.phone || '+8801345579534',
-      email: item.প্রতিষ্ঠানের_তথ্য?.ইমেইল_অ্যাড্রেস || item.header?.email || 'monsuralitravels@gmail.com',
+      email: item.প্রতিষ্ঠানের_তথ্য?.ইমেইল_অ্যাড্রেস || item.header?.email || 'contact@monsuralitravels.com',
     },
     parties: {
       agreementDate: item.সাধারণ_তথ্য?.চুক্তির_তারিখ || item.parties?.agreementDate || '',

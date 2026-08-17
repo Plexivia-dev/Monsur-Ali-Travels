@@ -3,6 +3,7 @@ import { PrintablePaper } from '../common/PrintablePaper';
 import { Printer, CheckCircle, Clock, AlertTriangle } from 'lucide-react';
 import logoImg from '../../../assets/logo.png';
 import { formatToDdMmYyyy } from '../../../lib/utils';
+import agencyInfo from '../../../lib/information.json';
 
 export function InvoicePreview({ data = {}, onPrint }) {
   const {
@@ -19,12 +20,11 @@ export function InvoicePreview({ data = {}, onPrint }) {
   } = data || {};
 
   const billerInfo = {
-    name: biller?.name || 'মনসুর আলী ট্রাভেলস (MONSUR ALI TRAVELS)',
-    subtitle: biller?.subtitle || 'Government Approved Overseas Manpower & Travel Agency',
-    address: biller?.address || 'Nadampur, Jagannathpur, Sunamganj - 3060, Sylhet, Bangladesh',
-    phone: biller?.phone || '+8801345579534',
-    email: biller?.email || 'monsuralitravels@gmail.com',
-    binNo: biller?.binNo || 'RL-1842',
+    name: biller?.name || agencyInfo.agencyName?.toUpperCase() || 'MONSUR ALI TOURS & TRAVELS',
+    subtitle: biller?.subtitle || agencyInfo.tagline || 'Your Trusted Travel Partner',
+    address: biller?.address || agencyInfo.address?.full || 'Mominpur Jagannathpur Road, Sunamganj, Post Code 3060',
+    phone: biller?.phone || agencyInfo.phone || '+8801345579534',
+    email: biller?.email || agencyInfo.email || 'contact@monsuralitravels.com',
   };
 
   const handlePrintAction = onPrint || (() => window.print());
@@ -101,7 +101,6 @@ export function InvoicePreview({ data = {}, onPrint }) {
                 <p className="text-xs text-slate-700 font-bold">{billerInfo.subtitle}</p>
                 <p className="text-xs text-slate-600">{billerInfo.address}</p>
                 <p className="text-xs text-slate-600">Phone: {billerInfo.phone} | Email: {billerInfo.email}</p>
-                {billerInfo.binNo && <p className="text-xs font-mono text-slate-500 font-semibold">License / BIN: {billerInfo.binNo}</p>}
               </div>
 
               <div className="text-right space-y-2">

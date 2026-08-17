@@ -39,10 +39,10 @@ export function SalarySlipPreview({ data }) {
                 {infoData.agencyName || 'MONSUR ALI TOURS & TRAVELS'}
               </h1>
               <p className="text-[9.5px] font-bold text-slate-700 mt-0.5">
-                Government Approved Overseas Manpower Agency ({infoData.licenseNo || 'RL-1842'})
+                {infoData.tagline || 'Your Trusted Travel Partner'}
               </p>
               <p className="text-[9px] text-slate-600 font-medium">
-                Head Office: {infoData.address?.full || 'Nadampur, Jagannathpur, Sunamganj - 3060, Sylhet, Bangladesh'}
+                Head Office: {infoData.address?.full || 'Mominpur Jagannathpur Road, Sunamganj, Post Code 3060'}
               </p>
             </div>
           </div>

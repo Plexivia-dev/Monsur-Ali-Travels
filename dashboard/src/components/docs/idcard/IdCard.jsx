@@ -4,6 +4,7 @@ import { IdCardPreview } from './IdCardPreview';
 import { Printer, Download, Sparkles, RefreshCw, FileText } from 'lucide-react';
 import { toast } from 'sonner';
 import { toPng } from 'html-to-image';
+import agencyInfo from '../../../lib/information.json';
 
 export function IdCard() {
   const [activeTab, setActiveTab] = useState('editor'); // 'editor' | 'preview'
@@ -18,9 +19,9 @@ export function IdCard() {
     joiningDate: new Date().toISOString().split('T')[0],
     bloodGroup: '',
     contactPhone: '',
-    email: 'monsuralitravels@gmail.com',
-    address: 'Nadampur, Jagannathpur, Sunamganj - 3060, Sylhet, Bangladesh',
-    website: 'www.monsuralitravels.com',
+    email: agencyInfo.email || 'contact@monsuralitravels.com',
+    address: agencyInfo.address?.full || 'Mominpur Jagannathpur Road, Sunamganj, Post Code 3060',
+    website: agencyInfo.website || 'www.monsuralitravels.com',
     signatureName: 'M. Ali',
     signatureTitle: 'Managing Director',
     photo: null,

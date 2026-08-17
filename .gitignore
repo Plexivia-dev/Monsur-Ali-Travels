@@ -37,6 +37,4 @@ backups/
 *.gz
 
 # Frontend split repository folder
-frontend/
-
 .agents

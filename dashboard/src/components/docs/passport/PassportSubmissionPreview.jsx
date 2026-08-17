@@ -53,10 +53,10 @@ export function PassportSubmissionPreview({ data, onPrint }) {
                     {agencyInfo.name || 'MONSUR ALI TRAVELS'}
                   </h1>
                   <p className="text-[11px] font-semibold text-slate-700">
-                    Government Approved Overseas Manpower & Passport Processing Agency
+                    {agencyInfo.tagline || 'Your Trusted Travel Partner'}
                   </p>
                   <p className="text-[10px] text-slate-600 font-mono mt-0.5">
-                    License No: {agencyInfo.licenseNo || 'RL-1842'} | Office: {agencyInfo.address || 'Sunamganj, Sylhet, Bangladesh'} | Cell: {agencyInfo.phone || '+8801345579534'}
+                    Office: {agencyInfo.address || 'Mominpur Jagannathpur Road, Sunamganj, Post Code 3060'} | Cell: {agencyInfo.phone || '+8801345579534'}
                   </p>
                 </div>
               </div>
