@@ -41,10 +41,10 @@ ssh -i C:\Users\mdikr\.ssh\id_ed25519_ikramul root@144.79.218.241 "cd /opt/monsu
 
 | Field             | Value                                    |
 | :---------------- | :--------------------------------------- |
-| **cPanel URL**    | `https://roxy.us.webxlogin.com:2083`     |
+| **cPanel URL**    | `https://aberi.us.svlogins.com:2083`     |
 | **cPanel User**   | _(আপনার cPanel username)_               |
 | **cPanel Pass**   | _(আপনার cPanel password)_               |
-| **Server Host**   | `roxy.us.webxlogin.com`                  |
+| **Server Host**   | `aberi.us.svlogins.com`                  |
 
 ---
 
@@ -53,22 +53,23 @@ ssh -i C:\Users\mdikr\.ssh\id_ed25519_ikramul root@144.79.218.241 "cd /opt/monsu
 | Field              | Value                        |
 | :----------------- | :--------------------------- |
 | **Email Address**  | `info@monsuralitravels.com`  |
-| **SMTP Host**      | `roxy.us.webxlogin.com`      |
-| **SMTP Port**      | `465` (SSL) / `587` (TLS)    |
+| **SMTP Host**      | `mail.monsuralitravels.com`  |
+| **SMTP Port**      | `587` (TLS)                  |
 | **SMTP User**      | `info@monsuralitravels.com`  |
-| **SMTP Password**  | `7FPv$F&EcCkDvkd`            |
-| **Encryption**     | `SSL`                        |
+| **SMTP Password**  | `[REDACTED_FOR_SECURITY]`    |
+| **Encryption**     | `TLS`                        |
 | **From Name**      | `Monsur Ali Travels`         |
 
 ### Backend `.env.production` SMTP Block
 ```env
-SMTP_HOST=roxy.us.webxlogin.com
-SMTP_PORT=465
-SMTP_ENCRYPTION=SSL
+SMTP_HOST=mail.monsuralitravels.com
+SMTP_PORT=587
+SMTP_ENCRYPTION=TLS
 SMTP_USER=info@monsuralitravels.com
-SMTP_PASSWORD=7FPv$F&EcCkDvkd
+SMTP_PASSWORD=[REDACTED_FOR_SECURITY]
 SMTP_FROM_NAME=Monsur Ali Travels
 ```
+
 
 ---
 
@@ -81,8 +82,8 @@ SMTP_FROM_NAME=Monsur Ali Travels
 | **Auth DB**    | `admin`                          |
 | **DB Name**    | `monsur-ali-travels`             |
 | **User**       | `admin`                          |
-| **Password**   | `MonsurAliSecPass2026!`          |
-| **URI**        | `mongodb://admin:MonsurAliSecPass2026!@mongodb:27017/monsur-ali-travels?authSource=admin` |
+| **Password**   | `[REDACTED_FOR_SECURITY]`          |
+| **URI**        | `mongodb://admin:[REDACTED_FOR_SECURITY]@mongodb:27017/monsur-ali-travels?authSource=admin` |
 
 ---
 
@@ -92,6 +93,8 @@ SMTP_FROM_NAME=Monsur Ali Travels
 | :------------ | :----------------------------------- |
 | **Domain**    | `monsuralitravels.com`               |
 | **Zone ID**   | `96601a82dcaad6ba15891d416e440706`   |
+| **Account ID**| `f9c0c34851099dfb743390a7a0086321`   |
+| **API Token** | `[REDACTED_FOR_SECURITY]`            |
 | **NS 1**      | `christian.ns.cloudflare.com`        |
 | **NS 2**      | `laila.ns.cloudflare.com`            |
 
