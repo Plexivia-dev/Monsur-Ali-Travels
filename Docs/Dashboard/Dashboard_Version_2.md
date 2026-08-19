@@ -4,6 +4,16 @@ This document tracks the comprehensive redesign of the Monsur Ali Travels ERP Da
 
 ---
 
+### DR-08: Port Collapsible & Modern Sidebar UI Primitives
+
+- **Date**: 2026-08-20
+- **Impact**: Sidebar UI Primitives, Dynamic Collapsible Menus, Mobile Drawer
+- **Description**:
+  - Implemented [`collapsible.jsx`](file:///f:/Monsur%20Ali%20Travels/dashboard/src/components/ui/collapsible.jsx) using `@base-ui/react/collapsible` matching the `ref` template.
+  - Verified and aligned [`sidebar.jsx`](file:///f:/Monsur%20Ali%20Travels/dashboard/src/components/ui/sidebar.jsx) primitives (`Sidebar`, `SidebarHeader`, `SidebarContent`, `SidebarGroup`, `SidebarMenu`, `SidebarMenuSub`, `SidebarTrigger`, `SidebarInset`) for responsive mobile drawer and desktop collapse behaviors.
+- **Changes**:
+  - Created [`dashboard/src/components/ui/collapsible.jsx`](file:///f:/Monsur%20Ali%20Travels/dashboard/src/components/ui/collapsible.jsx).
+
 ### DR-07: Port Core Shadcn UI Primitives (`Button`, `Badge`, `Card`, `Separator`)
 
 - **Date**: 2026-08-20
