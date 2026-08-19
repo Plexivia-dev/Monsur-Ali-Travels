@@ -4,6 +4,17 @@ This document tracks the comprehensive redesign of the Monsur Ali Travels ERP Da
 
 ---
 
+### DR-10: Create ModeToggle & ProfileDropdown Layout Components
+
+- **Date**: 2026-08-20
+- **Impact**: Header Controls, User Profile Menu, Dark/Light Switch
+- **Description**:
+  - Implemented [`ModeToggle.jsx`](file:///f:/Monsur%20Ali%20Travels/dashboard/src/components/layout/ModeToggle.jsx) using `useThemeStore` to switch seamlessly between dark and light modes with smooth icon scaling.
+  - Implemented [`ProfileDropdown.jsx`](file:///f:/Monsur%20Ali%20Travels/dashboard/src/components/layout/ProfileDropdown.jsx) using `useAuthStore` and `usePortalStore` with avatar initials fallback, online status badge, role badge, user profile link, settings link, and clean sign-out handler.
+- **Changes**:
+  - Created [`dashboard/src/components/layout/ModeToggle.jsx`](file:///f:/Monsur%20Ali%20Travels/dashboard/src/components/layout/ModeToggle.jsx).
+  - Created [`dashboard/src/components/layout/ProfileDropdown.jsx`](file:///f:/Monsur%20Ali%20Travels/dashboard/src/components/layout/ProfileDropdown.jsx).
+
 ### DR-09: Port Breadcrumb UI Primitives (`breadcrumb.jsx`)
 
 - **Date**: 2026-08-20
