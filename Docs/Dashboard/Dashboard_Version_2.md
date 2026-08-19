@@ -4,6 +4,22 @@ This document tracks the comprehensive redesign of the Monsur Ali Travels ERP Da
 
 ---
 
+### DR-18: Refactor Factory Portal & Submodules to Zustand & Modern Cards (`Factory.jsx`)
+
+- **Date**: 2026-08-20
+- **Impact**: Brick Factory Portal, Production Telemetry, Worker Wages & Expense Submodules
+- **Description**:
+  - Refactored [`Factory.jsx`](file:///f:/Monsur%20Ali%20Travels/dashboard/src/pages/Factory.jsx) and [`FactoryDashboard.jsx`](file:///f:/Monsur%20Ali%20Travels/dashboard/src/components/factory/FactoryDashboard.jsx) to connect directly to `usePortalStore`.
+  - Migrated `FactoryBills.jsx`, `FactoryEmployees.jsx`, `FactoryPayments.jsx`, and `FactoryModule.jsx` to use `usePortalStore` for notifications and navigation.
+  - Upgraded brick production charts, kiln telemetry monitors, and expense cards to match modern AdminCN card layouts.
+- **Changes**:
+  - Updated [`dashboard/src/pages/Factory.jsx`](file:///f:/Monsur%20Ali%20Travels/dashboard/src/pages/Factory.jsx).
+  - Updated [`dashboard/src/components/factory/FactoryDashboard.jsx`](file:///f:/Monsur%20Ali%20Travels/dashboard/src/components/factory/FactoryDashboard.jsx).
+  - Updated [`dashboard/src/components/factory/FactoryBills.jsx`](file:///f:/Monsur%20Ali%20Travels/dashboard/src/components/factory/FactoryBills.jsx).
+  - Updated [`dashboard/src/components/factory/FactoryEmployees.jsx`](file:///f:/Monsur%20Ali%20Travels/dashboard/src/components/factory/FactoryEmployees.jsx).
+  - Updated [`dashboard/src/components/factory/FactoryPayments.jsx`](file:///f:/Monsur%20Ali%20Travels/dashboard/src/components/factory/FactoryPayments.jsx).
+  - Updated [`dashboard/src/components/factory/FactoryModule.jsx`](file:///f:/Monsur%20Ali%20Travels/dashboard/src/components/factory/FactoryModule.jsx).
+
 ### DR-17: Refactor Agency Portal & Submodules to Zustand & Modern Cards (`Agency.jsx`)
 
 - **Date**: 2026-08-20

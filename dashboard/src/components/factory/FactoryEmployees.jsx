@@ -6,12 +6,12 @@ import { Modal } from '../ui/Modal';
 import { Input, Select } from "../ui/input";
 import { Button } from "../ui/button";
 import { Users, UserPlus } from 'lucide-react';
-import { usePortal } from '../../context/PortalContext';
+import { usePortalStore } from '../../store/usePortalStore';
 
 export const FactoryEmployees = () => {
   const { data: factoryData, isLoading } = useFactoryData();
   const addEmployeeMutation = useAddFactoryEmployee();
-  const { addToast } = usePortal();
+  const addToast = usePortalStore((state) => state.addToast);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [formData, setFormData] = useState({

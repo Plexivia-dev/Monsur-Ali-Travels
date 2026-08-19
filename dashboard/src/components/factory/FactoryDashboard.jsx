@@ -1,16 +1,16 @@
 import React from 'react';
 import { useFactoryData } from '../../api/hooks';
 import { StatCard } from '../ui/StatCard';
-import { Card, CardHeader, CardTitle, CardContent } from "../ui/card";
-import { Badge } from "../ui/badge";
-import { Button } from "../ui/button";
-import { Factory, Flame, Truck, Layers, Coins, AlertCircle, TrendingUp } from 'lucide-react';
+import { Card, CardHeader, CardTitle, CardContent } from '../ui/card';
+import { Badge } from '../ui/badge';
+import { Button } from '../ui/button';
+import { Factory, Flame, Truck, Layers, Coins, AlertCircle } from 'lucide-react';
 import { ResponsiveContainer, AreaChart, Area, XAxis, YAxis, Tooltip, CartesianGrid } from 'recharts';
-import { usePortal } from '../../context/PortalContext';
+import { usePortalStore } from '../../store/usePortalStore';
 
 export const FactoryDashboard = () => {
   const { data: factoryData, isLoading } = useFactoryData();
-  const { switchPortal } = usePortal();
+  const switchPortal = usePortalStore((state) => state.switchPortal);
 
   if (isLoading || !factoryData) {
     return (
@@ -20,7 +20,7 @@ export const FactoryDashboard = () => {
     );
   }
 
-  const { metrics, productionBatches, bills, payments, reports } = factoryData;
+  const { metrics, productionBatches, bills, reports } = factoryData;
 
   return (
     <div className="space-y-6">
@@ -28,7 +28,7 @@ export const FactoryDashboard = () => {
       {metrics.coalStockTons < metrics.coalThresholdTons && (
         <div className="p-4 rounded-xl bg-amber-500/10 border border-amber-500/30 text-foreground flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <AlertCircle className="w-5 h-5 text-amber-555 shrink-0" />
+            <AlertCircle className="w-5 h-5 text-amber-500 shrink-0" />
             <div>
               <p className="text-sm font-semibold">Low Coal Stock Warning</p>
               <p className="text-xs text-muted-foreground">
@@ -37,9 +37,10 @@ export const FactoryDashboard = () => {
             </div>
           </div>
           <Button
-            variant="primary"
+            variant="default"
             size="sm"
             onClick={() => switchPortal('factory', 'bills')}
+            className="cursor-pointer"
           >
             Create Coal Order
           </Button>
@@ -100,7 +101,7 @@ export const FactoryDashboard = () => {
               <CardTitle icon={Factory}>Monthly Brick Production Trend</CardTitle>
               <p className="text-xs text-muted-foreground mt-0.5">Actual Molded Units vs Target (Year 2026)</p>
             </div>
-            <Button variant="outline" size="sm" onClick={() => switchPortal('factory', 'reports')}>
+            <Button variant="outline" size="sm" onClick={() => switchPortal('factory', 'reports')} className="cursor-pointer">
               Full Analytics
             </Button>
           </CardHeader>
@@ -216,7 +217,7 @@ export const FactoryDashboard = () => {
         <Card>
           <CardHeader>
             <CardTitle icon={Coins}>Recent Factory Expenses & Bills</CardTitle>
-            <Button variant="ghost" size="sm" onClick={() => switchPortal('factory', 'bills')}>
+            <Button variant="ghost" size="sm" onClick={() => switchPortal('factory', 'bills')} className="cursor-pointer">
               View All
             </Button>
           </CardHeader>
@@ -230,7 +231,7 @@ export const FactoryDashboard = () => {
                   </div>
                   <div className="text-right">
                     <p className="font-bold text-sm text-foreground">${bill.amount.toLocaleString()}</p>
-                    <Badge variant={bill.status === 'Paid' ? 'success' : bill.status === 'Pending' ? 'warning' : 'danger'}>
+                    <Badge variant={bill.status === 'Paid' ? 'success' : bill.status === 'Pending' ? 'warning' : 'destructive'}>
                       {bill.status}
                     </Badge>
                   </div>
@@ -243,3 +244,5 @@ export const FactoryDashboard = () => {
     </div>
   );
 };
+
+export default FactoryDashboard;

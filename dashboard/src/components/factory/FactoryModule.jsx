@@ -1,5 +1,4 @@
-import React from 'react';
-import { usePortal } from '../../context/PortalContext';
+import { usePortalStore } from '../../store/usePortalStore';
 import { FactoryDashboard } from './FactoryDashboard';
 import { FactoryEmployees } from './FactoryEmployees';
 import { FactoryBills } from './FactoryBills';
@@ -7,7 +6,7 @@ import { FactoryPayments } from './FactoryPayments';
 import { FactoryReports } from './FactoryReports';
 
 export const FactoryModule = () => {
-  const { activeSubmodule } = usePortal();
+  const activeSubmodule = usePortalStore((state) => state.activeSubmodule);
 
   switch (activeSubmodule) {
     case 'employees':

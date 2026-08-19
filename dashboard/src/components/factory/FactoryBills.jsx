@@ -6,12 +6,12 @@ import { Modal } from '../ui/Modal';
 import { Input, Select } from "../ui/input";
 import { Button } from "../ui/button";
 import { FileText, Plus } from 'lucide-react';
-import { usePortal } from '../../context/PortalContext';
+import { usePortalStore } from '../../store/usePortalStore';
 
 export const FactoryBills = () => {
   const { data: factoryData, isLoading } = useFactoryData();
   const createBillMutation = useCreateFactoryBill();
-  const { addToast } = usePortal();
+  const addToast = usePortalStore((state) => state.addToast);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [formData, setFormData] = useState({

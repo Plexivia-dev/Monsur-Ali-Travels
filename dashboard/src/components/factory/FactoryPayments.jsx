@@ -1,17 +1,17 @@
 import React, { useState } from 'react';
-import { useFactoryData, useCreateFactoryPayment } from '../../api/hooks';
+import { useFactoryData, useAddFactoryPayment } from '../../api/hooks';
 import { DataTable } from "../ui/table";
 import { Badge } from "../ui/badge";
 import { Modal } from '../ui/Modal';
 import { Input, Select } from "../ui/input";
 import { Button } from "../ui/button";
 import { CreditCard, Plus } from 'lucide-react';
-import { usePortal } from '../../context/PortalContext';
+import { usePortalStore } from '../../store/usePortalStore';
 
 export const FactoryPayments = () => {
   const { data: factoryData, isLoading } = useFactoryData();
-  const createPaymentMutation = useCreateFactoryPayment();
-  const { addToast } = usePortal();
+  const addPaymentMutation = useAddFactoryPayment();
+  const addToast = usePortalStore((state) => state.addToast);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [formData, setFormData] = useState({

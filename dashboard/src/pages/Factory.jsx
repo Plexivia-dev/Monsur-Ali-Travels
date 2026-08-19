@@ -1,5 +1,5 @@
 import React from 'react';
-import { usePortal } from '../context/PortalContext';
+import { usePortalStore } from '../store/usePortalStore';
 import { FactoryDashboard } from '../components/factory/FactoryDashboard';
 import { FactoryEmployees } from '../components/factory/FactoryEmployees';
 import { FactoryBills } from '../components/factory/FactoryBills';
@@ -7,7 +7,7 @@ import { FactoryPayments } from '../components/factory/FactoryPayments';
 import { FactoryReports } from '../components/factory/FactoryReports';
 
 export default function Factory() {
-  const { activeSubmodule } = usePortal();
+  const activeSubmodule = usePortalStore((state) => state.activeSubmodule);
 
   switch (activeSubmodule) {
     case 'employees':
