@@ -73,6 +73,7 @@ const invoiceSchema = new mongoose.Schema(
     subtotal: { type: Number, default: 0 },
     taxAmount: { type: Number, default: 0 },
     grandTotal: { type: Number, default: 0 },
+    qrCode: { type: String, default: "" },
     isActive: { type: Boolean, default: true },
   },
   {

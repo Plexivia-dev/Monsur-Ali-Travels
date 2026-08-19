@@ -1,4 +1,5 @@
 import { InvoiceModel, generateUniqueInvoiceNo } from "../models/invoice.model.js";
+import { formatInvoiceQrText, generateQrDataUrl } from "../utils/qrHelper.js";
 
 // @desc    Get all invoices
 // @route   GET /api/v1/docs/invoices
@@ -70,9 +71,20 @@ export const getInvoiceById = async (req, res, next) => {
         message: "Invoice not found",
       });
     }
+
+    let invoiceData = invoice.toObject();
+    if (!invoiceData.qrCode) {
+      try {
+        const qrText = formatInvoiceQrText(invoiceData);
+        invoiceData.qrCode = await generateQrDataUrl(qrText, { size: 250, margin: 1 });
+      } catch (err) {
+        // silent fallback
+      }
+    }
+
     return res.status(200).json({
       status: "success",
-      data: invoice,
+      data: invoiceData,
     });
   } catch (error) {
     next(error);
@@ -87,6 +99,16 @@ export const createInvoice = async (req, res, next) => {
     if (!body.invoiceNo) {
       body.invoiceNo = generateUniqueInvoiceNo();
     }
+
+    if (!body.qrCode) {
+      try {
+        const qrText = formatInvoiceQrText(body);
+        body.qrCode = await generateQrDataUrl(qrText, { size: 250, margin: 1 });
+      } catch (err) {
+        console.warn("QR code generation error on invoice create:", err.message);
+      }
+    }
+
     const newInvoice = await InvoiceModel.create(body);
 
     return res.status(201).json({
@@ -106,6 +128,15 @@ export const updateInvoice = async (req, res, next) => {
     const { id } = req.params;
     const isMongoId = id.match(/^[0-9a-fA-F]{24}$/);
     const query = isMongoId ? { _id: id } : { invoiceNo: id };
+
+    if (req.body) {
+      try {
+        const qrText = formatInvoiceQrText(req.body);
+        req.body.qrCode = await generateQrDataUrl(qrText, { size: 250, margin: 1 });
+      } catch (err) {
+        console.warn("QR code generation error on invoice update:", err.message);
+      }
+    }
 
     const updatedInvoice = await InvoiceModel.findOneAndUpdate(query, req.body, {
       new: true,

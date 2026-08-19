@@ -1,5 +1,22 @@
 # Commit Log / Change Log
 
+## [2026-08-19]
+- **Backend Version**: `v0.4.1`
+- **Dashboard Version**: `v0.4.1`
+
+### 1. Dynamic QR Code API & Agency Branding Engine (MB22 & MD99)
+- **Backend Dynamic QR Generation API**:
+  - Implemented `/api/v1/qr` supporting dynamic payload generation in `png`, `svg`, `dataurl`, and `json` formats.
+  - Implemented `/api/v1/qr/agency` serving fast cached agency identity from `information.json` with vCard and human-readable text modes.
+  - Implemented `/api/v1/qr/invoice/:id` providing instant invoice verification barcodes.
+  - Created reusable `qrHelper.js` with brand color palette (`#0f172a` Slate Navy) and memory caching.
+- **Invoice QR Code Integration**:
+  - Updated `invoice.model.js` with `qrCode` persistent Data URL storage.
+  - Integrated automatic QR code generation into `InvoiceController.js` upon creation, update, and retrieval.
+- **Dashboard Invoice Canvas & Print Ready QR Stamp**:
+  - Integrated official QR Code verification stamp between Customer Signature and Official Seal on `InvoicePreview.jsx`.
+  - Updated `InvoiceBuilder.jsx` to preserve QR payload on database saves.
+
 ## [2026-08-06]
 
 ### 1. Dashboard Product API & Metadata Fixes

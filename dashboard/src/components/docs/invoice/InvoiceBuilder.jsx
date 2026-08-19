@@ -54,6 +54,7 @@ export function InvoiceBuilder() {
           ...prev,
           _id: savedDoc._id,
           invoiceNo: returnedInvoiceNo,
+          qrCode: savedDoc.qrCode || prev.qrCode || '',
         }));
         toast.success(
           isEdit

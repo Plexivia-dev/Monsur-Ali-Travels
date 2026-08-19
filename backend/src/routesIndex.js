@@ -17,12 +17,17 @@ import moneyReceiptRouter from "./routes/MoneyReceiptRoute.js";
 import docsRouter from "./routes/DocsRoute.js";
 
 // Utilities & System
+import qrRouter from "./routes/QrRoute.js";
 import emailRouter from "./routes/EmailRoute.js";
 import dashboardRouter from "./routes/DashboardRoute.js";
 import systemRouter from "./routes/SystemRoute.js";
 import uploadRouter from "./routes/UploadRoute.js";
 
 const coreRouter = Router();
+
+// Dynamic QR Code Generation API
+coreRouter.use("/qr", qrRouter);
+coreRouter.use("/qrcode", qrRouter);
 
 // Universal Case Management (Greece, N-Macedonia, Indian BSF, etc.)
 coreRouter.use("/cases", caseFileRouter);

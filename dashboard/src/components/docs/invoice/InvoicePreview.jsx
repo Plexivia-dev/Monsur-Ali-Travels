@@ -204,15 +204,29 @@ export function InvoicePreview({ data = {}, onPrint }) {
             </div>
           </div>
 
-          {/* Signature Block Pushed to Bottom via mt-auto */}
-          <div className="mt-auto pt-8 flex justify-between items-end text-xs text-slate-900 print:break-inside-avoid page-break-inside-avoid">
+          {/* Signature Block & Official QR Verification Stamp */}
+          <div className="mt-auto pt-6 flex justify-between items-end text-xs text-slate-900 print:break-inside-avoid page-break-inside-avoid">
             <div className="text-center space-y-1">
-              <div className="border-b border-slate-400 w-44 mb-1"></div>
+              <div className="border-b border-slate-400 w-40 mb-1"></div>
               <div className="text-xs text-slate-500 font-medium">Customer Signature</div>
             </div>
 
+            {/* Official Verification QR Code */}
+            <div className="flex flex-col items-center justify-center space-y-0.5">
+              <div className="p-1 border border-slate-300 rounded bg-white shadow-2xs">
+                <img
+                  src={data.qrCode || (data._id ? `/api/v1/qr/invoice/${data._id}?format=svg` : `/api/v1/qr/agency?format=svg`)}
+                  alt="Invoice Verification QR"
+                  className="w-16 h-16 object-contain"
+                />
+              </div>
+              <span className="text-[8px] font-mono text-slate-600 font-bold tracking-wider uppercase">
+                Scan to Verify
+              </span>
+            </div>
+
             <div className="text-center space-y-1">
-              <div className="border-b-2 border-slate-900 w-52 mb-1"></div>
+              <div className="border-b-2 border-slate-900 w-48 mb-1"></div>
               <div className="font-bold text-sm text-slate-900">{billerInfo.name}</div>
               <div className="text-xs text-slate-600">Authorized Signature & Seal</div>
             </div>
