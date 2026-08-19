@@ -4,6 +4,17 @@ This document tracks the comprehensive redesign of the Monsur Ali Travels ERP Da
 
 ---
 
+### DR-05: Port OKLCH Neutral Color Tokens & Modern Sans Typography
+
+- **Date**: 2026-08-20
+- **Impact**: Global Design System, Typography, Tailwind v4 Theme Variables
+- **Description**:
+  - Replaced legacy color variables and forced serif styling in `index.css` with the modern Shadcn OKLCH neutral color system from the `ref` template.
+  - Configured crisp geometric sans-serif typography (`Plus Jakarta Sans`, `Inter`, `Geist`, `Hind Siliguri`) with modern radii (`0.625rem`), refined dark mode contrast, and custom scrollbar styles.
+  - Preserved critical `@media print` rules for the Document Studio high-precision A4 generation engine.
+- **Changes**:
+  - Updated [`dashboard/src/index.css`](file:///f:/Monsur%20Ali%20Travels/dashboard/src/index.css).
+
 ### DR-04: Portal & UI State Management Migration to Zustand (`usePortalStore`)
 
 - **Date**: 2026-08-20
