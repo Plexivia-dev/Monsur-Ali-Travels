@@ -9,6 +9,23 @@ This document tracks the incremental migration and implementation of the Next-Ge
 
 ---
 
+### BR-15: Customer Guardian Application Module (Validation, Service, Controller, Route)
+- **Date**: 2026-08-20
+- **Scope**: Customer Guardian Application intake, `CGA-...` tracking generator, advance payment calculation, requirements checklist
+- **Description**:
+  - Implemented `server/src/validations/guardianApp.validation.js` with Zod schemas for application intake, advance payment calculation, and requirements checklist.
+  - Implemented `server/src/services/CustomerGuardianService.js` with:
+    - Auto-generation of unique tracking codes (`CGA-XX-XXXXXX`).
+    - Payment calculation (total, advance, due, paymentStatus).
+    - Central customer auto-sync and ledger billing via `CustomerSyncService`.
+  - Implemented `server/src/controllers/CustomerGuardianController.js` and `server/src/routes/CustomerGuardianRoute.js`.
+- **Files Modified/Created**:
+  - `server/src/validations/guardianApp.validation.js`
+  - `server/src/services/CustomerGuardianService.js`
+  - `server/src/controllers/CustomerGuardianController.js`
+  - `server/src/routes/CustomerGuardianRoute.js`
+  - `Docs/Backend/Backend_Version_2.md`
+
 ### BR-14: Passport Submission Module (Validation, Service, Controller, Route)
 - **Date**: 2026-08-20
 - **Scope**: Passport application intake, `PASS-...` tracking generator, renewal/new type handling, customer auto-sync
