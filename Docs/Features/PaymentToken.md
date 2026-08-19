@@ -33,3 +33,26 @@
   - Integrated soft-delete (`isActive: { type: Boolean, default: true }`) and compound text search indexes.
 - **Files Modified/Created**:
   - `backend/src/models/moneyReceipt.model.js`
+
+---
+
+### TK-02: Backend Money Receipt Controller & REST Endpoints
+- **Date**: 2026-08-19
+- **Scope**: Express Controller, Routing & Financial Aggregator
+- **Description**:
+  - Implemented `MoneyReceiptController.js` supporting:
+    - Full server-side pagination (`page`, `limit`, `skip`, `totalCount`, `totalPages`, `hasNextPage`, `hasPrevPage`).
+    - 8-field regex search across receiptNo, clientName, clientPhone, passportNumber, serviceType, purpose, createdByName, and confirmedByName.
+    - Status filtering (`pending`, `confirmed`, `cancelled`), serviceType filtering, date range queries (`startDate`, `endDate`), and bank handover status.
+    - Token generation by manager (`POST /api/v1/receipts`) with auto customer linking.
+    - Accountant cash seal & confirmation (`PATCH /api/v1/receipts/:id/confirm`) with auto customer ledger sync (`totalPaidAmount` & `totalDueAmount` recomputation).
+    - Token cancellation (`PATCH /api/v1/receipts/:id/cancel`).
+    - Bank turnover handover tracking (`PATCH /api/v1/receipts/:id/bank-deposit`).
+    - Aggregated financial summary (`GET /api/v1/receipts/summary`) returning today's cash collections, pending tokens, office cash balance, and deposited bank funds.
+    - Fast autocomplete lookup (`GET /api/v1/receipts/lookup`).
+    - Soft delete (`DELETE /api/v1/receipts/:id`).
+  - Created `MoneyReceiptRoute.js` and mounted at `/receipts` and `/money-receipts` in `routesIndex.js`.
+- **Files Modified/Created**:
+  - `backend/src/controllers/MoneyReceiptController.js`
+  - `backend/src/routes/MoneyReceiptRoute.js`
+  - `backend/src/routesIndex.js`

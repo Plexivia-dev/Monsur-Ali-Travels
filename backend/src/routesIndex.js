@@ -13,6 +13,7 @@ import indianVisaRouter from "./routes/IndianVisaRoute.js";
 import passportRouter from "./routes/PassportSubmissionRoute.js";
 import payrollRouter from "./routes/PayrollRoute.js";
 import invoiceRouter from "./routes/InvoiceRoute.js";
+import moneyReceiptRouter from "./routes/MoneyReceiptRoute.js";
 import docsRouter from "./routes/DocsRoute.js";
 
 // Utilities & System
@@ -38,6 +39,8 @@ coreRouter.use("/indian-visas", indianVisaRouter);
 coreRouter.use("/passports", passportRouter);
 coreRouter.use("/payrolls", payrollRouter);
 coreRouter.use("/invoices", invoiceRouter);
+coreRouter.use("/receipts", moneyReceiptRouter);
+coreRouter.use("/money-receipts", moneyReceiptRouter);
 
 // Common Dedicated File Upload Endpoints
 coreRouter.use("/upload", uploadRouter);
