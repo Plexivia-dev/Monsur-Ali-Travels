@@ -15,24 +15,23 @@ COPY . .
 # Production stage
 FROM node:22-alpine
 
+# Create non-root user for security
+RUN addgroup -g 1001 -S nodejs && adduser -S nodejs -u 1001
+
 WORKDIR /app
 
 # Set NODE_ENV to production
 ENV NODE_ENV=production
 
-# Copy only necessary files from builder
-COPY --from=builder /app/package.json /app/package-lock.json ./
-COPY --from=builder /app/node_modules ./node_modules
-COPY --from=builder /app/src ./src
-COPY --from=builder /app/scripts ./scripts
+# Copy only necessary files from builder with correct ownership
+COPY --chown=nodejs:nodejs --from=builder /app/package.json /app/package-lock.json ./
+COPY --chown=nodejs:nodejs --from=builder /app/node_modules ./node_modules
+COPY --chown=nodejs:nodejs --from=builder /app/src ./src
+COPY --chown=nodejs:nodejs --from=builder /app/scripts ./scripts
 
 # Create public, uploads, and documents directories for compatibility
-RUN mkdir -p /app/public /app/uploads /app/src/uploads /app/documents /app/src/documents
-
-# Create non-root user for security and set ownership of app directories
-RUN addgroup -g 1001 -S nodejs && \
-    adduser -S nodejs -u 1001 && \
-    chown -R nodejs:nodejs /app
+RUN mkdir -p /app/public /app/uploads /app/src/uploads /app/documents /app/src/documents && \
+    chown -R nodejs:nodejs /app/public /app/uploads /app/src/uploads /app/documents /app/src/documents
 
 USER nodejs
 
