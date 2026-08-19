@@ -4,6 +4,16 @@ This document tracks the comprehensive redesign of the Monsur Ali Travels ERP Da
 
 ---
 
+### DR-15: Redesign StatCard & KPI Metric Widgets (`StatCard.jsx`)
+
+- **Date**: 2026-08-20
+- **Impact**: KPI Stat Widgets, Analytical Dashboards, Progress Indicators
+- **Description**:
+  - Upgraded [`StatCard.jsx`](file:///f:/Monsur%20Ali%20Travels/dashboard/src/components/ui/StatCard.jsx) with Shadcn card containers (`Card`, `CardContent`), rounded icons with subtle background tints, pill-badge trend indicators (`TrendingUp` / `TrendingDown`), and animated progress bars.
+  - Aligned styling with `ref/src/views/dashboards/statistics/statistics-card-01.tsx` while preserving all existing ERP KPI metrics.
+- **Changes**:
+  - Updated [`dashboard/src/components/ui/StatCard.jsx`](file:///f:/Monsur%20Ali%20Travels/dashboard/src/components/ui/StatCard.jsx).
+
 ### DR-14: Redesign Top Breadcrumb & Page Banner Component (`TopBreadcrumbBar.jsx`)
 
 - **Date**: 2026-08-20
