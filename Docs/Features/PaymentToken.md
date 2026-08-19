@@ -75,3 +75,20 @@
 - **Files Modified/Created**:
   - `dashboard/src/components/docs/receipt/MoneyReceiptPrintSlip.jsx`
   - `dashboard/src/components/docs/receipt/MoneyReceiptModal.jsx`
+
+---
+
+### TK-04: Dashboard Cashier Desk Data Table & Seal Confirmation Modal
+- **Date**: 2026-08-19
+- **Scope**: Accountant & Cashier Desk Management UI
+- **Description**:
+  - Implemented `ReceiptConfirmModal.jsx`:
+    - Modal for cashier/accountant to verify incoming tokens, confirm cash/bank payment method, add notes, and execute official seal confirmation.
+  - Implemented `MoneyReceiptDataTable.jsx`:
+    - Complete live cashier table with 4 financial KPI cards: Today's Collected Cash (৳), Pending Tokens in Line, Cash in Office, and Bank Deposited Funds.
+    - Real-time search, status tabs (All, Pending, Confirmed, Cancelled), bank handover toggle, and print slip actions.
+  - Mounted `MoneyReceiptDataTable` in `DocumentData.jsx` under `receipts` / `money-receipts` / `tokens`.
+- **Files Modified/Created**:
+  - `dashboard/src/components/docs/receipt/ReceiptConfirmModal.jsx`
+  - `dashboard/src/components/data/MoneyReceiptDataTable.jsx`
+  - `dashboard/src/pages/DocumentData.jsx`

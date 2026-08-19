@@ -7,6 +7,7 @@ import { PassportSubmissionDataTable } from '../components/data/PassportSubmissi
 import { SalarySlipDataTable } from '../components/data/SalarySlipDataTable';
 import { InvoiceDataTable } from '../components/data/InvoiceDataTable';
 import { CustomerGuardianDataTable } from '../components/data/CustomerGuardianDataTable';
+import { MoneyReceiptDataTable } from '../components/data/MoneyReceiptDataTable';
 
 export default function DocumentData() {
   const { activeSubmodule } = usePortal();
@@ -33,6 +34,9 @@ export default function DocumentData() {
       )}
       {(activeSubmodule === 'invoices' || activeSubmodule === 'invoice') && (
         <InvoiceDataTable />
+      )}
+      {(activeSubmodule === 'receipts' || activeSubmodule === 'money-receipts' || activeSubmodule === 'tokens') && (
+        <MoneyReceiptDataTable />
       )}
     </div>
   );
