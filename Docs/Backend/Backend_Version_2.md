@@ -9,6 +9,22 @@ This document tracks the incremental migration and implementation of the Next-Ge
 
 ---
 
+### BR-14: Passport Submission Module (Validation, Service, Controller, Route)
+- **Date**: 2026-08-20
+- **Scope**: Passport application intake, `PASS-...` tracking generator, renewal/new type handling, customer auto-sync
+- **Description**:
+  - Implemented `server/src/validations/passport.validation.js` with Zod schemas for passport intake, update, and paginated search.
+  - Implemented `server/src/services/PassportService.js` with:
+    - Auto-generation of unique tracking codes (`PASS-XXXXXXXXXX`).
+    - Central customer auto-sync and ledger billing via `CustomerSyncService`.
+  - Implemented `server/src/controllers/PassportController.js` and `server/src/routes/PassportRoute.js`.
+- **Files Modified/Created**:
+  - `server/src/validations/passport.validation.js`
+  - `server/src/services/PassportService.js`
+  - `server/src/controllers/PassportController.js`
+  - `server/src/routes/PassportRoute.js`
+  - `Docs/Backend/Backend_Version_2.md`
+
 ### BR-13: Indian Visa Application Module (Validation, Service, Controller, Route)
 - **Date**: 2026-08-20
 - **Scope**: Indian Visa submissions, `IVISA-...` tracking generator, stage history audit trail, customer auto-sync
