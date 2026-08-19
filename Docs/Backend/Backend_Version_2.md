@@ -9,6 +9,23 @@ This document tracks the incremental migration and implementation of the Next-Ge
 
 ---
 
+### BR-10: Central Customer Module (Validation, Service, Controller, Route)
+- **Date**: 2026-08-20
+- **Scope**: Central Customer profiles, 8-service relation aggregator, lookup autocomplete, financial summary
+- **Description**:
+  - Implemented `server/src/validations/customer.validation.js` with Zod schemas for customer creation, partial updates, pagination, and autocomplete lookup.
+  - Implemented `server/src/services/CustomerService.js` supporting:
+    - Multi-field search (fullName, phone, passportNumber, nidNumber, customerCode, fatherName).
+    - Single customer profile fetching with linked relation history across 8 services (`cases`, `visaSubmissions`, `passportSubmissions`, `applications`, `invoices`, `receipts`, `agreements`, `candidateCases`).
+    - Autocomplete lookup endpoint (`/api/v1/customers/lookup?query=...`).
+  - Implemented `server/src/controllers/CustomerController.js` and `server/src/routes/CustomerRoute.js`.
+- **Files Modified/Created**:
+  - `server/src/validations/customer.validation.js`
+  - `server/src/services/CustomerService.js`
+  - `server/src/controllers/CustomerController.js`
+  - `server/src/routes/CustomerRoute.js`
+  - `Docs/Backend/Backend_Version_2.md`
+
 ### BR-09: Customer Auto-Sync & Relational Linker Service
 - **Date**: 2026-08-20
 - **Scope**: Cross-service customer intelligence, automated matching and ledger synchronization
