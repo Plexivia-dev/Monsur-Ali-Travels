@@ -55,6 +55,7 @@ export const generateUniversalQr = async (req, res, next) => {
     };
 
     // Long-lived cache for idempotent requests
+    res.setHeader("Access-Control-Allow-Origin", "*");
     res.setHeader("Cache-Control", "public, max-age=31536000, immutable");
 
     switch (format.toLowerCase()) {
@@ -117,6 +118,7 @@ export const getAgencyQr = async (req, res, next) => {
     const agencyInfo = getAgencyInfo();
     const payloadText = formatAgencyQrText(mode, agencyInfo);
 
+    res.setHeader("Access-Control-Allow-Origin", "*");
     res.setHeader("Cache-Control", "public, max-age=86400, stale-while-revalidate=604800");
 
     if (format.toLowerCase() === "svg") {
@@ -183,6 +185,7 @@ export const getInvoiceQr = async (req, res, next) => {
       bgcolor
     };
 
+    res.setHeader("Access-Control-Allow-Origin", "*");
     res.setHeader("Cache-Control", "public, max-age=86400");
 
     if (format.toLowerCase() === "svg") {

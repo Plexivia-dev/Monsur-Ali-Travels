@@ -1,10 +1,14 @@
 import axios from 'axios';
 import { handleGlobalError } from './error-handler';
 
-const baseURL = import.meta.env?.VITE_API_BASE_URL || 'https://api.monsuralitravels.com';
+export const API_BASE_URL =
+  import.meta.env?.VITE_API_BASE_URL ||
+  (typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
+    ? 'http://localhost:8001'
+    : 'https://api.monsuralitravels.com');
 
 export const apiClient = axios.create({
-  baseURL,
+  baseURL: API_BASE_URL,
   headers: {
     'Content-Type': 'application/json',
   },

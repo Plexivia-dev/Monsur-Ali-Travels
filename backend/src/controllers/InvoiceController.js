@@ -34,13 +34,26 @@ export const getInvoices = async (req, res, next) => {
       .skip(skip)
       .limit(limit);
 
+    const enrichedInvoices = await Promise.all(
+      invoices.map(async (inv) => {
+        const obj = inv.toObject();
+        if (!obj.qrCode) {
+          try {
+            const qrText = formatInvoiceQrText(obj);
+            obj.qrCode = await generateQrDataUrl(qrText, { size: 250, margin: 1 });
+          } catch (err) {}
+        }
+        return obj;
+      })
+    );
+
     const totalPages = Math.ceil(totalCount / limit) || 1;
 
     return res.status(200).json({
       status: "success",
       success: true,
-      results: invoices.length,
-      data: invoices,
+      results: enrichedInvoices.length,
+      data: enrichedInvoices,
       pagination: {
         skip,
         limit,

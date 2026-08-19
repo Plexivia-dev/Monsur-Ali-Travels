@@ -4,6 +4,7 @@ import { Printer, CheckCircle, Clock, AlertTriangle } from 'lucide-react';
 import logoImg from '../../../assets/logo.png';
 import { formatToDdMmYyyy } from '../../../lib/utils';
 import agencyInfo from '../../../lib/information.json';
+import { API_BASE_URL } from '../../../lib/api-client';
 
 export function InvoicePreview({ data = {}, onPrint }) {
   const {
@@ -215,9 +216,10 @@ export function InvoicePreview({ data = {}, onPrint }) {
             <div className="flex flex-col items-center justify-center space-y-0.5">
               <div className="p-1 border border-slate-300 rounded bg-white shadow-2xs">
                 <img
-                  src={data.qrCode || (data._id ? `/api/v1/qr/invoice/${data._id}?format=svg` : `/api/v1/qr/agency?format=svg`)}
+                  src={data.qrCode || (data._id ? `${API_BASE_URL}/api/v1/qr/invoice/${data._id}?format=svg` : `${API_BASE_URL}/api/v1/qr/agency?format=svg`)}
                   alt="Invoice Verification QR"
                   className="w-16 h-16 object-contain"
+                  crossOrigin="anonymous"
                 />
               </div>
               <span className="text-[8px] font-mono text-slate-600 font-bold tracking-wider uppercase">
