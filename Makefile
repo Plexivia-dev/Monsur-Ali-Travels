@@ -1,17 +1,20 @@
 .PHONY: deploy build-bg build-dash logs status down
 
 deploy:
-	git pull origin Live
+	git reset --hard origin/live
+	git pull origin live
 	docker compose -f docker-compose.prod.yml build --no-cache
 	docker compose -f docker-compose.prod.yml up -d
 
 build-bg:
-	git pull origin Live
+	git reset --hard origin/live
+	git pull origin live
 	docker compose -f docker-compose.prod.yml build --no-cache backend
 	docker compose -f docker-compose.prod.yml up -d backend
 
 build-dash:
-	git pull origin Live
+	git reset --hard origin/live
+	git pull origin live
 	docker compose -f docker-compose.prod.yml build --no-cache dashboard
 	docker compose -f docker-compose.prod.yml up -d dashboard
 
@@ -28,4 +31,4 @@ logs-dash:
 	docker compose -f docker-compose.prod.yml logs -f dashboard
 
 down:
-	docker compose -f docker-compose.prod.yml down
+	docker compose -f docker-compose.prod.yml down
