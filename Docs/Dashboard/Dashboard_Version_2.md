@@ -4,6 +4,16 @@ This document tracks the comprehensive redesign of the Monsur Ali Travels ERP Da
 
 ---
 
+### DR-06: Central Navigation Configuration for All ERP Portals (`navConfig.js`)
+
+- **Date**: 2026-08-20
+- **Impact**: Global Navigation Structure, Multi-Module ERP Hierarchy
+- **Description**:
+  - Created [`navConfig.js`](file:///f:/Monsur%20Ali%20Travels/dashboard/src/configs/navConfig.js) providing a unified, schema-driven navigation structure matching the `ref` template architecture.
+  - Configured 5 major portal sections: **Manpower Agency**, **Brick Factory**, **Document Studio**, **Data Records Center**, and **System Administration** with icons, sub-menus, paths, and portal identifiers.
+- **Changes**:
+  - Created [`dashboard/src/configs/navConfig.js`](file:///f:/Monsur%20Ali%20Travels/dashboard/src/configs/navConfig.js).
+
 ### DR-05: Port OKLCH Neutral Color Tokens & Modern Sans Typography
 
 - **Date**: 2026-08-20
