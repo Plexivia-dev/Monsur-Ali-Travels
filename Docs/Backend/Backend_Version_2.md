@@ -9,6 +9,23 @@ This document tracks the incremental migration and implementation of the Next-Ge
 
 ---
 
+### BR-12: Case Management (SA) Module (Validation, Service, Controller, Route)
+- **Date**: 2026-08-20
+- **Scope**: Generic Case Management, 5-stage lifecycle state machine, 3-step payment milestones, auto customer linking
+- **Description**:
+  - Implemented `server/src/validations/case.validation.js` with Zod schemas for case creation, 3-stage payment milestone updates (`step1_advance`, `step2_offerApproval`, `step3_delivery`), and status transitions.
+  - Implemented `server/src/services/CaseFileService.js` with:
+    - Auto customer profile creation and linking via `CustomerSyncService`.
+    - Dynamic calculation of `totalPaidAmount`, `dueAmount`, and `isFullyPaid`.
+    - Document checklist JSONB tracking (`photo2x2`, `electricityBill`, `nidCopy`, `landDocuments`).
+  - Implemented `server/src/controllers/CaseFileController.js` and `server/src/routes/CaseFileRoute.js`.
+- **Files Modified/Created**:
+  - `server/src/validations/case.validation.js`
+  - `server/src/services/CaseFileService.js`
+  - `server/src/controllers/CaseFileController.js`
+  - `server/src/routes/CaseFileRoute.js`
+  - `Docs/Backend/Backend_Version_2.md`
+
 ### BR-11: Money Receipt & Payment Token Module (Validation, Service, Controller, Route)
 - **Date**: 2026-08-20
 - **Scope**: Payment tokens, accountant cash confirmation & seal, bank turnover tracking, financial KPIs
