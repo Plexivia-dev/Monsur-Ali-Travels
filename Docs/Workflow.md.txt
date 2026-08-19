@@ -1,0 +1,56 @@
+# Visa & Work Permit System Specification & Requirements Summary
+
+## Overview
+A tailored workflow management system for tracking Work Permit and Visa Processing across specific countries Greece, North Macedonia, and India (BSF  NDR Processing).
+
+---
+
+## 1. Supported Countries  Modules
+1. Greece (Work Permit)
+2. North Macedonia (Work Permit)
+3. Indian Visa (BSF  NDR Processing)
+
+---
+
+## 2. File Processing Lifecycle  Statuses
+Each client file progresses through clear, sequential stages
+
+1. Entry (এন্ট্রি)
+   - Passport and basic information received and registered in the system (no active processing yet).
+2. Processing (প্রসেসিং)
+   - LawyerAdvocate actively starts working on the legal file.
+3. Approved  Offer Letter (অনুমোদিত)
+   - Work permit  official offer letter is approved.
+4. Submitted to BSF  Embassy (জমা সম্পন্ন)
+   - IndianBSFEmbassy file submission complete.
+5. Passport  Visa Delivered (কমপ্লিট)
+   - Final passport and visa handed over to client. File is completed and locked from edits.
+
+---
+
+## 3. Client & Document Requirements
+- Internal Worker Portal Only No client login required. Help desk  workers look up clients instantly via Name or Passport No.
+- Checklist & Reminders
+  - 2x2 Photo
+  - ElectricityUtility Bill (কারেন্ট বিল)
+  - NID Card copy
+  - LandAsset documents (জমির কাগজ)
+  - Follow-up call reminders for missing documents
+- Bulk Import  Legacy Migration Support easy bulk entry for the ~250+ existing active client files.
+
+---
+
+## 4. Payment & Due Tracking (৩ ধাপের পেমেন্ট ও বকেয়া হিসাব)
+Payments are tracked in 3 distinct milestones + manual Due field
+
+1. Step 1 Advance payment at File Submission.
+2. Step 2 Payment upon Offer Letter  Work Permit Approval.
+3. Step 3 Final payment upon Visa Delivery.
+4. Due Management (বকেয়া ট্র্যাকিং) Explicit tracking for pendingdue amounts with total company due reporting.
+
+---
+
+## 5. Invoicing & Tax Compliance
+- Printable client receipts  invoices.
+- Yearly income, expense, and tax calculation reports for government compliance.
+- Strict data privacy Only essential contactaddress fields stored, no sensitive personal licenses or unnecessary details.
