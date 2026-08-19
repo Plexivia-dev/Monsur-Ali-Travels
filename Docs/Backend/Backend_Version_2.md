@@ -9,6 +9,18 @@ This document tracks the incremental migration and implementation of the Next-Ge
 
 ---
 
+### BR-04: Prisma Client Singleton & Soft-Delete / Logging Extensions
+- **Date**: 2026-08-20
+- **Scope**: Database Client lifecycle, query extension hooks, soft-delete safety
+- **Description**:
+  - Implemented `server/src/config/prisma.js` creating a singleton Prisma client instance.
+  - Implemented Prisma `$extends` query middleware hooks that automatically enforce `{ isActive: true }` on all `findMany`, `findFirst`, and `count` operations.
+  - Intercepted `delete` queries system-wide to execute soft-delete (`isActive: false`) updates instead of destructive hard deletes.
+  - Added query logging in development mode and `testDatabaseConnection()` helper for health checks and server boot.
+- **Files Modified/Created**:
+  - `server/src/config/prisma.js`
+  - `Docs/Backend/Backend_Version_2.md`
+
 ### BR-03: Prisma PostgreSQL Schema Definition & Setup
 - **Date**: 2026-08-20
 - **Scope**: PostgreSQL database modeling, enums, relations, decimal precisions, and compound indexes
