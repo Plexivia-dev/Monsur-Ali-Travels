@@ -9,6 +9,21 @@ This document tracks the incremental migration and implementation of the Next-Ge
 
 ---
 
+### BR-05: Core Middlewares: Zod Validation & Global Error Handler
+- **Date**: 2026-08-20
+- **Scope**: Request validation pipeline, Prisma exception mapping, centralized HTTP error handler
+- **Description**:
+  - Implemented `server/src/middlewares/validate.middleware.js` using Zod schemas to validate `req.body`, `req.query`, and `req.params`, returning structured `400 Bad Request` validation field errors.
+  - Implemented `server/src/middlewares/error.middleware.js` providing:
+    - Zod error translation into clean JSON error arrays.
+    - Prisma error code handling (`P2002` duplicate unique key → 409 Conflict, `P2025` record not found → 404, `P2003` foreign key error → 400).
+    - JWT token expiry and signature error handling.
+    - `notFoundHandler` for undefined route endpoints.
+- **Files Modified/Created**:
+  - `server/src/middlewares/validate.middleware.js`
+  - `server/src/middlewares/error.middleware.js`
+  - `Docs/Backend/Backend_Version_2.md`
+
 ### BR-04: Prisma Client Singleton & Soft-Delete / Logging Extensions
 - **Date**: 2026-08-20
 - **Scope**: Database Client lifecycle, query extension hooks, soft-delete safety
