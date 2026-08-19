@@ -3,6 +3,9 @@ FROM node:22-alpine AS builder
 
 WORKDIR /app
 
+# Install OpenSSL and libc6-compat for Prisma schema and query engines
+RUN apk add --no-cache openssl libc6-compat
+
 # Copy package files and prisma schema
 COPY package.json package-lock.json* ./
 COPY prisma ./prisma/
@@ -18,6 +21,9 @@ COPY . .
 
 # Production stage
 FROM node:22-alpine
+
+# Install OpenSSL and libc6-compat for Prisma runtime
+RUN apk add --no-cache openssl libc6-compat
 
 # Create non-root user for security
 RUN addgroup -g 1001 -S nodejs && adduser -S nodejs -u 1001
