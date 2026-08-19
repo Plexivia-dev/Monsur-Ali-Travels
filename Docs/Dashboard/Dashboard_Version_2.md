@@ -4,6 +4,18 @@ This document tracks the comprehensive redesign of the Monsur Ali Travels ERP Da
 
 ---
 
+### DR-03: Auth State Management Migration to Zustand (`useAuthStore`)
+
+- **Date**: 2026-08-20
+- **Impact**: Global Authentication State, Token Management, 2FA, Google Sign-in
+- **Description**:
+  - Implemented [`useAuthStore.js`](file:///f:/Monsur%20Ali%20Travels/dashboard/src/store/useAuthStore.js) using Zustand to handle user authentication state (`user`, `isLoading`), credential login, 2FA verification, Google login, and logout.
+  - Managed secure token caching in `localStorage` (`accessToken`, `refreshToken`, `user`) with automatic state hydration on startup.
+  - Refactored `auth-context.jsx` to delegate directly to `useAuthStore` without React Context overhead.
+- **Changes**:
+  - Created [`dashboard/src/store/useAuthStore.js`](file:///f:/Monsur%20Ali%20Travels/dashboard/src/store/useAuthStore.js).
+  - Updated [`dashboard/src/lib/auth-context.jsx`](file:///f:/Monsur%20Ali%20Travels/dashboard/src/lib/auth-context.jsx).
+
 ### DR-02: Theme State Management Migration to Zustand (`useThemeStore`)
 
 - **Date**: 2026-08-20
