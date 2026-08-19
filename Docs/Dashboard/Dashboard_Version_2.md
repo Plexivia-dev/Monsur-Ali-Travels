@@ -4,6 +4,17 @@ This document tracks the comprehensive redesign of the Monsur Ali Travels ERP Da
 
 ---
 
+### DR-12: Redesign Modern Collapsible Sidebar Component (`Sidebar.jsx`)
+
+- **Date**: 2026-08-20
+- **Impact**: Navigation Sidebar, Hierarchical ERP Submodules, Active Highlighting
+- **Description**:
+  - Rebuilt [`Sidebar.jsx`](file:///f:/Monsur%20Ali%20Travels/dashboard/src/components/layout/Sidebar.jsx) using the `ref` template architecture (`SidebarPrimitive`, `SidebarContent`, `SidebarGroup`, `SidebarMenu`, `Collapsible`, `SidebarMenuSub`, `SidebarFooter`).
+  - Integrated dynamic `navConfig.js` rendering for all 5 portals with smooth accordion menus, active item indicators, tooltips in collapsed mode, and brand logo header.
+  - Connected directly to `usePortalStore` and `useAuthStore` without legacy Context API dependencies.
+- **Changes**:
+  - Updated [`dashboard/src/components/layout/Sidebar.jsx`](file:///f:/Monsur%20Ali%20Travels/dashboard/src/components/layout/Sidebar.jsx).
+
 ### DR-11: Create Modern Sticky Header Component (`Header.jsx`)
 
 - **Date**: 2026-08-20
