@@ -9,6 +9,20 @@ This document tracks the incremental migration and implementation of the Next-Ge
 
 ---
 
+### BR-08: User Management Module (Validation, Service, Controller, Route)
+- **Date**: 2026-08-20
+- **Scope**: User administration, role management, pagination, soft delete
+- **Description**:
+  - Implemented `server/src/validations/user.validation.js` with Zod schemas for user creation, partial updates, and paginated search filters.
+  - Implemented `server/src/services/UserService.js` providing full user CRUD with soft delete, multi-field search (name, email, phone, department, designation), and role filters.
+  - Implemented `server/src/controllers/UserController.js` and `server/src/routes/UserRoute.js` restricting user management to `Owner` and `Admin` roles.
+- **Files Modified/Created**:
+  - `server/src/validations/user.validation.js`
+  - `server/src/services/UserService.js`
+  - `server/src/controllers/UserController.js`
+  - `server/src/routes/UserRoute.js`
+  - `Docs/Backend/Backend_Version_2.md`
+
 ### BR-07: Auth Module (Validation, Service, Controller, Route)
 - **Date**: 2026-08-20
 - **Scope**: User authentication, registration, password management, profile introspection
