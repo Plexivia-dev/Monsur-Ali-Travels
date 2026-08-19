@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { Search, RefreshCw, ShieldCheck, Trash2, Printer, Download, X } from 'lucide-react';
+import { Search, RefreshCw, ShieldCheck, Trash2, Printer, Download, X, Receipt } from 'lucide-react';
 import { apiClient } from '../../lib/api-client';
 import { DataTablePagination } from './DataTablePagination';
 import { toast } from 'sonner';
 import { formatToDdMmYyyy } from '../../lib/utils';
 import { usePortal } from '../../context/PortalContext';
 import { PassportSubmissionPreview } from '../docs/passport/PassportSubmissionPreview';
+import { MoneyReceiptModal } from '../docs/receipt/MoneyReceiptModal';
 
 export function PassportSubmissionDataTable() {
   const { switchPortal } = usePortal();
@@ -15,6 +16,7 @@ export function PassportSubmissionDataTable() {
   const [status, setStatus] = useState('all');
   const [isLoading, setIsLoading] = useState(false);
   const [previewItem, setPreviewItem] = useState(null);
+  const [receiptModalData, setReceiptModalData] = useState(null);
 
   const fetchData = async (page = 1, limit = pagination.limit, searchQuery = search, statusFilter = status) => {
     try {
@@ -187,6 +189,24 @@ export function PassportSubmissionDataTable() {
                       <div className="flex items-center justify-end gap-1.5">
                         <button
                           type="button"
+                          onClick={() =>
+                            setReceiptModalData({
+                              clientName: item.applicantName,
+                              clientPhone: item.applicantPhone,
+                              passportNumber: item.passportNo || item.trackingNo,
+                              serviceType: 'পাসপোর্ট সাবমিশন ও নবায়ন (Passport Service)',
+                              purpose: `পাসপোর্ট ফাইল ফি - ট্র্যাকিং #${item.trackingNo}`,
+                              serviceRef: { modelName: 'PassportSubmission', docId: item._id, trackingId: item.trackingNo },
+                            })
+                          }
+                          className="p-1.5 rounded hover:bg-emerald-500/10 text-emerald-600 transition-colors cursor-pointer flex items-center gap-1 text-[11px] font-bold"
+                          title="টোকেন / মানি রিসিট দিন"
+                        >
+                          <Receipt className="w-3.5 h-3.5" />
+                          <span>টোকেন</span>
+                        </button>
+                        <button
+                          type="button"
                           onClick={() => setPreviewItem(item)}
                           className="p-1.5 rounded hover:bg-emerald-500/10 text-emerald-600 transition-colors cursor-pointer flex items-center gap-1 text-[11px] font-bold"
                           title="View & Download/Print Passport Submission Receipt"
@@ -261,6 +281,13 @@ export function PassportSubmissionDataTable() {
           </div>
         </div>
       )}
+
+      {/* Money Receipt Modal */}
+      <MoneyReceiptModal
+        isOpen={Boolean(receiptModalData)}
+        onClose={() => setReceiptModalData(null)}
+        initialData={receiptModalData || {}}
+      />
     </div>
   );
 }

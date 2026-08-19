@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { Search, RefreshCw, FileCheck, Trash2, Printer, Download, X, Edit3, Upload, Paperclip, CheckCircle2, Clock, Check, AlertCircle } from 'lucide-react';
+import { Search, RefreshCw, FileCheck, Trash2, Printer, Download, X, Edit3, Upload, Paperclip, CheckCircle2, Clock, Check, AlertCircle, Receipt } from 'lucide-react';
 import { apiClient } from '../../lib/api-client';
 import { DataTablePagination } from './DataTablePagination';
 import { toast } from 'sonner';
 import { formatToDdMmYyyy } from '../../lib/utils';
 import { usePortal } from '../../context/PortalContext';
 import { IndianVisaPreview } from '../docs/indian-visa/IndianVisaPreview';
+import { MoneyReceiptModal } from '../docs/receipt/MoneyReceiptModal';
 
 const VISA_STAGES = [
   { id: 'pending', label: 'আবেদন গ্রহণ (Pending)', color: 'bg-amber-500/10 text-amber-600 border-amber-500/20' },
@@ -30,6 +31,7 @@ export function IndianVisaDataTable() {
   const [stageNote, setStageNote] = useState('');
   const [stageDocument, setStageDocument] = useState({ name: '', fileUrl: '', fileType: 'pdf' });
   const [isUpdatingStage, setIsUpdatingStage] = useState(false);
+  const [receiptModalData, setReceiptModalData] = useState(null);
 
   const fetchData = async (page = 1, limit = pagination.limit, searchQuery = search, statusFilter = status) => {
     try {
@@ -280,23 +282,42 @@ export function IndianVisaDataTable() {
                           <Edit3 className="w-3.5 h-3.5" />
                           <span>আপডেট</span>
                         </button>
-                        <button
-                          type="button"
-                          onClick={() => setPreviewItem(item)}
-                          className="p-1.5 rounded hover:bg-emerald-500/10 text-emerald-600 transition-colors cursor-pointer flex items-center gap-1 text-[11px] font-bold"
-                          title="View & Download/Print Visa Receipt"
-                        >
-                          <Download className="w-3.5 h-3.5" />
-                          <span>Download / Print</span>
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => handleDelete(item._id, item.trackingNo)}
-                          className="p-1.5 rounded hover:bg-rose-500/10 text-rose-500 transition-colors cursor-pointer"
-                          title="Delete Record"
-                        >
-                          <Trash2 className="w-3.5 h-3.5" />
-                        </button>
+                          <button
+                            type="button"
+                            onClick={() =>
+                              setReceiptModalData({
+                                clientName: item.applicantName,
+                                clientPhone: item.contactNo || item.phone,
+                                passportNumber: item.passportNo,
+                                serviceType: 'ইন্ডিয়ান ভিসা প্রসেসিং (Indian Visa)',
+                                purpose: `ভিসা আবেদন ফি - ট্র্যাকিং #${item.trackingNo}`,
+                                amount: item.fee || item.totalFee || '',
+                                serviceRef: { modelName: 'IndianVisaSubmission', docId: item._id, trackingId: item.trackingNo },
+                              })
+                            }
+                            className="p-1.5 rounded hover:bg-emerald-500/10 text-emerald-600 transition-colors cursor-pointer flex items-center gap-1 text-[11px] font-bold"
+                            title="টোকেন / মানি রিসিট তৈরি করুন"
+                          >
+                            <Receipt className="w-3.5 h-3.5" />
+                            <span>টোকেন</span>
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => setPreviewItem(item)}
+                            className="p-1.5 rounded hover:bg-emerald-500/10 text-emerald-600 transition-colors cursor-pointer flex items-center gap-1 text-[11px] font-bold"
+                            title="View & Download/Print Visa Receipt"
+                          >
+                            <Download className="w-3.5 h-3.5" />
+                            <span>Download / Print</span>
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => handleDelete(item._id, item.trackingNo)}
+                            className="p-1.5 rounded hover:bg-rose-500/10 text-rose-500 transition-colors cursor-pointer"
+                            title="Delete Record"
+                          >
+                            <Trash2 className="w-3.5 h-3.5" />
+                          </button>
                       </div>
                     </td>
                   </tr>
@@ -466,6 +487,13 @@ export function IndianVisaDataTable() {
           </div>
         </div>
       )}
+
+      {/* Money Receipt Modal */}
+      <MoneyReceiptModal
+        isOpen={Boolean(receiptModalData)}
+        onClose={() => setReceiptModalData(null)}
+        initialData={receiptModalData || {}}
+      />
     </div>
   );
 }

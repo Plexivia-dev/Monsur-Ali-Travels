@@ -30,7 +30,9 @@ import {
   User,
   ShieldCheck,
   Stamp,
-  Database
+  Database,
+  Heart,
+  Briefcase
 } from 'lucide-react';
 
 export const Sidebar = () => {
@@ -56,6 +58,9 @@ export const Sidebar = () => {
   const navItemsDocs = [
     { id: 'agreement', label: 'Employment Agreement', icon: FileText },
     { id: 'customer-form', label: 'Customer & Guardian Form', icon: UserCheck },
+    { id: 'experience-certificate', label: 'Experience Certificate (অভিজ্ঞতা)', icon: Briefcase },
+    { id: 'character-certificate', label: 'Character Certificate (চারিত্রিক)', icon: Award },
+    { id: 'marriage-certificate', label: 'Marriage Certificate (বিবাহ)', icon: Heart },
     { id: 'payroll', label: 'Salary Slip', icon: Receipt },
     { id: 'invoice', label: 'Invoice', icon: FileSpreadsheet },
     { id: 'passport-sub', label: 'Passport Submission', icon: ShieldCheck },
@@ -64,6 +69,7 @@ export const Sidebar = () => {
   ];
 
   const navItemsData = [
+    { id: 'receipts', label: 'Money Receipts (মানি রিসিট ও টোকেন)', icon: Receipt },
     { id: 'customer-profiles', label: 'Customers (কাস্টমার)', icon: User },
     { id: 'customer-guardians', label: 'Customer Files (কাস্টমার ফাইল)', icon: Users },
     { id: 'agreements', label: 'Agreements (এগ্রিমেন্টস)', icon: FileText },

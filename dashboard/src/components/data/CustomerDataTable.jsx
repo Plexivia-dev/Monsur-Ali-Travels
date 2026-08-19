@@ -14,11 +14,13 @@ import {
   ChevronRight,
   Edit,
   User,
+  Receipt,
 } from 'lucide-react';
 import { apiClient } from '../../lib/api-client';
 import { DataTablePagination } from './DataTablePagination';
 import { toast } from 'sonner';
 import { usePortal } from '../../context/PortalContext';
+import { MoneyReceiptModal } from '../docs/receipt/MoneyReceiptModal';
 
 export function CustomerDataTable() {
   const { switchPortal } = usePortal();
@@ -35,6 +37,7 @@ export function CustomerDataTable() {
   const [typeFilter, setTypeFilter] = useState('all');
   const [isLoading, setIsLoading] = useState(false);
   const [profileItem, setProfileItem] = useState(null);
+  const [receiptModalData, setReceiptModalData] = useState(null);
 
   const fetchData = async (
     page = 1,
@@ -284,6 +287,21 @@ export function CustomerDataTable() {
                         <div className="flex items-center justify-end gap-1.5">
                           <button
                             type="button"
+                            onClick={() =>
+                              setReceiptModalData({
+                                clientName: item.fullName,
+                                clientPhone: item.phone,
+                                passportNumber: item.passportNumber,
+                                customerId: item._id,
+                              })
+                            }
+                            className="p-1.5 rounded hover:bg-emerald-500/10 text-emerald-600 transition-colors cursor-pointer"
+                            title="টোকেন / মানি রিসিট দিন"
+                          >
+                            <Receipt className="w-3.5 h-3.5" />
+                          </button>
+                          <button
+                            type="button"
                             onClick={() => setProfileItem(item)}
                             className="p-1.5 rounded hover:bg-sky-500/10 text-sky-600 transition-colors cursor-pointer"
                             title="View Full Profile"
@@ -405,10 +423,40 @@ export function CustomerDataTable() {
                   <ServiceBadge label="ইনভয়েস" count={profileItem.invoices?.length || 0} />
                 </div>
               </div>
+
+              {/* Actions inside Profile View */}
+              <div className="pt-2 flex justify-end">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setReceiptModalData({
+                      clientName: profileItem.fullName,
+                      clientPhone: profileItem.phone,
+                      passportNumber: profileItem.passportNumber,
+                      customerId: profileItem._id,
+                    });
+                    setProfileItem(null);
+                  }}
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold shadow-2xs transition-colors cursor-pointer"
+                >
+                  <Receipt className="w-3.5 h-3.5" />
+                  <span>পেমেন্ট টোকেন / রিসিট তৈরি করুন</span>
+                </button>
+              </div>
             </div>
           </div>
         </div>
       )}
+
+      {/* Money Receipt Modal */}
+      <MoneyReceiptModal
+        isOpen={Boolean(receiptModalData)}
+        onClose={() => setReceiptModalData(null)}
+        initialData={receiptModalData || {}}
+        onCreated={() => {
+          fetchData(pagination.page);
+        }}
+      />
     </div>
   );
 }

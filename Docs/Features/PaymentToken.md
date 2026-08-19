@@ -92,3 +92,19 @@
   - `dashboard/src/components/docs/receipt/ReceiptConfirmModal.jsx`
   - `dashboard/src/components/data/MoneyReceiptDataTable.jsx`
   - `dashboard/src/pages/DocumentData.jsx`
+
+---
+
+### TK-05: Customer, Visa & Passport Table Quick Token Action Triggers & Sidebar Nav
+- **Date**: 2026-08-19
+- **Scope**: Cross-Module Integration & Quick Action Modals
+- **Description**:
+  - Integrated 1-click `টোকেন / রিসিট` button in `CustomerDataTable.jsx` (both in table action columns and inside the full profile view modal).
+  - Integrated 1-click `টোকেন` button in `IndianVisaDataTable.jsx` rows with auto-filled applicant name, phone, passport, fee, and tracking reference.
+  - Integrated 1-click `টোকেন` button in `PassportSubmissionDataTable.jsx` rows with auto-filled passport application data.
+  - Added "Money Receipts (মানি রিসিট ও টোকেন)" menu item in `Sidebar.jsx` under Data Records section.
+- **Files Modified/Created**:
+  - `dashboard/src/components/data/CustomerDataTable.jsx`
+  - `dashboard/src/components/data/IndianVisaDataTable.jsx`
+  - `dashboard/src/components/data/PassportSubmissionDataTable.jsx`
+  - `dashboard/src/components/layout/Sidebar.jsx`
