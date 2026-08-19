@@ -9,6 +9,21 @@ This document tracks the incremental migration and implementation of the Next-Ge
 
 ---
 
+### BR-19: Dashboard Analytics, Seed Script & Central Route Aggregator
+- **Date**: 2026-08-20
+- **Scope**: Executive analytics metrics, initial database seeding, central API route aggregation
+- **Description**:
+  - Implemented `server/src/services/DashboardService.js` aggregating counts across 6 services, total billed/paid/due financials, and recent activity logs.
+  - Implemented `server/src/routes/index.js` aggregating all 12 submodule routes under `/api/v1/` (`/auth`, `/users`, `/customers`, `/receipts`, `/cases`, `/indian-visa`, `/passports`, `/guardian-applications`, `/invoices`, `/agreements`, `/payroll`, `/uploads`, `/dashboard`).
+  - Implemented `server/prisma/seed.js` to create the default Owner admin account (`admin@monsuralitravels.com`) with bcrypt hash and valid DID.
+- **Files Modified/Created**:
+  - `server/src/services/DashboardService.js`
+  - `server/src/controllers/DashboardController.js`
+  - `server/src/routes/DashboardRoute.js`
+  - `server/src/routes/index.js`
+  - `server/prisma/seed.js`
+  - `Docs/Backend/Backend_Version_2.md`
+
 ### BR-18: File Upload Pipeline (Date-based Storage & Document Routing)
 - **Date**: 2026-08-20
 - **Scope**: File upload handling, MIME-type filtering, YYMMDD dated directories
