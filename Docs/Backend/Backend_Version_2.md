@@ -9,6 +9,21 @@ This document tracks the incremental migration and implementation of the Next-Ge
 
 ---
 
+### BR-06: Authentication Middlewares & Password Security Utilities
+- **Date**: 2026-08-20
+- **Scope**: Bcrypt hashing, JWT token lifecycle, Bearer token authentication, Role-based authorization
+- **Description**:
+  - Implemented `server/src/utils/password.js` with `hashPassword` (bcrypt salt work factor 10) and `comparePassword`.
+  - Implemented `server/src/utils/jwt.js` with `signJwt` and `verifyJwt` incorporating typed `JwtPayload`.
+  - Implemented `server/src/middlewares/auth.middleware.js`:
+    - `authenticateToken`: Validates Bearer token header, verifies expiration, queries active user from PostgreSQL, and attaches `req.user`.
+    - `requireRoles`: Multi-role access guard (e.g. `requireRoles('Owner', 'Admin', 'Manager')`).
+- **Files Modified/Created**:
+  - `server/src/utils/password.js`
+  - `server/src/utils/jwt.js`
+  - `server/src/middlewares/auth.middleware.js`
+  - `Docs/Backend/Backend_Version_2.md`
+
 ### BR-05: Core Middlewares: Zod Validation & Global Error Handler
 - **Date**: 2026-08-20
 - **Scope**: Request validation pipeline, Prisma exception mapping, centralized HTTP error handler
