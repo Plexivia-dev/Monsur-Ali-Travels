@@ -4,6 +4,17 @@ This document tracks the comprehensive redesign of the Monsur Ali Travels ERP Da
 
 ---
 
+### DR-13: Refactor Root Application Shell with SidebarProvider & Header (`App.jsx`)
+
+- **Date**: 2026-08-20
+- **Impact**: Application Entry, Provider Hierarchy, Layout Shell Architecture
+- **Description**:
+  - Removed legacy Context Provider wrappers (`ThemeProvider`, `AuthProvider`, `PortalProvider`) from [`App.jsx`](file:///f:/Monsur%20Ali%20Travels/dashboard/src/App.jsx).
+  - Adopted `SidebarProvider` and `SidebarInset` layout shell with sticky `Header` and responsive main view container matching `ref/src/app/(pages)/layout.tsx`.
+  - Connected `AuthGuard` directly to `useAuthStore` and synchronized router URL path state directly to `usePortalStore`.
+- **Changes**:
+  - Updated [`dashboard/src/App.jsx`](file:///f:/Monsur%20Ali%20Travels/dashboard/src/App.jsx).
+
 ### DR-12: Redesign Modern Collapsible Sidebar Component (`Sidebar.jsx`)
 
 - **Date**: 2026-08-20
