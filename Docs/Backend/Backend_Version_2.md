@@ -9,6 +9,18 @@ This document tracks the incremental migration and implementation of the Next-Ge
 
 ---
 
+### BR-09: Customer Auto-Sync & Relational Linker Service
+- **Date**: 2026-08-20
+- **Scope**: Cross-service customer intelligence, automated matching and ledger synchronization
+- **Description**:
+  - Implemented `server/src/services/CustomerSyncService.js` to automatically find or create Central Customer profiles across any form submission (Indian Visa, Passport, Case Management, Guardian Applications, Agreements).
+  - Automatically matches existing customers by `passportNumber` (case-insensitive), `nidNumber`, or `phone`.
+  - Merges missing bio details (parents, present address, photos, scans) without overwriting existing data.
+  - Automatically increments customer's `totalBilledAmount`, `totalPaidAmount`, and recomputes `totalDueAmount`.
+- **Files Modified/Created**:
+  - `server/src/services/CustomerSyncService.js`
+  - `Docs/Backend/Backend_Version_2.md`
+
 ### BR-08: User Management Module (Validation, Service, Controller, Route)
 - **Date**: 2026-08-20
 - **Scope**: User administration, role management, pagination, soft delete
