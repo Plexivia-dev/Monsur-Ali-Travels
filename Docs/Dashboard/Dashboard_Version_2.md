@@ -4,6 +4,21 @@ This document tracks the comprehensive redesign of the Monsur Ali Travels ERP Da
 
 ---
 
+### DR-07: Port Core Shadcn UI Primitives (`Button`, `Badge`, `Card`, `Separator`)
+
+- **Date**: 2026-08-20
+- **Impact**: UI Component Library, Design Tokens, Interactive Micro-States
+- **Description**:
+  - Upgraded [`Button.jsx`](file:///f:/Monsur%20Ali%20Travels/dashboard/src/components/ui/Button.jsx) and [`button.jsx`](file:///f:/Monsur%20Ali%20Travels/dashboard/src/components/ui/button.jsx) with modern 9/10/8h sizing, refined focus rings (`focus-visible:ring-3`), and shadow elevations.
+  - Upgraded [`Badge.jsx`](file:///f:/Monsur%20Ali%20Travels/dashboard/src/components/ui/Badge.jsx) with pill tags, subtle status variants (`success`, `warning`, `info`, `destructive`, `outline`), and modern typography.
+  - Refactored [`Card.jsx`](file:///f:/Monsur%20Ali%20Travels/dashboard/src/components/ui/Card.jsx) with clean border rings, smooth headers, and action layouts.
+  - Updated [`separator.jsx`](file:///f:/Monsur%20Ali%20Travels/dashboard/src/components/ui/separator.jsx) to match modern `@base-ui/react` separator implementation.
+- **Changes**:
+  - Updated [`dashboard/src/components/ui/Button.jsx`](file:///f:/Monsur%20Ali%20Travels/dashboard/src/components/ui/Button.jsx), [`dashboard/src/components/ui/button.jsx`](file:///f:/Monsur%20Ali%20Travels/dashboard/src/components/ui/button.jsx).
+  - Updated [`dashboard/src/components/ui/Badge.jsx`](file:///f:/Monsur%20Ali%20Travels/dashboard/src/components/ui/Badge.jsx), [`dashboard/src/components/ui/badge.jsx`](file:///f:/Monsur%20Ali%20Travels/dashboard/src/components/ui/badge.jsx).
+  - Updated [`dashboard/src/components/ui/Card.jsx`](file:///f:/Monsur%20Ali%20Travels/dashboard/src/components/ui/Card.jsx), [`dashboard/src/components/ui/card.jsx`](file:///f:/Monsur%20Ali%20Travels/dashboard/src/components/ui/card.jsx).
+  - Updated [`dashboard/src/components/ui/separator.jsx`](file:///f:/Monsur%20Ali%20Travels/dashboard/src/components/ui/separator.jsx).
+
 ### DR-06: Central Navigation Configuration for All ERP Portals (`navConfig.js`)
 
 - **Date**: 2026-08-20
