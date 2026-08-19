@@ -4,6 +4,18 @@ This document tracks the comprehensive redesign of the Monsur Ali Travels ERP Da
 
 ---
 
+### DR-04: Portal & UI State Management Migration to Zustand (`usePortalStore`)
+
+- **Date**: 2026-08-20
+- **Impact**: Global Navigation State, Active Portals/Submodules, URL Sync, UI Sidebar & Notifications
+- **Description**:
+  - Implemented [`usePortalStore.js`](file:///f:/Monsur%20Ali%20Travels/dashboard/src/store/usePortalStore.js) with Zustand to manage active portal/submodule selection (`activePortal`, `activeSubmodule`), URL path parsing and synchronizing, sidebar toggle state (`isSidebarOpen`), global search dialog (`searchOpen`, `searchQuery`), and notification alert items.
+  - Provided direct store access with selector capabilities to eliminate full-tree re-renders.
+  - Refactored `PortalContext.jsx` into a light sync wrapper around `usePortalStore` for clean backwards compatibility.
+- **Changes**:
+  - Created [`dashboard/src/store/usePortalStore.js`](file:///f:/Monsur%20Ali%20Travels/dashboard/src/store/usePortalStore.js).
+  - Updated [`dashboard/src/context/PortalContext.jsx`](file:///f:/Monsur%20Ali%20Travels/dashboard/src/context/PortalContext.jsx).
+
 ### DR-03: Auth State Management Migration to Zustand (`useAuthStore`)
 
 - **Date**: 2026-08-20
