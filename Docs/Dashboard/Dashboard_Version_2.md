@@ -4,6 +4,16 @@ This document tracks the comprehensive redesign of the Monsur Ali Travels ERP Da
 
 ---
 
+### DR-02: Theme State Management Migration to Zustand (`useThemeStore`)
+
+- **Date**: 2026-08-20
+- **Impact**: Global Theme Store, Dark/Light Mode, LocalStorage Persistence
+- **Description**:
+  - Created [`useThemeStore.js`](file:///f:/Monsur%20Ali%20Travels/dashboard/src/store/useThemeStore.js) with Zustand to manage theme toggling (`light` / `dark`), HTML root class updates (`.dark`), and `localStorage` persistence (`smart_erp_theme`).
+  - Added export alias `useTheme` for seamless backward-compatibility and zero unnecessary re-renders.
+- **Changes**:
+  - Created [`dashboard/src/store/useThemeStore.js`](file:///f:/Monsur%20Ali%20Travels/dashboard/src/store/useThemeStore.js).
+
 ### DR-01: Initialization of Dashboard v2 Redesign Roadmap & Documentation
 
 - **Date**: 2026-08-20
