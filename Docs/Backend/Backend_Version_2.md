@@ -9,6 +9,22 @@ This document tracks the incremental migration and implementation of the Next-Ge
 
 ---
 
+### BR-03: Prisma PostgreSQL Schema Definition & Setup
+- **Date**: 2026-08-20
+- **Scope**: PostgreSQL database modeling, enums, relations, decimal precisions, and compound indexes
+- **Description**:
+  - Implemented `server/prisma/schema.prisma` mapping the complete relational schema with 11 core models:
+    - `User`: User roles enum, security credentials, audit relation linkages.
+    - `Customer`: Central customer single-source-of-truth with 8 relational foreign keys, bio fields, JSONB attachments, and Decimal ledger fields (`totalBilledAmount`, `totalPaidAmount`, `totalDueAmount`).
+    - `MoneyReceipt`: Payment tokens with manager/accountant relations, bank turnover status, and BDT currency tracking.
+    - `CaseFile`: Universal case management with 5 lifecycle stages enum, 3-stage payment milestone decimals, and checklist JSONB.
+    - `IndianVisaSubmission`, `PassportSubmission`, `CustomerGuardianApplication`, `CandidateCaseFile`, `Invoice`, `EmploymentAgreement`, `SalarySlip`.
+  - Defined 8 native PostgreSQL enums (`UserRole`, `Gender`, `CustomerStatus`, `CustomerType`, `ReceiptStatus`, `PaymentMethod`, `CaseStatus`, `VisaStage`).
+  - Added compound B-tree indexes for fast queries across tracking codes, customer names, passport numbers, and lifecycle statuses.
+- **Files Modified/Created**:
+  - `server/prisma/schema.prisma`
+  - `Docs/Backend/Backend_Version_2.md`
+
 ### BR-02: Environment Config & Uniform API Response / Tracking Utilities
 - **Date**: 2026-08-20
 - **Scope**: Zod environment validation, DID generation, tracking number engine, standardized HTTP responses
