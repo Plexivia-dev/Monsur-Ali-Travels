@@ -42,11 +42,10 @@ export function CharacterCertificatePreview({ data = {}, onPrint }) {
       {/* Printable A4 Paper */}
       <PrintablePaper id="printable-character-certificate" className="font-serif">
         
-        {/* Double Border Frame */}
-        <div className="border-4 border-slate-900 p-6 sm:p-8 min-h-[1020px] flex flex-col justify-between relative bg-white text-slate-900">
-          <div className="border-2 border-slate-800 p-6 sm:p-8 h-full flex flex-col justify-between space-y-6">
-            
-            {/* Header (Fully Customizable) */}
+        {/* Single Clean Certificate Border Frame */}
+        <div className="border-2 border-slate-900 p-6 sm:p-8 flex flex-col justify-between space-y-6 bg-white text-slate-900 flex-1 min-h-[960px] print:min-h-0 print:p-5">
+          
+          {/* Header (Fully Customizable) */}
             <div className="text-center space-y-1.5 border-b-2 border-slate-900 pb-4">
               <div className="flex justify-center mb-2">
                 <div className="w-14 h-14 rounded-full bg-white flex items-center justify-center shadow-xs border-2 border-slate-900 overflow-hidden p-1">
@@ -177,7 +176,6 @@ export function CharacterCertificatePreview({ data = {}, onPrint }) {
             </div>
 
           </div>
-        </div>
 
       </PrintablePaper>
 

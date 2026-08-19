@@ -1,4 +1,3 @@
-import React from 'react';
 import logoImg from '../assets/logo.png';
 
 export const MonsurAliTravelsLogo = ({ className = 'h-8 w-auto', iconOnly = false, alt = 'Monsur Ali Travels Logo' }) => {

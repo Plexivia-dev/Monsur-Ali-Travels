@@ -47,11 +47,10 @@ export function MarriageCertificatePreview({ data = {}, onPrint }) {
       {/* Printable A4 Paper */}
       <PrintablePaper id="printable-marriage-certificate" className="font-serif">
         
-        {/* Double Border Frame */}
-        <div className="border-4 border-slate-900 p-6 sm:p-8 min-h-[1020px] flex flex-col justify-between relative bg-white text-slate-900">
-          <div className="border-2 border-slate-800 p-5 sm:p-7 h-full flex flex-col justify-between space-y-4">
-            
-            {/* Header (Registrar / Kazi Office) */}
+        {/* Single Clean Certificate Border Frame */}
+        <div className="border-2 border-slate-900 p-6 sm:p-7 flex flex-col justify-between space-y-4 bg-white text-slate-900 flex-1 min-h-[960px] print:min-h-0 print:p-5">
+          
+          {/* Header (Registrar / Kazi Office) */}
             <div className="text-center space-y-1 border-b-2 border-slate-900 pb-3">
               <div className="flex justify-center mb-1">
                 <div className="w-12 h-12 rounded-full bg-white flex items-center justify-center shadow-xs border-2 border-slate-900 overflow-hidden p-1">
@@ -266,7 +265,6 @@ export function MarriageCertificatePreview({ data = {}, onPrint }) {
             </div>
 
           </div>
-        </div>
 
       </PrintablePaper>
 
