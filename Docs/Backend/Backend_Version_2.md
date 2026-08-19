@@ -9,6 +9,23 @@ This document tracks the incremental migration and implementation of the Next-Ge
 
 ---
 
+### BR-16: Invoice & Billing Module (Validation, Service, Controller, Route)
+- **Date**: 2026-08-20
+- **Scope**: Invoicing, line-item subtotal and tax calculation, payment status tracking, customer auto-linking
+- **Description**:
+  - Implemented `server/src/validations/invoice.validation.js` with Zod schemas for invoice creation, item arrays, and tax rates.
+  - Implemented `server/src/services/InvoiceService.js` with:
+    - Auto-generation of unique tracking codes (`I-XXXXXXXXXX`).
+    - Dynamic calculation of subtotal, taxAmount, and grandTotal.
+    - Central customer auto-sync and ledger billing via `CustomerSyncService`.
+  - Implemented `server/src/controllers/InvoiceController.js` and `server/src/routes/InvoiceRoute.js`.
+- **Files Modified/Created**:
+  - `server/src/validations/invoice.validation.js`
+  - `server/src/services/InvoiceService.js`
+  - `server/src/controllers/InvoiceController.js`
+  - `server/src/routes/InvoiceRoute.js`
+  - `Docs/Backend/Backend_Version_2.md`
+
 ### BR-15: Customer Guardian Application Module (Validation, Service, Controller, Route)
 - **Date**: 2026-08-20
 - **Scope**: Customer Guardian Application intake, `CGA-...` tracking generator, advance payment calculation, requirements checklist
