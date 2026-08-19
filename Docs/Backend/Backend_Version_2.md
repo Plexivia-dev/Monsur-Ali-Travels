@@ -9,6 +9,20 @@ This document tracks the incremental migration and implementation of the Next-Ge
 
 ---
 
+### BR-18: File Upload Pipeline (Date-based Storage & Document Routing)
+- **Date**: 2026-08-20
+- **Scope**: File upload handling, MIME-type filtering, YYMMDD dated directories
+- **Description**:
+  - Implemented `server/src/middlewares/upload.middleware.js` using Multer to route images into `/uploads/YYMMDD/` and documents/PDFs into `/documents/YYMMDD/` with configurable maximum file sizes (`MAX_FILE_SIZE_MB`).
+  - Implemented `server/src/controllers/UploadController.js` and `server/src/routes/UploadRoute.js` providing:
+    - `POST /api/v1/uploads/image`
+    - `POST /api/v1/uploads/document`
+- **Files Modified/Created**:
+  - `server/src/middlewares/upload.middleware.js`
+  - `server/src/controllers/UploadController.js`
+  - `server/src/routes/UploadRoute.js`
+  - `Docs/Backend/Backend_Version_2.md`
+
 ### BR-17: Employment Agreement & Salary Slip / Payroll Module
 - **Date**: 2026-08-20
 - **Scope**: Employment Agreements, `AGR-...` tracking generator, monthly Salary Slips, `SLIP-...` tracking generator
