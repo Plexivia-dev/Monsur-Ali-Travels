@@ -1,16 +1,16 @@
 import React from 'react';
 import { useAgencyData } from '../../api/hooks';
 import { StatCard } from '../ui/StatCard';
-import { Card, CardHeader, CardTitle, CardContent } from "../ui/card";
-import { Badge } from "../ui/badge";
-import { Button } from "../ui/button";
+import { Card, CardHeader, CardTitle, CardContent } from '../ui/card';
+import { Badge } from '../ui/badge';
+import { Button } from '../ui/button';
 import { Users2, Building2, Clock, DollarSign, TrendingUp, Briefcase } from 'lucide-react';
 import { ResponsiveContainer, AreaChart, Area, XAxis, YAxis, Tooltip, CartesianGrid } from 'recharts';
-import { usePortal } from '../../context/PortalContext';
+import { usePortalStore } from '../../store/usePortalStore';
 
 export const AgencyDashboard = () => {
   const { data: agencyData, isLoading } = useAgencyData();
-  const { switchPortal } = usePortal();
+  const switchPortal = usePortalStore((state) => state.switchPortal);
 
   if (isLoading || !agencyData) {
     return (
@@ -36,9 +36,10 @@ export const AgencyDashboard = () => {
           </div>
         </div>
         <Button
-          variant="primary"
+          variant="default"
           size="sm"
           onClick={() => switchPortal('agency', 'employees')}
+          className="cursor-pointer"
         >
           View Contractor Roster
         </Button>
@@ -96,7 +97,7 @@ export const AgencyDashboard = () => {
               <CardTitle icon={TrendingUp}>Contractor Placement & Revenue Growth</CardTitle>
               <p className="text-xs text-muted-foreground mt-0.5">Active Workforce vs Agency Net Margin (Year 2026)</p>
             </div>
-            <Button variant="outline" size="sm" onClick={() => switchPortal('agency', 'reports')}>
+            <Button variant="outline" size="sm" onClick={() => switchPortal('agency', 'reports')} className="cursor-pointer">
               Analytics
             </Button>
           </CardHeader>
@@ -142,7 +143,7 @@ export const AgencyDashboard = () => {
                   <p className="text-xs text-muted-foreground mt-1">{contract.industry} • {contract.workersDeployed} Workers</p>
                   <div className="mt-2 flex items-center justify-between text-[11px] text-muted-foreground">
                     <span>Rate: ${contract.hourlyRate}/hr</span>
-                    <span className="font-semibold text-emerald-555">Margin: {contract.margin}</span>
+                    <span className="font-semibold text-emerald-500">Margin: {contract.margin}</span>
                   </div>
                 </div>
               ))}
@@ -157,7 +158,7 @@ export const AgencyDashboard = () => {
         <Card>
           <CardHeader>
             <CardTitle icon={Users2}>Recent Contractor Deployments</CardTitle>
-            <Button variant="ghost" size="sm" onClick={() => switchPortal('agency', 'employees')}>
+            <Button variant="ghost" size="sm" onClick={() => switchPortal('agency', 'employees')} className="cursor-pointer">
               View All
             </Button>
           </CardHeader>
@@ -171,7 +172,7 @@ export const AgencyDashboard = () => {
                   </div>
                   <div className="text-right">
                     <p className="font-bold text-sm text-foreground">${emp.hourlyPay}/hr pay</p>
-                    <p className="text-[11px] text-emerald-555 font-medium">Billed: ${emp.billRate}/hr</p>
+                    <p className="text-[11px] text-emerald-500 font-medium">Billed: ${emp.billRate}/hr</p>
                   </div>
                 </div>
               ))}
@@ -183,7 +184,7 @@ export const AgencyDashboard = () => {
         <Card>
           <CardHeader>
             <CardTitle icon={DollarSign}>Recent Client Invoices</CardTitle>
-            <Button variant="ghost" size="sm" onClick={() => switchPortal('agency', 'bills')}>
+            <Button variant="ghost" size="sm" onClick={() => switchPortal('agency', 'bills')} className="cursor-pointer">
               View All
             </Button>
           </CardHeader>
@@ -197,7 +198,7 @@ export const AgencyDashboard = () => {
                   </div>
                   <div className="text-right">
                     <p className="font-bold text-sm text-foreground">${bill.amount.toLocaleString()}</p>
-                    <Badge variant={bill.status === 'Paid' ? 'success' : bill.status === 'Pending' ? 'warning' : 'danger'}>
+                    <Badge variant={bill.status === 'Paid' ? 'success' : bill.status === 'Pending' ? 'warning' : 'destructive'}>
                       {bill.status}
                     </Badge>
                   </div>
@@ -210,3 +211,5 @@ export const AgencyDashboard = () => {
     </div>
   );
 };
+
+export default AgencyDashboard;

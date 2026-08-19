@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useAgencyData } from '../../api/hooks';
-import { usePortal } from '../../context/PortalContext';
+import { usePortalStore } from '../../store/usePortalStore';
 import { Card, CardHeader, CardTitle, CardContent } from '../ui/card';
 import { Badge } from '../ui/badge';
 import { Button } from '../ui/button';
@@ -29,7 +29,7 @@ import {
 
 export const ClientManagement = ({ initialTab = 'all-clients' }) => {
   const { data: agencyData } = useAgencyData();
-  const { addToast } = usePortal();
+  const addToast = usePortalStore((state) => state.addToast);
 
   // Active tab inside Client Management module: 'add-client' | 'all-clients' | 'payments'
   const [activeTab, setActiveTab] = useState(

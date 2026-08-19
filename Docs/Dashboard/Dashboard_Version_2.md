@@ -4,6 +4,21 @@ This document tracks the comprehensive redesign of the Monsur Ali Travels ERP Da
 
 ---
 
+### DR-17: Refactor Agency Portal & Submodules to Zustand & Modern Cards (`Agency.jsx`)
+
+- **Date**: 2026-08-20
+- **Impact**: Agency Portal, Manpower Analytics, Candidate & Client Modules
+- **Description**:
+  - Refactored [`Agency.jsx`](file:///f:/Monsur%20Ali%20Travels/dashboard/src/pages/Agency.jsx) and [`AgencyDashboard.jsx`](file:///f:/Monsur%20Ali%20Travels/dashboard/src/components/agency/AgencyDashboard.jsx) to connect directly to `usePortalStore`.
+  - Migrated `AgencyEmployees.jsx`, `ClientManagement.jsx`, and `AgencyModule.jsx` to use `usePortalStore` for notifications and navigation.
+  - Upgraded KPI widgets, revenue growth charts, and contract breakdown cards to match modern AdminCN card layouts.
+- **Changes**:
+  - Updated [`dashboard/src/pages/Agency.jsx`](file:///f:/Monsur%20Ali%20Travels/dashboard/src/pages/Agency.jsx).
+  - Updated [`dashboard/src/components/agency/AgencyDashboard.jsx`](file:///f:/Monsur%20Ali%20Travels/dashboard/src/components/agency/AgencyDashboard.jsx).
+  - Updated [`dashboard/src/components/agency/AgencyEmployees.jsx`](file:///f:/Monsur%20Ali%20Travels/dashboard/src/components/agency/AgencyEmployees.jsx).
+  - Updated [`dashboard/src/components/agency/ClientManagement.jsx`](file:///f:/Monsur%20Ali%20Travels/dashboard/src/components/agency/ClientManagement.jsx).
+  - Updated [`dashboard/src/components/agency/AgencyModule.jsx`](file:///f:/Monsur%20Ali%20Travels/dashboard/src/components/agency/AgencyModule.jsx).
+
 ### DR-16: Redesign Table & DataTable UI Primitives (`Table.jsx`, `table.jsx`)
 
 - **Date**: 2026-08-20

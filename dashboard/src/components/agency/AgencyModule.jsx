@@ -1,18 +1,21 @@
 import React from 'react';
-import { usePortal } from '../../context/PortalContext';
+import { usePortalStore } from '../../store/usePortalStore';
 import { AgencyDashboard } from './AgencyDashboard';
 import { AgencyEmployees } from './AgencyEmployees';
 import { CandidateCaseFiles } from './CandidateCaseFiles';
 import { ClientManagement } from './ClientManagement';
 
 export const AgencyModule = () => {
-  const { activeSubmodule } = usePortal();
+  const activeSubmodule = usePortalStore((state) => state.activeSubmodule);
 
   switch (activeSubmodule) {
     case 'employees':
       return <AgencyEmployees />;
     case 'candidates':
-      return <CandidateCaseFiles />;
+    case 'candidates-all':
+    case 'candidates-add':
+    case 'cases':
+      return <CandidateCaseFiles initialTab={activeSubmodule} />;
     case 'clients':
     case 'clients-add':
     case 'add-client':
@@ -23,8 +26,8 @@ export const AgencyModule = () => {
     case 'payments':
       return <ClientManagement initialTab={activeSubmodule} />;
     case 'dashboard':
+    case 'reports':
     default:
       return <AgencyDashboard />;
   }
 };
-
