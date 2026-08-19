@@ -1,6 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { usePortal } from '../../context/PortalContext';
+import { usePortalStore } from '../../store/usePortalStore';
 import {
   ArrowLeft,
   ChevronRight,
@@ -9,64 +9,68 @@ import {
   Users2,
   Factory,
   Shield,
-  FileText,
-  IdCard,
-  Receipt,
-  ShieldCheck,
-  FileCheck,
-  UserCheck,
-  Layers,
-  Database
+  Database,
 } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 
 const PORTAL_LABELS = {
-  docs: { label: 'Document Center', icon: FileSpreadsheet, homeSub: 'customer-form' },
-  data: { label: 'Document Data Records', icon: Database, homeSub: 'customer-guardians' },
+  docs: { label: 'Document Studio', icon: FileSpreadsheet, homeSub: 'agreement' },
+  data: { label: 'Data Records Center', icon: Database, homeSub: 'customer-profiles' },
   agency: { label: 'Manpower Agency', icon: Users2, homeSub: 'dashboard' },
   factory: { label: 'Brick Factory', icon: Factory, homeSub: 'dashboard' },
-  admin: { label: 'System Admin', icon: Shield, homeSub: 'overview' }
+  admin: { label: 'System Admin', icon: Shield, homeSub: 'users' },
 };
 
 const SUBMODULE_LABELS = {
-  // Document Center Submodules
   'customer-form': 'Customer & Guardian Form',
   'customer-forms': 'Customer & Guardian Form',
   'customer-guardians': 'Customer Application Files',
-  'agreement': 'Employment Agreement',
-  'agreements': 'Employment Agreements',
-  'idcard': 'Employee ID Card',
-  'payroll': 'Salary Slip',
-  'payrolls': 'Salary Slips',
-  'invoice': 'Invoice Generator',
-  'invoices': 'Invoices Data',
+  agreement: 'Employment Agreement',
+  agreements: 'Employment Agreements',
+  idcard: 'Employee ID Card',
+  payroll: 'Salary Slip',
+  payrolls: 'Salary Slips',
+  invoice: 'Invoice Generator',
+  invoices: 'Invoices Data',
   'passport-sub': 'Passport Submission',
-  'passports': 'Passport Submissions Data',
+  passports: 'Passport Submissions Data',
   'indian-visa': 'Indian Visa Application',
   'indian-visas': 'Indian Visa Applications Data',
+  'certificate-exp': 'Experience Certificate',
+  'certificate-char': 'Character Certificate',
+  'certificate-marr': 'Marriage Certificate',
+  'customer-profiles': 'Customer Profiles',
 
-  // Agency Submodules
-  'dashboard': 'Dashboard Overview',
-  'candidates-list': 'Candidate Directory',
+  dashboard: 'Dashboard Overview',
+  'candidates-all': 'All Candidates',
   'candidates-add': 'Add New Candidate',
-  'cases': 'Candidate Case Files',
-  'passport-tracking': 'Passport & Visa Tracking',
-  'reports': 'Placement Reports',
+  candidates: 'Candidate Case Files',
+  cases: 'Candidate Case Files',
+  'clients-all': 'All Client Accounts',
+  'clients-add': 'Add New Client',
+  bills: 'Billing & Invoices',
+  payments: 'Wages & Payments',
+  reports: 'Reports & Analytics',
+  employees: 'Staff & Worker Roster',
 
-  // Admin Submodules
-  'overview': 'System Overview',
-  'activity': 'Activity Audit Log'
+  users: 'System Users',
+  'system-logs': 'Audit & Database Logs',
+  settings: 'Global Settings',
 };
 
 export function TopBreadcrumbBar() {
   const navigate = useNavigate();
-  const { activePortal, activeSubmodule, switchPortal } = usePortal();
+  const activePortal = usePortalStore((state) => state.activePortal);
+  const activeSubmodule = usePortalStore((state) => state.activeSubmodule);
+  const switchPortal = usePortalStore((state) => state.switchPortal);
 
-  const currentPortalInfo = PORTAL_LABELS[activePortal] || PORTAL_LABELS.docs;
+  const currentPortalInfo = PORTAL_LABELS[activePortal] || PORTAL_LABELS.agency;
   const PortalIcon = currentPortalInfo.icon;
-  const submoduleTitle = SUBMODULE_LABELS[activeSubmodule] || (activeSubmodule ? activeSubmodule.replace(/-/g, ' ').toUpperCase() : 'Dashboard');
+  const submoduleTitle =
+    SUBMODULE_LABELS[activeSubmodule] ||
+    (activeSubmodule ? activeSubmodule.replace(/-/g, ' ').toUpperCase() : 'Dashboard');
 
   const handleBack = () => {
-    // If browser has history, go back, otherwise go to portal root
     if (window.history.length > 1) {
       navigate(-1);
     } else {
@@ -75,29 +79,27 @@ export function TopBreadcrumbBar() {
   };
 
   return (
-    <div className="no-print mb-4 flex items-center justify-between gap-3 bg-card/60 backdrop-blur-xs border border-border px-3.5 py-2 rounded-xl text-xs shadow-2xs transition-colors">
-      {/* Left / Middle: Back Button & Breadcrumbs */}
+    <div className="no-print mb-4 flex items-center justify-between gap-3 bg-card/60 backdrop-blur-xs border border-border/80 px-3.5 py-2 rounded-xl text-xs shadow-xs transition-colors">
+      {/* Left: Back Button & Trail */}
       <div className="flex items-center gap-2.5 flex-wrap min-w-0">
-        {/* Back Button */}
-        <button
+        <Button
           type="button"
+          variant="secondary"
+          size="sm"
           onClick={handleBack}
-          className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-muted hover:bg-muted/80 text-foreground font-semibold transition-all cursor-pointer shadow-2xs hover:shadow-xs group shrink-0"
+          className="gap-1.5 font-medium cursor-pointer shadow-2xs group"
           title="Go to previous page"
         >
           <ArrowLeft className="w-3.5 h-3.5 text-muted-foreground group-hover:text-foreground group-hover:-translate-x-0.5 transition-transform" />
           <span>Back</span>
-        </button>
+        </Button>
 
-        {/* Vertical separator */}
-        <span className="h-4 w-[1px] bg-border shrink-0" />
+        <span className="h-4 w-px bg-border shrink-0" />
 
-        {/* Breadcrumb Trail */}
-        <nav aria-label="Breadcrumb" className="flex items-center gap-1.5 text-[11.5px] min-w-0">
-          {/* Home Link */}
+        <nav aria-label="Breadcrumb" className="flex items-center gap-1.5 text-xs min-w-0">
           <button
             type="button"
-            onClick={() => switchPortal('docs', 'customer-form')}
+            onClick={() => switchPortal('agency', 'dashboard')}
             className="flex items-center gap-1 text-muted-foreground hover:text-foreground transition-colors cursor-pointer shrink-0"
             title="Go to Home"
           >
@@ -105,9 +107,8 @@ export function TopBreadcrumbBar() {
             <span className="hidden sm:inline">Home</span>
           </button>
 
-          <ChevronRight className="w-3.5 h-3.5 text-muted-foreground/60 shrink-0" />
+          <ChevronRight className="w-3.5 h-3.5 text-muted-foreground/50 shrink-0" />
 
-          {/* Portal Node */}
           <button
             type="button"
             onClick={() => switchPortal(activePortal, currentPortalInfo.homeSub)}
@@ -117,18 +118,17 @@ export function TopBreadcrumbBar() {
             <span>{currentPortalInfo.label}</span>
           </button>
 
-          <ChevronRight className="w-3.5 h-3.5 text-muted-foreground/60 shrink-0" />
+          <ChevronRight className="w-3.5 h-3.5 text-muted-foreground/50 shrink-0" />
 
-          {/* Current Active Page Node */}
-          <span className="font-bold text-foreground truncate max-w-[200px] sm:max-w-[320px]">
+          <span className="font-semibold text-foreground truncate max-w-[200px] sm:max-w-[320px]">
             {submoduleTitle}
           </span>
         </nav>
       </div>
 
-      {/* Right side contextual status badge */}
+      {/* Right: Live Status Indicator */}
       <div className="hidden md:flex items-center gap-2 shrink-0">
-        <span className="inline-flex items-center gap-1 text-[10px] font-semibold text-muted-foreground bg-muted/60 px-2 py-0.5 rounded-md border border-border/60">
+        <span className="inline-flex items-center gap-1.5 text-[11px] font-medium text-muted-foreground bg-muted/60 px-2.5 py-1 rounded-md border border-border">
           <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
           <span>Smart ERP Live</span>
         </span>
@@ -136,3 +136,5 @@ export function TopBreadcrumbBar() {
     </div>
   );
 }
+
+export default TopBreadcrumbBar;

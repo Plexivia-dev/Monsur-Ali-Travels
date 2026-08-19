@@ -4,6 +4,16 @@ This document tracks the comprehensive redesign of the Monsur Ali Travels ERP Da
 
 ---
 
+### DR-14: Redesign Top Breadcrumb & Page Banner Component (`TopBreadcrumbBar.jsx`)
+
+- **Date**: 2026-08-20
+- **Impact**: In-Page Breadcrumb Bar, Navigation Back Button, Live Status Indicator
+- **Description**:
+  - Refactored [`TopBreadcrumbBar.jsx`](file:///f:/Monsur%20Ali%20Travels/dashboard/src/components/common/TopBreadcrumbBar.jsx) to consume `usePortalStore` directly.
+  - Redesigned visual aesthetics with subtle border rings, rounded pill buttons, smooth chevron breadcrumb trail, and live system status pulse badge.
+- **Changes**:
+  - Updated [`dashboard/src/components/common/TopBreadcrumbBar.jsx`](file:///f:/Monsur%20Ali%20Travels/dashboard/src/components/common/TopBreadcrumbBar.jsx).
+
 ### DR-13: Refactor Root Application Shell with SidebarProvider & Header (`App.jsx`)
 
 - **Date**: 2026-08-20
