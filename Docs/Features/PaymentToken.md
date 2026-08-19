@@ -56,3 +56,22 @@
   - `backend/src/controllers/MoneyReceiptController.js`
   - `backend/src/routes/MoneyReceiptRoute.js`
   - `backend/src/routesIndex.js`
+
+---
+
+### TK-03: Dashboard Dual-Slip Printable Canvas & Manager Token Generator Modal
+- **Date**: 2026-08-19
+- **Scope**: Frontend Printable Template & Token Creation UI
+- **Description**:
+  - Implemented `MoneyReceiptPrintSlip.jsx` rendering an A4 2-in-1 printable sheet:
+    - **Top Slip:** গ্রাহক কপি (Customer Copy)
+    - **Perforated Divider:** `✂️ কেটে আলাদা করুন (Tear Along Line)`
+    - **Bottom Slip:** অফিস ও একাউন্টস কপি (Office & Accounts Copy)
+    - Features: Agency branding header, prominent token number, date/time, client details, service type, amount box, amount in words, manager signature block, accountant seal stamp box, watermarks, and live status badge.
+  - Implemented `MoneyReceiptModal.jsx`:
+    - Responsive modal for manager to generate tokens from any service context.
+    - Supports service dropdown (Indian Visa, Passport, Greece Work Permit, North Macedonia, Manpower, Air Ticket, Service Fee, Other).
+    - Auto-calculates/validates inputs and immediately switches to printable view with 1-click `🖨️ প্রিন্ট করুন` action upon creation.
+- **Files Modified/Created**:
+  - `dashboard/src/components/docs/receipt/MoneyReceiptPrintSlip.jsx`
+  - `dashboard/src/components/docs/receipt/MoneyReceiptModal.jsx`
