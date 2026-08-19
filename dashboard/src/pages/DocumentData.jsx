@@ -1,5 +1,5 @@
 import React from 'react';
-import { usePortal } from '../context/PortalContext';
+import { usePortalStore } from '../store/usePortalStore';
 import { CustomerDataTable } from '../components/data/CustomerDataTable';
 import { AgreementDataTable } from '../components/data/AgreementDataTable';
 import { IndianVisaDataTable } from '../components/data/IndianVisaDataTable';
@@ -10,7 +10,7 @@ import { CustomerGuardianDataTable } from '../components/data/CustomerGuardianDa
 import { MoneyReceiptDataTable } from '../components/data/MoneyReceiptDataTable';
 
 export default function DocumentData() {
-  const { activeSubmodule } = usePortal();
+  const activeSubmodule = usePortalStore((state) => state.activeSubmodule);
 
   return (
     <div className="space-y-6">
@@ -20,7 +20,7 @@ export default function DocumentData() {
       {(activeSubmodule === 'agreements' || activeSubmodule === 'agreement' || activeSubmodule === 'dashboard') && (
         <AgreementDataTable />
       )}
-      {(activeSubmodule === 'customer-guardians' || activeSubmodule === 'customer-forms' || activeSubmodule === 'customers') && (
+      {(activeSubmodule === 'customer-guardians' || activeSubmodule === 'customer-forms' || activeSubmodule === 'customers' || activeSubmodule === 'customer-applications') && (
         <CustomerGuardianDataTable />
       )}
       {(activeSubmodule === 'indian-visas' || activeSubmodule === 'indian-visa') && (
@@ -29,7 +29,7 @@ export default function DocumentData() {
       {(activeSubmodule === 'passports' || activeSubmodule === 'passport-sub') && (
         <PassportSubmissionDataTable />
       )}
-      {(activeSubmodule === 'payrolls' || activeSubmodule === 'payroll') && (
+      {(activeSubmodule === 'payrolls' || activeSubmodule === 'payroll' || activeSubmodule === 'salary-slips') && (
         <SalarySlipDataTable />
       )}
       {(activeSubmodule === 'invoices' || activeSubmodule === 'invoice') && (

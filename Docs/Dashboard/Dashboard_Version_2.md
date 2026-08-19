@@ -4,6 +4,20 @@ This document tracks the comprehensive redesign of the Monsur Ali Travels ERP Da
 
 ---
 
+### DR-19: Refactor Admin, Document Studio & Data Center Pages to Zustand (`Admin.jsx`, `DocumentStudio.jsx`, `DocumentData.jsx`)
+
+- **Date**: 2026-08-20
+- **Impact**: System Admin, Document Generation Studio, Data Center Records, Global Search & Toasts
+- **Description**:
+  - Migrated [`Admin.jsx`](file:///f:/Monsur%20Ali%20Travels/dashboard/src/pages/Admin.jsx), [`DocumentStudio.jsx`](file:///f:/Monsur%20Ali%20Travels/dashboard/src/pages/DocumentStudio.jsx), and [`DocumentData.jsx`](file:///f:/Monsur%20Ali%20Travels/dashboard/src/pages/DocumentData.jsx) to connect directly to `usePortalStore`.
+  - Refactored [`GlobalSearchModal.jsx`](file:///f:/Monsur%20Ali%20Travels/dashboard/src/components/common/GlobalSearchModal.jsx) and [`ToastContainer.jsx`](file:///f:/Monsur%20Ali%20Travels/dashboard/src/components/common/ToastContainer.jsx) to use `usePortalStore` with quick navigation across all 5 ERP portals.
+- **Changes**:
+  - Updated [`dashboard/src/pages/Admin.jsx`](file:///f:/Monsur%20Ali%20Travels/dashboard/src/pages/Admin.jsx).
+  - Updated [`dashboard/src/pages/DocumentStudio.jsx`](file:///f:/Monsur%20Ali%20Travels/dashboard/src/pages/DocumentStudio.jsx).
+  - Updated [`dashboard/src/pages/DocumentData.jsx`](file:///f:/Monsur%20Ali%20Travels/dashboard/src/pages/DocumentData.jsx).
+  - Updated [`dashboard/src/components/common/GlobalSearchModal.jsx`](file:///f:/Monsur%20Ali%20Travels/dashboard/src/components/common/GlobalSearchModal.jsx).
+  - Updated [`dashboard/src/components/common/ToastContainer.jsx`](file:///f:/Monsur%20Ali%20Travels/dashboard/src/components/common/ToastContainer.jsx).
+
 ### DR-18: Refactor Factory Portal & Submodules to Zustand & Modern Cards (`Factory.jsx`)
 
 - **Date**: 2026-08-20
@@ -107,7 +121,7 @@ This document tracks the comprehensive redesign of the Monsur Ali Travels ERP Da
   - Implemented [`ProfileDropdown.jsx`](file:///f:/Monsur%20Ali%20Travels/dashboard/src/components/layout/ProfileDropdown.jsx) using `useAuthStore` and `usePortalStore` with avatar initials fallback, online status badge, role badge, user profile link, settings link, and clean sign-out handler.
 - **Changes**:
   - Created [`dashboard/src/components/layout/ModeToggle.jsx`](file:///f:/Monsur%20Ali%20Travels/dashboard/src/components/layout/ModeToggle.jsx).
-  - Created [`dashboard/src/components/layout/ProfileDropdown.jsx`](file:///f:/Monsur%20Ali%20Travels/dashboard/src/components/layout/ProfileDropdown.jsx).
+  - Created [`dashboard/src/components/layout/ProfileDropdown.jsx`](file:///f:/Monsur%20Ali%20ProfileDropdown.jsx).
 
 ### DR-09: Port Breadcrumb UI Primitives (`breadcrumb.jsx`)
 

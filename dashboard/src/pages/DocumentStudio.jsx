@@ -1,5 +1,5 @@
 import React from 'react';
-import { usePortal } from '../context/PortalContext';
+import { usePortalStore } from '../store/usePortalStore';
 import { EmploymentAgreement } from '../components/docs/agreement/EmploymentAgreement';
 import { IdCard } from '../components/docs/idcard/IdCard';
 import { SalarySlip } from '../components/docs/payroll/SalarySlip';
@@ -12,7 +12,7 @@ import { CharacterCertificate } from '../components/docs/certificate-character/C
 import { MarriageCertificate } from '../components/docs/certificate-marriage/MarriageCertificate';
 
 export default function DocumentStudio() {
-  const { activeSubmodule } = usePortal();
+  const activeSubmodule = usePortalStore((state) => state.activeSubmodule);
 
   return (
     <div className="space-y-5">

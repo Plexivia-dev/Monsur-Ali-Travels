@@ -1,19 +1,20 @@
 import React from 'react';
-import { usePortal } from '../context/PortalContext';
+import { usePortalStore } from '../store/usePortalStore';
 import { useAdminData } from '../api/hooks';
 import { AdminOverview } from '../components/admin/AdminOverview';
 import { AdminActivityLog } from '../components/admin/AdminActivityLog';
 import { AdminReports } from '../components/admin/AdminReports';
 
 export default function Admin() {
-  const { activeSubmodule, addToast } = usePortal();
+  const activeSubmodule = usePortalStore((state) => state.activeSubmodule);
+  const addToast = usePortalStore((state) => state.addToast);
   const { data: adminData, isLoading, error } = useAdminData();
 
   if (isLoading) {
     return (
       <div className="p-12 text-center text-muted-foreground animate-pulse space-y-3">
-        <div className="w-10 h-10 rounded-full bg-purple-500/20 text-purple-500 flex items-center justify-center mx-auto">
-          <span className="w-5 h-5 rounded-full border-2 border-purple-500 border-t-transparent animate-spin" />
+        <div className="w-10 h-10 rounded-full bg-primary/20 text-primary flex items-center justify-center mx-auto">
+          <span className="w-5 h-5 rounded-full border-2 border-primary border-t-transparent animate-spin" />
         </div>
         <p className="text-xs font-semibold">Loading Admin Telemetry...</p>
       </div>
@@ -22,7 +23,7 @@ export default function Admin() {
 
   if (error || !adminData) {
     return (
-      <div className="p-8 text-center text-rose-500 bg-rose-500/10 rounded-xl border border-rose-500/20 my-4">
+      <div className="p-8 text-center text-destructive bg-destructive/10 rounded-xl border border-destructive/20 my-4">
         Failed to load Admin telemetry. Please retry or contact technical support.
       </div>
     );
@@ -31,10 +32,12 @@ export default function Admin() {
   switch (activeSubmodule) {
     case 'activity':
     case 'audit':
+    case 'system-logs':
       return <AdminActivityLog adminData={adminData} addToast={addToast} />;
     case 'reports':
     case 'finance':
       return <AdminReports adminData={adminData} addToast={addToast} />;
+    case 'users':
     case 'overview':
     case 'dashboard':
     default:

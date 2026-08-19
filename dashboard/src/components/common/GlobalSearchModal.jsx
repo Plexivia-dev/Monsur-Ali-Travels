@@ -1,21 +1,56 @@
-import React from 'react';
-import { usePortal } from '../../context/PortalContext';
-import { Search, Building2, Users, FileText, CreditCard, Shield, ArrowRight, X } from 'lucide-react';
+import React, { useEffect } from 'react';
+import { usePortalStore } from '../../store/usePortalStore';
+import {
+  Search,
+  Building2,
+  Users,
+  FileText,
+  CreditCard,
+  Shield,
+  ArrowRight,
+  X,
+  FileSpreadsheet,
+  Database,
+} from 'lucide-react';
 
 export const GlobalSearchModal = () => {
-  const { searchOpen, setSearchOpen, searchQuery, setSearchQuery, switchPortal } = usePortal();
+  const searchOpen = usePortalStore((state) => state.searchOpen);
+  const setSearchOpen = usePortalStore((state) => state.setSearchOpen);
+  const searchQuery = usePortalStore((state) => state.searchQuery);
+  const setSearchQuery = usePortalStore((state) => state.setSearchQuery);
+  const switchPortal = usePortalStore((state) => state.switchPortal);
+
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape' && searchOpen) {
+        setSearchOpen(false);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [searchOpen, setSearchOpen]);
 
   if (!searchOpen) return null;
 
   const quickLinks = [
+    { portal: 'agency', submodule: 'dashboard', title: 'Agency Overview', desc: 'Active placements, billing & client contracts', icon: Building2 },
+    { portal: 'agency', submodule: 'candidates-all', title: 'All Candidates', desc: 'Candidate directory, case files & bio data', icon: Users },
+    { portal: 'agency', submodule: 'candidates-add', title: 'Add New Candidate', desc: 'Register candidate case profile', icon: Users },
+    { portal: 'agency', submodule: 'clients-all', title: 'Client Directory', desc: 'Client enterprise contracts & accounts', icon: Building2 },
+    { portal: 'agency', submodule: 'bills', title: 'Client Invoices & Billing', desc: 'Unbilled hours, margins & client billing', icon: FileText },
+    { portal: 'agency', submodule: 'payments', title: 'Wages & Payments', desc: 'Contractor salary settlements', icon: CreditCard },
     { portal: 'factory', submodule: 'dashboard', title: 'Factory Dashboard', desc: 'Brick production, Coal stock & Kiln metrics', icon: Building2 },
     { portal: 'factory', submodule: 'employees', title: 'Factory Workers & Kiln Crew', desc: 'Attendance, daily wages & kiln shifts', icon: Users },
     { portal: 'factory', submodule: 'bills', title: 'Factory Raw Material Bills', desc: 'Coal supplies, soil haulage & invoices', icon: FileText },
     { portal: 'factory', submodule: 'payments', title: 'Factory Worker & Vendor Payouts', desc: 'Wage settlements & vendor payments', icon: CreditCard },
-    { portal: 'agency', submodule: 'dashboard', title: 'Manpower Agency Portal', desc: 'Active placements, billing & client contracts', icon: Building2 },
-    { portal: 'agency', submodule: 'employees', title: 'Agency Contractor Database', desc: 'Placed workers, hourly rates & clients', icon: Users },
-    { portal: 'agency', submodule: 'bills', title: 'Client Invoices & Billing', desc: 'Unbilled hours, margins & client billing', icon: FileText },
+    { portal: 'docs', submodule: 'agreement', title: 'Employment Agreement', desc: 'Generate official candidate contract A4', icon: FileSpreadsheet },
+    { portal: 'docs', submodule: 'customer-form', title: 'Customer & Guardian Form', desc: 'Generate printable customer profile form', icon: FileSpreadsheet },
+    { portal: 'docs', submodule: 'payroll', title: 'Salary Slip Generator', desc: 'Printable worker salary slip', icon: FileSpreadsheet },
+    { portal: 'docs', submodule: 'invoice', title: 'Invoice Generator', desc: 'Generate official client invoice', icon: FileSpreadsheet },
+    { portal: 'data', submodule: 'customer-profiles', title: 'Customer Profiles Database', desc: 'View and manage all customer records', icon: Database },
+    { portal: 'data', submodule: 'agreements', title: 'Agreement Records', desc: 'Historical candidate employment agreements', icon: Database },
     { portal: 'admin', submodule: 'users', title: 'User Management & Permissions', desc: 'Role assignments & portal access', icon: Shield },
+    { portal: 'admin', submodule: 'system-logs', title: 'System Audit Logs', desc: 'Database operations and activity trail', icon: Shield },
   ];
 
   const filteredLinks = quickLinks.filter(
@@ -35,7 +70,7 @@ export const GlobalSearchModal = () => {
     <div className="fixed inset-0 z-50 flex items-start justify-center pt-20 p-4">
       {/* Backdrop */}
       <div
-        className="fixed inset-0 bg-black/40 backdrop-blur-xs"
+        className="fixed inset-0 bg-black/50 backdrop-blur-xs transition-opacity"
         onClick={() => setSearchOpen(false)}
       />
 
@@ -46,21 +81,21 @@ export const GlobalSearchModal = () => {
           <input
             autoFocus
             type="text"
-            placeholder="Search modules, workers, bills, or portals..."
+            placeholder="Search modules, portals, workers, forms..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full py-4 bg-transparent text-sm text-foreground placeholder-muted-foreground focus:outline-hidden"
+            className="w-full py-4 bg-transparent text-sm text-foreground placeholder-muted-foreground focus:outline-none"
           />
           <button
             onClick={() => setSearchOpen(false)}
-            className="p-1.5 text-muted-foreground hover:text-foreground rounded-lg hover:bg-muted"
+            className="p-1.5 text-muted-foreground hover:text-foreground rounded-lg hover:bg-muted cursor-pointer"
           >
             <X className="w-5 h-5" />
           </button>
         </div>
 
         {/* Search Results */}
-        <div className="p-3 max-h-96 overflow-y-auto space-y-1">
+        <div className="p-2 max-h-96 overflow-y-auto space-y-1">
           {filteredLinks.length > 0 ? (
             filteredLinks.map((item, idx) => {
               const Icon = item.icon;
@@ -68,21 +103,21 @@ export const GlobalSearchModal = () => {
                 <button
                   key={idx}
                   onClick={() => handleSelect(item.portal, item.submodule)}
-                  className="w-full flex items-center justify-between p-3 rounded-xl hover:bg-muted text-left transition-colors group cursor-pointer"
+                  className="w-full flex items-center justify-between p-2.5 rounded-xl hover:bg-muted/70 text-left transition-colors group cursor-pointer"
                 >
                   <div className="flex items-center gap-3">
                     <div className="p-2 rounded-lg bg-muted group-hover:bg-primary/10 text-muted-foreground group-hover:text-primary transition-colors">
                       <Icon className="w-4 h-4" />
                     </div>
                     <div>
-                      <h4 className="text-sm font-semibold text-foreground group-hover:text-primary transition-colors">
+                      <h4 className="text-sm font-medium text-foreground group-hover:text-primary transition-colors">
                         {item.title}
                       </h4>
                       <p className="text-xs text-muted-foreground">{item.desc}</p>
                     </div>
                   </div>
                   <div className="flex items-center gap-2">
-                    <span className="text-[10px] uppercase tracking-wider font-semibold px-2 py-0.5 rounded-full bg-muted text-muted-foreground">
+                    <span className="text-[10px] uppercase tracking-wider font-semibold px-2 py-0.5 rounded-md bg-muted text-muted-foreground">
                       {item.portal}
                     </span>
                     <ArrowRight className="w-4 h-4 text-muted-foreground group-hover:translate-x-1 transition-transform" />
@@ -104,3 +139,5 @@ export const GlobalSearchModal = () => {
     </div>
   );
 };
+
+export default GlobalSearchModal;
