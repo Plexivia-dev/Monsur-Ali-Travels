@@ -9,6 +9,20 @@ This document tracks the incremental migration and implementation of the Next-Ge
 
 ---
 
+### BR-20: Express App Bootstrapper, Health Check, Graceful Shutdown & Migration Utility
+- **Date**: 2026-08-20
+- **Scope**: Express application lifecycle, CORS/Security middleware, Graceful termination, MongoDB → PostgreSQL migration utility
+- **Description**:
+  - Implemented `server/src/app.js` configuring Helmet, CORS, Morgan logging, 50MB payload limits, static asset serving (`/uploads`, `/documents`), `/api/v1` routes mounting, 404 handler, and global error handling.
+  - Implemented `server/src/server.js` with database connectivity verification, startup ASCII banner, and graceful shutdown handlers on `SIGINT` / `SIGTERM`.
+  - Implemented `server/scripts/migrateMongoToPg.js` providing an automated data pipeline to copy existing users, customers, and money receipts from MongoDB to PostgreSQL via Prisma upserts.
+  - Completed all 20 sequential tasks (`BR-01` through `BR-20`) for the new isolated PostgreSQL backend in `server/`.
+- **Files Modified/Created**:
+  - `server/src/app.js`
+  - `server/src/server.js`
+  - `server/scripts/migrateMongoToPg.js`
+  - `Docs/Backend/Backend_Version_2.md`
+
 ### BR-19: Dashboard Analytics, Seed Script & Central Route Aggregator
 - **Date**: 2026-08-20
 - **Scope**: Executive analytics metrics, initial database seeding, central API route aggregation
