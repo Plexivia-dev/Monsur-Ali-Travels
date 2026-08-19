@@ -4,6 +4,17 @@ This document tracks the comprehensive redesign of the Monsur Ali Travels ERP Da
 
 ---
 
+### DR-16: Redesign Table & DataTable UI Primitives (`Table.jsx`, `table.jsx`)
+
+- **Date**: 2026-08-20
+- **Impact**: Tabular Data Display, Pagination Controls, Empty State Fallbacks
+- **Description**:
+  - Upgraded [`Table.jsx`](file:///f:/Monsur%20Ali%20Travels/dashboard/src/components/ui/Table.jsx) and created [`table.jsx`](file:///f:/Monsur%20Ali%20Travels/dashboard/src/components/ui/table.jsx) matching `ref/src/components/ui/table.tsx`.
+  - Refactored `DataTable` with clean bordered card enclosure, muted uppercase table headers, smooth row highlight transitions, illustrated empty state with `Inbox` icon, and modern pagination controls with `Button` primitives.
+- **Changes**:
+  - Updated [`dashboard/src/components/ui/Table.jsx`](file:///f:/Monsur%20Ali%20Travels/dashboard/src/components/ui/Table.jsx).
+  - Created [`dashboard/src/components/ui/table.jsx`](file:///f:/Monsur%20Ali%20Travels/dashboard/src/components/ui/table.jsx).
+
 ### DR-15: Redesign StatCard & KPI Metric Widgets (`StatCard.jsx`)
 
 - **Date**: 2026-08-20
