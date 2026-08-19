@@ -9,6 +9,25 @@ This document tracks the incremental migration and implementation of the Next-Ge
 
 ---
 
+### BR-11: Money Receipt & Payment Token Module (Validation, Service, Controller, Route)
+- **Date**: 2026-08-20
+- **Scope**: Payment tokens, accountant cash confirmation & seal, bank turnover tracking, financial KPIs
+- **Description**:
+  - Implemented `server/src/validations/receipt.validation.js` with Zod schemas for token generation, confirmation seal, cancellation, bank deposit, and date-range filters.
+  - Implemented `server/src/services/MoneyReceiptService.js` with:
+    - Auto customer matching by passport/phone if `customerId` is omitted.
+    - Status transitions (`pending` → `confirmed` → `cancelled`).
+    - Dynamic customer ledger recomputation upon confirmation (`totalPaidAmount` & `totalDueAmount`).
+    - Financial KPI aggregator (`/api/v1/receipts/summary`).
+    - Bank deposit handover toggle (`/api/v1/receipts/:id/bank-deposit`).
+  - Implemented `server/src/controllers/MoneyReceiptController.js` and `server/src/routes/MoneyReceiptRoute.js`.
+- **Files Modified/Created**:
+  - `server/src/validations/receipt.validation.js`
+  - `server/src/services/MoneyReceiptService.js`
+  - `server/src/controllers/MoneyReceiptController.js`
+  - `server/src/routes/MoneyReceiptRoute.js`
+  - `Docs/Backend/Backend_Version_2.md`
+
 ### BR-10: Central Customer Module (Validation, Service, Controller, Route)
 - **Date**: 2026-08-20
 - **Scope**: Central Customer profiles, 8-service relation aggregator, lookup autocomplete, financial summary
