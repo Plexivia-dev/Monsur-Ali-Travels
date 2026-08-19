@@ -108,3 +108,25 @@
   - `dashboard/src/components/data/IndianVisaDataTable.jsx`
   - `dashboard/src/components/data/PassportSubmissionDataTable.jsx`
   - `dashboard/src/components/layout/Sidebar.jsx`
+
+---
+
+### TK-06: Three Customizable Certificate Studios (Experience, Character, Marriage)
+- **Date**: 2026-08-19
+- **Scope**: Document Studio Certificate Templates
+- **Description**:
+  - Built **Experience Certificate Studio** (`dashboard/src/components/docs/certificate-experience/`):
+    - Customizable issuing company header, logo, trade license, custom certificate title/subtitle.
+    - Employee details, job role, dates of service, and 5 1-click presets (Construction Carpenter, Agricultural Worker, Chef, Electrician, Driver).
+    - Fully editable duty statement, conduct review, and authorized signatory blocks.
+  - Built **Character Certificate Studio** (`dashboard/src/components/docs/certificate-character/`):
+    - Customizable issuing authority (Ward Councillor, Notary, Corporate Employer, College Principal), candidate details, conduct praise, and verification seal.
+  - Built **Marriage Certificate Studio** (`dashboard/src/components/docs/certificate-marriage/`):
+    - Kazi office / Registrar header, Groom vs. Bride 2-column comparative layout, marriage terms, dower amount, witnesses, and official Nikahnama extract.
+  - Mounted all three studios in `DocumentStudio.jsx` and added to `Sidebar.jsx` under Document Studio.
+- **Files Modified/Created**:
+  - `dashboard/src/components/docs/certificate-experience/`
+  - `dashboard/src/components/docs/certificate-character/`
+  - `dashboard/src/components/docs/certificate-marriage/`
+  - `dashboard/src/pages/DocumentStudio.jsx`
+  - `dashboard/src/components/layout/Sidebar.jsx`
