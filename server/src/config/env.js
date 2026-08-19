@@ -20,7 +20,7 @@ dotenv.config();
 
 const envSchema = z.object({
   NODE_ENV: z.enum(['development', 'production', 'test']).default('development'),
-  PORT: z.coerce.number().default(5092),
+  PORT: z.coerce.number().default(5093),
   DATABASE_URL: z.string().min(1, 'DATABASE_URL is required'),
   JWT_SECRET: z.string().default('monsuralitravels_super_secret_access_token_jwt_2026'),
   JWT_EXPIRES_IN: z.string().default('7d'),
