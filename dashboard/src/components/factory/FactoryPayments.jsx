@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useFactoryData, useAddFactoryPayment } from '../../api/hooks';
+import { useFactoryData, useCreateFactoryPayment } from '../../api/hooks';
 import { DataTable } from "../ui/table";
 import { Badge } from "../ui/badge";
 import { Modal } from '../ui/Modal';
@@ -10,7 +10,7 @@ import { usePortalStore } from '../../store/usePortalStore';
 
 export const FactoryPayments = () => {
   const { data: factoryData, isLoading } = useFactoryData();
-  const addPaymentMutation = useAddFactoryPayment();
+  const createPaymentMutation = useCreateFactoryPayment();
   const addToast = usePortalStore((state) => state.addToast);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
