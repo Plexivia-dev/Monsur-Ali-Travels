@@ -136,15 +136,32 @@ export function InvoicePreview({ data = {}, onPrint }) {
               </div>
             </div>
 
-            {/* Client Billed-To Info */}
-            <div className="bg-slate-50 p-3.5 print:p-2.5 rounded-[4px] border border-slate-300 text-sm print:text-xs space-y-0.5">
-              <span className="text-xs print:text-[10px] font-extrabold uppercase tracking-wider text-slate-600 block">BILLED TO:</span>
-              <div className="font-bold text-base print:text-sm text-slate-900">{client.name || 'সম্মানিত কাস্টমার'}</div>
-              {client.contactPerson && <div>Attn: {client.contactPerson}</div>}
-              {client.address && <div>Address: {client.address}</div>}
-              {(client.phone || client.email) && (
-                <div>Phone: {client.phone || 'N/A'} | Email: {client.email || 'N/A'}</div>
-              )}
+            {/* Client Billed-To Info & Official Verification QR */}
+            <div className="bg-slate-50 p-3.5 print:p-2.5 rounded-[4px] border border-slate-300 flex justify-between items-center gap-4">
+              <div className="text-sm print:text-xs space-y-0.5 flex-1">
+                <span className="text-xs print:text-[10px] font-extrabold uppercase tracking-wider text-slate-600 block">BILLED TO:</span>
+                <div className="font-bold text-base print:text-sm text-slate-900">{client.name || 'সম্মানিত কাস্টমার'}</div>
+                {client.contactPerson && <div>Attn: {client.contactPerson}</div>}
+                {client.address && <div>Address: {client.address}</div>}
+                {(client.phone || client.email) && (
+                  <div>Phone: {client.phone || 'N/A'} | Email: {client.email || 'N/A'}</div>
+                )}
+              </div>
+
+              {/* Official Verification QR Code (Larger Height & Width) */}
+              <div className="flex flex-col items-center justify-center space-y-1 shrink-0">
+                <div className="p-1.5 bg-white border border-slate-300 rounded shadow-xs">
+                  <img
+                    src={data.qrCode || (data._id ? `${API_BASE_URL}/api/v1/qr/invoice/${data._id}?format=svg` : `${API_BASE_URL}/api/v1/qr/agency?format=svg`)}
+                    alt="Invoice Verification QR"
+                    className="w-24 h-24 print:w-20 print:h-20 object-contain"
+                    crossOrigin="anonymous"
+                  />
+                </div>
+                <span className="text-[9px] print:text-[8px] font-mono text-slate-600 font-bold tracking-wider uppercase">
+                  Scan to Verify
+                </span>
+              </div>
             </div>
 
             {/* Line Items Table with Visible Cell Grid Borders */}
@@ -205,30 +222,15 @@ export function InvoicePreview({ data = {}, onPrint }) {
             </div>
           </div>
 
-          {/* Signature Block & Official QR Verification Stamp */}
+          {/* Signature Block */}
           <div className="mt-auto pt-6 print:pt-4 flex justify-between items-end text-xs print:text-[11px] text-slate-900 print:break-inside-avoid page-break-inside-avoid">
             <div className="text-center space-y-1">
-              <div className="border-b border-slate-400 w-36 print:w-32 mb-1"></div>
+              <div className="border-b border-slate-400 w-44 print:w-40 mb-1"></div>
               <div className="text-xs print:text-[10px] text-slate-500 font-medium">Customer Signature</div>
             </div>
 
-            {/* Official Verification QR Code */}
-            <div className="flex flex-col items-center justify-center space-y-0.5">
-              <div className="p-1 border border-slate-300 rounded bg-white shadow-2xs">
-                <img
-                  src={data.qrCode || (data._id ? `${API_BASE_URL}/api/v1/qr/invoice/${data._id}?format=svg` : `${API_BASE_URL}/api/v1/qr/agency?format=svg`)}
-                  alt="Invoice Verification QR"
-                  className="w-14 h-14 print:w-12 print:h-12 object-contain"
-                  crossOrigin="anonymous"
-                />
-              </div>
-              <span className="text-[8px] font-mono text-slate-600 font-bold tracking-wider uppercase">
-                Scan to Verify
-              </span>
-            </div>
-
             <div className="text-center space-y-1">
-              <div className="border-b-2 border-slate-900 w-44 print:w-36 mb-1"></div>
+              <div className="border-b-2 border-slate-900 w-52 print:w-44 mb-1"></div>
               <div className="font-bold text-sm print:text-xs text-slate-900">{billerInfo.name}</div>
               <div className="text-xs print:text-[10px] text-slate-600">Authorized Signature & Seal</div>
             </div>
