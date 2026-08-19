@@ -4,6 +4,16 @@ This document tracks the comprehensive redesign of the Monsur Ali Travels ERP Da
 
 ---
 
+### DR-09: Port Breadcrumb UI Primitives (`breadcrumb.jsx`)
+
+- **Date**: 2026-08-20
+- **Impact**: Navigation Header, Breadcrumbs Component, Path Hierarchy
+- **Description**:
+  - Implemented [`breadcrumb.jsx`](file:///f:/Monsur%20Ali%20Travels/dashboard/src/components/ui/breadcrumb.jsx) (`Breadcrumb`, `BreadcrumbList`, `BreadcrumbItem`, `BreadcrumbLink`, `BreadcrumbPage`, `BreadcrumbSeparator`, `BreadcrumbEllipsis`) matching `ref/src/components/ui/breadcrumb.tsx`.
+  - Configured chevron icon separators, smooth interactive link transitions, and current page emphasis.
+- **Changes**:
+  - Created [`dashboard/src/components/ui/breadcrumb.jsx`](file:///f:/Monsur%20Ali%20Travels/dashboard/src/components/ui/breadcrumb.jsx).
+
 ### DR-08: Port Collapsible & Modern Sidebar UI Primitives
 
 - **Date**: 2026-08-20
