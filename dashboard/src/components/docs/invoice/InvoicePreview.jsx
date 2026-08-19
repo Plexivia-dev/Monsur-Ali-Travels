@@ -149,7 +149,7 @@ export function InvoicePreview({ data = {}, onPrint }) {
               </div>
 
               {/* Official Verification QR Code (Larger Height & Width) */}
-              <div className="flex flex-col items-center justify-center space-y-1 shrink-0">
+              <div className="flex items-center justify-center shrink-0">
                 <div className="p-1.5 bg-white border border-slate-300 rounded shadow-xs">
                   <img
                     src={data.qrCode || (data._id ? `${API_BASE_URL}/api/v1/qr/invoice/${data._id}?format=svg` : `${API_BASE_URL}/api/v1/qr/agency?format=svg`)}
@@ -158,9 +158,6 @@ export function InvoicePreview({ data = {}, onPrint }) {
                     crossOrigin="anonymous"
                   />
                 </div>
-                <span className="text-[9px] print:text-[8px] font-mono text-slate-600 font-bold tracking-wider uppercase">
-                  Scan to Verify
-                </span>
               </div>
             </div>
 
