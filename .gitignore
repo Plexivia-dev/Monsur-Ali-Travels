@@ -38,3 +38,4 @@ backups/
 
 # Frontend split repository folder
 .agents
+ref/
