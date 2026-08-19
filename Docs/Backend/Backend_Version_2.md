@@ -9,6 +9,23 @@ This document tracks the incremental migration and implementation of the Next-Ge
 
 ---
 
+### BR-17: Employment Agreement & Salary Slip / Payroll Module
+- **Date**: 2026-08-20
+- **Scope**: Employment Agreements, `AGR-...` tracking generator, monthly Salary Slips, `SLIP-...` tracking generator
+- **Description**:
+  - Implemented `server/src/validations/document.validation.js` with Zod schemas for Employment Agreement (Bangla object keys matching UI requirements) and monthly Salary Slips.
+  - Implemented `server/src/services/AgreementService.js` and `server/src/services/PayrollService.js` with auto-generation of unique IDs (`AGR-XXXXXXXX`, `SLIP-XXXXXXXXXX`) and customer auto-sync.
+  - Implemented `server/src/controllers/AgreementController.js`, `server/src/controllers/PayrollController.js`, and their respective Express routes.
+- **Files Modified/Created**:
+  - `server/src/validations/document.validation.js`
+  - `server/src/services/AgreementService.js`
+  - `server/src/services/PayrollService.js`
+  - `server/src/controllers/AgreementController.js`
+  - `server/src/controllers/PayrollController.js`
+  - `server/src/routes/AgreementRoute.js`
+  - `server/src/routes/PayrollRoute.js`
+  - `Docs/Backend/Backend_Version_2.md`
+
 ### BR-16: Invoice & Billing Module (Validation, Service, Controller, Route)
 - **Date**: 2026-08-20
 - **Scope**: Invoicing, line-item subtotal and tax calculation, payment status tracking, customer auto-linking
