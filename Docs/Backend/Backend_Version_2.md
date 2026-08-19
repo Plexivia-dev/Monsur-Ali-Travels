@@ -9,6 +9,23 @@ This document tracks the incremental migration and implementation of the Next-Ge
 
 ---
 
+### BR-13: Indian Visa Application Module (Validation, Service, Controller, Route)
+- **Date**: 2026-08-20
+- **Scope**: Indian Visa submissions, `IVISA-...` tracking generator, stage history audit trail, customer auto-sync
+- **Description**:
+  - Implemented `server/src/validations/visa.validation.js` with Zod schemas for visa creation, stage transitions (`pending`, `submitted`, `accepted`, `rejected`, `delivered`), and search queries.
+  - Implemented `server/src/services/IndianVisaService.js` with:
+    - Auto-generation of unique tracking codes (`IVISA-XXXXXXXXXX`).
+    - Central customer auto-sync and ledger billing via `CustomerSyncService`.
+    - Stage transition history logs with timestamps and administrative notes.
+  - Implemented `server/src/controllers/IndianVisaController.js` and `server/src/routes/IndianVisaRoute.js`.
+- **Files Modified/Created**:
+  - `server/src/validations/visa.validation.js`
+  - `server/src/services/IndianVisaService.js`
+  - `server/src/controllers/IndianVisaController.js`
+  - `server/src/routes/IndianVisaRoute.js`
+  - `Docs/Backend/Backend_Version_2.md`
+
 ### BR-12: Case Management (SA) Module (Validation, Service, Controller, Route)
 - **Date**: 2026-08-20
 - **Scope**: Generic Case Management, 5-stage lifecycle state machine, 3-step payment milestones, auto customer linking
