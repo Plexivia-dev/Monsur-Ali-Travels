@@ -154,31 +154,29 @@ export const Sidebar = () => {
                           className="group/collapsible"
                         >
                           <SidebarMenuItem>
-                            <CollapsibleTrigger asChild>
-                              <SidebarMenuButton
-                                tooltip={displayItemLabel}
-                                onClick={(e) => {
-                                  if (isCollapsed) {
-                                    e.preventDefault();
-                                    handleParentMenuClick(item.label);
-                                  }
-                                }}
+                            <SidebarMenuButton
+                              tooltip={displayItemLabel}
+                              onClick={(e) => {
+                                e.preventDefault();
+                                handleParentMenuClick(item.label);
+                              }}
+                              className={cn(
+                                'w-full justify-between cursor-pointer font-medium text-sm py-2 px-3 rounded-xl transition-all duration-200 text-white hover:text-white hover:bg-white/10',
+                                isChildActive && 'text-white font-bold bg-sky-500/25 border border-sky-400/40 shadow-xs'
+                              )}
+                            >
+                              <div className="flex items-center gap-2.5 min-w-0">
+                                {renderIcon(item.icon, cn('w-4.5 h-4.5 shrink-0 transition-colors', isChildActive ? 'text-white' : 'text-sky-300'))}
+                                <span className="truncate">{displayItemLabel}</span>
+                              </div>
+                              <ChevronRight
                                 className={cn(
-                                  'w-full justify-between cursor-pointer font-medium text-sm py-2 px-3 rounded-xl transition-all duration-200 text-white hover:text-white hover:bg-white/10',
-                                  isChildActive && 'text-white font-bold bg-sky-500/25 border border-sky-400/40 shadow-xs'
+                                  'w-4 h-4 text-sky-300 transition-transform duration-200',
+                                  isOpen && 'rotate-90',
+                                  'group-data-[collapsible=icon]:hidden'
                                 )}
-                              >
-                                <div className="flex items-center gap-2.5 min-w-0">
-                                  {renderIcon(item.icon, cn('w-4.5 h-4.5 shrink-0 transition-colors', isChildActive ? 'text-white' : 'text-sky-300'))}
-                                  <span className="truncate">{displayItemLabel}</span>
-                                </div>
-                                <ChevronRight
-                                  className={cn(
-                                    'w-4 h-4 text-sky-300 transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90 group-data-[collapsible=icon]:hidden'
-                                  )}
-                                />
-                              </SidebarMenuButton>
-                            </CollapsibleTrigger>
+                              />
+                            </SidebarMenuButton>
                             <CollapsibleContent>
                               <SidebarMenuSub className="ml-5 border-l-2 border-sky-400/30 pl-3 my-1.5 space-y-1">
                                 {item.childItems.map((subItem, subIdx) => {

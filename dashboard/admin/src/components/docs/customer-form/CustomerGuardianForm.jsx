@@ -38,7 +38,7 @@ import { toast } from 'sonner';
 import { useTranslation } from 'react-i18next';
 
 export function CustomerGuardianForm({ data, onChange, onReset, onSave, onPreview, isSubmitting }) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [selectedPreviewDoc, setSelectedPreviewDoc] = useState(null);
   const [detectedCustomer, setDetectedCustomer] = useState(null);
   const [hasPromptedFor, setHasPromptedFor] = useState(new Set());
@@ -295,12 +295,14 @@ export function CustomerGuardianForm({ data, onChange, onReset, onSave, onPrevie
               {t('customerForm.serviceType', 'Service Type (Purpose)')}
             </label>
             <select
-              value={data.serviceType || SERVICE_TYPES[0]}
+              value={data.serviceType || 'Indian Visa Application'}
               onChange={(e) => onChange(prev => ({ ...prev, serviceType: e.target.value }))}
               className="w-full px-3 py-2 bg-background border border-border rounded-lg text-foreground font-semibold text-xs focus:outline-hidden focus:ring-1 focus:ring-primary cursor-pointer"
             >
               {SERVICE_TYPES.map((st, i) => (
-                <option key={i} value={st}>{st}</option>
+                <option key={st.id || i} value={st.label}>
+                  {i18n?.language === 'bn' ? st.bn : st.label}
+                </option>
               ))}
             </select>
           </div>
@@ -316,7 +318,9 @@ export function CustomerGuardianForm({ data, onChange, onReset, onSave, onPrevie
               className="w-full px-3 py-2 bg-background border border-border rounded-lg text-foreground font-bold text-xs focus:outline-hidden focus:ring-1 focus:ring-primary cursor-pointer"
             >
               {STATUS_OPTIONS.map((so) => (
-                <option key={so.id} value={so.id}>{so.label}</option>
+                <option key={so.id} value={so.id}>
+                  {i18n?.language === 'bn' ? so.bn : so.label}
+                </option>
               ))}
             </select>
           </div>

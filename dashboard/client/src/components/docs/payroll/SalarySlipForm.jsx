@@ -142,7 +142,7 @@ export function SalarySlipForm({ formData, setFormData, onSubmit, onReset, isSub
           className="flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-semibold border border-border bg-muted/40 hover:bg-muted text-muted-foreground hover:text-foreground transition-all cursor-pointer shrink-0 self-start sm:self-auto"
         >
           <RotateCcw className="w-3.5 h-3.5" />
-          <span>রিসেট (Reset)</span>
+          <span>Reset</span>
         </button>
       </div>
 
@@ -200,12 +200,12 @@ export function SalarySlipForm({ formData, setFormData, onSubmit, onReset, isSub
         {currentStep === 1 && (
           <div className="bg-card border border-border p-4 rounded-md shadow-xs space-y-3 animate-in fade-in-50 duration-150">
             <h3 className="font-bold text-foreground flex items-center gap-2 text-xs text-emerald-600 border-b border-border pb-2">
-              <User className="w-4 h-4" /> ১. কর্মচারী ও স্যালারি নিয়ন্ত্রণ বিবরণী (Employee Profile & Details)
+              <User className="w-4 h-4" /> Employee Profile & Details
             </h3>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
               <div>
-                <label className="block font-semibold text-foreground mb-1">কর্মচারীর পূর্ণ নাম (Employee Name) *</label>
+                <label className="block font-semibold text-foreground mb-1">Employee Name*</label>
                 <input
                   type="text"
                   required
@@ -216,7 +216,7 @@ export function SalarySlipForm({ formData, setFormData, onSubmit, onReset, isSub
               </div>
 
               <div>
-                <label className="block font-semibold text-foreground mb-1">কর্মচারী আইডি (Employee ID) *</label>
+                <label className="block font-semibold text-foreground mb-1">Employee ID*</label>
                 <input
                   type="text"
                   required
@@ -227,7 +227,7 @@ export function SalarySlipForm({ formData, setFormData, onSubmit, onReset, isSub
               </div>
 
               <div>
-                <label className="block font-semibold text-foreground mb-1">পদবী (Designation)</label>
+                <label className="block font-semibold text-foreground mb-1">Designation</label>
                 <input
                   type="text"
                   value={formData.designation}
@@ -237,7 +237,7 @@ export function SalarySlipForm({ formData, setFormData, onSubmit, onReset, isSub
               </div>
 
               <div>
-                <label className="block font-semibold text-foreground mb-1">বিভাগ (Department)</label>
+                <label className="block font-semibold text-foreground mb-1">বিDepartment</label>
                 <input
                   type="text"
                   value={formData.department}
@@ -247,7 +247,7 @@ export function SalarySlipForm({ formData, setFormData, onSubmit, onReset, isSub
               </div>
 
               <div>
-                <label className="block font-semibold text-foreground mb-1">যোগদানের তারিখ (Joining Date)</label>
+                <label className="block font-semibold text-foreground mb-1">Joining Date</label>
                 <DatePicker
                   value={formData.joiningDate}
                   onChange={(val) => handleChange('joiningDate', val)}
@@ -255,7 +255,7 @@ export function SalarySlipForm({ formData, setFormData, onSubmit, onReset, isSub
               </div>
 
               <div>
-                <label className="block font-semibold text-foreground mb-1">বেতনের মাস (Salary Month) *</label>
+                <label className="block font-semibold text-foreground mb-1">Salary Month*</label>
                 <input
                   type="text"
                   required
@@ -266,7 +266,7 @@ export function SalarySlipForm({ formData, setFormData, onSubmit, onReset, isSub
               </div>
 
               <div>
-                <label className="block font-semibold text-foreground mb-1">পরিশোধের তারিখ (Pay Date)</label>
+                <label className="block font-semibold text-foreground mb-1">Pay Date</label>
                 <DatePicker
                   value={formData.payDate}
                   onChange={(val) => handleChange('payDate', val)}
@@ -275,7 +275,7 @@ export function SalarySlipForm({ formData, setFormData, onSubmit, onReset, isSub
 
               <div>
                 <div className="flex items-center justify-between mb-1">
-                  <label className="block font-semibold text-foreground">স্লিপ নম্বর (Slip No.)</label>
+                  <label className="block font-semibold text-foreground">Slip No.</label>
                   <button
                     type="button"
                     onClick={() => {

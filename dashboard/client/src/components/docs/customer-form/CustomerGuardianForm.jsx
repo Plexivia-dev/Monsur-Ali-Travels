@@ -293,12 +293,14 @@ export function CustomerGuardianForm({ data, onChange, onReset, onSave, onPrevie
               Service Type (কাজের ধরণ / উদ্দেশ্য)
             </label>
             <select
-              value={data.serviceType || SERVICE_TYPES[0]}
+              value={data.serviceType || 'Indian Visa Application'}
               onChange={(e) => onChange(prev => ({ ...prev, serviceType: e.target.value }))}
               className="w-full px-3 py-2 bg-background border border-border rounded-lg text-foreground font-semibold text-xs focus:outline-hidden focus:ring-1 focus:ring-primary cursor-pointer"
             >
               {SERVICE_TYPES.map((st, i) => (
-                <option key={i} value={st}>{st}</option>
+                <option key={st.id || i} value={st.label}>
+                  {st.label} ({st.bn})
+                </option>
               ))}
             </select>
           </div>
@@ -314,7 +316,9 @@ export function CustomerGuardianForm({ data, onChange, onReset, onSave, onPrevie
               className="w-full px-3 py-2 bg-background border border-border rounded-lg text-foreground font-bold text-xs focus:outline-hidden focus:ring-1 focus:ring-primary cursor-pointer"
             >
               {STATUS_OPTIONS.map((so) => (
-                <option key={so.id} value={so.id}>{so.label}</option>
+                <option key={so.id} value={so.id}>
+                  {so.label} ({so.bn})
+                </option>
               ))}
             </select>
           </div>
