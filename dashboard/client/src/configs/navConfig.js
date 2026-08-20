@@ -229,35 +229,5 @@ export const navGroups = [
       },
     ],
   },
-  {
-    groupLabel: 'System Administration',
-    groupKey: 'nav.admin',
-    portal: 'admin',
-    items: [
-      {
-        icon: 'Users',
-        label: 'System Users',
-        key: 'nav.systemUsers',
-        portal: 'admin',
-        submodule: 'users',
-        href: '/dashboard/admin/users',
-      },
-      {
-        icon: 'History',
-        label: 'Audit & Database Logs',
-        key: 'nav.auditLogs',
-        portal: 'admin',
-        submodule: 'system-logs',
-        href: '/dashboard/admin/system-logs',
-      },
-      {
-        icon: 'Settings2',
-        label: 'Global Settings',
-        key: 'nav.globalSettings',
-        portal: 'admin',
-        submodule: 'settings',
-        href: '/dashboard/admin/settings',
-      },
-    ],
-  },
 ];
+
