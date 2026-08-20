@@ -164,7 +164,7 @@ export const Sidebar = () => {
                                 )}
                               >
                                 <div className="flex items-center gap-2.5 min-w-0">
-                                  {renderIcon(item.icon, cn('w-4 h-4 shrink-0', isChildActive ? 'text-sky-400' : 'text-muted-foreground'))}
+                                  {renderIcon(item.icon, cn('w-4 h-4 shrink-0 transition-colors', isChildActive ? 'text-sky-400' : 'text-muted-foreground'))}
                                   <span className="truncate">{item.label}</span>
                                 </div>
                                 <ChevronRight
@@ -188,7 +188,7 @@ export const Sidebar = () => {
                                         className={cn(
                                           'cursor-pointer text-xs rounded-md py-1.5 transition-colors duration-200',
                                           isActive
-                                            ? 'bg-sky-500 text-slate-950 font-bold shadow-xs hover:bg-sky-400 hover:text-slate-950'
+                                            ? 'bg-sky-500/15 text-sky-400 font-semibold'
                                             : 'text-muted-foreground hover:text-foreground hover:bg-sidebar-accent'
                                         )}
                                       >
@@ -215,13 +215,13 @@ export const Sidebar = () => {
                           className={cn(
                             'cursor-pointer text-xs font-medium rounded-lg transition-all duration-200',
                             isActive
-                              ? 'bg-sky-500 text-slate-950 font-bold shadow-md hover:bg-sky-400 hover:text-slate-950'
+                              ? 'bg-sidebar-accent text-sidebar-foreground font-semibold'
                               : 'text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground'
                           )}
                         >
                           {renderIcon(
                             item.icon,
-                            cn('w-4 h-4 shrink-0', isActive ? 'text-slate-950 font-bold' : 'text-muted-foreground')
+                            cn('w-4 h-4 shrink-0 transition-colors', isActive ? 'text-sky-400' : 'text-muted-foreground')
                           )}
                           <span className="truncate">{item.label}</span>
                         </SidebarMenuButton>
