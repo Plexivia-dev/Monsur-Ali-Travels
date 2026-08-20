@@ -6,6 +6,7 @@ import { toast } from 'sonner';
 import { formatToDdMmYyyy } from '../../lib/utils';
 import { usePortal } from '../../context/PortalContext';
 import { InvoicePreview } from '../docs/invoice/InvoicePreview';
+import { ConfirmDeleteDialog } from '@/components/ui/confirm-delete-dialog';
 
 export function InvoiceDataTable() {
   const { switchPortal } = usePortal();
@@ -15,6 +16,8 @@ export function InvoiceDataTable() {
   const [status, setStatus] = useState('all');
   const [isLoading, setIsLoading] = useState(false);
   const [previewItem, setPreviewItem] = useState(null);
+  const [deleteTarget, setDeleteTarget] = useState(null);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const fetchData = async (page = 1, limit = pagination.limit, searchQuery = search, statusFilter = status) => {
     try {
@@ -50,15 +53,19 @@ export function InvoiceDataTable() {
     fetchData(1, pagination.limit, search, status);
   };
 
-  const handleDelete = async (id, invoiceNo) => {
-    if (!window.confirm(`আপনি কি ইনভয়েস "${invoiceNo || id}" মুছে ফেলতে চান?`)) return;
+  const handleConfirmDelete = async () => {
+    if (!deleteTarget) return;
     try {
-      await apiClient.delete(`/api/v1/docs/invoices/${id}`);
+      setIsDeleting(true);
+      await apiClient.delete(`/api/v1/docs/invoices/${deleteTarget.id}`);
       toast.success('ইনভয়েস মুছে ফেলা হয়েছে।');
+      setDeleteTarget(null);
       fetchData(pagination.page, pagination.limit, search, status);
     } catch (err) {
       console.error('Failed to delete invoice:', err);
       toast.error('ইনভয়েস মুছতে সমস্যা হয়েছে।');
+    } finally {
+      setIsDeleting(false);
     }
   };
 
@@ -210,7 +217,7 @@ export function InvoiceDataTable() {
                         </button>
                         <button
                           type="button"
-                          onClick={() => handleDelete(item._id, item.invoiceNo)}
+                          onClick={() => setDeleteTarget({ id: item._id, invoiceNo: item.invoiceNo })}
                           className="p-1.5 rounded hover:bg-rose-500/10 text-rose-500 transition-colors cursor-pointer"
                           title="Delete Record"
                         >
@@ -275,6 +282,18 @@ export function InvoiceDataTable() {
           </div>
         </div>
       )}
+
+      {/* Confirm Delete Alert Dialog */}
+      <ConfirmDeleteDialog
+        open={Boolean(deleteTarget)}
+        onOpenChange={(open) => !open && setDeleteTarget(null)}
+        onConfirm={handleConfirmDelete}
+        title="Are you sure you want to delete this?"
+        description={`Invoice "${deleteTarget?.invoiceNo || deleteTarget?.id}" will be permanently removed.`}
+        cancelText="NO"
+        confirmText="Yes"
+        isDeleting={isDeleting}
+      />
     </div>
   );
 }

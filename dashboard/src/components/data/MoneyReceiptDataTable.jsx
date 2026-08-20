@@ -26,6 +26,7 @@ import { formatToDdMmYyyy } from '../../lib/utils';
 import { MoneyReceiptModal } from '../docs/receipt/MoneyReceiptModal';
 import { ReceiptConfirmModal } from '../docs/receipt/ReceiptConfirmModal';
 import { MoneyReceiptPrintSlip } from '../docs/receipt/MoneyReceiptPrintSlip';
+import { ConfirmDeleteDialog } from '@/components/ui/confirm-delete-dialog';
 
 export function MoneyReceiptDataTable() {
   const [data, setData] = useState([]);
@@ -41,7 +42,9 @@ export function MoneyReceiptDataTable() {
   // Modals
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [confirmModalItem, setConfirmModalItem] = useState(null);
-  const [previewItem, setPreviewItem] = useState(null);
+  const [bankDepositTarget, setBankDepositTarget] = useState(null);
+  const [deleteTarget, setDeleteTarget] = useState(null);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const fetchSummary = async () => {
     try {
@@ -90,21 +93,16 @@ export function MoneyReceiptDataTable() {
     fetchData(1, pagination.limit, search, status, serviceType);
   };
 
-  const handleBankDepositToggle = async (item) => {
-    const newState = !item.handedOverToBank;
-    const confirmPrompt = window.confirm(
-      newState
-        ? `টোকেন #${item.receiptNo} এর টাকা ব্যাংকে জমা সম্পন্ন হয়েছে মর্মে রেকর্ড করতে চান?`
-        : `ব্যাংক জমা স্ট্যাটাস রিসেট করতে চান?`
-    );
-    if (!confirmPrompt) return;
-
+  const handleConfirmBankDeposit = async () => {
+    if (!bankDepositTarget) return;
+    const newState = !bankDepositTarget.handedOverToBank;
     try {
-      const res = await apiClient.patch(`/api/v1/receipts/${item._id || item.id}/bank-deposit`, {
+      const res = await apiClient.patch(`/api/v1/receipts/${bankDepositTarget._id || bankDepositTarget.id}/bank-deposit`, {
         handedOverToBank: newState,
       });
       if (res.data?.success || res.data?.status === 'success') {
         toast.success(`ব্যাংক ডিপোজিট স্ট্যাটাস আপডেট হয়েছে।`);
+        setBankDepositTarget(null);
         fetchData(pagination.page);
         fetchSummary();
       }
@@ -129,17 +127,21 @@ export function MoneyReceiptDataTable() {
     }
   };
 
-  const handleDelete = async (id, receiptNo) => {
-    if (!window.confirm(`আপনি কি নিশ্চিত যে টোকেন #${receiptNo} মুছে ফেলতে চান?`)) return;
+  const handleConfirmDelete = async () => {
+    if (!deleteTarget) return;
     try {
-      const res = await apiClient.delete(`/api/v1/receipts/${id}`);
+      setIsDeleting(true);
+      const res = await apiClient.delete(`/api/v1/receipts/${deleteTarget.id}`);
       if (res.data?.success || res.data?.status === 'success') {
-        toast.success(`টোকেন #${receiptNo} সফলভাবে মুছে ফেলা হয়েছে।`);
+        toast.success(`টোকেন #${deleteTarget.receiptNo} সফলভাবে মুছে ফেলা হয়েছে।`);
+        setDeleteTarget(null);
         fetchData(pagination.page);
         fetchSummary();
       }
     } catch (err) {
       toast.error('টোকেন মুছতে ব্যর্থ হয়েছে।');
+    } finally {
+      setIsDeleting(false);
     }
   };
 
@@ -422,7 +424,7 @@ export function MoneyReceiptDataTable() {
                       <td className="px-4 py-3">
                         {isConfirmed ? (
                           <button
-                            onClick={() => handleBankDepositToggle(item)}
+                            onClick={() => setBankDepositTarget(item)}
                             className={`px-2 py-0.5 rounded text-[10px] font-bold border transition-colors cursor-pointer flex items-center gap-1 ${
                               item.handedOverToBank
                                 ? 'bg-blue-500/10 text-blue-700 border-blue-300'
@@ -476,7 +478,7 @@ export function MoneyReceiptDataTable() {
 
                           {/* Delete Button */}
                           <button
-                            onClick={() => handleDelete(item._id || item.id, item.receiptNo)}
+                            onClick={() => setDeleteTarget({ id: item._id || item.id, receiptNo: item.receiptNo })}
                             className="p-1.5 rounded-lg border border-border bg-background hover:bg-rose-50 text-muted-foreground hover:text-rose-600 transition-colors cursor-pointer"
                             title="মুছে ফেলুন"
                           >
@@ -548,6 +550,30 @@ export function MoneyReceiptDataTable() {
           </div>
         </div>
       )}
+
+      {/* Confirm Delete Alert Dialog */}
+      <ConfirmDeleteDialog
+        open={Boolean(deleteTarget)}
+        onOpenChange={(open) => !open && setDeleteTarget(null)}
+        onConfirm={handleConfirmDelete}
+        title="Are you sure you want to delete this?"
+        description={`Money receipt token #${deleteTarget?.receiptNo} will be permanently removed.`}
+        cancelText="NO"
+        confirmText="Yes"
+        isDeleting={isDeleting}
+      />
+
+      {/* Confirm Bank Deposit Status Change Dialog */}
+      <ConfirmDeleteDialog
+        open={Boolean(bankDepositTarget)}
+        onOpenChange={(open) => !open && setBankDepositTarget(null)}
+        onConfirm={handleConfirmBankDeposit}
+        type={bankDepositTarget?.handedOverToBank ? "reset" : "delete"}
+        title={bankDepositTarget?.handedOverToBank ? "Are you sure you want to reset this?" : "Are you sure you want to update bank deposit?"}
+        description={bankDepositTarget?.handedOverToBank ? `Reset bank deposit status for token #${bankDepositTarget?.receiptNo}.` : `Record token #${bankDepositTarget?.receiptNo} as deposited to bank.`}
+        cancelText="NO"
+        confirmText="Yes"
+      />
 
     </div>
   );

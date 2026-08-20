@@ -22,6 +22,7 @@ import { formatToDdMmYyyy } from '../../lib/utils';
 import { usePortal } from '../../context/PortalContext';
 import { CustomerGuardianPreview } from '../docs/customer-form/CustomerGuardianPreview';
 import { STATUS_OPTIONS, SERVICE_TYPES } from '../docs/customer-form/sampleData';
+import { ConfirmDeleteDialog } from '@/components/ui/confirm-delete-dialog';
 
 export function CustomerGuardianDataTable({ onEditItem }) {
   const { switchPortal } = usePortal();
@@ -32,6 +33,8 @@ export function CustomerGuardianDataTable({ onEditItem }) {
   const [serviceType, setServiceType] = useState('all');
   const [isLoading, setIsLoading] = useState(false);
   const [previewItem, setPreviewItem] = useState(null);
+  const [deleteTarget, setDeleteTarget] = useState(null);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const fetchData = async (
     page = 1,
@@ -93,15 +96,19 @@ export function CustomerGuardianDataTable({ onEditItem }) {
     }
   };
 
-  const handleDelete = async (id, appNo) => {
-    if (!window.confirm(`আপনি কি কাস্টমার ফাইল "${appNo || id}" মুছে ফেলতে চান?`)) return;
+  const handleConfirmDelete = async () => {
+    if (!deleteTarget) return;
     try {
-      await apiClient.delete(`/api/v1/docs/customer-guardians/${id}`);
+      setIsDeleting(true);
+      await apiClient.delete(`/api/v1/docs/customer-guardians/${deleteTarget.id}`);
       toast.success('কাস্টমার ফাইল মুছে ফেলা হয়েছে।');
+      setDeleteTarget(null);
       fetchData(pagination.page, pagination.limit, search, status, serviceType);
     } catch (err) {
       console.error('Failed to delete customer record:', err);
       toast.error('ফাইল মুছতে সমস্যা হয়েছে।');
+    } finally {
+      setIsDeleting(false);
     }
   };
 
@@ -357,7 +364,7 @@ export function CustomerGuardianDataTable({ onEditItem }) {
                           {/* Delete */}
                           <button
                             type="button"
-                            onClick={() => handleDelete(item._id, item.applicationNo)}
+                            onClick={() => setDeleteTarget({ id: item._id, applicationNo: item.applicationNo })}
                             className="p-1.5 text-muted-foreground hover:text-rose-600 bg-muted/60 hover:bg-rose-500/10 rounded-lg transition-colors cursor-pointer"
                             title="Delete Record"
                           >
@@ -420,6 +427,18 @@ export function CustomerGuardianDataTable({ onEditItem }) {
           </div>
         </div>
       )}
+
+      {/* Confirm Delete Alert Dialog */}
+      <ConfirmDeleteDialog
+        open={Boolean(deleteTarget)}
+        onOpenChange={(open) => !open && setDeleteTarget(null)}
+        onConfirm={handleConfirmDelete}
+        title="Are you sure you want to delete this?"
+        description={`Customer file "${deleteTarget?.applicationNo || deleteTarget?.id}" will be permanently removed.`}
+        cancelText="NO"
+        confirmText="Yes"
+        isDeleting={isDeleting}
+      />
     </div>
   );
 }

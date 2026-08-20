@@ -6,6 +6,7 @@ import { toast } from 'sonner';
 import { formatToDdMmYyyy } from '../../lib/utils';
 import { usePortal } from '../../context/PortalContext';
 import { SalarySlipPreview } from '../docs/payroll/SalarySlipPreview';
+import { ConfirmDeleteDialog } from '@/components/ui/confirm-delete-dialog';
 
 export function SalarySlipDataTable() {
   const { switchPortal } = usePortal();
@@ -15,6 +16,8 @@ export function SalarySlipDataTable() {
   const [month, setMonth] = useState('all');
   const [isLoading, setIsLoading] = useState(false);
   const [previewItem, setPreviewItem] = useState(null);
+  const [deleteTarget, setDeleteTarget] = useState(null);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const fetchData = async (page = 1, limit = pagination.limit, searchQuery = search, monthFilter = month) => {
     try {
@@ -50,15 +53,19 @@ export function SalarySlipDataTable() {
     fetchData(1, pagination.limit, search, month);
   };
 
-  const handleDelete = async (id, slipNo) => {
-    if (!window.confirm(`আপনি কি স্যালারি স্লিপ "${slipNo || id}" মুছে ফেলতে চান?`)) return;
+  const handleConfirmDelete = async () => {
+    if (!deleteTarget) return;
     try {
-      await apiClient.delete(`/api/v1/docs/payrolls/${id}`);
+      setIsDeleting(true);
+      await apiClient.delete(`/api/v1/docs/payrolls/${deleteTarget.id}`);
       toast.success('স্যালারি স্লিপ মুছে ফেলা হয়েছে।');
+      setDeleteTarget(null);
       fetchData(pagination.page, pagination.limit, search, month);
     } catch (err) {
       console.error('Failed to delete salary slip:', err);
       toast.error('স্যালারি স্লিপ মুছতে সমস্যা হয়েছে।');
+    } finally {
+      setIsDeleting(false);
     }
   };
 
@@ -186,7 +193,7 @@ export function SalarySlipDataTable() {
                         </button>
                         <button
                           type="button"
-                          onClick={() => handleDelete(item._id, item.slipNo)}
+                          onClick={() => setDeleteTarget({ id: item._id, slipNo: item.slipNo })}
                           className="p-1.5 rounded hover:bg-rose-500/10 text-rose-500 transition-colors cursor-pointer"
                           title="Delete Record"
                         >
@@ -251,6 +258,18 @@ export function SalarySlipDataTable() {
           </div>
         </div>
       )}
+
+      {/* Confirm Delete Alert Dialog */}
+      <ConfirmDeleteDialog
+        open={Boolean(deleteTarget)}
+        onOpenChange={(open) => !open && setDeleteTarget(null)}
+        onConfirm={handleConfirmDelete}
+        title="Are you sure you want to delete this?"
+        description={`Salary slip "${deleteTarget?.slipNo || deleteTarget?.id}" will be permanently removed.`}
+        cancelText="NO"
+        confirmText="Yes"
+        isDeleting={isDeleting}
+      />
     </div>
   );
 }

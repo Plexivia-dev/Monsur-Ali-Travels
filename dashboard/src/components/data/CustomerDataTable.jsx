@@ -21,6 +21,7 @@ import { DataTablePagination } from './DataTablePagination';
 import { toast } from 'sonner';
 import { usePortal } from '../../context/PortalContext';
 import { MoneyReceiptModal } from '../docs/receipt/MoneyReceiptModal';
+import { ConfirmDeleteDialog } from '@/components/ui/confirm-delete-dialog';
 
 export function CustomerDataTable() {
   const { switchPortal } = usePortal();
@@ -38,6 +39,8 @@ export function CustomerDataTable() {
   const [isLoading, setIsLoading] = useState(false);
   const [profileItem, setProfileItem] = useState(null);
   const [receiptModalData, setReceiptModalData] = useState(null);
+  const [deleteTarget, setDeleteTarget] = useState(null);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const fetchData = async (
     page = 1,
@@ -80,16 +83,19 @@ export function CustomerDataTable() {
     fetchData(1, pagination.limit, search, statusFilter, typeFilter);
   };
 
-  const handleDelete = async (id, customerCode) => {
-    if (!window.confirm(`আপনি কি কাস্টমার "${customerCode || id}" মুছে ফেলতে চান? এটি স্থায়ীভাবে মুছে যাবে।`))
-      return;
+  const handleConfirmDelete = async () => {
+    if (!deleteTarget) return;
     try {
-      await apiClient.delete(`/api/v1/customers/${id}`);
+      setIsDeleting(true);
+      await apiClient.delete(`/api/v1/customers/${deleteTarget.id}`);
       toast.success('কাস্টমার প্রোফাইল মুছে ফেলা হয়েছে।');
+      setDeleteTarget(null);
       fetchData(pagination.page, pagination.limit, search, statusFilter, typeFilter);
     } catch (err) {
       console.error('Failed to delete customer:', err);
       toast.error('কাস্টমার মুছতে সমস্যা হয়েছে।');
+    } finally {
+      setIsDeleting(false);
     }
   };
 
@@ -310,7 +316,7 @@ export function CustomerDataTable() {
                           </button>
                           <button
                             type="button"
-                            onClick={() => handleDelete(item._id, item.customerCode)}
+                            onClick={() => setDeleteTarget({ id: item._id, customerCode: item.customerCode })}
                             className="p-1.5 rounded hover:bg-rose-500/10 text-rose-500 transition-colors cursor-pointer"
                             title="Delete"
                           >
@@ -456,6 +462,18 @@ export function CustomerDataTable() {
         onCreated={() => {
           fetchData(pagination.page);
         }}
+      />
+
+      {/* Confirm Delete Alert Dialog */}
+      <ConfirmDeleteDialog
+        open={Boolean(deleteTarget)}
+        onOpenChange={(open) => !open && setDeleteTarget(null)}
+        onConfirm={handleConfirmDelete}
+        title="Are you sure you want to delete this?"
+        description={`Customer code "${deleteTarget?.customerCode || deleteTarget?.id}" will be permanently removed.`}
+        cancelText="NO"
+        confirmText="Yes"
+        isDeleting={isDeleting}
       />
     </div>
   );

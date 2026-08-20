@@ -7,6 +7,7 @@ import { formatToDdMmYyyy } from '../../lib/utils';
 import { usePortal } from '../../context/PortalContext';
 import { PassportSubmissionPreview } from '../docs/passport/PassportSubmissionPreview';
 import { MoneyReceiptModal } from '../docs/receipt/MoneyReceiptModal';
+import { ConfirmDeleteDialog } from '@/components/ui/confirm-delete-dialog';
 
 export function PassportSubmissionDataTable() {
   const { switchPortal } = usePortal();
@@ -17,6 +18,8 @@ export function PassportSubmissionDataTable() {
   const [isLoading, setIsLoading] = useState(false);
   const [previewItem, setPreviewItem] = useState(null);
   const [receiptModalData, setReceiptModalData] = useState(null);
+  const [deleteTarget, setDeleteTarget] = useState(null);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const fetchData = async (page = 1, limit = pagination.limit, searchQuery = search, statusFilter = status) => {
     try {
@@ -52,15 +55,19 @@ export function PassportSubmissionDataTable() {
     fetchData(1, pagination.limit, search, status);
   };
 
-  const handleDelete = async (id, trackingNo) => {
-    if (!window.confirm(`আপনি কি পাসপোর্ট ফাইল "${trackingNo || id}" মুছে ফেলতে চান?`)) return;
+  const handleConfirmDelete = async () => {
+    if (!deleteTarget) return;
     try {
-      await apiClient.delete(`/api/v1/docs/passports/${id}`);
+      setIsDeleting(true);
+      await apiClient.delete(`/api/v1/docs/passports/${deleteTarget.id}`);
       toast.success('পাসপোর্ট ফাইল রেকর্ড মুছে ফেলা হয়েছে।');
+      setDeleteTarget(null);
       fetchData(pagination.page, pagination.limit, search, status);
     } catch (err) {
       console.error('Failed to delete passport record:', err);
       toast.error('পাসপোর্ট ফাইল মুছতে সমস্যা হয়েছে।');
+    } finally {
+      setIsDeleting(false);
     }
   };
 
@@ -216,7 +223,7 @@ export function PassportSubmissionDataTable() {
                         </button>
                         <button
                           type="button"
-                          onClick={() => handleDelete(item._id, item.trackingNo)}
+                          onClick={() => setDeleteTarget({ id: item._id, trackingNo: item.trackingNo })}
                           className="p-1.5 rounded hover:bg-rose-500/10 text-rose-500 transition-colors cursor-pointer"
                           title="Delete Record"
                         >
@@ -287,6 +294,18 @@ export function PassportSubmissionDataTable() {
         isOpen={Boolean(receiptModalData)}
         onClose={() => setReceiptModalData(null)}
         initialData={receiptModalData || {}}
+      />
+
+      {/* Confirm Delete Alert Dialog */}
+      <ConfirmDeleteDialog
+        open={Boolean(deleteTarget)}
+        onOpenChange={(open) => !open && setDeleteTarget(null)}
+        onConfirm={handleConfirmDelete}
+        title="Are you sure you want to delete this?"
+        description={`Passport submission record "${deleteTarget?.trackingNo || deleteTarget?.id}" will be permanently removed.`}
+        cancelText="NO"
+        confirmText="Yes"
+        isDeleting={isDeleting}
       />
     </div>
   );

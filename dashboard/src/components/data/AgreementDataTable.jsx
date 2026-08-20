@@ -7,8 +7,11 @@ import { formatToDdMmYyyy } from '../../lib/utils';
 import { usePortal } from '../../context/PortalContext';
 import { AgreementPreview } from '../docs/agreement/AgreementPreview';
 import { PrintablePaper } from '../docs/common/PrintablePaper';
+import { ConfirmDeleteDialog } from '@/components/ui/confirm-delete-dialog';
 
-function normalizeAgreementData(item = {}) {
+// Normalize nested backend schema to the exact structure expected by AgreementPreview
+function normalizeAgreementData(item) {
+  if (!item) return {};
   return {
     _id: item._id,
     agreementId: item.agreementId || '',
@@ -43,32 +46,36 @@ function normalizeAgreementData(item = {}) {
       location: item.পদের_বিবরণ?.কর্মস্থল || item.position?.location || 'হেড অফিস, নাদampur',
       jobType: item.পদের_বিবরণ?.নিয়োগের_ধরন || item.position?.jobType || 'স্থায়ী / পূর্ণকালীন (Full-Time)',
       workSchedule: item.পদের_বিবরণ?.কাজের_সময়_ও_ছুটি || item.position?.workSchedule || 'সকাল ৯:০০ - সন্ধ্যা ৬:০০, রবিবার হতে বৃহস্পতিবার',
+      probationMonths: item.পদের_বিবরণ?.শিক্ষানবিস_সময়কাল || item.position?.probationMonths || '৩ (তিন) মাস',
     },
-    salary: {
-      basicSalary: item.বেতন_কাঠামো?.মূল_বেতন || item.salary?.basicSalary || '0',
-      houseRent: item.বেতন_কাঠামো?.বাড়ি_ভাড়া_ভাতা || item.salary?.houseRent || '0',
-      medical: item.বেতন_কাঠামো?.চিকিৎসা_ভাতা || item.salary?.medical || '0',
-      conveyance: item.বেতন_কাঠামো?.যাতায়াত_ভাতা || item.salary?.conveyance || '0',
-      specialAllowance: item.বেতন_কাঠামো?.বিশেষ_ভাতা || item.salary?.specialAllowance || '0',
-      grossSalary: item.বেতন_কাঠামো?.সর্বমোট_মাসিক_বেতন || item.salary?.grossSalary || '0',
-      grossSalaryInWords: item.বেতন_কাঠামো?.বেতন_কথায় || item.salary?.grossSalaryInWords || '',
+    compensation: {
+      basicSalary: item.বেতন_ও_ভাতা?.মূল_বেতন || item.compensation?.basicSalary || 0,
+      houseRent: item.বেতন_ও_ভাতা?.বাড়ি_ভাড়া || item.compensation?.houseRent || 0,
+      medicalAllowance: item.বেতন_ও_ভাতা?.চিকিৎসা_ভাতা || item.compensation?.medicalAllowance || 0,
+      conveyanceAllowance: item.বেতন_ও_ভাতা?.যাতায়াত_ভাতা || item.compensation?.conveyanceAllowance || 0,
+      specialAllowance: item.বেতন_ও_ভাতা?.বিশেষ_ভাতা || item.compensation?.specialAllowance || 0,
+      paymentMethod: item.বেতন_ও_ভাতা?.পরিশোধের_মাধ্যম || item.compensation?.paymentMethod || 'ব্যাংক ট্রান্সফার / নগদ ক্যাশ',
+      paymentDate: item.বেতন_ও_ভাতা?.বেতন_প্রদানের_তারিখ || item.compensation?.paymentDate || 'পরবর্তী মাসের ৭ কর্মদিবসের মধ্যে',
     },
-    leave: {
-      casualDays: item.ছুটি_ও_সুবিধা?.নৈমিত্তিক_ছুটি_দিন || item.leave?.casualDays || '10',
-      sickDays: item.ছুটি_ও_সুবিধা?.অসুস্থতাজনিত_ছুটি_দিন || item.leave?.sickDays || '14',
-      earnedDays: item.ছুটি_ও_সুবিধা?.অর্জিত_ছুটি_দিন || item.leave?.earnedDays || '18',
-      lunchProvided: item.ছুটি_ও_সুবিধা?.ফ্রি_লাঞ্চ_সুবিধা ?? item.leave?.lunchProvided ?? true,
-      teaSnacks: item.ছুটি_ও_সুবিধা?.চা_নাস্তা_সুবিধা ?? item.leave?.teaSnacks ?? true,
-      lunchAllowance: item.ছুটি_ও_সুবিধা?.লাঞ্চ_ভাতা || item.leave?.lunchAllowance || '',
+    security: {
+      guarantorName: item.নিরাপত্তা_ও_জামানত?.জামিনদারের_নাম || item.security?.guarantorName || '',
+      guarantorNid: item.নিরাপত্তা_ও_জামানত?.জামিনদারের_জাতীয়_পরিচয়পত্র_নং || item.security?.guarantorNid || '',
+      guarantorPhone: item.নিরাপত্তা_ও_জামানত?.জামিনদারের_মোবাইল_নম্বর || item.security?.guarantorPhone || '',
+      guarantorAddress: item.নিরাপত্তা_ও_জামানত?.জামিনদারের_ঠিকানা || item.security?.guarantorAddress || '',
+      depositAmount: item.নিরাপত্তা_ও_জামানত?.জামানত_বন্ডের_পরিমাণ || item.security?.depositAmount || 0,
+      securityChequeNo: item.নিরাপত্তা_ও_জামানত?.সিকিউরিটি_চেক_নম্বর || item.security?.securityChequeNo || '',
+      chequeBank: item.নিরাপত্তা_ও_জামানত?.ব্যাংকের_নাম || item.security?.chequeBank || '',
     },
-    witnesses: {
-      firstWitnessName: item.স্বাক্ষীগণের_তথ্য?.প্রথম_পক্ষের_সাক্ষী?.নাম || item.witnesses?.firstWitnessName || '',
-      firstWitnessPhone: item.স্বাক্ষীগণের_তথ্য?.প্রথম_পক্ষের_সাক্ষী?.মোবাইল_নম্বর || item.witnesses?.firstWitnessPhone || '',
-      firstWitnessAddress: item.স্বাক্ষীগণের_তথ্য?.প্রথম_পক্ষের_সাক্ষী?.ঠিকানা || item.witnesses?.firstWitnessAddress || '',
-      secondWitnessName: item.স্বাক্ষীগণের_তথ্য?.দ্বিতীয়_পক্ষের_সাক্ষী?.নাম || item.witnesses?.secondWitnessName || '',
-      secondWitnessPhone: item.স্বাক্ষীগণের_তথ্য?.দ্বিতীয়_পক্ষের_সাক্ষী?.মোবাইল_নম্বর || item.witnesses?.secondWitnessPhone || '',
-      secondWitnessAddress: item.স্বাক্ষীগণের_তথ্য?.দ্বিতীয়_পক্ষের_সাক্ষী?.ঠিকানা || item.witnesses?.secondWitnessAddress || '',
-    },
+    status: item.স্ট্যাটাস || item.status || 'Active',
+    agreementTerms: item.চুক্তির_শর্তাবলী || item.agreementTerms || '',
+    meta: {
+      witness1Name: item.meta?.witness1Name || '',
+      witness1Address: item.meta?.witness1Address || '',
+      witness2Name: item.meta?.witness2Name || '',
+      witness2Address: item.meta?.witness2Address || '',
+      firstPartySignatureName: item.meta?.firstPartySignatureName || 'মো: ইকরামুল হোসেন',
+      secondPartySignatureName: item.meta?.secondPartySignatureName || item.সাধারণ_তথ্য?.কর্মচারীর_পূর্ণ_নাম || '',
+    }
   };
 }
 
@@ -113,18 +120,6 @@ export function AgreementDataTable() {
   const handleSearchSubmit = (e) => {
     e.preventDefault();
     fetchData(1, pagination.limit, search, status);
-  };
-
-  const handleDelete = async (id, agreementId) => {
-    if (!window.confirm(`আপনি কি চুক্তিপত্র "${agreementId || id}" মুছে ফেলতে চান?`)) return;
-    try {
-      await apiClient.delete(`/api/v1/docs/agreements/${id}`);
-      toast.success('চুক্তিপত্র মুছে ফেলা হয়েছে।');
-      fetchData(pagination.page, pagination.limit, search, status);
-    } catch (err) {
-      console.error('Failed to delete agreement:', err);
-      toast.error('চুক্তিপত্র মুছতে সমস্যা হয়েছে।');
-    }
   };
 
   const handlePrint = () => {
@@ -266,7 +261,7 @@ export function AgreementDataTable() {
                           </button>
                           <button
                             type="button"
-                            onClick={() => handleDelete(item._id, item.agreementId)}
+                            onClick={() => setDeleteTarget({ id: item._id, agreementId: item.agreementId })}
                             className="p-1.5 rounded hover:bg-rose-500/10 text-rose-500 transition-colors cursor-pointer"
                             title="Delete Record"
                           >
@@ -334,6 +329,18 @@ export function AgreementDataTable() {
           </div>
         </div>
       )}
+
+      {/* Confirm Delete Alert Dialog */}
+      <ConfirmDeleteDialog
+        open={Boolean(deleteTarget)}
+        onOpenChange={(open) => !open && setDeleteTarget(null)}
+        onConfirm={handleConfirmDelete}
+        title="Are you sure you want to delete this?"
+        description={`Employment agreement "${deleteTarget?.agreementId || deleteTarget?.id}" will be permanently deleted.`}
+        cancelText="NO"
+        confirmText="Yes"
+        isDeleting={isDeleting}
+      />
     </div>
   );
 }

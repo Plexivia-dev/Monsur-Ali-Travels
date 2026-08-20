@@ -7,6 +7,7 @@ import { formatToDdMmYyyy } from '../../lib/utils';
 import { usePortal } from '../../context/PortalContext';
 import { IndianVisaPreview } from '../docs/indian-visa/IndianVisaPreview';
 import { MoneyReceiptModal } from '../docs/receipt/MoneyReceiptModal';
+import { ConfirmDeleteDialog } from '@/components/ui/confirm-delete-dialog';
 
 const VISA_STAGES = [
   { id: 'pending', label: 'আবেদন গ্রহণ (Pending)', color: 'bg-amber-500/10 text-amber-600 border-amber-500/20' },
@@ -32,6 +33,8 @@ export function IndianVisaDataTable() {
   const [stageDocument, setStageDocument] = useState({ name: '', fileUrl: '', fileType: 'pdf' });
   const [isUpdatingStage, setIsUpdatingStage] = useState(false);
   const [receiptModalData, setReceiptModalData] = useState(null);
+  const [deleteTarget, setDeleteTarget] = useState(null);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const fetchData = async (page = 1, limit = pagination.limit, searchQuery = search, statusFilter = status) => {
     try {
@@ -122,15 +125,19 @@ export function IndianVisaDataTable() {
     }
   };
 
-  const handleDelete = async (id, trackingNo) => {
-    if (!window.confirm(`আপনি কি ভিসা আবেদন "${trackingNo || id}" মুছে ফেলতে চান?`)) return;
+  const handleConfirmDelete = async () => {
+    if (!deleteTarget) return;
     try {
-      await apiClient.delete(`/api/v1/indian-visas/${id}`);
+      setIsDeleting(true);
+      await apiClient.delete(`/api/v1/indian-visas/${deleteTarget.id}`);
       toast.success('ভিসা আবেদন রেকর্ড মুছে ফেলা হয়েছে।');
+      setDeleteTarget(null);
       fetchData(pagination.page, pagination.limit, search, status);
     } catch (err) {
       console.error('Failed to delete visa record:', err);
       toast.error('ভিসা আবেদন মুছতে সমস্যা হয়েছে।');
+    } finally {
+      setIsDeleting(false);
     }
   };
 
@@ -312,7 +319,7 @@ export function IndianVisaDataTable() {
                           </button>
                           <button
                             type="button"
-                            onClick={() => handleDelete(item._id, item.trackingNo)}
+                            onClick={() => setDeleteTarget({ id: item._id, trackingNo: item.trackingNo })}
                             className="p-1.5 rounded hover:bg-rose-500/10 text-rose-500 transition-colors cursor-pointer"
                             title="Delete Record"
                           >
@@ -397,7 +404,7 @@ export function IndianVisaDataTable() {
               <button
                 type="button"
                 onClick={() => setStageModalItem(null)}
-                className="p-1.5 rounded-lg hover:bg-muted text-muted-foreground hover:text-foreground"
+                className="p-1 rounded-lg hover:bg-muted text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
               >
                 <X className="w-4 h-4" />
               </button>
@@ -493,6 +500,18 @@ export function IndianVisaDataTable() {
         isOpen={Boolean(receiptModalData)}
         onClose={() => setReceiptModalData(null)}
         initialData={receiptModalData || {}}
+      />
+
+      {/* Confirm Delete Alert Dialog */}
+      <ConfirmDeleteDialog
+        open={Boolean(deleteTarget)}
+        onOpenChange={(open) => !open && setDeleteTarget(null)}
+        onConfirm={handleConfirmDelete}
+        title="Are you sure you want to delete this?"
+        description={`Indian visa application "${deleteTarget?.trackingNo || deleteTarget?.id}" will be permanently removed.`}
+        cancelText="NO"
+        confirmText="Yes"
+        isDeleting={isDeleting}
       />
     </div>
   );
