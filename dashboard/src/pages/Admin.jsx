@@ -4,11 +4,16 @@ import { useAdminData } from '../api/hooks';
 import { AdminOverview } from '../components/admin/AdminOverview';
 import { AdminActivityLog } from '../components/admin/AdminActivityLog';
 import { AdminReports } from '../components/admin/AdminReports';
+import { UserProfilePage } from '../components/profile/UserProfilePage';
 
 export default function Admin() {
   const activeSubmodule = usePortalStore((state) => state.activeSubmodule);
   const addToast = usePortalStore((state) => state.addToast);
   const { data: adminData, isLoading, error } = useAdminData();
+
+  if (activeSubmodule === 'profile' || activeSubmodule === 'account') {
+    return <UserProfilePage />;
+  }
 
   if (isLoading) {
     return (

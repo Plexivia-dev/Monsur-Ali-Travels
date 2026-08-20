@@ -76,6 +76,25 @@ export class AuthController {
       next(error);
     }
   }
+
+  /**
+   * Updates authenticated user profile
+   * @param {import('express').Request & { user?: any }} req
+   * @param {import('express').Response} res
+   * @param {import('express').NextFunction} next
+   */
+  static async updateProfile(req, res, next) {
+    try {
+      const user = await AuthService.updateProfile(req.user.id, req.body);
+      return sendSuccess(res, {
+        statusCode: 200,
+        message: 'Profile updated successfully',
+        data: user,
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
 }
 
 export default AuthController;

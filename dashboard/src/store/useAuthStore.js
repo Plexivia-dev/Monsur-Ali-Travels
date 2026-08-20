@@ -44,7 +44,12 @@ export const useAuthStore = create((set, get) => ({
         did: apiUser.did,
         email: apiUser.email || email,
         name: apiUser.name || email.split('@')[0].replace('.', ' ').replace(/\b\w/g, (l) => l.toUpperCase()),
+        username: apiUser.username || '',
+        phone: apiUser.phone || '',
+        address: apiUser.address || '',
         role: apiUser.role || 'Employee',
+        department: apiUser.department || '',
+        designation: apiUser.designation || '',
         avatar: apiUser.avatar || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=256&q=80',
       };
 
@@ -62,6 +67,86 @@ export const useAuthStore = create((set, get) => ({
     }
   },
 
+  fetchProfile: async () => {
+    try {
+      const response = await apiClient.get('/api/v1/auth/me');
+      if (response.data?.data) {
+        const apiUser = response.data.data;
+        const currentUser = get().user || {};
+        const updatedUser = {
+          ...currentUser,
+          id: apiUser.id || apiUser._id || currentUser.id,
+          did: apiUser.did || currentUser.did,
+          email: apiUser.email || currentUser.email,
+          name: apiUser.name || currentUser.name,
+          username: apiUser.username ?? currentUser.username,
+          phone: apiUser.phone ?? currentUser.phone,
+          address: apiUser.address ?? currentUser.address,
+          role: apiUser.role || currentUser.role,
+          department: apiUser.department || currentUser.department,
+          designation: apiUser.designation || currentUser.designation,
+          avatar: apiUser.avatar || currentUser.avatar,
+        };
+
+        if (typeof window !== 'undefined') {
+          localStorage.setItem('user', JSON.stringify(updatedUser));
+        }
+
+        set({ user: updatedUser });
+        return updatedUser;
+      }
+    } catch (err) {
+      console.error('Failed to refresh user profile:', err);
+    }
+  },
+
+  updateProfile: async (profileData) => {
+    try {
+      set({ isLoading: true });
+      const response = await apiClient.put('/api/v1/auth/profile', profileData);
+      const apiUser = response.data.data;
+      const currentUser = get().user || {};
+
+      const updatedUser = {
+        ...currentUser,
+        id: apiUser.id || apiUser._id || currentUser.id,
+        did: apiUser.did || currentUser.did,
+        name: apiUser.name !== undefined ? apiUser.name : currentUser.name,
+        username: apiUser.username !== undefined ? apiUser.username : currentUser.username,
+        phone: apiUser.phone !== undefined ? apiUser.phone : currentUser.phone,
+        address: apiUser.address !== undefined ? apiUser.address : currentUser.address,
+        avatar: apiUser.avatar !== undefined ? apiUser.avatar : currentUser.avatar,
+        email: apiUser.email || currentUser.email,
+        role: apiUser.role || currentUser.role,
+      };
+
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('user', JSON.stringify(updatedUser));
+      }
+
+      set({ user: updatedUser, isLoading: false });
+      return { success: true, user: updatedUser };
+    } catch (err) {
+      set({ isLoading: false });
+      throw err;
+    }
+  },
+
+  changePassword: async (currentPassword, newPassword) => {
+    try {
+      set({ isLoading: true });
+      const response = await apiClient.post('/api/v1/auth/change-password', {
+        currentPassword,
+        newPassword,
+      });
+      set({ isLoading: false });
+      return response.data;
+    } catch (err) {
+      set({ isLoading: false });
+      throw err;
+    }
+  },
+
   verify2fa: async (email, password, code) => {
     try {
       set({ isLoading: true });
@@ -73,6 +158,9 @@ export const useAuthStore = create((set, get) => ({
         did: apiUser.did,
         email: apiUser.email || email,
         name: apiUser.name || email.split('@')[0].replace('.', ' ').replace(/\b\w/g, (l) => l.toUpperCase()),
+        username: apiUser.username || '',
+        phone: apiUser.phone || '',
+        address: apiUser.address || '',
         role: apiUser.role || 'Employee',
         avatar: apiUser.avatar || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=256&q=80',
       };
@@ -102,6 +190,9 @@ export const useAuthStore = create((set, get) => ({
         did: apiUser.did,
         email: apiUser.email,
         name: apiUser.name,
+        username: apiUser.username || '',
+        phone: apiUser.phone || '',
+        address: apiUser.address || '',
         role: apiUser.role,
         avatar: apiUser.avatar || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=256&q=80',
       };

@@ -245,7 +245,7 @@ export const Sidebar = () => {
         {isCollapsed ? (
           <button
             type="button"
-            onClick={() => handleItemSelect('admin', 'users')}
+            onClick={() => handleItemSelect('admin', 'profile')}
             className="size-8 rounded-full border border-sky-500/50 bg-sidebar-accent hover:bg-sky-500/15 text-sky-400 flex items-center justify-center shrink-0 transition-all duration-200 cursor-pointer mx-auto shadow-xs"
             title={user?.name ? `${user.name} (${t('header.myProfile', 'My Profile')})` : t('header.myProfile', 'My Profile')}
             aria-label={t('header.myProfile', 'My Profile')}
@@ -255,7 +255,7 @@ export const Sidebar = () => {
         ) : (
           <div className="flex items-center justify-between gap-2.5 px-2 py-1.5 rounded-lg bg-sidebar-accent/50 w-full overflow-hidden">
             <div
-              onClick={() => handleItemSelect('admin', 'users')}
+              onClick={() => handleItemSelect('admin', 'profile')}
               className="flex items-center gap-2.5 min-w-0 cursor-pointer hover:opacity-85 transition-opacity"
               title={t('header.myProfile', 'My Profile')}
             >

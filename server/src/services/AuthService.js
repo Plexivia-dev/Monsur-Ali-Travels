@@ -140,14 +140,18 @@ export class AuthService {
         id: true,
         did: true,
         name: true,
+        username: true,
         email: true,
         phone: true,
+        address: true,
+        avatar: true,
         role: true,
         department: true,
         designation: true,
         assets: true,
         lastLogin: true,
         createdAt: true,
+        updatedAt: true,
       },
     });
 
@@ -158,6 +162,72 @@ export class AuthService {
     }
 
     return user;
+  }
+
+  /**
+   * Updates user profile info (name, username, phone, address, avatar)
+   * @param {string} userId
+   * @param {import('../validations/auth.validation.js').UpdateProfileInput} input
+   * @returns {Promise<any>}
+   */
+  static async updateProfile(userId, input) {
+    const user = await prisma.user.findUnique({
+      where: { id: userId, isActive: true },
+    });
+
+    if (!user) {
+      const error = new Error('User not found');
+      error.statusCode = 404;
+      throw error;
+    }
+
+    // Check username uniqueness if provided
+    if (input.username && input.username.trim()) {
+      const cleanUsername = input.username.trim().toLowerCase();
+      const existingUser = await prisma.user.findFirst({
+        where: {
+          username: { equals: cleanUsername, mode: 'insensitive' },
+          NOT: { id: userId },
+        },
+      });
+
+      if (existingUser) {
+        const error = new Error('Username is already taken. Please choose another username.');
+        error.statusCode = 409;
+        throw error;
+      }
+    }
+
+    const updateData = {};
+    if (input.name !== undefined) updateData.name = input.name.trim();
+    if (input.username !== undefined) updateData.username = input.username ? input.username.trim().toLowerCase() : null;
+    if (input.phone !== undefined) updateData.phone = input.phone.trim();
+    if (input.address !== undefined) updateData.address = input.address ? input.address.trim() : '';
+    if (input.avatar !== undefined) updateData.avatar = input.avatar || '';
+
+    const updatedUser = await prisma.user.update({
+      where: { id: userId },
+      data: updateData,
+      select: {
+        id: true,
+        did: true,
+        name: true,
+        username: true,
+        email: true,
+        phone: true,
+        address: true,
+        avatar: true,
+        role: true,
+        department: true,
+        designation: true,
+        assets: true,
+        lastLogin: true,
+        createdAt: true,
+        updatedAt: true,
+      },
+    });
+
+    return updatedUser;
   }
 }
 

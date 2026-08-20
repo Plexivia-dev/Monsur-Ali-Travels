@@ -47,6 +47,8 @@ const SUBMODULE_KEYS = {
   'salary-slips': 'nav.salarySlipRecords',
   invoices: 'nav.invoiceRecords',
   users: 'nav.systemUsers',
+  profile: 'header.myProfile',
+  account: 'header.myProfile',
   'system-logs': 'nav.auditLogs',
   settings: 'nav.globalSettings',
 };

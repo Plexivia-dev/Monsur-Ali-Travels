@@ -72,7 +72,7 @@ export const ProfileDropdown = () => {
         <DropdownMenuGroup>
           <DropdownMenuItem
             className="flex items-center gap-2 cursor-pointer text-xs py-2"
-            onClick={() => switchPortal('admin', 'users')}
+            onClick={() => switchPortal('admin', 'profile')}
           >
             <User className="w-4 h-4 text-muted-foreground" />
             <span>{t('header.myProfile', 'My Account & Profile')}</span>
