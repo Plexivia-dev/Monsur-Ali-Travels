@@ -24,6 +24,7 @@ import {
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { cn } from '@/lib/utils';
 import logoImg from '../../assets/logo.png';
+import { APP_VERSION } from '../../configs/appConfig';
 
 export const Sidebar = () => {
   const { t } = useTranslation();
@@ -103,7 +104,7 @@ export const Sidebar = () => {
                   {t('brand.name', 'Monsur Ali Travels')}
                 </span>
                 <span className="text-[10px] text-muted-foreground font-medium uppercase tracking-wider mt-0.5">
-                  {t('brand.tagline', 'Smart ERP v2.0')}
+                  {t('brand.tagline', { version: APP_VERSION, defaultValue: `Smart ERP v${APP_VERSION}` })}
                 </span>
               </div>
             </div>

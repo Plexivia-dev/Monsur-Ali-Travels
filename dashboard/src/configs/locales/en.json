@@ -1,7 +1,7 @@
 {
   "brand": {
     "name": "Monsur Ali Travels",
-    "tagline": "Smart ERP v2.0",
+    "tagline": "Smart ERP v{{version}}",
     "openSidebar": "Open Sidebar",
     "closeSidebar": "Close Sidebar"
   },

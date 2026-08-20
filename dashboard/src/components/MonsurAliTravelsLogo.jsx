@@ -1,4 +1,5 @@
 import logoImg from '../assets/logo.png';
+import { APP_VERSION } from '../configs/appConfig';
 
 export const MonsurAliTravelsLogo = ({ className = 'h-10 w-auto', iconOnly = false, alt = 'Monsur Ali Travels Logo' }) => {
   return (
@@ -16,7 +17,7 @@ export const MonsurAliTravelsLogo = ({ className = 'h-10 w-auto', iconOnly = fal
             Monsur Ali Travels
           </span>
           <span className="text-[10px] text-muted-foreground font-medium uppercase tracking-wider mt-0.5">
-            Smart ERP v2.0
+            Smart ERP v{APP_VERSION}
           </span>
         </div>
       )}
