@@ -1,5 +1,6 @@
 import React from 'react';
 import agencyInfo from '../../../lib/information.json';
+import logoImg from '../../../assets/logo.png';
 import { PrintablePaper } from '../common/PrintablePaper';
 import { Globe, MapPin, Phone } from 'lucide-react';
 
@@ -38,28 +39,21 @@ export function CashVoucherPreview({ data }) {
                 width: '78px',
                 height: '78px',
                 borderRadius: '50%',
-                border: '3px solid #1a56db',
-                background: 'linear-gradient(135deg, #1a56db 0%, #1e429f 100%)',
+                border: '2.5px solid #1a56db',
+                background: '#fff',
                 display: 'flex',
-                flexDirection: 'column',
                 alignItems: 'center',
                 justifyContent: 'center',
-                color: '#fff',
-                padding: '6px',
+                padding: '4px',
+                overflow: 'hidden',
+                boxShadow: '0 1px 3px rgba(0,0,0,0.08)',
               }}
             >
-              <div style={{ fontSize: '7px', fontWeight: 900, letterSpacing: '0.5px', lineHeight: 1.1, textAlign: 'center' }}>
-                MONSUR ALI
-              </div>
-              <div style={{ fontSize: '5px', fontWeight: 700, letterSpacing: '0.3px', lineHeight: 1.1, textAlign: 'center', marginTop: '1px' }}>
-                TRAVELS
-              </div>
-              <div style={{ fontSize: '5px', lineHeight: 1, marginTop: '2px', textAlign: 'center', opacity: 0.9 }}>
-                Recruitment &amp;
-              </div>
-              <div style={{ fontSize: '5px', lineHeight: 1, textAlign: 'center', opacity: 0.9 }}>
-                Travel Agency
-              </div>
+              <img
+                src={logoImg}
+                alt="Monsur Ali Travels Logo"
+                style={{ width: '100%', height: '100%', objectFit: 'contain' }}
+              />
             </div>
           </div>
 
@@ -83,14 +77,11 @@ export function CashVoucherPreview({ data }) {
 
             {/* Agency Name bilingual */}
             <div style={{ lineHeight: 1.25 }}>
-              <div style={{ fontSize: '15px', fontWeight: 800, color: '#1a56db', letterSpacing: '0.3px' }}>
+              <div style={{ fontSize: '16px', fontWeight: 800, color: '#1a56db', letterSpacing: '0.3px' }}>
                 মনসুর আলি ট্রাভেলস
               </div>
-              <div style={{ fontSize: '13px', fontWeight: 700, color: '#222' }}>
+              <div style={{ fontSize: '14px', fontWeight: 700, color: '#222' }}>
                 Monsur Ali Travels
-              </div>
-              <div style={{ fontSize: '10px', color: '#555', marginTop: '1px' }}>
-                নিয়োগ এবং ট্রাভেল এজেন্সি
               </div>
             </div>
           </div>
