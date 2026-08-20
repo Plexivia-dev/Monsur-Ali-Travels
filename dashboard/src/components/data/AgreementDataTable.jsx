@@ -326,7 +326,7 @@ export function AgreementDataTable() {
             </div>
 
             {/* Modal Body with Printable Paper Canvas */}
-            <div className="flex-1 overflow-y-auto p-4 sm:p-6 bg-slate-100 dark:bg-slate-900/50 flex justify-center">
+            <div className="flex-1 overflow-y-auto p-4 sm:p-6 bg-muted/40 flex justify-center">
               <PrintablePaper id="printable-agreement-canvas">
                 <AgreementPreview data={normalizeAgreementData(previewItem)} />
               </PrintablePaper>
