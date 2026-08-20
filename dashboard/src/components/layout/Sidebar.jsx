@@ -72,18 +72,22 @@ export const Sidebar = () => {
   return (
     <SidebarPrimitive collapsible="icon" className="border-r border-border bg-sidebar transition-all duration-300 ease-in-out">
       {/* Brand Header */}
-      <SidebarHeader className="h-16 border-b border-sidebar-border px-3 flex items-center justify-start transition-all duration-300">
+      <SidebarHeader className="h-16 border-b border-sidebar-border px-2 flex items-center justify-center transition-all duration-300">
         {isCollapsed ? (
           <button
             type="button"
             onClick={() => setOpen(true)}
-            className="size-9 rounded-full bg-white p-[6px] border border-border text-foreground flex items-center justify-center shrink-0 shadow-xs hover:bg-slate-50 transition-all duration-200 cursor-pointer mx-auto"
+            className="size-9 rounded-full bg-white p-[4px] border border-border/20 flex items-center justify-center shrink-0 shadow-xs hover:opacity-90 transition-all duration-200 cursor-pointer overflow-hidden"
             title="Open Sidebar"
           >
-            <Menu className="w-4 h-4 text-foreground" />
+            {logoImg ? (
+              <img src={logoImg} alt="Monsur Ali Travels" className="w-full h-full object-contain" />
+            ) : (
+              <Globe className="w-4 h-4 text-primary" />
+            )}
           </button>
         ) : (
-          <div className="flex items-center justify-between w-full">
+          <div className="flex items-center justify-between w-full px-1">
             <div
               onClick={() => handleItemSelect('agency', 'dashboard')}
               className="flex items-center justify-start gap-2.5 cursor-pointer group/brand overflow-hidden text-left"
