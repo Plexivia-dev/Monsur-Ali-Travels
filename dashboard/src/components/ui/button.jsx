@@ -16,9 +16,21 @@ const buttonVariants = cva(
         ghost:
           'hover:bg-muted hover:text-foreground aria-expanded:bg-muted aria-expanded:text-foreground',
         destructive:
-          'bg-destructive text-destructive-foreground hover:bg-destructive/90 shadow-xs',
+          'bg-rose-600 hover:bg-rose-700 text-white shadow-xs',
         danger:
-          'bg-destructive text-destructive-foreground hover:bg-destructive/90 shadow-xs',
+          'bg-rose-600 hover:bg-rose-700 text-white shadow-xs',
+        error:
+          'bg-rose-600 hover:bg-rose-700 text-white shadow-xs',
+        delete:
+          'bg-rose-600 hover:bg-rose-700 text-white shadow-xs',
+        cancel:
+          'bg-rose-500/15 text-rose-600 dark:text-rose-400 border border-rose-500/25 hover:bg-rose-500/25',
+        warning:
+          'bg-rose-600 hover:bg-rose-700 text-white shadow-xs',
+        success:
+          'bg-emerald-600 hover:bg-emerald-700 text-white shadow-xs',
+        info:
+          'bg-amber-600 hover:bg-amber-700 text-white shadow-xs',
         link: 'text-primary underline-offset-4 hover:underline cursor-pointer',
       },
       size: {
