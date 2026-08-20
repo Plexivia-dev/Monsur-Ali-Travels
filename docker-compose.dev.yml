@@ -31,11 +31,24 @@ services:
       JWT_EXPIRES_IN: ${JWT_EXPIRES_IN:-7d}
       UPLOAD_PATH: /app/uploads
       DOCUMENT_PATH: /app/documents
-      CORS_ORIGIN: "https://dashboard.monsuralitravels.com,https://dashboard.monsuralitravelsbd.com,https://monsuralitravels.com,https://www.monsuralitravels.com,https://monsuralitravelsbd.com,https://www.monsuralitravelsbd.com,http://localhost:5173,http://localhost:8005,http://localhost:8006,*"
+      CORS_ORIGIN: "https://dashboard.monsuralitravels.com,https://dashboard.monsuralitravelsbd.com,https://monsuralitravels.com,https://www.monsuralitravels.com,https://monsuralitravelsbd.com,https://www.monsuralitravelsbd.com,http://localhost:5173,http://localhost:8005,http://localhost:8006,http://localhost:8015,*"
     ports:
       - "5093:5093"
     depends_on:
       - postgres-dev
+    networks:
+      - monsuralitravels-dev-net
+
+  dashboard-dev:
+    build:
+      context: ./dashboard
+      dockerfile: Dockerfile
+      args:
+        - VITE_API_BASE_URL=${VITE_API_BASE_URL:-https://server.monsuralitravelsbd.com}
+    container_name: monsuralitravels-dashboard-dev
+    restart: always
+    ports:
+      - "8015:80"
     networks:
       - monsuralitravels-dev-net
 
