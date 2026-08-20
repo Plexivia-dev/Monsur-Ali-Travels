@@ -23,6 +23,8 @@
     "invoice": "Invoice",
     "experienceCertificate": "Experience Certificate",
     "characterCertificate": "Character Certificate",
+    "marriageCertificate": "Marriage Certificate",
+    "certificatesStudio": "Certificates",
     "moneyReceipt": "Money Receipt",
     "cashVoucher": "Cash Money Voucher",
     "idCard": "Employee ID Card",

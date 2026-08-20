@@ -4,7 +4,7 @@ export function getDefaultCharacterCertificateData() {
     issueDate: new Date().toISOString().split("T")[0],
     language: "en", // 'en' | 'bn'
     certificateTitle: "CHARACTER CERTIFICATE",
-    certificateSubtitle: "TO WHOM IT MAY CONCERN / চারিত্রিক সনদপত্র",
+    certificateSubtitle: "চারিত্রিক সনদপত্র",
 
     // Issuing Authority / Organization
     authority: {
