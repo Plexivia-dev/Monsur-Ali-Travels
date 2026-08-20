@@ -35,23 +35,23 @@ function BarcodeSVG({ value = 'MR2026084001' }) {
 }
 
 // Single Voucher Slip Unit Component
-export function VoucherSlipCard({ data = {}, copyTitle = 'Original Copy (মূল কপি)', idSuffix = '' }) {
+export function VoucherSlipCard({ data = {}, copyTitle = 'Original Copy', idSuffix = '' }) {
   const {
     receiptNo = 'MR-2026-084',
     date = new Date().toISOString().split('T')[0],
     time = '11:30 AM',
-    clientName = 'Md. Abdul Karim',
-    passportNumber = 'A08492014',
-    purpose = 'Visa Processing & Flight Ticket Booking (Saudi Arabia)',
-    receivedBy = 'Md. Tanvir Hossain',
-    receivedByRole = 'Accounts Officer',
+    clientName = '',
+    passportNumber = '',
+    purpose = '',
+    receivedBy = '',
+    receivedByRole = '',
     paymentMethod = 'Cash',
-    amount = 50000,
-    amountInWords = 'Fifty Thousand Taka Only.',
-    preparedBy = 'প্রদানকারী',
-    receivedBySignature = 'গ্রহণকারী',
-    accountsSignature = 'একাউন্টেন্ট',
-    approvedBySignature = 'জিএম / প্রোপাইটার',
+    amount = 0,
+    amountInWords = '',
+    preparedBy = '',
+    receivedBySignature = '',
+    accountsSignature = '',
+    approvedBySignature = '',
   } = data || {};
 
   const formattedAmount = Number(amount || 0).toLocaleString('en-IN');
@@ -168,7 +168,7 @@ export function VoucherSlipCard({ data = {}, copyTitle = 'Original Copy (মূ�
                 <Square className="w-3.5 h-3.5 text-slate-400" />
               )}
               <span className={`text-[11.5px] ${paymentMethod === 'Cash' ? 'font-bold text-slate-900' : 'text-slate-600'}`}>
-                Cash (নগদ)
+                Cash
               </span>
             </label>
 
@@ -226,28 +226,28 @@ export function VoucherSlipCard({ data = {}, copyTitle = 'Original Copy (মূ�
           <div className="border-t border-slate-400 pt-1 font-bold text-slate-800">
             Prepared / Paid By
           </div>
-          <div className="text-[10px] text-slate-500 font-medium">({preparedBy || 'প্রদানকারী'})</div>
+          <div className="text-[10px] text-slate-500 font-medium">({preparedBy || 'Prepared By'})</div>
         </div>
 
         <div>
           <div className="border-t border-slate-400 pt-1 font-bold text-slate-800">
             Received By
           </div>
-          <div className="text-[10px] text-slate-500 font-medium">({receivedBySignature || 'গ্রহণকারী'})</div>
+          <div className="text-[10px] text-slate-500 font-medium">({receivedBySignature || 'Received By'})</div>
         </div>
 
         <div>
           <div className="border-t border-slate-400 pt-1 font-bold text-slate-800">
             Accounts
           </div>
-          <div className="text-[10px] text-slate-500 font-medium">({accountsSignature || 'একাউন্টেন্ট'})</div>
+          <div className="text-[10px] text-slate-500 font-medium">({accountsSignature || 'Accounts Officer'})</div>
         </div>
 
         <div>
           <div className="border-t border-slate-400 pt-1 font-bold text-slate-800">
             Approved By
           </div>
-          <div className="text-[10px] text-slate-500 font-medium">({approvedBySignature || 'জিএম / প্রোপাইটার'})</div>
+          <div className="text-[10px] text-slate-500 font-medium">({approvedBySignature || 'Approved By'})</div>
         </div>
       </div>
     </div>
@@ -276,11 +276,6 @@ export function MoneyReceiptPreview({ data = {} }) {
 
   return (
     <div className="w-full flex justify-center py-2 sm:py-4 no-print-padding print:p-0 print:m-0">
-      {/* 
-        A4 container: 
-        In display mode: max-w-[850px], height fits content naturally (not full page stretched).
-        In print mode: fits standard A4 with clean margins.
-      */}
       <div
         id="printable-money-receipt"
         className="printable-money-receipt bg-white text-slate-900 shadow-2xl rounded-2xl w-full max-w-[850px] p-4 sm:p-6 flex flex-col justify-start print:min-h-0 print:h-auto print:p-4 print:m-0 print:shadow-none print:w-full print:max-w-none space-y-3"
@@ -288,7 +283,7 @@ export function MoneyReceiptPreview({ data = {} }) {
         {/* First Voucher Slip (Original Copy) */}
         <VoucherSlipCard
           data={data}
-          copyTitle={data.copyType || 'Original Copy (মূল কপি)'}
+          copyTitle={data.copyType || 'Original Copy'}
           idSuffix="-original"
         />
 
@@ -298,7 +293,7 @@ export function MoneyReceiptPreview({ data = {} }) {
             <ScissorDivider />
             <VoucherSlipCard
               data={data}
-              copyTitle="Office Copy (অফিস কপি)"
+              copyTitle="Office Copy"
               idSuffix="-office"
             />
           </>

@@ -1,8 +1,10 @@
 import React, { useCallback } from 'react';
 import { PlusCircle, Trash2 } from 'lucide-react';
 import { numberToWords, numberToWordsBn, generateVoucherNo } from './sampleData';
+import { useTranslation } from 'react-i18next';
 
 export function CashVoucherForm({ data, onChange, onReset, onSave, onPreview, isSubmitting }) {
+  const { t } = useTranslation();
 
   // ─── Helpers ─────────────────────────────────────────────────────────────
   const recalc = useCallback((items, taxVat) => {
@@ -41,12 +43,16 @@ export function CashVoucherForm({ data, onChange, onReset, onSave, onPreview, is
     <div className="space-y-6">
       {/* Header */}
       <div className="bg-card border border-border rounded-2xl p-5 shadow-xs">
-        <h2 className="text-base font-bold text-foreground mb-4">Cash Voucher (ক্যাশ মানি ভাউচার)</h2>
+        <h2 className="text-base font-bold text-foreground mb-4">
+          {t('cashVoucherForm.title', 'Cash Money Voucher')}
+        </h2>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           {/* Voucher No */}
           <div>
-            <label className="block text-xs font-semibold text-muted-foreground mb-1">Voucher No</label>
+            <label className="block text-xs font-semibold text-muted-foreground mb-1">
+              {t('cashVoucherForm.voucherNo', 'Voucher No')}
+            </label>
             <div className="flex gap-2">
               <input
                 type="text"
@@ -59,14 +65,16 @@ export function CashVoucherForm({ data, onChange, onReset, onSave, onPreview, is
                 onClick={() => handleChange('voucherNo', generateVoucherNo())}
                 className="px-3 py-2 bg-muted hover:bg-muted/80 border border-border rounded-xl text-xs font-bold text-muted-foreground transition-all cursor-pointer"
               >
-                New
+                {t('cashVoucherForm.new', 'New')}
               </button>
             </div>
           </div>
 
           {/* Date */}
           <div>
-            <label className="block text-xs font-semibold text-muted-foreground mb-1">Date</label>
+            <label className="block text-xs font-semibold text-muted-foreground mb-1">
+              {t('cashVoucherForm.date', 'Date')}
+            </label>
             <input
               type="date"
               value={data.voucherDate?.split('/').reverse().join('-') || ''}
@@ -83,14 +91,16 @@ export function CashVoucherForm({ data, onChange, onReset, onSave, onPreview, is
       {/* Expense Items */}
       <div className="bg-card border border-border rounded-2xl p-5 shadow-xs">
         <div className="flex items-center justify-between mb-4">
-          <h3 className="text-sm font-bold text-foreground">Expense Items (খরচের বিবরণ)</h3>
+          <h3 className="text-sm font-bold text-foreground">
+            {t('cashVoucherForm.expenseItems', 'Expense Items')}
+          </h3>
           <button
             type="button"
             onClick={addItem}
             className="flex items-center gap-1.5 text-xs font-bold text-primary bg-primary/10 hover:bg-primary/20 px-3 py-1.5 rounded-xl transition-all cursor-pointer"
           >
             <PlusCircle className="w-3.5 h-3.5" />
-            Add Row
+            {t('cashVoucherForm.addRow', 'Add Row')}
           </button>
         </div>
 
@@ -98,10 +108,10 @@ export function CashVoucherForm({ data, onChange, onReset, onSave, onPreview, is
           <table className="w-full text-xs">
             <thead>
               <tr className="bg-muted text-muted-foreground">
-                <th className="px-2 py-2 text-left w-10">#</th>
-                <th className="px-2 py-2 text-left">বিবরণ (Bengali)</th>
-                <th className="px-2 py-2 text-left">Description (English)</th>
-                <th className="px-2 py-2 text-right w-32">Amount (BDT)</th>
+                <th className="px-2 py-2 text-left w-10">{t('cashVoucherForm.slNo', '#')}</th>
+                <th className="px-2 py-2 text-left">{t('cashVoucherForm.descriptionBn', 'Description (Bengali)')}</th>
+                <th className="px-2 py-2 text-left">{t('cashVoucherForm.descriptionEn', 'Description (English)')}</th>
+                <th className="px-2 py-2 text-right w-32">{t('cashVoucherForm.amountBdt', 'Amount (BDT)')}</th>
                 <th className="px-2 py-2 w-10"></th>
               </tr>
             </thead>
@@ -114,7 +124,7 @@ export function CashVoucherForm({ data, onChange, onReset, onSave, onPreview, is
                       type="text"
                       value={item.descriptionBn}
                       onChange={(e) => handleItemChange(idx, 'descriptionBn', e.target.value)}
-                      placeholder="বাংলায় লিখুন..."
+                      placeholder={t('cashVoucherForm.placeholderBn', 'Write in Bengali...')}
                       className="w-full bg-muted/60 border border-border/60 rounded-lg px-2 py-1.5 text-foreground focus:outline-none focus:ring-1 focus:ring-primary"
                     />
                   </td>
@@ -123,7 +133,7 @@ export function CashVoucherForm({ data, onChange, onReset, onSave, onPreview, is
                       type="text"
                       value={item.descriptionEn}
                       onChange={(e) => handleItemChange(idx, 'descriptionEn', e.target.value)}
-                      placeholder="Write in English..."
+                      placeholder={t('cashVoucherForm.placeholderEn', 'Write in English...')}
                       className="w-full bg-muted/60 border border-border/60 rounded-lg px-2 py-1.5 text-foreground focus:outline-none focus:ring-1 focus:ring-primary"
                     />
                   </td>
@@ -156,13 +166,13 @@ export function CashVoucherForm({ data, onChange, onReset, onSave, onPreview, is
         {/* Totals */}
         <div className="mt-4 flex flex-col items-end gap-1 text-xs">
           <div className="flex gap-4">
-            <span className="text-muted-foreground">Subtotal</span>
+            <span className="text-muted-foreground">{t('cashVoucherForm.subtotal', 'Subtotal')}</span>
             <span className="font-semibold text-foreground w-28 text-right">
               {Number(data.subtotal || 0).toLocaleString('en-IN', { minimumFractionDigits: 2 })}
             </span>
           </div>
           <div className="flex gap-4 items-center">
-            <span className="text-muted-foreground">Tax / VAT</span>
+            <span className="text-muted-foreground">{t('cashVoucherForm.taxVat', 'Tax / VAT')}</span>
             <input
               type="number"
               value={data.taxVat}
@@ -172,7 +182,7 @@ export function CashVoucherForm({ data, onChange, onReset, onSave, onPreview, is
             />
           </div>
           <div className="flex gap-4 border-t border-border pt-1 mt-1">
-            <span className="font-bold text-foreground">Grand Total</span>
+            <span className="font-bold text-foreground">{t('cashVoucherForm.grandTotal', 'Grand Total')}</span>
             <span className="font-bold text-foreground w-28 text-right">
               {Number(data.grandTotal || 0).toLocaleString('en-IN', { minimumFractionDigits: 2 })}
             </span>
@@ -182,35 +192,43 @@ export function CashVoucherForm({ data, onChange, onReset, onSave, onPreview, is
 
       {/* Signatures */}
       <div className="bg-card border border-border rounded-2xl p-5 shadow-xs">
-        <h3 className="text-sm font-bold text-foreground mb-4">Signatures / Received By</h3>
+        <h3 className="text-sm font-bold text-foreground mb-4">
+          {t('cashVoucherForm.signatures', 'Signatures & Authorizations')}
+        </h3>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           <div>
-            <label className="block text-xs font-semibold text-muted-foreground mb-1">Received By (Signature By)</label>
+            <label className="block text-xs font-semibold text-muted-foreground mb-1">
+              {t('cashVoucherForm.receivedBy', 'Received By')}
+            </label>
             <input
               type="text"
               value={data.receivedBy}
               onChange={(e) => handleChange('receivedBy', e.target.value)}
-              placeholder="Name / Signature"
+              placeholder={t('cashVoucherForm.receivedByPlaceholder', 'Signature / Name')}
               className="w-full bg-muted border border-border rounded-xl px-3 py-2 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
             />
           </div>
           <div>
-            <label className="block text-xs font-semibold text-muted-foreground mb-1">প্রণকারীর স্বাক্ষর ও নাম</label>
+            <label className="block text-xs font-semibold text-muted-foreground mb-1">
+              {t('cashVoucherForm.preparedBy', 'Prepared By')}
+            </label>
             <input
               type="text"
               value={data.preparedBy}
               onChange={(e) => handleChange('preparedBy', e.target.value)}
-              placeholder="Signature & Name"
+              placeholder={t('cashVoucherForm.preparedByPlaceholder', 'Signature & Name')}
               className="w-full bg-muted border border-border rounded-xl px-3 py-2 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
             />
           </div>
           <div>
-            <label className="block text-xs font-semibold text-muted-foreground mb-1">কর্তৃপক্ষর স্বাক্ষর ও পদবী</label>
+            <label className="block text-xs font-semibold text-muted-foreground mb-1">
+              {t('cashVoucherForm.authority', 'Authority')}
+            </label>
             <input
               type="text"
               value={data.accountsSignature}
               onChange={(e) => handleChange('accountsSignature', e.target.value)}
-              placeholder="Signature & Designation"
+              placeholder={t('cashVoucherForm.authorityPlaceholder', 'Signature & Designation')}
               className="w-full bg-muted border border-border rounded-xl px-3 py-2 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
             />
           </div>
@@ -224,14 +242,14 @@ export function CashVoucherForm({ data, onChange, onReset, onSave, onPreview, is
           onClick={onReset}
           className="px-5 py-2 bg-muted hover:bg-muted/80 text-foreground text-xs font-bold rounded-xl transition-all cursor-pointer"
         >
-          Reset
+          {t('cashVoucherForm.reset', 'Reset')}
         </button>
         <button
           type="button"
           onClick={onPreview}
           className="px-5 py-2 bg-secondary hover:bg-secondary/80 text-secondary-foreground text-xs font-bold rounded-xl transition-all cursor-pointer"
         >
-          Preview Only
+          {t('cashVoucherForm.previewOnly', 'Preview Only')}
         </button>
         <button
           type="button"
@@ -239,7 +257,7 @@ export function CashVoucherForm({ data, onChange, onReset, onSave, onPreview, is
           disabled={isSubmitting}
           className="px-6 py-2 bg-primary hover:bg-primary/90 text-primary-foreground text-xs font-bold rounded-xl transition-all cursor-pointer disabled:opacity-60"
         >
-          {isSubmitting ? 'Saving...' : 'Save & Preview'}
+          {isSubmitting ? t('cashVoucherForm.saving', 'Saving...') : t('cashVoucherForm.savePreview', 'Save & Preview')}
         </button>
       </div>
     </div>

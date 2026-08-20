@@ -98,7 +98,7 @@ export function CashVoucherPreview({ data }) {
           {/* Right: Voucher No + QR */}
           <div style={{ flexShrink: 0, textAlign: 'right', minWidth: '130px' }}>
             <div style={{ fontSize: '10px', color: '#555' }}>
-              <span>বাম নং : </span>
+              <span>ভাউচার নং : </span>
               <span style={{ fontWeight: 700, color: '#1a56db', fontSize: '11px' }}>
                 {data.voucherNo || 'MAT-KV-000000'}
               </span>

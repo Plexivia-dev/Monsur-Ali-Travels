@@ -1,5 +1,5 @@
 /**
- * Cash Voucher (ক্যাশ মানি ভাউচার) — Sample Data & Utilities
+ * Cash Voucher (Cash Money Voucher) — Sample Data & Utilities
  */
 
 // ─── Voucher Number Generator ────────────────────────────────────────────────
@@ -86,12 +86,8 @@ export function numberToWordsBn(amount) {
 // ─── Default Data ─────────────────────────────────────────────────────────────
 export function getDefaultCashVoucherData() {
   const items = [
-    { slNo: 1, descriptionBn: 'বিদ্যুৎ বিল', descriptionEn: 'Electric Bill Payment',         amount: 3500 },
-    { slNo: 2, descriptionBn: 'ইন্টারনেট বিল',descriptionEn: 'Office Internet Subscription', amount: 1800 },
+    { slNo: 1, descriptionBn: '', descriptionEn: '', amount: 0 },
   ];
-  const subtotal   = items.reduce((s, it) => s + Number(it.amount), 0);
-  const taxVat     = 0;
-  const grandTotal = subtotal + taxVat;
 
   return {
     _id: null,
@@ -101,17 +97,17 @@ export function getDefaultCashVoucherData() {
     did: '',
 
     items,
-    subtotal,
-    taxVat,
-    grandTotal,
-    grandTotalInWordsEn: numberToWords(grandTotal),
-    grandTotalInWordsBn: numberToWordsBn(grandTotal),
+    subtotal: 0,
+    taxVat: 0,
+    grandTotal: 0,
+    grandTotalInWordsEn: '',
+    grandTotalInWordsBn: '',
 
     // Signatures
     receivedBy: '',
-    preparedBy: 'প্রণকারীর নাম',
-    accountsSignature: 'একাউন্টস অফিসার',
-    accountsDesignation: 'Accounts Officer',
+    preparedBy: '',
+    accountsSignature: '',
+    accountsDesignation: '',
 
     notes: '',
   };

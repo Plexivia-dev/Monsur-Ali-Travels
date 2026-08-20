@@ -2,21 +2,13 @@ import React, { useRef, useState } from 'react';
 import {
   Receipt,
   User,
-  Phone,
-  CreditCard,
+  Layers,
+  DollarSign,
   FileText,
-  Calendar,
-  Clock,
-  Printer,
   RefreshCw,
   Eye,
   Save,
-  CheckCircle2,
-  DollarSign,
-  Layers,
   Sparkles,
-  Search,
-  ExternalLink,
 } from 'lucide-react';
 import { BdPhoneInput } from '../../common/BdPhoneInput';
 import { DatePicker } from '../../ui/date-picker';
@@ -26,7 +18,8 @@ import { toast } from 'sonner';
 import { useTranslation } from 'react-i18next';
 
 export function MoneyReceiptForm({ data, onChange, onReset, onSave, onPreview, isSubmitting }) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const isBn = i18n.language === 'bn';
   const [detectedCustomer, setDetectedCustomer] = useState(null);
   const [hasPromptedFor, setHasPromptedFor] = useState(new Set());
   const lookupTimeoutRef = useRef(null);
@@ -90,10 +83,10 @@ export function MoneyReceiptForm({ data, onChange, onReset, onSave, onPreview, i
         <div>
           <h2 className="text-base font-bold text-foreground flex items-center gap-2">
             <Receipt className="w-5 h-5 text-primary" />
-            Money Receipt &amp; Payment Voucher Generator
+            {t('moneyReceiptForm.title', 'Money Receipt & Payment Voucher Generator')}
           </h2>
           <p className="text-xs text-muted-foreground mt-0.5">
-            Generate and print professional internal money receipts, vouchers, and accounts tokens for A4 slip printing.
+            {t('moneyReceiptForm.subtitle', 'Generate and print professional internal money receipts, vouchers, and accounts tokens for A4 slip printing.')}
           </p>
         </div>
 
@@ -104,7 +97,7 @@ export function MoneyReceiptForm({ data, onChange, onReset, onSave, onPreview, i
             className="flex items-center gap-1.5 text-xs font-medium text-muted-foreground hover:text-foreground bg-muted hover:bg-muted/80 px-3 py-1.5 rounded-lg transition-colors cursor-pointer"
           >
             <RefreshCw className="w-3.5 h-3.5" />
-            <span>Reset Form</span>
+            <span>{t('moneyReceiptForm.resetForm', 'Reset Form')}</span>
           </button>
         </div>
       </div>
@@ -141,7 +134,9 @@ export function MoneyReceiptForm({ data, onChange, onReset, onSave, onPreview, i
       <div className="bg-muted/30 border border-border p-4 rounded-xl space-y-3">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 text-xs">
           <div>
-            <label className="block font-bold text-foreground mb-1">Receipt No.</label>
+            <label className="block font-bold text-foreground mb-1">
+              {t('moneyReceiptForm.receiptNo', 'Receipt No.')}
+            </label>
             <input
               type="text"
               value={data.receiptNo || ''}
@@ -151,7 +146,9 @@ export function MoneyReceiptForm({ data, onChange, onReset, onSave, onPreview, i
           </div>
 
           <div>
-            <label className="block font-bold text-foreground mb-1">Date</label>
+            <label className="block font-bold text-foreground mb-1">
+              {t('moneyReceiptForm.date', 'Date')}
+            </label>
             <DatePicker
               value={data.date || ''}
               onChange={(val) => handleFieldChange('date', val)}
@@ -159,25 +156,29 @@ export function MoneyReceiptForm({ data, onChange, onReset, onSave, onPreview, i
           </div>
 
           <div>
-            <label className="block font-bold text-foreground mb-1">Time</label>
+            <label className="block font-bold text-foreground mb-1">
+              {t('moneyReceiptForm.time', 'Time')}
+            </label>
             <input
               type="text"
               value={data.time || ''}
-              placeholder="e.g. 11:30 AM"
+              placeholder={t('moneyReceiptForm.timePlaceholder', 'e.g. 11:30 AM')}
               onChange={(e) => handleFieldChange('time', e.target.value)}
               className="w-full px-3 py-2 bg-background border border-border rounded-lg text-foreground font-mono text-xs focus:ring-1 focus:ring-primary"
             />
           </div>
 
           <div>
-            <label className="block font-bold text-foreground mb-1">Print Layout Format</label>
+            <label className="block font-bold text-foreground mb-1">
+              {t('moneyReceiptForm.printLayout', 'Print Layout Format')}
+            </label>
             <select
               value={data.dualPrint !== false ? 'dual' : 'single'}
               onChange={(e) => handleFieldChange('dualPrint', e.target.value === 'dual')}
               className="w-full px-3 py-2 bg-background border border-border rounded-lg text-foreground font-semibold text-xs focus:ring-1 focus:ring-primary cursor-pointer"
             >
-              <option value="dual">Dual Slip on 1 A4 (Original + Office Copy)</option>
-              <option value="single">Single Voucher Slip Only</option>
+              <option value="dual">{t('moneyReceiptForm.dualSlip', 'Dual Slip on 1 A4 (Original + Office Copy)')}</option>
+              <option value="single">{t('moneyReceiptForm.singleSlip', 'Single Voucher Slip Only')}</option>
             </select>
           </div>
         </div>
@@ -187,34 +188,40 @@ export function MoneyReceiptForm({ data, onChange, onReset, onSave, onPreview, i
       <div className="space-y-3">
         <div className="flex items-center gap-2 bg-[#0B3A60] text-white px-3.5 py-2 rounded-xl text-xs font-bold uppercase tracking-wider">
           <User className="w-4 h-4" />
-          <span>1. Client &amp; Passenger Information</span>
+          <span>{t('moneyReceiptForm.clientInfo', '1. Client & Passenger Information')}</span>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 text-xs">
           <div>
-            <label className="block font-bold text-foreground mb-1">Client / Passenger Name *</label>
+            <label className="block font-bold text-foreground mb-1">
+              {t('moneyReceiptForm.clientName', 'Client / Passenger Name')} *
+            </label>
             <input
               type="text"
               value={data.clientName || ''}
-              placeholder="e.g. Md. Abdul Karim"
+              placeholder={t('moneyReceiptForm.clientNamePlaceholder', 'e.g. Md. Abdul Karim')}
               onChange={(e) => handleFieldChange('clientName', e.target.value)}
               className="w-full px-3 py-2 bg-background border border-border rounded-lg text-foreground font-semibold text-xs focus:ring-1 focus:ring-primary"
             />
           </div>
 
           <div>
-            <label className="block font-bold text-foreground mb-1">Passport / NID No.</label>
+            <label className="block font-bold text-foreground mb-1">
+              {t('moneyReceiptForm.passportNid', 'Passport / NID No.')}
+            </label>
             <input
               type="text"
               value={data.passportNumber || ''}
-              placeholder="e.g. A08492014"
+              placeholder={t('moneyReceiptForm.passportPlaceholder', 'e.g. A08492014')}
               onChange={(e) => handleFieldChange('passportNumber', e.target.value)}
               className="w-full px-3 py-2 bg-background border border-border rounded-lg text-foreground font-mono font-medium text-xs focus:ring-1 focus:ring-primary"
             />
           </div>
 
           <div>
-            <label className="block font-bold text-foreground mb-1">Phone / Mobile No.</label>
+            <label className="block font-bold text-foreground mb-1">
+              {t('moneyReceiptForm.phone', 'Phone / Mobile No.')}
+            </label>
             <BdPhoneInput
               value={data.phone || ''}
               onChange={(val) => handleFieldChange('phone', val)}
@@ -227,17 +234,19 @@ export function MoneyReceiptForm({ data, onChange, onReset, onSave, onPreview, i
       <div className="space-y-3">
         <div className="flex items-center gap-2 bg-[#0B3A60] text-white px-3.5 py-2 rounded-xl text-xs font-bold uppercase tracking-wider">
           <Layers className="w-4 h-4" />
-          <span>2. Purpose, Service Head &amp; Officer</span>
+          <span>{t('moneyReceiptForm.purposeSection', '2. Purpose, Service Head & Officer')}</span>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
           <div>
-            <label className="block font-bold text-foreground mb-1">Purpose / Service Head *</label>
+            <label className="block font-bold text-foreground mb-1">
+              {t('moneyReceiptForm.purpose', 'Purpose / Service Head')} *
+            </label>
             <input
               type="text"
               list="service-purpose-options"
               value={data.purpose || ''}
-              placeholder="e.g. Visa Processing & Flight Ticket Booking (Saudi Arabia)"
+              placeholder={t('moneyReceiptForm.purposePlaceholder', 'e.g. Visa Processing & Flight Ticket Booking (Saudi Arabia)')}
               onChange={(e) => handleFieldChange('purpose', e.target.value)}
               className="w-full px-3 py-2 bg-background border border-border rounded-lg text-foreground font-medium text-xs focus:ring-1 focus:ring-primary"
             />
@@ -249,19 +258,21 @@ export function MoneyReceiptForm({ data, onChange, onReset, onSave, onPreview, i
           </div>
 
           <div>
-            <label className="block font-bold text-foreground mb-1">Received / Paid By (Accounts Officer)</label>
+            <label className="block font-bold text-foreground mb-1">
+              {t('moneyReceiptForm.receivedBy', 'Received / Paid By (Accounts Officer)')}
+            </label>
             <div className="grid grid-cols-2 gap-2">
               <input
                 type="text"
                 value={data.receivedBy || ''}
-                placeholder="e.g. Md. Tanvir Hossain"
+                placeholder={t('moneyReceiptForm.officerPlaceholder', 'e.g. Md. Tanvir Hossain')}
                 onChange={(e) => handleFieldChange('receivedBy', e.target.value)}
                 className="w-full px-3 py-2 bg-background border border-border rounded-lg text-foreground font-medium text-xs focus:ring-1 focus:ring-primary"
               />
               <input
                 type="text"
                 value={data.receivedByRole || ''}
-                placeholder="Role (e.g. Accounts Officer)"
+                placeholder={t('moneyReceiptForm.rolePlaceholder', 'Role (e.g. Accounts Officer)')}
                 onChange={(e) => handleFieldChange('receivedByRole', e.target.value)}
                 className="w-full px-3 py-2 bg-background border border-border rounded-lg text-foreground text-xs focus:ring-1 focus:ring-primary"
               />
@@ -274,12 +285,14 @@ export function MoneyReceiptForm({ data, onChange, onReset, onSave, onPreview, i
       <div className="space-y-3">
         <div className="flex items-center gap-2 bg-[#0B3A60] text-white px-3.5 py-2 rounded-xl text-xs font-bold uppercase tracking-wider">
           <DollarSign className="w-4 h-4" />
-          <span>3. Payment Method &amp; Amount Breakdown</span>
+          <span>{t('moneyReceiptForm.paymentSection', '3. Payment Method & Amount Breakdown')}</span>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs bg-muted/20 p-4 rounded-xl border border-border">
           <div>
-            <label className="block font-bold text-foreground mb-1.5">Payment Method</label>
+            <label className="block font-bold text-foreground mb-1.5">
+              {t('moneyReceiptForm.paymentMethod', 'Payment Method')}
+            </label>
             <div className="space-y-1.5">
               {PAYMENT_METHODS.map((pm) => (
                 <label
@@ -298,7 +311,7 @@ export function MoneyReceiptForm({ data, onChange, onReset, onSave, onPreview, i
                     onChange={(e) => handleFieldChange('paymentMethod', e.target.value)}
                     className="accent-primary"
                   />
-                  <span>{pm.label}</span>
+                  <span>{isBn ? pm.labelBn : pm.label}</span>
                 </label>
               ))}
             </div>
@@ -306,13 +319,15 @@ export function MoneyReceiptForm({ data, onChange, onReset, onSave, onPreview, i
 
           <div className="sm:col-span-2 space-y-3">
             <div>
-              <label className="block font-bold text-foreground mb-1">Total Amount (টাকার পরিমাণ) *</label>
+              <label className="block font-bold text-foreground mb-1">
+                {t('moneyReceiptForm.totalAmount', 'Total Amount')} *
+              </label>
               <div className="relative">
                 <span className="absolute left-3 top-2.5 font-bold text-muted-foreground">৳</span>
                 <input
                   type="number"
                   value={data.amount || ''}
-                  placeholder="e.g. 50000"
+                  placeholder={t('moneyReceiptForm.amountPlaceholder', 'e.g. 50000')}
                   onChange={(e) => handleFieldChange('amount', e.target.value)}
                   className="w-full pl-8 pr-3 py-2 bg-background border border-border rounded-lg text-foreground font-mono font-bold text-sm focus:ring-1 focus:ring-primary"
                 />
@@ -320,11 +335,13 @@ export function MoneyReceiptForm({ data, onChange, onReset, onSave, onPreview, i
             </div>
 
             <div>
-              <label className="block font-bold text-foreground mb-1">Amount in Words (কথায়)</label>
+              <label className="block font-bold text-foreground mb-1">
+                {t('moneyReceiptForm.amountInWords', 'Amount in Words')}
+              </label>
               <input
                 type="text"
                 value={data.amountInWords || ''}
-                placeholder="e.g. Fifty Thousand Taka Only."
+                placeholder={t('moneyReceiptForm.amountInWordsPlaceholder', 'e.g. Fifty Thousand Taka Only.')}
                 onChange={(e) => handleFieldChange('amountInWords', e.target.value)}
                 className="w-full px-3 py-2 bg-background border border-border rounded-lg text-foreground font-medium text-xs italic focus:ring-1 focus:ring-primary"
               />
@@ -337,49 +354,57 @@ export function MoneyReceiptForm({ data, onChange, onReset, onSave, onPreview, i
       <div className="space-y-3">
         <div className="flex items-center gap-2 bg-[#0B3A60] text-white px-3.5 py-2 rounded-xl text-xs font-bold uppercase tracking-wider">
           <FileText className="w-4 h-4" />
-          <span>4. Signatures &amp; Approvals</span>
+          <span>{t('moneyReceiptForm.signatures', '4. Signatures & Approvals')}</span>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 text-xs">
           <div>
-            <label className="block font-medium text-foreground mb-1">Prepared / Paid By</label>
+            <label className="block font-medium text-foreground mb-1">
+              {t('moneyReceiptForm.preparedBy', 'Prepared / Paid By')}
+            </label>
             <input
               type="text"
               value={data.preparedBy || ''}
-              placeholder="প্রদানকারী"
+              placeholder={t('moneyReceiptForm.preparedBy', 'Prepared By')}
               onChange={(e) => handleFieldChange('preparedBy', e.target.value)}
               className="w-full px-3 py-1.5 bg-background border border-border rounded-lg text-foreground text-xs"
             />
           </div>
 
           <div>
-            <label className="block font-medium text-foreground mb-1">Received By</label>
+            <label className="block font-medium text-foreground mb-1">
+              {t('moneyReceiptForm.receivedBySignature', 'Received By')}
+            </label>
             <input
               type="text"
               value={data.receivedBySignature || ''}
-              placeholder="গ্রহণকারী"
+              placeholder={t('moneyReceiptForm.receivedBySignature', 'Received By')}
               onChange={(e) => handleFieldChange('receivedBySignature', e.target.value)}
               className="w-full px-3 py-1.5 bg-background border border-border rounded-lg text-foreground text-xs"
             />
           </div>
 
           <div>
-            <label className="block font-medium text-foreground mb-1">Accounts Officer</label>
+            <label className="block font-medium text-foreground mb-1">
+              {t('moneyReceiptForm.accountsOfficer', 'Accounts Officer')}
+            </label>
             <input
               type="text"
               value={data.accountsSignature || ''}
-              placeholder="একাউন্টেন্ট"
+              placeholder={t('moneyReceiptForm.accountsOfficer', 'Accounts Officer')}
               onChange={(e) => handleFieldChange('accountsSignature', e.target.value)}
               className="w-full px-3 py-1.5 bg-background border border-border rounded-lg text-foreground text-xs"
             />
           </div>
 
           <div>
-            <label className="block font-medium text-foreground mb-1">Approved By</label>
+            <label className="block font-medium text-foreground mb-1">
+              {t('moneyReceiptForm.approvedBy', 'Approved By')}
+            </label>
             <input
               type="text"
               value={data.approvedBySignature || ''}
-              placeholder="জিএম / প্রোপাইটার"
+              placeholder={t('moneyReceiptForm.approvedBy', 'Approved By')}
               onChange={(e) => handleFieldChange('approvedBySignature', e.target.value)}
               className="w-full px-3 py-1.5 bg-background border border-border rounded-lg text-foreground text-xs"
             />
@@ -395,7 +420,7 @@ export function MoneyReceiptForm({ data, onChange, onReset, onSave, onPreview, i
           className="w-full sm:w-auto flex items-center justify-center gap-2 bg-muted hover:bg-muted/80 text-foreground px-5 py-2.5 rounded-xl font-bold text-xs transition-all cursor-pointer shadow-xs"
         >
           <Eye className="w-4 h-4 text-primary" />
-          <span>Preview Voucher</span>
+          <span>{t('moneyReceiptForm.previewVoucher', 'Preview Voucher')}</span>
         </button>
 
         <button
@@ -405,7 +430,7 @@ export function MoneyReceiptForm({ data, onChange, onReset, onSave, onPreview, i
           className="w-full sm:w-auto flex items-center justify-center gap-2 bg-primary hover:bg-primary/90 text-primary-foreground px-6 py-2.5 rounded-xl font-bold text-xs transition-all cursor-pointer shadow-xs disabled:opacity-50"
         >
           <Save className="w-4 h-4" />
-          <span>{isSubmitting ? 'Saving...' : 'Save & Generate Voucher'}</span>
+          <span>{isSubmitting ? t('moneyReceiptForm.saving', 'Saving...') : t('moneyReceiptForm.saveGenerate', 'Save & Generate Voucher')}</span>
         </button>
       </div>
     </div>

@@ -35,8 +35,10 @@ import { SERVICE_TYPES, STATUS_OPTIONS } from './sampleData';
 import { ExistingCustomerAlertModal } from '../common/ExistingCustomerAlertModal';
 import { apiClient } from '../../../lib/api-client';
 import { toast } from 'sonner';
+import { useTranslation } from 'react-i18next';
 
 export function CustomerGuardianForm({ data, onChange, onReset, onSave, onPreview, isSubmitting }) {
+  const { t } = useTranslation();
   const [selectedPreviewDoc, setSelectedPreviewDoc] = useState(null);
   const [detectedCustomer, setDetectedCustomer] = useState(null);
   const [hasPromptedFor, setHasPromptedFor] = useState(new Set());
@@ -265,10 +267,10 @@ export function CustomerGuardianForm({ data, onChange, onReset, onSave, onPrevie
         <div>
           <h2 className="text-base font-bold text-foreground flex items-center gap-2">
             <FileText className="w-5 h-5 text-primary" />
-            Customer &amp; Guardian Information Application Form
+            {t('customerForm.title', 'Customer & Guardian Information Application Form')}
           </h2>
           <p className="text-xs text-muted-foreground mt-0.5">
-            কাস্টমার ও অভিভাবকের তথ্য, ফাইল স্ট্যাটাস ও অগ্রিম পেমেন্টের হিসাব ডাটাবেজে সংরক্ষণ করুন।
+            {t('customerForm.subtitle', 'Save customer and guardian details, file status, and advance payment details to the database.')}
           </p>
         </div>
 
@@ -279,7 +281,7 @@ export function CustomerGuardianForm({ data, onChange, onReset, onSave, onPrevie
             className="flex items-center gap-1.5 text-xs font-medium text-muted-foreground hover:text-foreground bg-muted hover:bg-muted/80 px-3 py-1.5 rounded-lg transition-colors cursor-pointer"
           >
             <RefreshCw className="w-3.5 h-3.5" />
-            <span>Clear / Reset Form</span>
+            <span>{t('customerForm.clearReset', 'Clear / Reset Form')}</span>
           </button>
         </div>
       </div>
@@ -290,7 +292,7 @@ export function CustomerGuardianForm({ data, onChange, onReset, onSave, onPrevie
           <div>
             <label className="block font-bold text-foreground mb-1 flex items-center gap-1.5">
               <Layers className="w-3.5 h-3.5 text-primary" />
-              Service Type (কাজের ধরণ / উদ্দেশ্য)
+              {t('customerForm.serviceType', 'Service Type (Purpose)')}
             </label>
             <select
               value={data.serviceType || SERVICE_TYPES[0]}
@@ -306,7 +308,7 @@ export function CustomerGuardianForm({ data, onChange, onReset, onSave, onPrevie
           <div>
             <label className="block font-bold text-foreground mb-1 flex items-center gap-1.5">
               <Activity className="w-3.5 h-3.5 text-amber-500" />
-              File Processing Status (ফাইলের অবস্থান)
+              {t('customerForm.fileStatus', 'File Processing Status')}
             </label>
             <select
               value={data.status || 'received'}
@@ -320,7 +322,7 @@ export function CustomerGuardianForm({ data, onChange, onReset, onSave, onPrevie
           </div>
 
           <div>
-            <label className="block font-bold text-foreground mb-1">Application No.</label>
+            <label className="block font-bold text-foreground mb-1">{t('customerForm.applicationNo', 'Application No.')}</label>
             <input
               type="text"
               value={data.applicationNo || ''}
@@ -330,7 +332,7 @@ export function CustomerGuardianForm({ data, onChange, onReset, onSave, onPrevie
           </div>
 
           <div>
-            <label className="block font-bold text-foreground mb-1">Date Received</label>
+            <label className="block font-bold text-foreground mb-1">{t('customerForm.dateReceived', 'Date Received')}</label>
             <DatePicker
               value={data.dateReceived || ''}
               onChange={(val) => onChange(prev => ({ ...prev, dateReceived: val, declarationDate: val }))}
@@ -343,17 +345,17 @@ export function CustomerGuardianForm({ data, onChange, onReset, onSave, onPrevie
       <div className="space-y-3">
         <div className="flex items-center gap-2 bg-[#103058] text-white px-3.5 py-2 rounded-xl text-xs font-bold uppercase tracking-wider">
           <User className="w-4 h-4" />
-          <span>1. Customer Details (কাস্টমারের বিবরণ)</span>
+          <span>{t('customerForm.customerDetails', '1. Customer Details (Applicant)')}</span>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 text-xs">
           <div>
             <label className="block font-semibold text-foreground mb-1">
-              Full Name (পূর্ণ নাম) <span className="text-rose-500 font-bold">*</span>
+              {t('customerForm.fullName', 'Full Name')} <span className="text-rose-500 font-bold">*</span>
             </label>
             <input
               type="text"
-              placeholder="কাস্টমারের পূর্ণ নাম লিখুন"
+              placeholder={t('customerForm.fullNamePlaceholder', 'Enter customer full name')}
               value={data.customer?.fullName || ''}
               onChange={(e) => handleCustomerChange('fullName', e.target.value)}
               className="w-full px-3 py-2 bg-muted/50 border border-border rounded-lg text-foreground focus:outline-hidden focus:ring-1 focus:ring-primary font-bold"
@@ -362,11 +364,11 @@ export function CustomerGuardianForm({ data, onChange, onReset, onSave, onPrevie
 
           <div>
             <label className="block font-semibold text-foreground mb-1">
-              NID Number <span className="text-rose-500 font-bold">*</span>
+              {t('customerForm.nidNumber', 'NID Number')} <span className="text-rose-500 font-bold">*</span>
             </label>
             <input
               type="text"
-              placeholder="জাতীয় পরিচয়পত্র নম্বর"
+              placeholder={t('customerForm.nidPlaceholder', 'National ID number')}
               value={data.customer?.nidNumber || ''}
               onChange={(e) => handleCustomerChange('nidNumber', e.target.value)}
               className="w-full px-3 py-2 bg-muted/50 border border-border rounded-lg text-foreground font-mono focus:outline-hidden focus:ring-1 focus:ring-primary"
@@ -374,10 +376,10 @@ export function CustomerGuardianForm({ data, onChange, onReset, onSave, onPrevie
           </div>
 
           <div>
-            <label className="block font-semibold text-foreground mb-1">Passport Number</label>
+            <label className="block font-semibold text-foreground mb-1">{t('customerForm.passportNumber', 'Passport Number')}</label>
             <input
               type="text"
-              placeholder="পাসপোর্ট নম্বর"
+              placeholder={t('customerForm.passportPlaceholder', 'Passport number')}
               value={data.customer?.passportNumber || ''}
               onChange={(e) => handleCustomerChange('passportNumber', e.target.value)}
               className="w-full px-3 py-2 bg-muted/50 border border-border rounded-lg text-foreground font-mono focus:outline-hidden focus:ring-1 focus:ring-primary uppercase"
@@ -385,12 +387,12 @@ export function CustomerGuardianForm({ data, onChange, onReset, onSave, onPrevie
           </div>
 
           <div>
-            <label className="block font-semibold text-foreground mb-1 leading-tight truncate" title="Country previously applied to and rejected by">
-              Rejected Country (যদি থাকে)
+            <label className="block font-semibold text-foreground mb-1 leading-tight truncate" title={t('customerForm.rejectedCountry', 'Rejected Country (If any)')}>
+              {t('customerForm.rejectedCountry', 'Rejected Country (If any)')}
             </label>
             <input
               type="text"
-              placeholder="পূর্বে রিজেক্ট হওয়া দেশ (যদি থাকে)"
+              placeholder={t('customerForm.rejectedCountryPlaceholder', 'Previously rejected country (if any)')}
               value={data.customer?.countryRejected || ''}
               onChange={(e) => handleCustomerChange('countryRejected', e.target.value)}
               className="w-full px-3 py-2 bg-muted/50 border border-border rounded-lg text-foreground focus:outline-hidden focus:ring-1 focus:ring-primary"
@@ -398,10 +400,10 @@ export function CustomerGuardianForm({ data, onChange, onReset, onSave, onPrevie
           </div>
 
           <div>
-            <label className="block font-semibold text-foreground mb-1">Father Name (পিতার নাম)</label>
+            <label className="block font-semibold text-foreground mb-1">{t('customerForm.fatherName', "Father's Name")}</label>
             <input
               type="text"
-              placeholder="পিতার নাম লিখুন"
+              placeholder={t('customerForm.fatherPlaceholder', "Enter father's name")}
               value={data.customer?.fatherName || ''}
               onChange={(e) => handleCustomerChange('fatherName', e.target.value)}
               className="w-full px-3 py-2 bg-muted/50 border border-border rounded-lg text-foreground focus:outline-hidden focus:ring-1 focus:ring-primary uppercase"
@@ -409,10 +411,10 @@ export function CustomerGuardianForm({ data, onChange, onReset, onSave, onPrevie
           </div>
 
           <div>
-            <label className="block font-semibold text-foreground mb-1">Mother Name (মাতার নাম)</label>
+            <label className="block font-semibold text-foreground mb-1">{t('customerForm.motherName', "Mother's Name")}</label>
             <input
               type="text"
-              placeholder="মাতার নাম লিখুন"
+              placeholder={t('customerForm.motherPlaceholder', "Enter mother's name")}
               value={data.customer?.motherName || ''}
               onChange={(e) => handleCustomerChange('motherName', e.target.value)}
               className="w-full px-3 py-2 bg-muted/50 border border-border rounded-lg text-foreground focus:outline-hidden focus:ring-1 focus:ring-primary uppercase"
@@ -420,7 +422,7 @@ export function CustomerGuardianForm({ data, onChange, onReset, onSave, onPrevie
           </div>
 
           <div>
-            <label className="block font-semibold text-foreground mb-1">Mobile Number (ফোন)</label>
+            <label className="block font-semibold text-foreground mb-1">{t('customerForm.mobileNumber', 'Mobile Number')}</label>
             <BdPhoneInput
               value={data.customer?.mobileNumber || ''}
               onChange={(val) => handleCustomerChange('mobileNumber', val)}
@@ -428,10 +430,10 @@ export function CustomerGuardianForm({ data, onChange, onReset, onSave, onPrevie
           </div>
 
           <div>
-            <label className="block font-semibold text-foreground mb-1">Email Address</label>
+            <label className="block font-semibold text-foreground mb-1">{t('customerForm.emailAddress', 'Email Address')}</label>
             <input
               type="email"
-              placeholder="ইমেইল অ্যাড্রেস"
+              placeholder={t('customerForm.emailPlaceholder', 'Email address')}
               value={data.customer?.email || ''}
               onChange={(e) => handleCustomerChange('email', e.target.value)}
               className="w-full px-3 py-2 bg-muted/50 border border-border rounded-lg text-foreground focus:outline-hidden focus:ring-1 focus:ring-primary"
@@ -444,15 +446,15 @@ export function CustomerGuardianForm({ data, onChange, onReset, onSave, onPrevie
       <div className="space-y-3">
         <div className="flex items-center gap-2 bg-[#103058] text-white px-3.5 py-2 rounded-xl text-xs font-bold uppercase tracking-wider">
           <Users className="w-4 h-4" />
-          <span>2. Guardian Details (অভিভাবকের বিবরণ)</span>
+          <span>{t('customerForm.guardianDetails', '2. Guardian Details')}</span>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 text-xs">
           <div>
-            <label className="block font-semibold text-foreground mb-1">Guardian Full Name (নাম)</label>
+            <label className="block font-semibold text-foreground mb-1">{t('customerForm.guardianFullName', 'Guardian Full Name')}</label>
             <input
               type="text"
-              placeholder="অভিভাবকের পূর্ণ নাম"
+              placeholder={t('customerForm.guardianFullNamePlaceholder', 'Enter guardian full name')}
               value={data.guardian?.fullName || ''}
               onChange={(e) => handleGuardianChange('fullName', e.target.value)}
               className="w-full px-3 py-2 bg-muted/50 border border-border rounded-lg text-foreground focus:outline-hidden focus:ring-1 focus:ring-primary font-bold"
@@ -460,10 +462,10 @@ export function CustomerGuardianForm({ data, onChange, onReset, onSave, onPrevie
           </div>
 
           <div>
-            <label className="block font-semibold text-foreground mb-1">NID Card Number</label>
+            <label className="block font-semibold text-foreground mb-1">{t('customerForm.guardianNid', 'NID Card Number')}</label>
             <input
               type="text"
-              placeholder="অভিভাবকের NID নম্বর"
+              placeholder={t('customerForm.guardianNidPlaceholder', "Guardian's NID number")}
               value={data.guardian?.nidNumber || ''}
               onChange={(e) => handleGuardianChange('nidNumber', e.target.value)}
               className="w-full px-3 py-2 bg-muted/50 border border-border rounded-lg text-foreground font-mono focus:outline-hidden focus:ring-1 focus:ring-primary"
@@ -471,10 +473,10 @@ export function CustomerGuardianForm({ data, onChange, onReset, onSave, onPrevie
           </div>
 
           <div>
-            <label className="block font-semibold text-foreground mb-1">Father Name (পিতার নাম)</label>
+            <label className="block font-semibold text-foreground mb-1">{t('customerForm.guardianFather', "Father's Name")}</label>
             <input
               type="text"
-              placeholder="পিতার নাম"
+              placeholder={t('customerForm.guardianFatherPlaceholder', "Enter father's name")}
               value={data.guardian?.fatherName || ''}
               onChange={(e) => handleGuardianChange('fatherName', e.target.value)}
               className="w-full px-3 py-2 bg-muted/50 border border-border rounded-lg text-foreground focus:outline-hidden focus:ring-1 focus:ring-primary uppercase"
@@ -482,10 +484,10 @@ export function CustomerGuardianForm({ data, onChange, onReset, onSave, onPrevie
           </div>
 
           <div>
-            <label className="block font-semibold text-foreground mb-1">Mother Name (মাতার নাম)</label>
+            <label className="block font-semibold text-foreground mb-1">{t('customerForm.guardianMother', "Mother's Name")}</label>
             <input
               type="text"
-              placeholder="মাতার নাম"
+              placeholder={t('customerForm.guardianMotherPlaceholder', "Enter mother's name")}
               value={data.guardian?.motherName || ''}
               onChange={(e) => handleGuardianChange('motherName', e.target.value)}
               className="w-full px-3 py-2 bg-muted/50 border border-border rounded-lg text-foreground focus:outline-hidden focus:ring-1 focus:ring-primary uppercase"
@@ -493,7 +495,7 @@ export function CustomerGuardianForm({ data, onChange, onReset, onSave, onPrevie
           </div>
 
           <div>
-            <label className="block font-semibold text-foreground mb-1">Mobile Number</label>
+            <label className="block font-semibold text-foreground mb-1">{t('customerForm.guardianMobile', 'Mobile Number')}</label>
             <BdPhoneInput
               value={data.guardian?.mobileNumber || ''}
               onChange={(val) => handleGuardianChange('mobileNumber', val)}
@@ -501,10 +503,10 @@ export function CustomerGuardianForm({ data, onChange, onReset, onSave, onPrevie
           </div>
 
           <div>
-            <label className="block font-semibold text-foreground mb-1">Email Address</label>
+            <label className="block font-semibold text-foreground mb-1">{t('customerForm.guardianEmail', 'Email Address')}</label>
             <input
               type="email"
-              placeholder="ইমেইল"
+              placeholder={t('customerForm.guardianEmailPlaceholder', 'Email address')}
               value={data.guardian?.email || ''}
               onChange={(e) => handleGuardianChange('email', e.target.value)}
               className="w-full px-3 py-2 bg-muted/50 border border-border rounded-lg text-foreground focus:outline-hidden focus:ring-1 focus:ring-primary"
@@ -512,10 +514,10 @@ export function CustomerGuardianForm({ data, onChange, onReset, onSave, onPrevie
           </div>
 
           <div>
-            <label className="block font-semibold text-foreground mb-1">Relationship with Customer</label>
+            <label className="block font-semibold text-foreground mb-1">{t('customerForm.guardianRelation', 'Relationship with Customer')}</label>
             <input
               type="text"
-              placeholder="সম্পর্ক (যেমন: পিতা, চাচা, ভাই)"
+              placeholder={t('customerForm.guardianRelationPlaceholder', 'Relationship (e.g. Father, Brother)')}
               value={data.guardian?.relationship || ''}
               onChange={(e) => handleGuardianChange('relationship', e.target.value)}
               className="w-full px-3 py-2 bg-muted/50 border border-border rounded-lg text-foreground focus:outline-hidden focus:ring-1 focus:ring-primary font-medium"
@@ -523,10 +525,10 @@ export function CustomerGuardianForm({ data, onChange, onReset, onSave, onPrevie
           </div>
 
           <div>
-            <label className="block font-semibold text-foreground mb-1">Guardian Address (ঠিকানা)</label>
+            <label className="block font-semibold text-foreground mb-1">{t('customerForm.guardianAddress', 'Guardian Address')}</label>
             <input
               type="text"
-              placeholder="গ্রাম, ডাকঘর, জেলা"
+              placeholder={t('customerForm.guardianAddressPlaceholder', 'Village, Post Office, District')}
               value={data.guardian?.address || ''}
               onChange={(e) => handleGuardianChange('address', e.target.value)}
               className="w-full px-3 py-2 bg-muted/50 border border-border rounded-lg text-foreground focus:outline-hidden focus:ring-1 focus:ring-primary"
@@ -540,7 +542,7 @@ export function CustomerGuardianForm({ data, onChange, onReset, onSave, onPrevie
         <div className="flex items-center justify-between bg-[#103058] text-white px-3.5 py-2 rounded-xl text-xs font-bold uppercase tracking-wider">
           <div className="flex items-center gap-2">
             <FileText className="w-4 h-4" />
-            <span>3. Customer Requirement Documents (প্রয়োজনীয় কাগজপত্র)</span>
+            <span>{t('customerForm.requirementDocs', '3. Customer Requirement Documents')}</span>
           </div>
           <button
             type="button"
@@ -548,7 +550,7 @@ export function CustomerGuardianForm({ data, onChange, onReset, onSave, onPrevie
             className="inline-flex items-center gap-1 bg-white/20 hover:bg-white/30 text-white px-2.5 py-1 rounded-lg text-[11px] font-semibold transition-colors cursor-pointer"
           >
             <Plus className="w-3 h-3" />
-            <span>Add Document</span>
+            <span>{t('customerForm.addDocument', 'Add Document')}</span>
           </button>
         </div>
 
@@ -556,10 +558,10 @@ export function CustomerGuardianForm({ data, onChange, onReset, onSave, onPrevie
           <table className="w-full text-left">
             <thead className="bg-muted/60 text-muted-foreground border-b border-border text-[11px] uppercase font-bold">
               <tr>
-                <th className="py-2 px-3 w-12 text-center">No.</th>
-                <th className="py-2 px-3">Required Document</th>
-                <th className="py-2 px-3 w-36">Submitted Status</th>
-                <th className="py-2 px-3 w-48">Remarks</th>
+                <th className="py-2 px-3 w-12 text-center">{t('customerForm.no', 'No.')}</th>
+                <th className="py-2 px-3">{t('customerForm.requiredDoc', 'Required Document')}</th>
+                <th className="py-2 px-3 w-36">{t('customerForm.submittedStatus', 'Submitted Status')}</th>
+                <th className="py-2 px-3 w-48">{t('customerForm.remarks', 'Remarks')}</th>
                 <th className="py-2 px-3 w-10 text-center"></th>
               </tr>
             </thead>
@@ -581,16 +583,16 @@ export function CustomerGuardianForm({ data, onChange, onReset, onSave, onPrevie
                       onChange={(e) => handleDocChange(idx, 'submitted', e.target.value)}
                       className="w-full px-2 py-1 bg-muted/60 border border-border rounded text-xs font-semibold text-foreground focus:ring-1 focus:ring-primary cursor-pointer"
                     >
-                      <option value="Yes">Yes (জমা আছে)</option>
-                      <option value="No">No (জমা নেই)</option>
-                      <option value="Pending">Pending</option>
-                      <option value="N/A">N/A</option>
+                      <option value="Yes">{t('customerForm.yesStatus', 'Yes (Submitted)')}</option>
+                      <option value="No">{t('customerForm.noStatus', 'No (Not Submitted)')}</option>
+                      <option value="Pending">{t('customerForm.pendingStatus', 'Pending')}</option>
+                      <option value="N/A">{t('customerForm.naStatus', 'N/A')}</option>
                     </select>
                   </td>
                   <td className="py-2 px-3">
                     <input
                       type="text"
-                      placeholder="Remarks..."
+                      placeholder={t('customerForm.remarksPlaceholder', 'Remarks...')}
                       value={doc.remarks || ''}
                       onChange={(e) => handleDocChange(idx, 'remarks', e.target.value)}
                       className="w-full px-2 py-1 bg-muted/50 border border-border rounded text-xs text-foreground focus:ring-1 focus:ring-primary"
@@ -617,12 +619,12 @@ export function CustomerGuardianForm({ data, onChange, onReset, onSave, onPrevie
       <div className="space-y-3">
         <div className="flex items-center gap-2 bg-[#103058] text-white px-3.5 py-2 rounded-xl text-xs font-bold uppercase tracking-wider">
           <DollarSign className="w-4 h-4" />
-          <span>4. Service Fee &amp; Advance Payment (অগ্রিম পেমেন্ট ও সার্ভিস চার্জ)</span>
+          <span>{t('customerForm.paymentDetails', '4. Service Fee & Advance Payment')}</span>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3 text-xs bg-muted/30 p-4 rounded-xl border border-border">
           <div>
-            <label className="block font-bold text-foreground mb-1">Total Agreed Fee (মোট টাকা)</label>
+            <label className="block font-bold text-foreground mb-1">{t('customerForm.totalFee', 'Total Agreed Fee (৳)')}</label>
             <div className="relative">
               <span className="absolute left-3 top-2 font-bold text-muted-foreground">৳</span>
               <input
@@ -637,7 +639,7 @@ export function CustomerGuardianForm({ data, onChange, onReset, onSave, onPrevie
 
           <div>
             <label className="block font-bold text-emerald-600 dark:text-emerald-400 mb-1">
-              Advance Paid (অগ্রিম জমা)
+              {t('customerForm.advancePaid', 'Advance Paid (৳)')}
             </label>
             <div className="relative">
               <span className="absolute left-3 top-2 font-bold text-emerald-600">৳</span>
@@ -653,7 +655,7 @@ export function CustomerGuardianForm({ data, onChange, onReset, onSave, onPrevie
 
           <div>
             <label className="block font-bold text-rose-600 dark:text-rose-400 mb-1">
-              Due Amount (বকেয়া টাকা)
+              {t('customerForm.dueAmount', 'Due Amount (৳)')}
             </label>
             <div className="relative">
               <span className="absolute left-3 top-2 font-bold text-rose-600">৳</span>
@@ -667,13 +669,13 @@ export function CustomerGuardianForm({ data, onChange, onReset, onSave, onPrevie
           </div>
 
           <div>
-            <label className="block font-bold text-foreground mb-1">Payment Method</label>
+            <label className="block font-bold text-foreground mb-1">{t('customerForm.paymentMethod', 'Payment Method')}</label>
             <select
               value={data.payment?.paymentMethod || 'Cash'}
               onChange={(e) => handlePaymentChange('paymentMethod', e.target.value)}
               className="w-full px-3 py-2 bg-background border border-border rounded-lg text-foreground font-semibold focus:outline-hidden focus:ring-1 focus:ring-primary cursor-pointer"
             >
-              <option value="Cash">Cash (নগদ)</option>
+              <option value="Cash">Cash</option>
               <option value="bKash">bKash</option>
               <option value="Nagad">Nagad</option>
               <option value="Rocket">Rocket</option>
@@ -683,10 +685,10 @@ export function CustomerGuardianForm({ data, onChange, onReset, onSave, onPrevie
           </div>
 
           <div>
-            <label className="block font-bold text-foreground mb-1">Money Receipt No.</label>
+            <label className="block font-bold text-foreground mb-1">{t('customerForm.receiptNo', 'Money Receipt No.')}</label>
             <input
               type="text"
-              placeholder="e.g. REC-5829"
+              placeholder={t('customerForm.receiptNoPlaceholder', 'e.g. REC-5829')}
               value={data.payment?.receiptNo || ''}
               onChange={(e) => handlePaymentChange('receiptNo', e.target.value)}
               className="w-full px-3 py-2 bg-background border border-border rounded-lg text-foreground font-mono font-medium focus:outline-hidden focus:ring-1 focus:ring-primary"
@@ -695,14 +697,14 @@ export function CustomerGuardianForm({ data, onChange, onReset, onSave, onPrevie
         </div>
       </div>
 
-      {/* 5. DOCUMENT ATTACHMENTS (ছবি, পাসপোর্ট ও অন্যান্য ফাইল) */}
+      {/* 5. DOCUMENT ATTACHMENTS */}
       <div className="space-y-3">
         <div className="flex items-center justify-between bg-[#103058] text-white px-3.5 py-2 rounded-xl text-xs font-bold uppercase tracking-wider">
           <div className="flex items-center gap-2">
             <Paperclip className="w-4 h-4" />
-            <span>5. Document Attachments (ছবি, পাসপোর্ট ও অন্যান্য ফাইল সংযুক্ত করুন)</span>
+            <span>{t('customerForm.attachments', '5. Document Attachments')}</span>
           </div>
-          <span className="text-[10px] font-normal opacity-80">Images / PDF (Max 10MB)</span>
+          <span className="text-[10px] font-normal opacity-80">{t('customerForm.maxFileSize', 'Images / PDF (Max 10MB)')}</span>
         </div>
 
         {/* 3 Main Specific Attachment Cards */}
@@ -713,15 +715,15 @@ export function CustomerGuardianForm({ data, onChange, onReset, onSave, onPrevie
               <div className="flex items-center justify-between mb-1.5">
                 <span className="font-bold text-foreground flex items-center gap-1.5">
                   <Camera className="w-4 h-4 text-primary" />
-                  Passport Size Photo (২x২ ছবি)
+                  {t('customerForm.passportSizePhoto', 'Passport Size Photo (2x2)')}
                 </span>
                 {data.attachments?.passportPhoto && (
                   <span className="text-[10px] font-bold text-emerald-600 bg-emerald-500/10 px-2 py-0.5 rounded-md">
-                    Attached ✓
+                    {t('customerForm.attached', 'Attached ✓')}
                   </span>
                 )}
               </div>
-              <p className="text-[11px] text-muted-foreground">কাস্টমারের ল্যাব প্রিন্ট পাসপোর্ট সাইজের ছবি</p>
+              <p className="text-[11px] text-muted-foreground">{t('customerForm.passportPhotoDesc', 'Customer lab print passport size photo')}</p>
             </div>
 
             <div className="flex items-center gap-3">
@@ -731,7 +733,7 @@ export function CustomerGuardianForm({ data, onChange, onReset, onSave, onPrevie
                     src={data.attachments.passportPhoto}
                     alt="Passport Photo"
                     className="w-full h-full object-cover cursor-pointer"
-                    onClick={() => setSelectedPreviewDoc({ title: 'Passport Size Photo', url: data.attachments.passportPhoto })}
+                    onClick={() => setSelectedPreviewDoc({ title: t('customerForm.passportSizePhoto', 'Passport Size Photo'), url: data.attachments.passportPhoto })}
                   />
                 ) : (
                   <ImageIcon className="w-6 h-6 text-muted-foreground/50" />
@@ -741,7 +743,7 @@ export function CustomerGuardianForm({ data, onChange, onReset, onSave, onPrevie
               <div className="flex-1 space-y-1.5">
                 <label className="inline-flex items-center gap-1.5 bg-primary/10 hover:bg-primary/20 text-primary px-3 py-1.5 rounded-lg text-xs font-semibold cursor-pointer transition-colors w-full justify-center">
                   <Upload className="w-3.5 h-3.5" />
-                  <span>{data.attachments?.passportPhoto ? 'Change Photo' : 'Upload Photo'}</span>
+                  <span>{data.attachments?.passportPhoto ? t('customerForm.changePhoto', 'Change Photo') : t('customerForm.uploadPhoto', 'Upload Photo')}</span>
                   <input
                     type="file"
                     accept="image/*"
@@ -756,7 +758,7 @@ export function CustomerGuardianForm({ data, onChange, onReset, onSave, onPrevie
                     className="inline-flex items-center gap-1 text-rose-500 hover:text-rose-600 text-[11px] font-medium w-full justify-center cursor-pointer"
                   >
                     <Trash2 className="w-3 h-3" />
-                    <span>Remove</span>
+                    <span>{t('customerForm.remove', 'Remove')}</span>
                   </button>
                 )}
               </div>
@@ -769,15 +771,15 @@ export function CustomerGuardianForm({ data, onChange, onReset, onSave, onPrevie
               <div className="flex items-center justify-between mb-1.5">
                 <span className="font-bold text-foreground flex items-center gap-1.5">
                   <FileCheck className="w-4 h-4 text-emerald-500" />
-                  Passport Scan (পাসপোর্ট কপি)
+                  {t('customerForm.passportScan', 'Passport Scan Copy')}
                 </span>
                 {data.attachments?.passportScan && (
                   <span className="text-[10px] font-bold text-emerald-600 bg-emerald-500/10 px-2 py-0.5 rounded-md">
-                    Attached ✓
+                    {t('customerForm.attached', 'Attached ✓')}
                   </span>
                 )}
               </div>
-              <p className="text-[11px] text-muted-foreground">পাসপোর্টের ইনফরমেশন ও সাইন পেজের কপি</p>
+              <p className="text-[11px] text-muted-foreground">{t('customerForm.passportScanDesc', 'Information and signature page of passport')}</p>
             </div>
 
             <div className="flex items-center gap-3">
@@ -788,7 +790,7 @@ export function CustomerGuardianForm({ data, onChange, onReset, onSave, onPrevie
                       src={data.attachments.passportScan}
                       alt="Passport Scan"
                       className="w-full h-full object-cover cursor-pointer"
-                      onClick={() => setSelectedPreviewDoc({ title: 'Passport Scan Copy', url: data.attachments.passportScan })}
+                      onClick={() => setSelectedPreviewDoc({ title: t('customerForm.passportScan', 'Passport Scan Copy'), url: data.attachments.passportScan })}
                     />
                   ) : (
                     <FileText className="w-7 h-7 text-emerald-500" />
@@ -801,7 +803,7 @@ export function CustomerGuardianForm({ data, onChange, onReset, onSave, onPrevie
               <div className="flex-1 space-y-1.5">
                 <label className="inline-flex items-center gap-1.5 bg-primary/10 hover:bg-primary/20 text-primary px-3 py-1.5 rounded-lg text-xs font-semibold cursor-pointer transition-colors w-full justify-center">
                   <Upload className="w-3.5 h-3.5" />
-                  <span>{data.attachments?.passportScan ? 'Change File' : 'Upload Passport'}</span>
+                  <span>{data.attachments?.passportScan ? t('customerForm.changeFile', 'Change File') : t('customerForm.uploadPassport', 'Upload Passport')}</span>
                   <input
                     type="file"
                     accept="image/*,application/pdf"
@@ -813,19 +815,19 @@ export function CustomerGuardianForm({ data, onChange, onReset, onSave, onPrevie
                   <div className="flex items-center justify-between text-[11px]">
                     <button
                       type="button"
-                      onClick={() => setSelectedPreviewDoc({ title: 'Passport Scan Copy', url: data.attachments.passportScan })}
+                      onClick={() => setSelectedPreviewDoc({ title: t('customerForm.passportScan', 'Passport Scan Copy'), url: data.attachments.passportScan })}
                       className="text-primary hover:underline flex items-center gap-0.5 cursor-pointer"
                     >
                       <Eye className="w-3 h-3" />
-                      <span>View</span>
+                      <span>{t('customerForm.view', 'View')}</span>
                     </button>
                     <button
                       type="button"
                       onClick={() => handleRemoveAttachment('passportScan')}
                       className="text-rose-500 hover:text-rose-600 flex items-center gap-0.5 cursor-pointer"
                     >
-                      <Trash2 className="w-3 h-3" />
-                      <span>Remove</span>
+                      <Trash2 className="w-3.5 h-3.5" />
+                      <span>{t('customerForm.remove', 'Remove')}</span>
                     </button>
                   </div>
                 )}
@@ -839,15 +841,15 @@ export function CustomerGuardianForm({ data, onChange, onReset, onSave, onPrevie
               <div className="flex items-center justify-between mb-1.5">
                 <span className="font-bold text-foreground flex items-center gap-1.5">
                   <CreditCard className="w-4 h-4 text-purple-500" />
-                  NID Card Scan (NID কপি)
+                  {t('customerForm.nidScan', 'NID Card Scan Copy')}
                 </span>
                 {data.attachments?.nidScan && (
                   <span className="text-[10px] font-bold text-emerald-600 bg-emerald-500/10 px-2 py-0.5 rounded-md">
-                    Attached ✓
+                    {t('customerForm.attached', 'Attached ✓')}
                   </span>
                 )}
               </div>
-              <p className="text-[11px] text-muted-foreground">কাস্টমার বা অভিভাবকের NID কার্ডের স্ক্যান</p>
+              <p className="text-[11px] text-muted-foreground">{t('customerForm.nidScanDesc', 'Customer or guardian NID card scan')}</p>
             </div>
 
             <div className="flex items-center gap-3">
@@ -858,7 +860,7 @@ export function CustomerGuardianForm({ data, onChange, onReset, onSave, onPrevie
                       src={data.attachments.nidScan}
                       alt="NID Scan"
                       className="w-full h-full object-cover cursor-pointer"
-                      onClick={() => setSelectedPreviewDoc({ title: 'NID Card Scan Copy', url: data.attachments.nidScan })}
+                      onClick={() => setSelectedPreviewDoc({ title: t('customerForm.nidScan', 'NID Card Scan Copy'), url: data.attachments.nidScan })}
                     />
                   ) : (
                     <FileText className="w-7 h-7 text-purple-500" />
@@ -871,7 +873,7 @@ export function CustomerGuardianForm({ data, onChange, onReset, onSave, onPrevie
               <div className="flex-1 space-y-1.5">
                 <label className="inline-flex items-center gap-1.5 bg-primary/10 hover:bg-primary/20 text-primary px-3 py-1.5 rounded-lg text-xs font-semibold cursor-pointer transition-colors w-full justify-center">
                   <Upload className="w-3.5 h-3.5" />
-                  <span>{data.attachments?.nidScan ? 'Change File' : 'Upload NID'}</span>
+                  <span>{data.attachments?.nidScan ? t('customerForm.changeFile', 'Change File') : t('customerForm.uploadNid', 'Upload NID')}</span>
                   <input
                     type="file"
                     accept="image/*,application/pdf"
@@ -883,19 +885,19 @@ export function CustomerGuardianForm({ data, onChange, onReset, onSave, onPrevie
                   <div className="flex items-center justify-between text-[11px]">
                     <button
                       type="button"
-                      onClick={() => setSelectedPreviewDoc({ title: 'NID Card Scan Copy', url: data.attachments.nidScan })}
+                      onClick={() => setSelectedPreviewDoc({ title: t('customerForm.nidScan', 'NID Card Scan Copy'), url: data.attachments.nidScan })}
                       className="text-primary hover:underline flex items-center gap-0.5 cursor-pointer"
                     >
                       <Eye className="w-3 h-3" />
-                      <span>View</span>
+                      <span>{t('customerForm.view', 'View')}</span>
                     </button>
                     <button
                       type="button"
                       onClick={() => handleRemoveAttachment('nidScan')}
                       className="text-rose-500 hover:text-rose-600 flex items-center gap-0.5 cursor-pointer"
                     >
-                      <Trash2 className="w-3 h-3" />
-                      <span>Remove</span>
+                      <Trash2 className="w-3.5 h-3.5" />
+                      <span>{t('customerForm.remove', 'Remove')}</span>
                     </button>
                   </div>
                 )}
@@ -910,16 +912,16 @@ export function CustomerGuardianForm({ data, onChange, onReset, onSave, onPrevie
             <div>
               <h4 className="font-bold text-foreground flex items-center gap-1.5">
                 <FileText className="w-4 h-4 text-sky-500" />
-                Other Supporting Documents (অন্যান্য কাগজপত্র)
+                {t('customerForm.otherSupportingDocs', 'Other Supporting Documents')}
               </h4>
               <p className="text-[11px] text-muted-foreground">
-                ব্যাংক স্টেটমেন্ট, বিদ্যুৎ বিল, ট্রেড লাইসেন্স, পূর্ববর্তী ভিসা কপি বা অন্যান্য ফাইল আপলোড করুন।
+                {t('customerForm.otherDocsDesc', 'Upload bank statements, utility bills, trade license, previous visa copies, etc.')}
               </p>
             </div>
 
             <label className="inline-flex items-center gap-1.5 bg-primary hover:bg-primary/90 text-primary-foreground px-3 py-1.5 rounded-lg text-xs font-semibold cursor-pointer transition-colors shadow-2xs shrink-0">
               <Plus className="w-3.5 h-3.5" />
-              <span>+ Add Other File</span>
+              <span>{t('customerForm.addOtherFile', '+ Add Other File')}</span>
               <input
                 type="file"
                 accept="image/*,application/pdf,.doc,.docx"
@@ -983,7 +985,7 @@ export function CustomerGuardianForm({ data, onChange, onReset, onSave, onPrevie
             </div>
           ) : (
             <div className="text-center py-4 text-muted-foreground text-[11.5px] border border-dashed border-border rounded-lg bg-background/50">
-              কোনো অতিরিক্ত ফাইল সংযুক্ত করা হয়নি। প্রয়োজন হলে "+ Add Other File" বাটনে ক্লিক করে ফাইল যুক্ত করুন।
+              {t('customerForm.noOtherFiles', 'No additional files attached.')}
             </div>
           )}
         </div>
@@ -993,12 +995,12 @@ export function CustomerGuardianForm({ data, onChange, onReset, onSave, onPrevie
       <div className="p-4 bg-muted/30 border border-border rounded-xl space-y-3">
         <div className="flex items-center gap-2 text-xs font-bold text-foreground">
           <Building className="w-4 h-4 text-primary" />
-          <span>Office Remarks &amp; Officer Verification</span>
+          <span>{t('customerForm.officeRemarks', '6. Office Remarks & Officer Verification')}</span>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
           <div>
-            <label className="block font-medium text-muted-foreground mb-1">Verified By (অফিস কর্মকর্তা)</label>
+            <label className="block font-medium text-muted-foreground mb-1">{t('customerForm.verifiedBy', 'Verified By (Officer)')}</label>
             <input
               type="text"
               value={data.verifiedBy || ''}
@@ -1008,10 +1010,10 @@ export function CustomerGuardianForm({ data, onChange, onReset, onSave, onPrevie
           </div>
 
           <div>
-            <label className="block font-medium text-muted-foreground mb-1">Office Internal Notes (অফিস নোট)</label>
+            <label className="block font-medium text-muted-foreground mb-1">{t('customerForm.officeNotes', 'Office Internal Notes')}</label>
             <input
               type="text"
-              placeholder="Internal file remarks..."
+              placeholder={t('customerForm.officeNotesPlaceholder', 'Internal file remarks...')}
               value={data.officeNotes || ''}
               onChange={(e) => onChange(prev => ({ ...prev, officeNotes: e.target.value }))}
               className="w-full px-3 py-1.5 bg-background border border-border rounded-lg text-foreground text-xs"
@@ -1025,10 +1027,10 @@ export function CustomerGuardianForm({ data, onChange, onReset, onSave, onPrevie
         <div className="text-xs text-muted-foreground">
           {data._id ? (
             <span className="text-emerald-600 font-semibold flex items-center gap-1.5">
-              <CheckCircle2 className="w-4 h-4" /> Editing saved application: {data.applicationNo}
+              <CheckCircle2 className="w-4 h-4" /> {t('customerForm.editingApp', { appNo: data.applicationNo, defaultValue: `Editing saved application: ${data.applicationNo}` })}
             </span>
           ) : (
-            <span>New application not yet saved to database.</span>
+            <span>{t('customerForm.newAppUnsaved', 'New application not yet saved to database.')}</span>
           )}
         </div>
 
@@ -1039,7 +1041,7 @@ export function CustomerGuardianForm({ data, onChange, onReset, onSave, onPrevie
             className="flex items-center gap-2 border border-border hover:bg-muted text-foreground text-xs font-bold px-4 py-2.5 rounded-xl transition-colors cursor-pointer"
           >
             <Eye className="w-4 h-4" />
-            <span>View Preview</span>
+            <span>{t('customerForm.viewPreview', 'View Preview')}</span>
           </button>
 
           <button
@@ -1049,7 +1051,7 @@ export function CustomerGuardianForm({ data, onChange, onReset, onSave, onPrevie
             className="flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-6 py-2.5 rounded-xl shadow-xs hover:shadow-md transition-all cursor-pointer disabled:opacity-50"
           >
             <Save className="w-4 h-4" />
-            <span>{isSubmitting ? 'Saving...' : data._id ? 'Update Database (আপডেট করুন)' : 'Save to Database (ডাটাবেজে সেভ করুন)'}</span>
+            <span>{isSubmitting ? t('customerForm.saving', 'Saving...') : data._id ? t('customerForm.updateDatabase', 'Update Database') : t('customerForm.saveToDatabase', 'Save to Database')}</span>
           </button>
         </div>
       </div>
