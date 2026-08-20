@@ -8,21 +8,18 @@ import {
   ResponsiveContainer,
 } from 'recharts';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { useTheme } from 'next-themes';
+import { useThemeStore } from '@/store/useThemeStore';
 import { useEffect, useState } from 'react';
 import { useOrderCounts } from '@/hooks/use-order-counts';
 
 export function RevenueChart() {
-  const { theme, systemTheme } = useTheme();
+  const isDark = useThemeStore((state) => state.isDark);
   const [mounted, setMounted] = useState(false);
   const { data: counts = [] } = useOrderCounts(30);
 
   useEffect(() => {
     setMounted(true);
   }, []);
-
-  const currentTheme = theme === 'system' ? systemTheme : theme;
-  const isDark = currentTheme === 'dark';
 
   const data = (counts || []).map((c) => ({
     name: new Date(c.date).toLocaleDateString(undefined, { month: 'short', day: 'numeric' }),

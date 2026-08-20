@@ -1,24 +1,9 @@
 import React from 'react';
-import { useTheme } from 'next-themes';
+import { useThemeStore } from '@/store/useThemeStore';
 import { Sun, Moon } from 'lucide-react';
 
 export const ThemeToggle = () => {
-  const { theme, setTheme, resolvedTheme } = useTheme();
-  const [mounted, setMounted] = React.useState(false);
-
-  React.useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  const isDark = mounted && (resolvedTheme === 'dark' || theme === 'dark');
-
-  const toggleTheme = () => {
-    setTheme(isDark ? 'light' : 'dark');
-  };
-
-  if (!mounted) {
-    return <div className="h-8 w-14 rounded-full bg-neutral-900 border border-neutral-700/80 opacity-50" />;
-  }
+  const { toggleTheme, isDark } = useThemeStore();
 
   return (
     <button

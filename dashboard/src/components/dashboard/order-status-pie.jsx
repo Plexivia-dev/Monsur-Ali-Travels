@@ -1,7 +1,7 @@
 import { useOrderStatusDistribution } from '@/hooks/use-order-status-distribution';
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from 'recharts';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { useTheme } from 'next-themes';
+import { useThemeStore } from '@/store/useThemeStore';
 import { useEffect, useState } from 'react';
 
 const STATUS_CONFIG = {
@@ -12,16 +12,13 @@ const STATUS_CONFIG = {
 };
 
 export function OrderStatusPie({ range = '30days' }) {
-  const { theme, systemTheme } = useTheme();
+  const isDark = useThemeStore((state) => state.isDark);
   const [mounted, setMounted] = useState(false);
   const { data: statusCounts = {}, isLoading } = useOrderStatusDistribution(range);
 
   useEffect(() => {
     setMounted(true);
   }, []);
-
-  const currentTheme = theme === 'system' ? systemTheme : theme;
-  const isDark = currentTheme === 'dark';
 
   const total = Object.values(statusCounts).reduce((sum, v) => sum + Number(v || 0), 0);
 
