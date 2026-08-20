@@ -153,13 +153,13 @@ export function InvoiceDataTable() {
             <thead>
               <tr className="bg-muted/50 text-muted-foreground font-bold border-b border-border">
                 <th className="p-3 w-12 text-center">#</th>
-                <th className="p-3">ইনভয়েস নং (Invoice No)</th>
-                <th className="p-3">কাস্টমার / ক্লায়েন্ট</th>
-                <th className="p-3">ইস্যুর তারিখ</th>
-                <th className="p-3">পরিশোধের শেষ তারিখ</th>
-                <th className="p-3">আইটেম সংখ্যা</th>
-                <th className="p-3 text-center">পেমেন্ট স্ট্যাটাস</th>
-                <th className="p-3 text-right">অ্যাকশন</th>
+                <th className="p-3">{t('tables.invoiceNo', 'Invoice No')}</th>
+                <th className="p-3">{t('tables.customerClient', 'Customer / Client')}</th>
+                <th className="p-3">{t('tables.issueDate', 'Issue Date')}</th>
+                <th className="p-3">{t('tables.dueDate', 'Due Date')}</th>
+                <th className="p-3">{t('tables.itemCount', 'Items')}</th>
+                <th className="p-3 text-center">{t('tables.paymentStatus', 'Payment Status')}</th>
+                <th className="p-3 text-right">{t('tables.action', 'Actions')}</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-border">

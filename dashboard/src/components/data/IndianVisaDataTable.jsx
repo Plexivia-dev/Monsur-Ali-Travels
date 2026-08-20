@@ -214,13 +214,13 @@ export function IndianVisaDataTable() {
             <thead>
               <tr className="bg-muted/50 text-muted-foreground font-bold border-b border-border">
                 <th className="p-3 w-12 text-center">#</th>
-                <th className="p-3">ট্র্যাকিং নম্বর (Tracking No)</th>
-                <th className="p-3">আবেদনকারীর নাম</th>
-                <th className="p-3">পাসপোর্ট নম্বর</th>
-                <th className="p-3">ভিসা ক্যাটাগরি ও পোর্ট</th>
-                <th className="p-3">জমার তারিখ</th>
-                <th className="p-3 text-center">স্ট্যাটাস</th>
-                <th className="p-3 text-right">অ্যাকশন</th>
+                <th className="p-3">{t('tables.trackingNo', 'Tracking No')}</th>
+                <th className="p-3">{t('tables.applicantName', 'Applicant Name')}</th>
+                <th className="p-3">{t('tables.passportNo', 'Passport No')}</th>
+                <th className="p-3">{t('tables.visaCategoryPort', 'Visa Category & Port')}</th>
+                <th className="p-3">{t('tables.submissionDate', 'Submission Date')}</th>
+                <th className="p-3 text-center">{t('tables.status', 'Status')}</th>
+                <th className="p-3 text-right">{t('tables.action', 'Actions')}</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-border">

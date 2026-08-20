@@ -129,14 +129,14 @@ export function SalarySlipDataTable() {
             <thead>
               <tr className="bg-muted/50 text-muted-foreground font-bold border-b border-border">
                 <th className="p-3 w-12 text-center">#</th>
-                <th className="p-3">স্লিপ নং (Slip No)</th>
-                <th className="p-3">কর্মচারীর নাম</th>
-                <th className="p-3">আইডি ও পদবী</th>
-                <th className="p-3">বেতনের মাস</th>
-                <th className="p-3">প্রদেয় বেতন (Net ৳)</th>
-                <th className="p-3">পেমেন্ট মেথড</th>
-                <th className="p-3">তারিখ</th>
-                <th className="p-3 text-right">অ্যাকশন</th>
+                <th className="p-3">{t('tables.slipNo', 'Slip No')}</th>
+                <th className="p-3">{t('tables.employeeName', 'Employee Name')}</th>
+                <th className="p-3">{t('tables.idDesignation', 'ID & Designation')}</th>
+                <th className="p-3">{t('tables.salaryMonth', 'Salary Month')}</th>
+                <th className="p-3">{t('tables.netSalary', 'Net Salary (৳)')}</th>
+                <th className="p-3">{t('tables.paymentMethod', 'Payment Method')}</th>
+                <th className="p-3">{t('tables.date', 'Date')}</th>
+                <th className="p-3 text-right">{t('tables.action', 'Actions')}</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-border">

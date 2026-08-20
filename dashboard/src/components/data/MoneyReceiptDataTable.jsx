@@ -303,15 +303,15 @@ export function MoneyReceiptDataTable() {
           <table className="w-full text-xs text-left">
             <thead className="bg-muted/50 border-b border-border text-muted-foreground uppercase text-[10px] font-bold">
               <tr>
-                <th className="px-4 py-3">টোকেন নং</th>
-                <th className="px-4 py-3">গ্রাহকের নাম ও ফোন</th>
-                <th className="px-4 py-3">সেবার ধরন ও বিবরণ</th>
-                <th className="px-4 py-3">টাকার পরিমাণ</th>
-                <th className="px-4 py-3">স্ট্যাটাস</th>
-                <th className="px-4 py-3">তৈরি করেছেন</th>
-                <th className="px-4 py-3">সিল প্রদানকারী</th>
-                <th className="px-4 py-3">ব্যাংক জমা</th>
-                <th className="px-4 py-3 text-right">অ্যাকশন</th>
+                <th className="px-4 py-3">{t('tables.tokenNo', 'Token No')}</th>
+                <th className="px-4 py-3">{t('tables.customerDetails', 'Customer Details')}</th>
+                <th className="px-4 py-3">{t('tables.serviceDetails', 'Service Details')}</th>
+                <th className="px-4 py-3">{t('tables.amount', 'Amount')}</th>
+                <th className="px-4 py-3">{t('tables.status', 'Status')}</th>
+                <th className="px-4 py-3">{t('tables.createdBy', 'Created By')}</th>
+                <th className="px-4 py-3">{t('tables.signedBy', 'Signed By')}</th>
+                <th className="px-4 py-3">{t('tables.bankDeposit', 'Bank Deposit')}</th>
+                <th className="px-4 py-3 text-right">{t('tables.action', 'Actions')}</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-border">

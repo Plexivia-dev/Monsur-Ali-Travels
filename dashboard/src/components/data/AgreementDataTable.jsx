@@ -192,13 +192,13 @@ export function AgreementDataTable() {
             <thead>
               <tr className="bg-muted/50 text-muted-foreground font-bold border-b border-border">
                 <th className="p-3 w-12 text-center">#</th>
-                <th className="p-3">আইডি (Agreement ID)</th>
-                <th className="p-3">কর্মচারীর নাম</th>
-                <th className="p-3">পদবী ও বিভাগ</th>
-                <th className="p-3">চুক্তির তারিখ</th>
-                <th className="p-3">মাসিক বেতন (৳)</th>
-                <th className="p-3 text-center">স্ট্যাটাস</th>
-                <th className="p-3 text-right">অ্যাকশন</th>
+                <th className="p-3">{t('tables.agreementId', 'Agreement ID')}</th>
+                <th className="p-3">{t('tables.employeeName', 'Employee Name')}</th>
+                <th className="p-3">{t('tables.designationDept', 'Designation & Dept')}</th>
+                <th className="p-3">{t('tables.agreementDate', 'Agreement Date')}</th>
+                <th className="p-3">{t('tables.monthlySalary', 'Monthly Salary (৳)')}</th>
+                <th className="p-3 text-center">{t('tables.status', 'Status')}</th>
+                <th className="p-3 text-right">{t('tables.action', 'Actions')}</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-border">
