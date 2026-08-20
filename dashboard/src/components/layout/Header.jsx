@@ -1,8 +1,6 @@
 import React from 'react';
 import { Search, Bell } from 'lucide-react';
 import { usePortalStore } from '../../store/usePortalStore';
-import { SidebarTrigger } from '@/components/ui/sidebar';
-import { Separator } from '@/components/ui/separator';
 import { Button } from '@/components/ui/button';
 import {
   Breadcrumb,
@@ -71,11 +69,8 @@ export const Header = () => {
   return (
     <header className="sticky top-0 z-40 bg-card/80 backdrop-blur-md border-b border-border transition-colors">
       <div className="flex h-14 w-full items-center justify-between gap-4 px-4 sm:px-6">
-        {/* Left Side: Sidebar Trigger & Breadcrumb */}
+        {/* Left Side: Breadcrumb */}
         <div className="flex items-center gap-3 min-w-0">
-          <SidebarTrigger className="[&_svg]:size-5 text-muted-foreground hover:text-foreground cursor-pointer" />
-          <Separator orientation="vertical" className="hidden h-4 data-vertical:self-center sm:block" />
-
           <Breadcrumb className="hidden sm:block">
             <BreadcrumbList>
               <BreadcrumbItem>

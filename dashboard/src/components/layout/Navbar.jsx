@@ -11,9 +11,7 @@ import {
   Shield,
   FileSpreadsheet,
   CheckCheck,
-  ChevronDown,
-  PanelLeftClose,
-  PanelLeftOpen
+  ChevronDown
 } from 'lucide-react';
 
 export const Navbar = () => {
@@ -36,18 +34,8 @@ export const Navbar = () => {
 
   return (
     <header className="sticky top-0 z-30 h-16 bg-card/85 backdrop-blur-md border-b border-border px-4 sm:px-6 flex items-center justify-between transition-colors">
-      {/* Left: Sidebar Toggle & Active Context */}
+      {/* Left: Active Context */}
       <div className="flex items-center gap-3">
-        {!isSidebarOpen && (
-          <button
-            onClick={toggleSidebar}
-            className="p-2 rounded-xl bg-primary/10 hover:bg-primary/20 text-primary border border-primary/20 transition-all cursor-pointer flex items-center justify-center shadow-xs"
-            title="Expand Sidebar"
-            aria-label="Expand Sidebar"
-          >
-            <PanelLeftOpen className="w-5 h-5" />
-          </button>
-        )}
 
         {/* Portal Selector Dropdown Button */}
         <div className="relative">
