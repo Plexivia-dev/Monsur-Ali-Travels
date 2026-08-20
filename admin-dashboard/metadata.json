@@ -1,0 +1,6 @@
+{
+  "name": "Smart ERP",
+  "description": "Comprehensive Enterprise Resource Planning system for Brick Factory and Manpower Agency portals with employee, billing, payout, and report management.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
