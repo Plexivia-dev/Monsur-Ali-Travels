@@ -89,12 +89,12 @@ export function CustomerDataTable() {
     try {
       setIsDeleting(true);
       await apiClient.delete(`/api/v1/customers/${deleteTarget.id}`);
-      toast.success('কাস্টমার প্রোফাইল মুছে ফেলা হয়েছে।');
+      toast.success(t('customers.deleteSuccess', 'Customer profile deleted successfully.'));
       setDeleteTarget(null);
       fetchData(pagination.page, pagination.limit, search, statusFilter, typeFilter);
     } catch (err) {
       console.error('Failed to delete customer:', err);
-      toast.error('কাস্টমার মুছতে সমস্যা হয়েছে।');
+      toast.error(t('customers.deleteError', 'Failed to delete customer.'));
     } finally {
       setIsDeleting(false);
     }
@@ -118,10 +118,10 @@ export function CustomerDataTable() {
         <div>
           <h2 className="text-lg font-bold text-foreground tracking-tight flex items-center gap-2">
             <Users className="w-5 h-5 text-sky-500" />
-            Customers (কাস্টমার তালিকা)
+            {t('customers.title', 'Customers')}
           </h2>
           <p className="text-xs text-muted-foreground mt-0.5">
-            কেন্দ্রীয় কাস্টমার প্রোফাইল, যোগাযোগ তথ্য, সার্ভিস হিস্ট্রি ও পেমেন্ট লেজার।
+            {t('customers.subtitle', 'Central customer profiles, contact info, service history, and payment ledger.')}
           </p>
         </div>
 
@@ -131,7 +131,7 @@ export function CustomerDataTable() {
           className="flex items-center gap-2 bg-sky-600 hover:bg-sky-700 text-white text-xs font-bold px-4 py-2 rounded-lg shadow-xs transition-all cursor-pointer shrink-0"
         >
           <Plus className="w-4 h-4" />
-          <span>নতুন কাস্টমার</span>
+          <span>{t('customers.addCustomer', 'Add New Customer')}</span>
         </button>
       </div>
 
@@ -143,7 +143,7 @@ export function CustomerDataTable() {
             type="text"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            placeholder="নাম, ফোন, পাসপোর্ট, NID সার্চ করুন..."
+            placeholder={t('customers.searchPlaceholder', 'Search by name, phone, passport, NID...')}
             className="w-full pl-9 pr-3 py-1.5 bg-background border border-border rounded-lg text-xs font-medium text-foreground outline-none focus:ring-1 focus:ring-primary"
           />
         </form>
@@ -154,10 +154,10 @@ export function CustomerDataTable() {
             onChange={(e) => setStatusFilter(e.target.value)}
             className="bg-background border border-border rounded-lg px-3 py-1.5 text-xs font-bold text-foreground outline-none cursor-pointer"
           >
-            <option value="all">সকল স্ট্যাটাস</option>
-            <option value="Active">Active (সক্রিয়)</option>
-            <option value="Lead">Lead (লিড)</option>
-            <option value="Inactive">Inactive (নিষ্ক্রিয়)</option>
+            <option value="all">{t('customers.statusFilter', 'All Statuses')}</option>
+            <option value="Active">Active</option>
+            <option value="Lead">Lead</option>
+            <option value="Inactive">Inactive</option>
             <option value="Blacklisted">Blacklisted</option>
           </select>
 
@@ -166,7 +166,7 @@ export function CustomerDataTable() {
             onChange={(e) => setTypeFilter(e.target.value)}
             className="bg-background border border-border rounded-lg px-3 py-1.5 text-xs font-bold text-foreground outline-none cursor-pointer"
           >
-            <option value="all">সকল টাইপ</option>
+            <option value="all">{t('customers.typeFilter', 'All Types')}</option>
             <option value="Individual">Individual</option>
             <option value="Corporate">Corporate</option>
             <option value="Agent_Referred">Agent Referred</option>
@@ -192,14 +192,14 @@ export function CustomerDataTable() {
             <thead>
               <tr className="bg-muted/50 text-muted-foreground font-bold border-b border-border">
                 <th className="p-3 w-12 text-center">#</th>
-                <th className="p-3">কাস্টমার কোড</th>
-                <th className="p-3">নাম</th>
-                <th className="p-3">ফোন</th>
-                <th className="p-3">পাসপোর্ট / NID</th>
-                <th className="p-3 text-center">সার্ভিস</th>
-                <th className="p-3 text-right">বকেয়া (৳)</th>
-                <th className="p-3 text-center">স্ট্যাটাস</th>
-                <th className="p-3 text-right">অ্যাকশন</th>
+                <th className="p-3">{t('customers.code', 'Customer Code')}</th>
+                <th className="p-3">{t('customers.name', 'Name')}</th>
+                <th className="p-3">{t('customers.phone', 'Phone')}</th>
+                <th className="p-3">{t('customers.passportNid', 'Passport / NID')}</th>
+                <th className="p-3 text-center">{t('customers.services', 'Services')}</th>
+                <th className="p-3 text-right">{t('customers.due', 'Due (৳)')}</th>
+                <th className="p-3 text-center">{t('customers.status', 'Status')}</th>
+                <th className="p-3 text-right">{t('customers.action', 'Actions')}</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-border">
@@ -207,7 +207,7 @@ export function CustomerDataTable() {
                 <tr>
                   <td colSpan={9} className="text-center py-10 text-muted-foreground">
                     <RefreshCw className="w-5 h-5 animate-spin mx-auto text-primary mb-2" />
-                    <span>ডাটা লোড হচ্ছে...</span>
+                    <span>{t('customers.loading', 'Loading data...')}</span>
                   </td>
                 </tr>
               ) : data.length === 0 ? (
@@ -241,7 +241,7 @@ export function CustomerDataTable() {
                         <div className="font-bold text-foreground">{item.fullName || '—'}</div>
                         {item.fatherName && (
                           <div className="text-[10px] text-muted-foreground">
-                            পিতা: {item.fatherName}
+                            {t('customers.fatherPrefix', 'Father')}: {item.fatherName}
                           </div>
                         )}
                       </td>

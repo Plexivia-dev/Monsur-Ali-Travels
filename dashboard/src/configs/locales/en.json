@@ -227,5 +227,25 @@
     "resetConfirm": "Are you sure you want to reset the form? All inputted data will be cleared.",
     "yesReset": "Yes, Reset",
     "noCancel": "No, Cancel"
+  },
+  "customers": {
+    "title": "Customers",
+    "subtitle": "Central customer profiles, contact info, service history, and payment ledger.",
+    "addCustomer": "Add New Customer",
+    "searchPlaceholder": "Search by name, phone, passport, NID...",
+    "statusFilter": "All Statuses",
+    "typeFilter": "All Types",
+    "code": "Customer Code",
+    "name": "Name",
+    "phone": "Phone",
+    "passportNid": "Passport / NID",
+    "services": "Services",
+    "due": "Due (৳)",
+    "status": "Status",
+    "action": "Actions",
+    "fatherPrefix": "Father",
+    "loading": "Loading data...",
+    "deleteSuccess": "Customer profile deleted successfully.",
+    "deleteError": "Failed to delete customer."
   }
 }
