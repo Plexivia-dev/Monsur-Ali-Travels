@@ -162,10 +162,10 @@ export function PassportSubmissionDataTable() {
         <div>
           <h2 className="text-lg font-bold text-foreground tracking-tight flex items-center gap-2">
             <ShieldCheck className="w-5 h-5 text-emerald-500" />
-            Passport Submissions (পাসপোর্ট ফাইল জমা তালিকা)
+            {t('passports.title', 'Passport Submissions')}
           </h2>
           <p className="text-xs text-muted-foreground mt-0.5">
-            ই-পাসপোর্ট ও এমআরপি পাসপোর্ট আবেদনের ডাটাবেজ ট্র্যাকিং ও ক্লায়েন্ট রেকর্ড।
+            {t('passports.subtitle', 'Database tracking and client records for e-Passport and MRP applications.')}
           </p>
         </div>
 
@@ -174,7 +174,7 @@ export function PassportSubmissionDataTable() {
           onClick={() => switchPortal('docs', 'passport-sub')}
           className="flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-4 py-2 rounded-lg shadow-xs transition-all cursor-pointer shrink-0"
         >
-          <span>+ নতুন পাসপোর্ট ফাইল</span>
+          <span>{t('passports.newPassport', '+ New Passport File')}</span>
         </button>
       </div>
 

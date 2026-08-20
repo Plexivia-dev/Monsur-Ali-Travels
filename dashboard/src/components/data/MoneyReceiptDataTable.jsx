@@ -157,13 +157,10 @@ export function MoneyReceiptDataTable() {
           </div>
           <div>
             <h1 className="text-lg sm:text-xl font-bold text-foreground flex items-center gap-2">
-              মানি রিসিট ও পেমেন্ট টোকেন (Money Receipts)
-              <span className="text-xs bg-emerald-500/10 text-emerald-600 px-2.5 py-0.5 rounded-full font-mono font-semibold">
-                লাইভ ক্যাশ ডেস্ক
-              </span>
+              {t('moneyReceipts.title', 'Money Receipts & Payment Collection')}
             </h1>
             <p className="text-xs text-muted-foreground">
-              ম্যানেজার কর্তৃক টোকেন জেনারেশন, একাউন্টস সিল এবং ব্যাংক টার্নওভার ট্র্যাকিং
+              {t('moneyReceipts.subtitle', 'All transaction tokens, advance receipts, and customer payment vouchers.')}
             </p>
           </div>
         </div>
@@ -173,7 +170,7 @@ export function MoneyReceiptDataTable() {
           className="flex items-center justify-center space-x-2 bg-primary hover:bg-primary/90 text-primary-foreground text-xs sm:text-sm font-semibold px-4 py-2.5 rounded-xl shadow-xs transition-all cursor-pointer"
         >
           <Plus className="w-4 h-4" />
-          <span>নতুন টোকেন তৈরি করুন</span>
+          <span>{t('moneyReceipts.newReceipt', '+ New Money Receipt')}</span>
         </button>
       </div>
 

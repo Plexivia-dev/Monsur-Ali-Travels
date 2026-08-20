@@ -134,10 +134,10 @@ export function AgreementDataTable() {
         <div>
           <h2 className="text-lg font-bold text-foreground tracking-tight flex items-center gap-2">
             <FileText className="w-5 h-5 text-emerald-500" />
-            Employment Agreements (নিয়োগ চুক্তিপত্র তালিকা)
+            {t('agreements.title', 'Employment Agreements')}
           </h2>
           <p className="text-xs text-muted-foreground mt-0.5">
-            ডাটাবেজে সংরক্ষিত সকল কর্মচারীর চুক্তিপত্রের বিস্তারিত রেকর্ড ও প্রিন্ট লিস্ট।
+            {t('agreements.subtitle', 'Detailed records and print list of all employee employment contracts in the database.')}
           </p>
         </div>
 
@@ -146,7 +146,7 @@ export function AgreementDataTable() {
           onClick={() => switchPortal('docs', 'agreement')}
           className="flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-4 py-2 rounded-lg shadow-xs transition-all cursor-pointer shrink-0"
         >
-          <span>+ নতুন চুক্তিপত্র তৈরি</span>
+          <span>{t('agreements.newAgreement', '+ Create New Agreement')}</span>
         </button>
       </div>
 
@@ -158,6 +158,7 @@ export function AgreementDataTable() {
             type="text"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
+            placeholder={t('common.search', 'Search...')}
             className="w-full pl-9 pr-3 py-1.5 bg-background border border-border rounded-lg text-xs font-medium text-foreground outline-none focus:ring-1 focus:ring-primary"
           />
         </form>
@@ -168,9 +169,9 @@ export function AgreementDataTable() {
             onChange={(e) => setStatus(e.target.value)}
             className="bg-background border border-border rounded-lg px-3 py-1.5 text-xs font-bold text-foreground outline-none cursor-pointer"
           >
-            <option value="all">সকল স্ট্যাটাস</option>
-            <option value="active">Active (সক্রিয়)</option>
-            <option value="inactive">Inactive (নিষ্ক্রিয়)</option>
+            <option value="all">{t('agreements.allStatus', 'All Statuses')}</option>
+            <option value="active">{t('agreements.active', 'Active')}</option>
+            <option value="inactive">{t('agreements.inactive', 'Inactive')}</option>
           </select>
 
           <button

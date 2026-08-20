@@ -77,14 +77,15 @@ export function SalarySlipDataTable() {
   return (
     <div className="space-y-4">
       {/* Header Bar */}
+      {/* Header Bar */}
       <div className="bg-card border border-border p-5 rounded-xl shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h2 className="text-lg font-bold text-foreground tracking-tight flex items-center gap-2">
             <DollarSign className="w-5 h-5 text-emerald-500" />
-            Salary Slips & Payroll Records (মাসিক পে-স্লিপ তালিকা)
+            {t('salarySlips.title', 'Monthly Salary Slips')}
           </h2>
           <p className="text-xs text-muted-foreground mt-0.5">
-            কর্মচারীদের মাসিক বেতন স্লিপ ও পেমেন্ট হিস্ট্রি ডাটাবেজ রেকর্ড।
+            {t('salarySlips.subtitle', 'Staff payroll disbursement records, monthly payslips, and payment methods.')}
           </p>
         </div>
 
@@ -93,7 +94,7 @@ export function SalarySlipDataTable() {
           onClick={() => switchPortal('docs', 'payroll')}
           className="flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-4 py-2 rounded-lg shadow-xs transition-all cursor-pointer shrink-0"
         >
-          <span>+ নতুন স্যালারি স্লিপ</span>
+          <span>{t('salarySlips.newSlip', '+ Generate Salary Slip')}</span>
         </button>
       </div>
 
@@ -105,6 +106,7 @@ export function SalarySlipDataTable() {
             type="text"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
+            placeholder={t('common.search', 'Search...')}
             className="w-full pl-9 pr-3 py-1.5 bg-background border border-border rounded-lg text-xs font-medium text-foreground outline-none focus:ring-1 focus:ring-primary"
           />
         </form>
@@ -144,7 +146,7 @@ export function SalarySlipDataTable() {
                 <tr>
                   <td colSpan={9} className="text-center py-10 text-muted-foreground">
                     <RefreshCw className="w-5 h-5 animate-spin mx-auto text-primary mb-2" />
-                    <span>ডাটা লোড হচ্ছে...</span>
+                    <span>{t('common.loading', 'Loading data...')}</span>
                   </td>
                 </tr>
               ) : data.length === 0 ? (

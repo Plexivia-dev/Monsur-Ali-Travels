@@ -248,6 +248,25 @@
     "deleteSuccess": "Customer profile deleted successfully.",
     "deleteError": "Failed to delete customer."
   },
+  "customerApplications": {
+    "title": "Customer & Guardian Applications",
+    "subtitle": "Central database of submitted customer files, document checklists, and advance payments.",
+    "newApplication": "+ New Customer File",
+    "searchPlaceholder": "Search by Name, Passport, NID, Phone...",
+    "allServices": "All Services",
+    "allStatus": "All Statuses",
+    "applicationNo": "Application #",
+    "customerDetails": "Customer Details",
+    "service": "Service",
+    "payment": "Payment (৳)",
+    "currentStatus": "Current Status",
+    "date": "Date",
+    "actions": "Actions",
+    "statusUpdated": "File status updated successfully!",
+    "statusUpdateError": "Failed to update file status.",
+    "deleteSuccess": "Customer record deleted successfully.",
+    "deleteError": "Failed to delete customer record."
+  },
   "customerForm": {
     "title": "Customer & Guardian Information Application Form",
     "subtitle": "Save customer and guardian details, file status, and advance payment details to the database.",
@@ -306,6 +325,45 @@
     "previewSuccess": "Form preview ready! (Offline Mode - App No: {{appNo}})",
     "saveError": "Failed to save to database.",
     "clearSuccess": "Form has been reset."
+  },
+  "agreements": {
+    "title": "Employment Agreements",
+    "subtitle": "Detailed records and print list of all employee employment contracts in the database.",
+    "newAgreement": "+ Create New Agreement",
+    "allStatus": "All Statuses",
+    "active": "Active",
+    "inactive": "Inactive"
+  },
+  "indianVisas": {
+    "title": "Indian Visa Applications",
+    "subtitle": "Complete database of submitted and processing Indian visa applications.",
+    "newVisa": "+ New Visa Application",
+    "allStatus": "All Statuses"
+  },
+  "passports": {
+    "title": "Passport Submissions",
+    "subtitle": "Database tracking and client records for e-Passport and MRP applications.",
+    "newPassport": "+ New Passport File",
+    "allStatus": "All Statuses"
+  },
+  "invoices": {
+    "title": "Invoices & Billing History",
+    "subtitle": "Customer and agency billing invoice records, payment status, and due accounts.",
+    "newInvoice": "+ Create New Invoice",
+    "allStatus": "All Statuses",
+    "paid": "Paid",
+    "pending": "Pending",
+    "overdue": "Overdue"
+  },
+  "moneyReceipts": {
+    "title": "Money Receipts & Payment Collection",
+    "subtitle": "All transaction tokens, advance receipts, and customer payment vouchers.",
+    "newReceipt": "+ New Money Receipt"
+  },
+  "salarySlips": {
+    "title": "Monthly Salary Slips",
+    "subtitle": "Staff payroll disbursement records, monthly payslips, and payment methods.",
+    "newSlip": "+ Generate Salary Slip"
   },
   "tables": {
     "agreementId": "Agreement ID",

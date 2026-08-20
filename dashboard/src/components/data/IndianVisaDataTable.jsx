@@ -163,10 +163,10 @@ export function IndianVisaDataTable() {
         <div>
           <h2 className="text-lg font-bold text-foreground tracking-tight flex items-center gap-2">
             <FileCheck className="w-5 h-5 text-emerald-500" />
-            Indian Visa Applications (ইন্ডিয়ান ভিসা আবেদন তালিকা)
+            {t('indianVisas.title', 'Indian Visa Applications')}
           </h2>
           <p className="text-xs text-muted-foreground mt-0.5">
-            সকল জমাকৃত ও প্রসেসিংরত ইন্ডিয়ান ভিসা আবেদনসমূহের সার্বিক ডাটাবেজ রেকর্ড।
+            {t('indianVisas.subtitle', 'Complete database of submitted and processing Indian visa applications.')}
           </p>
         </div>
 
@@ -175,7 +175,7 @@ export function IndianVisaDataTable() {
           onClick={() => switchPortal('docs', 'indian-visa')}
           className="flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-4 py-2 rounded-lg shadow-xs transition-all cursor-pointer shrink-0"
         >
-          <span>+ নতুন ভিসা আবেদন</span>
+          <span>{t('indianVisas.newVisa', '+ New Visa Application')}</span>
         </button>
       </div>
 

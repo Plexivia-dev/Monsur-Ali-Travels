@@ -26,7 +26,7 @@ import { ConfirmDeleteDialog } from '@/components/ui/confirm-delete-dialog';
 import { useTranslation } from 'react-i18next';
 
 export function CustomerGuardianDataTable({ onEditItem }) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { switchPortal } = usePortal();
   const [data, setData] = useState([]);
   const [pagination, setPagination] = useState({ page: 1, limit: 10, skip: 0, totalCount: 0, totalPages: 1 });
@@ -86,14 +86,14 @@ export function CustomerGuardianDataTable({ onEditItem }) {
       });
 
       if (res.data?.success || res.data?.status === 'success') {
-        toast.success('ফাইলের স্ট্যাটাস সফলভাবে আপডেট হয়েছে!');
+        toast.success(t('customerApplications.statusUpdated', 'File status updated successfully!'));
         setData(prev =>
           prev.map(item => (item._id === id ? { ...item, status: newStatus } : item))
         );
       }
     } catch (err) {
       console.error('Failed to update status:', err);
-      toast.error('স্ট্যাটাস আপডেট করতে সমস্যা হয়েছে।');
+      toast.error(t('customerApplications.statusUpdateError', 'Failed to update file status.'));
     }
   };
 
@@ -102,12 +102,12 @@ export function CustomerGuardianDataTable({ onEditItem }) {
     try {
       setIsDeleting(true);
       await apiClient.delete(`/api/v1/docs/customer-guardians/${deleteTarget.id}`);
-      toast.success('কাস্টমার ফাইল মুছে ফেলা হয়েছে।');
+      toast.success(t('customerApplications.deleteSuccess', 'Customer record deleted successfully.'));
       setDeleteTarget(null);
       fetchData(pagination.page, pagination.limit, search, status, serviceType);
     } catch (err) {
       console.error('Failed to delete customer record:', err);
-      toast.error('ফাইল মুছতে সমস্যা হয়েছে।');
+      toast.error(t('customerApplications.deleteError', 'Failed to delete customer record.'));
     } finally {
       setIsDeleting(false);
     }
@@ -122,27 +122,27 @@ export function CustomerGuardianDataTable({ onEditItem }) {
   };
 
   const handleWhatsAppShare = (item) => {
-    const customerName = item.customer?.fullName || 'সম্মানিত কাস্টমার';
+    const customerName = item.customer?.fullName || 'Customer';
     const total = Number(item.payment?.totalAmount || 0).toLocaleString('en-IN');
     const advance = Number(item.payment?.advancePaid || 0).toLocaleString('en-IN');
     const due = Number(item.payment?.dueAmount || 0).toLocaleString('en-IN');
 
     const msg =
-      `*📄 মনসুর আলী ট্রাভেলস (MONSUR ALI TRAVELS)*\n` +
+      `*📄 MONSUR ALI TRAVELS*\n` +
       `*CUSTOMER & GUARDIAN APPLICATION (${item.applicationNo || 'APP-0000'})*\n` +
       `-----------------------------------------\n` +
-      `👤 *কাস্টমারের নাম:* ${customerName}\n` +
-      `📌 *সার্ভিস:* ${item.serviceType || 'Indian Visa'}\n` +
+      `👤 *Name:* ${customerName}\n` +
+      `📌 *Service:* ${item.serviceType || 'Indian Visa'}\n` +
       `🆔 *NID:* ${item.customer?.nidNumber || 'N/A'}\n` +
-      `🛂 *পাসপোর্ট:* ${item.customer?.passportNumber || 'N/A'}\n` +
-      `💰 *মোট ফি:* ৳ ${total}\n` +
-      `✅ *অগ্রিম জমা:* ৳ ${advance}\n` +
-      `⏳ *বকেয়া:* ৳ ${due}\n` +
+      `🛂 *Passport:* ${item.customer?.passportNumber || 'N/A'}\n` +
+      `💰 *Total Fee:* ৳ ${total}\n` +
+      `✅ *Advance:* ৳ ${advance}\n` +
+      `⏳ *Due:* ৳ ${due}\n` +
       `-----------------------------------------\n` +
-      `📅 *জমার তারিখ:* ${item.dateReceived || 'আজ'}\n\n` +
-      `🏢 *মনসুর আলী ট্রাভেলস*\n` +
-      `📍 ঠিকানা: Mominpur Jagannathpur Road, Sunamganj, Post Code 3060\n` +
-      `📞 যোগাযোগ: +8801345579534`;
+      `📅 *Date:* ${item.dateReceived || 'Today'}\n\n` +
+      `🏢 *Monsur Ali Travels*\n` +
+      `📍 Address: Mominpur Jagannathpur Road, Sunamganj, Post Code 3060\n` +
+      `📞 Contact: +8801345579534`;
 
     window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(msg)}`, '_blank');
   };
@@ -152,7 +152,7 @@ export function CustomerGuardianDataTable({ onEditItem }) {
     if (!obj) return <span className="text-xs text-muted-foreground">{statusKey}</span>;
     return (
       <span className={`px-2.5 py-1 rounded-full text-[11px] font-bold border ${obj.color}`}>
-        {obj.label.split('(')[0]}
+        {i18n.language === 'bn' ? obj.bn : obj.label}
       </span>
     );
   };
@@ -164,10 +164,10 @@ export function CustomerGuardianDataTable({ onEditItem }) {
         <div>
           <h2 className="text-lg font-bold text-foreground tracking-tight flex items-center gap-2">
             <FileText className="w-5 h-5 text-primary" />
-            Customer &amp; Guardian Applications (কাস্টমার ফাইল ও পেমেন্ট তালিকা)
+            {t('customerApplications.title', 'Customer & Guardian Applications')}
           </h2>
           <p className="text-xs text-muted-foreground mt-0.5">
-            জমাকৃত কাস্টমার ফাইল, প্রয়োজনীয় ডকুমেন্ট চেকলিস্ট ও অগ্রিম পেমেন্টের সার্বিক ডাটাবেজ।
+            {t('customerApplications.subtitle', 'Central database of submitted customer files, document checklists, and advance payments.')}
           </p>
         </div>
 
@@ -176,7 +176,7 @@ export function CustomerGuardianDataTable({ onEditItem }) {
           onClick={() => switchPortal('docs', 'customer-form')}
           className="flex items-center gap-2 bg-primary hover:bg-primary/90 text-primary-foreground text-xs font-bold px-4 py-2 rounded-xl shadow-xs transition-all cursor-pointer shrink-0"
         >
-          <span>+ নতুন কাস্টমার ফাইল</span>
+          <span>{t('customerApplications.newApplication', '+ New Customer File')}</span>
         </button>
       </div>
 
@@ -188,7 +188,7 @@ export function CustomerGuardianDataTable({ onEditItem }) {
             type="text"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            placeholder="Search by Name, Passport, NID, Phone..."
+            placeholder={t('customerApplications.searchPlaceholder', 'Search by Name, Passport, NID, Phone...')}
             className="w-full pl-9 pr-3 py-1.5 bg-background border border-border rounded-xl text-xs font-medium text-foreground outline-hidden focus:ring-1 focus:ring-primary"
           />
         </form>
@@ -200,9 +200,11 @@ export function CustomerGuardianDataTable({ onEditItem }) {
             onChange={(e) => setServiceType(e.target.value)}
             className="px-3 py-1.5 bg-background border border-border rounded-xl text-xs font-medium text-foreground focus:ring-1 focus:ring-primary cursor-pointer"
           >
-            <option value="all">All Services (সব সেবা)</option>
-            {SERVICE_TYPES.map((st, i) => (
-              <option key={i} value={st}>{st}</option>
+            <option value="all">{t('customerApplications.allServices', 'All Services')}</option>
+            {SERVICE_TYPES.map((st) => (
+              <option key={st.id} value={st.id}>
+                {i18n.language === 'bn' ? st.bn : st.label}
+              </option>
             ))}
           </select>
 
@@ -212,9 +214,11 @@ export function CustomerGuardianDataTable({ onEditItem }) {
             onChange={(e) => setStatus(e.target.value)}
             className="px-3 py-1.5 bg-background border border-border rounded-xl text-xs font-medium text-foreground focus:ring-1 focus:ring-primary cursor-pointer"
           >
-            <option value="all">All Status (সব অবস্থা)</option>
+            <option value="all">{t('customerApplications.allStatus', 'All Statuses')}</option>
             {STATUS_OPTIONS.map((s) => (
-              <option key={s.id} value={s.id}>{s.label}</option>
+              <option key={s.id} value={s.id}>
+                {i18n.language === 'bn' ? s.bn : s.label}
+              </option>
             ))}
           </select>
 
@@ -235,13 +239,13 @@ export function CustomerGuardianDataTable({ onEditItem }) {
           <table className="w-full text-left text-xs">
             <thead className="bg-muted/50 text-muted-foreground border-b border-border font-semibold uppercase text-[10px] tracking-wider">
               <tr>
-                <th className="py-3 px-4">Application #</th>
-                <th className="py-3 px-4">Customer Details</th>
-                <th className="py-3 px-4">Service</th>
-                <th className="py-3 px-4">Payment (টাকা)</th>
-                <th className="py-3 px-4">Current Status</th>
-                <th className="py-3 px-4">Date</th>
-                <th className="py-3 px-4 text-right">Actions</th>
+                <th className="py-3 px-4">{t('customerApplications.applicationNo', 'Application #')}</th>
+                <th className="py-3 px-4">{t('customerApplications.customerDetails', 'Customer Details')}</th>
+                <th className="py-3 px-4">{t('customerApplications.service', 'Service')}</th>
+                <th className="py-3 px-4">{t('customerApplications.payment', 'Payment (৳)')}</th>
+                <th className="py-3 px-4">{t('customerApplications.currentStatus', 'Current Status')}</th>
+                <th className="py-3 px-4">{t('customerApplications.date', 'Date')}</th>
+                <th className="py-3 px-4 text-right">{t('customerApplications.actions', 'Actions')}</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-border">
@@ -249,7 +253,7 @@ export function CustomerGuardianDataTable({ onEditItem }) {
                 <tr>
                   <td colSpan={7} className="py-12 text-center text-muted-foreground">
                     <RefreshCw className="w-6 h-6 animate-spin mx-auto mb-2 text-primary" />
-                    তথ্য লোড হচ্ছে...
+                    {t('common.loading', 'Loading data...')}
                   </td>
                 </tr>
               ) : data.length === 0 ? (
@@ -302,7 +306,7 @@ export function CustomerGuardianDataTable({ onEditItem }) {
                       {/* Service Type */}
                       <td className="py-3 px-4">
                         <span className="font-medium text-foreground">
-                          {item.serviceType?.split('(')[0] || 'Indian Visa'}
+                          {getServiceLabel(item.serviceType, i18n.language)}
                         </span>
                       </td>
 
@@ -329,7 +333,9 @@ export function CustomerGuardianDataTable({ onEditItem }) {
                           className="px-2 py-1 bg-background border border-border rounded-lg text-[11px] font-bold text-foreground cursor-pointer focus:ring-1 focus:ring-primary"
                         >
                           {STATUS_OPTIONS.map((s) => (
-                            <option key={s.id} value={s.id}>{s.label.split('(')[0]}</option>
+                            <option key={s.id} value={s.id}>
+                              {i18n.language === 'bn' ? s.bn : s.label}
+                            </option>
                           ))}
                         </select>
                       </td>

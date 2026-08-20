@@ -6,24 +6,41 @@ export function generateApplicationNo() {
 }
 
 export const SERVICE_TYPES = [
-  'ইন্ডিয়ান ভিসা (Indian Visa Application)',
-  'ওয়ার্ক পারমিট / জব ভিসা (Work Permit & Job Placement)',
-  'ট্যুরিস্ট / ভিজিট ভিসা (Tourist / Visit Visa)',
-  'পাসপোর্ট রিনিউ / সংশোধন (Passport Services)',
-  'উমরাহ প্যাকেজ (Umrah Processing)',
-  'এয়ার টিকিট বুকিং (Air Ticket)',
-  'অন্যান্য কনস্যুলার সেবা (Other Consular Services)'
+  { id: 'indian_visa', label: 'Indian Visa Application', bn: 'ইন্ডিয়ান ভিসা আবেদন' },
+  { id: 'work_permit', label: 'Work Permit & Job Placement', bn: 'ওয়ার্ক পারমিট ও জব ভিসা' },
+  { id: 'tourist_visa', label: 'Tourist / Visit Visa', bn: 'ট্যুরিস্ট / ভিজিট ভিসা' },
+  { id: 'passport_services', label: 'Passport Services', bn: 'পাসপোর্ট সেবা ও রিনিউ' },
+  { id: 'umrah_package', label: 'Umrah Processing', bn: 'উমরাহ প্রসেসিং' },
+  { id: 'air_ticket', label: 'Air Ticket Booking', bn: 'এয়ার টিকিট বুকিং' },
+  { id: 'other_services', label: 'Other Consular Services', bn: 'অন্যান্য কনস্যুলার সেবা' }
 ];
 
 export const STATUS_OPTIONS = [
-  { id: 'received', label: 'File Received (ফাইল গ্রহণ করা হয়েছে)', color: 'bg-blue-500/15 text-blue-600 border-blue-500/30' },
-  { id: 'under_review', label: 'Under Verification (কাগজপত্র যাচাই হচ্ছে)', color: 'bg-amber-500/15 text-amber-600 border-amber-500/30' },
-  { id: 'processing', label: 'Processing (প্রসেসিং চলছে)', color: 'bg-purple-500/15 text-purple-600 border-purple-500/30' },
-  { id: 'embassy_submitted', label: 'Submitted to Embassy/VFS (জমা দেওয়া হয়েছে)', color: 'bg-indigo-500/15 text-indigo-600 border-indigo-500/30' },
-  { id: 'approved', label: 'Visa/File Approved (অনুমোদিত / প্রস্তুত)', color: 'bg-emerald-500/15 text-emerald-600 border-emerald-500/30' },
-  { id: 'delivered', label: 'Delivered to Customer (ডেলিভারি সম্পন্ন)', color: 'bg-teal-500/15 text-teal-600 border-teal-500/30' },
-  { id: 'rejected', label: 'Rejected / Cancelled (বাতিল / রিজেক্টেড)', color: 'bg-rose-500/15 text-rose-600 border-rose-500/30' }
+  { id: 'received', label: 'File Received', bn: 'ফাইল গৃহীত', color: 'bg-blue-500/15 text-blue-600 border-blue-500/30' },
+  { id: 'under_review', label: 'Under Verification', bn: 'কাগজপত্র যাচাইাধীন', color: 'bg-amber-500/15 text-amber-600 border-amber-500/30' },
+  { id: 'processing', label: 'Processing', bn: 'প্রসেসিং চলমান', color: 'bg-purple-500/15 text-purple-600 border-purple-500/30' },
+  { id: 'embassy_submitted', label: 'Submitted to Embassy/VFS', bn: 'এম্বাসিতে জমা সম্পন্ন', color: 'bg-indigo-500/15 text-indigo-600 border-indigo-500/30' },
+  { id: 'approved', label: 'Visa/File Approved', bn: 'ভিসা/ফাইল অনুমোদিত', color: 'bg-emerald-500/15 text-emerald-600 border-emerald-500/30' },
+  { id: 'delivered', label: 'Delivered to Customer', bn: 'ডেলিভারি সম্পন্ন', color: 'bg-teal-500/15 text-teal-600 border-teal-500/30' },
+  { id: 'rejected', label: 'Rejected / Cancelled', bn: 'বাতিল / রিজেক্টেড', color: 'bg-rose-500/15 text-rose-600 border-rose-500/30' }
 ];
+
+export function getServiceLabel(serviceValue, lang = 'en') {
+  if (!serviceValue) return '—';
+  const found = SERVICE_TYPES.find(s => s.id === serviceValue || s.label === serviceValue || s.bn === serviceValue);
+  if (found) return lang === 'bn' ? found.bn : found.label;
+  if (typeof serviceValue === 'string' && serviceValue.includes('(')) {
+    const parts = serviceValue.split('(');
+    return lang === 'bn' ? parts[0].trim() : parts[1].replace(')', '').trim();
+  }
+  return serviceValue;
+}
+
+export function getStatusLabel(statusId, lang = 'en') {
+  const found = STATUS_OPTIONS.find(s => s.id === statusId);
+  if (found) return lang === 'bn' ? found.bn : found.label;
+  return statusId;
+}
 
 export function getDefaultCustomerGuardianData() {
   return {
@@ -31,7 +48,7 @@ export function getDefaultCustomerGuardianData() {
     applicationNo: generateApplicationNo(),
     dateReceived: new Date().toISOString().split('T')[0],
     verifiedBy: '',
-    serviceType: 'ইন্ডিয়ান ভিসা (Indian Visa Application)',
+    serviceType: 'Indian Visa Application',
     status: 'received',
     customer: {
       fullName: '',

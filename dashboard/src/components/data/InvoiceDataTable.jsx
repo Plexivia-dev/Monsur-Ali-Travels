@@ -94,10 +94,10 @@ export function InvoiceDataTable() {
         <div>
           <h2 className="text-lg font-bold text-foreground tracking-tight flex items-center gap-2">
             <FileSpreadsheet className="w-5 h-5 text-emerald-500" />
-            Invoices & Billing History (ইনভয়েস ও বিলিং রেকর্ড)
+            {t('invoices.title', 'Invoices & Billing History')}
           </h2>
           <p className="text-xs text-muted-foreground mt-0.5">
-            কাস্টমার ও এজেন্সি বিলিং ইনভয়েস রেকর্ড, পেমেন্ট স্ট্যাটাস এবং বকেয়া হিসেব।
+            {t('invoices.subtitle', 'Customer and agency billing invoice records, payment status, and due accounts.')}
           </p>
         </div>
 
@@ -106,7 +106,7 @@ export function InvoiceDataTable() {
           onClick={() => switchPortal('docs', 'invoice')}
           className="flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-4 py-2 rounded-lg shadow-xs transition-all cursor-pointer shrink-0"
         >
-          <span>+ নতুন ইনভয়েস তৈরি</span>
+          <span>{t('invoices.newInvoice', '+ Create New Invoice')}</span>
         </button>
       </div>
 
@@ -118,6 +118,7 @@ export function InvoiceDataTable() {
             type="text"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
+            placeholder={t('common.search', 'Search...')}
             className="w-full pl-9 pr-3 py-1.5 bg-background border border-border rounded-lg text-xs font-medium text-foreground outline-none focus:ring-1 focus:ring-primary"
           />
         </form>
@@ -128,10 +129,10 @@ export function InvoiceDataTable() {
             onChange={(e) => setStatus(e.target.value)}
             className="bg-background border border-border rounded-lg px-3 py-1.5 text-xs font-bold text-foreground outline-none cursor-pointer"
           >
-            <option value="all">সকল স্ট্যাটাস</option>
-            <option value="Paid">Paid (পরিশোধিত)</option>
-            <option value="Pending">Pending (অপেক্ষমান)</option>
-            <option value="Overdue">Overdue (বকেয়া)</option>
+            <option value="all">{t('invoices.allStatus', 'All Statuses')}</option>
+            <option value="Paid">{t('invoices.paid', 'Paid')}</option>
+            <option value="Pending">{t('invoices.pending', 'Pending')}</option>
+            <option value="Overdue">{t('invoices.overdue', 'Overdue')}</option>
           </select>
 
           <button
