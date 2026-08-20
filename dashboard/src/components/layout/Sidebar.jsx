@@ -252,11 +252,11 @@ export const Sidebar = () => {
           <button
             type="button"
             onClick={logout}
-            className="p-1.5 rounded-md text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors cursor-pointer shrink-0 group-data-[collapsible=icon]:hidden"
+            className="size-8 rounded-lg bg-rose-500/15 text-rose-400 border border-rose-500/20 hover:bg-white hover:text-rose-600 hover:border-white transition-all duration-200 cursor-pointer flex items-center justify-center shrink-0 shadow-xs group-data-[collapsible=icon]:hidden"
             title="Logout"
             aria-label="Logout"
           >
-            <LogOut className="w-4 h-4" />
+            <LogOut className="w-4 h-4 transition-colors" />
           </button>
         </div>
       </SidebarFooter>
