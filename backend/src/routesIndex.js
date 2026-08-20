@@ -22,6 +22,7 @@ import passportRouter from "./routes/client/PassportSubmissionRoute.js";
 import payrollRouter from "./routes/client/PayrollRoute.js";
 import invoiceRouter from "./routes/client/InvoiceRoute.js";
 import moneyReceiptRouter from "./routes/client/MoneyReceiptRoute.js";
+import cashVoucherRouter from "./routes/CashVoucherRoute.js";
 import docsRouter from "./routes/client/DocsRoute.js";
 import emailRouter from "./routes/client/EmailRoute.js";
 
@@ -71,6 +72,7 @@ clientRouter.use("/payrolls", payrollRouter);
 clientRouter.use("/invoices", invoiceRouter);
 clientRouter.use("/receipts", moneyReceiptRouter);
 clientRouter.use("/money-receipts", moneyReceiptRouter);
+clientRouter.use("/cash-vouchers", cashVoucherRouter);
 clientRouter.use("/docs", docsRouter);
 clientRouter.use("/sendEmail", emailRouter);
 
