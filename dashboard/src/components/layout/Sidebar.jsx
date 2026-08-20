@@ -49,23 +49,23 @@ export const Sidebar = () => {
   return (
     <SidebarPrimitive collapsible="icon" className="border-r border-border bg-sidebar transition-all duration-300">
       {/* Brand Header */}
-      <SidebarHeader className="h-14 border-b border-sidebar-border px-4 flex items-center justify-between">
+      <SidebarHeader className="h-16 border-b border-sidebar-border px-4 flex items-center justify-start">
         <div
           onClick={() => switchPortal('agency', 'dashboard')}
-          className="flex items-center gap-3 cursor-pointer group/brand overflow-hidden"
+          className="flex items-center justify-start gap-3 cursor-pointer group/brand overflow-hidden w-full text-left"
         >
-          <div className="size-8 rounded-lg bg-primary/10 border border-primary/20 flex items-center justify-center shrink-0 overflow-hidden shadow-xs">
+          <div className="size-10 rounded-full bg-white p-2 flex items-center justify-center shrink-0 overflow-hidden shadow-xs border border-border/20">
             {logoImg ? (
-              <img src={logoImg} alt="Monsur Ali Travels" className="size-6 object-contain" />
+              <img src={logoImg} alt="Monsur Ali Travels" className="w-full h-full object-contain" />
             ) : (
-              <Globe className="w-4 h-4 text-primary" />
+              <Globe className="w-5 h-5 text-primary" />
             )}
           </div>
-          <div className="flex flex-col min-w-0 group-data-[collapsible=icon]:hidden">
-            <span className="font-semibold text-sm text-sidebar-foreground tracking-tight truncate">
+          <div className="flex flex-col min-w-0 text-left items-start group-data-[collapsible=icon]:hidden">
+            <span className="font-semibold text-sm text-sidebar-foreground tracking-tight truncate leading-tight">
               Monsur Ali Travels
             </span>
-            <span className="text-[10px] text-muted-foreground font-medium uppercase tracking-wider">
+            <span className="text-[10px] text-muted-foreground font-medium uppercase tracking-wider mt-0.5">
               Smart ERP v2.0
             </span>
           </div>
