@@ -80,12 +80,22 @@ export function VoucherSlipCard({ data = {}, copyTitle = 'Original Copy (মূ�
           </div>
         </div>
 
-        {/* Right: Copy Tag & Barcode */}
+        {/* Right: Copy Tag & Barcode / QR Code */}
         <div className="flex flex-col items-end">
           <span className="inline-block bg-[#E3F2FD] text-[#0D47A1] text-[10.5px] font-bold px-3 py-0.5 rounded-full border border-[#BBDEFB] uppercase tracking-wide mb-1.5 shadow-2xs">
             {copyTitle}
           </span>
-          <BarcodeSVG value={receiptNo} />
+          <div className="flex items-center gap-2">
+            {data.qrCode && (
+              <img
+                src={data.qrCode}
+                alt="Receipt QR"
+                className="w-11 h-11 rounded p-0.5 bg-white border border-slate-300 shadow-2xs"
+                title={`Scan to verify: ${receiptNo}`}
+              />
+            )}
+            <BarcodeSVG value={receiptNo} />
+          </div>
         </div>
       </div>
 

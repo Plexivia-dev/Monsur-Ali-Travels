@@ -1,4 +1,9 @@
-import { MoneyReceiptModel, generateReceiptTokenNo } from "../models/moneyReceipt.model.js";
+import {
+  MoneyReceiptModel,
+  generateReceiptTokenNo,
+  generateReceiptQrCode,
+  generateReceiptQrText,
+} from "../models/moneyReceipt.model.js";
 import Customer from "../models/customer.model.js";
 
 // @desc    Get all money receipts / tokens with pagination and search
@@ -95,9 +100,9 @@ export const getReceiptById = async (req, res, next) => {
     const isMongoId = id.match(/^[0-9a-fA-F]{24}$/);
     const query = isMongoId
       ? { _id: id, isActive: { $ne: false } }
-      : { receiptNo: id, isActive: { $ne: false } };
+      : { $or: [{ receiptNo: id }, { did: id }], isActive: { $ne: false } };
 
-    const receipt = await MoneyReceiptModel.findOne(query)
+    let receipt = await MoneyReceiptModel.findOne(query)
       .populate("customerId", "fullName phone passportNumber customerCode totalDueAmount")
       .populate("createdBy", "name role")
       .populate("confirmedBy", "name role");
@@ -105,12 +110,19 @@ export const getReceiptById = async (req, res, next) => {
     if (!receipt) {
       return res.status(404).json({
         status: "error",
-        message: "Money receipt / token not found",
+        message: "Money receipt / voucher not found",
       });
+    }
+
+    // Ensure QR code is present
+    if (!receipt.qrCode) {
+      receipt.qrCode = await generateReceiptQrCode(receipt.receiptNo);
+      await receipt.save();
     }
 
     return res.status(200).json({
       status: "success",
+      success: true,
       data: receipt,
     });
   } catch (error) {
@@ -133,6 +145,7 @@ export const lookupReceipt = async (req, res, next) => {
       isActive: { $ne: false },
       $or: [
         { receiptNo: regex },
+        { did: regex },
         { clientPhone: regex },
         { passportNumber: regex },
         { clientName: regex },
@@ -143,6 +156,7 @@ export const lookupReceipt = async (req, res, next) => {
 
     return res.status(200).json({
       status: "success",
+      success: true,
       data: results,
     });
   } catch (error) {
@@ -150,13 +164,44 @@ export const lookupReceipt = async (req, res, next) => {
   }
 };
 
-// @desc    Create new money receipt / token (Manager Action)
+// @desc    Generate standalone QR code by receipt number
+// @route   GET /api/v1/receipts/qr-code
+export const generateQrEndpoint = async (req, res, next) => {
+  try {
+    const { receiptNo } = req.query;
+    if (!receiptNo) {
+      return res.status(400).json({ status: "error", message: "Receipt number is required" });
+    }
+
+    const qrCode = await generateReceiptQrCode(receiptNo);
+    const qrText = generateReceiptQrText(receiptNo);
+
+    return res.status(200).json({
+      status: "success",
+      success: true,
+      data: {
+        receiptNo,
+        qrText,
+        qrCode,
+      },
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// @desc    Create new money receipt / voucher
 // @route   POST /api/v1/receipts
 export const createReceipt = async (req, res, next) => {
   try {
     const body = req.body || {};
     if (!body.receiptNo) {
       body.receiptNo = generateReceiptTokenNo();
+    }
+
+    // Always generate QR code on create
+    if (!body.qrCode) {
+      body.qrCode = await generateReceiptQrCode(body.receiptNo);
     }
 
     // Set creator user if present
@@ -180,8 +225,50 @@ export const createReceipt = async (req, res, next) => {
 
     return res.status(201).json({
       status: "success",
-      message: "Money receipt token created successfully",
+      success: true,
+      message: "Money receipt created successfully",
       data: newReceipt,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// @desc    Update existing money receipt / voucher
+// @route   PUT /api/v1/receipts/:id
+export const updateReceipt = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const body = req.body || {};
+
+    const isMongoId = id.match(/^[0-9a-fA-F]{24}$/);
+    const query = isMongoId
+      ? { _id: id, isActive: { $ne: false } }
+      : { $or: [{ receiptNo: id }, { did: id }], isActive: { $ne: false } };
+
+    let receipt = await MoneyReceiptModel.findOne(query);
+    if (!receipt) {
+      return res.status(404).json({
+        status: "error",
+        message: "Money receipt not found to update",
+      });
+    }
+
+    // If receiptNo is modified or qrCode missing, re-generate QR code
+    if (body.receiptNo && body.receiptNo !== receipt.receiptNo) {
+      body.qrCode = await generateReceiptQrCode(body.receiptNo);
+    } else if (!receipt.qrCode) {
+      body.qrCode = await generateReceiptQrCode(receipt.receiptNo);
+    }
+
+    Object.assign(receipt, body);
+    await receipt.save();
+
+    return res.status(200).json({
+      status: "success",
+      success: true,
+      message: "Money receipt updated successfully",
+      data: receipt,
     });
   } catch (error) {
     next(error);

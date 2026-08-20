@@ -4,6 +4,8 @@ import {
   getReceiptById,
   lookupReceipt,
   createReceipt,
+  updateReceipt,
+  generateQrEndpoint,
   confirmReceipt,
   cancelReceipt,
   updateBankDeposit,
@@ -13,14 +15,16 @@ import {
 
 const moneyReceiptRouter = Router();
 
-// Summary & Lookup endpoints (must come before /:id)
+// Summary & Lookup & QR endpoints (must come before /:id)
 moneyReceiptRouter.get("/summary", getReceiptSummary);
 moneyReceiptRouter.get("/lookup", lookupReceipt);
+moneyReceiptRouter.get("/qr-code", generateQrEndpoint);
 
 // Core CRUD
 moneyReceiptRouter.get("/", getAllReceipts);
 moneyReceiptRouter.post("/", createReceipt);
 moneyReceiptRouter.get("/:id", getReceiptById);
+moneyReceiptRouter.put("/:id", updateReceipt);
 moneyReceiptRouter.delete("/:id", deleteReceipt);
 
 // State transitions & Workflow endpoints

@@ -43,8 +43,11 @@ export function MoneyReceipt() {
         const returnedNo = saved?.receiptNo || data.receiptNo || generateReceiptNo();
         setData((prev) => ({
           ...prev,
+          ...saved,
           _id: saved?._id || prev._id,
           receiptNo: returnedNo,
+          qrCode: saved?.qrCode || prev.qrCode,
+          did: saved?.did || prev.did,
         }));
         toast.success(
           isEdit

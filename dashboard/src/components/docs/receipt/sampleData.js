@@ -1,7 +1,13 @@
 export function generateReceiptNo() {
-  const currentYear = new Date().getFullYear();
-  const randomNum = Math.floor(100 + Math.random() * 900);
-  return `MR-${currentYear}-${randomNum}`;
+  const date = new Date();
+  const yy = String(date.getFullYear()).slice(-2);
+  const mm = String(date.getMonth() + 1).padStart(2, '0');
+  const hex = Math.floor(0x1000 + Math.random() * 0xefff).toString(16).toUpperCase();
+  return `MA${yy}${mm}${hex}`;
+}
+
+export function generateReceiptQrText(receiptNo) {
+  return `Monsur Ali Travels\nMoney receipt No: ${receiptNo}`;
 }
 
 export function numberToWords(amount) {
