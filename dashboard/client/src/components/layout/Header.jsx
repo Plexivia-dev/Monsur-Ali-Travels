@@ -25,6 +25,7 @@ const PORTAL_KEYS = {
 
 const SUBMODULE_KEYS = {
   dashboard: 'nav.agencyDashboard',
+  overview: 'nav.documentStudioHub',
   'clients-all': 'nav.allClients',
   'clients-add': 'nav.addClient',
   bills: 'nav.clientBills',
