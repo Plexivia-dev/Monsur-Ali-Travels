@@ -174,7 +174,7 @@ export const Sidebar = () => {
                                 </div>
                                 <ChevronRight
                                   className={cn(
-                                    'w-3.5 h-3.5 text-muted-foreground transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90'
+                                    'w-3.5 h-3.5 text-muted-foreground transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90 group-data-[collapsible=icon]:hidden'
                                   )}
                                 />
                               </SidebarMenuButton>
