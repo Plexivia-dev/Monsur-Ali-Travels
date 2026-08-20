@@ -367,9 +367,6 @@ export function UserProfilePage() {
                 <User className="w-4 h-4 text-primary" />
                 <span>{t('account.personalInfo', 'Personal Information')}</span>
               </CardTitle>
-              <CardDescription className="text-xs text-muted-foreground">
-                {t('account.personalInfoDesc', 'Update your name, unique username, and contact details across the ERP system.')}
-              </CardDescription>
             </CardHeader>
 
             <form onSubmit={handleSaveProfile}>
@@ -514,9 +511,6 @@ export function UserProfilePage() {
                 <KeyRound className="w-4 h-4 text-amber-500" />
                 <span>{t('account.security', 'Security & Password')}</span>
               </CardTitle>
-              <CardDescription className="text-xs text-muted-foreground">
-                {t('account.securityDesc', 'Update your account password to maintain system security.')}
-              </CardDescription>
             </CardHeader>
 
             <form onSubmit={handleChangePasswordSubmit}>
