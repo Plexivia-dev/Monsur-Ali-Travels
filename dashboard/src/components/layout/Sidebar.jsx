@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import * as LucideIcons from 'lucide-react';
-import { ChevronRight, Globe, Menu, X } from 'lucide-react';
+import { ChevronRight, Globe, Menu, X, LogOut } from 'lucide-react';
 import { usePortalStore } from '../../store/usePortalStore';
 import { useAuthStore } from '../../store/useAuthStore';
 import { navGroups } from '../../configs/navConfig';
@@ -29,6 +29,7 @@ export const Sidebar = () => {
   const activeSubmodule = usePortalStore((state) => state.activeSubmodule);
   const switchPortal = usePortalStore((state) => state.switchPortal);
   const user = useAuthStore((state) => state.user);
+  const logout = useAuthStore((state) => state.logout);
   const { state, setOpen, isMobile, setOpenMobile } = useSidebar();
   const isCollapsed = state === 'collapsed';
 
@@ -239,16 +240,27 @@ export const Sidebar = () => {
 
       {/* Footer Info */}
       <SidebarFooter className="border-t border-sidebar-border p-3">
-        <div className="flex items-center gap-3 px-1 py-1 rounded-lg bg-sidebar-accent/50 group-data-[collapsible=icon]:justify-center">
-          <div className="size-7 rounded-full bg-primary/15 text-primary flex items-center justify-center font-semibold text-xs shrink-0">
-            {user?.name ? user.name[0].toUpperCase() : 'A'}
+        <div className="flex items-center justify-between gap-3 px-2 py-1.5 rounded-lg bg-sidebar-accent/50 group-data-[collapsible=icon]:justify-center">
+          <div className="flex items-center gap-2.5 min-w-0">
+            <div className="size-8 rounded-full bg-primary/15 text-primary flex items-center justify-center font-semibold text-xs shrink-0">
+              {user?.name ? user.name[0].toUpperCase() : 'A'}
+            </div>
+            <div className="flex flex-col min-w-0 text-left group-data-[collapsible=icon]:hidden">
+              <span className="text-xs font-semibold text-sidebar-foreground truncate leading-tight">
+                {user?.name || 'Administrator'}
+              </span>
+              <span className="text-[10px] text-muted-foreground truncate mt-0.5">{user?.role || 'Super Admin'}</span>
+            </div>
           </div>
-          <div className="flex flex-col min-w-0 group-data-[collapsible=icon]:hidden">
-            <span className="text-xs font-semibold text-sidebar-foreground truncate">
-              {user?.name || 'Administrator'}
-            </span>
-            <span className="text-[10px] text-muted-foreground truncate">{user?.role || 'Super Admin'}</span>
-          </div>
+          <button
+            type="button"
+            onClick={logout}
+            className="p-1.5 rounded-md text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors cursor-pointer shrink-0 group-data-[collapsible=icon]:hidden"
+            title="Logout"
+            aria-label="Logout"
+          >
+            <LogOut className="w-4 h-4" />
+          </button>
         </div>
       </SidebarFooter>
     </SidebarPrimitive>
