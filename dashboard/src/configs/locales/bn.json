@@ -320,8 +320,12 @@
     "uploadSuccess": "ডকুমেন্ট সফলভাবে আপলোড হয়েছে!",
     "removeSuccess": "ডকুমেন্ট মুছে ফেলা হয়েছে।",
     "addFileSuccess": "\"{{name}}\" যুক্ত হয়েছে!",
-    "nameRequired": "কাস্টমারের নাম (Customer Full Name) আবশ্যক!",
     "updateSuccess": "কাস্টমার ফাইল আপডেট করা হয়েছে! (App No: {{appNo}})",
+    "saveSuccess": "কাস্টমার ফাইল ডাটাবেজে সেভ হয়েছে! (App No: {{appNo}})",
+    "previewSuccess": "ফর্ম প্রিভিউ প্রস্তুত! (অফলাইন মোড - App No: {{appNo}})",
+    "saveError": "ডাটাবেজে সংরক্ষণ করতে ব্যর্থ হয়েছে।",
+    "clearSuccess": "ফর্মের তথ্য রিসেট করা হয়েছে।"
+  },
   "agreements": {
     "title": "নিয়োগ চুক্তিপত্রসমূহ",
     "subtitle": "ডাটাবেজে সংরক্ষিত সকল কর্মচারীর চুক্তিপত্রের বিস্তারিত রেকর্ড ও তালিকা।",

@@ -116,6 +116,14 @@ export const navGroups = [
         href: '/dashboard/docs/invoice',
       },
       {
+        icon: 'Receipt',
+        label: 'Money Receipt Voucher',
+        key: 'nav.moneyReceipt',
+        portal: 'docs',
+        submodule: 'money-receipt',
+        href: '/dashboard/docs/money-receipt',
+      },
+      {
         icon: 'Award',
         label: 'Experience Certificate',
         key: 'nav.experienceCertificate',

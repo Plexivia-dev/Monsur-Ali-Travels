@@ -1,7 +1,7 @@
 {
-  "name": "Smart_ERP",
+  "name": "Manaagement-Web-Dashboard",
   "private": true,
-  "version": "1.1.0",
+  "version": "1.1.1",
   "type": "module",
   "scripts": {
     "dev": "vite",

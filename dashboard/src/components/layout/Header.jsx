@@ -36,6 +36,8 @@ const SUBMODULE_KEYS = {
   idcard: 'nav.idCard',
   payroll: 'nav.salarySlip',
   invoice: 'nav.invoice',
+  'money-receipt': 'nav.moneyReceipt',
+  receipt: 'nav.moneyReceipt',
   'certificate-exp': 'nav.experienceCertificate',
   'certificate-char': 'nav.characterCertificate',
   'certificate-marr': 'nav.marriageCertificate',
