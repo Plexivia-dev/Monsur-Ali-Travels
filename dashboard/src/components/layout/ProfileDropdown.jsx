@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { LogOut, Settings, User, ShieldCheck } from 'lucide-react';
 import { useAuthStore } from '../../store/useAuthStore';
 import { usePortalStore } from '../../store/usePortalStore';
@@ -15,6 +16,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 
 export const ProfileDropdown = () => {
+  const { t } = useTranslation();
   const user = useAuthStore((state) => state.user);
   const logout = useAuthStore((state) => state.logout);
   const switchPortal = usePortalStore((state) => state.switchPortal);
@@ -73,14 +75,14 @@ export const ProfileDropdown = () => {
             onClick={() => switchPortal('admin', 'users')}
           >
             <User className="w-4 h-4 text-muted-foreground" />
-            <span>My Account & Users</span>
+            <span>{t('header.myProfile', 'My Account & Profile')}</span>
           </DropdownMenuItem>
           <DropdownMenuItem
             className="flex items-center gap-2 cursor-pointer text-xs py-2"
             onClick={() => switchPortal('admin', 'settings')}
           >
             <Settings className="w-4 h-4 text-muted-foreground" />
-            <span>System Settings</span>
+            <span>{t('header.systemSettings', 'System Settings')}</span>
           </DropdownMenuItem>
         </DropdownMenuGroup>
 
@@ -93,7 +95,7 @@ export const ProfileDropdown = () => {
             onClick={handleLogout}
           >
             <LogOut className="w-4 h-4" />
-            <span>Sign out</span>
+            <span>{t('header.signOut', 'Sign out')}</span>
           </DropdownMenuItem>
         </DropdownMenuGroup>
       </DropdownMenuContent>

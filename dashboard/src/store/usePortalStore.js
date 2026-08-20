@@ -22,7 +22,7 @@ const initialParsed = parsePortalFromPath(initialPath);
 export const usePortalStore = create((set, get) => ({
   activePortal: initialParsed.portal,
   activeSubmodule: initialParsed.submodule,
-  language: typeof window !== 'undefined' ? (localStorage.getItem('app_language') || 'bn') : 'bn',
+  language: typeof window !== 'undefined' ? (localStorage.getItem('app_language') || 'en') : 'en',
   isSidebarOpen: true,
   searchOpen: false,
   searchQuery: '',
@@ -41,8 +41,8 @@ export const usePortalStore = create((set, get) => ({
   },
 
   toggleLanguage: () => {
-    const current = get().language || 'bn';
-    const nextLang = current === 'bn' ? 'en' : 'bn';
+    const current = get().language || 'en';
+    const nextLang = current === 'en' ? 'bn' : 'en';
     if (typeof window !== 'undefined') localStorage.setItem('app_language', nextLang);
     set({ language: nextLang });
   },

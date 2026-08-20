@@ -1,4 +1,5 @@
 import React, { useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { usePortalStore } from '../../store/usePortalStore';
 import {
   Search,
@@ -14,6 +15,7 @@ import {
 } from 'lucide-react';
 
 export const GlobalSearchModal = () => {
+  const { t } = useTranslation();
   const searchOpen = usePortalStore((state) => state.searchOpen);
   const setSearchOpen = usePortalStore((state) => state.setSearchOpen);
   const searchQuery = usePortalStore((state) => state.searchQuery);
@@ -33,22 +35,18 @@ export const GlobalSearchModal = () => {
   if (!searchOpen) return null;
 
   const quickLinks = [
-    { portal: 'agency', submodule: 'dashboard', title: 'Agency Overview', desc: 'Active placements, billing & client contracts', icon: Building2 },
-    { portal: 'agency', submodule: 'clients-all', title: 'Client Directory', desc: 'Client enterprise contracts & accounts', icon: Building2 },
-    { portal: 'agency', submodule: 'bills', title: 'Client Invoices & Billing', desc: 'Unbilled hours, margins & client billing', icon: FileText },
-    { portal: 'agency', submodule: 'payments', title: 'Wages & Payments', desc: 'Contractor salary settlements', icon: CreditCard },
-    { portal: 'factory', submodule: 'dashboard', title: 'Factory Dashboard', desc: 'Brick production, Coal stock & Kiln metrics', icon: Building2 },
-    { portal: 'factory', submodule: 'employees', title: 'Factory Workers & Kiln Crew', desc: 'Attendance, daily wages & kiln shifts', icon: Users },
-    { portal: 'factory', submodule: 'bills', title: 'Factory Raw Material Bills', desc: 'Coal supplies, soil haulage & invoices', icon: FileText },
-    { portal: 'factory', submodule: 'payments', title: 'Factory Worker & Vendor Payouts', desc: 'Wage settlements & vendor payments', icon: CreditCard },
-    { portal: 'docs', submodule: 'agreement', title: 'Employment Agreement', desc: 'Generate official candidate contract A4', icon: FileSpreadsheet },
-    { portal: 'docs', submodule: 'customer-form', title: 'Customer & Guardian Form', desc: 'Generate printable customer profile form', icon: FileSpreadsheet },
-    { portal: 'docs', submodule: 'payroll', title: 'Salary Slip Generator', desc: 'Printable worker salary slip', icon: FileSpreadsheet },
-    { portal: 'docs', submodule: 'invoice', title: 'Invoice Generator', desc: 'Generate official client invoice', icon: FileSpreadsheet },
-    { portal: 'data', submodule: 'customer-profiles', title: 'Customer Profiles Database', desc: 'View and manage all customer records', icon: Database },
-    { portal: 'data', submodule: 'agreements', title: 'Agreement Records', desc: 'Historical candidate employment agreements', icon: Database },
-    { portal: 'admin', submodule: 'users', title: 'User Management & Permissions', desc: 'Role assignments & portal access', icon: Shield },
-    { portal: 'admin', submodule: 'system-logs', title: 'System Audit Logs', desc: 'Database operations and activity trail', icon: Shield },
+    { portal: 'agency', submodule: 'dashboard', title: t('nav.agencyDashboard', 'Agency Overview'), desc: 'Active placements, billing & client contracts', icon: Building2 },
+    { portal: 'agency', submodule: 'clients-all', title: t('nav.allClients', 'Client Directory'), desc: 'Client enterprise contracts & accounts', icon: Building2 },
+    { portal: 'agency', submodule: 'bills', title: t('nav.clientBills', 'Client Invoices & Billing'), desc: 'Unbilled hours, margins & client billing', icon: FileText },
+    { portal: 'agency', submodule: 'payments', title: t('nav.clientPayments', 'Client Payments'), desc: 'Contractor salary settlements', icon: CreditCard },
+    { portal: 'docs', submodule: 'agreement', title: t('nav.employmentAgreement', 'Employment Agreement'), desc: 'Generate official candidate contract A4', icon: FileSpreadsheet },
+    { portal: 'docs', submodule: 'customer-form', title: t('nav.customerGuardianForm', 'Customer & Guardian Form'), desc: 'Generate printable customer profile form', icon: FileSpreadsheet },
+    { portal: 'docs', submodule: 'payroll', title: t('nav.salarySlip', 'Salary Slip Generator'), desc: 'Printable worker salary slip', icon: FileSpreadsheet },
+    { portal: 'docs', submodule: 'invoice', title: t('nav.invoice', 'Invoice Generator'), desc: 'Generate official client invoice', icon: FileSpreadsheet },
+    { portal: 'data', submodule: 'customer-profiles', title: t('nav.customerProfiles', 'Customer Profiles Database'), desc: 'View and manage all customer records', icon: Database },
+    { portal: 'data', submodule: 'agreements', title: t('nav.agreementRecords', 'Agreement Records'), desc: 'Historical candidate employment agreements', icon: Database },
+    { portal: 'admin', submodule: 'users', title: t('nav.systemUsers', 'User Management & Permissions'), desc: 'Role assignments & portal access', icon: Shield },
+    { portal: 'admin', submodule: 'system-logs', title: t('nav.auditLogs', 'System Audit Logs'), desc: 'Database operations and activity trail', icon: Shield },
   ];
 
   const filteredLinks = quickLinks.filter(
@@ -79,7 +77,7 @@ export const GlobalSearchModal = () => {
           <input
             autoFocus
             type="text"
-            placeholder="Search modules, portals, workers, forms..."
+            placeholder={t('header.searchPlaceholder', 'Search modules, portals, records...')}
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className="w-full py-4 bg-transparent text-sm text-foreground placeholder-muted-foreground focus:outline-none"

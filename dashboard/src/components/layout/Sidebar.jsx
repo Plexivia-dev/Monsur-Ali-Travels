@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import * as LucideIcons from 'lucide-react';
 import { ChevronRight, Globe, Menu, X, LogOut, User } from 'lucide-react';
 import { usePortalStore } from '../../store/usePortalStore';
@@ -25,6 +26,7 @@ import { cn } from '@/lib/utils';
 import logoImg from '../../assets/logo.png';
 
 export const Sidebar = () => {
+  const { t } = useTranslation();
   const activePortal = usePortalStore((state) => state.activePortal);
   const activeSubmodule = usePortalStore((state) => state.activeSubmodule);
   const switchPortal = usePortalStore((state) => state.switchPortal);
@@ -78,8 +80,8 @@ export const Sidebar = () => {
             type="button"
             onClick={() => setOpen(true)}
             className="size-9 rounded-full border border-sky-500/70 hover:border-sky-400 bg-sidebar-accent/60 hover:bg-sidebar-accent text-sky-400 flex items-center justify-center shrink-0 shadow-xs transition-all duration-200 cursor-pointer"
-            title="Open Sidebar"
-            aria-label="Open Sidebar"
+            title={t('brand.openSidebar', 'Open Sidebar')}
+            aria-label={t('brand.openSidebar', 'Open Sidebar')}
           >
             <Menu className="w-4 h-4 text-sky-400" />
           </button>
@@ -91,17 +93,17 @@ export const Sidebar = () => {
             >
               <div className="size-10 rounded-full bg-white p-[4px] flex items-center justify-center shrink-0 overflow-hidden shadow-xs border border-border/20">
                 {logoImg ? (
-                  <img src={logoImg} alt="Monsur Ali Travels" className="w-full h-full object-contain" />
+                  <img src={logoImg} alt={t('brand.name', 'Monsur Ali Travels')} className="w-full h-full object-contain" />
                 ) : (
                   <Globe className="w-5 h-5 text-primary" />
                 )}
               </div>
               <div className="flex flex-col min-w-0 text-left items-start">
                 <span className="font-semibold text-sm text-sidebar-foreground tracking-tight truncate leading-tight">
-                  Monsur Ali Travels
+                  {t('brand.name', 'Monsur Ali Travels')}
                 </span>
                 <span className="text-[10px] text-muted-foreground font-medium uppercase tracking-wider mt-0.5">
-                  Smart ERP v2.0
+                  {t('brand.tagline', 'Smart ERP v2.0')}
                 </span>
               </div>
             </div>
@@ -113,7 +115,7 @@ export const Sidebar = () => {
                 if (isMobile) setOpenMobile(false);
               }}
               className="size-6 rounded-full border border-sky-500/70 hover:border-sky-400 p-[2px] text-sky-400 hover:text-sky-300 hover:bg-sky-500/10 flex items-center justify-center shrink-0 transition-colors cursor-pointer"
-              title="Close Sidebar"
+              title={t('brand.closeSidebar', 'Close Sidebar')}
             >
               <X className="w-3.5 h-3.5 text-sky-400" />
             </button>
@@ -124,15 +126,18 @@ export const Sidebar = () => {
       {/* Main Navigation Content */}
       <SidebarContent className="p-2 space-y-4">
         {navGroups.map((group, groupIdx) => {
+          const displayGroupLabel = group.groupKey ? t(group.groupKey, group.groupLabel) : group.groupLabel;
+
           return (
             <SidebarGroup key={groupIdx} className="p-0">
               <SidebarGroupLabel className="px-3 py-1 text-[11px] font-semibold tracking-wider text-muted-foreground/80 uppercase">
-                {group.groupLabel}
+                {displayGroupLabel}
               </SidebarGroupLabel>
               <SidebarGroupContent>
                 <SidebarMenu>
                   {group.items.map((item, itemIdx) => {
                     const hasChildren = Array.isArray(item.childItems) && item.childItems.length > 0;
+                    const displayItemLabel = item.key ? t(item.key, item.label) : item.label;
 
                     if (hasChildren) {
                       const isChildActive = item.childItems.some(
@@ -150,7 +155,7 @@ export const Sidebar = () => {
                           <SidebarMenuItem>
                             <CollapsibleTrigger asChild>
                               <SidebarMenuButton
-                                tooltip={item.label}
+                                tooltip={displayItemLabel}
                                 onClick={(e) => {
                                   if (isCollapsed) {
                                     e.preventDefault();
@@ -164,7 +169,7 @@ export const Sidebar = () => {
                               >
                                 <div className="flex items-center gap-2.5 min-w-0">
                                   {renderIcon(item.icon, cn('w-4 h-4 shrink-0 transition-colors', isChildActive ? 'text-sky-400' : 'text-muted-foreground'))}
-                                  <span className="truncate">{item.label}</span>
+                                  <span className="truncate">{displayItemLabel}</span>
                                 </div>
                                 <ChevronRight
                                   className={cn(
@@ -178,6 +183,7 @@ export const Sidebar = () => {
                                 {item.childItems.map((subItem, subIdx) => {
                                   const isActive =
                                     activePortal === subItem.portal && activeSubmodule === subItem.submodule;
+                                  const displaySubLabel = subItem.key ? t(subItem.key, subItem.label) : subItem.label;
 
                                   return (
                                     <SidebarMenuSubItem key={subIdx}>
@@ -191,7 +197,7 @@ export const Sidebar = () => {
                                             : 'text-muted-foreground hover:text-foreground hover:bg-sidebar-accent'
                                         )}
                                       >
-                                        <span className="truncate">{subItem.label}</span>
+                                        <span className="truncate">{displaySubLabel}</span>
                                       </SidebarMenuSubButton>
                                     </SidebarMenuSubItem>
                                   );
@@ -209,7 +215,7 @@ export const Sidebar = () => {
                       <SidebarMenuItem key={itemIdx}>
                         <SidebarMenuButton
                           isActive={isActive}
-                          tooltip={item.label}
+                          tooltip={displayItemLabel}
                           onClick={() => handleItemSelect(item.portal, item.submodule)}
                           className={cn(
                             'cursor-pointer text-xs font-medium rounded-lg transition-all duration-200',
@@ -222,7 +228,7 @@ export const Sidebar = () => {
                             item.icon,
                             cn('w-4 h-4 shrink-0 transition-colors', isActive ? 'text-sky-400' : 'text-muted-foreground')
                           )}
-                          <span className="truncate">{item.label}</span>
+                          <span className="truncate">{displayItemLabel}</span>
                         </SidebarMenuButton>
                       </SidebarMenuItem>
                     );
@@ -241,8 +247,8 @@ export const Sidebar = () => {
             type="button"
             onClick={() => handleItemSelect('admin', 'users')}
             className="size-8 rounded-full border border-sky-500/50 bg-sidebar-accent hover:bg-sky-500/15 text-sky-400 flex items-center justify-center shrink-0 transition-all duration-200 cursor-pointer mx-auto shadow-xs"
-            title={user?.name ? `${user.name} (My Profile)` : 'My Profile'}
-            aria-label="My Profile"
+            title={user?.name ? `${user.name} (${t('header.myProfile', 'My Profile')})` : t('header.myProfile', 'My Profile')}
+            aria-label={t('header.myProfile', 'My Profile')}
           >
             <User className="w-4 h-4 text-sky-400" />
           </button>
@@ -251,7 +257,7 @@ export const Sidebar = () => {
             <div
               onClick={() => handleItemSelect('admin', 'users')}
               className="flex items-center gap-2.5 min-w-0 cursor-pointer hover:opacity-85 transition-opacity"
-              title="View Profile"
+              title={t('header.myProfile', 'My Profile')}
             >
               <div className="size-8 rounded-full bg-primary/15 text-primary flex items-center justify-center font-semibold text-xs shrink-0">
                 {user?.name ? user.name[0].toUpperCase() : 'A'}
@@ -267,8 +273,8 @@ export const Sidebar = () => {
               type="button"
               onClick={logout}
               className="size-8 rounded-lg bg-rose-500/15 text-rose-400 border border-rose-500/20 hover:bg-white hover:text-rose-600 hover:border-white transition-all duration-200 cursor-pointer flex items-center justify-center shrink-0 shadow-xs"
-              title="Logout"
-              aria-label="Logout"
+              title={t('common.logout', 'Logout')}
+              aria-label={t('common.logout', 'Logout')}
             >
               <LogOut className="w-4 h-4 transition-colors" />
             </button>

@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { Search, Bell } from 'lucide-react';
 import { usePortalStore } from '../../store/usePortalStore';
 import { Button } from '@/components/ui/button';
@@ -14,49 +15,44 @@ import ModeToggle from './ModeToggle';
 import ProfileDropdown from './ProfileDropdown';
 import LanguageToggle from './LanguageToggle';
 
-const PORTAL_LABELS = {
-  agency: 'Manpower Agency',
-  factory: 'Brick Factory',
-  docs: 'Document Studio',
-  data: 'Data Records Center',
-  admin: 'System Admin',
+const PORTAL_KEYS = {
+  agency: 'nav.agency',
+  factory: 'nav.factory',
+  docs: 'nav.docs',
+  data: 'nav.data',
+  admin: 'nav.admin',
 };
 
-const SUBMODULE_LABELS = {
-  dashboard: 'Overview & Dashboard',
-  employees: 'Staff & Worker Roster',
-  'candidates-all': 'All Candidates',
-  'candidates-add': 'Add New Candidate',
-  candidates: 'Candidate Case Files',
-  cases: 'Candidate Case Files',
-  'clients-all': 'All Client Accounts',
-  'clients-add': 'Add New Client',
-  bills: 'Billing & Invoices',
-  payments: 'Wages & Payments',
-  reports: 'Reports & Analytics',
-  agreement: 'Employment Agreement',
-  'customer-form': 'Customer & Guardian Form',
-  'indian-visa': 'Indian Visa Submission',
-  'passport-sub': 'Passport Submission',
-  idcard: 'Office ID Card',
-  payroll: 'Monthly Salary Slip',
-  invoice: 'Invoice & Billing',
-  'certificate-exp': 'Experience Certificate',
-  'certificate-char': 'Character Certificate',
-  'certificate-marr': 'Marriage Certificate',
-  'customer-profiles': 'Customer Profiles',
-  agreements: 'Agreement Records',
-  'customer-applications': 'Customer Applications',
-  'indian-visas': 'Indian Visa Records',
-  passports: 'Passport Submissions',
-  'salary-slips': 'Salary Slips',
-  invoices: 'Invoice Records',
-  users: 'System Users',
-  'system-logs': 'Audit & Database Logs',
-  settings: 'Global Settings',
+const SUBMODULE_KEYS = {
+  dashboard: 'nav.agencyDashboard',
+  'clients-all': 'nav.allClients',
+  'clients-add': 'nav.addClient',
+  bills: 'nav.clientBills',
+  payments: 'nav.clientPayments',
+  agreement: 'nav.employmentAgreement',
+  'customer-form': 'nav.customerGuardianForm',
+  'indian-visa': 'nav.indianVisaRecords',
+  'passport-sub': 'nav.passportRecords',
+  idcard: 'nav.idCard',
+  payroll: 'nav.salarySlip',
+  invoice: 'nav.invoice',
+  'certificate-exp': 'nav.experienceCertificate',
+  'certificate-char': 'nav.characterCertificate',
+  'certificate-marr': 'nav.marriageCertificate',
+  'customer-profiles': 'nav.customerProfiles',
+  agreements: 'nav.agreementRecords',
+  'customer-applications': 'nav.customerApplications',
+  'indian-visas': 'nav.indianVisaRecords',
+  passports: 'nav.passportRecords',
+  'salary-slips': 'nav.salarySlipRecords',
+  invoices: 'nav.invoiceRecords',
+  users: 'nav.systemUsers',
+  'system-logs': 'nav.auditLogs',
+  settings: 'nav.globalSettings',
 };
 
 export const Header = () => {
+  const { t } = useTranslation();
   const activePortal = usePortalStore((state) => state.activePortal);
   const activeSubmodule = usePortalStore((state) => state.activeSubmodule);
   const switchPortal = usePortalStore((state) => state.switchPortal);
@@ -64,8 +60,10 @@ export const Header = () => {
   const notifications = usePortalStore((state) => state.notifications);
 
   const unreadCount = notifications.filter((n) => n.unread).length;
-  const portalLabel = PORTAL_LABELS[activePortal] || activePortal;
-  const submoduleLabel = SUBMODULE_LABELS[activeSubmodule] || activeSubmodule.replace(/-/g, ' ');
+  const portalLabel = PORTAL_KEYS[activePortal] ? t(PORTAL_KEYS[activePortal]) : activePortal;
+  const submoduleLabel = SUBMODULE_KEYS[activeSubmodule]
+    ? t(SUBMODULE_KEYS[activeSubmodule])
+    : activeSubmodule.replace(/-/g, ' ');
 
   return (
     <header className="sticky top-0 z-40 bg-card/80 backdrop-blur-md border-b border-border transition-colors">
@@ -97,7 +95,7 @@ export const Header = () => {
             className="hidden md:flex items-center gap-2 text-xs text-muted-foreground bg-muted/50 border-border hover:bg-muted cursor-pointer h-8 px-2.5 rounded-lg"
           >
             <Search className="w-3.5 h-3.5" />
-            <span>Search ERP...</span>
+            <span>{t('header.searchPlaceholder', 'Search ERP...')}</span>
             <kbd className="pointer-events-none inline-flex h-4 select-none items-center gap-1 rounded bg-background px-1.5 font-mono text-[10px] font-medium text-muted-foreground border border-border">
               ⌘K
             </kbd>
@@ -109,7 +107,7 @@ export const Header = () => {
             size="icon"
             onClick={() => setSearchOpen(true)}
             className="md:hidden text-muted-foreground hover:text-foreground cursor-pointer"
-            title="Search"
+            title={t('common.search', 'Search')}
           >
             <Search className="w-4 h-4" />
           </Button>
@@ -123,7 +121,7 @@ export const Header = () => {
             size="icon"
             onClick={() => switchPortal(activePortal, 'reports')}
             className="relative text-muted-foreground hover:text-foreground cursor-pointer"
-            title="Notifications"
+            title={t('header.notifications', 'Notifications')}
           >
             <Bell className="w-4 h-4" />
             {unreadCount > 0 && (

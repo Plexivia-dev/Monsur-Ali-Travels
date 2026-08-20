@@ -1,11 +1,13 @@
 export const navGroups = [
   {
     groupLabel: 'Manpower Agency',
+    groupKey: 'nav.agency',
     portal: 'agency',
     items: [
       {
         icon: 'LayoutDashboard',
         label: 'Agency Dashboard',
+        key: 'nav.agencyDashboard',
         portal: 'agency',
         submodule: 'dashboard',
         href: '/dashboard/agency/dashboard',
@@ -13,28 +15,33 @@ export const navGroups = [
       {
         icon: 'Building2',
         label: 'Clients & Accounts',
+        key: 'nav.clientsAndAccounts',
         portal: 'agency',
         childItems: [
           {
             label: 'All Clients',
+            key: 'nav.allClients',
             portal: 'agency',
             submodule: 'clients-all',
             href: '/dashboard/agency/clients-all',
           },
           {
             label: 'Add Client',
+            key: 'nav.addClient',
             portal: 'agency',
             submodule: 'clients-add',
             href: '/dashboard/agency/clients-add',
           },
           {
             label: 'Client Invoices & Bills',
+            key: 'nav.clientBills',
             portal: 'agency',
             submodule: 'bills',
             href: '/dashboard/agency/bills',
           },
           {
             label: 'Client Payments',
+            key: 'nav.clientPayments',
             portal: 'agency',
             submodule: 'payments',
             href: '/dashboard/agency/payments',
@@ -46,11 +53,13 @@ export const navGroups = [
   /*
   {
     groupLabel: 'Brick Factory',
+    groupKey: 'nav.factory',
     portal: 'factory',
     items: [
       {
         icon: 'Factory',
         label: 'Factory Dashboard',
+        key: 'nav.factoryDashboard',
         portal: 'factory',
         submodule: 'dashboard',
         href: '/dashboard/factory/dashboard',
@@ -58,6 +67,7 @@ export const navGroups = [
       {
         icon: 'Users2',
         label: 'Worker Roster',
+        key: 'nav.workerRoster',
         portal: 'factory',
         submodule: 'employees',
         href: '/dashboard/factory/employees',
@@ -65,6 +75,7 @@ export const navGroups = [
       {
         icon: 'Receipt',
         label: 'Coal & Material Bills',
+        key: 'nav.coalBills',
         portal: 'factory',
         submodule: 'bills',
         href: '/dashboard/factory/bills',
@@ -72,6 +83,7 @@ export const navGroups = [
       {
         icon: 'CreditCard',
         label: 'Wages & Payments',
+        key: 'nav.wagesPayments',
         portal: 'factory',
         submodule: 'payments',
         href: '/dashboard/factory/payments',
@@ -79,6 +91,7 @@ export const navGroups = [
       {
         icon: 'BarChart3',
         label: 'Kiln & Production Telemetry',
+        key: 'nav.kilnReports',
         portal: 'factory',
         submodule: 'reports',
         href: '/dashboard/factory/reports',
@@ -88,11 +101,13 @@ export const navGroups = [
   */
   {
     groupLabel: 'Document Studio',
+    groupKey: 'nav.docs',
     portal: 'docs',
     items: [
       {
         icon: 'FileText',
         label: 'Employment Agreement',
+        key: 'nav.employmentAgreement',
         portal: 'docs',
         submodule: 'agreement',
         href: '/dashboard/docs/agreement',
@@ -100,6 +115,7 @@ export const navGroups = [
       {
         icon: 'UserCheck',
         label: 'Customer & Guardian Form',
+        key: 'nav.customerGuardianForm',
         portal: 'docs',
         submodule: 'customer-form',
         href: '/dashboard/docs/customer-form',
@@ -107,6 +123,7 @@ export const navGroups = [
       {
         icon: 'Stamp',
         label: 'Indian Visa Submission',
+        key: 'nav.indianVisaRecords',
         portal: 'docs',
         submodule: 'indian-visa',
         href: '/dashboard/docs/indian-visa',
@@ -114,13 +131,15 @@ export const navGroups = [
       {
         icon: 'CreditCard',
         label: 'Passport Submission',
+        key: 'nav.passportRecords',
         portal: 'docs',
         submodule: 'passport-sub',
         href: '/dashboard/docs/passport-sub',
       },
       {
         icon: 'IdCard',
-        label: 'Office ID Card',
+        label: 'Employee ID Card',
+        key: 'nav.idCard',
         portal: 'docs',
         submodule: 'idcard',
         href: '/dashboard/docs/idcard',
@@ -128,6 +147,7 @@ export const navGroups = [
       {
         icon: 'Receipt',
         label: 'Monthly Salary Slip',
+        key: 'nav.salarySlip',
         portal: 'docs',
         submodule: 'payroll',
         href: '/dashboard/docs/payroll',
@@ -135,6 +155,7 @@ export const navGroups = [
       {
         icon: 'FileSpreadsheet',
         label: 'Invoice Billing',
+        key: 'nav.invoice',
         portal: 'docs',
         submodule: 'invoice',
         href: '/dashboard/docs/invoice',
@@ -142,6 +163,7 @@ export const navGroups = [
       {
         icon: 'Award',
         label: 'Experience Certificate',
+        key: 'nav.experienceCertificate',
         portal: 'docs',
         submodule: 'certificate-exp',
         href: '/dashboard/docs/certificate-exp',
@@ -149,6 +171,7 @@ export const navGroups = [
       {
         icon: 'ShieldCheck',
         label: 'Character Certificate',
+        key: 'nav.characterCertificate',
         portal: 'docs',
         submodule: 'certificate-char',
         href: '/dashboard/docs/certificate-char',
@@ -156,6 +179,7 @@ export const navGroups = [
       {
         icon: 'Heart',
         label: 'Marriage Certificate',
+        key: 'nav.marriageCertificate',
         portal: 'docs',
         submodule: 'certificate-marr',
         href: '/dashboard/docs/certificate-marr',
@@ -164,11 +188,13 @@ export const navGroups = [
   },
   {
     groupLabel: 'Data Records Center',
+    groupKey: 'nav.data',
     portal: 'data',
     items: [
       {
         icon: 'User',
-        label: 'Customers (কাস্টমার)',
+        label: 'Customer Profiles',
+        key: 'nav.customerProfiles',
         portal: 'data',
         submodule: 'customer-profiles',
         href: '/dashboard/data/customer-profiles',
@@ -176,6 +202,7 @@ export const navGroups = [
       {
         icon: 'FileText',
         label: 'Agreement Records',
+        key: 'nav.agreementRecords',
         portal: 'data',
         submodule: 'agreements',
         href: '/dashboard/data/agreements',
@@ -183,6 +210,7 @@ export const navGroups = [
       {
         icon: 'UserCheck',
         label: 'Customer Applications',
+        key: 'nav.customerApplications',
         portal: 'data',
         submodule: 'customer-applications',
         href: '/dashboard/data/customer-applications',
@@ -190,6 +218,7 @@ export const navGroups = [
       {
         icon: 'Stamp',
         label: 'Indian Visa Records',
+        key: 'nav.indianVisaRecords',
         portal: 'data',
         submodule: 'indian-visas',
         href: '/dashboard/data/indian-visas',
@@ -197,6 +226,7 @@ export const navGroups = [
       {
         icon: 'CreditCard',
         label: 'Passport Submissions',
+        key: 'nav.passportRecords',
         portal: 'data',
         submodule: 'passports',
         href: '/dashboard/data/passports',
@@ -204,6 +234,7 @@ export const navGroups = [
       {
         icon: 'Receipt',
         label: 'Salary Slips',
+        key: 'nav.salarySlipRecords',
         portal: 'data',
         submodule: 'salary-slips',
         href: '/dashboard/data/salary-slips',
@@ -211,6 +242,7 @@ export const navGroups = [
       {
         icon: 'FileSpreadsheet',
         label: 'Invoices & Billing',
+        key: 'nav.invoiceRecords',
         portal: 'data',
         submodule: 'invoices',
         href: '/dashboard/data/invoices',
@@ -219,11 +251,13 @@ export const navGroups = [
   },
   {
     groupLabel: 'System Administration',
+    groupKey: 'nav.admin',
     portal: 'admin',
     items: [
       {
         icon: 'Shield',
         label: 'System Users',
+        key: 'nav.systemUsers',
         portal: 'admin',
         submodule: 'users',
         href: '/dashboard/admin/users',
@@ -231,6 +265,7 @@ export const navGroups = [
       {
         icon: 'History',
         label: 'Audit & Database Logs',
+        key: 'nav.auditLogs',
         portal: 'admin',
         submodule: 'system-logs',
         href: '/dashboard/admin/system-logs',
@@ -238,6 +273,7 @@ export const navGroups = [
       {
         icon: 'Settings',
         label: 'Global Settings',
+        key: 'nav.globalSettings',
         portal: 'admin',
         submodule: 'settings',
         href: '/dashboard/admin/settings',
