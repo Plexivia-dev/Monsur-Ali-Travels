@@ -261,3 +261,43 @@
     visibility: hidden !important;
   }
 }
+
+/* Sonner Toast Close Button on Top-Right with Border */
+[data-sonner-toast] [data-close-button] {
+  left: auto !important;
+  right: 0 !important;
+  top: 0 !important;
+  transform: translate(35%, -35%) !important;
+  background-color: var(--card, #ffffff) !important;
+  color: var(--foreground, #111827) !important;
+  border: 1.5px solid var(--border, #dcdcdc) !important;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.12) !important;
+  opacity: 1 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: 22px !important;
+  height: 22px !important;
+  border-radius: 9999px !important;
+  cursor: pointer !important;
+  transition: all 0.2s ease-in-out !important;
+}
+
+[data-sonner-toast] [data-close-button]:hover {
+  background-color: var(--muted, #f0f0f0) !important;
+  border-color: var(--ring, #94a3b8) !important;
+  transform: translate(35%, -35%) scale(1.1) !important;
+}
+
+.dark [data-sonner-toast] [data-close-button] {
+  background-color: var(--card, #1e293b) !important;
+  color: var(--foreground, #f8fafc) !important;
+  border: 1.5px solid var(--border, rgba(255, 255, 255, 0.2)) !important;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.4) !important;
+}
+
+.dark [data-sonner-toast] [data-close-button]:hover {
+  background-color: var(--muted, #334155) !important;
+  border-color: var(--ring, #64748b) !important;
+}
+
