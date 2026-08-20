@@ -1,12 +1,12 @@
 export const navGroups = [
   {
-    groupLabel: 'Manpower Agency',
+    groupLabel: 'Agency',
     groupKey: 'nav.agency',
     portal: 'agency',
     items: [
       {
         icon: 'LayoutDashboard',
-        label: 'Agency Dashboard',
+        label: 'Overview',
         key: 'nav.agencyDashboard',
         portal: 'agency',
         submodule: 'dashboard',

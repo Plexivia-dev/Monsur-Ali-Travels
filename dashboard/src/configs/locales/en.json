@@ -6,12 +6,12 @@
     "closeSidebar": "Close Sidebar"
   },
   "nav": {
-    "agency": "Manpower Agency",
+    "agency": "Agency",
     "factory": "Brick Factory",
     "docs": "Document Studio",
     "data": "Data Records Center",
     "admin": "System Administration",
-    "agencyDashboard": "Agency Dashboard",
+    "agencyDashboard": "Overview",
     "clientsAndAccounts": "Clients & Accounts",
     "allClients": "All Clients",
     "addClient": "Add Client",
