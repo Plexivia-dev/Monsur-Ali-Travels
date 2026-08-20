@@ -1,5 +1,5 @@
 import { toast } from 'sonner';
-import i18n from '../i18n/i18n';
+import i18n from '../configs/i18n';
 
 const recentToasts = new Map();
 const DEBOUNCE_TIME = 2500;

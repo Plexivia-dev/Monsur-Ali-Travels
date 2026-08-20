@@ -1,7 +1,7 @@
-﻿import i18n from 'i18next';
+import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
-import enTranslation from '../locales/en.json';
-import bnTranslation from '../locales/bn.json';
+import enTranslation from './locales/en.json';
+import bnTranslation from './locales/bn.json';
 
 const savedLanguage = typeof window !== 'undefined' ? (localStorage.getItem('app_language') || 'en') : 'en';
 
