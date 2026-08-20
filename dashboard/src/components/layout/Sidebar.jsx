@@ -162,11 +162,11 @@ export const Sidebar = () => {
                                 }}
                                 className={cn(
                                   'w-full justify-between cursor-pointer font-medium text-xs transition-all duration-200',
-                                  isChildActive && 'text-primary font-semibold'
+                                  isChildActive && 'text-sky-400 font-semibold'
                                 )}
                               >
                                 <div className="flex items-center gap-2.5 min-w-0">
-                                  {renderIcon(item.icon, 'w-4 h-4 shrink-0')}
+                                  {renderIcon(item.icon, cn('w-4 h-4 shrink-0', isChildActive ? 'text-sky-400' : 'text-muted-foreground'))}
                                   <span className="truncate">{item.label}</span>
                                 </div>
                                 <ChevronRight
@@ -190,7 +190,7 @@ export const Sidebar = () => {
                                         className={cn(
                                           'cursor-pointer text-xs rounded-md py-1.5 transition-colors duration-200',
                                           isActive
-                                            ? 'bg-primary/10 text-primary font-semibold'
+                                            ? 'bg-sky-500 text-slate-950 font-bold shadow-xs hover:bg-sky-400 hover:text-slate-950'
                                             : 'text-muted-foreground hover:text-foreground hover:bg-sidebar-accent'
                                         )}
                                       >
@@ -217,13 +217,13 @@ export const Sidebar = () => {
                           className={cn(
                             'cursor-pointer text-xs font-medium rounded-lg transition-all duration-200',
                             isActive
-                              ? 'bg-primary text-primary-foreground font-semibold hover:bg-primary/90 hover:text-primary-foreground'
+                              ? 'bg-sky-500 text-slate-950 font-bold shadow-md hover:bg-sky-400 hover:text-slate-950'
                               : 'text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground'
                           )}
                         >
                           {renderIcon(
                             item.icon,
-                            cn('w-4 h-4 shrink-0', isActive ? 'text-primary-foreground' : 'text-muted-foreground')
+                            cn('w-4 h-4 shrink-0', isActive ? 'text-slate-950 font-bold' : 'text-muted-foreground')
                           )}
                           <span className="truncate">{item.label}</span>
                         </SidebarMenuButton>
