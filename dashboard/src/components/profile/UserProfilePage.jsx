@@ -612,32 +612,6 @@ export function UserProfilePage() {
             </form>
           </Card>
 
-          {/* System Role & Security Info Card */}
-          <Card className="border-border/80 shadow-xs bg-muted/10">
-            <CardHeader className="pb-2">
-              <CardTitle className="text-xs font-semibold text-foreground flex items-center gap-2">
-                <Shield className="w-3.5 h-3.5 text-primary" />
-                <span>Account Role & Access</span>
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="p-4 pt-0 space-y-2.5 text-xs text-muted-foreground">
-              <div className="flex items-center justify-between">
-                <span>Access Level:</span>
-                <span className="font-semibold text-foreground">{user?.role || 'Employee'}</span>
-              </div>
-              <div className="flex items-center justify-between">
-                <span>Account ID:</span>
-                <span className="font-mono text-[11px] text-foreground">{user?.did || '—'}</span>
-              </div>
-              <div className="flex items-center justify-between">
-                <span>Status:</span>
-                <span className="text-emerald-500 font-semibold flex items-center gap-1">
-                  <span className="size-1.5 rounded-full bg-emerald-500 inline-block" />
-                  Active
-                </span>
-              </div>
-            </CardContent>
-          </Card>
         </div>
       </div>
     </div>

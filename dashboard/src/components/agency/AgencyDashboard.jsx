@@ -24,26 +24,6 @@ export const AgencyDashboard = () => {
 
   return (
     <div className="space-y-6">
-      {/* Top Banner info */}
-      <div className="p-4 rounded-xl bg-primary/10 border border-primary/20 text-foreground flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <Briefcase className="w-5 h-5 text-primary shrink-0" />
-          <div>
-            <p className="text-sm font-semibold">Manpower Operations Summary</p>
-            <p className="text-xs text-muted-foreground">
-              {metrics.activePlacedWorkers} contractors currently deployed across {metrics.totalContracts} enterprise client contracts.
-            </p>
-          </div>
-        </div>
-        <Button
-          variant="default"
-          size="sm"
-          onClick={() => switchPortal('agency', 'employees')}
-          className="cursor-pointer"
-        >
-          View Contractor Roster
-        </Button>
-      </div>
 
       {/* KPI Stat Cards Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
