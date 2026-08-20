@@ -164,7 +164,6 @@ model Customer {
   applications          CustomerGuardianApplication[]
   invoices              Invoice[]
   agreements            EmploymentAgreement[]
-  candidateCases        CandidateCaseFile[]
 
   createdAt             DateTime       @default(now())
   updatedAt             DateTime       @updatedAt
@@ -342,30 +341,6 @@ model CustomerGuardianApplication {
 
   @@index([applicationNo, status])
   @@map("customer_guardian_applications")
-}
-
-model CandidateCaseFile {
-  id                    String         @id @default(uuid())
-  did                   String         @unique
-  caseNo                String         @unique // MP-YYYY-XXXX
-
-  customerId            String?
-  customer              Customer?      @relation(fields: [customerId], references: [id], onDelete: SetNull)
-
-  candidateName         String
-  passportNumber        String?        @default("")
-  countryApplied        String
-  jobCategory           String
-  stage                 String         @default("Medical")
-  paymentSummary        Json?          @default("{\"totalFee\":0,\"paidAmount\":0,\"dueAmount\":0}")
-  details               Json?          @default("{}")
-  isActive              Boolean        @default(true)
-
-  createdAt             DateTime       @default(now())
-  updatedAt             DateTime       @updatedAt
-
-  @@index([caseNo, candidateName, passportNumber])
-  @@map("candidate_case_files")
 }
 
 model Invoice {

@@ -34,8 +34,6 @@ export const GlobalSearchModal = () => {
 
   const quickLinks = [
     { portal: 'agency', submodule: 'dashboard', title: 'Agency Overview', desc: 'Active placements, billing & client contracts', icon: Building2 },
-    { portal: 'agency', submodule: 'candidates-all', title: 'All Candidates', desc: 'Candidate directory, case files & bio data', icon: Users },
-    { portal: 'agency', submodule: 'candidates-add', title: 'Add New Candidate', desc: 'Register candidate case profile', icon: Users },
     { portal: 'agency', submodule: 'clients-all', title: 'Client Directory', desc: 'Client enterprise contracts & accounts', icon: Building2 },
     { portal: 'agency', submodule: 'bills', title: 'Client Invoices & Billing', desc: 'Unbilled hours, margins & client billing', icon: FileText },
     { portal: 'agency', submodule: 'payments', title: 'Wages & Payments', desc: 'Contractor salary settlements', icon: CreditCard },

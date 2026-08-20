@@ -11,31 +11,6 @@ export const navGroups = [
         href: '/dashboard/agency/dashboard',
       },
       {
-        icon: 'Users',
-        label: 'Candidates',
-        portal: 'agency',
-        childItems: [
-          {
-            label: 'All Candidates',
-            portal: 'agency',
-            submodule: 'candidates-all',
-            href: '/dashboard/agency/candidates-all',
-          },
-          {
-            label: 'Add Candidate',
-            portal: 'agency',
-            submodule: 'candidates-add',
-            href: '/dashboard/agency/candidates-add',
-          },
-          {
-            label: 'Case Files',
-            portal: 'agency',
-            submodule: 'candidates',
-            href: '/dashboard/agency/candidates',
-          },
-        ],
-      },
-      {
         icon: 'Building2',
         label: 'Clients & Accounts',
         portal: 'agency',

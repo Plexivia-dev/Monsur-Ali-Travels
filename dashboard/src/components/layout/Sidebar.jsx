@@ -35,7 +35,6 @@ export const Sidebar = () => {
 
   // Maintain open state for collapsible parent menus
   const [openMenus, setOpenMenus] = useState({
-    Candidates: true,
     'Clients & Accounts': true,
   });
 

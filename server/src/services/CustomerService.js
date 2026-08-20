@@ -72,7 +72,6 @@ export class CustomerService {
         invoices: { orderBy: { createdAt: 'desc' } },
         receipts: { orderBy: { createdAt: 'desc' } },
         agreements: { orderBy: { createdAt: 'desc' } },
-        candidateCases: { orderBy: { createdAt: 'desc' } },
       },
     });
 
