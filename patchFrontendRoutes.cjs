@@ -53,13 +53,13 @@ const adminReplacements = {
   '/api/v1/users': '/api/v1/admin/users'
 };
 
-const adminDashDir = path.join(__dirname, 'admin-dashboard');
-const clientDashDir = path.join(__dirname, 'client-dashboard');
+const adminDashDir = path.join(__dirname, 'dashboard', 'admin');
+const clientDashDir = path.join(__dirname, 'dashboard', 'client');
 
-console.log("Replacing in admin-dashboard...");
+console.log("Replacing in dashboard/admin...");
 replaceInDir(adminDashDir, adminReplacements);
 
-console.log("Replacing in client-dashboard...");
+console.log("Replacing in dashboard/client...");
 replaceInDir(clientDashDir, clientReplacements);
 
 console.log("Done.");
