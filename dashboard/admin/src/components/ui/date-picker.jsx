@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Calendar as CalendarIcon, ChevronLeft, ChevronRight, X } from 'lucide-react';
 
 const MONTH_NAMES = [
@@ -23,10 +24,12 @@ export function DatePicker({
   required = false,
   disabled = false,
   className = '',
-  placeholder = 'তারিখ নির্বাচন করুন',
+  placeholder,
   id,
   name
 }) {
+  const { t, i18n } = useTranslation();
+  const defaultPlaceholder = placeholder || t('common.selectDate', 'Select Date');
   const [isOpen, setIsOpen] = useState(false);
   const containerRef = useRef(null);
 
@@ -161,7 +164,7 @@ export function DatePicker({
         <div className="flex items-center gap-2 truncate">
           <CalendarIcon className="w-4 h-4 text-emerald-600 shrink-0" />
           <span className={`font-mono ${value ? 'text-foreground font-bold' : 'text-muted-foreground'}`}>
-            {value ? formatDisplay(value) : placeholder}
+            {value ? formatDisplay(value) : defaultPlaceholder}
           </span>
         </div>
 
@@ -198,7 +201,7 @@ export function DatePicker({
             </button>
 
             <div className="flex items-center gap-1.5 text-xs font-bold text-foreground">
-              <span>{MONTH_NAMES[viewMonth]}</span>
+              <span>{i18n.language === 'bn' ? MONTH_NAMES_BN[viewMonth] : MONTH_NAMES[viewMonth]}</span>
               <select
                 value={viewYear}
                 onChange={(e) => setViewYear(Number(e.target.value))}
@@ -278,7 +281,7 @@ export function DatePicker({
               onClick={handleTodaySelect}
               className="text-emerald-600 hover:text-emerald-700 font-bold hover:underline cursor-pointer"
             >
-              আজকের তারিখ (Today)
+              {t('common.today', 'Today')}
             </button>
 
             <button
@@ -286,7 +289,7 @@ export function DatePicker({
               onClick={() => setIsOpen(false)}
               className="text-muted-foreground hover:text-foreground font-semibold cursor-pointer"
             >
-              বন্ধ করুন (Close)
+              {t('common.close', 'Close')}
             </button>
           </div>
         </div>

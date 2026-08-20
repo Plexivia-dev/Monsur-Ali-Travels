@@ -21,7 +21,7 @@ export function getDefaultIndianVisaData() {
   return {
     _id: null,
     trackingNo: '',
-    submissionDate: new Date().toLocaleDateString('bn-BD', { day: 'numeric', month: 'long', year: 'numeric' }),
+    submissionDate: new Date().toISOString().split('T')[0],
 
     agencyInfo: {
       name: agencyInfo.agencyName || 'মনসুর আলী ট্রাভেলস (MONSUR ALI TRAVELS)',
@@ -37,10 +37,10 @@ export function getDefaultIndianVisaData() {
     applicantEmail: '',
     address: '',
 
-    visaType: 'ট্যুরিস্ট ভিসা (Tourist Visa)',
-    entryPort: 'হরিদাসপুর / গেদে (Haridaspur / Gede)',
-    durationMonths: '১ বছর (1 Year Multiple)',
-    entryType: 'মাল্টিপল এন্ট্রি (Multiple Entry)',
+    visaType: 'Tourist Visa',
+    entryPort: 'Haridaspur / Gede',
+    durationMonths: '1 Year Multiple',
+    entryType: 'Multiple Entry',
 
     documentsProvided: {
       passportOriginal: true,
