@@ -124,6 +124,14 @@ export const navGroups = [
         href: '/dashboard/docs/money-receipt',
       },
       {
+        icon: 'Wallet',
+        label: 'Cash Money Voucher',
+        key: 'nav.cashVoucher',
+        portal: 'docs',
+        submodule: 'cash-voucher',
+        href: '/dashboard/docs/cash-voucher',
+      },
+      {
         icon: 'Award',
         label: 'Experience Certificate',
         key: 'nav.experienceCertificate',

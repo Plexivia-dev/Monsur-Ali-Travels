@@ -38,6 +38,7 @@ const SUBMODULE_KEYS = {
   invoice: 'nav.invoice',
   'money-receipt': 'nav.moneyReceipt',
   receipt: 'nav.moneyReceipt',
+  'cash-voucher': 'nav.cashVoucher',
   'certificate-exp': 'nav.experienceCertificate',
   'certificate-char': 'nav.characterCertificate',
   'certificate-marr': 'nav.marriageCertificate',

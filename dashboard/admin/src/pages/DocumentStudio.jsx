@@ -8,6 +8,7 @@ import { PassportSubmission } from '../components/docs/passport/PassportSubmissi
 import { IndianVisa } from '../components/docs/indian-visa/IndianVisa';
 import { CustomerGuardian } from '../components/docs/customer-form/CustomerGuardian';
 import { MoneyReceipt } from '../components/docs/receipt/MoneyReceipt';
+import { CashVoucher } from '../components/docs/cash-voucher/CashVoucher';
 import { ExperienceCertificate } from '../components/docs/certificate-experience/ExperienceCertificate';
 import { CharacterCertificate } from '../components/docs/certificate-character/CharacterCertificate';
 import { MarriageCertificate } from '../components/docs/certificate-marriage/MarriageCertificate';
@@ -25,6 +26,7 @@ export default function DocumentStudio() {
           activeSubmodule !== 'invoice' &&
           activeSubmodule !== 'money-receipt' &&
           activeSubmodule !== 'receipt' &&
+          activeSubmodule !== 'cash-voucher' &&
           activeSubmodule !== 'passport-sub' &&
           activeSubmodule !== 'indian-visa' &&
           activeSubmodule !== 'customer-form' &&
@@ -38,12 +40,13 @@ export default function DocumentStudio() {
       {activeSubmodule === 'payroll' && <SalarySlip />}
       {activeSubmodule === 'invoice' && <Invoice />}
       {(activeSubmodule === 'money-receipt' || activeSubmodule === 'receipt') && <MoneyReceipt />}
+      {activeSubmodule === 'cash-voucher' && <CashVoucher />}
       {activeSubmodule === 'passport-sub' && <PassportSubmission />}
       {activeSubmodule === 'indian-visa' && <IndianVisa />}
       {activeSubmodule === 'idcard' && <IdCard />}
       {activeSubmodule === 'customer-form' && <CustomerGuardian />}
 
-      {/* New Certificates */}
+      {/* Certificates */}
       {(activeSubmodule === 'experience-certificate' || activeSubmodule === 'certificate-exp') && (
         <ExperienceCertificate />
       )}
