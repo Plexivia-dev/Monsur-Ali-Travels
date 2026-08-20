@@ -73,14 +73,14 @@ export const Sidebar = () => {
   };
 
   return (
-    <SidebarPrimitive collapsible="icon" className="border-r border-border bg-sidebar transition-all duration-300 ease-in-out">
+    <SidebarPrimitive collapsible="icon" className="border-r border-sidebar-border bg-sidebar transition-all duration-300 ease-in-out">
       {/* Brand Header */}
-      <SidebarHeader className="h-14 border-b border-white/15 px-3 flex items-center justify-center transition-all duration-300">
+      <SidebarHeader className="h-14 border-b border-sidebar-border px-3 flex items-center justify-center transition-all duration-300">
         {isCollapsed ? (
           <button
             type="button"
             onClick={() => setOpen(true)}
-            className="size-9 rounded-full border border-sky-400/50 hover:border-sky-300 bg-white/10 hover:bg-white/20 text-sky-300 flex items-center justify-center shrink-0 shadow-xs transition-all duration-200 cursor-pointer"
+            className="size-9 rounded-full border border-sky-400/50 hover:border-sky-300 bg-sidebar-accent hover:bg-sidebar-accent/80 text-sky-300 flex items-center justify-center shrink-0 shadow-xs transition-all duration-200 cursor-pointer"
             title={t('brand.openSidebar', 'Open Sidebar')}
             aria-label={t('brand.openSidebar', 'Open Sidebar')}
           >
@@ -100,7 +100,7 @@ export const Sidebar = () => {
                 )}
               </div>
               <div className="flex flex-col min-w-0 text-left items-start">
-                <span className="font-bold text-sm text-white tracking-tight truncate leading-tight">
+                <span className="font-bold text-sm text-sidebar-foreground tracking-tight truncate leading-tight">
                   {t('brand.name', 'Monsur Ali Travels')}
                 </span>
                 <span className="text-[10px] text-sky-200 font-semibold uppercase tracking-wider mt-0.5">
@@ -115,7 +115,7 @@ export const Sidebar = () => {
                 setOpen(false);
                 if (isMobile) setOpenMobile(false);
               }}
-              className="size-7 rounded-full bg-white/10 hover:bg-white/20 border border-white/20 text-sky-300 hover:text-white flex items-center justify-center shrink-0 transition-all cursor-pointer shadow-xs"
+              className="size-7 rounded-full bg-sidebar-accent hover:bg-sidebar-accent/80 border border-sidebar-border text-sky-300 hover:text-sidebar-foreground flex items-center justify-center shrink-0 transition-all cursor-pointer shadow-xs"
               title={t('brand.closeSidebar', 'Close Sidebar')}
             >
               <X className="w-3.5 h-3.5" />
@@ -161,7 +161,7 @@ export const Sidebar = () => {
                                 handleParentMenuClick(item.label);
                               }}
                               className={cn(
-                                'w-full justify-between cursor-pointer font-medium text-sm py-2 px-3 rounded-xl transition-all duration-200 text-white hover:text-white hover:bg-white/10',
+                                'w-full justify-between cursor-pointer font-medium text-sm py-2 px-3 rounded-xl transition-all duration-200 text-sidebar-foreground hover:text-white hover:bg-sidebar-accent',
                                 isChildActive && 'text-white font-bold bg-sky-500/25 border border-sky-400/40 shadow-xs'
                               )}
                             >
@@ -193,7 +193,7 @@ export const Sidebar = () => {
                                           'cursor-pointer text-[13px] rounded-lg py-2 px-2.5 flex items-center gap-2 transition-all duration-200',
                                           isActive
                                             ? 'bg-sky-500/25 text-white font-bold border border-sky-400/40 shadow-xs'
-                                            : 'text-slate-100 hover:text-white hover:bg-white/10 font-medium'
+                                            : 'text-sidebar-foreground/80 hover:text-sidebar-foreground hover:bg-sidebar-accent font-medium'
                                         )}
                                       >
                                         {subItem.icon && renderIcon(subItem.icon, cn('w-4 h-4 shrink-0 transition-colors', isActive ? 'text-white' : 'text-sky-300/90'))}
@@ -221,7 +221,7 @@ export const Sidebar = () => {
                             'cursor-pointer text-sm font-medium py-2 px-3 rounded-xl transition-all duration-200',
                             isActive
                               ? 'bg-sky-500/25 text-white font-bold border border-sky-400/40 shadow-xs'
-                              : 'text-white hover:bg-white/10 hover:text-white'
+                              : 'text-sidebar-foreground hover:bg-sidebar-accent hover:text-white'
                           )}
                         >
                           {renderIcon(
@@ -241,19 +241,19 @@ export const Sidebar = () => {
       </SidebarContent>
 
       {/* Footer Info */}
-      <SidebarFooter className="border-t border-white/15 p-2 flex items-center justify-center overflow-hidden transition-all duration-300">
+      <SidebarFooter className="border-t border-sidebar-border p-2 flex items-center justify-center overflow-hidden transition-all duration-300">
         {isCollapsed ? (
           <button
             type="button"
             onClick={() => handleItemSelect('admin', 'profile')}
-            className="size-8 rounded-full border border-sky-400/50 bg-white/10 hover:bg-white/20 text-sky-300 flex items-center justify-center shrink-0 transition-all duration-200 cursor-pointer mx-auto shadow-xs"
+            className="size-8 rounded-full border border-sky-400/50 bg-sidebar-accent hover:bg-sidebar-accent/80 text-sky-300 flex items-center justify-center shrink-0 transition-all duration-200 cursor-pointer mx-auto shadow-xs"
             title={user?.name ? `${user.name} (${t('header.myProfile', 'My Profile')})` : t('header.myProfile', 'My Profile')}
             aria-label={t('header.myProfile', 'My Profile')}
           >
             <User className="w-4 h-4 text-sky-300" />
           </button>
         ) : (
-          <div className="flex items-center justify-between gap-2.5 px-2.5 py-2 rounded-xl bg-white/10 border border-white/15 w-full overflow-hidden shadow-xs">
+          <div className="flex items-center justify-between gap-2.5 px-2.5 py-2 rounded-xl bg-sidebar-accent border border-sidebar-border w-full overflow-hidden shadow-xs">
             <div
               onClick={() => handleItemSelect('admin', 'profile')}
               className="flex items-center gap-2.5 min-w-0 cursor-pointer hover:opacity-90 transition-opacity"
@@ -263,7 +263,7 @@ export const Sidebar = () => {
                 {user?.name ? user.name[0].toUpperCase() : 'A'}
               </div>
               <div className="flex flex-col min-w-0 text-left">
-                <span className="text-xs font-bold text-white truncate leading-tight">
+                <span className="text-xs font-bold text-sidebar-foreground truncate leading-tight">
                   {user?.name || 'Administrator'}
                 </span>
                 <span className="text-[10.5px] text-sky-200 font-medium truncate mt-0.5">{user?.role || 'Super Admin'}</span>
