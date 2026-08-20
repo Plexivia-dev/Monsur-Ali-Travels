@@ -22,6 +22,7 @@ const initialParsed = parsePortalFromPath(initialPath);
 export const usePortalStore = create((set, get) => ({
   activePortal: initialParsed.portal,
   activeSubmodule: initialParsed.submodule,
+  language: typeof window !== 'undefined' ? (localStorage.getItem('app_language') || 'bn') : 'bn',
   isSidebarOpen: true,
   searchOpen: false,
   searchQuery: '',
@@ -33,6 +34,18 @@ export const usePortalStore = create((set, get) => ({
     { id: 4, portal: 'agency', title: 'Pending Placement', message: '3 candidates awaiting client confirmation for Logistics Hub.', time: '4 hours ago', unread: true, type: 'warning' },
     { id: 5, portal: 'admin', title: 'System Backup Complete', message: 'Automated database snapshot created successfully.', time: '12 hours ago', unread: false, type: 'info' }
   ],
+
+  setLanguage: (lang) => {
+    if (typeof window !== 'undefined') localStorage.setItem('app_language', lang);
+    set({ language: lang });
+  },
+
+  toggleLanguage: () => {
+    const current = get().language || 'bn';
+    const nextLang = current === 'bn' ? 'en' : 'bn';
+    if (typeof window !== 'undefined') localStorage.setItem('app_language', nextLang);
+    set({ language: nextLang });
+  },
 
   setActivePortal: (portal) => {
     const { activeSubmodule } = get();

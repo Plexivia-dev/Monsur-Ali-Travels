@@ -12,6 +12,7 @@ import {
 } from '@/components/ui/breadcrumb';
 import ModeToggle from './ModeToggle';
 import ProfileDropdown from './ProfileDropdown';
+import LanguageToggle from './LanguageToggle';
 
 const PORTAL_LABELS = {
   agency: 'Manpower Agency',
@@ -112,6 +113,9 @@ export const Header = () => {
           >
             <Search className="w-4 h-4" />
           </Button>
+
+          {/* Language Switcher Toggle */}
+          <LanguageToggle />
 
           {/* Notifications Trigger */}
           <Button
