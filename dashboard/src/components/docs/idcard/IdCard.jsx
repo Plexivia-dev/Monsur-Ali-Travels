@@ -1,7 +1,7 @@
 import React, { useState, useRef } from 'react';
 import { IdCardForm } from './IdCardForm';
 import { IdCardPreview } from './IdCardPreview';
-import { Printer, Download, Sparkles, RefreshCw, FileText } from 'lucide-react';
+import { Download, Sparkles, RefreshCw, FileText } from 'lucide-react';
 import { toast } from 'sonner';
 import { toPng } from 'html-to-image';
 import agencyInfo from '../../../lib/information.json';
@@ -73,14 +73,6 @@ export function IdCard() {
     }
   };
 
-  const handlePrint = () => {
-    if (!isFormValid) {
-      toast.error('আইডি কার্ড প্রিন্ট বা ডাউনলোড করার জন্য সবগুলো ফিল্ড এবং ছবি আবশ্যক!');
-      return;
-    }
-    window.print();
-  };
-
   return (
     <div className="space-y-6">
       {/* Top Controls Bar */}
@@ -126,17 +118,6 @@ export function IdCard() {
           >
             <Download className="w-3.5 h-3.5" />
             <span>Back PNG</span>
-          </button>
-
-          <button
-            type="button"
-            onClick={handlePrint}
-            disabled={!isFormValid}
-            className="flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-4 py-2 rounded-lg shadow-xs hover:shadow-sm transition-all cursor-pointer shrink-0 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-emerald-600"
-            title={!isFormValid ? 'সব ফিল্ড ও ছবি আবশ্যক' : 'আইডি কার্ড প্রিন্ট বা ডাউনলোড করুন'}
-          >
-            <Printer className="w-4 h-4" />
-            <span>Download PDF / Print</span>
           </button>
         </div>
       </div>
