@@ -31,26 +31,22 @@ services:
 
   backend:
     build:
-      context: ./server
+      context: ./backend
       dockerfile: Dockerfile
     container_name: monsuralitravels-backend-live
     restart: always
+    env_file:
+      - ./backend/.env
     volumes:
-      - /var/www/uploads:/app/uploads
-      - /var/www/documents:/app/documents
+      - /var/www/uploads:/app/src/uploads
+      - /var/www/documents:/app/src/documents
     environment:
       NODE_ENV: production
       PORT: 5092
-      DATABASE_URL: ${DATABASE_URL:-postgresql://admin:MonsurAliSecPass2026!@monsuralitravels-postgres-live:5432/monsur_ali_travels?schema=public}
-      JWT_SECRET: ${JWT_SECRET:-monsuralitravels_super_secret_access_token_jwt_2026}
-      JWT_EXPIRES_IN: ${JWT_EXPIRES_IN:-7d}
-      UPLOAD_PATH: /app/uploads
-      DOCUMENT_PATH: /app/documents
-      CORS_ORIGIN: "https://dashboard.monsuralitravels.com,https://dashboard.monsuralitravelsbd.com,https://monsuralitravels.com,https://www.monsuralitravels.com,https://monsuralitravelsbd.com,https://www.monsuralitravelsbd.com,http://localhost:5173,http://localhost:8005,http://localhost:8006"
     ports:
       - "5092:5092"
     depends_on:
-      - postgres
+      - mongodb
     networks:
       - monsuralitravels-net
 
