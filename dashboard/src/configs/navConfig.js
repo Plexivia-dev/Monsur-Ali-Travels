@@ -41,13 +41,6 @@ export const navGroups = [
           },
         ],
       },
-      {
-        icon: 'BarChart3',
-        label: 'Placement Reports',
-        portal: 'agency',
-        submodule: 'reports',
-        href: '/dashboard/agency/reports',
-      },
     ],
   },
   /*
