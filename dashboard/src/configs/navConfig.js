@@ -75,6 +75,7 @@ export const navGroups = [
       },
     ],
   },
+  /*
   {
     groupLabel: 'Brick Factory',
     portal: 'factory',
@@ -116,6 +117,7 @@ export const navGroups = [
       },
     ],
   },
+  */
   {
     groupLabel: 'Document Studio',
     portal: 'docs',
