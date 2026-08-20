@@ -6,7 +6,7 @@ import { authenticateToken, authorizeRoles } from "./middlewares/auth.middleware
 import fs from "fs";
 import { logger } from "./config/logger.js";
 import coreRouter from "./routesIndex.js";
-import developerRouter, { broadcastLogToClients } from "./routes/DeveloperRoute.js";
+import developerRouter, { broadcastLogToClients } from "./routes/shared/DeveloperRoute.js";
 import { env } from "./config/env.js";
 
 export async function createApp() {

@@ -1,65 +1,79 @@
 import { Router } from "express";
 
-// Authentication & Core ERP User Routes
-import authRouter from "./routes/AuthRoute.js";
-import usersRouter from "./routes/UsersRoute.js";
-import candidateRouter from "./routes/CandidateRoute.js";
-import customerRouter from "./routes/CustomerRoute.js";
-import caseFileRouter from "./routes/CaseFileRoute.js";
+// --- SHARED ROUTES ---
+import authRouter from "./routes/shared/AuthRoute.js";
+import qrRouter from "./routes/shared/QrRoute.js";
+import uploadRouter from "./routes/shared/UploadRoute.js";
+import notificationRouter from "./routes/shared/NotificationRoute.js";
+// import developerRouter from "./routes/shared/DeveloperRoute.js";
 
-// Document Studio & Data List Routes
-import agreementRouter from "./routes/AgreementRoute.js";
-import indianVisaRouter from "./routes/IndianVisaRoute.js";
-import passportRouter from "./routes/PassportSubmissionRoute.js";
-import payrollRouter from "./routes/PayrollRoute.js";
-import invoiceRouter from "./routes/InvoiceRoute.js";
-import moneyReceiptRouter from "./routes/MoneyReceiptRoute.js";
-import docsRouter from "./routes/DocsRoute.js";
+// --- ADMIN ROUTES ---
+import dashboardRouter from "./routes/admin/DashboardRoute.js";
+import systemRouter from "./routes/admin/SystemRoute.js";
+import usersRouter from "./routes/admin/UsersRoute.js";
 
-// Utilities & System
-import qrRouter from "./routes/QrRoute.js";
-import emailRouter from "./routes/EmailRoute.js";
-import dashboardRouter from "./routes/DashboardRoute.js";
-import systemRouter from "./routes/SystemRoute.js";
-import uploadRouter from "./routes/UploadRoute.js";
-import notificationRouter from "./routes/NotificationRoute.js";
+// --- CLIENT (STAFF) ROUTES ---
+import candidateRouter from "./routes/client/CandidateRoute.js";
+import customerRouter from "./routes/client/CustomerRoute.js";
+import caseFileRouter from "./routes/client/CaseFileRoute.js";
+import agreementRouter from "./routes/client/AgreementRoute.js";
+import indianVisaRouter from "./routes/client/IndianVisaRoute.js";
+import passportRouter from "./routes/client/PassportSubmissionRoute.js";
+import payrollRouter from "./routes/client/PayrollRoute.js";
+import invoiceRouter from "./routes/client/InvoiceRoute.js";
+import moneyReceiptRouter from "./routes/client/MoneyReceiptRoute.js";
+import docsRouter from "./routes/client/DocsRoute.js";
+import emailRouter from "./routes/client/EmailRoute.js";
+
+// --- MIDDLEWARES ---
+import { authenticateToken, authorizeRoles } from "./middlewares/auth.middleware.js";
+import { auditLog } from "./middlewares/auditLog.js";
 
 const coreRouter = Router();
 
-// Dynamic QR Code Generation API
+// ==========================================
+// 1. SHARED ROUTES (Mounted directly at /api/v1/)
+// ==========================================
+coreRouter.use("/auth", authRouter);
 coreRouter.use("/qr", qrRouter);
 coreRouter.use("/qrcode", qrRouter);
-
-// Notifications API
-coreRouter.use("/notifications", notificationRouter);
-
-// Universal Case Management (Greece, N-Macedonia, Indian BSF, etc.)
-coreRouter.use("/cases", caseFileRouter);
-
-// Authentication & Users & Central Customers
-coreRouter.use("/auth", authRouter);
-coreRouter.use("/users", usersRouter);
-coreRouter.use("/customers", customerRouter);
-coreRouter.use("/candidates", candidateRouter);
-
-// Document Records & Data Lists (Direct top-level endpoints)
-coreRouter.use("/agreements", agreementRouter);
-coreRouter.use("/indian-visas", indianVisaRouter);
-coreRouter.use("/passports", passportRouter);
-coreRouter.use("/payrolls", payrollRouter);
-coreRouter.use("/invoices", invoiceRouter);
-coreRouter.use("/receipts", moneyReceiptRouter);
-coreRouter.use("/money-receipts", moneyReceiptRouter);
-
-// Common Dedicated File Upload Endpoints
 coreRouter.use("/upload", uploadRouter);
+coreRouter.use("/notifications", notificationRouter);
+// coreRouter.use("/developer", developerRouter);
 
-// Backward-compatible Document Studio routes (/docs/*)
-coreRouter.use("/docs", docsRouter);
+// ==========================================
+// 2. ADMIN SCOPE (Mounted at /api/v1/admin/)
+// ==========================================
+const adminRouter = Router();
 
-// ERP Dashboard & System
-coreRouter.use("/dashboard", dashboardRouter);
-coreRouter.use("/sendEmail", emailRouter);
-coreRouter.use("/system", systemRouter);
+// Secure admin routes
+adminRouter.use(authenticateToken);
+adminRouter.use(authorizeRoles("Admin", "Owner", "Superadmin"));
+adminRouter.use(auditLog);
+
+adminRouter.use("/dashboard", dashboardRouter);
+adminRouter.use("/system", systemRouter);
+adminRouter.use("/users", usersRouter);
+
+coreRouter.use("/admin", adminRouter);
+
+// ==========================================
+// 3. CLIENT/STAFF SCOPE (Mounted at /api/v1/client/)
+// ==========================================
+const clientRouter = Router();
+clientRouter.use("/cases", caseFileRouter);
+clientRouter.use("/customers", customerRouter);
+clientRouter.use("/candidates", candidateRouter);
+clientRouter.use("/agreements", agreementRouter);
+clientRouter.use("/indian-visas", indianVisaRouter);
+clientRouter.use("/passports", passportRouter);
+clientRouter.use("/payrolls", payrollRouter);
+clientRouter.use("/invoices", invoiceRouter);
+clientRouter.use("/receipts", moneyReceiptRouter);
+clientRouter.use("/money-receipts", moneyReceiptRouter);
+clientRouter.use("/docs", docsRouter);
+clientRouter.use("/sendEmail", emailRouter);
+
+coreRouter.use("/client", clientRouter);
 
 export default coreRouter;
