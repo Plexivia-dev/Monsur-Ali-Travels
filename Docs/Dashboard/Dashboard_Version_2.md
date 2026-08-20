@@ -4,6 +4,22 @@ This document tracks the comprehensive redesign of the Monsur Ali Travels ERP Da
 
 ---
 
+### DR-21: Sidebar Branding Polish, Logo Padding, Auto-Toggle & Primary Color Refinements
+
+- **Date**: 2026-08-20
+- **Impact**: Sidebar Layout, Brand Header, Interaction Transitions, Active Navigation Color
+- **Description**:
+  - Refined sidebar brand header with left alignment, circular white logo container (`p-[4px]`, `rounded-full`), and close (`X`) icon on open state.
+  - Implemented seamless collapsed mode showing centered circular logo that expands the sidebar on click.
+  - Added smooth auto-toggle behavior: clicking items when collapsed opens the sidebar, and selecting items when expanded auto-closes it.
+  - Updated active/selected navigation items to brand primary sky blue (`bg-sky-500` with bold dark text `text-slate-950` and `shadow-md`), matching primary action buttons.
+  - Cleaned up redundant `SidebarTrigger` and `PanelLeft` icons from the top `Header.jsx` and `Navbar.jsx`.
+- **Changes**:
+  - Updated [`dashboard/src/components/layout/Sidebar.jsx`](file:///f:/Monsur%20Ali%20Travels/dashboard/src/components/layout/Sidebar.jsx).
+  - Updated [`dashboard/src/components/layout/Header.jsx`](file:///f:/Monsur%20Ali%20Travels/dashboard/src/components/layout/Header.jsx).
+  - Updated [`dashboard/src/components/layout/Navbar.jsx`](file:///f:/Monsur%20Ali%20Travels/dashboard/src/components/layout/Navbar.jsx).
+  - Updated [`dashboard/src/components/MonsurAliTravelsLogo.jsx`](file:///f:/Monsur%20Ali%20Travels/dashboard/src/components/MonsurAliTravelsLogo.jsx).
+
 ### DR-20: Full Production Verification, Build Optimization & Migration Finalization
 
 - **Date**: 2026-08-20
