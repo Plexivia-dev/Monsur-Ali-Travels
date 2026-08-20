@@ -45,8 +45,8 @@ function SingleReceiptSlip({ data = {}, copyType = 'গ্রাহক কপি
         <div className="flex items-center justify-between gap-3">
           {/* Logo & Agency Info */}
           <div className="flex items-center gap-2.5">
-            <div className="w-11 h-11 rounded-lg bg-slate-900 flex items-center justify-center p-1.5 shrink-0">
-              <img src={logoImg} alt="Logo" className="w-full h-full object-contain filter invert" />
+            <div className="w-12 h-12 rounded-full bg-white flex items-center justify-center p-1 shrink-0 border-2 border-[#0B3A60] overflow-hidden shadow-xs">
+              <img src={logoImg} alt="Logo" className="w-full h-full object-contain" />
             </div>
             <div>
               <h1 className="text-base sm:text-lg font-black tracking-tight text-slate-900 uppercase leading-none">

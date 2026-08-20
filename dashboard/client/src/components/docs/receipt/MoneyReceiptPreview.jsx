@@ -64,8 +64,8 @@ export function VoucherSlipCard({ data = {}, copyTitle = 'Original Copy (মূ�
       <div className="flex items-start justify-between gap-4 pb-2.5">
         {/* Left: Logo & Agency Details */}
         <div className="flex items-center gap-3">
-          <div className="w-12 h-12 rounded-xl bg-slate-900 flex items-center justify-center p-1.5 shrink-0 shadow-xs">
-            <img src={logoImg} alt="Logo" className="w-full h-full object-contain filter invert" />
+          <div className="w-14 h-14 rounded-full bg-white flex items-center justify-center p-1 shrink-0 shadow-xs border-2 border-[#0B3A60] overflow-hidden">
+            <img src={logoImg} alt="Logo" className="w-full h-full object-contain" />
           </div>
           <div>
             <h1 className="text-xl sm:text-2xl font-black tracking-tight text-[#0D47A1] uppercase font-serif leading-none">

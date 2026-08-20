@@ -51,10 +51,10 @@ export function SalarySlipForm({ formData, setFormData, onSubmit, onReset, isSub
   const [resetDialogOpen, setResetDialogOpen] = useState(false);
 
   const steps = [
-    { id: 1, title: 'কর্মচারীর তথ্য', subtitle: 'Employee Info', icon: User },
-    { id: 2, title: 'অর্জিত বেতন ও ভাতা', subtitle: 'Earnings & Allowances', icon: DollarSign },
-    { id: 3, title: 'কর্তন ও সমন্বয়', subtitle: 'Deductions', icon: DollarSign },
-    { id: 4, title: 'হাজিরা ও রিভিউ', subtitle: 'Attendance & Review', icon: Clock },
+    { id: 1, title: 'Employee Info', icon: User },
+    { id: 2,  title: 'Earnings & Allowances', icon: DollarSign },
+    { id: 3,  title: 'Deductions', icon: DollarSign },
+    { id: 4,  title: 'Attendance & Review', icon: Clock },
   ];
 
   const handleChange = (field, value) => {
