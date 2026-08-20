@@ -78,11 +78,11 @@ export const Sidebar = () => {
           <button
             type="button"
             onClick={() => setOpen(true)}
-            className="size-9 rounded-full border border-border bg-sidebar-accent/60 hover:bg-sidebar-accent text-foreground flex items-center justify-center shrink-0 shadow-xs transition-all duration-200 cursor-pointer"
+            className="size-9 rounded-full border border-sky-500/70 hover:border-sky-400 bg-sidebar-accent/60 hover:bg-sidebar-accent text-sky-400 flex items-center justify-center shrink-0 shadow-xs transition-all duration-200 cursor-pointer"
             title="Open Sidebar"
             aria-label="Open Sidebar"
           >
-            <Menu className="w-4 h-4 text-foreground" />
+            <Menu className="w-4 h-4 text-sky-400" />
           </button>
         ) : (
           <div className="flex items-center justify-between w-full px-1">
@@ -113,10 +113,10 @@ export const Sidebar = () => {
                 setOpen(false);
                 if (isMobile) setOpenMobile(false);
               }}
-              className="size-6 rounded-full border border-border p-[2px] text-muted-foreground hover:text-foreground hover:bg-sidebar-accent flex items-center justify-center shrink-0 transition-colors cursor-pointer"
+              className="size-6 rounded-full border border-sky-500/70 hover:border-sky-400 p-[2px] text-sky-400 hover:text-sky-300 hover:bg-sky-500/10 flex items-center justify-center shrink-0 transition-colors cursor-pointer"
               title="Close Sidebar"
             >
-              <X className="w-3.5 h-3.5" />
+              <X className="w-3.5 h-3.5 text-sky-400" />
             </button>
           </div>
         )}
