@@ -90,18 +90,10 @@ export function CashVoucherForm({ data, onChange, onReset, onSave, onPreview, is
 
       {/* Expense Items */}
       <div className="bg-card border border-border rounded-2xl p-5 shadow-xs">
-        <div className="flex items-center justify-between mb-4">
+        <div className="mb-4">
           <h3 className="text-sm font-bold text-foreground">
             {t('cashVoucherForm.expenseItems', 'Expense Items')}
           </h3>
-          <button
-            type="button"
-            onClick={addItem}
-            className="flex items-center gap-1.5 text-xs font-bold text-primary bg-primary/10 hover:bg-primary/20 px-3 py-1.5 rounded-xl transition-all cursor-pointer"
-          >
-            <PlusCircle className="w-3.5 h-3.5" />
-            {t('cashVoucherForm.addRow', 'Add Row')}
-          </button>
         </div>
 
         <div className="overflow-x-auto rounded-xl border border-border">
@@ -163,29 +155,41 @@ export function CashVoucherForm({ data, onChange, onReset, onSave, onPreview, is
           </table>
         </div>
 
-        {/* Totals */}
-        <div className="mt-4 flex flex-col items-end gap-1 text-xs">
-          <div className="flex gap-4">
-            <span className="text-muted-foreground">{t('cashVoucherForm.subtotal', 'Subtotal')}</span>
-            <span className="font-semibold text-foreground w-28 text-right">
-              {Number(data.subtotal || 0).toLocaleString('en-IN', { minimumFractionDigits: 2 })}
-            </span>
-          </div>
-          <div className="flex gap-4 items-center">
-            <span className="text-muted-foreground">{t('cashVoucherForm.taxVat', 'Tax / VAT')}</span>
-            <input
-              type="number"
-              value={data.taxVat}
-              onChange={(e) => handleTaxChange(e.target.value)}
-              min="0"
-              className="w-28 bg-muted border border-border rounded-lg px-2 py-1 text-right text-foreground text-xs focus:outline-none focus:ring-1 focus:ring-primary"
-            />
-          </div>
-          <div className="flex gap-4 border-t border-border pt-1 mt-1">
-            <span className="font-bold text-foreground">{t('cashVoucherForm.grandTotal', 'Grand Total')}</span>
-            <span className="font-bold text-foreground w-28 text-right">
-              {Number(data.grandTotal || 0).toLocaleString('en-IN', { minimumFractionDigits: 2 })}
-            </span>
+        {/* Bottom Section: Add Row Button on Left & Totals on Right */}
+        <div className="mt-4 flex flex-col sm:flex-row items-start justify-between gap-4">
+          <button
+            type="button"
+            onClick={addItem}
+            className="flex items-center gap-1.5 text-xs font-bold text-white bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 px-4 py-2 rounded-xl shadow-xs transition-all cursor-pointer"
+          >
+            <PlusCircle className="w-4 h-4" />
+            <span>{t('cashVoucherForm.addRow', 'Add Row')}</span>
+          </button>
+
+          {/* Totals */}
+          <div className="flex flex-col items-end gap-1 text-xs w-full sm:w-auto">
+            <div className="flex gap-4">
+              <span className="text-muted-foreground">{t('cashVoucherForm.subtotal', 'Subtotal')}</span>
+              <span className="font-semibold text-foreground w-28 text-right">
+                {Number(data.subtotal || 0).toLocaleString('en-IN', { minimumFractionDigits: 2 })}
+              </span>
+            </div>
+            <div className="flex gap-4 items-center">
+              <span className="text-muted-foreground">{t('cashVoucherForm.taxVat', 'Tax / VAT')}</span>
+              <input
+                type="number"
+                value={data.taxVat}
+                onChange={(e) => handleTaxChange(e.target.value)}
+                min="0"
+                className="w-28 bg-muted border border-border rounded-lg px-2 py-1 text-right text-foreground text-xs focus:outline-none focus:ring-1 focus:ring-primary"
+              />
+            </div>
+            <div className="flex gap-4 border-t border-border pt-1 mt-1">
+              <span className="font-bold text-foreground">{t('cashVoucherForm.grandTotal', 'Grand Total')}</span>
+              <span className="font-bold text-foreground w-28 text-right">
+                {Number(data.grandTotal || 0).toLocaleString('en-IN', { minimumFractionDigits: 2 })}
+              </span>
+            </div>
           </div>
         </div>
       </div>
