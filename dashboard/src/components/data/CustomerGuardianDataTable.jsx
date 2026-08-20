@@ -62,7 +62,6 @@ export function CustomerGuardianDataTable({ onEditItem }) {
       }
     } catch (err) {
       console.error('Failed to fetch customer applications:', err);
-      toast.error('কাস্টমার ফাইলের তালিকা লোড করতে সমস্যা হয়েছে।');
     } finally {
       setIsLoading(false);
     }

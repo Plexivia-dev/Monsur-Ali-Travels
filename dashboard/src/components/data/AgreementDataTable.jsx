@@ -107,7 +107,6 @@ export function AgreementDataTable() {
       }
     } catch (err) {
       console.error('Failed to fetch agreements:', err);
-      toast.error('নিয়োগ চুক্তিপত্র তালিকা লোড করতে ব্যর্থ হয়েছে।');
     } finally {
       setIsLoading(false);
     }

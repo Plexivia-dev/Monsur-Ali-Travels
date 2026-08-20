@@ -38,7 +38,6 @@ export function SalarySlipDataTable() {
       }
     } catch (err) {
       console.error('Failed to fetch salary slips:', err);
-      toast.error('স্যালারি স্লিপ তালিকা লোড করতে ব্যর্থ হয়েছে।');
     } finally {
       setIsLoading(false);
     }

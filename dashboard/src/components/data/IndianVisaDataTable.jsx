@@ -55,7 +55,6 @@ export function IndianVisaDataTable() {
       }
     } catch (err) {
       console.error('Failed to fetch Indian visa applications:', err);
-      toast.error('ইন্ডিয়ান ভিসা আবেদনের তালিকা লোড করতে ব্যর্থ হয়েছে।');
     } finally {
       setIsLoading(false);
     }

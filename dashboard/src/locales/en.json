@@ -1,4 +1,4 @@
-﻿{
+{
   "brand": {
     "name": "Monsur Ali Travels",
     "tagline": "Smart ERP v2.0",
@@ -75,5 +75,16 @@
     "total": "Total",
     "paid": "Paid",
     "due": "Due"
+  },
+  "errors": {
+    "generic": "Something went wrong. Please try again.",
+    "network": "Unable to connect to the server. Please check your network connection.",
+    "unauthorized": "Session expired or invalid credentials. Please log in again.",
+    "forbidden": "You do not have permission to perform this action.",
+    "notFound": "The requested record was not found.",
+    "validation": "Please check your inputs and try again.",
+    "server": "Server is temporarily unavailable. Please try again later.",
+    "deleteFailed": "Failed to delete the record.",
+    "loadFailed": "Failed to load data from server."
   }
 }

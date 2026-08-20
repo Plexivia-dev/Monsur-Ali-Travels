@@ -68,7 +68,6 @@ export function CustomerDataTable() {
       }
     } catch (err) {
       console.error('Failed to fetch customers:', err);
-      toast.error('কাস্টমার তালিকা লোড করতে ব্যর্থ হয়েছে।');
     } finally {
       setIsLoading(false);
     }

@@ -77,7 +77,6 @@ export function MoneyReceiptDataTable() {
       }
     } catch (err) {
       console.error('Failed to fetch money receipts:', err);
-      toast.error('মানি রিসিট ও টোকেন তালিকা লোড করতে ব্যর্থ হয়েছে।');
     } finally {
       setIsLoading(false);
     }

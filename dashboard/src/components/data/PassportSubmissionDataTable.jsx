@@ -40,7 +40,6 @@ export function PassportSubmissionDataTable() {
       }
     } catch (err) {
       console.error('Failed to fetch passport submissions:', err);
-      toast.error('পাসপোর্ট জমা ফাইলের তালিকা লোড করতে সমস্যা হয়েছে।');
     } finally {
       setIsLoading(false);
     }

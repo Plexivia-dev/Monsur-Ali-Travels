@@ -38,7 +38,6 @@ export function InvoiceDataTable() {
       }
     } catch (err) {
       console.error('Failed to fetch invoices:', err);
-      toast.error('ইনভয়েস তালিকা লোড করতে সমস্যা হয়েছে।');
     } finally {
       setIsLoading(false);
     }
