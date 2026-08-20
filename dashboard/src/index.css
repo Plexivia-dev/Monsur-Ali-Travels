@@ -140,6 +140,24 @@
   background: transparent;
 }
 
+/* Semantic Status Color Utilities (Dark & Light Mode) */
+@layer utilities {
+  .status-success {
+    @apply bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border-emerald-500/25;
+  }
+  .status-warning,
+  .status-error,
+  .status-danger,
+  .status-destructive,
+  .status-cancel,
+  .status-delete {
+    @apply bg-rose-500/15 text-rose-600 dark:text-rose-400 border-rose-500/25;
+  }
+  .status-info {
+    @apply bg-amber-500/15 text-amber-600 dark:text-amber-400 border-amber-500/25;
+  }
+}
+
 ::-webkit-scrollbar-thumb {
   background: var(--border);
   border-radius: 9999px;

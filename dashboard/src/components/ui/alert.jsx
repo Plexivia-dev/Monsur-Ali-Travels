@@ -10,7 +10,15 @@ const alertVariants = cva(
       variant: {
         default: "bg-card text-card-foreground",
         destructive:
-          "bg-card text-destructive *:data-[slot=alert-description]:text-destructive/90 *:[svg]:text-current",
+          "border-rose-500/30 bg-rose-500/10 text-rose-600 dark:text-rose-400 *:data-[slot=alert-description]:text-rose-600/90 dark:*:data-[slot=alert-description]:text-rose-400/90 *:[svg]:text-rose-500",
+        error:
+          "border-rose-500/30 bg-rose-500/10 text-rose-600 dark:text-rose-400 *:data-[slot=alert-description]:text-rose-600/90 dark:*:data-[slot=alert-description]:text-rose-400/90 *:[svg]:text-rose-500",
+        warning:
+          "border-rose-500/30 bg-rose-500/10 text-rose-600 dark:text-rose-400 *:data-[slot=alert-description]:text-rose-600/90 dark:*:data-[slot=alert-description]:text-rose-400/90 *:[svg]:text-rose-500",
+        success:
+          "border-emerald-500/30 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 *:data-[slot=alert-description]:text-emerald-600/90 dark:*:data-[slot=alert-description]:text-emerald-400/90 *:[svg]:text-emerald-500",
+        info:
+          "border-amber-500/30 bg-amber-500/10 text-amber-600 dark:text-amber-400 *:data-[slot=alert-description]:text-amber-600/90 dark:*:data-[slot=alert-description]:text-amber-400/90 *:[svg]:text-amber-500",
       },
     },
     defaultVariants: {

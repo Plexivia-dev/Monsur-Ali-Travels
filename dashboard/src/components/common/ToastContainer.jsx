@@ -10,10 +10,11 @@ export const ToastContainer = () => {
 
   const icons = {
     success: <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0" />,
-    warning: <AlertTriangle className="w-4 h-4 text-amber-500 shrink-0" />,
-    danger: <XCircle className="w-4 h-4 text-destructive shrink-0" />,
-    destructive: <XCircle className="w-4 h-4 text-destructive shrink-0" />,
-    info: <Info className="w-4 h-4 text-primary shrink-0" />,
+    warning: <AlertTriangle className="w-4 h-4 text-rose-500 shrink-0" />,
+    error: <XCircle className="w-4 h-4 text-rose-500 shrink-0" />,
+    danger: <XCircle className="w-4 h-4 text-rose-500 shrink-0" />,
+    destructive: <XCircle className="w-4 h-4 text-rose-500 shrink-0" />,
+    info: <Info className="w-4 h-4 text-amber-500 shrink-0" />,
   };
 
   return (
