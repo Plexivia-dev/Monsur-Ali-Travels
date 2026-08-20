@@ -26,6 +26,7 @@ import { Card, CardHeader, CardTitle, CardContent, CardDescription, CardFooter }
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
+import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Separator } from '@/components/ui/separator';
@@ -373,10 +374,10 @@ export function UserProfilePage() {
               <CardContent className="p-5 space-y-4">
                 {/* Full Name */}
                 <div className="space-y-1.5">
-                  <label className="text-xs font-semibold text-foreground flex items-center gap-1.5">
+                  <Label className="text-xs font-semibold text-foreground flex items-center gap-1.5">
                     <span>{t('account.fullName', 'Full Name')}</span>
                     <span className="text-rose-500">*</span>
-                  </label>
+                  </Label>
                   <div className="relative">
                     <User className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
                     <Input
@@ -392,7 +393,7 @@ export function UserProfilePage() {
 
                 {/* Custom Unique Username */}
                 <div className="space-y-1.5">
-                  <label className="text-xs font-semibold text-foreground flex items-center justify-between">
+                  <Label className="text-xs font-semibold text-foreground flex items-center justify-between">
                     <span className="flex items-center gap-1.5">
                       <AtSign className="w-3.5 h-3.5 text-primary" />
                       <span>{t('account.username', 'Custom Username')}</span>
@@ -400,7 +401,7 @@ export function UserProfilePage() {
                     <span className="text-[11px] text-muted-foreground font-normal">
                       {t('common.status', 'Unique')}
                     </span>
-                  </label>
+                  </Label>
                   <div className="relative">
                     <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground font-mono text-sm font-semibold">
                       @
@@ -422,10 +423,10 @@ export function UserProfilePage() {
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   {/* Phone Number */}
                   <div className="space-y-1.5">
-                    <label className="text-xs font-semibold text-foreground flex items-center gap-1.5">
+                    <Label className="text-xs font-semibold text-foreground flex items-center gap-1.5">
                       <Phone className="w-3.5 h-3.5 text-primary" />
                       <span>{t('account.phone', 'Phone Number')}</span>
-                    </label>
+                    </Label>
                     <Input
                       type="tel"
                       value={formData.phone}
@@ -437,7 +438,7 @@ export function UserProfilePage() {
 
                   {/* Email (Read-only) */}
                   <div className="space-y-1.5">
-                    <label className="text-xs font-semibold text-foreground flex items-center justify-between">
+                    <Label className="text-xs font-semibold text-foreground flex items-center justify-between">
                       <span className="flex items-center gap-1.5">
                         <Mail className="w-3.5 h-3.5 text-primary" />
                         <span>{t('account.email', 'Email Address')}</span>
@@ -445,7 +446,7 @@ export function UserProfilePage() {
                       <span className="text-[10px] text-emerald-500 font-semibold bg-emerald-500/10 px-1.5 py-0.5 rounded">
                         Verified
                       </span>
-                    </label>
+                    </Label>
                     <Input
                       type="email"
                       value={user?.email || ''}
@@ -457,10 +458,10 @@ export function UserProfilePage() {
 
                 {/* Address */}
                 <div className="space-y-1.5">
-                  <label className="text-xs font-semibold text-foreground flex items-center gap-1.5">
+                  <Label className="text-xs font-semibold text-foreground flex items-center gap-1.5">
                     <MapPin className="w-3.5 h-3.5 text-primary" />
                     <span>{t('account.address', 'Address / Location')}</span>
-                  </label>
+                  </Label>
                   <Textarea
                     value={formData.address}
                     onChange={(e) => handleInputChange('address', e.target.value)}
@@ -517,9 +518,9 @@ export function UserProfilePage() {
               <CardContent className="p-5 space-y-3.5">
                 {/* Current Password */}
                 <div className="space-y-1.5">
-                  <label className="text-xs font-semibold text-foreground">
+                  <Label className="text-xs font-semibold text-foreground">
                     {t('account.currentPassword', 'Current Password')}
-                  </label>
+                  </Label>
                   <div className="relative">
                     <Input
                       type={showCurrentPassword ? 'text' : 'password'}
@@ -541,9 +542,9 @@ export function UserProfilePage() {
 
                 {/* New Password */}
                 <div className="space-y-1.5">
-                  <label className="text-xs font-semibold text-foreground">
+                  <Label className="text-xs font-semibold text-foreground">
                     {t('account.newPassword', 'New Password')}
-                  </label>
+                  </Label>
                   <div className="relative">
                     <Input
                       type={showNewPassword ? 'text' : 'password'}
@@ -565,9 +566,9 @@ export function UserProfilePage() {
 
                 {/* Confirm New Password */}
                 <div className="space-y-1.5">
-                  <label className="text-xs font-semibold text-foreground">
+                  <Label className="text-xs font-semibold text-foreground">
                     {t('account.confirmPassword', 'Confirm New Password')}
-                  </label>
+                  </Label>
                   <div className="relative">
                     <Input
                       type={showConfirmPassword ? 'text' : 'password'}
