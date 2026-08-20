@@ -75,16 +75,16 @@ export const Sidebar = () => {
   return (
     <SidebarPrimitive collapsible="icon" className="border-r border-border bg-sidebar transition-all duration-300 ease-in-out">
       {/* Brand Header */}
-      <SidebarHeader className="h-14 border-b border-sidebar-border px-2 flex items-center justify-center transition-all duration-300">
+      <SidebarHeader className="h-14 border-b border-white/15 px-3 flex items-center justify-center transition-all duration-300">
         {isCollapsed ? (
           <button
             type="button"
             onClick={() => setOpen(true)}
-            className="size-9 rounded-full border border-sky-500/70 hover:border-sky-400 bg-sidebar-accent/60 hover:bg-sidebar-accent text-sky-400 flex items-center justify-center shrink-0 shadow-xs transition-all duration-200 cursor-pointer"
+            className="size-9 rounded-full border border-sky-400/50 hover:border-sky-300 bg-white/10 hover:bg-white/20 text-sky-300 flex items-center justify-center shrink-0 shadow-xs transition-all duration-200 cursor-pointer"
             title={t('brand.openSidebar', 'Open Sidebar')}
             aria-label={t('brand.openSidebar', 'Open Sidebar')}
           >
-            <Menu className="w-4 h-4 text-sky-400" />
+            <Menu className="w-4 h-4 text-sky-300" />
           </button>
         ) : (
           <div className="flex items-center justify-between w-full px-1">
@@ -92,7 +92,7 @@ export const Sidebar = () => {
               onClick={() => handleItemSelect('agency', 'dashboard')}
               className="flex items-center justify-start gap-2.5 cursor-pointer group/brand overflow-hidden text-left"
             >
-              <div className="size-10 rounded-full bg-white p-[4px] flex items-center justify-center shrink-0 overflow-hidden shadow-xs border border-border/20">
+              <div className="size-10 rounded-full bg-white p-[3px] flex items-center justify-center shrink-0 overflow-hidden shadow-xs border border-white/30">
                 {logoImg ? (
                   <img src={logoImg} alt={t('brand.name', 'Monsur Ali Travels')} className="w-full h-full object-contain" />
                 ) : (
@@ -100,10 +100,10 @@ export const Sidebar = () => {
                 )}
               </div>
               <div className="flex flex-col min-w-0 text-left items-start">
-                <span className="font-semibold text-sm text-white tracking-tight truncate leading-tight">
+                <span className="font-bold text-sm text-white tracking-tight truncate leading-tight">
                   {t('brand.name', 'Monsur Ali Travels')}
                 </span>
-                <span className="text-[10px] text-sky-200/80 font-medium uppercase tracking-wider mt-0.5">
+                <span className="text-[10px] text-sky-200 font-semibold uppercase tracking-wider mt-0.5">
                   {t('brand.tagline', { version: APP_VERSION, defaultValue: `Smart ERP v${APP_VERSION}` })}
                 </span>
               </div>
@@ -115,23 +115,23 @@ export const Sidebar = () => {
                 setOpen(false);
                 if (isMobile) setOpenMobile(false);
               }}
-              className="size-6 rounded-full border border-sky-500/70 hover:border-sky-400 p-[2px] text-sky-400 hover:text-sky-300 hover:bg-sky-500/10 flex items-center justify-center shrink-0 transition-colors cursor-pointer"
+              className="size-7 rounded-full bg-white/10 hover:bg-white/20 border border-white/20 text-sky-300 hover:text-white flex items-center justify-center shrink-0 transition-all cursor-pointer shadow-xs"
               title={t('brand.closeSidebar', 'Close Sidebar')}
             >
-              <X className="w-3.5 h-3.5 text-sky-400" />
+              <X className="w-3.5 h-3.5" />
             </button>
           </div>
         )}
       </SidebarHeader>
 
       {/* Main Navigation Content */}
-      <SidebarContent className="p-2 space-y-4">
+      <SidebarContent className="p-2 space-y-3">
         {navGroups.map((group, groupIdx) => {
           const displayGroupLabel = group.groupKey ? t(group.groupKey, group.groupLabel) : group.groupLabel;
 
           return (
             <SidebarGroup key={groupIdx} className="p-0">
-              <SidebarGroupLabel className="px-3 py-1.5 text-xs font-bold tracking-wider text-sky-200/70 uppercase">
+              <SidebarGroupLabel className="px-3 pt-2 pb-1 text-[11px] font-bold tracking-widest text-sky-300 uppercase">
                 {displayGroupLabel}
               </SidebarGroupLabel>
               <SidebarGroupContent>
@@ -164,8 +164,8 @@ export const Sidebar = () => {
                                   }
                                 }}
                                 className={cn(
-                                  'w-full justify-between cursor-pointer font-medium text-sm py-2 transition-all duration-200 text-white/90 hover:text-white hover:bg-sidebar-accent',
-                                  isChildActive && 'text-sky-300 font-semibold bg-white/10'
+                                  'w-full justify-between cursor-pointer font-medium text-sm py-2 px-3 rounded-xl transition-all duration-200 text-white hover:text-white hover:bg-white/10',
+                                  isChildActive && 'text-white font-bold bg-white/15 border border-sky-400/30 shadow-xs'
                                 )}
                               >
                                 <div className="flex items-center gap-2.5 min-w-0">
@@ -174,13 +174,13 @@ export const Sidebar = () => {
                                 </div>
                                 <ChevronRight
                                   className={cn(
-                                    'w-4 h-4 text-white/50 transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90 group-data-[collapsible=icon]:hidden'
+                                    'w-4 h-4 text-sky-200/70 transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90 group-data-[collapsible=icon]:hidden'
                                   )}
                                 />
                               </SidebarMenuButton>
                             </CollapsibleTrigger>
                             <CollapsibleContent>
-                              <SidebarMenuSub className="ml-5 border-l border-sidebar-border pl-2.5 my-1 space-y-1">
+                              <SidebarMenuSub className="ml-5 border-l-2 border-sky-400/30 pl-3 my-1.5 space-y-1">
                                 {item.childItems.map((subItem, subIdx) => {
                                   const isActive =
                                     activePortal === subItem.portal && activeSubmodule === subItem.submodule;
@@ -192,13 +192,13 @@ export const Sidebar = () => {
                                         isActive={isActive}
                                         onClick={() => handleItemSelect(subItem.portal, subItem.submodule)}
                                         className={cn(
-                                          'cursor-pointer text-[13px] rounded-md py-2 flex items-center gap-2 transition-colors duration-200',
+                                          'cursor-pointer text-[13px] rounded-lg py-2 px-2.5 flex items-center gap-2 transition-all duration-200',
                                           isActive
-                                            ? 'bg-sky-500/20 text-sky-300 font-semibold'
-                                            : 'text-white/80 hover:text-white hover:bg-sidebar-accent'
+                                            ? 'bg-sky-400/25 text-white font-bold border border-sky-400/40 shadow-xs'
+                                            : 'text-slate-100 hover:text-white hover:bg-white/10 font-medium'
                                         )}
                                       >
-                                        {subItem.icon && renderIcon(subItem.icon, cn('w-4 h-4 shrink-0 text-sky-400', isActive && 'text-sky-300'))}
+                                        {subItem.icon && renderIcon(subItem.icon, cn('w-4 h-4 shrink-0 text-sky-400', isActive && 'text-sky-200'))}
                                         <span className="truncate">{displaySubLabel}</span>
                                       </SidebarMenuSubButton>
                                     </SidebarMenuSubItem>
@@ -220,10 +220,10 @@ export const Sidebar = () => {
                           tooltip={displayItemLabel}
                           onClick={() => handleItemSelect(item.portal, item.submodule)}
                           className={cn(
-                            'cursor-pointer text-sm font-medium py-2 rounded-lg transition-all duration-200',
+                            'cursor-pointer text-sm font-medium py-2 px-3 rounded-xl transition-all duration-200',
                             isActive
-                              ? 'bg-white/15 text-white font-semibold shadow-xs'
-                              : 'text-white/85 hover:bg-sidebar-accent hover:text-white'
+                              ? 'bg-sky-400/20 text-white font-bold border border-sky-400/30 shadow-xs'
+                              : 'text-white hover:bg-white/10 hover:text-white'
                           )}
                         >
                           {renderIcon(
@@ -243,38 +243,38 @@ export const Sidebar = () => {
       </SidebarContent>
 
       {/* Footer Info */}
-      <SidebarFooter className="border-t border-sidebar-border p-2 flex items-center justify-center overflow-hidden transition-all duration-300">
+      <SidebarFooter className="border-t border-white/15 p-2 flex items-center justify-center overflow-hidden transition-all duration-300">
         {isCollapsed ? (
           <button
             type="button"
             onClick={() => handleItemSelect('admin', 'profile')}
-            className="size-8 rounded-full border border-sky-500/50 bg-sidebar-accent hover:bg-sky-500/15 text-sky-400 flex items-center justify-center shrink-0 transition-all duration-200 cursor-pointer mx-auto shadow-xs"
+            className="size-8 rounded-full border border-sky-400/50 bg-white/10 hover:bg-white/20 text-sky-300 flex items-center justify-center shrink-0 transition-all duration-200 cursor-pointer mx-auto shadow-xs"
             title={user?.name ? `${user.name} (${t('header.myProfile', 'My Profile')})` : t('header.myProfile', 'My Profile')}
             aria-label={t('header.myProfile', 'My Profile')}
           >
-            <User className="w-4 h-4 text-sky-400" />
+            <User className="w-4 h-4 text-sky-300" />
           </button>
         ) : (
-          <div className="flex items-center justify-between gap-2.5 px-2 py-1.5 rounded-lg bg-sidebar-accent/50 w-full overflow-hidden">
+          <div className="flex items-center justify-between gap-2.5 px-2.5 py-2 rounded-xl bg-white/10 border border-white/15 w-full overflow-hidden shadow-xs">
             <div
               onClick={() => handleItemSelect('admin', 'profile')}
-              className="flex items-center gap-2.5 min-w-0 cursor-pointer hover:opacity-85 transition-opacity"
+              className="flex items-center gap-2.5 min-w-0 cursor-pointer hover:opacity-90 transition-opacity"
               title={t('header.myProfile', 'My Profile')}
             >
-              <div className="size-8 rounded-full bg-white/20 text-white flex items-center justify-center font-semibold text-xs shrink-0">
+              <div className="size-9 rounded-full bg-sky-500/30 border border-sky-300/40 text-white flex items-center justify-center font-bold text-xs shrink-0 shadow-xs">
                 {user?.name ? user.name[0].toUpperCase() : 'A'}
               </div>
               <div className="flex flex-col min-w-0 text-left">
-                <span className="text-xs font-semibold text-white truncate leading-tight">
+                <span className="text-xs font-bold text-white truncate leading-tight">
                   {user?.name || 'Administrator'}
                 </span>
-                <span className="text-[10px] text-sky-200/70 truncate mt-0.5">{user?.role || 'Super Admin'}</span>
+                <span className="text-[10.5px] text-sky-200 font-medium truncate mt-0.5">{user?.role || 'Super Admin'}</span>
               </div>
             </div>
             <button
               type="button"
               onClick={logout}
-              className="size-8 rounded-lg bg-rose-500/15 text-rose-400 border border-rose-500/20 hover:bg-white hover:text-rose-600 hover:border-white transition-all duration-200 cursor-pointer flex items-center justify-center shrink-0 shadow-xs"
+              className="size-8 rounded-lg bg-rose-500/20 text-rose-200 border border-rose-400/30 hover:bg-rose-500 hover:text-white hover:border-rose-500 transition-all duration-200 cursor-pointer flex items-center justify-center shrink-0 shadow-xs"
               title={t('common.logout', 'Logout')}
               aria-label={t('common.logout', 'Logout')}
             >
