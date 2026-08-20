@@ -51,10 +51,10 @@ export function SalarySlipForm({ formData, setFormData, onSubmit, onReset, isSub
   const [resetDialogOpen, setResetDialogOpen] = useState(false);
 
   const steps = [
-    { id: 1, title: 'কর্মচারীর তথ্য', subtitle: 'Employee Info', icon: User },
-    { id: 2, title: 'অর্জিত বেতন ও ভাতা', subtitle: 'Earnings & Allowances', icon: DollarSign },
-    { id: 3, title: 'কর্তন ও সমন্বয়', subtitle: 'Deductions', icon: DollarSign },
-    { id: 4, title: 'হাজিরা ও রিভিউ', subtitle: 'Attendance & Review', icon: Clock },
+    { id: 1, title: 'Employee Info', icon: User },
+    { id: 2, title: 'Earnings & Allowances', icon: DollarSign },
+    { id: 3, title: 'Deductions', icon: DollarSign },
+    { id: 4, title: 'Attendance & Review', icon: Clock },
   ];
 
   const handleChange = (field, value) => {
@@ -96,11 +96,11 @@ export function SalarySlipForm({ formData, setFormData, onSubmit, onReset, isSub
     e.preventDefault();
     if (currentStep === 1) {
       if (!formData.employeeName || !formData.employeeName.trim()) {
-        alert('অনুগ্রহ করে কর্মচারীর পূর্ণ নাম পূরণ করুন।');
+        alert('Please enter the employee full name.');
         return;
       }
       if (!formData.employeeId || !formData.employeeId.trim()) {
-        alert('অনুগ্রহ করে কর্মচারী আইডি পূরণ করুন।');
+        alert('Please enter the employee ID.');
         return;
       }
     }
@@ -142,7 +142,7 @@ export function SalarySlipForm({ formData, setFormData, onSubmit, onReset, isSub
           className="flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-semibold border border-border bg-muted/40 hover:bg-muted text-muted-foreground hover:text-foreground transition-all cursor-pointer shrink-0 self-start sm:self-auto"
         >
           <RotateCcw className="w-3.5 h-3.5" />
-          <span>রিসেট (Reset)</span>
+          <span>Reset</span>
         </button>
       </div>
 
@@ -186,7 +186,6 @@ export function SalarySlipForm({ formData, setFormData, onSubmit, onReset, isSub
                 </div>
                 <div className="min-w-0">
                   <div className="text-[11px] font-bold truncate">{step.title}</div>
-                  <div className="text-[10px] text-muted-foreground truncate">{step.subtitle}</div>
                 </div>
               </button>
             );
@@ -200,12 +199,12 @@ export function SalarySlipForm({ formData, setFormData, onSubmit, onReset, isSub
         {currentStep === 1 && (
           <div className="bg-card border border-border p-4 rounded-md shadow-xs space-y-3 animate-in fade-in-50 duration-150">
             <h3 className="font-bold text-foreground flex items-center gap-2 text-xs text-emerald-600 border-b border-border pb-2">
-              <User className="w-4 h-4" /> ১. কর্মচারী ও স্যালারি নিয়ন্ত্রণ বিবরণী (Employee Profile & Details)
+              <User className="w-4 h-4" /> 1. Employee Profile & Payroll Details
             </h3>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
               <div>
-                <label className="block font-semibold text-foreground mb-1">কর্মচারীর পূর্ণ নাম (Employee Name) *</label>
+                <label className="block font-semibold text-foreground mb-1">Employee Name *</label>
                 <input
                   type="text"
                   required
@@ -216,7 +215,7 @@ export function SalarySlipForm({ formData, setFormData, onSubmit, onReset, isSub
               </div>
 
               <div>
-                <label className="block font-semibold text-foreground mb-1">কর্মচারী আইডি (Employee ID) *</label>
+                <label className="block font-semibold text-foreground mb-1">Employee ID *</label>
                 <input
                   type="text"
                   required
@@ -227,7 +226,7 @@ export function SalarySlipForm({ formData, setFormData, onSubmit, onReset, isSub
               </div>
 
               <div>
-                <label className="block font-semibold text-foreground mb-1">পদবী (Designation)</label>
+                <label className="block font-semibold text-foreground mb-1">Designation</label>
                 <input
                   type="text"
                   value={formData.designation}
@@ -237,7 +236,7 @@ export function SalarySlipForm({ formData, setFormData, onSubmit, onReset, isSub
               </div>
 
               <div>
-                <label className="block font-semibold text-foreground mb-1">বিভাগ (Department)</label>
+                <label className="block font-semibold text-foreground mb-1">Department</label>
                 <input
                   type="text"
                   value={formData.department}
@@ -247,7 +246,7 @@ export function SalarySlipForm({ formData, setFormData, onSubmit, onReset, isSub
               </div>
 
               <div>
-                <label className="block font-semibold text-foreground mb-1">যোগদানের তারিখ (Joining Date)</label>
+                <label className="block font-semibold text-foreground mb-1">Joining Date</label>
                 <DatePicker
                   value={formData.joiningDate}
                   onChange={(val) => handleChange('joiningDate', val)}
@@ -255,7 +254,7 @@ export function SalarySlipForm({ formData, setFormData, onSubmit, onReset, isSub
               </div>
 
               <div>
-                <label className="block font-semibold text-foreground mb-1">বেতনের মাস (Salary Month) *</label>
+                <label className="block font-semibold text-foreground mb-1">Salary Month *</label>
                 <input
                   type="text"
                   required
@@ -266,7 +265,7 @@ export function SalarySlipForm({ formData, setFormData, onSubmit, onReset, isSub
               </div>
 
               <div>
-                <label className="block font-semibold text-foreground mb-1">পরিশোধের তারিখ (Pay Date)</label>
+                <label className="block font-semibold text-foreground mb-1">Pay Date</label>
                 <DatePicker
                   value={formData.payDate}
                   onChange={(val) => handleChange('payDate', val)}
@@ -275,7 +274,7 @@ export function SalarySlipForm({ formData, setFormData, onSubmit, onReset, isSub
 
               <div>
                 <div className="flex items-center justify-between mb-1">
-                  <label className="block font-semibold text-foreground">স্লিপ নম্বর (Slip No.)</label>
+                  <label className="block font-semibold text-foreground">Slip No.</label>
                   <button
                     type="button"
                     onClick={() => {
@@ -291,7 +290,7 @@ export function SalarySlipForm({ formData, setFormData, onSubmit, onReset, isSub
                     }}
                     className="text-[10px] text-emerald-600 hover:underline font-semibold cursor-pointer"
                   >
-                    নতুন কোড জেনারেট
+                    Generate Random
                   </button>
                 </div>
                 <input
@@ -304,21 +303,21 @@ export function SalarySlipForm({ formData, setFormData, onSubmit, onReset, isSub
               </div>
 
               <div>
-                <label className="block font-semibold text-foreground mb-1">পেমেন্ট মেথড (Payment Mode)</label>
+                <label className="block font-semibold text-foreground mb-1">Payment Mode</label>
                 <select
                   value={formData.paymentMode}
                   onChange={(e) => handleChange('paymentMode', e.target.value)}
                   className="w-full px-3 py-2 bg-background border border-border rounded-md text-foreground text-xs font-semibold focus:ring-1 focus:ring-primary outline-none cursor-pointer"
                 >
-                  <option value="Cash">Cash (নগদ)</option>
-                  <option value="Bank Transfer">Bank Transfer (ব্যাংক ট্রান্সফার)</option>
-                  <option value="Cheque">Cheque (চেক)</option>
-                  <option value="Other">Other (অন্যান্য)</option>
+                  <option value="Cash">Cash</option>
+                  <option value="Bank Transfer">Bank Transfer</option>
+                  <option value="Cheque">Cheque</option>
+                  <option value="Other">Other</option>
                 </select>
               </div>
 
               <div>
-                <label className="block font-semibold text-foreground mb-1">হাজিরা দিন (Attendance Days)</label>
+                <label className="block font-semibold text-foreground mb-1">Attendance Days</label>
                 <input
                   type="number"
                   value={formData.attendanceDays}
@@ -334,12 +333,12 @@ export function SalarySlipForm({ formData, setFormData, onSubmit, onReset, isSub
         {currentStep === 2 && (
           <div className="bg-card border border-border p-4 rounded-md shadow-xs space-y-3 animate-in fade-in-50 duration-150">
             <h3 className="font-bold text-foreground flex items-center gap-2 text-xs text-emerald-600 border-b border-border pb-2">
-              <DollarSign className="w-4 h-4" /> ২. অর্জিত বেতন ও ভাতাসমূহ / Earnings (BDT)
+              <DollarSign className="w-4 h-4" /> 2. Earnings (BDT)
             </h3>
 
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
               <div>
-                <label className="block font-semibold text-foreground mb-1">মূল বেতন (Basic Salary) ৳</label>
+                <label className="block font-semibold text-foreground mb-1">Basic Salary (BDT)</label>
                 <input
                   type="number"
                   value={formData.basicSalary}
@@ -349,7 +348,7 @@ export function SalarySlipForm({ formData, setFormData, onSubmit, onReset, isSub
               </div>
 
               <div>
-                <label className="block font-semibold text-foreground mb-1">বাড়ি ভাড়া ভাতা (House Rent) ৳</label>
+                <label className="block font-semibold text-foreground mb-1">House Rent Allowance (BDT)</label>
                 <input
                   type="number"
                   value={formData.houseRentAllowance}
@@ -359,7 +358,7 @@ export function SalarySlipForm({ formData, setFormData, onSubmit, onReset, isSub
               </div>
 
               <div>
-                <label className="block font-semibold text-foreground mb-1">চিকিৎসা ভাতা (Medical) ৳</label>
+                <label className="block font-semibold text-foreground mb-1">Medical Allowance (BDT)</label>
                 <input
                   type="number"
                   value={formData.medicalAllowance}
@@ -369,7 +368,7 @@ export function SalarySlipForm({ formData, setFormData, onSubmit, onReset, isSub
               </div>
 
               <div>
-                <label className="block font-semibold text-foreground mb-1">যাতায়াত ভাতা (Conveyance) ৳</label>
+                <label className="block font-semibold text-foreground mb-1">Conveyance Allowance (BDT)</label>
                 <input
                   type="number"
                   value={formData.conveyanceAllowance}
@@ -379,7 +378,7 @@ export function SalarySlipForm({ formData, setFormData, onSubmit, onReset, isSub
               </div>
 
               <div>
-                <label className="block font-semibold text-foreground mb-1">অন্যান্য বিশেষ ভাতা ৳</label>
+                <label className="block font-semibold text-foreground mb-1">Other Special Allowance (BDT)</label>
                 <input
                   type="number"
                   value={formData.otherAllowance}
@@ -389,7 +388,7 @@ export function SalarySlipForm({ formData, setFormData, onSubmit, onReset, isSub
               </div>
 
               <div>
-                <label className="block font-semibold text-foreground mb-1">ওভারটাইম / অতিরিক্ত দায়িত্ব ৳</label>
+                <label className="block font-semibold text-foreground mb-1">Overtime / Extra Duty (BDT)</label>
                 <input
                   type="number"
                   value={formData.overtimeExtraDuty}
@@ -399,7 +398,7 @@ export function SalarySlipForm({ formData, setFormData, onSubmit, onReset, isSub
               </div>
 
               <div className="sm:col-span-3 p-3 bg-emerald-500/10 border border-emerald-500/20 rounded-md flex items-center justify-between">
-                <span className="font-bold text-xs text-foreground">মোট অর্জিত গ্রস বেতন (Gross Earnings):</span>
+                <span className="font-bold text-xs text-foreground">Gross Earnings:</span>
                 <span className="font-mono font-bold text-base text-emerald-600">
                   {Number(formData.grossEarnings).toLocaleString('en-BD')} ৳
                 </span>
@@ -412,12 +411,12 @@ export function SalarySlipForm({ formData, setFormData, onSubmit, onReset, isSub
         {currentStep === 3 && (
           <div className="bg-card border border-border p-4 rounded-md shadow-xs space-y-3 animate-in fade-in-50 duration-150">
             <h3 className="font-bold text-foreground flex items-center gap-2 text-xs text-rose-600 border-b border-border pb-2">
-              <DollarSign className="w-4 h-4" /> ৩. কর্তন ও সমন্বয় / Deductions (BDT)
+              <DollarSign className="w-4 h-4" /> 3. Deductions & Adjustments (BDT)
             </h3>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
               <div>
-                <label className="block font-semibold text-foreground mb-1">অগ্রিম বেতন গ্রহণ (Advance Salary) ৳</label>
+                <label className="block font-semibold text-foreground mb-1">Advance Salary (BDT)</label>
                 <input
                   type="number"
                   value={formData.advanceSalary}
@@ -427,7 +426,7 @@ export function SalarySlipForm({ formData, setFormData, onSubmit, onReset, isSub
               </div>
 
               <div>
-                <label className="block font-semibold text-foreground mb-1">অনুপস্থিতি কর্তন (Unpaid Leave) ৳</label>
+                <label className="block font-semibold text-foreground mb-1">Unpaid Leave Absence (BDT)</label>
                 <input
                   type="number"
                   value={formData.unpaidLeaveAbsence}
@@ -437,7 +436,7 @@ export function SalarySlipForm({ formData, setFormData, onSubmit, onReset, isSub
               </div>
 
               <div>
-                <label className="block font-semibold text-foreground mb-1">ঋণ কর্তন (Loan Deduction) ৳</label>
+                <label className="block font-semibold text-foreground mb-1">Loan Deduction (BDT)</label>
                 <input
                   type="number"
                   value={formData.loanAuthorizedDeduction}
@@ -447,7 +446,7 @@ export function SalarySlipForm({ formData, setFormData, onSubmit, onReset, isSub
               </div>
 
               <div>
-                <label className="block font-semibold text-foreground mb-1">ট্যাক্স ও অন্যান্য কর্তন (Tax Deduction) ৳</label>
+                <label className="block font-semibold text-foreground mb-1">Tax / Statutory Deduction (BDT)</label>
                 <input
                   type="number"
                   value={formData.taxStatutoryDeduction}
@@ -457,7 +456,7 @@ export function SalarySlipForm({ formData, setFormData, onSubmit, onReset, isSub
               </div>
 
               <div className="sm:col-span-2">
-                <label className="block font-semibold text-foreground mb-1">অন্যান্য অনুমোদিত কর্তন (Other Deduction) ৳</label>
+                <label className="block font-semibold text-foreground mb-1">Other Authorized Deduction (BDT)</label>
                 <input
                   type="number"
                   value={formData.otherAuthorizedDeduction}
@@ -467,7 +466,7 @@ export function SalarySlipForm({ formData, setFormData, onSubmit, onReset, isSub
               </div>
 
               <div className="sm:col-span-2 p-3 bg-rose-500/10 border border-rose-500/20 rounded-md flex items-center justify-between">
-                <span className="font-bold text-xs text-foreground">মোট কর্তন (Total Deductions):</span>
+                <span className="font-bold text-xs text-foreground">Total Deductions:</span>
                 <span className="font-mono font-bold text-base text-rose-600">
                   {Number(formData.totalDeduction).toLocaleString('en-BD')} ৳
                 </span>
@@ -482,12 +481,12 @@ export function SalarySlipForm({ formData, setFormData, onSubmit, onReset, isSub
             {/* Attendance Fields */}
             <div className="bg-card border border-border p-4 rounded-md shadow-xs space-y-3">
               <h3 className="font-bold text-foreground flex items-center gap-2 text-xs text-sky-600 border-b border-border pb-2">
-                <Clock className="w-4 h-4" /> ৪. হাজিরা বিবরণী ও সাক্ষরকারী (Attendance & Signatures)
+                <Clock className="w-4 h-4" /> 4. Attendance Summary & Signatures
               </h3>
 
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
                 <div>
-                  <label className="block font-semibold text-foreground mb-1">মোট কর্মদিবস</label>
+                  <label className="block font-semibold text-foreground mb-1">Total Working Days</label>
                   <input
                     type="number"
                     value={formData.workingDays}
@@ -497,7 +496,7 @@ export function SalarySlipForm({ formData, setFormData, onSubmit, onReset, isSub
                 </div>
 
                 <div>
-                  <label className="block font-semibold text-foreground mb-1">উপস্থিত দিন</label>
+                  <label className="block font-semibold text-foreground mb-1">Present Days</label>
                   <input
                     type="number"
                     value={formData.presentDays}
@@ -507,7 +506,7 @@ export function SalarySlipForm({ formData, setFormData, onSubmit, onReset, isSub
                 </div>
 
                 <div>
-                  <label className="block font-semibold text-foreground mb-1">পেইড ছুটি</label>
+                  <label className="block font-semibold text-foreground mb-1">Paid Leave</label>
                   <input
                     type="number"
                     value={formData.paidLeave}
@@ -517,7 +516,7 @@ export function SalarySlipForm({ formData, setFormData, onSubmit, onReset, isSub
                 </div>
 
                 <div>
-                  <label className="block font-semibold text-foreground mb-1">অনুপস্থিত দিন</label>
+                  <label className="block font-semibold text-foreground mb-1">Unpaid / Absent Days</label>
                   <input
                     type="number"
                     value={formData.unpaidLeave}
@@ -532,25 +531,25 @@ export function SalarySlipForm({ formData, setFormData, onSubmit, onReset, isSub
             <div className="p-4 bg-emerald-500/10 border border-emerald-500/30 rounded-md space-y-2 shadow-xs">
               <div className="flex items-center gap-2 text-emerald-600 font-bold text-xs">
                 <Sparkles className="w-4 h-4" />
-                চূড়ান্ত বেতন বিবরণী সারসংক্ষেপ (Final Payroll Summary)
+                Final Payroll Summary
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 text-xs">
                 <div className="p-2.5 bg-background border border-border rounded-md">
-                  <span className="text-muted-foreground block text-[10px]">কর্মচারীর নাম ও আইডি:</span>
-                  <span className="font-bold text-foreground">{formData.employeeName || 'নামহীন'} ({formData.employeeId || '-'})</span>
+                  <span className="text-muted-foreground block text-[10px]">Employee Name & ID:</span>
+                  <span className="font-bold text-foreground">{formData.employeeName || 'Unnamed'} ({formData.employeeId || '-'})</span>
                 </div>
                 <div className="p-2.5 bg-background border border-border rounded-md">
-                  <span className="text-muted-foreground block text-[10px]">মোট গ্রস বেতন:</span>
+                  <span className="text-muted-foreground block text-[10px]">Total Gross Earnings:</span>
                   <span className="font-bold text-foreground font-mono">{Number(formData.grossEarnings).toLocaleString('en-BD')} ৳</span>
                 </div>
                 <div className="p-2.5 bg-background border border-border rounded-md">
-                  <span className="text-muted-foreground block text-[10px]">মোট কর্তন:</span>
+                  <span className="text-muted-foreground block text-[10px]">Total Deductions:</span>
                   <span className="font-bold text-rose-600 font-mono">- {Number(formData.totalDeduction).toLocaleString('en-BD')} ৳</span>
                 </div>
               </div>
               <div className="pt-2 border-t border-border flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                 <div>
-                  <span className="text-xs font-semibold text-muted-foreground">সর্বমোট প্রদেয় নিট বেতন:</span>
+                  <span className="text-xs font-semibold text-muted-foreground">Net Salary Payable:</span>
                   <div className="text-lg font-black text-emerald-600 font-mono">
                     = {Number(formData.netSalaryPayable).toLocaleString('en-BD')} ৳
                   </div>
@@ -570,7 +569,7 @@ export function SalarySlipForm({ formData, setFormData, onSubmit, onReset, isSub
               className="flex items-center gap-1.5 px-4 py-2 rounded-md text-xs font-bold border border-border bg-muted/40 hover:bg-muted text-foreground transition-all cursor-pointer"
             >
               <ChevronLeft className="w-4 h-4" />
-              <span>পূর্ববর্তী ধাপ (Previous)</span>
+              <span>Previous Step</span>
             </button>
           ) : (
             <div />
@@ -581,7 +580,7 @@ export function SalarySlipForm({ formData, setFormData, onSubmit, onReset, isSub
               type="submit"
               className="flex items-center gap-2 px-5 py-2 rounded-md text-xs font-bold bg-primary text-primary-foreground hover:bg-primary/90 shadow-xs transition-all cursor-pointer"
             >
-              <span>পরবর্তী ধাপ (Next Step)</span>
+              <span>Next Step</span>
               <ChevronRight className="w-4 h-4" />
             </button>
           ) : (
@@ -593,12 +592,12 @@ export function SalarySlipForm({ formData, setFormData, onSubmit, onReset, isSub
               {isSubmitting ? (
                 <>
                   <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin shrink-0" />
-                  <span>ডাটাবেজে সংরক্ষণ ও আইডি জেনারেট হচ্ছে...</span>
+                  <span>Saving to Database & Generating ID...</span>
                 </>
               ) : (
                 <>
                   <Eye className="w-4 h-4" />
-                  <span>স্যালারি স্লিপ তৈরি ও প্রিভিউ দেখুন</span>
+                  <span>Generate Salary Slip & View Preview</span>
                 </>
               )}
             </button>
@@ -612,10 +611,10 @@ export function SalarySlipForm({ formData, setFormData, onSubmit, onReset, isSub
           <DialogHeader>
             <div className="flex items-center gap-2 text-rose-500 mb-1">
               <AlertTriangle className="w-5 h-5" />
-              <DialogTitle className="text-base font-bold">ফর্মের সকল তথ্য রিসেট নিশ্চিতকরণ</DialogTitle>
+              <DialogTitle className="text-base font-bold">Confirm Form Reset</DialogTitle>
             </div>
             <DialogDescription className="text-xs text-muted-foreground">
-              আপনি কি নিশ্চিত যে স্যালারি স্লিপের সকল ইনপুট ডেটা মুছে ফেলে ডিফল্ট ফর্মে ফিরে যেতে চান?
+              Are you sure you want to clear all input data and reset the salary slip form?
             </DialogDescription>
           </DialogHeader>
           <DialogFooter className="gap-2 sm:gap-0 mt-2">
@@ -624,14 +623,14 @@ export function SalarySlipForm({ formData, setFormData, onSubmit, onReset, isSub
               onClick={() => setResetDialogOpen(false)}
               className="px-4 py-1.5 text-xs font-semibold rounded-md border border-border hover:bg-muted text-foreground transition-all cursor-pointer"
             >
-              বাতিল (Cancel)
+              Cancel
             </button>
             <button
               type="button"
               onClick={confirmReset}
               className="px-4 py-1.5 text-xs font-bold rounded-md bg-rose-600 hover:bg-rose-700 text-white shadow-xs transition-all cursor-pointer"
             >
-              হ্যাঁ, রিসেট করুন
+              Yes, Reset Form
             </button>
           </DialogFooter>
         </DialogContent>
@@ -639,3 +638,5 @@ export function SalarySlipForm({ formData, setFormData, onSubmit, onReset, isSub
     </div>
   );
 }
+
+export default SalarySlipForm;

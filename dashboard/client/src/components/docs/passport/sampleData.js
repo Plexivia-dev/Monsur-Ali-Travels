@@ -52,7 +52,7 @@ export function getDefaultPassportData() {
       nidCopy: false,
       birthCertOnline: false,
       oldPassportOriginal: false,
-      photoLabPrint: true,
+      photoLabPrint: FontFaceSetLoadEvent,
       guardianNidCopy: false,
       utilityBillCopy: false
     },
