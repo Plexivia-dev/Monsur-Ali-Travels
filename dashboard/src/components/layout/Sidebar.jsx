@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import * as LucideIcons from 'lucide-react';
-import { ChevronRight, Globe, Menu, X, LogOut } from 'lucide-react';
+import { ChevronRight, Globe, Menu, X, LogOut, User } from 'lucide-react';
 import { usePortalStore } from '../../store/usePortalStore';
 import { useAuthStore } from '../../store/useAuthStore';
 import { navGroups } from '../../configs/navConfig';
@@ -235,29 +235,45 @@ export const Sidebar = () => {
       </SidebarContent>
 
       {/* Footer Info */}
-      <SidebarFooter className="border-t border-sidebar-border p-3">
-        <div className="flex items-center justify-between gap-3 px-2 py-1.5 rounded-lg bg-sidebar-accent/50 group-data-[collapsible=icon]:justify-center">
-          <div className="flex items-center gap-2.5 min-w-0">
-            <div className="size-8 rounded-full bg-primary/15 text-primary flex items-center justify-center font-semibold text-xs shrink-0">
-              {user?.name ? user.name[0].toUpperCase() : 'A'}
-            </div>
-            <div className="flex flex-col min-w-0 text-left group-data-[collapsible=icon]:hidden">
-              <span className="text-xs font-semibold text-sidebar-foreground truncate leading-tight">
-                {user?.name || 'Administrator'}
-              </span>
-              <span className="text-[10px] text-muted-foreground truncate mt-0.5">{user?.role || 'Super Admin'}</span>
-            </div>
-          </div>
+      <SidebarFooter className="border-t border-sidebar-border p-2 flex items-center justify-center overflow-hidden transition-all duration-300">
+        {isCollapsed ? (
           <button
             type="button"
-            onClick={logout}
-            className="size-8 rounded-lg bg-rose-500/15 text-rose-400 border border-rose-500/20 hover:bg-white hover:text-rose-600 hover:border-white transition-all duration-200 cursor-pointer flex items-center justify-center shrink-0 shadow-xs group-data-[collapsible=icon]:hidden"
-            title="Logout"
-            aria-label="Logout"
+            onClick={() => handleItemSelect('admin', 'users')}
+            className="size-8 rounded-full border border-sky-500/50 bg-sidebar-accent hover:bg-sky-500/15 text-sky-400 flex items-center justify-center shrink-0 transition-all duration-200 cursor-pointer mx-auto shadow-xs"
+            title={user?.name ? `${user.name} (My Profile)` : 'My Profile'}
+            aria-label="My Profile"
           >
-            <LogOut className="w-4 h-4 transition-colors" />
+            <User className="w-4 h-4 text-sky-400" />
           </button>
-        </div>
+        ) : (
+          <div className="flex items-center justify-between gap-2.5 px-2 py-1.5 rounded-lg bg-sidebar-accent/50 w-full overflow-hidden">
+            <div
+              onClick={() => handleItemSelect('admin', 'users')}
+              className="flex items-center gap-2.5 min-w-0 cursor-pointer hover:opacity-85 transition-opacity"
+              title="View Profile"
+            >
+              <div className="size-8 rounded-full bg-primary/15 text-primary flex items-center justify-center font-semibold text-xs shrink-0">
+                {user?.name ? user.name[0].toUpperCase() : 'A'}
+              </div>
+              <div className="flex flex-col min-w-0 text-left">
+                <span className="text-xs font-semibold text-sidebar-foreground truncate leading-tight">
+                  {user?.name || 'Administrator'}
+                </span>
+                <span className="text-[10px] text-muted-foreground truncate mt-0.5">{user?.role || 'Super Admin'}</span>
+              </div>
+            </div>
+            <button
+              type="button"
+              onClick={logout}
+              className="size-8 rounded-lg bg-rose-500/15 text-rose-400 border border-rose-500/20 hover:bg-white hover:text-rose-600 hover:border-white transition-all duration-200 cursor-pointer flex items-center justify-center shrink-0 shadow-xs"
+              title="Logout"
+              aria-label="Logout"
+            >
+              <LogOut className="w-4 h-4 transition-colors" />
+            </button>
+          </div>
+        )}
       </SidebarFooter>
     </SidebarPrimitive>
   );
