@@ -37,8 +37,8 @@ export function EmploymentAgreement() {
     parties: {
       agreementDate: new Date().toISOString().split('T')[0],
       nidPassport: '',
-      employerName: 'মো: ইকরামুল হোসেন (ব্যবস্থাপনা পরিচালক)',
-      employerPhone: agencyInfo.phone || '+8801345579534',
+      employerName: '',
+      employerPhone: '',
       employeeName: '',
       employeeEmail: '',
       fatherHusbandName: '',

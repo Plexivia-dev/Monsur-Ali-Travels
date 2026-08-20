@@ -25,8 +25,8 @@ function normalizeAgreementData(item) {
     parties: {
       agreementDate: item.সাধারণ_তথ্য?.চুক্তির_তারিখ || item.parties?.agreementDate || '',
       nidPassport: item.সাধারণ_তথ্য?.জাতীয়_পরিচয়পত্র_পাসপোর্ট || item.parties?.nidPassport || '',
-      employerName: item.সাধারণ_তথ্য?.নিয়োগকর্তা_কর্তৃপক্ষ || item.parties?.employerName || 'মো: ইকরামুল হোসেন (ব্যবস্থাপনা পরিচালক)',
-      employerPhone: item.সাধারণ_তথ্য?.কর্তৃপক্ষের_মোবাইল_নম্বর || item.parties?.employerPhone || '+8801345579534',
+      employerName: item.সাধারণ_তথ্য?.নিয়োগকর্তা_কর্তৃপক্ষ || item.parties?.employerName || '',
+      employerPhone: item.সাধারণ_তথ্য?.কর্তৃপক্ষের_মোবাইল_নম্বর || item.parties?.employerPhone || '',
       employeeName: item.সাধারণ_তথ্য?.কর্মচারীর_পূর্ণ_নাম || item.parties?.employeeName || '',
       employeeEmail: item.সাধারণ_তথ্য?.কর্মচারীর_ইমেইল || item.parties?.employeeEmail || '',
       fatherHusbandName: item.সাধারণ_তথ্য?.পিতা_স্বামীর_নাম || item.parties?.fatherHusbandName || '',

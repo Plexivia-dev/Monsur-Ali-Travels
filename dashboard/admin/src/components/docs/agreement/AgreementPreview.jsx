@@ -65,8 +65,8 @@ export function AgreementPreview({ data }) {
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-1.5 text-[11px] px-1">
           <div><span className="text-slate-600 font-medium">চুক্তির তারিখ :</span> <span className="font-bold">{formatToBengaliDate(data.parties?.agreementDate) || '____________________'}</span></div>
           <div><span className="text-slate-600 font-medium">জাতীয় পরিচয়পত্র/পাসপোর্ট :</span> <span className="font-bold font-mono">{data.parties?.nidPassport || '____________________'}</span></div>
-          <div><span className="text-slate-600 font-medium">নিয়োগকর্তা/কর্তৃপক্ষ :</span> <span className="font-bold">{data.parties?.employerName || 'মো: ইকরামুল হোসেন (ব্যবস্থাপনা পরিচালক)'}</span></div>
-          <div><span className="text-slate-600 font-medium">মোবাইল নম্বর :</span> <span className="font-bold font-mono">{data.parties?.employerPhone || '+8801345579534'}</span></div>
+          <div><span className="text-slate-600 font-medium">নিয়োগকর্তা/কর্তৃপক্ষ :</span> <span className="font-bold">{data.parties?.employerName || '____________________'}</span></div>
+          <div><span className="text-slate-600 font-medium">মোবাইল নম্বর :</span> <span className="font-bold font-mono">{data.parties?.employerPhone || '____________________'}</span></div>
           <div><span className="text-slate-600 font-medium">কর্মচারীর পূর্ণ নাম :</span> <span className="font-bold text-slate-900">{data.parties?.employeeName || '____________________'}</span></div>
           <div><span className="text-slate-600 font-medium">ইমেইল অ্যাড্রেস :</span> <span className="font-bold">{data.parties?.employeeEmail || '____________________'}</span></div>
           <div><span className="text-slate-600 font-medium">পিতা/স্বামীর নাম :</span> <span className="font-bold">{data.parties?.fatherHusbandName || '____________________'}</span></div>
@@ -319,7 +319,7 @@ export function AgreementPreview({ data }) {
               <span className="text-[9.5px] text-slate-400 font-normal italic">(১ম পক্ষ / নিয়োগকারীর স্বাক্ষর)</span>
             </div>
             <div className="font-bold text-xs text-slate-900">নিয়োগকারী / কর্তৃপক্ষের স্বাক্ষর ও সিল</div>
-            <div><span className="text-slate-600">নাম:</span> <span className="font-bold">{data.parties?.employerName || 'মো: ইকরামুল হোসেন'}</span></div>
+            <div><span className="text-slate-600">নাম:</span> <span className="font-bold">{data.parties?.employerName || '________________________'}</span></div>
             <div><span className="text-slate-600">পদবী:</span> <span className="font-bold">ব্যবস্থাপনা পরিচালক / স্বত্বাধিকারী</span></div>
             <div><span className="text-slate-600">তারিখ:</span> <span className="font-bold">{currentDate}</span></div>
           </div>
