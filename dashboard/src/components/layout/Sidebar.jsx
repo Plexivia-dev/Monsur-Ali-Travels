@@ -78,14 +78,11 @@ export const Sidebar = () => {
           <button
             type="button"
             onClick={() => setOpen(true)}
-            className="size-9 rounded-full bg-white p-[4px] border border-border/20 flex items-center justify-center shrink-0 shadow-xs hover:opacity-90 transition-all duration-200 cursor-pointer overflow-hidden"
+            className="size-9 rounded-full border border-border bg-sidebar-accent/60 hover:bg-sidebar-accent text-foreground flex items-center justify-center shrink-0 shadow-xs transition-all duration-200 cursor-pointer"
             title="Open Sidebar"
+            aria-label="Open Sidebar"
           >
-            {logoImg ? (
-              <img src={logoImg} alt="Monsur Ali Travels" className="w-full h-full object-contain" />
-            ) : (
-              <Globe className="w-4 h-4 text-primary" />
-            )}
+            <Menu className="w-4 h-4 text-foreground" />
           </button>
         ) : (
           <div className="flex items-center justify-between w-full px-1">
