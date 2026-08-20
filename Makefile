@@ -1,4 +1,4 @@
-.PHONY: deploy build-bg build-server build-dash logs status down
+.PHONY: deploy build-bg build-dash build-admin build-front logs status down
 
 deploy:
 	git pull origin live
@@ -10,15 +10,20 @@ build-bg:
 	docker compose -f docker-compose.prod.yml build --no-cache backend
 	docker compose -f docker-compose.prod.yml up -d backend
 
-build-server:
-	git pull origin live
-	docker compose -f docker-compose.prod.yml build --no-cache server
-	docker compose -f docker-compose.prod.yml up -d server
-
 build-dash:
 	git pull origin live
 	docker compose -f docker-compose.prod.yml build --no-cache dashboard
 	docker compose -f docker-compose.prod.yml up -d dashboard
+
+build-admin:
+	git pull origin live
+	docker compose -f docker-compose.prod.yml build --no-cache dashboard-admin
+	docker compose -f docker-compose.prod.yml up -d dashboard-admin
+
+build-front:
+	git pull origin live
+	docker compose -f docker-compose.prod.yml build --no-cache frontend
+	docker compose -f docker-compose.prod.yml up -d frontend
 
 status:
 	docker compose -f docker-compose.prod.yml ps
@@ -29,11 +34,15 @@ logs:
 logs-bg:
 	docker compose -f docker-compose.prod.yml logs -f backend
 
-logs-server:
-	docker compose -f docker-compose.prod.yml logs -f server
-
 logs-dash:
 	docker compose -f docker-compose.prod.yml logs -f dashboard
 
+logs-admin:
+	docker compose -f docker-compose.prod.yml logs -f dashboard-admin
+
+logs-front:
+	docker compose -f docker-compose.prod.yml logs -f frontend
+
 down:
 	docker compose -f docker-compose.prod.yml down
+

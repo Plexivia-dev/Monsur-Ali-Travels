@@ -65,12 +65,12 @@ chmod -R 777 "/var/www/documents"
 if [ -d "$PROJECT_DIR/.git" ]; then
     echo "Existing repository found at $PROJECT_DIR, pulling latest changes..."
     cd "$PROJECT_DIR"
-    git fetch origin master
-    git reset --hard origin/master
+    git fetch origin live
+    git reset --hard origin/live
 else
     echo "Cloning repository from $REPO_URL..."
     mkdir -p "$PROJECT_DIR"
-    git clone -b master "$REPO_URL" "$PROJECT_DIR"
+    git clone -b live "$REPO_URL" "$PROJECT_DIR"
     cd "$PROJECT_DIR"
 fi
 
