@@ -70,27 +70,26 @@ export const SERVICE_PURPOSES = [
 ];
 
 export function getDefaultMoneyReceiptData() {
-  const initialAmount = 50000;
   return {
     _id: null,
     receiptNo: generateReceiptNo(),
     date: new Date().toISOString().split('T')[0],
     time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-    clientName: 'Md. Abdul Karim',
-    passportNumber: 'A08492014',
-    phone: '+8801712345678',
-    purpose: 'Visa Processing & Flight Ticket Booking (Saudi Arabia)',
-    receivedBy: 'Md. Tanvir Hossain',
-    receivedByRole: 'Accounts Officer',
+    clientName: '',
+    passportNumber: '',
+    phone: '',
+    purpose: '',
+    receivedBy: '',
+    receivedByRole: '',
     paymentMethod: 'Cash',
-    amount: initialAmount,
-    amountInWords: numberToWords(initialAmount),
-    preparedBy: 'প্রদানকারী',
-    receivedBySignature: 'গ্রহণকারী',
-    accountsSignature: 'একাউন্টেন্ট',
-    approvedBySignature: 'জিএম / প্রোপাইটার',
+    amount: '',
+    amountInWords: '',
+    preparedBy: '',
+    receivedBySignature: '',
+    accountsSignature: '',
+    approvedBySignature: '',
     copyType: 'Original Copy (মূল কপি)',
-    dualPrint: true, // Default: print 2 copies on single A4 page
+    dualPrint: true,
     notes: '',
   };
 }
