@@ -131,7 +131,7 @@ export const Sidebar = () => {
 
           return (
             <SidebarGroup key={groupIdx} className="p-0">
-              <SidebarGroupLabel className="px-3 pt-2 pb-1 text-[11px] font-bold tracking-widest text-sky-300 uppercase">
+              <SidebarGroupLabel className="px-3 pt-3 pb-1 text-[11px] font-extrabold tracking-widest text-sky-400 uppercase">
                 {displayGroupLabel}
               </SidebarGroupLabel>
               <SidebarGroupContent>
@@ -165,16 +165,16 @@ export const Sidebar = () => {
                                 }}
                                 className={cn(
                                   'w-full justify-between cursor-pointer font-medium text-sm py-2 px-3 rounded-xl transition-all duration-200 text-white hover:text-white hover:bg-white/10',
-                                  isChildActive && 'text-white font-bold bg-white/15 border border-sky-400/30 shadow-xs'
+                                  isChildActive && 'text-white font-bold bg-sky-500/25 border border-sky-400/40 shadow-xs'
                                 )}
                               >
                                 <div className="flex items-center gap-2.5 min-w-0">
-                                  {renderIcon(item.icon, cn('w-4.5 h-4.5 shrink-0 transition-colors text-sky-400', isChildActive && 'text-sky-300'))}
+                                  {renderIcon(item.icon, cn('w-4.5 h-4.5 shrink-0 transition-colors', isChildActive ? 'text-white' : 'text-sky-300'))}
                                   <span className="truncate">{displayItemLabel}</span>
                                 </div>
                                 <ChevronRight
                                   className={cn(
-                                    'w-4 h-4 text-sky-200/70 transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90 group-data-[collapsible=icon]:hidden'
+                                    'w-4 h-4 text-sky-300 transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90 group-data-[collapsible=icon]:hidden'
                                   )}
                                 />
                               </SidebarMenuButton>
@@ -194,11 +194,11 @@ export const Sidebar = () => {
                                         className={cn(
                                           'cursor-pointer text-[13px] rounded-lg py-2 px-2.5 flex items-center gap-2 transition-all duration-200',
                                           isActive
-                                            ? 'bg-sky-400/25 text-white font-bold border border-sky-400/40 shadow-xs'
+                                            ? 'bg-sky-500/25 text-white font-bold border border-sky-400/40 shadow-xs'
                                             : 'text-slate-100 hover:text-white hover:bg-white/10 font-medium'
                                         )}
                                       >
-                                        {subItem.icon && renderIcon(subItem.icon, cn('w-4 h-4 shrink-0 text-sky-400', isActive && 'text-sky-200'))}
+                                        {subItem.icon && renderIcon(subItem.icon, cn('w-4 h-4 shrink-0 transition-colors', isActive ? 'text-white' : 'text-sky-300/90'))}
                                         <span className="truncate">{displaySubLabel}</span>
                                       </SidebarMenuSubButton>
                                     </SidebarMenuSubItem>
@@ -222,13 +222,13 @@ export const Sidebar = () => {
                           className={cn(
                             'cursor-pointer text-sm font-medium py-2 px-3 rounded-xl transition-all duration-200',
                             isActive
-                              ? 'bg-sky-400/20 text-white font-bold border border-sky-400/30 shadow-xs'
+                              ? 'bg-sky-500/25 text-white font-bold border border-sky-400/40 shadow-xs'
                               : 'text-white hover:bg-white/10 hover:text-white'
                           )}
                         >
                           {renderIcon(
                             item.icon,
-                            cn('w-4.5 h-4.5 shrink-0 transition-colors text-sky-400', isActive && 'text-sky-300')
+                            cn('w-4.5 h-4.5 shrink-0 transition-colors', isActive ? 'text-white' : 'text-sky-300')
                           )}
                           <span className="truncate">{displayItemLabel}</span>
                         </SidebarMenuButton>
