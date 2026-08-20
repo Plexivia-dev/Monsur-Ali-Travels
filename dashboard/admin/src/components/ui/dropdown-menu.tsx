@@ -30,8 +30,9 @@ export const DropdownMenu = ({ children, defaultOpen = false }: any) => {
   )
 }
 
-export const DropdownMenuTrigger = ({ render, isOpen, setIsOpen }: any) => {
-  return React.cloneElement(render, {
+export const DropdownMenuTrigger = ({ render, children, isOpen, setIsOpen }: any) => {
+  const element = render || children
+  return React.cloneElement(element, {
     onClick: () => setIsOpen(!isOpen),
   })
 }
@@ -63,6 +64,62 @@ export const DropdownMenuContent = ({ children, isOpen, setIsOpen, align = "end"
       })}
     </div>
   )
+}
+
+export const DropdownMenuGroup = ({ children, setIsOpen }: any) => {
+  return (
+    <div className="flex flex-col">
+      {React.Children.map(children, (child) => {
+        if (React.isValidElement(child)) {
+          return React.cloneElement(child as React.ReactElement<any>, {
+            setIsOpen,
+          })
+        }
+        return child
+      })}
+    </div>
+  )
+}
+
+export const DropdownMenuItem = ({ children, variant, render, onClick, setIsOpen, className }: any) => {
+  const handleClick = (e: React.MouseEvent) => {
+    if (onClick) onClick(e)
+    if (setIsOpen) setIsOpen(false)
+  }
+
+  const baseClasses = cn(
+    "relative flex cursor-pointer select-none items-center rounded-sm py-1.5 px-2 text-xs outline-none transition-colors hover:bg-accent hover:text-accent-foreground gap-2",
+    variant === "destructive" && "text-destructive hover:bg-destructive/10 hover:text-destructive",
+    className
+  )
+
+  if (render) {
+    return React.cloneElement(render, {
+      className: cn(baseClasses, render.props.className),
+      onClick: (e: any) => {
+        handleClick(e)
+        if (render.props.onClick) render.props.onClick(e)
+      }
+    })
+  }
+
+  return (
+    <div onClick={handleClick} className={baseClasses}>
+      {children}
+    </div>
+  )
+}
+
+export const DropdownMenuLabel = ({ children, className }: any) => {
+  return (
+    <div className={cn("px-2 py-1.5 text-xs font-semibold", className)}>
+      {children}
+    </div>
+  )
+}
+
+export const DropdownMenuSeparator = () => {
+  return <div className="-mx-1 my-1 h-px bg-border" />
 }
 
 export const DropdownMenuRadioGroup = ({ children, value, onValueChange, setIsOpen }: any) => {
