@@ -140,7 +140,7 @@ export function InvoicePreview({ data = {}, onPrint }) {
             <div className="bg-slate-50 p-3.5 print:p-2.5 rounded-[4px] border border-slate-300 flex justify-between items-center gap-4">
               <div className="text-sm print:text-xs space-y-0.5 flex-1">
                 <span className="text-xs print:text-[10px] font-extrabold uppercase tracking-wider text-slate-600 block">BILLED TO:</span>
-                <div className="font-bold text-base print:text-sm text-slate-900">{client.name || 'সম্মানিত কাস্টমার'}</div>
+                <div className="font-bold text-base print:text-sm text-slate-900">{client.name || 'Valued Client'}</div>
                 {client.contactPerson && <div>Attn: {client.contactPerson}</div>}
                 {client.address && <div>Address: {client.address}</div>}
                 {(client.phone || client.email) && (

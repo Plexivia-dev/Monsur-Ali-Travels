@@ -58,15 +58,15 @@ export function InvoiceForm({ data, onChange, onSubmit, onReset, isSubmitting = 
           
           {/* Status Dropdown */}
           <div className="flex items-center space-x-2 shrink-0">
-            <label className="text-foreground font-bold text-sm">পেমেন্ট স্ট্যাটাস (Status): *</label>
+            <label className="text-foreground font-bold text-sm">Payment Status: *</label>
             <select
               value={data.paymentStatus}
               onChange={e => onChange({ ...data, paymentStatus: e.target.value })}
               className={`border rounded-[4px] px-3 py-2 text-sm font-bold outline-none cursor-pointer transition-colors ${getStatusColor(data.paymentStatus)}`}
             >
-              <option value="Paid" className="bg-white text-emerald-600 font-bold">Paid (পরিশোধিত)</option>
-              <option value="Pending" className="bg-white text-amber-600 font-bold">Pending (অপেক্ষমান)</option>
-              <option value="Overdue" className="bg-white text-rose-600 font-bold">Overdue (বকেয়া)</option>
+              <option value="Paid" className="bg-white text-emerald-600 font-bold">Paid</option>
+              <option value="Pending" className="bg-white text-amber-600 font-bold">Pending</option>
+              <option value="Overdue" className="bg-white text-rose-600 font-bold">Overdue</option>
             </select>
           </div>
         </div>
@@ -74,7 +74,7 @@ export function InvoiceForm({ data, onChange, onSubmit, onReset, isSubmitting = 
         {/* METADATA */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
           <div>
-            <label className="block font-bold text-foreground text-sm mb-1.5">ইস্যুর তারিখ (Issue Date)</label>
+            <label className="block font-bold text-foreground text-sm mb-1.5">Issue Date</label>
             <DatePicker
               value={data.issueDate}
               onChange={val => onChange({ ...data, issueDate: val })}
@@ -82,7 +82,7 @@ export function InvoiceForm({ data, onChange, onSubmit, onReset, isSubmitting = 
           </div>
 
           <div>
-            <label className="block font-bold text-foreground text-sm mb-1.5">পরিশোধের শেষ তারিখ (Due Date)</label>
+            <label className="block font-bold text-foreground text-sm mb-1.5">Due Date</label>
             <DatePicker
               value={data.dueDate}
               onChange={val => onChange({ ...data, dueDate: val })}
@@ -92,11 +92,11 @@ export function InvoiceForm({ data, onChange, onSubmit, onReset, isSubmitting = 
 
         {/* BILLED TO */}
         <div className="border-t border-border pt-5 space-y-3">
-          <h4 className="font-bold text-foreground text-base uppercase tracking-wider text-emerald-600">বিল টু (BILLED TO)</h4>
+          <h4 className="font-bold text-foreground text-base uppercase tracking-wider text-emerald-600">Billed To (Client Details)</h4>
           
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
             <div>
-              <label className="block font-bold text-foreground text-sm mb-1.5">কাস্টমার / প্রতিষ্ঠানের নাম *</label>
+              <label className="block font-bold text-foreground text-sm mb-1.5">Client / Organization Name *</label>
               <input
                 type="text"
                 required
@@ -107,7 +107,7 @@ export function InvoiceForm({ data, onChange, onSubmit, onReset, isSubmitting = 
             </div>
 
             <div>
-              <label className="block font-bold text-foreground text-sm mb-1.5">যোগাযোগকারীর নাম (Attn)</label>
+              <label className="block font-bold text-foreground text-sm mb-1.5">Contact Person (Attn)</label>
               <input
                 type="text"
                 value={data.client.contactPerson}
@@ -117,7 +117,7 @@ export function InvoiceForm({ data, onChange, onSubmit, onReset, isSubmitting = 
             </div>
 
             <div>
-              <label className="block font-bold text-foreground text-sm mb-1.5">ফোন নম্বর</label>
+              <label className="block font-bold text-foreground text-sm mb-1.5">Phone Number</label>
               <BdPhoneInput
                 value={data.client.phone}
                 onChange={(val) => handleClientChange('phone', val)}
@@ -125,7 +125,7 @@ export function InvoiceForm({ data, onChange, onSubmit, onReset, isSubmitting = 
             </div>
 
             <div>
-              <label className="block font-bold text-foreground text-sm mb-1.5">ইমেইল অ্যাড্রেস</label>
+              <label className="block font-bold text-foreground text-sm mb-1.5">Email Address</label>
               <input
                 type="email"
                 value={data.client.email}
@@ -135,7 +135,7 @@ export function InvoiceForm({ data, onChange, onSubmit, onReset, isSubmitting = 
             </div>
 
             <div className="sm:col-span-2">
-              <label className="block font-bold text-foreground text-sm mb-1.5">ঠিকানা (Address)</label>
+              <label className="block font-bold text-foreground text-sm mb-1.5">Billing Address</label>
               <input
                 type="text"
                 value={data.client.address}
@@ -150,7 +150,7 @@ export function InvoiceForm({ data, onChange, onSubmit, onReset, isSubmitting = 
         <div className="border-t border-border pt-5 space-y-4">
           <div className="flex items-center justify-between">
             <h4 className="font-bold text-foreground text-base uppercase tracking-wider text-emerald-600">
-              বিল আইটেমস (Dynamic Invoice Line Items)
+              Invoice Line Items
             </h4>
             <button
               type="button"
@@ -158,14 +158,14 @@ export function InvoiceForm({ data, onChange, onSubmit, onReset, isSubmitting = 
               className="flex items-center gap-1.5 bg-emerald-500/10 text-emerald-600 hover:bg-emerald-500/20 font-bold text-xs px-3.5 py-2 rounded-[4px] transition-colors cursor-pointer"
             >
               <Plus className="w-4 h-4" />
-              <span>আইটেম যোগ করুন (+ Add Item)</span>
+              <span>+ Add Item</span>
             </button>
           </div>
 
           {data.items.map((item, idx) => (
             <div key={item.id} className="bg-muted/30 border border-border p-4 rounded-[4px] space-y-3">
               <div className="flex items-center justify-between border-b border-border/50 pb-1.5">
-                <span className="font-bold text-foreground text-sm">আইটেম #{idx + 1} (Item {idx + 1})</span>
+                <span className="font-bold text-foreground text-sm">Item #{idx + 1}</span>
                 {data.items.length > 1 && (
                   <button
                     type="button"
@@ -174,14 +174,14 @@ export function InvoiceForm({ data, onChange, onSubmit, onReset, isSubmitting = 
                     title="Remove Item"
                   >
                     <Trash2 className="w-4 h-4" />
-                    <span>মুছে ফেলুন</span>
+                    <span>Remove</span>
                   </button>
                 )}
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-12 gap-4 items-center">
                 <div className="sm:col-span-4">
-                  <label className="block font-semibold text-foreground text-sm mb-1">আইটেম টাইটেল (Short Title) *</label>
+                  <label className="block font-semibold text-foreground text-sm mb-1">Item Title *</label>
                   <input
                     type="text"
                     required
@@ -192,7 +192,7 @@ export function InvoiceForm({ data, onChange, onSubmit, onReset, isSubmitting = 
                 </div>
 
                 <div className="sm:col-span-4">
-                  <label className="block font-semibold text-foreground text-sm mb-1">বিবরণ (Description)</label>
+                  <label className="block font-semibold text-foreground text-sm mb-1">Description</label>
                   <input
                     type="text"
                     value={item.description || ''}
@@ -202,7 +202,7 @@ export function InvoiceForm({ data, onChange, onSubmit, onReset, isSubmitting = 
                 </div>
 
                 <div className="sm:col-span-2">
-                  <label className="block font-semibold text-foreground text-sm mb-1">পরিমাণ (Qty)</label>
+                  <label className="block font-semibold text-foreground text-sm mb-1">Qty</label>
                   <input
                     type="number"
                     min="0"
@@ -213,7 +213,7 @@ export function InvoiceForm({ data, onChange, onSubmit, onReset, isSubmitting = 
                 </div>
 
                 <div className="sm:col-span-2">
-                  <label className="block font-semibold text-foreground text-sm mb-1">মূল্য (Price ৳) *</label>
+                  <label className="block font-semibold text-foreground text-sm mb-1">Unit Price (BDT) *</label>
                   <input
                     type="number"
                     min="0"
@@ -232,7 +232,7 @@ export function InvoiceForm({ data, onChange, onSubmit, onReset, isSubmitting = 
         <div className="border-t border-border pt-5 space-y-4">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
             <div>
-              <label className="block font-bold text-foreground text-sm mb-1.5">ট্যাক্স / ভ্যাট হার (Tax Rate %)</label>
+              <label className="block font-bold text-foreground text-sm mb-1.5">Tax / VAT Rate (%)</label>
               <input
                 type="number"
                 min="0"
@@ -245,7 +245,7 @@ export function InvoiceForm({ data, onChange, onSubmit, onReset, isSubmitting = 
           </div>
 
           <div>
-            <label className="block font-bold text-foreground text-sm mb-1.5">পেমেন্ট নির্দেশনাবলী ও শর্তাবলী (Payment Instructions & Terms)</label>
+            <label className="block font-bold text-foreground text-sm mb-1.5">Payment Instructions & Terms</label>
             <textarea
               rows={2}
               value={data.paymentTerms}
@@ -264,7 +264,7 @@ export function InvoiceForm({ data, onChange, onSubmit, onReset, isSubmitting = 
           className="flex items-center gap-1.5 px-4 py-2.5 rounded-[4px] text-sm font-bold border border-border bg-muted/40 hover:bg-muted text-foreground transition-all cursor-pointer"
         >
           <RotateCcw className="w-4 h-4 text-muted-foreground" />
-          <span>ফর্ম রিসেট (Reset)</span>
+          <span>Reset Form</span>
         </button>
 
         <button
@@ -275,12 +275,12 @@ export function InvoiceForm({ data, onChange, onSubmit, onReset, isSubmitting = 
           {isSubmitting ? (
             <>
               <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin shrink-0" />
-              <span>সংরক্ষণ করা হচ্ছে...</span>
+              <span>Saving to Database & Generating Invoice...</span>
             </>
           ) : (
             <>
               <Eye className="w-4 h-4" />
-              <span>ইনভয়েস তৈরি ও প্রিভিউ দেখুন</span>
+              <span>Generate Invoice & View Preview</span>
             </>
           )}
         </button>
