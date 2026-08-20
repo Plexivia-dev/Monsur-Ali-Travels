@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { RotateCcw, Eye, FileCheck, UserCheck } from 'lucide-react';
 import { BdPhoneInput } from '../../common/BdPhoneInput';
 import { DatePicker } from '../../ui/date-picker';
-import { Input, Select } from '../../ui/Input';
+import { Input, Select } from '../../ui/input';
 import { Label } from '../../ui/label';
 import { Textarea } from '../../ui/textarea';
 
