@@ -14,11 +14,11 @@ import {
 import { Button } from '@/components/ui/button';
 
 const PORTAL_LABELS = {
-  docs: { label: 'Document Studio', icon: FileSpreadsheet, homeSub: 'agreement' },
-  data: { label: 'Data Records Center', icon: Database, homeSub: 'customer-profiles' },
-  agency: { label: 'Manpower Agency', icon: Users2, homeSub: 'dashboard' },
-  factory: { label: 'Brick Factory', icon: Factory, homeSub: 'dashboard' },
-  admin: { label: 'System Admin', icon: Shield, homeSub: 'users' },
+  docs: { label: 'Document Studio', icon: FileSpreadsheet, homeSub: 'agreement', hasParentPage: false },
+  data: { label: 'Data Records Center', icon: Database, homeSub: 'customer-profiles', hasParentPage: false },
+  agency: { label: 'Manpower Agency', icon: Users2, homeSub: 'dashboard', hasParentPage: true },
+  factory: { label: 'Brick Factory', icon: Factory, homeSub: 'dashboard', hasParentPage: true },
+  admin: { label: 'System Admin', icon: Shield, homeSub: 'users', hasParentPage: false },
 };
 
 const SUBMODULE_LABELS = {
@@ -109,14 +109,21 @@ export function TopBreadcrumbBar() {
 
           <ChevronRight className="w-3.5 h-3.5 text-muted-foreground/50 shrink-0" />
 
-          <button
-            type="button"
-            onClick={() => switchPortal(activePortal, currentPortalInfo.homeSub)}
-            className="flex items-center gap-1.5 text-muted-foreground hover:text-foreground font-medium transition-colors cursor-pointer shrink-0"
-          >
-            <PortalIcon className="w-3.5 h-3.5 text-primary" />
-            <span>{currentPortalInfo.label}</span>
-          </button>
+          {PORTAL_LABELS[activePortal]?.hasParentPage ? (
+            <button
+              type="button"
+              onClick={() => switchPortal(activePortal, currentPortalInfo.homeSub)}
+              className="flex items-center gap-1.5 text-muted-foreground hover:text-foreground font-medium transition-colors cursor-pointer shrink-0"
+            >
+              <PortalIcon className="w-3.5 h-3.5 text-primary" />
+              <span>{currentPortalInfo.label}</span>
+            </button>
+          ) : (
+            <span className="flex items-center gap-1.5 text-muted-foreground font-medium shrink-0 select-none">
+              <PortalIcon className="w-3.5 h-3.5 text-primary/70" />
+              <span>{currentPortalInfo.label}</span>
+            </span>
+          )}
 
           <ChevronRight className="w-3.5 h-3.5 text-muted-foreground/50 shrink-0" />
 

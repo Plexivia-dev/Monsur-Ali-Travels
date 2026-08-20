@@ -21,16 +21,42 @@ function BreadcrumbItem({ className, ...props }) {
 }
 
 function BreadcrumbLink({ className, href, onClick, children, ...props }) {
+  if (!href && !onClick) {
+    return (
+      <span
+        data-slot="breadcrumb-link"
+        className={cn('text-muted-foreground select-none font-normal', className)}
+        {...props}
+      >
+        {children}
+      </span>
+    );
+  }
+
+  if (href) {
+    return (
+      <a
+        data-slot="breadcrumb-link"
+        href={href}
+        onClick={onClick}
+        className={cn('hover:text-foreground transition-colors cursor-pointer', className)}
+        {...props}
+      >
+        {children}
+      </a>
+    );
+  }
+
   return (
-    <a
+    <button
+      type="button"
       data-slot="breadcrumb-link"
-      href={href || '#'}
       onClick={onClick}
-      className={cn('hover:text-foreground transition-colors cursor-pointer', className)}
+      className={cn('hover:text-foreground transition-colors cursor-pointer bg-transparent border-0 p-0 font-inherit text-inherit inline-flex items-center', className)}
       {...props}
     >
       {children}
-    </a>
+    </button>
   );
 }
 

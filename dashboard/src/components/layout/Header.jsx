@@ -51,6 +51,8 @@ const SUBMODULE_KEYS = {
   settings: 'nav.globalSettings',
 };
 
+const PORTALS_WITH_PARENT_PAGE = ['agency', 'factory'];
+
 export const Header = () => {
   const { t } = useTranslation();
   const activePortal = usePortalStore((state) => state.activePortal);
@@ -65,6 +67,8 @@ export const Header = () => {
     ? t(SUBMODULE_KEYS[activeSubmodule])
     : activeSubmodule.replace(/-/g, ' ');
 
+  const hasParentPage = PORTALS_WITH_PARENT_PAGE.includes(activePortal) && activeSubmodule !== 'dashboard';
+
   return (
     <header className="sticky top-0 z-40 bg-card/80 backdrop-blur-md border-b border-border transition-colors">
       <div className="flex h-14 w-full items-center justify-between gap-4 px-4 sm:px-6">
@@ -73,9 +77,15 @@ export const Header = () => {
           <Breadcrumb className="hidden sm:block">
             <BreadcrumbList>
               <BreadcrumbItem>
-                <BreadcrumbLink onClick={() => switchPortal(activePortal, 'dashboard')}>
-                  {portalLabel}
-                </BreadcrumbLink>
+                {hasParentPage ? (
+                  <BreadcrumbLink onClick={() => switchPortal(activePortal, 'dashboard')}>
+                    {portalLabel}
+                  </BreadcrumbLink>
+                ) : (
+                  <BreadcrumbLink>
+                    {portalLabel}
+                  </BreadcrumbLink>
+                )}
               </BreadcrumbItem>
               <BreadcrumbSeparator />
               <BreadcrumbItem>
