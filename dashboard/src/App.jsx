@@ -13,7 +13,7 @@ import DocumentStudio from './pages/DocumentStudio';
 import DocumentData from './pages/DocumentData';
 import { ToastContainer } from './components/common/ToastContainer';
 import { GlobalSearchModal } from './components/common/GlobalSearchModal';
-import { Toaster } from 'sonner';
+import { Toaster } from './components/ui/sonner';
 import LoginPage from './pages/LoginPage';
 
 const queryClient = new QueryClient({
@@ -90,7 +90,7 @@ function MainLayout() {
 
           {/* Global Utilities */}
           <ToastContainer />
-          <Toaster richColors position="top-right" />
+          <Toaster />
           <GlobalSearchModal />
         </SidebarInset>
       </div>

@@ -9,8 +9,9 @@ const Toaster = ({ ...props }) => {
     <Sonner
       theme={theme}
       className="toaster group"
-      position="top-right"
+      position="bottom-right"
       richColors
+      closeButton
       visibleToasts={1}
       duration={3500}
       icons={{
@@ -36,14 +37,12 @@ const Toaster = ({ ...props }) => {
           "--normal-text": "var(--popover-foreground)",
           "--normal-border": "var(--border)",
           "--border-radius": "var(--radius)",
-          top: "32px",
-          right: "0px",
-          "--x-gutter": "0px",
         }
       }
       toastOptions={{
         classNames: {
           toast: "cn-toast",
+          closeButton: "border border-border/50 text-foreground bg-card/80 hover:bg-muted",
         },
       }}
       {...props}
