@@ -40,12 +40,34 @@ export const AdminOverview = ({ adminData }) => {
     {};
 
   // Feed items
-  const rawFeed = adminData?.recentActivityFeed || [];
+  const backendNotifications = (adminData?.notifications || []).map((notif) => {
+    // Human readable duration/date
+    const notifDate = new Date(notif.createdAt);
+    const diffMs = Date.now() - notifDate.getTime();
+    const diffMins = Math.max(0, Math.floor(diffMs / 60000));
+    const timestampStr = diffMins === 0 ? 'Just now' : diffMins < 60 ? `${diffMins}m ago` : notifDate.toLocaleDateString();
+
+    return {
+      id: notif._id || notif.id,
+      timestamp: timestampStr,
+      timeISO: notif.createdAt,
+      module: notif.module === 'passport' ? 'Passport' : 'Agency',
+      user: notif.createdBy || 'Staff',
+      avatar: (notif.createdBy || 'ST').substring(0, 2).toUpperCase(),
+      title: notif.title,
+      description: notif.message,
+      amount: '—',
+      type: notif.type === 'danger' ? 'expense' : 'income',
+      status: notif.module === 'passport' ? 'Passport' : 'Visa'
+    };
+  });
+
+  const rawFeed = [...backendNotifications, ...(adminData?.recentActivityFeed || [])];
   const filteredFeed = rawFeed.filter((item) => {
     const matchesModule =
       feedFilter === 'All' ||
       (feedFilter === 'Factory' && item.module === 'Factory') ||
-      (feedFilter === 'Agency' && item.module === 'Agency');
+      (feedFilter === 'Agency' && (item.module === 'Agency' || item.module === 'Passport'));
 
     const matchesSearch =
       !searchQuery ||
@@ -245,10 +267,12 @@ export const AdminOverview = ({ adminData }) => {
                           className={`text-[10px] font-bold px-2 py-0.5 rounded-full border ${
                             item.module === 'Factory'
                               ? 'bg-amber-500/10 text-amber-500 border-amber-500/30'
+                              : item.module === 'Passport'
+                              ? 'bg-purple-500/10 text-purple-500 border-purple-500/30'
                               : 'bg-sky-500/10 text-sky-500 border-sky-500/30'
                           }`}
                         >
-                          {item.module === 'Factory' ? 'Brick Factory' : 'Manpower Agency'}
+                          {item.module === 'Factory' ? 'Brick Factory' : item.module === 'Passport' ? 'Passport Office' : 'Manpower Agency'}
                         </span>
                         <span className="text-[11px] font-medium text-muted-foreground">
                           {item.timestamp}

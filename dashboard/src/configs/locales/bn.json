@@ -342,5 +342,21 @@
     "netSalary": "প্রদেয় বেতন (Net ৳)",
     "paymentMethod": "পেমেন্ট মেথড",
     "date": "তারিখ"
+  },
+  "visaStatus": {
+    "received": "ফাইল রিসিভ করা হয়েছে",
+    "sent_to_senior": "ঊর্ধ্বতন কর্মকর্তার কাছে পাঠানো হয়েছে",
+    "received_by_senior": "ঊর্ধ্বতন কর্মকর্তা কর্তৃক রিসিভড",
+    "sent_to_lawyer": "লইয়ারের কাছে পাঠানো হয়েছে",
+    "online_submitted": "অনলাইন সাবমিটেড",
+    "approved": "এপ্রুভড",
+    "indian_visa_submitted": "ইন্ডিয়ান ভিসা সাবমিটেড",
+    "indian_visa_completed": "ইন্ডিয়ান ভিসা কমপ্লিট",
+    "rejected": "রিজেক্টেড",
+    "police_clearance_applied": "পুলিশ ক্লিয়ারেন্স আবেদনকৃত",
+    "ready_for_ecc_nda": "ECC এবং NDA এর জন্য প্রস্তুত",
+    "submitted_to_bsf": "গ্লোবাল বিএসএফ সেন্টারে সাবমিট করা হয়েছে",
+    "interview_scheduled": "ইন্টারভিউ নির্ধারিত",
+    "complete_process": "প্রক্রিয়া সম্পন্ন"
   }
 }

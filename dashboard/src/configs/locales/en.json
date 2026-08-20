@@ -341,5 +341,21 @@
     "netSalary": "Net Salary (৳)",
     "paymentMethod": "Payment Method",
     "date": "Date"
+  },
+  "visaStatus": {
+    "received": "File Received",
+    "sent_to_senior": "Sent to Senior",
+    "received_by_senior": "Received by Senior",
+    "sent_to_lawyer": "Sent to Lawyer",
+    "online_submitted": "Online Submitted",
+    "approved": "Approved",
+    "indian_visa_submitted": "Indian Visa Submitted",
+    "indian_visa_completed": "Indian Visa Completed",
+    "rejected": "Rejected",
+    "police_clearance_applied": "Police Clearance Applied",
+    "ready_for_ecc_nda": "Ready for ECC & NDA",
+    "submitted_to_bsf": "Submitted to BSF Center",
+    "interview_scheduled": "Interview Scheduled",
+    "complete_process": "Complete Process"
   }
 }

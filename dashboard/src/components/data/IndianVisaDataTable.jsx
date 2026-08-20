@@ -10,11 +10,20 @@ import { MoneyReceiptModal } from '../docs/receipt/MoneyReceiptModal';
 import { ConfirmDeleteDialog } from '@/components/ui/confirm-delete-dialog';
 
 const VISA_STAGES = [
-  { id: 'pending', label: 'আবেদন গ্রহণ (Pending)', color: 'bg-amber-500/10 text-amber-600 border-amber-500/20' },
-  { id: 'submitted', label: 'ফাইল সাবমিটেড (Submitted)', color: 'bg-blue-500/10 text-blue-600 border-blue-500/20' },
-  { id: 'accepted', label: 'ভিসা এক্সেপ্টেড (Visa Accepted)', color: 'bg-emerald-500/10 text-emerald-600 border-emerald-500/20' },
-  { id: 'rejected', label: 'ভিসা রিজেক্টেড (Visa Rejected)', color: 'bg-rose-500/10 text-rose-600 border-rose-500/20' },
-  { id: 'delivered', label: 'ডেলিভারি সম্পন্ন (Delivered)', color: 'bg-purple-500/10 text-purple-600 border-purple-500/20' },
+  { id: 'received', label: 'File Received', color: 'bg-amber-500/10 text-amber-600 border-amber-500/20' },
+  { id: 'sent_to_senior', label: 'Sent to Senior', color: 'bg-blue-500/10 text-blue-600 border-blue-500/20' },
+  { id: 'received_by_senior', label: 'Received by Senior', color: 'bg-indigo-500/10 text-indigo-600 border-indigo-500/20' },
+  { id: 'sent_to_lawyer', label: 'Sent to Lawyer', color: 'bg-violet-500/10 text-violet-600 border-violet-500/20' },
+  { id: 'online_submitted', label: 'Online Submitted', color: 'bg-sky-500/10 text-sky-600 border-sky-500/20' },
+  { id: 'approved', label: 'Approved', color: 'bg-emerald-500/10 text-emerald-600 border-emerald-500/20' },
+  { id: 'indian_visa_submitted', label: 'Indian Visa Submitted', color: 'bg-teal-500/10 text-teal-600 border-teal-500/20' },
+  { id: 'indian_visa_completed', label: 'Indian Visa Completed', color: 'bg-green-500/10 text-green-600 border-green-500/20' },
+  { id: 'rejected', label: 'Rejected', color: 'bg-rose-500/10 text-rose-600 border-rose-500/20' },
+  { id: 'police_clearance_applied', label: 'Police Clearance Applied', color: 'bg-cyan-500/10 text-cyan-600 border-cyan-500/20' },
+  { id: 'ready_for_ecc_nda', label: 'Ready for ECC & NDA', color: 'bg-orange-500/10 text-orange-600 border-orange-500/20' },
+  { id: 'submitted_to_bsf', label: 'Submitted to BSF Center', color: 'bg-purple-500/10 text-purple-600 border-purple-500/20' },
+  { id: 'interview_scheduled', label: 'Interview Scheduled', color: 'bg-fuchsia-500/10 text-fuchsia-600 border-fuchsia-500/20' },
+  { id: 'complete_process', label: 'Complete Process', color: 'bg-emerald-600/10 text-emerald-700 border-emerald-600/20' },
 ];
 
 import { useTranslation } from 'react-i18next';
@@ -188,11 +197,12 @@ export function IndianVisaDataTable() {
             onChange={(e) => setStatus(e.target.value)}
             className="bg-background border border-border rounded-lg px-3 py-1.5 text-xs font-bold text-foreground outline-none cursor-pointer"
           >
-            <option value="all">সকল স্ট্যাটাস</option>
-            <option value="pending">Pending (অপেক্ষমান)</option>
-            <option value="processing">Processing (প্রসেসিং)</option>
-            <option value="submitted">Submitted (জমা দেওয়া হয়েছে)</option>
-            <option value="delivered">Delivered (ডেলিভার্ড)</option>
+            <option value="all">{t('common.allStatus', 'All Status')}</option>
+            {VISA_STAGES.map((st) => (
+              <option key={st.id} value={st.id}>
+                {t('visaStatus.' + st.id, st.label)}
+              </option>
+            ))}
           </select>
 
           <button
@@ -275,7 +285,7 @@ export function IndianVisaDataTable() {
                             title="ক্লিক করে স্ট্যাটাস ও ডকুমেন্ট পরিবর্তন করুন"
                           >
                             <Edit3 className="w-3 h-3" />
-                            <span>{stageInfo.label.split(' ')[0]}</span>
+                            <span>{t('visaStatus.' + stageInfo.id, stageInfo.label)}</span>
                           </button>
                         );
                       })()}
@@ -424,7 +434,7 @@ export function IndianVisaDataTable() {
               >
                 {VISA_STAGES.map((st) => (
                   <option key={st.id} value={st.id}>
-                    {st.label}
+                    {t('visaStatus.' + st.id, st.label)}
                   </option>
                 ))}
               </select>

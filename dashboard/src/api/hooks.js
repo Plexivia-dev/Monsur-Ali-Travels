@@ -1,5 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { mockApi } from './axiosClient';
+import { apiClient } from '../lib/api-client';
 
 // Query Keys
 export const QUERY_KEYS = {
@@ -35,10 +36,35 @@ export const useAdminData = () => {
   return useQuery({
     queryKey: [QUERY_KEYS.ADMIN],
     queryFn: async () => {
-      const res = await mockApi.getAdminData();
-      return res.data;
+      try {
+        const res = await apiClient.get('/api/v1/dashboard/overview');
+        const backendData = res.data?.data || {};
+        const mockRes = await mockApi.getAdminData();
+        const baseData = mockRes.data || {};
+        
+        return {
+          ...baseData,
+          ownerOverview: {
+            ...baseData.ownerOverview,
+            timeframes: {
+              ...baseData.ownerOverview.timeframes,
+              'Today': {
+                ...baseData.ownerOverview.timeframes?.['Today'],
+                totalVisas: backendData.totalVisas || 0,
+                totalPassports: backendData.totalPassports || 0,
+                totalAgreements: backendData.totalAgreements || 0,
+              }
+            }
+          },
+          notifications: backendData.notifications || []
+        };
+      } catch (err) {
+        console.error('Failed to load admin dashboard stats:', err);
+        const res = await mockApi.getAdminData();
+        return res.data;
+      }
     },
-    staleTime: 1000 * 60 * 5,
+    staleTime: 1000 * 60 * 1, // Poll every minute or keep fresh
   });
 };
 

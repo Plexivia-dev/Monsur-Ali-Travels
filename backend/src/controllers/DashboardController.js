@@ -18,6 +18,7 @@ export const getErpOverviewStats = async (req, res, next) => {
       totalAgreements,
       totalSalarySlips,
       invoiceAgg,
+      recentNotifications,
     ] = await Promise.all([
       UserModel.countDocuments({ isActive: true }),
       CandidateCaseFileModel.countDocuments(),
@@ -35,6 +36,7 @@ export const getErpOverviewStats = async (req, res, next) => {
           },
         },
       ]),
+      NotificationModel.find().sort({ createdAt: -1 }).limit(15),
     ]);
 
     const billingStats = invoiceAgg[0] || {
@@ -56,6 +58,7 @@ export const getErpOverviewStats = async (req, res, next) => {
         totalSalarySlips,
         billing: billingStats,
         payments: [],
+        notifications: recentNotifications || [],
       },
     });
   } catch (err) {
