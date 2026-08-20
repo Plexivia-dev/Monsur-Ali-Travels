@@ -237,8 +237,8 @@ export function CashVoucherPreview({ data }) {
           }}
         >
           <div style={{ minWidth: '90px', fontSize: '10px', fontWeight: 700, color: '#374151', lineHeight: 1.6 }}>
-            <div>কথায় পরিমাণ</div>
             <div>Amount in Words</div>
+            <div>কথায় পরিমাণ</div>
           </div>
           <div style={{ flex: 1, borderLeft: '1px solid #e5e7eb', paddingLeft: '10px', fontSize: '11px', color: '#1f2937', lineHeight: 1.7 }}>
             <div style={{ fontWeight: 600 }}>{data.grandTotalInWordsEn || '—'}</div>
