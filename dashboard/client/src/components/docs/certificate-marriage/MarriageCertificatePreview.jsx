@@ -2,7 +2,6 @@ import React from 'react';
 import { PrintablePaper } from '../common/PrintablePaper';
 import { Printer, Heart, ShieldCheck, Award } from 'lucide-react';
 import { formatToDdMmYyyy } from '../../../lib/utils';
-import defaultLogo from '../../../assets/logo.png';
 
 export function MarriageCertificatePreview({ data = {}, onPrint }) {
   const {
@@ -52,11 +51,13 @@ export function MarriageCertificatePreview({ data = {}, onPrint }) {
           
           {/* Header (Registrar / Kazi Office) */}
             <div className="text-center space-y-1 border-b-2 border-slate-900 pb-3">
-              <div className="flex justify-center mb-1">
-                <div className="w-12 h-12 rounded-full bg-white flex items-center justify-center shadow-xs border-2 border-slate-900 overflow-hidden p-1">
-                  <img src={defaultLogo} alt="Logo" className="w-full h-full object-contain filter grayscale" />
+              {registrar.logoUrl && (
+                <div className="flex justify-center mb-1">
+                  <div className="w-12 h-12 rounded-full bg-white flex items-center justify-center shadow-xs border-2 border-slate-900 overflow-hidden p-1">
+                    <img src={registrar.logoUrl} alt="Logo" className="w-full h-full object-contain" />
+                  </div>
                 </div>
-              </div>
+              )}
 
               <h1 className="text-lg sm:text-xl font-black uppercase tracking-wider text-slate-900 font-sans">
                 {registrar.officeName || 'OFFICE OF THE MARRIAGE REGISTRAR & KAZI'}

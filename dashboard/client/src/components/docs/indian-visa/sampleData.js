@@ -38,16 +38,16 @@ export function getDefaultIndianVisaData() {
     address: '',
 
     visaType: 'Tourist Visa',
-    entryPort: 'Haridaspur / Gede',
-    durationMonths: '1 Year Multiple',
-    entryType: 'Multiple Entry',
+    entryPort: '',
+    durationMonths: '',
+    entryType: '',
 
     documentsProvided: {
-      passportOriginal: true,
-      nidCopy: true,
-      photoLabPrint: true,
+      passportOriginal: false,
+      nidCopy: false,
+      photoLabPrint: false,
       bankSolvency: false,
-      utilityBillCopy: true,
+      utilityBillCopy: false,
       previousVisaCopy: false,
       nocTradeLicense: false
     },

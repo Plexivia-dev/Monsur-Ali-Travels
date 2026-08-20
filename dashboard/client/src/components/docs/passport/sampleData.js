@@ -43,10 +43,10 @@ export function getDefaultPassportData() {
     relationship: 'পিতা',
 
     passportType: 'ই-পাসপোর্ট (E-Passport)',
-    applicationCategory: 'নতুন আবেদন (New Passport)',
-    pageCount: '৪৮ পৃষ্ঠা (48 Pages)',
-    validityYears: '১০ বছর (10 Years)',
-    deliverySpeed: 'সাধারণ (Regular)',
+    applicationCategory: ')',
+    pageCount: '',
+    validityYears: '',
+    deliverySpeed: '',
 
     documentsProvided: {
       nidCopy: true,

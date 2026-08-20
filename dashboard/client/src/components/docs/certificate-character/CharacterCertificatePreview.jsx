@@ -2,7 +2,6 @@ import React from 'react';
 import { PrintablePaper } from '../common/PrintablePaper';
 import { Printer, ShieldCheck, Award } from 'lucide-react';
 import { formatToDdMmYyyy } from '../../../lib/utils';
-import defaultLogo from '../../../assets/logo.png';
 
 export function CharacterCertificatePreview({ data = {}, onPrint }) {
   const {
@@ -47,15 +46,13 @@ export function CharacterCertificatePreview({ data = {}, onPrint }) {
           
           {/* Header (Fully Customizable) */}
             <div className="text-center space-y-1.5 border-b-2 border-slate-900 pb-4">
-              <div className="flex justify-center mb-2">
-                <div className="w-14 h-14 rounded-full bg-white flex items-center justify-center shadow-xs border-2 border-slate-900 overflow-hidden p-1">
-                  {authority.logoUrl ? (
+              {authority.logoUrl && (
+                <div className="flex justify-center mb-2">
+                  <div className="w-14 h-14 rounded-full bg-white flex items-center justify-center shadow-xs border-2 border-slate-900 overflow-hidden p-1">
                     <img src={authority.logoUrl} alt="Logo" className="w-full h-full object-contain" />
-                  ) : (
-                    <img src={defaultLogo} alt="Logo" className="w-full h-full object-contain filter grayscale" />
-                  )}
+                  </div>
                 </div>
-              </div>
+              )}
 
               <h1 className="text-xl sm:text-2xl font-black uppercase tracking-wider text-slate-900 font-sans">
                 {authority.organizationName || 'OFFICE OF THE ISSUING AUTHORITY'}

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Building2, User, FileText, ShieldCheck, Sparkles } from 'lucide-react';
+import { Building2, User, FileText, ShieldCheck, Sparkles, Upload, Image, Trash2 } from 'lucide-react';
 
 const AUTHORITY_PRESETS = [
   {
@@ -62,6 +62,20 @@ export function CharacterCertificateForm({ data = {}, onChange }) {
     }
   };
 
+  const handleLogoUpload = (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (uploadEvent) => {
+      handleChange('authority', 'logoUrl', uploadEvent.target.result);
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const handleRemoveLogo = () => {
+    handleChange('authority', 'logoUrl', '');
+  };
+
   const handleApplyAuthorityPreset = (preset) => {
     onChange((prev) => ({
       ...prev,
@@ -109,6 +123,47 @@ export function CharacterCertificateForm({ data = {}, onChange }) {
         </h3>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div className="sm:col-span-2">
+            <label className="block text-xs font-semibold mb-1">
+              কর্তৃপক্ষের নিজস্ব লোগো আপলোড (Custom Organization Logo - ঐচ্ছিক / Optional)
+            </label>
+            <div className="flex items-center gap-3">
+              {data.authority?.logoUrl ? (
+                <div className="relative w-14 h-14 rounded-lg border border-border bg-white flex items-center justify-center p-1 overflow-hidden shrink-0">
+                  <img src={data.authority.logoUrl} alt="Logo" className="w-full h-full object-contain" />
+                  <button
+                    type="button"
+                    onClick={handleRemoveLogo}
+                    className="absolute -top-1 -right-1 bg-rose-600 text-white rounded-full p-0.5 shadow-xs hover:bg-rose-700 cursor-pointer"
+                    title="Remove Logo"
+                  >
+                    <Trash2 className="w-3 h-3" />
+                  </button>
+                </div>
+              ) : (
+                <div className="w-14 h-14 rounded-lg border border-dashed border-border flex items-center justify-center bg-muted/30 text-muted-foreground shrink-0">
+                  <Image className="w-6 h-6 opacity-40" />
+                </div>
+              )}
+              
+              <div className="flex-1 space-y-1">
+                <label className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-border bg-background hover:bg-muted text-xs font-medium text-foreground cursor-pointer transition-colors shadow-2xs">
+                  <Upload className="w-3.5 h-3.5 text-primary" />
+                  <span>{data.authority?.logoUrl ? 'লোগো পরিবর্তন করুন (Change Logo)' : 'লোগো আপলোড করুন (Upload Logo)'}</span>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={handleLogoUpload}
+                    className="hidden"
+                  />
+                </label>
+                <p className="text-[11px] text-muted-foreground">
+                  (লোগো না দিলে সার্টিফিকেট শুধুমাত্র টেক্সট হেডারে প্রিন্ট হবে, কোনো ডিফল্ট লোগো বসবে না)
+                </p>
+              </div>
+            </div>
+          </div>
+
           <div className="sm:col-span-2">
             <label className="block text-xs font-semibold mb-1">কর্তৃপক্ষের নাম (Organization Name)</label>
             <input

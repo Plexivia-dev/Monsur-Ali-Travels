@@ -1,14 +1,12 @@
 import React from 'react';
 import { PrintablePaper } from '../common/PrintablePaper';
-import { Printer, Building2, ShieldCheck, Award, CheckCircle2 } from 'lucide-react';
+import { Printer, ShieldCheck } from 'lucide-react';
 import { formatToDdMmYyyy } from '../../../lib/utils';
-import defaultLogo from '../../../assets/logo.png';
 
 export function ExperienceCertificatePreview({ data = {}, onPrint }) {
   const {
     memoNo = 'EXP/2026/0001',
     issueDate = new Date().toISOString().split('T')[0],
-    language = 'en',
     certificateTitle = 'TO WHOM IT MAY CONCERN',
     certificateSubtitle = 'EXPERIENCE & SERVICE CERTIFICATE',
     company = {},
@@ -17,19 +15,18 @@ export function ExperienceCertificatePreview({ data = {}, onPrint }) {
     signatory = {},
   } = data || {};
 
-  const isBn = language === 'bn';
   const handlePrint = onPrint || (() => window.print());
 
   return (
     <div className="w-full flex flex-col items-center">
       
-      {/* Top Preview Action Bar */}
+      {/* Top Preview Bar */}
       <div className="no-print w-full max-w-[850px] mb-3 flex items-center justify-between bg-card border border-border rounded-xl px-4 py-2.5 shadow-xs">
         <div className="flex items-center space-x-2 text-xs text-muted-foreground">
           <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-          <span className="font-semibold text-foreground">Official Experience Certificate Canvas</span>
+          <span className="font-semibold text-foreground">Experience Certificate Canvas</span>
           <span>•</span>
-          <span className="text-[11px]">A4 Vector Print Ready</span>
+          <span className="text-[11px]">A4 High-Res Print Ready</span>
         </div>
 
         <button
@@ -44,22 +41,21 @@ export function ExperienceCertificatePreview({ data = {}, onPrint }) {
       {/* Printable A4 Paper */}
       <PrintablePaper id="printable-experience-certificate" className="font-serif">
         
-        {/* Double Border Frame for Official High-Security Certificate Look */}
-        <div className="border-4 border-slate-900 p-6 sm:p-8 min-h-[1020px] flex flex-col justify-between relative bg-white text-slate-900">
-          <div className="border-2 border-slate-800 p-6 sm:p-8 h-full flex flex-col justify-between space-y-6">
+        {/* Single Clean Certificate Border Frame */}
+        <div className="border-2 border-slate-900 p-6 sm:p-8 flex flex-col justify-between space-y-5 bg-white text-slate-900 flex-1 min-h-[960px] print:min-h-0 print:p-5">
+          
+          <div>
             
             {/* Top Company Header (Customizable) */}
             <div className="text-center space-y-1.5 border-b-2 border-slate-900 pb-4">
               
-              <div className="flex justify-center mb-2">
-                <div className="w-14 h-14 rounded-full bg-white flex items-center justify-center shadow-xs border-2 border-slate-900 overflow-hidden p-1">
-                  {company.logoUrl ? (
+              {company.logoUrl && (
+                <div className="flex justify-center mb-2">
+                  <div className="w-14 h-14 rounded-full bg-white flex items-center justify-center shadow-xs border-2 border-slate-900 overflow-hidden p-1">
                     <img src={company.logoUrl} alt="Company Logo" className="w-full h-full object-contain" />
-                  ) : (
-                    <img src={defaultLogo} alt="Logo" className="w-full h-full object-contain filter grayscale" />
-                  )}
+                  </div>
                 </div>
-              </div>
+              )}
 
               <h1 className="text-xl sm:text-2xl font-black uppercase tracking-wider text-slate-900 font-sans">
                 {company.name || 'COMPANY NAME'}

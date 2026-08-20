@@ -25,7 +25,7 @@ export function getDefaultCharacterCertificateData() {
       nidNo: "",
       birthDate: "",
       gender: "Male",
-      maritalStatus: "Unmarried",
+      maritalStatus: "",
       presentAddress: "",
       permanentAddress: "",
     },
