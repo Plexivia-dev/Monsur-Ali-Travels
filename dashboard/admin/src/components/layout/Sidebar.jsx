@@ -100,10 +100,10 @@ export const Sidebar = () => {
                 )}
               </div>
               <div className="flex flex-col min-w-0 text-left items-start">
-                <span className="font-semibold text-sm text-sidebar-foreground tracking-tight truncate leading-tight">
+                <span className="font-semibold text-sm text-white tracking-tight truncate leading-tight">
                   {t('brand.name', 'Monsur Ali Travels')}
                 </span>
-                <span className="text-[10px] text-muted-foreground font-medium uppercase tracking-wider mt-0.5">
+                <span className="text-[10px] text-sky-200/80 font-medium uppercase tracking-wider mt-0.5">
                   {t('brand.tagline', { version: APP_VERSION, defaultValue: `Smart ERP v${APP_VERSION}` })}
                 </span>
               </div>
@@ -131,7 +131,7 @@ export const Sidebar = () => {
 
           return (
             <SidebarGroup key={groupIdx} className="p-0">
-              <SidebarGroupLabel className="px-3 py-1.5 text-xs font-bold tracking-wider text-muted-foreground/90 uppercase">
+              <SidebarGroupLabel className="px-3 py-1.5 text-xs font-bold tracking-wider text-sky-200/70 uppercase">
                 {displayGroupLabel}
               </SidebarGroupLabel>
               <SidebarGroupContent>
@@ -164,17 +164,17 @@ export const Sidebar = () => {
                                   }
                                 }}
                                 className={cn(
-                                  'w-full justify-between cursor-pointer font-medium text-sm py-2 transition-all duration-200',
-                                  isChildActive && 'text-sky-400 font-semibold'
+                                  'w-full justify-between cursor-pointer font-medium text-sm py-2 transition-all duration-200 text-white/90 hover:text-white hover:bg-sidebar-accent',
+                                  isChildActive && 'text-sky-300 font-semibold bg-white/10'
                                 )}
                               >
                                 <div className="flex items-center gap-2.5 min-w-0">
-                                  {renderIcon(item.icon, cn('w-4.5 h-4.5 shrink-0 transition-colors text-sky-500 dark:text-sky-400', isChildActive && 'text-sky-400'))}
+                                  {renderIcon(item.icon, cn('w-4.5 h-4.5 shrink-0 transition-colors text-sky-400', isChildActive && 'text-sky-300'))}
                                   <span className="truncate">{displayItemLabel}</span>
                                 </div>
                                 <ChevronRight
                                   className={cn(
-                                    'w-4 h-4 text-muted-foreground transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90 group-data-[collapsible=icon]:hidden'
+                                    'w-4 h-4 text-white/50 transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90 group-data-[collapsible=icon]:hidden'
                                   )}
                                 />
                               </SidebarMenuButton>
@@ -194,11 +194,11 @@ export const Sidebar = () => {
                                         className={cn(
                                           'cursor-pointer text-[13px] rounded-md py-2 flex items-center gap-2 transition-colors duration-200',
                                           isActive
-                                            ? 'bg-sky-500/15 text-sky-400 font-semibold'
-                                            : 'text-muted-foreground hover:text-foreground hover:bg-sidebar-accent'
+                                            ? 'bg-sky-500/20 text-sky-300 font-semibold'
+                                            : 'text-white/80 hover:text-white hover:bg-sidebar-accent'
                                         )}
                                       >
-                                        {subItem.icon && renderIcon(subItem.icon, cn('w-4 h-4 shrink-0 text-sky-500 dark:text-sky-400', isActive && 'text-sky-400'))}
+                                        {subItem.icon && renderIcon(subItem.icon, cn('w-4 h-4 shrink-0 text-sky-400', isActive && 'text-sky-300'))}
                                         <span className="truncate">{displaySubLabel}</span>
                                       </SidebarMenuSubButton>
                                     </SidebarMenuSubItem>
@@ -222,13 +222,13 @@ export const Sidebar = () => {
                           className={cn(
                             'cursor-pointer text-sm font-medium py-2 rounded-lg transition-all duration-200',
                             isActive
-                              ? 'bg-sidebar-accent text-sidebar-foreground font-semibold'
-                              : 'text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground'
+                              ? 'bg-white/15 text-white font-semibold shadow-xs'
+                              : 'text-white/85 hover:bg-sidebar-accent hover:text-white'
                           )}
                         >
                           {renderIcon(
                             item.icon,
-                            cn('w-4.5 h-4.5 shrink-0 transition-colors text-sky-500 dark:text-sky-400', isActive && 'text-sky-400')
+                            cn('w-4.5 h-4.5 shrink-0 transition-colors text-sky-400', isActive && 'text-sky-300')
                           )}
                           <span className="truncate">{displayItemLabel}</span>
                         </SidebarMenuButton>
@@ -261,14 +261,14 @@ export const Sidebar = () => {
               className="flex items-center gap-2.5 min-w-0 cursor-pointer hover:opacity-85 transition-opacity"
               title={t('header.myProfile', 'My Profile')}
             >
-              <div className="size-8 rounded-full bg-primary/15 text-primary flex items-center justify-center font-semibold text-xs shrink-0">
+              <div className="size-8 rounded-full bg-white/20 text-white flex items-center justify-center font-semibold text-xs shrink-0">
                 {user?.name ? user.name[0].toUpperCase() : 'A'}
               </div>
               <div className="flex flex-col min-w-0 text-left">
-                <span className="text-xs font-semibold text-sidebar-foreground truncate leading-tight">
+                <span className="text-xs font-semibold text-white truncate leading-tight">
                   {user?.name || 'Administrator'}
                 </span>
-                <span className="text-[10px] text-muted-foreground truncate mt-0.5">{user?.role || 'Super Admin'}</span>
+                <span className="text-[10px] text-sky-200/70 truncate mt-0.5">{user?.role || 'Super Admin'}</span>
               </div>
             </div>
             <button
