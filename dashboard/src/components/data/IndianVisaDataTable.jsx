@@ -17,7 +17,10 @@ const VISA_STAGES = [
   { id: 'delivered', label: 'ডেলিভারি সম্পন্ন (Delivered)', color: 'bg-purple-500/10 text-purple-600 border-purple-500/20' },
 ];
 
+import { useTranslation } from 'react-i18next';
+
 export function IndianVisaDataTable() {
+  const { t } = useTranslation();
   const { switchPortal } = usePortal();
   const [data, setData] = useState([]);
   const [pagination, setPagination] = useState({ page: 1, limit: 10, skip: 0, totalCount: 0, totalPages: 1 });
@@ -231,7 +234,7 @@ export function IndianVisaDataTable() {
               ) : data.length === 0 ? (
                 <tr>
                   <td colSpan={8} className="text-center py-10 text-muted-foreground font-medium">
-                    কোনো ভিসা আবেদন রেকর্ড পাওয়া যায়নি।
+                    {t('common.noData', 'No data found')}
                   </td>
                 </tr>
               ) : (
@@ -452,7 +455,7 @@ export function IndianVisaDataTable() {
                     <span className="truncate">{stageDocument.name}</span>
                   </div>
                 ) : (
-                  <span className="text-[11px] text-muted-foreground">কোনো ফাইল যুক্ত করা হয়নি</span>
+                  <span className="text-[11px] text-muted-foreground">{t('visa.noFile', 'No file attached')}</span>
                 )}
               </div>
             </div>

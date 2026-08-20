@@ -8,8 +8,10 @@ import { usePortal } from '../../context/PortalContext';
 import { PassportSubmissionPreview } from '../docs/passport/PassportSubmissionPreview';
 import { MoneyReceiptModal } from '../docs/receipt/MoneyReceiptModal';
 import { ConfirmDeleteDialog } from '@/components/ui/confirm-delete-dialog';
+import { useTranslation } from 'react-i18next';
 
 export function PassportSubmissionDataTable() {
+  const { t } = useTranslation();
   const { switchPortal } = usePortal();
   const [data, setData] = useState([]);
   const [pagination, setPagination] = useState({ page: 1, limit: 10, skip: 0, totalCount: 0, totalPages: 1 });
@@ -161,7 +163,7 @@ export function PassportSubmissionDataTable() {
               ) : data.length === 0 ? (
                 <tr>
                   <td colSpan={8} className="text-center py-10 text-muted-foreground font-medium">
-                    কোনো পাসপোর্ট ফাইল রেকর্ড পাওয়া যায়নি।
+                    {t('common.noData', 'No data found')}
                   </td>
                 </tr>
               ) : (

@@ -22,8 +22,10 @@ import { toast } from 'sonner';
 import { usePortal } from '../../context/PortalContext';
 import { MoneyReceiptModal } from '../docs/receipt/MoneyReceiptModal';
 import { ConfirmDeleteDialog } from '@/components/ui/confirm-delete-dialog';
+import { useTranslation } from 'react-i18next';
 
 export function CustomerDataTable() {
+  const { t } = useTranslation();
   const { switchPortal } = usePortal();
   const [data, setData] = useState([]);
   const [pagination, setPagination] = useState({
@@ -211,7 +213,7 @@ export function CustomerDataTable() {
               ) : data.length === 0 ? (
                 <tr>
                   <td colSpan={9} className="text-center py-10 text-muted-foreground font-medium">
-                    কোনো কাস্টমার পাওয়া যায়নি।
+                    {t('common.noData', 'No data found')}
                   </td>
                 </tr>
               ) : (

@@ -27,8 +27,10 @@ import { MoneyReceiptModal } from '../docs/receipt/MoneyReceiptModal';
 import { ReceiptConfirmModal } from '../docs/receipt/ReceiptConfirmModal';
 import { MoneyReceiptPrintSlip } from '../docs/receipt/MoneyReceiptPrintSlip';
 import { ConfirmDeleteDialog } from '@/components/ui/confirm-delete-dialog';
+import { useTranslation } from 'react-i18next';
 
 export function MoneyReceiptDataTable() {
+  const { t } = useTranslation();
   const [data, setData] = useState([]);
   const [pagination, setPagination] = useState({ page: 1, limit: 10, skip: 0, totalCount: 0, totalPages: 1 });
   const [search, setSearch] = useState('');
@@ -323,7 +325,7 @@ export function MoneyReceiptDataTable() {
               ) : data.length === 0 ? (
                 <tr>
                   <td colSpan="9" className="text-center py-12 text-muted-foreground">
-                    কোনো মানি রিসিট বা টোকেন পাওয়া যায়নি।
+                    {t('common.noData', 'No data found')}
                   </td>
                 </tr>
               ) : (

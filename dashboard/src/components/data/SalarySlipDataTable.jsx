@@ -7,8 +7,10 @@ import { formatToDdMmYyyy } from '../../lib/utils';
 import { usePortal } from '../../context/PortalContext';
 import { SalarySlipPreview } from '../docs/payroll/SalarySlipPreview';
 import { ConfirmDeleteDialog } from '@/components/ui/confirm-delete-dialog';
+import { useTranslation } from 'react-i18next';
 
 export function SalarySlipDataTable() {
+  const { t } = useTranslation();
   const { switchPortal } = usePortal();
   const [data, setData] = useState([]);
   const [pagination, setPagination] = useState({ page: 1, limit: 10, skip: 0, totalCount: 0, totalPages: 1 });
@@ -148,7 +150,7 @@ export function SalarySlipDataTable() {
               ) : data.length === 0 ? (
                 <tr>
                   <td colSpan={9} className="text-center py-10 text-muted-foreground font-medium">
-                    কোনো স্যালারি স্লিপ পাওয়া যায়নি।
+                    {t('common.noData', 'No data found')}
                   </td>
                 </tr>
               ) : (
