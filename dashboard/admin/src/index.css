@@ -2,6 +2,7 @@
 @import "shadcn/tailwind.css";
 @import "./typeset.css";
 @import "./scroll-fade.css";
+@import "./shimmer.css";
 
 @theme inline {
   --color-background: var(--background);
