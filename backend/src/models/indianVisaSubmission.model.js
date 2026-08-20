@@ -100,8 +100,7 @@ const indianVisaSubmissionSchema = new mongoose.Schema(
     // Status Stages: pending -> submitted -> accepted -> rejected -> delivered
     status: {
       type: String,
-      enum: ["pending", "submitted", "accepted", "rejected", "delivered", "processing"],
-      default: "pending",
+      default: "received",
       index: true,
     },
 

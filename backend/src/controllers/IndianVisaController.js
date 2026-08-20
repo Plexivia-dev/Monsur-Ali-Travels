@@ -1,5 +1,6 @@
 import { IndianVisaSubmissionModel } from "../models/indianVisaSubmission.model.js";
 import { syncCustomerProfile } from "../helper/customerSyncHelper.js";
+import { NotificationModel } from "../models/notification.model.js";
 
 /**
  * Controller for Indian Visa Application Submissions
@@ -189,6 +190,20 @@ export class IndianVisaController {
       });
 
       await doc.save();
+
+      // Create a system notification alert
+      try {
+        await NotificationModel.create({
+          title: `Visa Status: ${status}`,
+          message: `Visa file for "${doc.applicantName}" (Passport: ${doc.passportNo}) has been updated to "${status}".`,
+          module: "visa",
+          type: status === "rejected" ? "danger" : status === "approved" || status === "complete_process" ? "success" : "info",
+          refId: doc._id,
+          createdBy: req.user?.name || "Staff",
+        });
+      } catch (notifErr) {
+        console.error("Failed to save status update notification:", notifErr);
+      }
 
       return res.status(200).json({
         status: "success",

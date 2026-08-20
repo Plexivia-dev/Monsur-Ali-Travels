@@ -5,6 +5,7 @@ import { EmploymentAgreementModel } from '../models/employmentAgreement.model.js
 import { SalarySlipModel } from '../models/salarySlip.model.js';
 import { UserModel } from '../models/user.model.js';
 import { CandidateCaseFileModel } from '../models/candidateCaseFile.model.js';
+import { NotificationModel } from '../models/notification.model.js';
 
 export const getErpOverviewStats = async (req, res, next) => {
   try {

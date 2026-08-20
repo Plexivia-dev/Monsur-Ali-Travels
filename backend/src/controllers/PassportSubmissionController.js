@@ -1,4 +1,5 @@
 import { PassportSubmissionModel, generateUniquePassportTrackingNo } from "../models/passportSubmission.model.js";
+import { NotificationModel } from "../models/notification.model.js";
 
 // @desc    Get all passport submissions
 // @route   GET /api/v1/docs/passport-submissions
@@ -156,5 +157,75 @@ export const deletePassportSubmission = async (req, res, next) => {
     });
   } catch (error) {
     next(error);
+  }
+};
+
+// @desc    Update Passport Stage & Add Documents
+// @route   PATCH /api/v1/passports/:id/stage
+export const updatePassportStage = async (req, res, next) => {
+  try {
+    const { status, note, document } = req.body;
+    const { id } = req.params;
+    const isMongoId = id.match(/^[0-9a-fA-F]{24}$/);
+    const query = isMongoId ? { _id: id } : { trackingNo: id };
+
+    const doc = await PassportSubmissionModel.findOne(query);
+
+    if (!doc) {
+      return res.status(404).json({
+        status: "fail",
+        success: false,
+        message: "Passport submission not found.",
+      });
+    }
+
+    if (status) {
+      doc.status = status;
+    }
+
+    // Add attached document if uploaded during stage update
+    if (document && document.fileUrl) {
+      doc.attachments = doc.attachments || {};
+      doc.attachments.supportingDocs = doc.attachments.supportingDocs || [];
+      doc.attachments.supportingDocs.push({
+        name: document.name || `Document-${status}`,
+        fileUrl: document.fileUrl,
+        fileType: document.fileType || "document",
+        uploadedAt: new Date(),
+      });
+    }
+
+    doc.activityLogs = doc.activityLogs || [];
+    doc.activityLogs.push({
+      timestamp: new Date(),
+      statusChangedTo: status || doc.status,
+      note: note || `Stage updated to ${status}`,
+      updatedBy: req.user?.name || "Staff",
+    });
+
+    await doc.save();
+
+    // Create a system notification alert
+    try {
+      await NotificationModel.create({
+        title: `Passport Status: ${status}`,
+        message: `Passport file for "${doc.applicantName}" (Passport ID: ${doc.trackingNo}) has been updated to "${status}".`,
+        module: "passport",
+        type: status === "rejected" ? "danger" : status === "approved" || status === "complete_process" ? "success" : "info",
+        refId: doc._id,
+        createdBy: req.user?.name || "Staff",
+      });
+    } catch (notifErr) {
+      console.error("Failed to save status update notification:", notifErr);
+    }
+
+    return res.status(200).json({
+      status: "success",
+      success: true,
+      data: doc,
+      message: `Passport processing status updated to ${status}.`,
+    });
+  } catch (err) {
+    next(err);
   }
 };

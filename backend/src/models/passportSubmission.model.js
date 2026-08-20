@@ -103,9 +103,29 @@ const passportSubmissionSchema = new mongoose.Schema(
     remarks: { type: String, default: "" },
     status: {
       type: String,
-      enum: ["pending", "processing", "submitted", "delivered"],
-      default: "pending",
+      default: "received",
     },
+    attachments: {
+      photo: { type: String, default: "" },
+      passportScan: { type: String, default: "" },
+      nidScan: { type: String, default: "" },
+      supportingDocs: [
+        {
+          name: { type: String, default: "" },
+          fileUrl: { type: String, default: "" },
+          fileType: { type: String, default: "" },
+          uploadedAt: { type: Date, default: Date.now },
+        },
+      ],
+    },
+    activityLogs: [
+      {
+        timestamp: { type: Date, default: Date.now },
+        statusChangedTo: { type: String, default: "" },
+        note: { type: String, default: "" },
+        updatedBy: { type: String, default: "Admin" },
+      },
+    ],
     isActive: { type: Boolean, default: true },
   },
   {

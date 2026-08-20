@@ -5,6 +5,7 @@ import {
   createPassportSubmission,
   updatePassportSubmission,
   deletePassportSubmission,
+  updatePassportStage,
 } from "../controllers/PassportSubmissionController.js";
 
 const passportRouter = Router();
@@ -14,6 +15,9 @@ passportRouter
   .route("/")
   .get(getPassportSubmissions)
   .post(createPassportSubmission);
+
+// PATCH /api/v1/passports/:id/stage
+passportRouter.patch("/:id/stage", updatePassportStage);
 
 // GET /api/v1/passports/:id & PUT/DELETE /api/v1/passports/:id
 passportRouter

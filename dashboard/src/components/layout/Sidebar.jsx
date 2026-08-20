@@ -131,7 +131,7 @@ export const Sidebar = () => {
 
           return (
             <SidebarGroup key={groupIdx} className="p-0">
-              <SidebarGroupLabel className="px-3 py-1 text-[11px] font-semibold tracking-wider text-muted-foreground/80 uppercase">
+              <SidebarGroupLabel className="px-3 py-1.5 text-xs font-bold tracking-wider text-muted-foreground/90 uppercase">
                 {displayGroupLabel}
               </SidebarGroupLabel>
               <SidebarGroupContent>
@@ -164,23 +164,23 @@ export const Sidebar = () => {
                                   }
                                 }}
                                 className={cn(
-                                  'w-full justify-between cursor-pointer font-medium text-xs transition-all duration-200',
+                                  'w-full justify-between cursor-pointer font-medium text-sm py-2 transition-all duration-200',
                                   isChildActive && 'text-sky-400 font-semibold'
                                 )}
                               >
                                 <div className="flex items-center gap-2.5 min-w-0">
-                                  {renderIcon(item.icon, cn('w-4 h-4 shrink-0 transition-colors', isChildActive ? 'text-sky-400' : 'text-muted-foreground'))}
+                                  {renderIcon(item.icon, cn('w-4.5 h-4.5 shrink-0 transition-colors text-sky-500 dark:text-sky-400', isChildActive && 'text-sky-400'))}
                                   <span className="truncate">{displayItemLabel}</span>
                                 </div>
                                 <ChevronRight
                                   className={cn(
-                                    'w-3.5 h-3.5 text-muted-foreground transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90 group-data-[collapsible=icon]:hidden'
+                                    'w-4 h-4 text-muted-foreground transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90 group-data-[collapsible=icon]:hidden'
                                   )}
                                 />
                               </SidebarMenuButton>
                             </CollapsibleTrigger>
                             <CollapsibleContent>
-                              <SidebarMenuSub className="ml-5 border-l border-sidebar-border pl-2 my-1 space-y-0.5">
+                              <SidebarMenuSub className="ml-5 border-l border-sidebar-border pl-2.5 my-1 space-y-1">
                                 {item.childItems.map((subItem, subIdx) => {
                                   const isActive =
                                     activePortal === subItem.portal && activeSubmodule === subItem.submodule;
@@ -192,12 +192,13 @@ export const Sidebar = () => {
                                         isActive={isActive}
                                         onClick={() => handleItemSelect(subItem.portal, subItem.submodule)}
                                         className={cn(
-                                          'cursor-pointer text-xs rounded-md py-1.5 transition-colors duration-200',
+                                          'cursor-pointer text-[13px] rounded-md py-2 flex items-center gap-2 transition-colors duration-200',
                                           isActive
                                             ? 'bg-sky-500/15 text-sky-400 font-semibold'
                                             : 'text-muted-foreground hover:text-foreground hover:bg-sidebar-accent'
                                         )}
                                       >
+                                        {subItem.icon && renderIcon(subItem.icon, cn('w-4 h-4 shrink-0 text-sky-500 dark:text-sky-400', isActive && 'text-sky-400'))}
                                         <span className="truncate">{displaySubLabel}</span>
                                       </SidebarMenuSubButton>
                                     </SidebarMenuSubItem>
@@ -219,7 +220,7 @@ export const Sidebar = () => {
                           tooltip={displayItemLabel}
                           onClick={() => handleItemSelect(item.portal, item.submodule)}
                           className={cn(
-                            'cursor-pointer text-xs font-medium rounded-lg transition-all duration-200',
+                            'cursor-pointer text-sm font-medium py-2 rounded-lg transition-all duration-200',
                             isActive
                               ? 'bg-sidebar-accent text-sidebar-foreground font-semibold'
                               : 'text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground'
@@ -227,7 +228,7 @@ export const Sidebar = () => {
                         >
                           {renderIcon(
                             item.icon,
-                            cn('w-4 h-4 shrink-0 transition-colors', isActive ? 'text-sky-400' : 'text-muted-foreground')
+                            cn('w-4.5 h-4.5 shrink-0 transition-colors text-sky-500 dark:text-sky-400', isActive && 'text-sky-400')
                           )}
                           <span className="truncate">{displayItemLabel}</span>
                         </SidebarMenuButton>

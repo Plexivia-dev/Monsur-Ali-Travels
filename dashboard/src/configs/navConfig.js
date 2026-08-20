@@ -19,6 +19,7 @@ export const navGroups = [
         portal: 'agency',
         childItems: [
           {
+            icon: 'Users',
             label: 'All Clients',
             key: 'nav.allClients',
             portal: 'agency',
@@ -26,6 +27,7 @@ export const navGroups = [
             href: '/dashboard/agency/clients-all',
           },
           {
+            icon: 'UserPlus',
             label: 'Add Client',
             key: 'nav.addClient',
             portal: 'agency',
@@ -33,6 +35,7 @@ export const navGroups = [
             href: '/dashboard/agency/clients-add',
           },
           {
+            icon: 'Receipt',
             label: 'Client Invoices & Bills',
             key: 'nav.clientBills',
             portal: 'agency',
@@ -40,6 +43,7 @@ export const navGroups = [
             href: '/dashboard/agency/bills',
           },
           {
+            icon: 'CreditCard',
             label: 'Client Payments',
             key: 'nav.clientPayments',
             portal: 'agency',
@@ -50,62 +54,13 @@ export const navGroups = [
       },
     ],
   },
-  /*
-  {
-    groupLabel: 'Brick Factory',
-    groupKey: 'nav.factory',
-    portal: 'factory',
-    items: [
-      {
-        icon: 'Factory',
-        label: 'Factory Dashboard',
-        key: 'nav.factoryDashboard',
-        portal: 'factory',
-        submodule: 'dashboard',
-        href: '/dashboard/factory/dashboard',
-      },
-      {
-        icon: 'Users2',
-        label: 'Worker Roster',
-        key: 'nav.workerRoster',
-        portal: 'factory',
-        submodule: 'employees',
-        href: '/dashboard/factory/employees',
-      },
-      {
-        icon: 'Receipt',
-        label: 'Coal & Material Bills',
-        key: 'nav.coalBills',
-        portal: 'factory',
-        submodule: 'bills',
-        href: '/dashboard/factory/bills',
-      },
-      {
-        icon: 'CreditCard',
-        label: 'Wages & Payments',
-        key: 'nav.wagesPayments',
-        portal: 'factory',
-        submodule: 'payments',
-        href: '/dashboard/factory/payments',
-      },
-      {
-        icon: 'BarChart3',
-        label: 'Kiln & Production Telemetry',
-        key: 'nav.kilnReports',
-        portal: 'factory',
-        submodule: 'reports',
-        href: '/dashboard/factory/reports',
-      },
-    ],
-  },
-  */
   {
     groupLabel: 'Document Studio',
     groupKey: 'nav.docs',
     portal: 'docs',
     items: [
       {
-        icon: 'FileText',
+        icon: 'FileSignature',
         label: 'Employment Agreement',
         key: 'nav.employmentAgreement',
         portal: 'docs',
@@ -129,7 +84,7 @@ export const navGroups = [
         href: '/dashboard/docs/indian-visa',
       },
       {
-        icon: 'CreditCard',
+        icon: 'BookOpen',
         label: 'Passport Submission',
         key: 'nav.passportRecords',
         portal: 'docs',
@@ -137,7 +92,7 @@ export const navGroups = [
         href: '/dashboard/docs/passport-sub',
       },
       {
-        icon: 'IdCard',
+        icon: 'Contact',
         label: 'Employee ID Card',
         key: 'nav.idCard',
         portal: 'docs',
@@ -145,7 +100,7 @@ export const navGroups = [
         href: '/dashboard/docs/idcard',
       },
       {
-        icon: 'Receipt',
+        icon: 'Banknote',
         label: 'Monthly Salary Slip',
         key: 'nav.salarySlip',
         portal: 'docs',
@@ -153,7 +108,7 @@ export const navGroups = [
         href: '/dashboard/docs/payroll',
       },
       {
-        icon: 'FileSpreadsheet',
+        icon: 'ReceiptText',
         label: 'Invoice Billing',
         key: 'nav.invoice',
         portal: 'docs',
@@ -192,7 +147,7 @@ export const navGroups = [
     portal: 'data',
     items: [
       {
-        icon: 'User',
+        icon: 'Users',
         label: 'Customer Profiles',
         key: 'nav.customerProfiles',
         portal: 'data',
@@ -200,7 +155,7 @@ export const navGroups = [
         href: '/dashboard/data/customer-profiles',
       },
       {
-        icon: 'FileText',
+        icon: 'FileSignature',
         label: 'Agreement Records',
         key: 'nav.agreementRecords',
         portal: 'data',
@@ -224,7 +179,7 @@ export const navGroups = [
         href: '/dashboard/data/indian-visas',
       },
       {
-        icon: 'CreditCard',
+        icon: 'BookOpen',
         label: 'Passport Submissions',
         key: 'nav.passportRecords',
         portal: 'data',
@@ -232,7 +187,7 @@ export const navGroups = [
         href: '/dashboard/data/passports',
       },
       {
-        icon: 'Receipt',
+        icon: 'Banknote',
         label: 'Salary Slips',
         key: 'nav.salarySlipRecords',
         portal: 'data',
@@ -240,7 +195,7 @@ export const navGroups = [
         href: '/dashboard/data/salary-slips',
       },
       {
-        icon: 'FileSpreadsheet',
+        icon: 'ReceiptText',
         label: 'Invoices & Billing',
         key: 'nav.invoiceRecords',
         portal: 'data',
@@ -255,7 +210,7 @@ export const navGroups = [
     portal: 'admin',
     items: [
       {
-        icon: 'Shield',
+        icon: 'Users',
         label: 'System Users',
         key: 'nav.systemUsers',
         portal: 'admin',
@@ -271,7 +226,7 @@ export const navGroups = [
         href: '/dashboard/admin/system-logs',
       },
       {
-        icon: 'Settings',
+        icon: 'Settings2',
         label: 'Global Settings',
         key: 'nav.globalSettings',
         portal: 'admin',
