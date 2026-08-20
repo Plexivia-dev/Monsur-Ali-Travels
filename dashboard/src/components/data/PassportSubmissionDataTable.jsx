@@ -275,7 +275,7 @@ export function PassportSubmissionDataTable() {
             </div>
 
             {/* Modal Body */}
-            <div className="flex-1 overflow-y-auto p-4 sm:p-6 bg-slate-100 dark:bg-slate-900/50 flex justify-center">
+            <div className="flex-1 overflow-y-auto p-4 sm:p-6 bg-muted/40 flex justify-center">
               <PassportSubmissionPreview data={previewItem} />
             </div>
           </div>
