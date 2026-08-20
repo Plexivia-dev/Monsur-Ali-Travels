@@ -75,7 +75,7 @@ export const Sidebar = () => {
   return (
     <SidebarPrimitive collapsible="icon" className="border-r border-border bg-sidebar transition-all duration-300 ease-in-out">
       {/* Brand Header */}
-      <SidebarHeader className="h-16 border-b border-sidebar-border px-2 flex items-center justify-center transition-all duration-300">
+      <SidebarHeader className="h-14 border-b border-sidebar-border px-2 flex items-center justify-center transition-all duration-300">
         {isCollapsed ? (
           <button
             type="button"
