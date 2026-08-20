@@ -42,13 +42,13 @@ export function SalarySlip() {
     bankAccountNo: '',
 
     // Earnings
-    basicSalary: 15000,
-    houseRentAllowance: 5000,
-    medicalAllowance: 2000,
-    conveyanceAllowance: 1500,
-    otherAllowance: 1500,
-    overtimeAmount: 3500,
-    grossEarnings: 25000,
+    basicSalary: "",
+    houseRentAllowance: "",
+    medicalAllowance: "",
+    conveyanceAllowance: "",
+    otherAllowance: "",
+    overtimeAmount: "",
+    grossEarnings: "",
 
     // Deductions
     advanceSalary: 0,
@@ -59,8 +59,8 @@ export function SalarySlip() {
     totalDeduction: 0,
 
     // Net Payable
-    netSalaryPayable: 28500,
-    netSalaryInWords: 'Twenty Eight Thousand Five Hundred Taka Only',
+    netSalaryPayable: "",
+    netSalaryInWords: '',
 
     // Attendance Values
     workingDays: 30,

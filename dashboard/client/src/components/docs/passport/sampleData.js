@@ -49,7 +49,7 @@ export function getDefaultPassportData() {
     deliverySpeed: '',
 
     documentsProvided: {
-      nidCopy: true,
+      nidCopy: false,
       birthCertOnline: false,
       oldPassportOriginal: false,
       photoLabPrint: true,

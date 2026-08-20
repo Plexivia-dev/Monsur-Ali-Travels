@@ -18,7 +18,7 @@ export function CashVoucherPreview({ data }) {
       {/* ─── Outer border box ───────────────────────────────────────────── */}
       <div
         style={{
-          border: '3px solid #1a56db',
+          border: '3px solid #0b3a60',
           borderRadius: '10px',
           padding: '18px 20px',
           fontFamily: "'Noto Serif Bengali', 'SolaimanLipi', 'Kalpurush', serif",
@@ -39,7 +39,7 @@ export function CashVoucherPreview({ data }) {
                 width: '78px',
                 height: '78px',
                 borderRadius: '50%',
-                border: '2.5px solid #1a56db',
+                border: '2.5px solid #0b3a60',
                 background: '#fff',
                 display: 'flex',
                 alignItems: 'center',
@@ -62,7 +62,7 @@ export function CashVoucherPreview({ data }) {
             {/* Title Banner */}
             <div
               style={{
-                background: '#1a56db',
+                background: '#0b3a60',
                 color: '#fff',
                 borderRadius: '6px',
                 padding: '5px 14px',
@@ -77,7 +77,7 @@ export function CashVoucherPreview({ data }) {
 
             {/* Agency Name bilingual */}
             <div style={{ lineHeight: 1.25 }}>
-              <div style={{ fontSize: '16px', fontWeight: 800, color: '#1a56db', letterSpacing: '0.3px' }}>
+              <div style={{ fontSize: '16px', fontWeight: 800, color: '#0b3a60', letterSpacing: '0.3px' }}>
                 মনসুর আলি ট্রাভেলস
               </div>
               <div style={{ fontSize: '14px', fontWeight: 700, color: '#222' }}>
@@ -90,7 +90,7 @@ export function CashVoucherPreview({ data }) {
           <div style={{ flexShrink: 0, textAlign: 'right', minWidth: '130px' }}>
             <div style={{ fontSize: '10px', color: '#555' }}>
               <span>ভাউচার নং : </span>
-              <span style={{ fontWeight: 700, color: '#1a56db', fontSize: '11px' }}>
+              <span style={{ fontWeight: 700, color: '#0b3a60', fontSize: '11px' }}>
                 {data.voucherNo || 'MAT-KV-000000'}
               </span>
             </div>
@@ -132,7 +132,7 @@ export function CashVoucherPreview({ data }) {
         </div>
 
         {/* ─── DIVIDER ─────────────────────────────────────────────────── */}
-        <div style={{ borderTop: '2px solid #1a56db', marginBottom: '8px' }} />
+        <div style={{ borderTop: '2px solid #0b3a60', marginBottom: '8px' }} />
 
         {/* ─── EXPENSE TABLE ────────────────────────────────────────────── */}
         <table
@@ -144,14 +144,14 @@ export function CashVoucherPreview({ data }) {
           }}
         >
           <thead>
-            <tr style={{ background: '#1a56db', color: '#fff' }}>
-              <th style={{ padding: '5px 8px', textAlign: 'center', width: '60px', borderRight: '1px solid #3b6fd4' }}>
+            <tr style={{ background: '#0b3a60', color: '#fff' }}>
+              <th style={{ padding: '5px 8px', textAlign: 'center', width: '60px', borderRight: '1px solid #1c527e' }}>
                 ক্রমিক নং
               </th>
-              <th style={{ padding: '5px 8px', textAlign: 'left', borderRight: '1px solid #3b6fd4' }}>
+              <th style={{ padding: '5px 8px', textAlign: 'left', borderRight: '1px solid #1c527e' }}>
                 খরচের বিবরণ
               </th>
-              <th style={{ padding: '5px 8px', textAlign: 'left', borderRight: '1px solid #3b6fd4' }}>
+              <th style={{ padding: '5px 8px', textAlign: 'left', borderRight: '1px solid #1c527e' }}>
                 Description of Expense
               </th>
               <th style={{ padding: '5px 8px', textAlign: 'right', width: '100px' }}>
@@ -212,8 +212,8 @@ export function CashVoucherPreview({ data }) {
             </tr>
 
             {/* Grand Total */}
-            <tr style={{ background: '#1a56db', color: '#fff' }}>
-              <td colSpan={3} style={{ padding: '6px 8px', textAlign: 'right', fontWeight: 800, borderRight: '1px solid #3b6fd4' }}>
+            <tr style={{ background: '#0b3a60', color: '#fff' }}>
+              <td colSpan={3} style={{ padding: '6px 8px', textAlign: 'right', fontWeight: 800, borderRight: '1px solid #1c527e' }}>
                 Grand Total
               </td>
               <td style={{ padding: '6px 8px', textAlign: 'right', fontWeight: 800, fontSize: '12px' }}>
@@ -306,15 +306,15 @@ export function CashVoucherPreview({ data }) {
           }}
         >
           <span style={{ display: 'flex', alignItems: 'center', gap: '3px' }}>
-            <MapPin style={{ width: '10px', height: '10px', color: '#1a56db', flexShrink: 0 }} />
+            <MapPin style={{ width: '10px', height: '10px', color: '#0b3a60', flexShrink: 0 }} />
             {agencyInfo.address.fullBn || agencyInfo.address.full}
           </span>
           <span style={{ display: 'flex', alignItems: 'center', gap: '3px' }}>
-            <Phone style={{ width: '10px', height: '10px', color: '#1a56db', flexShrink: 0 }} />
+            <Phone style={{ width: '10px', height: '10px', color: '#0b3a60', flexShrink: 0 }} />
             {agencyInfo.phone}
           </span>
           <span style={{ display: 'flex', alignItems: 'center', gap: '3px' }}>
-            <Globe style={{ width: '10px', height: '10px', color: '#1a56db', flexShrink: 0 }} />
+            <Globe style={{ width: '10px', height: '10px', color: '#0b3a60', flexShrink: 0 }} />
             {agencyInfo.website}
           </span>
         </div>
