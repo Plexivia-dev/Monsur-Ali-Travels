@@ -1,4 +1,4 @@
-import { Router } from "express";
+﻿import { Router } from "express";
 import {
   getAllCases,
   lookupCase,
@@ -8,6 +8,7 @@ import {
   deleteCase,
   getDueSummary,
   bulkImportCases,
+  updateWorkflowStatus
 } from "../../controllers/client/caseFile.controller.js";
 
 const caseFileRouter = Router();
@@ -41,5 +42,8 @@ caseFileRouter.post("/", createCase);
 caseFileRouter.get("/:id", getCaseById);
 caseFileRouter.put("/:id", updateCase);
 caseFileRouter.delete("/:id", deleteCase);
+
+
+caseFileRouter.patch('/:id/workflow', updateWorkflowStatus);
 
 export default caseFileRouter;

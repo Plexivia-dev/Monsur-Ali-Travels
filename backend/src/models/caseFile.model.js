@@ -61,21 +61,44 @@ const caseFileSchema = new Schema(
       index: true,
     },
 
-    // Universal 5 Lifecycle Steps
+    // Universal 5 Lifecycle Steps (Legacy)
     status: {
       type: String,
       enum: [
-        "ENTRY",                  // ১. পাসপোর্ট রিসিভ ও এন্ট্রি
-        "PROCESSING",             // ২. লয়ার/উকিল কাজ শুরু করেছে
-        "APPROVED_OFFER_LETTER",  // ৩. ওয়ার্ক পারমিট / অফার লেটার অনুমোদিত
-        "SUBMITTED_EMBASSY_BSF",  // ৪. বিএসএফ / এম্বাসিতে জমা সম্পন্ন
-        "COMPLETED_DELIVERED",    // ৫. ভিসা ও পাসপোর্ট ডেলিভারি সম্পন্ন (লকড)
+        "ENTRY",                  // ১. রিসিভ / এন্ট্রি
+        "PROCESSING",             // ২. প্রসেসিং / কাজ চলমান
+        "APPROVED_OFFER_LETTER",  // ৩. অ্যাপ্রুভড / অফার লেটার
+        "SUBMITTED_EMBASSY_BSF",  // ৪. সাবমিটেড (এমবাসি / বিএসএফ)
+        "COMPLETED_DELIVERED",    // ৫. কমপ্লিট / ডেলিভার্ড
         "REJECTED",
         "ON_HOLD",
       ],
       default: "ENTRY",
       index: true,
     },
+
+    // 🚀 Advanced Handoff & Workflow Tracking (New)
+    assignedTo: {
+      type: Schema.Types.ObjectId,
+      ref: "User",
+      default: null,
+      index: true,
+    },
+    workflowStatus: {
+      type: String,
+      default: "Received",
+      trim: true,
+      index: true,
+    },
+    statusHistory: [
+      {
+        status: { type: String, required: true },
+        remarks: { type: String, default: "" },
+        updatedBy: { type: Schema.Types.ObjectId, ref: "User" },
+        assignedTo: { type: Schema.Types.ObjectId, ref: "User" },
+        date: { type: Date, default: Date.now },
+      }
+    ],
 
     // Document Checklist & Follow-up Reminders
     checklist: {

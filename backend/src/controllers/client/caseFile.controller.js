@@ -511,3 +511,70 @@ export const bulkImportCases = async (req, res) => {
     });
   }
 };
+
+
+// 8. Update Workflow Status & Handoff
+export const updateWorkflowStatus = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { workflowStatus, assignedTo, remarks } = req.body;
+    const updatedBy = req.user?._id || req.user?.id;
+
+    const caseDoc = await CaseFile.findById(id);
+    if (!caseDoc) {
+      return res.status(404).json({ success: false, message: "Case file not found" });
+    }
+
+    // Update fields
+    if (workflowStatus) caseDoc.workflowStatus = workflowStatus;
+    if (assignedTo) caseDoc.assignedTo = assignedTo;
+
+    // Push to history
+    caseDoc.statusHistory.push({
+      status: workflowStatus || caseDoc.workflowStatus,
+      remarks: remarks || "",
+      updatedBy: updatedBy,
+      assignedTo: assignedTo || caseDoc.assignedTo,
+      date: new Date()
+    });
+
+    await caseDoc.save();
+
+    // Trigger Notification
+    const Notification = (await import("../../models/notification.model.js")).NotificationModel;
+    
+    let notificationTitle = "Case File Updated";
+    let notificationMsg = `Case ${caseDoc.caseNumber} status updated to ${workflowStatus}.`;
+    let recipientId = assignedTo || null;
+
+    if (assignedTo && assignedTo.toString() !== caseDoc.assignedTo?.toString()) {
+      notificationTitle = "Case Handed Over";
+      notificationMsg = `Case ${caseDoc.caseNumber} has been handed over to you.`;
+    } else if (workflowStatus === "Approved") {
+      notificationTitle = "Case Approved";
+      notificationMsg = `Case ${caseDoc.caseNumber} (${caseDoc.applicantName}) is approved. Please prepare for Indian Visa.`;
+      recipientId = null; // Broadcast or frontdesk team (can be handled differently)
+    }
+
+    await Notification.create({
+      title: notificationTitle,
+      message: notificationMsg,
+      module: "visa",
+      type: "info",
+      refId: caseDoc._id,
+      recipientId: recipientId,
+      createdBy: req.user?.name || "System"
+    });
+
+    return res.status(200).json({
+      success: true,
+      message: "Workflow updated successfully",
+      data: caseDoc,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: error.message || "Failed to update workflow",
+    });
+  }
+};
