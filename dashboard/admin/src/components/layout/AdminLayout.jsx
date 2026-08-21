@@ -7,6 +7,7 @@ import { LanguageDropdown } from '@/components/blocks/dropdown-language'
 import { ProfileDropdown } from '@/components/blocks/dropdown-profile'
 import { Button } from '@/components/ui/button'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+import logo from '@/assets/logo.png'
 
 export default function AdminLayout() {
   const { user, logout } = useAuth()
@@ -31,9 +32,11 @@ export default function AdminLayout() {
       {/* Sidebar */}
       <aside className="w-64 border-r border-border bg-card flex flex-col justify-between hidden md:flex">
         <div className="flex flex-col">
-          <div className="h-16 px-6 border-b border-border flex items-center gap-2">
-            <div className="size-8 rounded-lg bg-primary flex items-center justify-center font-black text-primary-foreground text-lg">M</div>
-            <span className="font-bold text-lg tracking-tight">Monsur Ali Travels</span>
+          <div className="h-16 px-6 border-b border-border flex items-center gap-3">
+            <img src={logo} alt="Logo" className="size-8 p-1 bg-white rounded-full object-contain shadow-sm" />
+            <span className="font-bold text-sm tracking-wide text-foreground uppercase">
+              Monsur Ali <span className="text-blue-500 font-extrabold">Travels</span>
+            </span>
           </div>
           <nav className="p-4 space-y-1">
             {menuItems.map((item) => {

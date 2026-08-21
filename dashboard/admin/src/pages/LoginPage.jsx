@@ -113,7 +113,7 @@ export function LoginPage() {
                 type="submit"
                 disabled={isSubmitting}
                 size="sm"
-                className="w-full mt-3 h-10 flex items-center justify-center font-semibold text-xs bg-foreground hover:bg-foreground/90 text-background transition cursor-pointer shadow-md rounded-lg"
+                className="w-full mt-4 h-10 flex items-center justify-center font-semibold text-xs bg-foreground hover:bg-foreground/90 text-background transition cursor-pointer shadow-md rounded-lg"
               >
                 {isSubmitting ? (
                   <div className="h-4 w-4 border-2 border-background/30 border-t-background rounded-full animate-spin mr-2" />
