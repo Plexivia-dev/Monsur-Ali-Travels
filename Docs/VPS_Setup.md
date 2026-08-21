@@ -1,4 +1,14 @@
-# Monsur Ali Travels ERP - VPS & Cloudflare Configuration
+# Monsur Ali Travels ERP - VPS & Cloudflare Configuration Guide
+
+## 🔑 SSH Login Command (Direct Access)
+
+Run this command directly in your Windows Terminal / PowerShell to log in to the VPS:
+
+```bash
+ssh -i C:\Users\mdikr\.ssh\id_ed25519_ikramul root@144.79.218.241
+```
+
+---
 
 ## 1. VPS Server Specifications
 
@@ -8,53 +18,54 @@
 - **OS:** Ubuntu 22.04 / 24.04 LTS
 - **Live Path:** `/opt/monsuralitravels`
 - **Uploads Storage:** `/var/www/uploads`
+- **Documents Storage:** `/var/www/documents`
+- **SSH Key Path:** `C:\Users\mdikr\.ssh\id_ed25519_ikramul`
 
 ---
 
-## 2. Cloudflare DNS & Domain Integration
+## 2. Production Container & Port Architecture
+
+| Container Name | Service / App | Host Port | Local Dev Port | Routing Domain |
+| :--- | :--- | :--- | :--- | :--- |
+| **`monsuralitravels-dashboard-admin-live`** | Admin Dashboard SPA (`dashboard/admin`) | **`8007`** | `5174` | `https://admin.monsuralitravels.com` |
+| **`monsuralitravels-dashboard-live`** | Client Dashboard SPA (`dashboard/client`) | **`8005`** | `5173` | `https://dashboard.monsuralitravels.com` |
+| **`monsuralitravels-backend-live`** | Express REST API (`backend`) | **`5092`** | `5092` | `https://api.monsuralitravels.com` |
+| **`monsuralitravels-frontend-live`** | Landing Website (`frontend`) | **`8006`** | `3000` | `https://monsuralitravels.com` |
+| **`monsuralitravels-mongodb-live`** | MongoDB 7.0 Engine | **`27017`** | `27017` | Local / Docker Bridge Network |
+
+---
+
+## 3. Cloudflare DNS & Domain Integration
 
 - **Primary Domain:** `monsuralitravels.com`
-- **Cloudflare API Token:** _(Stored securely in Cloudflare account dashboard)_
 - **Cloudflare Zone ID:** `96601a82dcaad6ba15891d416e440706`
+- **Cloudflare Account ID:** `f9c0c34851099dfb743390a7a0086321`
 
 ### Assigned Cloudflare Nameservers
-
-Point these 2 NameServers in your Domain Registrar (where you purchased `monsuralitravels.com`):
-
 1. `christian.ns.cloudflare.com`
 2. `laila.ns.cloudflare.com`
 
-### Configured DNS Records (All Auto-Assigned to `144.79.218.241`)
+### Configured DNS Records (Target IP: `144.79.218.241`)
 
-| Type  | Record Name                                    | Target IP        | Description                     |
-| :---- | :--------------------------------------------- | :--------------- | :------------------------------ |
-| **A** | `admin` (`admin.monsuralitravels.com`)         | `144.79.218.241` | Primary ERP Admin Dashboard SPA |
-| **A** | `api` (`api.monsuralitravels.com`)             | `144.79.218.241` | Primary Backend REST API        |
-| **A** | `@` (`monsuralitravels.com`)                   | `144.79.218.241` | Root Domain                     |
-| **A** | `dashboard` (`dashboard.monsuralitravels.com`) | `144.79.218.241` | Dashboard Alias                 |
-| **A** | `server` (`server.monsuralitravels.com`)       | `144.79.218.241` | Server Alias                    |
-| **A** | `service` (`service.monsuralitravels.com`)     | `144.79.218.241` | Service Alias                   |
-| **A** | `www` (`www.monsuralitravels.com`)             | `144.79.218.241` | WWW Subdomain                   |
+| Type  | Record Name | Target IP | Description |
+| :---- | :--- | :--- | :--- |
+| **A** | `admin` (`admin.monsuralitravels.com`) | `144.79.218.241` | Standalone Admin Dashboard SPA |
+| **A** | `dashboard` (`dashboard.monsuralitravels.com`) | `144.79.218.241` | Client ERP Main Dashboard SPA |
+| **A** | `api` (`api.monsuralitravels.com`) | `144.79.218.241` | Primary Backend REST API |
+| **A** | `@` (`monsuralitravels.com`) | `144.79.218.241` | Root Domain / Landing Website |
+| **A** | `www` (`www.monsuralitravels.com`) | `144.79.218.241` | WWW Subdomain |
+| **A** | `server` (`server.monsuralitravels.com`) | `144.79.218.241` | Server Alias |
+| **A** | `service` (`service.monsuralitravels.com`) | `144.79.218.241` | Service Alias |
 
 ---
 
-## 3. 1-Command Automated Fresh VPS Provisioning
+## 4. 1-Command Automated Fresh VPS Provisioning
 
-Run this command directly in your VPS terminal (`ssh -p 22 root@144.79.218.241`):
+Run this command directly in your VPS terminal:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/ikram3031/Smart_ERP/master/vps-setup.sh | bash
+curl -fsSL https://raw.githubusercontent.com/ikram3031/Monsur-Ali-Travels/live/vps-setup.sh | bash
 ```
-
----
-
-## 4. Production Container & Port Architecture
-
-| Container Name                        | Service             | Host Port | Routing Domain                       |
-| :------------------------------------ | :------------------ | :-------- | :----------------------------------- |
-| **`monsuralitravels-dashboard-live`** | Vite SPA Dashboard  | `8005`    | `https://admin.monsuralitravels.com` |
-| **`monsuralitravels-backend-live`**   | Express Node.js API | `5092`    | `https://api.monsuralitravels.com`   |
-| **`monsuralitravels-mongodb-live`**   | MongoDB Engine      | `27017`   | Local / Internal Bridge Network      |
 
 ---
 
@@ -66,12 +77,29 @@ certbot --nginx -d admin.monsuralitravels.com -d api.monsuralitravels.com -d das
 
 ---
 
-## 6. Maintenance Commands
+## 6. Daily Maintenance & Useful Commands (Makefile)
+
+Inside `/opt/monsuralitravels`:
 
 ```bash
-# Pull and deploy latest code
-cd /opt/monsuralitravels && ./prod-update.sh
+# 1. Full Deploy (Pull live + Rebuild all + Start)
+make deploy
 
-# View live container logs
-docker compose -f docker-compose.prod.yml logs -f
+# 2. Rebuild & Restart Individual Services
+make build-dash     # Client Dashboard (8005)
+make build-admin    # Admin Dashboard (8007)
+make build-bg       # Backend API (5092)
+make build-front    # Frontend Landing (8006)
+
+# 3. View Logs
+make logs           # All services
+make logs-bg        # Backend logs
+make logs-dash      # Client Dashboard logs
+make logs-admin     # Admin Dashboard logs
+make logs-front     # Frontend logs
+
+# 4. Status & Management
+make status         # Container status (docker compose ps)
+make down           # Stop and remove containers
 ```
+

@@ -3,7 +3,7 @@ import { generateDid } from "../utils/generateDid.js";
 
 const { models } = mongoose;
 
-export const USER_ROLES = ["Owner", "Admin", "Manager", "Employee", "Agent", "Staff"];
+export const USER_ROLES = ["Owner", "Admin", "Employee"];
 
 const userSchema = new Schema(
   {
@@ -17,6 +17,7 @@ const userSchema = new Schema(
       index: true,
     },
     did: { type: String, default: () => generateDid(), unique: true, index: true },
+    employeeDid: { type: String, ref: "Employee", default: null, index: true },
     passwordHash: { type: String, required: true, trim: true, select: false },
     phone: { type: String, required: true, trim: true, index: true },
     refreshToken: { type: String, select: false },
@@ -34,8 +35,8 @@ const userSchema = new Schema(
     },
     isActive: { type: Boolean, default: true },
     lastLogin: { type: Date, default: null },
-    createdBy: { type: Schema.Types.ObjectId, ref: "User", default: null },
-    updatedBy: { type: Schema.Types.ObjectId, ref: "User", default: null },
+    createdByDid: { type: String, default: null },
+    updatedByDid: { type: String, default: null },
   },
   {
     timestamps: true,
@@ -43,9 +44,7 @@ const userSchema = new Schema(
     toJSON: {
       virtuals: true,
       transform: (_doc, ret) => {
-        if (ret._id) {
-          ret.id = ret._id.toString();
-        }
+        ret.id = ret.did;
         delete ret._id;
         delete ret.passwordHash;
         delete ret.emailOtp;
@@ -56,7 +55,29 @@ const userSchema = new Schema(
         return ret;
       },
     },
+    toObject: {
+      virtuals: true,
+    },
   },
 );
+
+userSchema.virtual("createdBy", {
+  ref: "User",
+  localField: "createdByDid",
+  foreignField: "did",
+  justOne: true,
+});
+userSchema.virtual("updatedBy", {
+  ref: "User",
+  localField: "updatedByDid",
+  foreignField: "did",
+  justOne: true,
+});
+userSchema.virtual("employee", {
+  ref: "Employee",
+  localField: "employeeDid",
+  foreignField: "did",
+  justOne: true,
+});
 
 export const UserModel = models.User || model("User", userSchema);

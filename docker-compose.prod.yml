@@ -28,9 +28,6 @@ services:
     environment:
       NODE_ENV: production
       PORT: 5092
-      MONGODB_URI: ${MONGODB_URI:-mongodb://admin:MonsurAliSecPass2026!@monsuralitravels-mongodb-live:27017/monsur-ali-travels?authSource=admin}
-      MONGODB_DB_NAME: monsur-ali-travels
-      ACCESS_TOKEN_SECRET: ${ACCESS_TOKEN_SECRET:-monsuralitravels_super_secret_access_token_jwt_2026}
     ports:
       - "5092:5092"
     depends_on:
@@ -40,7 +37,7 @@ services:
 
   dashboard:
     build:
-      context: ./dashboard
+      context: ./dashboard/client
       dockerfile: Dockerfile
       args:
         - VITE_API_BASE_URL=${VITE_API_BASE_URL:-https://api.monsuralitravels.com}
@@ -51,6 +48,30 @@ services:
     networks:
       - monsuralitravels-net
 
+  dashboard-admin:
+    build:
+      context: ./dashboard/admin
+      dockerfile: Dockerfile
+      args:
+        - VITE_API_BASE_URL=${VITE_API_BASE_URL:-https://api.monsuralitravels.com}
+    container_name: monsuralitravels-dashboard-admin-live
+    restart: always
+    ports:
+      - "8007:80"
+    networks:
+      - monsuralitravels-net
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: monsuralitravels-frontend-live
+    restart: always
+    ports:
+      - "8006:80"
+    networks:
+      - monsuralitravels-net
+
 networks:
   monsuralitravels-net:
     driver: bridge
@@ -58,3 +79,4 @@ networks:
 volumes:
   mongodb-data:
     driver: local
+

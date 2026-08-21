@@ -3,6 +3,7 @@
 .env.*
 **/.env
 **/.env.*
+!**/.env.example
 
 # Node / package managers
 node_modules/
@@ -37,6 +38,5 @@ backups/
 *.gz
 
 # Frontend split repository folder
-frontend/
-
 .agents
+ref/

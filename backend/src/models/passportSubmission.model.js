@@ -37,16 +37,13 @@ const passportSubmissionSchema = new mongoose.Schema(
     // Agency Header Info
     agencyInfo: {
       name: { type: String, default: "MONSUR ALI TOURS & TRAVELS" },
-      address: { type: String, default: "Nadampur, Jagannathpur, Sunamganj - 3060, Sylhet, Bangladesh" },
+      address: { type: String, default: "Mominpur Jagannathpur Road, Sunamganj, Post Code 3060" },
       phone: { type: String, default: "+8801345579534" },
-      email: { type: String, default: "monsuralitravels@gmail.com" },
-      licenseNo: { type: String, default: "RL-1842" },
+      email: { type: String, default: "contact@monsuralitravels.com" },
     },
 
-    // Central Customer Profile Reference (Relationship)
-    customerId: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Customer",
+    clientDid: {
+      type: String,
       default: null,
       index: true,
     },
@@ -104,16 +101,55 @@ const passportSubmissionSchema = new mongoose.Schema(
     remarks: { type: String, default: "" },
     status: {
       type: String,
-      enum: ["pending", "processing", "submitted", "delivered"],
-      default: "pending",
+      default: "received",
     },
+    attachments: {
+      photo: { type: String, default: "" },
+      passportScan: { type: String, default: "" },
+      nidScan: { type: String, default: "" },
+      supportingDocs: [
+        {
+          name: { type: String, default: "" },
+          fileUrl: { type: String, default: "" },
+          fileType: { type: String, default: "" },
+          uploadedAt: { type: Date, default: Date.now },
+        },
+      ],
+    },
+    activityLogs: [
+      {
+        timestamp: { type: Date, default: Date.now },
+        statusChangedTo: { type: String, default: "" },
+        note: { type: String, default: "" },
+        updatedBy: { type: String, default: "Admin" },
+      },
+    ],
     isActive: { type: Boolean, default: true },
   },
   {
     timestamps: true,
     collection: "passport-submissions",
+    toJSON: {
+      virtuals: true,
+      transform: (_doc, ret) => {
+        ret.id = ret.did;
+        delete ret._id;
+        return ret;
+      },
+    },
+    toObject: {
+      virtuals: true,
+    },
   }
 );
+
+// Virtual Populates for passportSubmission relations using DIDs
+passportSubmissionSchema.virtual("customerId", {
+  ref: "Client",
+  localField: "clientDid",
+  foreignField: "did",
+  justOne: true,
+});
 
 passportSubmissionSchema.pre("save", function (next) {
   if (!this.trackingNo) {

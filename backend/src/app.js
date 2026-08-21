@@ -6,7 +6,7 @@ import { authenticateToken, authorizeRoles } from "./middlewares/auth.middleware
 import fs from "fs";
 import { logger } from "./config/logger.js";
 import coreRouter from "./routesIndex.js";
-import developerRouter, { broadcastLogToClients } from "./routes/DeveloperRoute.js";
+import developerRouter, { broadcastLogToClients } from "./routes/shared/DeveloperRoute.js";
 import { env } from "./config/env.js";
 
 export async function createApp() {
@@ -32,6 +32,10 @@ export async function createApp() {
     "http://monsuralitravels.com/",
     "http://www.monsuralitravels.com",
     "http://www.monsuralitravels.com/",
+    "https://dashboard.monsuralitravels.com",
+    "https://dashboard.monsuralitravels.com/",
+    "http://dashboard.monsuralitravels.com",
+    "http://dashboard.monsuralitravels.com/",
     "https://monsuralitravelsbd.com",
     "https://www.monsuralitravelsbd.com",
     "https://dashboard.monsuralitravelsbd.com",
@@ -45,6 +49,18 @@ export async function createApp() {
     "http://localhost:5174/",
     "http://127.0.0.1:5174",
     "http://127.0.0.1:5174/",
+    "http://localhost:8005",
+    "http://localhost:8005/",
+    "http://127.0.0.1:8005",
+    "http://127.0.0.1:8005/",
+    "http://localhost:8006",
+    "http://localhost:8006/",
+    "http://127.0.0.1:8006",
+    "http://127.0.0.1:8006/",
+    "http://localhost:8007",
+    "http://localhost:8007/",
+    "http://127.0.0.1:8007",
+    "http://127.0.0.1:8007/",
   ];
 
   const envOrigins = env.ALLOWED_ORIGINS

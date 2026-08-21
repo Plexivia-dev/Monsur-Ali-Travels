@@ -37,7 +37,7 @@ services:
 
   dashboard:
     build:
-      context: ./dashboard
+      context: ./dashboard/client
       dockerfile: Dockerfile
       args:
         - VITE_API_BASE_URL=${VITE_API_BASE_URL:-https://api.monsuralitravels.com}
@@ -45,6 +45,30 @@ services:
     restart: always
     ports:
       - "8005:80"
+    networks:
+      - monsuralitravels-net
+
+  dashboard-admin:
+    build:
+      context: ./dashboard/admin
+      dockerfile: Dockerfile
+      args:
+        - VITE_API_BASE_URL=${VITE_API_BASE_URL:-https://api.monsuralitravels.com}
+    container_name: monsuralitravels-dashboard-admin-live
+    restart: always
+    ports:
+      - "8007:80"
+    networks:
+      - monsuralitravels-net
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: monsuralitravels-frontend-live
+    restart: always
+    ports:
+      - "8006:80"
     networks:
       - monsuralitravels-net
 
