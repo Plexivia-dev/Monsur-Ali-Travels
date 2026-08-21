@@ -53,7 +53,7 @@ export default function SettingsPage() {
   };
 
   return (
-    <div className="p-4 md:p-6 lg:p-8 space-y-6 max-w-7xl mx-auto h-[calc(100vh-64px)] overflow-y-auto bg-[#EFEFEF]">
+    <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl md:text-3xl font-bold text-gray-900 font-display">
