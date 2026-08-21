@@ -21,7 +21,7 @@ const notificationSchema = new mongoose.Schema(
     },
     module: {
       type: String,
-      enum: ["visa", "passport", "customer", "agreement", "invoice", "general"],
+      enum: ["visa", "passport", "client", "agreement", "invoice", "general"],
       default: "general",
     },
     type: {
@@ -29,12 +29,12 @@ const notificationSchema = new mongoose.Schema(
       enum: ["info", "success", "warning", "danger"],
       default: "info",
     },
-    refId: {
-      type: mongoose.Schema.Types.ObjectId,
+    refDid: {
+      type: String,
       default: null,
     },
-    recipientId: {
-      type: mongoose.Schema.Types.ObjectId,
+    recipientUserDid: {
+      type: String,
       ref: "User",
       default: null,
       index: true,
@@ -50,8 +50,27 @@ const notificationSchema = new mongoose.Schema(
   },
   {
     timestamps: true,
+    toJSON: {
+      virtuals: true,
+      transform: (_doc, ret) => {
+        ret.id = ret.did;
+        delete ret._id;
+        return ret;
+      },
+    },
+    toObject: {
+      virtuals: true,
+    },
   }
 );
+
+// Virtual Populates for Notification relations using DIDs
+notificationSchema.virtual("recipientUser", {
+  ref: "User",
+  localField: "recipientUserDid",
+  foreignField: "did",
+  justOne: true,
+});
 
 export const NotificationModel =
   mongoose.models.Notification ||

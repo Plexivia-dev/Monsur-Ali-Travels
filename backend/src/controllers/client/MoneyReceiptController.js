@@ -4,7 +4,7 @@ import {
   generateReceiptQrCode,
   generateReceiptQrText,
 } from "../../models/moneyReceipt.model.js";
-import Customer from "../../models/customer.model.js";
+import Client from "../../models/client.model.js";
 
 // @desc    Get all money receipts / tokens with pagination and search
 // @route   GET /api/v1/receipts
@@ -66,7 +66,7 @@ export const getAllReceipts = async (req, res, next) => {
       .sort({ createdAt: -1 })
       .skip(skip)
       .limit(limit)
-      .populate("customerId", "fullName phone passportNumber customerCode")
+      .populate("customerId", "fullName phone passportNumber clientCode")
       .populate("createdBy", "name role")
       .populate("confirmedBy", "name role");
 
@@ -103,7 +103,7 @@ export const getReceiptById = async (req, res, next) => {
       : { $or: [{ receiptNo: id }, { did: id }], isActive: { $ne: false } };
 
     let receipt = await MoneyReceiptModel.findOne(query)
-      .populate("customerId", "fullName phone passportNumber customerCode totalDueAmount")
+      .populate("customerId", "fullName phone passportNumber clientCode totalDueAmount")
       .populate("createdBy", "name role")
       .populate("confirmedBy", "name role");
 
@@ -205,20 +205,22 @@ export const createReceipt = async (req, res, next) => {
     }
 
     // Set creator user if present
-    if (req.user?._id) {
-      body.createdBy = req.user._id;
+    if (req.user?.did) {
+      body.createdByDid = req.user.did;
       body.createdByName = req.user.name || body.createdByName || "ম্যানেজার (Manager)";
     }
 
-    // Auto-link to customer if phone or passport matches and customerId not provided
-    if (!body.customerId && (body.passportNumber || body.clientPhone)) {
+    // Auto-link to client if phone or passport matches and clientDid/customerId not provided
+    if (!body.clientDid && !body.customerId && (body.passportNumber || body.clientPhone)) {
       const search = [];
       if (body.passportNumber) search.push({ passportNumber: body.passportNumber.trim().toUpperCase() });
       if (body.clientPhone) search.push({ phone: body.clientPhone.trim() });
-      const matchedCustomer = await Customer.findOne({ $or: search });
-      if (matchedCustomer) {
-        body.customerId = matchedCustomer._id;
+      const matchedClient = await Client.findOne({ $or: search });
+      if (matchedClient) {
+        body.clientDid = matchedClient.did;
       }
+    } else if (body.clientDid || body.customerId) {
+      body.clientDid = body.clientDid || body.customerId;
     }
 
     const newReceipt = await MoneyReceiptModel.create(body);
@@ -305,7 +307,7 @@ export const confirmReceipt = async (req, res, next) => {
 
     receipt.status = "confirmed";
     receipt.confirmedAt = new Date();
-    receipt.confirmedBy = req.user?._id || null;
+    receipt.confirmedByDid = req.user?.did || null;
     receipt.confirmedByName = confirmedByName || req.user?.name || "একাউন্টেন্ট (Accountant)";
     if (paymentMethod) receipt.paymentMethod = paymentMethod;
     if (notes) {
@@ -314,17 +316,17 @@ export const confirmReceipt = async (req, res, next) => {
 
     await receipt.save();
 
-    // If linked to customer, update customer's totalPaidAmount
-    if (receipt.customerId) {
+    // If linked to client, update client's totalPaidAmount
+    if (receipt.clientDid) {
       try {
-        const cust = await Customer.findById(receipt.customerId);
+        const cust = await Client.findOne({ did: receipt.clientDid });
         if (cust) {
           cust.totalPaidAmount = (cust.totalPaidAmount || 0) + Number(receipt.amount || 0);
           cust.totalDueAmount = Math.max(0, (cust.totalBilledAmount || 0) - cust.totalPaidAmount);
           await cust.save();
         }
       } catch (err) {
-        console.error("Failed to update customer ledger:", err);
+        console.error("Failed to update client ledger:", err);
       }
     }
 

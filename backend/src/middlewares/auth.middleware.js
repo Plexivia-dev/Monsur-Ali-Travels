@@ -15,22 +15,22 @@ export const authenticateToken = async (req, res, next) => {
 
   try {
     const payload = jwt.verify(token, env.ACCESS_TOKEN_SECRET);
-    const userId = payload.userId || payload.id || payload.sub;
+    const userDid = payload.did || payload.userId || payload.id || payload.sub;
 
-    if (!userId) {
+    if (!userDid) {
       return res.status(401).json({ status: "error", message: "Invalid token payload" });
     }
 
-    const user = await UserModel.findById(userId).lean();
+    const user = await UserModel.findOne({ did: userDid }).lean();
 
     if (!user || user.isActive === false) {
       return res.status(401).json({ status: "error", message: "User not found or account deactivated" });
     }
 
     req.user = {
-      _id: user._id.toString(),
-      id: user._id.toString(),
-      userId: user._id.toString(),
+      _id: user.did,
+      id: user.did,
+      userId: user.did,
       did: user.did,
       name: user.name,
       email: user.email,

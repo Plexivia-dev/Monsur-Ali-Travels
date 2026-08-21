@@ -1,5 +1,5 @@
 import { IndianVisaSubmissionModel } from "../../models/indianVisaSubmission.model.js";
-import { syncCustomerProfile } from "../../helper/customerSyncHelper.js";
+import { syncClientProfile } from "../../helper/clientSyncHelper.js";
 import { NotificationModel } from "../../models/notification.model.js";
 
 /**
@@ -72,7 +72,7 @@ export class IndianVisaController {
   // GET /api/v1/docs/indian-visas/:id
   static async getById(req, res) {
     try {
-      const doc = await IndianVisaSubmissionModel.findOne({ _id: req.params.id, isActive: { $ne: false } });
+      const doc = await IndianVisaSubmissionModel.findOne({ did: req.params.id, isActive: { $ne: false } });
       if (!doc) {
         return res.status(404).json({
           status: "fail",
@@ -100,7 +100,7 @@ export class IndianVisaController {
     try {
       const payload = {
         ...req.body,
-        createdBy: req.user?._id || req.user?.id || null,
+        createdByDid: req.user?.did || null,
       };
 
       // Initial activity log
@@ -116,8 +116,8 @@ export class IndianVisaController {
       const newDoc = new IndianVisaSubmissionModel(payload);
       const savedDoc = await newDoc.save();
 
-      // Automatically sync with Central Customer Collection
-      const syncedCustomer = await syncCustomerProfile({
+      // Automatically sync with Central Client Collection
+      const syncedClient = await syncClientProfile({
         fullName: payload.applicantName,
         phone: payload.applicantPhone,
         nidNumber: payload.nidBirthCertNo,
@@ -126,11 +126,12 @@ export class IndianVisaController {
         email: payload.applicantEmail,
         attachments: payload.attachments,
         relationType: "visa",
-        relationId: savedDoc._id,
+        relationId: savedDoc.did,
+        createdByDid: req.user?.did || null,
       });
 
-      if (syncedCustomer && !savedDoc.customerId) {
-        savedDoc.customerId = syncedCustomer._id;
+      if (syncedClient && !savedDoc.clientDid) {
+        savedDoc.clientDid = syncedClient.did;
         await savedDoc.save();
       }
 
@@ -138,8 +139,8 @@ export class IndianVisaController {
         status: "success",
         success: true,
         data: savedDoc,
-        customerId: syncedCustomer?._id || null,
-        message: "Indian visa application submitted and customer synced successfully.",
+        clientDid: syncedClient?.did || null,
+        message: "Indian visa application submitted and client synced successfully.",
       });
     } catch (err) {
       console.error("IndianVisaController create error:", err);
@@ -156,7 +157,7 @@ export class IndianVisaController {
   static async updateStage(req, res) {
     try {
       const { status, note, document } = req.body;
-      const doc = await IndianVisaSubmissionModel.findById(req.params.id);
+      const doc = await IndianVisaSubmissionModel.findOne({ did: req.params.id });
 
       if (!doc) {
         return res.status(404).json({
@@ -198,7 +199,7 @@ export class IndianVisaController {
           message: `Visa file for "${doc.applicantName}" (Passport: ${doc.passportNo}) has been updated to "${status}".`,
           module: "visa",
           type: status === "rejected" ? "danger" : status === "approved" || status === "complete_process" ? "success" : "info",
-          refId: doc._id,
+          refDid: doc.did,
           createdBy: req.user?.name || "Staff",
         });
       } catch (notifErr) {
@@ -224,8 +225,8 @@ export class IndianVisaController {
   // PUT /api/v1/docs/indian-visas/:id
   static async update(req, res) {
     try {
-      const updatedDoc = await IndianVisaSubmissionModel.findByIdAndUpdate(
-        req.params.id,
+      const updatedDoc = await IndianVisaSubmissionModel.findOneAndUpdate(
+        { did: req.params.id },
         req.body,
         { new: true, runValidators: true }
       );
@@ -257,8 +258,8 @@ export class IndianVisaController {
   // DELETE /api/v1/docs/indian-visas/:id
   static async delete(req, res) {
     try {
-      const deletedDoc = await IndianVisaSubmissionModel.findByIdAndUpdate(
-        req.params.id,
+      const deletedDoc = await IndianVisaSubmissionModel.findOneAndUpdate(
+        { did: req.params.id },
         { isActive: false },
         { new: true }
       );

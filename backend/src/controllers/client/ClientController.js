@@ -1,10 +1,10 @@
-import Customer from "../../models/customer.model.js";
+import Client from "../../models/client.model.js";
 
 /**
- * Controller for Central Customer Management & Relations
+ * Controller for Central Client Management & Relations
  */
-class CustomerController {
-  // GET /api/v1/customers
+class ClientController {
+  // GET /api/v1/clients
   async getAll(req, res) {
     try {
       const page = Math.max(1, parseInt(req.query.page, 10) || 1);
@@ -29,13 +29,13 @@ class CustomerController {
           { phone: searchRegex },
           { passportNumber: searchRegex },
           { nidNumber: searchRegex },
-          { customerCode: searchRegex },
+          { clientCode: searchRegex },
           { email: searchRegex },
         ];
       }
 
-      const totalCount = await Customer.countDocuments(query);
-      const customers = await Customer.find(query)
+      const totalCount = await Client.countDocuments(query);
+      const clients = await Client.find(query)
         .populate("applications", "applicationNo serviceType status dateReceived payment")
         .populate("visaSubmissions", "trackingNo visaType status submissionDate")
         .populate("passportSubmissions", "trackingNo passportType status submissionDate")
@@ -49,31 +49,31 @@ class CustomerController {
       return res.status(200).json({
         status: "success",
         success: true,
-        data: customers,
+        data: clients,
         pagination: {
           skip,
           limit,
           totalCount,
           page,
           totalPages,
-          hasNextPage: skip + customers.length < totalCount,
+          hasNextPage: skip + clients.length < totalCount,
           hasPrevPage: skip > 0,
         },
       });
     } catch (err) {
-      console.error("CustomerController.getAll error:", err);
+      console.error("ClientController.getAll error:", err);
       return res.status(500).json({
         status: "error",
         success: false,
-        message: err.message || "Failed to fetch customers.",
+        message: err.message || "Failed to fetch clients.",
       });
     }
   }
 
-  // GET /api/v1/customers/:id
+  // GET /api/v1/clients/:id
   async getById(req, res) {
     try {
-      const customer = await Customer.findOne({ _id: req.params.id, isActive: { $ne: false } })
+      const client = await Client.findOne({ did: req.params.id, isActive: { $ne: false } })
         .populate("applications")
         .populate("visaSubmissions")
         .populate("passportSubmissions")
@@ -81,124 +81,124 @@ class CustomerController {
         .populate("agreements")
         .populate("invoices");
 
-      if (!customer) {
+      if (!client) {
         return res.status(404).json({
           status: "fail",
           success: false,
-          message: "Customer not found.",
+          message: "Client not found.",
         });
       }
 
       return res.status(200).json({
         status: "success",
         success: true,
-        data: customer,
+        data: client,
       });
     } catch (err) {
-      console.error("CustomerController.getById error:", err);
+      console.error("ClientController.getById error:", err);
       return res.status(500).json({
         status: "error",
         success: false,
-        message: err.message || "Failed to fetch customer profile.",
+        message: err.message || "Failed to fetch client profile.",
       });
     }
   }
 
-  // POST /api/v1/customers
+  // POST /api/v1/clients
   async create(req, res) {
     try {
-      const customerData = {
+      const clientData = {
         ...req.body,
-        createdBy: req.user?._id || req.user?.id || null,
+        createdByDid: req.user?.did || null,
       };
 
-      const customer = await Customer.create(customerData);
+      const client = await Client.create(clientData);
 
       return res.status(201).json({
         status: "success",
         success: true,
-        data: customer,
-        message: "Customer profile created successfully.",
+        data: client,
+        message: "Client profile created successfully.",
       });
     } catch (err) {
-      console.error("CustomerController.create error:", err);
+      console.error("ClientController.create error:", err);
       return res.status(400).json({
         status: "error",
         success: false,
-        message: err.message || "Failed to create customer.",
+        message: err.message || "Failed to create client.",
       });
     }
   }
 
-  // PUT /api/v1/customers/:id
+  // PUT /api/v1/clients/:id
   async update(req, res) {
     try {
-      const customer = await Customer.findByIdAndUpdate(
-        req.params.id,
+      const client = await Client.findOneAndUpdate(
+        { did: req.params.id },
         {
           ...req.body,
-          updatedBy: req.user?._id || req.user?.id || null,
+          updatedByDid: req.user?.did || null,
         },
         { new: true, runValidators: true }
       );
 
-      if (!customer) {
+      if (!client) {
         return res.status(404).json({
           status: "fail",
           success: false,
-          message: "Customer not found.",
+          message: "Client not found.",
         });
       }
 
       return res.status(200).json({
         status: "success",
         success: true,
-        data: customer,
-        message: "Customer updated successfully.",
+        data: client,
+        message: "Client updated successfully.",
       });
     } catch (err) {
-      console.error("CustomerController.update error:", err);
+      console.error("ClientController.update error:", err);
       return res.status(400).json({
         status: "error",
         success: false,
-        message: err.message || "Failed to update customer.",
+        message: err.message || "Failed to update client.",
       });
     }
   }
 
-  // DELETE /api/v1/customers/:id
+  // DELETE /api/v1/clients/:id
   async delete(req, res) {
     try {
-      const customer = await Customer.findByIdAndUpdate(
-        req.params.id,
+      const client = await Client.findOneAndUpdate(
+        { did: req.params.id },
         { isActive: false },
         { new: true }
       );
-      if (!customer) {
+      if (!client) {
         return res.status(404).json({
           status: "fail",
           success: false,
-          message: "Customer not found.",
+          message: "Client not found.",
         });
       }
 
       return res.status(200).json({
         status: "success",
         success: true,
-        message: "Customer profile deleted successfully.",
+        message: "Client profile deleted successfully.",
       });
     } catch (err) {
-      console.error("CustomerController.delete error:", err);
+      console.error("ClientController.delete error:", err);
       return res.status(500).json({
         status: "error",
         success: false,
-        message: err.message || "Failed to delete customer.",
+        message: err.message || "Failed to delete client.",
       });
     }
   }
 
   // Quick lookup by passport, phone or NID
-  // GET /api/v1/customers/lookup?query=...
+  // GET /api/v1/clients/lookup?query=...
   async lookup(req, res) {
     try {
       const { query } = req.query;
@@ -213,33 +213,33 @@ class CustomerController {
       const q = query.trim();
       const regex = new RegExp(q, "i");
 
-      const customers = await Customer.find({
+      const clients = await Client.find({
         isActive: { $ne: false },
         $or: [
           { passportNumber: q.toUpperCase() },
           { phone: regex },
           { nidNumber: regex },
-          { customerCode: regex },
+          { clientCode: regex },
           { fullName: regex },
         ],
       })
-        .select("customerCode fullName phone passportNumber nidNumber fatherName motherName guardian attachments")
+        .select("clientCode fullName phone passportNumber nidNumber fatherName motherName guardian attachments")
         .limit(10);
 
       return res.status(200).json({
         status: "success",
         success: true,
-        data: customers,
+        data: clients,
       });
     } catch (err) {
-      console.error("CustomerController.lookup error:", err);
+      console.error("ClientController.lookup error:", err);
       return res.status(500).json({
         status: "error",
         success: false,
-        message: err.message || "Failed to lookup customer.",
+        message: err.message || "Failed to lookup client.",
       });
     }
   }
 }
 
-export default new CustomerController();
+export default new ClientController();

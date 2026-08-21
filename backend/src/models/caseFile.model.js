@@ -23,10 +23,9 @@ const caseFileSchema = new Schema(
       unique: true,
       index: true,
     },
-    customerId: {
-      type: Schema.Types.ObjectId,
-      ref: "Customer",
-      required: [true, "Customer reference is required"],
+    clientDid: {
+      type: String,
+      required: [true, "Client reference DID is required"],
       index: true,
     },
     // Snapshot fields for ultra-fast lookup
@@ -78,9 +77,8 @@ const caseFileSchema = new Schema(
     },
 
     // 🚀 Advanced Handoff & Workflow Tracking (New)
-    assignedTo: {
-      type: Schema.Types.ObjectId,
-      ref: "User",
+    assignedToDid: {
+      type: String,
       default: null,
       index: true,
     },
@@ -94,8 +92,8 @@ const caseFileSchema = new Schema(
       {
         status: { type: String, required: true },
         remarks: { type: String, default: "" },
-        updatedBy: { type: Schema.Types.ObjectId, ref: "User" },
-        assignedTo: { type: Schema.Types.ObjectId, ref: "User" },
+        updatedByDid: { type: String, ref: "User" },
+        assignedToDid: { type: String, ref: "User" },
         date: { type: Date, default: Date.now },
       }
     ],
@@ -131,20 +129,29 @@ const caseFileSchema = new Schema(
       type: String,
       default: "",
     },
-    createdBy: {
-      type: Schema.Types.ObjectId,
-      ref: "User",
+    createdByDid: {
+      type: String,
       default: null,
     },
-    updatedBy: {
-      type: Schema.Types.ObjectId,
-      ref: "User",
+    updatedByDid: {
+      type: String,
       default: null,
     },
   },
   {
     timestamps: true,
     versionKey: false,
+    toJSON: {
+      virtuals: true,
+      transform: (_doc, ret) => {
+        ret.id = ret.did;
+        delete ret._id;
+        return ret;
+      },
+    },
+    toObject: {
+      virtuals: true,
+    },
   }
 );
 
@@ -176,6 +183,32 @@ caseFileSchema.index({
   passportNumber: "text",
   phone: "text",
   caseType: "text",
+});
+
+// Virtual Populates for CaseFile relations using DIDs
+caseFileSchema.virtual("customerId", {
+  ref: "Client",
+  localField: "clientDid",
+  foreignField: "did",
+  justOne: true,
+});
+caseFileSchema.virtual("assignedTo", {
+  ref: "User",
+  localField: "assignedToDid",
+  foreignField: "did",
+  justOne: true,
+});
+caseFileSchema.virtual("createdBy", {
+  ref: "User",
+  localField: "createdByDid",
+  foreignField: "did",
+  justOne: true,
+});
+caseFileSchema.virtual("updatedBy", {
+  ref: "User",
+  localField: "updatedByDid",
+  foreignField: "did",
+  justOne: true,
 });
 
 const CaseFile = models.CaseFile || model("CaseFile", caseFileSchema);

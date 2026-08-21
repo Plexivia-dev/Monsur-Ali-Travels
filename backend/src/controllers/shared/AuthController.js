@@ -7,7 +7,7 @@ import { comparePassword, hashPassword } from "../../utils/password.js";
 
 export const createAccessToken = (user) => {
   return jwt.sign(
-    { userId: user.id },
+    { did: user.did, role: user.role },
     env.ACCESS_TOKEN_SECRET,
     { expiresIn: env.ACCESS_TOKEN_EXPIRES_IN },
   );
@@ -89,7 +89,7 @@ export const login = async (req, res, next) => {
       status: "success",
       data: {
         user: {
-          id: user.id,
+          id: user.did,
           did: user.did,
           name: user.name,
           email: user.email,
@@ -312,7 +312,7 @@ export const googleAuth = async (req, res, next) => {
       status: "success",
       data: {
         user: {
-          id: user.id,
+          id: user.did,
           did: user.did,
           name: user.name,
           email: user.email,

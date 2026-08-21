@@ -42,10 +42,8 @@ const indianVisaSubmissionSchema = new mongoose.Schema(
       email: { type: String, default: "contact@monsuralitravels.com" },
     },
 
-    // Central Customer Profile Reference (Relationship)
-    customerId: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Customer",
+    clientDid: {
+      type: String,
       default: null,
       index: true,
     },
@@ -131,16 +129,40 @@ const indianVisaSubmissionSchema = new mongoose.Schema(
     ],
 
     isActive: { type: Boolean, default: true },
-    createdBy: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
-      required: false,
+    createdByDid: {
+      type: String,
+      default: null,
     },
   },
   {
     timestamps: true,
+    toJSON: {
+      virtuals: true,
+      transform: (_doc, ret) => {
+        ret.id = ret.did;
+        delete ret._id;
+        return ret;
+      },
+    },
+    toObject: {
+      virtuals: true,
+    },
   }
 );
+
+// Virtual Populates for indianVisaSubmission relations using DIDs
+indianVisaSubmissionSchema.virtual("customerId", {
+  ref: "Client",
+  localField: "clientDid",
+  foreignField: "did",
+  justOne: true,
+});
+indianVisaSubmissionSchema.virtual("createdBy", {
+  ref: "User",
+  localField: "createdByDid",
+  foreignField: "did",
+  justOne: true,
+});
 
 // Pre-save hook to ensure trackingNo is generated if not provided
 indianVisaSubmissionSchema.pre("save", function (next) {

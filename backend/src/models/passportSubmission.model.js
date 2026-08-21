@@ -42,10 +42,8 @@ const passportSubmissionSchema = new mongoose.Schema(
       email: { type: String, default: "contact@monsuralitravels.com" },
     },
 
-    // Central Customer Profile Reference (Relationship)
-    customerId: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Customer",
+    clientDid: {
+      type: String,
       default: null,
       index: true,
     },
@@ -131,8 +129,27 @@ const passportSubmissionSchema = new mongoose.Schema(
   {
     timestamps: true,
     collection: "passport-submissions",
+    toJSON: {
+      virtuals: true,
+      transform: (_doc, ret) => {
+        ret.id = ret.did;
+        delete ret._id;
+        return ret;
+      },
+    },
+    toObject: {
+      virtuals: true,
+    },
   }
 );
+
+// Virtual Populates for passportSubmission relations using DIDs
+passportSubmissionSchema.virtual("customerId", {
+  ref: "Client",
+  localField: "clientDid",
+  foreignField: "did",
+  justOne: true,
+});
 
 passportSubmissionSchema.pre("save", function (next) {
   if (!this.trackingNo) {

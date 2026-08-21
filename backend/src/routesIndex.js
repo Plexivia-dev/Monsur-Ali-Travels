@@ -14,7 +14,7 @@ import usersRouter from "./routes/admin/UsersRoute.js";
 
 // --- CLIENT (STAFF) ROUTES ---
 import candidateRouter from "./routes/client/CandidateRoute.js";
-import customerRouter from "./routes/client/CustomerRoute.js";
+import clientRouterInstance from "./routes/client/ClientRoute.js";
 import caseFileRouter from "./routes/client/CaseFileRoute.js";
 import agreementRouter from "./routes/client/AgreementRoute.js";
 import indianVisaRouter from "./routes/client/IndianVisaRoute.js";
@@ -63,7 +63,8 @@ coreRouter.use("/admin", adminRouter);
 // ==========================================
 const clientRouter = Router();
 clientRouter.use("/cases", caseFileRouter);
-clientRouter.use("/customers", customerRouter);
+clientRouter.use("/customers", clientRouterInstance);
+clientRouter.use("/clients", clientRouterInstance);
 clientRouter.use("/candidates", candidateRouter);
 clientRouter.use("/agreements", agreementRouter);
 clientRouter.use("/indian-visas", indianVisaRouter);

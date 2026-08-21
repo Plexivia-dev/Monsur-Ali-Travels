@@ -66,9 +66,8 @@ const moneyReceiptSchema = new Schema(
       default: "",
     },
     // Central Customer reference if available
-    customerId: {
-      type: Schema.Types.ObjectId,
-      ref: "Customer",
+    clientDid: {
+      type: String,
       default: null,
       index: true,
     },
@@ -181,9 +180,8 @@ const moneyReceiptSchema = new Schema(
     },
 
     // Manager / Token Creator
-    createdBy: {
-      type: Schema.Types.ObjectId,
-      ref: "User",
+    createdByDid: {
+      type: String,
       default: null,
     },
     createdByName: {
@@ -192,9 +190,8 @@ const moneyReceiptSchema = new Schema(
     },
 
     // Cashier / Accountant (Seal/Confirmation)
-    confirmedBy: {
-      type: Schema.Types.ObjectId,
-      ref: "User",
+    confirmedByDid: {
+      type: String,
       default: null,
     },
     confirmedByName: {
@@ -233,8 +230,39 @@ const moneyReceiptSchema = new Schema(
   {
     timestamps: true,
     versionKey: false,
+    toJSON: {
+      virtuals: true,
+      transform: (_doc, ret) => {
+        ret.id = ret.did;
+        delete ret._id;
+        return ret;
+      },
+    },
+    toObject: {
+      virtuals: true,
+    },
   }
 );
+
+// Virtual Populates for moneyReceipt relations using DIDs
+moneyReceiptSchema.virtual("customerId", {
+  ref: "Client",
+  localField: "clientDid",
+  foreignField: "did",
+  justOne: true,
+});
+moneyReceiptSchema.virtual("createdBy", {
+  ref: "User",
+  localField: "createdByDid",
+  foreignField: "did",
+  justOne: true,
+});
+moneyReceiptSchema.virtual("confirmedBy", {
+  ref: "User",
+  localField: "confirmedByDid",
+  foreignField: "did",
+  justOne: true,
+});
 
 // Ensure receipt number and QR code generation before save
 moneyReceiptSchema.pre("save", async function (next) {

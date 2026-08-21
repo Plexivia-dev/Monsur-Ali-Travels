@@ -3,13 +3,13 @@ import { generateDid } from "../utils/generateDid.js";
 
 const { models } = mongoose;
 
-// Unique Customer Reference Number Generator: MAT-CUST- + 6 digits
-export function generateCustomerCode() {
+// Unique Client Reference Number Generator: MAT-CLNT- + 6 digits
+export function generateClientCode() {
   const num = Math.floor(100000 + Math.random() * 900000);
-  return `CUST-${num}`;
+  return `CLNT-${num}`;
 }
 
-const customerSchema = new Schema(
+const clientSchema = new Schema(
   {
     did: {
       type: String,
@@ -17,16 +17,16 @@ const customerSchema = new Schema(
       unique: true,
       index: true,
     },
-    customerCode: {
+    clientCode: {
       type: String,
       unique: true,
       index: true,
-      default: generateCustomerCode,
+      default: generateClientCode,
     },
     // Primary Bio Info
     fullName: {
       type: String,
-      required: [true, "Customer full name is required"],
+      required: [true, "Client full name is required"],
       trim: true,
       index: true,
     },
@@ -87,7 +87,7 @@ const customerSchema = new Schema(
       address: { type: String, default: "" },
     },
 
-    // Permanent Attachments Repository for this customer
+    // Permanent Attachments Repository for this client
     attachments: {
       photo: { type: String, default: "" }, // 2x2 photo URL / Base64
       passportScan: { type: String, default: "" },
@@ -103,51 +103,16 @@ const customerSchema = new Schema(
       ],
     },
 
-    // Dynamic Relations (Reference ObjectIds of all applications linked with this customer)
-    applications: [
-      {
-        type: Schema.Types.ObjectId,
-        ref: "CustomerGuardianApplication",
-      },
-    ],
-    visaSubmissions: [
-      {
-        type: Schema.Types.ObjectId,
-        ref: "IndianVisaSubmission",
-      },
-    ],
-    passportSubmissions: [
-      {
-        type: Schema.Types.ObjectId,
-        ref: "PassportSubmission",
-      },
-    ],
-    candidateCases: [
-      {
-        type: Schema.Types.ObjectId,
-        ref: "CandidateCaseFile",
-      },
-    ],
-    agreements: [
-      {
-        type: Schema.Types.ObjectId,
-        ref: "EmploymentAgreement",
-      },
-    ],
-    invoices: [
-      {
-        type: Schema.Types.ObjectId,
-        ref: "Invoice",
-      },
-    ],
-    cases: [
-      {
-        type: Schema.Types.ObjectId,
-        ref: "CaseFile",
-      },
-    ],
+    // Dynamic Relations (Reference DIDs of all applications linked with this client)
+    applicationDids: { type: [String], default: [] },
+    visaSubmissionDids: { type: [String], default: [] },
+    passportSubmissionDids: { type: [String], default: [] },
+    candidateCaseDids: { type: [String], default: [] },
+    agreementDids: { type: [String], default: [] },
+    invoiceDids: { type: [String], default: [] },
+    caseDids: { type: [String], default: [] },
 
-    // Customer Status & Notes
+    // Client Status & Notes
     status: {
       type: String,
       enum: ["Active", "Lead", "Inactive", "Blacklisted", "Archived"],
@@ -164,23 +129,83 @@ const customerSchema = new Schema(
     remarks: { type: String, default: "" },
     
     isActive: { type: Boolean, default: true },
-    createdBy: { type: Schema.Types.ObjectId, ref: "User", default: null },
-    updatedBy: { type: Schema.Types.ObjectId, ref: "User", default: null },
+    createdByDid: { type: String, default: null },
+    updatedByDid: { type: String, default: null },
   },
   {
     timestamps: true,
     versionKey: false,
+    toJSON: {
+      virtuals: true,
+      transform: (_doc, ret) => {
+        ret.id = ret.did;
+        delete ret._id;
+        return ret;
+      },
+    },
+    toObject: {
+      virtuals: true,
+    },
   }
 );
 
 // Search Index for Quick Lookups across Name, Phone, Passport, NID
-customerSchema.index({
+clientSchema.index({
   fullName: "text",
   phone: "text",
   passportNumber: "text",
   nidNumber: "text",
-  customerCode: "text",
+  clientCode: "text",
 });
 
-const Customer = models.Customer || model("Customer", customerSchema);
-export default Customer;
+// Virtual Populates for Client relations using DIDs
+clientSchema.virtual("applications", {
+  ref: "CustomerGuardianApplication",
+  localField: "applicationDids",
+  foreignField: "did",
+});
+clientSchema.virtual("visaSubmissions", {
+  ref: "IndianVisaSubmission",
+  localField: "visaSubmissionDids",
+  foreignField: "did",
+});
+clientSchema.virtual("passportSubmissions", {
+  ref: "PassportSubmission",
+  localField: "passportSubmissionDids",
+  foreignField: "did",
+});
+clientSchema.virtual("candidateCases", {
+  ref: "CandidateCaseFile",
+  localField: "candidateCaseDids",
+  foreignField: "did",
+});
+clientSchema.virtual("agreements", {
+  ref: "EmploymentAgreement",
+  localField: "agreementDids",
+  foreignField: "did",
+});
+clientSchema.virtual("invoices", {
+  ref: "Invoice",
+  localField: "invoiceDids",
+  foreignField: "did",
+});
+clientSchema.virtual("cases", {
+  ref: "CaseFile",
+  localField: "caseDids",
+  foreignField: "did",
+});
+clientSchema.virtual("createdBy", {
+  ref: "User",
+  localField: "createdByDid",
+  foreignField: "did",
+  justOne: true,
+});
+clientSchema.virtual("updatedBy", {
+  ref: "User",
+  localField: "updatedByDid",
+  foreignField: "did",
+  justOne: true,
+});
+
+const Client = models.Client || model("Client", clientSchema);
+export default Client;

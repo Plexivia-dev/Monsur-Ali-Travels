@@ -1,5 +1,5 @@
 import { CustomerGuardianModel } from "../../models/customerGuardianApplication.model.js";
-import { syncCustomerProfile } from "../../helper/customerSyncHelper.js";
+import { syncClientProfile } from "../../helper/clientSyncHelper.js";
 
 /**
  * Controller for Customer & Guardian Application Form Submissions
@@ -72,7 +72,7 @@ export class CustomerGuardianController {
   // GET /api/v1/docs/customer-guardians/:id
   static async getById(req, res) {
     try {
-      const doc = await CustomerGuardianModel.findOne({ _id: req.params.id, isActive: { $ne: false } });
+      const doc = await CustomerGuardianModel.findOne({ did: req.params.id, isActive: { $ne: false } });
       if (!doc) {
         return res.status(404).json({
           status: "fail",
@@ -100,7 +100,7 @@ export class CustomerGuardianController {
     try {
       const payload = {
         ...req.body,
-        createdBy: req.user?._id || req.user?.id || null,
+        createdByDid: req.user?.did || null,
       };
 
       if (payload.payment) {
@@ -121,8 +121,8 @@ export class CustomerGuardianController {
 
       const doc = await CustomerGuardianModel.create(payload);
 
-      // Automatically sync with central Customer collection (relational link)
-      const syncedCustomer = await syncCustomerProfile({
+      // Automatically sync with central Client collection (relational link)
+      const syncedClient = await syncClientProfile({
         fullName: payload.customer?.fullName,
         phone: payload.customer?.mobileNumber,
         nidNumber: payload.customer?.nidNumber,
@@ -133,12 +133,13 @@ export class CustomerGuardianController {
         guardian: payload.guardian,
         attachments: payload.attachments,
         relationType: "application",
-        relationId: doc._id,
+        relationId: doc.did,
         payment: payload.payment,
+        createdByDid: req.user?.did || null,
       });
 
-      if (syncedCustomer && !doc.customerId) {
-        doc.customerId = syncedCustomer._id;
+      if (syncedClient && !doc.clientDid) {
+        doc.clientDid = syncedClient.did;
         await doc.save();
       }
 
@@ -146,8 +147,8 @@ export class CustomerGuardianController {
         status: "success",
         success: true,
         data: doc,
-        customerId: syncedCustomer?._id || null,
-        message: "Customer application created and synced successfully.",
+        clientDid: syncedClient?.did || null,
+        message: "Client application created and synced successfully.",
       });
     } catch (err) {
       console.error("CustomerGuardianController create error:", err);
@@ -162,7 +163,7 @@ export class CustomerGuardianController {
   // PUT /api/v1/docs/customer-guardians/:id
   static async update(req, res) {
     try {
-      const existing = await CustomerGuardianModel.findById(req.params.id);
+      const existing = await CustomerGuardianModel.findOne({ did: req.params.id });
       if (!existing) {
         return res.status(404).json({
           status: "fail",
@@ -190,8 +191,8 @@ export class CustomerGuardianController {
         updateData.$push = { activityLogs: newLog };
       }
 
-      const updatedDoc = await CustomerGuardianModel.findByIdAndUpdate(
-        req.params.id,
+      const updatedDoc = await CustomerGuardianModel.findOneAndUpdate(
+        { did: req.params.id },
         updateData,
         { new: true, runValidators: true }
       );
@@ -224,7 +225,7 @@ export class CustomerGuardianController {
         });
       }
 
-      const existing = await CustomerGuardianModel.findById(req.params.id);
+      const existing = await CustomerGuardianModel.findOne({ did: req.params.id });
       if (!existing) {
         return res.status(404).json({
           status: "fail",
@@ -263,8 +264,8 @@ export class CustomerGuardianController {
   // DELETE /api/v1/docs/customer-guardians/:id
   static async delete(req, res) {
     try {
-      const doc = await CustomerGuardianModel.findByIdAndUpdate(
-        req.params.id,
+      const doc = await CustomerGuardianModel.findOneAndUpdate(
+        { did: req.params.id },
         { isActive: false },
         { new: true }
       );
