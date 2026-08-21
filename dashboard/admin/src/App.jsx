@@ -10,6 +10,7 @@ import DialogPage from '@/pages/DialogPage'
 import { LoginPage } from '@/pages/LoginPage'
 import VisaWorkflowsPage from '@/pages/VisaWorkflowsPage'
 import ActivityLogsPage from '@/pages/ActivityLogsPage'
+import Accounting from '@/pages/Accounting'
 import { useAuth } from '@/store/useAuthStore'
 import { Toaster } from '@/components/ui/toast'
 
@@ -37,6 +38,7 @@ export default function App() {
               <Route path="dialog" element={<DialogPage />} />
               <Route path="visa-workflows" element={<VisaWorkflowsPage />} />
               <Route path="activity-logs" element={<ActivityLogsPage />} />
+              <Route path="accounting" element={<Accounting />} />
             </Route>
           </Route>
 

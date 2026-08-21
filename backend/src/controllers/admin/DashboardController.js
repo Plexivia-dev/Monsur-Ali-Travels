@@ -142,4 +142,50 @@ export const getOrderStatusDistribution = async (req, res, next) => {
   }
 };
 
-export default { getErpOverviewStats, dailyOrders, getKpiStats, getOrderStatusDistribution };
+export const getAccountingStats = async (req, res, next) => {
+  try {
+    const [
+      invoiceAgg,
+      invoiceDueAgg,
+      cashVoucherAgg,
+      salarySlipAgg,
+    ] = await Promise.all([
+      InvoiceModel.aggregate([
+        { $group: { _id: null, totalRevenue: { $sum: '$grandTotal' } } }
+      ]),
+      InvoiceModel.aggregate([
+        { $match: { paymentStatus: { $in: ['Pending', 'Overdue'] } } },
+        { $group: { _id: null, totalDues: { $sum: '$grandTotal' } } }
+      ]),
+      import('../../models/cashVoucher.model.js').then(({ CashVoucherModel }) => 
+        CashVoucherModel.aggregate([
+          { $match: { status: 'confirmed' } },
+          { $group: { _id: null, totalExpenses: { $sum: '$grandTotal' } } }
+        ])
+      ),
+      SalarySlipModel.aggregate([
+        { $group: { _id: null, totalPayroll: { $sum: '$netSalaryPayable' } } }
+      ]),
+    ]);
+
+    const totalRevenue = invoiceAgg[0]?.totalRevenue || 0;
+    const totalDues = invoiceDueAgg[0]?.totalDues || 0;
+    const totalExpenses = cashVoucherAgg[0]?.totalExpenses || 0;
+    const totalPayroll = salarySlipAgg[0]?.totalPayroll || 0;
+
+    return res.json({
+      status: 'success',
+      data: {
+        totalRevenue,
+        totalDues,
+        officeExpenses: totalExpenses,
+        payroll: totalPayroll,
+        netProfit: totalRevenue - (totalExpenses + totalPayroll),
+      },
+    });
+  } catch (err) {
+    next(err);
+  }
+};
+
+export default { getErpOverviewStats, dailyOrders, getKpiStats, getOrderStatusDistribution, getAccountingStats };
