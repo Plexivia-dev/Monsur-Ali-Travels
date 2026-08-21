@@ -2,13 +2,13 @@ import * as React from "react"
 import { ChevronDown } from "lucide-react"
 import { cn } from "@/lib/utils"
 
-export const Select = ({ children, value, onValueChange }: any) => {
+export const Select = ({ children, value, onValueChange }) => {
   const [isOpen, setIsOpen] = React.useState(false)
-  const selectRef = React.useRef<HTMLDivElement>(null)
+  const selectRef = React.useRef(null)
 
   React.useEffect(() => {
-    const handleOutsideClick = (event: MouseEvent) => {
-      if (selectRef.current && !selectRef.current.contains(event.target as Node)) {
+    const handleOutsideClick = (event) => {
+      if (selectRef.current && !selectRef.current.contains(event.target)) {
         setIsOpen(false)
       }
     }
@@ -20,7 +20,7 @@ export const Select = ({ children, value, onValueChange }: any) => {
     <div ref={selectRef} className="relative inline-block text-left">
       {React.Children.map(children, (child) => {
         if (React.isValidElement(child)) {
-          return React.cloneElement(child as React.ReactElement<any>, {
+          return React.cloneElement(child, {
             value,
             onValueChange,
             isOpen,
@@ -33,7 +33,7 @@ export const Select = ({ children, value, onValueChange }: any) => {
   )
 }
 
-export const SelectTrigger = ({ children, className, isOpen, setIsOpen, ...props }: any) => {
+export const SelectTrigger = ({ children, className, isOpen, setIsOpen, ...props }) => {
   return (
     <button
       onClick={() => setIsOpen(!isOpen)}
@@ -49,11 +49,11 @@ export const SelectTrigger = ({ children, className, isOpen, setIsOpen, ...props
   )
 }
 
-export const SelectValue = ({ value, placeholder }: any) => {
+export const SelectValue = ({ value, placeholder }) => {
   return <span>{value || placeholder}</span>
 }
 
-export const SelectContent = ({ children, isOpen, setIsOpen, value, onValueChange, className }: any) => {
+export const SelectContent = ({ children, isOpen, setIsOpen, value, onValueChange, className }) => {
   if (!isOpen) return null
 
   return (
@@ -66,9 +66,9 @@ export const SelectContent = ({ children, isOpen, setIsOpen, value, onValueChang
       <div className="p-1">
         {React.Children.map(children, (child) => {
           if (React.isValidElement(child)) {
-            return React.cloneElement(child as React.ReactElement<any>, {
+            return React.cloneElement(child, {
               selectedValue: value,
-              onSelect: (val: any) => {
+              onSelect: (val) => {
                 onValueChange(val)
                 setIsOpen(false)
               },
@@ -81,7 +81,7 @@ export const SelectContent = ({ children, isOpen, setIsOpen, value, onValueChang
   )
 }
 
-export const SelectItem = ({ children, value, selectedValue, onSelect, className }: any) => {
+export const SelectItem = ({ children, value, selectedValue, onSelect, className }) => {
   const isSelected = value === selectedValue
 
   return (

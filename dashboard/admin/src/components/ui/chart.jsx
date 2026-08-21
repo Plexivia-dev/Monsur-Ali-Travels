@@ -1,20 +1,7 @@
 import * as React from "react"
 import { cn } from "@/lib/utils"
 
-export interface ChartConfig {
-  [key: string]: {
-    label: string
-    color?: string
-  }
-}
-
-interface ChartContainerProps extends React.HTMLAttributes<HTMLDivElement> {
-  id: string
-  config: ChartConfig
-  children: React.ReactNode
-}
-
-export const ChartContainer = React.forwardRef<HTMLDivElement, ChartContainerProps>(
+export const ChartContainer = React.forwardRef(
   ({ id, config, className, children, ...props }, ref) => {
     return (
       <div
@@ -30,7 +17,7 @@ export const ChartContainer = React.forwardRef<HTMLDivElement, ChartContainerPro
 )
 ChartContainer.displayName = "ChartContainer"
 
-export const ChartStyle = ({ id, config }: { id: string; config: ChartConfig }) => {
+export const ChartStyle = ({ id, config }) => {
   const styles = React.useMemo(() => {
     return Object.entries(config)
       .map(([key, value]) => {
@@ -46,14 +33,14 @@ export const ChartStyle = ({ id, config }: { id: string; config: ChartConfig }) 
   return <style dangerouslySetInnerHTML={{ __html: styles }} />
 }
 
-export const ChartTooltip = ({ active, payload, label, content, ...props }: any) => {
+export const ChartTooltip = ({ active, payload, label, content, ...props }) => {
   if (content) {
     return React.cloneElement(content, { active, payload, label, ...props })
   }
   return null
 }
 
-export const ChartTooltipContent = ({ active, payload, hideLabel }: any) => {
+export const ChartTooltipContent = ({ active, payload, hideLabel }) => {
   if (!active || !payload || !payload.length) return null
 
   return (

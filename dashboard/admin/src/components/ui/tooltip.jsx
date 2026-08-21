@@ -1,11 +1,11 @@
 import * as React from "react"
 import { cn } from "@/lib/utils"
 
-export const TooltipProvider = ({ children }: { children: React.ReactNode }) => {
+export const TooltipProvider = ({ children }) => {
   return <>{children}</>
 }
 
-export const Tooltip = ({ children }: { children: React.ReactNode }) => {
+export const Tooltip = ({ children }) => {
   const [isOpen, setIsOpen] = React.useState(false)
   return (
     <div
@@ -15,7 +15,7 @@ export const Tooltip = ({ children }: { children: React.ReactNode }) => {
     >
       {React.Children.map(children, (child) => {
         if (React.isValidElement(child)) {
-          return React.cloneElement(child as React.ReactElement<any>, { isOpen })
+          return React.cloneElement(child, { isOpen })
         }
         return child
       })}
@@ -23,7 +23,7 @@ export const Tooltip = ({ children }: { children: React.ReactNode }) => {
   )
 }
 
-export const TooltipTrigger = ({ children, isOpen, ...props }: any) => {
+export const TooltipTrigger = ({ children, isOpen, ...props }) => {
   return (
     <div className="inline-block cursor-help" {...props}>
       {children}
@@ -31,7 +31,7 @@ export const TooltipTrigger = ({ children, isOpen, ...props }: any) => {
   )
 }
 
-export const TooltipContent = ({ children, isOpen, side = "top", className }: any) => {
+export const TooltipContent = ({ children, isOpen, side = "top", className }) => {
   if (!isOpen) return null
 
   const positions = {
@@ -45,7 +45,7 @@ export const TooltipContent = ({ children, isOpen, side = "top", className }: an
     <div
       className={cn(
         "absolute z-50 rounded-md bg-popover px-3 py-1.5 text-xs text-popover-foreground shadow-md animate-in fade-in-0 zoom-in-95 border border-border whitespace-nowrap",
-        positions[side as keyof typeof positions],
+        positions[side],
         className
       )}
     >

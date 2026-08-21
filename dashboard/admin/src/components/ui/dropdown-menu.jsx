@@ -1,13 +1,13 @@
 import * as React from "react"
 import { cn } from "@/lib/utils"
 
-export const DropdownMenu = ({ children, defaultOpen = false }: any) => {
+export const DropdownMenu = ({ children, defaultOpen = false }) => {
   const [isOpen, setIsOpen] = React.useState(defaultOpen)
-  const menuRef = React.useRef<HTMLDivElement>(null)
+  const menuRef = React.useRef(null)
 
   React.useEffect(() => {
-    const handleOutsideClick = (e: MouseEvent) => {
-      if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
+    const handleOutsideClick = (e) => {
+      if (menuRef.current && !menuRef.current.contains(e.target)) {
         setIsOpen(false)
       }
     }
@@ -19,7 +19,7 @@ export const DropdownMenu = ({ children, defaultOpen = false }: any) => {
     <div ref={menuRef} className="relative inline-block text-left">
       {React.Children.map(children, (child) => {
         if (React.isValidElement(child)) {
-          return React.cloneElement(child as React.ReactElement<any>, {
+          return React.cloneElement(child, {
             isOpen,
             setIsOpen,
           })
@@ -30,14 +30,14 @@ export const DropdownMenu = ({ children, defaultOpen = false }: any) => {
   )
 }
 
-export const DropdownMenuTrigger = ({ render, children, isOpen, setIsOpen }: any) => {
+export const DropdownMenuTrigger = ({ render, children, isOpen, setIsOpen }) => {
   const element = render || children
   return React.cloneElement(element, {
     onClick: () => setIsOpen(!isOpen),
   })
 }
 
-export const DropdownMenuContent = ({ children, isOpen, setIsOpen, align = "end", className }: any) => {
+export const DropdownMenuContent = ({ children, isOpen, setIsOpen, align = "end", className }) => {
   if (!isOpen) return null
 
   const alignments = {
@@ -50,13 +50,13 @@ export const DropdownMenuContent = ({ children, isOpen, setIsOpen, align = "end"
     <div
       className={cn(
         "absolute z-50 mt-2 rounded-md border border-border bg-popover p-1 text-popover-foreground shadow-md min-w-[8rem] overflow-hidden animate-in fade-in-0 zoom-in-95",
-        alignments[align as keyof typeof alignments],
+        alignments[align],
         className
       )}
     >
       {React.Children.map(children, (child) => {
         if (React.isValidElement(child)) {
-          return React.cloneElement(child as React.ReactElement<any>, {
+          return React.cloneElement(child, {
             setIsOpen,
           })
         }
@@ -66,12 +66,12 @@ export const DropdownMenuContent = ({ children, isOpen, setIsOpen, align = "end"
   )
 }
 
-export const DropdownMenuGroup = ({ children, setIsOpen }: any) => {
+export const DropdownMenuGroup = ({ children, setIsOpen }) => {
   return (
     <div className="flex flex-col">
       {React.Children.map(children, (child) => {
         if (React.isValidElement(child)) {
-          return React.cloneElement(child as React.ReactElement<any>, {
+          return React.cloneElement(child, {
             setIsOpen,
           })
         }
@@ -81,8 +81,8 @@ export const DropdownMenuGroup = ({ children, setIsOpen }: any) => {
   )
 }
 
-export const DropdownMenuItem = ({ children, variant, render, onClick, setIsOpen, className }: any) => {
-  const handleClick = (e: React.MouseEvent) => {
+export const DropdownMenuItem = ({ children, variant, render, onClick, setIsOpen, className }) => {
+  const handleClick = (e) => {
     if (onClick) onClick(e)
     if (setIsOpen) setIsOpen(false)
   }
@@ -96,7 +96,7 @@ export const DropdownMenuItem = ({ children, variant, render, onClick, setIsOpen
   if (render) {
     return React.cloneElement(render, {
       className: cn(baseClasses, render.props.className),
-      onClick: (e: any) => {
+      onClick: (e) => {
         handleClick(e)
         if (render.props.onClick) render.props.onClick(e)
       }
@@ -110,7 +110,7 @@ export const DropdownMenuItem = ({ children, variant, render, onClick, setIsOpen
   )
 }
 
-export const DropdownMenuLabel = ({ children, className }: any) => {
+export const DropdownMenuLabel = ({ children, className }) => {
   return (
     <div className={cn("px-2 py-1.5 text-xs font-semibold", className)}>
       {children}
@@ -122,14 +122,14 @@ export const DropdownMenuSeparator = () => {
   return <div className="-mx-1 my-1 h-px bg-border" />
 }
 
-export const DropdownMenuRadioGroup = ({ children, value, onValueChange, setIsOpen }: any) => {
+export const DropdownMenuRadioGroup = ({ children, value, onValueChange, setIsOpen }) => {
   return (
     <div className="flex flex-col">
       {React.Children.map(children, (child) => {
         if (React.isValidElement(child)) {
-          return React.cloneElement(child as React.ReactElement<any>, {
+          return React.cloneElement(child, {
             selectedValue: value,
-            onSelect: (val: any) => {
+            onSelect: (val) => {
               onValueChange(val)
               if (setIsOpen) setIsOpen(false)
             },
@@ -141,7 +141,7 @@ export const DropdownMenuRadioGroup = ({ children, value, onValueChange, setIsOp
   )
 }
 
-export const DropdownMenuRadioItem = ({ children, value, selectedValue, onSelect, className }: any) => {
+export const DropdownMenuRadioItem = ({ children, value, selectedValue, onSelect, className }) => {
   const isSelected = value === selectedValue
 
   return (

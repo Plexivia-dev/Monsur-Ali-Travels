@@ -1,11 +1,7 @@
 import * as React from "react"
 import { cn } from "@/lib/utils"
 
-export interface AvatarProps extends React.HTMLAttributes<HTMLDivElement> {
-  size?: "default" | "sm" | "lg"
-}
-
-export const Avatar = React.forwardRef<HTMLDivElement, AvatarProps>(
+export const Avatar = React.forwardRef(
   ({ className, size = "default", ...props }, ref) => {
     const sizeClasses = {
       default: "h-10 w-10",
@@ -28,10 +24,7 @@ export const Avatar = React.forwardRef<HTMLDivElement, AvatarProps>(
 )
 Avatar.displayName = "Avatar"
 
-export const AvatarImage = React.forwardRef<
-  HTMLImageElement,
-  React.ImgHTMLAttributes<HTMLImageElement>
->(({ className, ...props }, ref) => (
+export const AvatarImage = React.forwardRef(({ className, ...props }, ref) => (
   <img
     ref={ref}
     className={cn("aspect-square h-full w-full object-cover", className)}
@@ -40,10 +33,7 @@ export const AvatarImage = React.forwardRef<
 ))
 AvatarImage.displayName = "AvatarImage"
 
-export const AvatarFallback = React.forwardRef<
-  HTMLDivElement,
-  React.HTMLAttributes<HTMLDivElement>
->(({ className, ...props }, ref) => (
+export const AvatarFallback = React.forwardRef(({ className, ...props }, ref) => (
   <div
     ref={ref}
     className={cn(

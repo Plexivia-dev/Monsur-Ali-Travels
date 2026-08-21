@@ -3,13 +3,8 @@ import { toast as sonnerToast, Toaster as SonnerToaster } from "sonner"
 export const Toaster = SonnerToaster
 
 export const toast = {
-  add: ({ title, description, type, actionProps }: {
-    title: string
-    description?: string
-    type?: "success" | "info" | "warning" | "error" | "loading"
-    actionProps?: { children: React.ReactNode; onClick: () => void }
-  }) => {
-    const options: any = {
+  add: ({ title, description, type, actionProps }) => {
+    const options = {
       description,
     }
     if (actionProps) {
@@ -27,17 +22,10 @@ export const toast = {
 
     return sonnerToast(title, options)
   },
-  close: (id: string | number) => {
+  close: (id) => {
     sonnerToast.dismiss(id)
   },
-  promise: <T>(
-    promise: Promise<T> | (() => Promise<T>),
-    data: {
-      loading: string
-      success: string | ((result: T) => string)
-      error: string | ((err: any) => string)
-    }
-  ) => {
+  promise: (promise, data) => {
     return sonnerToast.promise(promise, data)
   }
 }
