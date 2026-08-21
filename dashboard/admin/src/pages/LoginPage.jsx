@@ -49,7 +49,7 @@ export function LoginPage() {
       <div className="w-full max-w-[400px] relative z-10">
         <Card className="shadow-2xl border-border bg-card/90 text-card-foreground backdrop-blur-xl overflow-hidden rounded-2xl">
           <CardHeader className="px-5 pt-5 pb-3 text-center border-b border-border/80 bg-card/40 flex flex-col items-center justify-center">
-            <img src={logo} alt="Monsur Ali Travels Logo" className="h-10 w-auto object-contain mb-1.5" />
+            <img src={logo} alt="Monsur Ali Travels Logo" className="h-16 w-16 p-2 bg-white rounded-full object-contain mb-1.5 shadow-sm" />
             <CardDescription className="text-xs text-muted-foreground mt-0.5">
               Secure store administration portal
             </CardDescription>
