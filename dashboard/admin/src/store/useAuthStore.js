@@ -1,56 +1,42 @@
 import { create } from 'zustand';
 import { apiClient } from '@/lib/api-client';
 import { getErrorMessage } from '@/lib/error-handler';
-import type { AuthUser } from '@/types/admin';
 
-const ROLES_ADMIN = ['Owner', 'Superadmin', 'Admin'] as const;
+const ROLES_ADMIN = ['Owner', 'Superadmin', 'Admin'];
 
 // ── helpers ───────────────────────────────────────────────────────────────────
 
-const readCachedUser = (): AuthUser | null => {
+const readCachedUser = () => {
   try {
     const raw = localStorage.getItem('user');
     const token = localStorage.getItem('accessToken');
-    return raw && token ? (JSON.parse(raw) as AuthUser) : null;
+    return raw && token ? JSON.parse(raw) : null;
   } catch {
     return null;
   }
 };
 
-const mapApiUser = (apiUser: Record<string, unknown>, email?: string): AuthUser => ({
-  id: (apiUser.id as string) || (apiUser._id as string),
-  did: apiUser.did as string | undefined,
-  email: (apiUser.email as string) || email || '',
+const mapApiUser = (apiUser, email) => ({
+  id: apiUser.id || apiUser._id,
+  did: apiUser.did,
+  email: apiUser.email || email || '',
   name:
-    (apiUser.name as string) ||
+    apiUser.name ||
     (email || '').split('@')[0].replace('.', ' ').replace(/\b\w/g, (l) => l.toUpperCase()),
-  username: (apiUser.username as string) || '',
-  phone: (apiUser.phone as string) || '',
-  address: (apiUser.address as string) || '',
-  role: (apiUser.role as AuthUser['role']) || 'Employee',
-  department: (apiUser.department as string) || '',
-  designation: (apiUser.designation as string) || '',
+  username: apiUser.username || '',
+  phone: apiUser.phone || '',
+  address: apiUser.address || '',
+  role: apiUser.role || 'Employee',
+  department: apiUser.department || '',
+  designation: apiUser.designation || '',
   avatar:
-    (apiUser.avatar as string) ||
+    apiUser.avatar ||
     'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=256&q=80',
 });
 
 // ── store ─────────────────────────────────────────────────────────────────────
 
-interface AuthState {
-  user: AuthUser | null;
-  isLoading: boolean;
-  // actions
-  login: (email: string, password: string) => Promise<{ success: boolean; requires2fa?: boolean }>;
-  verify2fa: (email: string, password: string, code: string) => Promise<void>;
-  fetchProfile: () => Promise<void>;
-  updateProfile: (data: Partial<AuthUser>) => Promise<void>;
-  changePassword: (current: string, next: string) => Promise<void>;
-  logout: () => Promise<void>;
-  hasRole: (roles: AuthUser['role'][]) => boolean;
-}
-
-export const useAuthStore = create<AuthState>((set, get) => ({
+export const useAuthStore = create((set, get) => ({
   user: readCachedUser(),
   isLoading: false,
 
@@ -101,7 +87,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       const current = get().user || {};
       const updated = { ...current, ...mapApiUser(data.data) };
       localStorage.setItem('user', JSON.stringify(updated));
-      set({ user: updated as AuthUser });
+      set({ user: updated });
     } catch {
       // silent — stale cache is fine
     }
@@ -114,7 +100,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       const current = get().user || {};
       const updated = { ...current, ...mapApiUser(data.data) };
       localStorage.setItem('user', JSON.stringify(updated));
-      set({ user: updated as AuthUser });
+      set({ user: updated });
     } finally {
       set({ isLoading: false });
     }
@@ -146,7 +132,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
 
   hasRole: (roles) => {
     const user = get().user;
-    return user ? (roles as string[]).includes(user.role) : false;
+    return user ? roles.includes(user.role) : false;
   },
 }));
 

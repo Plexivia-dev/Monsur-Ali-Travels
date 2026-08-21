@@ -1,20 +1,20 @@
-import { clsx, type ClassValue } from 'clsx';
+import { clsx } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 
 /** Merge Tailwind classes safely */
-export function cn(...inputs: ClassValue[]) {
+export function cn(...inputs) {
   return twMerge(clsx(inputs));
 }
 
 /** Format BDT currency */
-export function formatBDT(amount: number): string {
+export function formatBDT(amount) {
   if (amount >= 1_000_000) return `৳${(amount / 1_000_000).toFixed(1)}M`;
   if (amount >= 1_000) return `৳${(amount / 1_000).toFixed(0)}k`;
   return `৳${amount.toLocaleString()}`;
 }
 
 /** Relative time string */
-export function timeAgo(isoDate: string): string {
+export function timeAgo(isoDate) {
   const diffMs = Date.now() - new Date(isoDate).getTime();
   const mins = Math.max(0, Math.floor(diffMs / 60_000));
   if (mins === 0) return 'Just now';
@@ -25,6 +25,6 @@ export function timeAgo(isoDate: string): string {
 }
 
 /** Truncate string */
-export function truncate(str: string, max = 50): string {
+export function truncate(str, max = 50) {
   return str.length > max ? str.slice(0, max) + '…' : str;
 }

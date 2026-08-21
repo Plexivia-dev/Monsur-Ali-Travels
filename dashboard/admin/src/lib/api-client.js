@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 export const API_BASE_URL =
-  (import.meta as any).env?.VITE_API_BASE_URL || 'https://api.monsuralitravels.com';
+  import.meta.env?.VITE_API_BASE_URL || 'https://api.monsuralitravels.com';
 
 export const apiClient = axios.create({
   baseURL: API_BASE_URL,
@@ -19,10 +19,10 @@ apiClient.interceptors.request.use((config) => {
 
 // ── Response Interceptor: 401 → silent token refresh queue ───────────────────
 let isRefreshing = false;
-let failedQueue: Array<{ resolve: (t: string) => void; reject: (e: unknown) => void }> = [];
+let failedQueue = [];
 
-const processQueue = (error: unknown, token: string | null = null) => {
-  failedQueue.forEach((p) => (error ? p.reject(error) : p.resolve(token!)));
+const processQueue = (error, token = null) => {
+  failedQueue.forEach((p) => (error ? p.reject(error) : p.resolve(token)));
   failedQueue = [];
 };
 
@@ -30,12 +30,12 @@ apiClient.interceptors.response.use(
   (res) => res,
   async (error) => {
     const originalRequest = error.config;
-    const url: string = originalRequest?.url || '';
+    const url = originalRequest?.url || '';
     const isAuthUrl = url.includes('/auth/login') || url.includes('/auth/refresh-token');
 
     if (error.response?.status === 401 && !originalRequest._retry && !isAuthUrl) {
       if (isRefreshing) {
-        return new Promise<string>((resolve, reject) =>
+        return new Promise((resolve, reject) =>
           failedQueue.push({ resolve, reject })
         ).then((token) => {
           originalRequest.headers.Authorization = `Bearer ${token}`;
