@@ -1,5 +1,5 @@
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar'
-import ProfileDropdown from '@/components/shadcn-studio/blocks/dropdown-profile'
+import ProfileDropdown from '@/components/blocks/dropdown-profile'
 
 export default function DropdownProfilePage() {
   return (

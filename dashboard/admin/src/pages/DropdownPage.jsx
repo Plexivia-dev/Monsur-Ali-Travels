@@ -1,5 +1,5 @@
 import { Button } from '@/components/ui/button'
-import LanguageDropdown from '@/components/shadcn-studio/blocks/dropdown-language'
+import LanguageDropdown from '@/components/blocks/dropdown-language'
 import { RiTranslate2 } from '@remixicon/react'
 
 export default function DropdownPage() {

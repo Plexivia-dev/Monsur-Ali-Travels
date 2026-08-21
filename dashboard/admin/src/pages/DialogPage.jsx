@@ -1,5 +1,5 @@
 import { Button } from '@/components/ui/button'
-import ErrorDialog from '@/components/shadcn-studio/blocks/dashboard-dialog-22/dialog-error'
+import ErrorDialog from '@/components/blocks/dialog-error'
 
 export default function DialogPage() {
   return (

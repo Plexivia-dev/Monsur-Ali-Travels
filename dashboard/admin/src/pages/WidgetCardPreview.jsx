@@ -1,4 +1,4 @@
-import SalesMetricsCard from "@/components/shadcn-studio/blocks/chart-sales-metrics"
+import SalesMetricsCard from "@/components/blocks/chart-sales-metrics"
 
 export default function WidgetCardPreview() {
   return (
