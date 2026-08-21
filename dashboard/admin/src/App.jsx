@@ -11,6 +11,7 @@ import { LoginPage } from '@/pages/LoginPage'
 import VisaWorkflowsPage from '@/pages/VisaWorkflowsPage'
 import ActivityLogsPage from '@/pages/ActivityLogsPage'
 import Accounting from '@/pages/Accounting'
+import SettingsPage from '@/pages/SettingsPage'
 import { useAuth } from '@/store/useAuthStore'
 import { Toaster } from '@/components/ui/toast'
 
@@ -42,6 +43,7 @@ export default function App() {
               <Route path="system-logs" element={<ActivityLogsPage />} />
               <Route path="system" element={<Navigate to="/admin/activity-logs" replace />} />
               <Route path="accounting" element={<Accounting />} />
+              <Route path="settings" element={<SettingsPage />} />
             </Route>
           </Route>
 

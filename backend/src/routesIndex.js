@@ -11,6 +11,7 @@ import notificationRouter from "./routes/shared/NotificationRoute.js";
 import dashboardRouter from "./routes/admin/DashboardRoute.js";
 import systemRouter from "./routes/admin/SystemRoute.js";
 import usersRouter from "./routes/admin/UsersRoute.js";
+import settingsRouter from "./routes/admin/SettingsRoute.js";
 
 // --- CLIENT (STAFF) ROUTES ---
 import candidateRouter from "./routes/client/CandidateRoute.js";
@@ -59,6 +60,7 @@ adminRouter.use("/dashboard", dashboardRouter);
 adminRouter.use("/system", systemRouter);
 adminRouter.use("/users", usersRouter);
 adminRouter.use("/cases", adminCaseRouter);
+adminRouter.use("/settings", settingsRouter);
 
 coreRouter.use("/admin", adminRouter);
 

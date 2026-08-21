@@ -3,7 +3,8 @@ import { generateDid } from "../utils/generateDid.js";
 
 const { models } = mongoose;
 
-export const USER_ROLES = ["Owner", "Admin", "Employee"];
+export const USER_ROLES = ["Owner", "Admin", "Manager", "Staff"];
+export const USER_SUB_ROLES = ["Frontdesk", "Lawyer", "Visa_Processor", "Accountant", "Representative", "ClientManager"];
 
 const userSchema = new Schema(
   {
@@ -26,7 +27,12 @@ const userSchema = new Schema(
     emailOtpExpiresAt: { type: Date, select: false },
     twoFactorSecret: { type: String, select: false },
     twoFactorEnabled: { type: Boolean, default: false },
-    role: { type: String, required: true, enum: USER_ROLES, default: "Employee" },
+    role: { type: String, required: true, enum: USER_ROLES, default: "Staff", index: true },
+    subRole: { 
+      type: String, 
+      enum: USER_SUB_ROLES,
+      required: function() { return this.role === 'Staff'; }
+    },
     department: { type: String, trim: true, default: "" },
     designation: { type: String, trim: true, default: "" },
     assets: {
@@ -60,6 +66,13 @@ const userSchema = new Schema(
     },
   },
 );
+
+userSchema.pre('save', function(next) {
+    if (this.role !== 'Staff' && this.subRole) {
+        this.subRole = undefined;
+    }
+    next();
+});
 
 userSchema.virtual("createdBy", {
   ref: "User",

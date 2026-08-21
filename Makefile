@@ -1,27 +1,42 @@
-.PHONY: deploy build-bg build-dash build-admin build-front logs status down
+.PHONY: deploy build-bg build-client build-admin build-front logs status down
 
 deploy:
-	git pull origin live
+	git reset --hard HEAD
+	git clean -fd
+	git fetch origin live
+	git reset --hard origin/live
 	docker compose -f docker-compose.prod.yml build --no-cache
 	docker compose -f docker-compose.prod.yml up -d
 
 build-bg:
-	git pull origin live
+	git reset --hard HEAD
+	git clean -fd
+	git fetch origin live
+	git reset --hard origin/live
 	docker compose -f docker-compose.prod.yml build --no-cache backend
 	docker compose -f docker-compose.prod.yml up -d backend
 
-build-dash:
-	git pull origin live
+build-client:
+	git reset --hard HEAD
+	git clean -fd
+	git fetch origin live
+	git reset --hard origin/live
 	docker compose -f docker-compose.prod.yml build --no-cache dashboard
 	docker compose -f docker-compose.prod.yml up -d dashboard
 
 build-admin:
-	git pull origin live
+	git reset --hard HEAD
+	git clean -fd
+	git fetch origin live
+	git reset --hard origin/live
 	docker compose -f docker-compose.prod.yml build --no-cache dashboard-admin
 	docker compose -f docker-compose.prod.yml up -d dashboard-admin
 
 build-front:
-	git pull origin live
+	git reset --hard HEAD
+	git clean -fd
+	git fetch origin live
+	git reset --hard origin/live
 	docker compose -f docker-compose.prod.yml build --no-cache frontend
 	docker compose -f docker-compose.prod.yml up -d frontend
 
@@ -34,7 +49,7 @@ logs:
 logs-bg:
 	docker compose -f docker-compose.prod.yml logs -f backend
 
-logs-dash:
+logs-client:
 	docker compose -f docker-compose.prod.yml logs -f dashboard
 
 logs-admin:
@@ -45,4 +60,3 @@ logs-front:
 
 down:
 	docker compose -f docker-compose.prod.yml down
-

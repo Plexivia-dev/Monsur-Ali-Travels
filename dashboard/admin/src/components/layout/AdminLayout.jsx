@@ -114,7 +114,7 @@ export default function AdminLayout() {
               >
                 <div className="flex items-center gap-3">
                   <Server className="size-5 shrink-0 text-white/85" />
-                  <span className="text-[17px] font-medium">{lang === 'BN' ? 'সিস্টেম' : 'System'}</span>
+                  <span className="text-[18px] font-semibold">{lang === 'BN' ? 'সিস্টেম' : 'System'}</span>
                 </div>
                 {isSystemOpen ? (
                   <ChevronDown className="size-4 text-white/70" />
@@ -133,13 +133,13 @@ export default function AdminLayout() {
                         key={sub.path}
                         to={sub.path}
                         onClick={() => setIsMobileOpen(false)}
-                        className={`flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm transition-all ${
+                        className={`flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-[16px] font-semibold transition-all ${
                           isSubActive
                             ? 'bg-white text-primary font-bold shadow-md'
                             : 'text-white/80 hover:bg-white/10 hover:text-white'
                         }`}
                       >
-                        <SubIcon className={`size-4 shrink-0 ${isSubActive ? 'text-primary' : 'text-white/85'}`} />
+                        <SubIcon className={`size-4.5 shrink-0 ${isSubActive ? 'text-primary' : 'text-white/85'}`} />
                         <span>{sub.name}</span>
                       </Link>
                     )
@@ -155,7 +155,7 @@ export default function AdminLayout() {
               variant="ghost" 
               onClick={() => {
                 setIsMobileOpen(false)
-                navigate('/admin/dropdown')
+                navigate('/admin/settings')
               }}
               className="flex-1 flex items-center justify-center bg-white text-green-600 hover:bg-white/90 gap-2 rounded-lg py-2.5 cursor-pointer shadow-sm border-0 font-semibold"
             >
@@ -270,7 +270,7 @@ export default function AdminLayout() {
                   >
                     <div className="flex items-center gap-3">
                       <Server className="size-5 shrink-0 text-white/85" />
-                      <span className="text-[17px] font-medium whitespace-nowrap ml-1 animate-fade-in">
+                      <span className="text-[18px] font-semibold whitespace-nowrap ml-1 animate-fade-in">
                         {lang === 'BN' ? 'সিস্টেম' : 'System'}
                       </span>
                     </div>
@@ -290,13 +290,13 @@ export default function AdminLayout() {
                           <Link
                             key={sub.path}
                             to={sub.path}
-                            className={`flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm transition-all ${
+                            className={`flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-[16px] font-semibold transition-all ${
                               isSubActive
                                 ? 'bg-white text-primary font-bold shadow-md'
                                 : 'text-white/80 hover:bg-white/10 hover:text-white'
                             }`}
                           >
-                            <SubIcon className={`size-4 shrink-0 ${isSubActive ? 'text-primary' : 'text-white/85'}`} />
+                            <SubIcon className={`size-4.5 shrink-0 ${isSubActive ? 'text-primary' : 'text-white/85'}`} />
                             <span className="whitespace-nowrap">{sub.name}</span>
                           </Link>
                         )
@@ -314,7 +314,7 @@ export default function AdminLayout() {
           }`}>
             <Button 
               variant="ghost" 
-              onClick={() => navigate('/admin/dropdown')}
+              onClick={() => navigate('/admin/settings')}
               className={`flex items-center bg-white text-green-600 hover:bg-white/90 cursor-pointer transition-all duration-300 shadow-sm border-0 ${
                 isCollapsed ? 'size-10 justify-center rounded-xl p-0' : 'flex-grow justify-center gap-2 px-3 py-2.5 rounded-lg'
               }`}
