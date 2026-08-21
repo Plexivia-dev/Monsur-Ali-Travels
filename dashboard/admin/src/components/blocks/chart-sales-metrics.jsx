@@ -8,34 +8,19 @@ import {
   CirclePercentIcon
 } from 'lucide-react'
 
+import React, { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart'
+import { apiClient } from '@/lib/api-client'
 import logo from '@/assets/logo.png'
 
-const salesPlanPercentage = 54
-const totalBars = 24
-const filledBars = Math.round((salesPlanPercentage * totalBars) / 100)
-
-const salesChartData = Array.from({ length: totalBars }, (_, index) => {
-  const date = new Date(2025, 5, 15)
-  const formattedDate = date.toLocaleDateString('en-GB', {
-    day: '2-digit',
-    month: '2-digit',
-    year: 'numeric'
-  })
-
-  return {
-    date: formattedDate,
-    sales: index < filledBars ? 315 : 0.0001
-  }
-})
-
-const salesChartConfig = {
-  sales: {
-    label: 'Sales'
-  }
+const ACTION_COLORS = {
+  CREATE: 'bg-green-500',
+  UPDATE: 'bg-blue-500',
+  SOFT_DELETE: 'bg-red-500',
+  AUTH_LOGIN: 'bg-sky-500',
+  STATUS_TRANSITION: 'bg-indigo-500',
 }
 
 const MetricsData = [
@@ -92,31 +77,29 @@ const clientUpdates = [
   }
 ]
 
-const revenueChartData = [
-  { month: 'january', sales: 340, fill: 'var(--color-january)' },
-  { month: 'february', sales: 200, fill: 'var(--color-february)' },
-  { month: 'march', sales: 200, fill: 'var(--color-march)' }
-]
-
-const revenueChartConfig = {
-  sales: {
-    label: 'Sales'
-  },
-  january: {
-    label: 'January',
-    color: 'var(--primary)'
-  },
-  february: {
-    label: 'February',
-    color: 'color-mix(in oklab, var(--primary) 60%, transparent)'
-  },
-  march: {
-    label: 'March',
-    color: 'color-mix(in oklab, var(--primary) 20%, transparent)'
-  }
-}
-
 export const SalesMetricsCard = ({ className }) => {
+  const [liveLogs, setLiveLogs] = useState([])
+
+  useEffect(() => {
+    async function loadRecentLogs() {
+      try {
+        const res = await apiClient.get('/api/v1/admin/system/logs?limit=6')
+        if (res.data?.status === 'success') {
+          setLiveLogs(res.data.data || [])
+        }
+      } catch (err) {
+        // silent fallback
+      }
+    }
+    loadRecentLogs()
+  }, [])
+
+  const formatTime = (dateStr) => {
+    if (!dateStr) return 'Recent'
+    const d = new Date(dateStr)
+    return d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+  }
+
   return (
     <Card className={`bg-white border border-gray-200 shadow-md ${className ?? ''}`}>
       <CardContent className="pt-6">
@@ -179,7 +162,7 @@ export const SalesMetricsCard = ({ className }) => {
         <Card className='bg-white border border-gray-200 shadow-sm'>
           <CardContent className='pt-5 pb-5 px-5'>
             <div className='flex items-center justify-between mb-4'>
-              <span className='text-base font-semibold'>Activity Logs</span>
+              <span className='text-base font-semibold'>Live System Activity Logs</span>
               <Link
                 to="/admin/activity-logs"
                 className="text-xs font-medium text-primary hover:underline"
@@ -188,27 +171,23 @@ export const SalesMetricsCard = ({ className }) => {
               </Link>
             </div>
             <div className='grid gap-3 sm:grid-cols-2'>
-              {[
-                { action: "Passport submitted", agent: "Rahim Uddin", time: "5 mins ago", type: "upload" },
-                { action: "Visa approved", agent: "Nadia Islam", time: "18 mins ago", type: "success" },
-                { action: "New file opened", agent: "Jalal Ahmed", time: "1 hour ago", type: "info" },
-                { action: "Payment received", agent: "Meher Nigar", time: "2 hours ago", type: "payment" },
-                { action: "Embassy form filled", agent: "Tariq Hassan", time: "3 hours ago", type: "form" },
-                { action: "Document rejected", agent: "Shirin Akter", time: "Yesterday", type: "error" },
-              ].map((log, i) => (
-                <div key={i} className='flex items-start gap-3 p-3 rounded-lg bg-muted/40 hover:bg-muted/70 transition-colors'>
-                  <div className={`size-2 rounded-full mt-1.5 shrink-0 ${
-                    log.type === 'success' ? 'bg-green-500' :
-                    log.type === 'error' ? 'bg-red-500' :
-                    log.type === 'payment' ? 'bg-amber-500' :
-                    'bg-primary'
-                  }`} />
-                  <div className='flex flex-col gap-0.5 min-w-0'>
-                    <span className='text-sm font-medium text-foreground'>{log.action}</span>
-                    <span className='text-xs text-muted-foreground truncate'>{log.agent} · {log.time}</span>
+              {liveLogs.length === 0 ? (
+                <p className="text-xs text-muted-foreground italic col-span-2 py-2">No activity recorded yet.</p>
+              ) : (
+                liveLogs.map((log) => (
+                  <div key={log.did || log._id} className='flex items-start gap-3 p-3 rounded-lg bg-gray-50 border border-gray-100 hover:bg-gray-100/70 transition-colors'>
+                    <div className={`size-2 rounded-full mt-1.5 shrink-0 ${ACTION_COLORS[log.action] || 'bg-primary'}`} />
+                    <div className='flex flex-col gap-0.5 min-w-0'>
+                      <span className='text-sm font-medium text-foreground truncate'>
+                        {log.action} on {log.targetCollection}
+                      </span>
+                      <span className='text-xs text-muted-foreground truncate'>
+                        {log.actionDetails?.name} ({log.actionDetails?.role}) · {formatTime(log.createdAt)}
+                      </span>
+                    </div>
                   </div>
-                </div>
-              ))}
+                ))
+              )}
             </div>
           </CardContent>
         </Card>
