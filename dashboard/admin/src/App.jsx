@@ -8,9 +8,18 @@ import DropdownPage from '@/pages/DropdownPage'
 import DropdownProfilePage from '@/pages/DropdownProfilePage'
 import DialogPage from '@/pages/DialogPage'
 import { LoginPage } from '@/pages/LoginPage'
+import { useAuth } from '@/store/useAuthStore'
 import { Toaster } from '@/components/ui/toast'
 
 export default function App() {
+  const fetchProfile = useAuth((state) => state.fetchProfile)
+
+  React.useEffect(() => {
+    if (localStorage.getItem('accessToken')) {
+      fetchProfile()
+    }
+  }, [fetchProfile])
+
   return (
     <>
       <BrowserRouter>

@@ -2,7 +2,7 @@ import { create } from 'zustand';
 import { apiClient } from '@/lib/api-client';
 import { getErrorMessage } from '@/lib/error-handler';
 
-const ROLES_ADMIN = ['Owner', 'Superadmin', 'Admin'];
+const ROLES_ADMIN = ['Owner', 'Admin'];
 
 // ── helpers ───────────────────────────────────────────────────────────────────
 
@@ -49,6 +49,10 @@ export const useAuthStore = create((set, get) => ({
       const { user: apiUser, accessToken, refreshToken } = data.data;
       const loggedUser = mapApiUser(apiUser, email);
 
+      if (!ROLES_ADMIN.includes(loggedUser.role)) {
+        throw new Error('Access denied. Only Owners and Admins are allowed to access this portal.');
+      }
+
       localStorage.setItem('accessToken', accessToken);
       localStorage.setItem('refreshToken', refreshToken);
       localStorage.setItem('user', JSON.stringify(loggedUser));
@@ -56,7 +60,7 @@ export const useAuthStore = create((set, get) => ({
       set({ user: loggedUser });
       return { success: true };
     } catch (err) {
-      throw new Error(getErrorMessage(err, 'Sign in failed. Please check your credentials.'));
+      throw new Error(err.message || getErrorMessage(err, 'Sign in failed. Please check your credentials.'));
     } finally {
       set({ isLoading: false });
     }
@@ -69,12 +73,16 @@ export const useAuthStore = create((set, get) => ({
       const { user: apiUser, accessToken, refreshToken } = data.data;
       const loggedUser = mapApiUser(apiUser, email);
 
+      if (!ROLES_ADMIN.includes(loggedUser.role)) {
+        throw new Error('Access denied. Only Owners and Admins are allowed to access this portal.');
+      }
+
       localStorage.setItem('accessToken', accessToken);
       localStorage.setItem('refreshToken', refreshToken);
       localStorage.setItem('user', JSON.stringify(loggedUser));
       set({ user: loggedUser });
     } catch (err) {
-      throw new Error(getErrorMessage(err, '2FA verification failed.'));
+      throw new Error(err.message || getErrorMessage(err, '2FA verification failed.'));
     } finally {
       set({ isLoading: false });
     }
