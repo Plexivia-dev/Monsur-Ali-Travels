@@ -9,6 +9,7 @@ import DropdownProfilePage from '@/pages/DropdownProfilePage'
 import DialogPage from '@/pages/DialogPage'
 import { LoginPage } from '@/pages/LoginPage'
 import VisaWorkflowsPage from '@/pages/VisaWorkflowsPage'
+import CaseWorkflow from '@/pages/CaseWorkflow'
 import ActivityLogsPage from '@/pages/ActivityLogsPage'
 import Accounting from '@/pages/Accounting'
 import SettingsPage from '@/pages/SettingsPage'
@@ -38,6 +39,7 @@ export default function App() {
               <Route path="profile-dropdown" element={<DropdownProfilePage />} />
               <Route path="dialog" element={<DialogPage />} />
               <Route path="visa-workflows" element={<VisaWorkflowsPage />} />
+              <Route path="cases" element={<CaseWorkflow />} />
               <Route path="activity-logs" element={<ActivityLogsPage />} />
               <Route path="system/logs" element={<ActivityLogsPage />} />
               <Route path="system-logs" element={<ActivityLogsPage />} />

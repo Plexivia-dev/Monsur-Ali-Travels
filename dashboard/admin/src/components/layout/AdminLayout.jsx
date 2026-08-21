@@ -1,6 +1,6 @@
 import * as React from 'react'
 import { Link, Outlet, useNavigate, useLocation } from 'react-router-dom'
-import { LayoutDashboard, Compass, Layers, User, AlertCircle, LogOut, Menu, X, Settings, Server, FileText, ChevronDown, ChevronRight } from 'lucide-react'
+import { LayoutDashboard, Compass, Layers, User, AlertCircle, LogOut, Menu, X, Settings, Server, FileText, ChevronDown, ChevronRight, FolderOpen } from 'lucide-react'
 import { RiTranslate2 } from '@remixicon/react'
 import { useAuth } from '@/store/useAuthStore'
 import { ProfileDropdown } from '@/components/blocks/dropdown-profile'
@@ -26,6 +26,7 @@ export default function AdminLayout() {
 
   const menuItems = [
     { name: lang === 'BN' ? 'ওভারভিউ' : 'Overview', path: '/admin', icon: LayoutDashboard },
+    { name: lang === 'BN' ? 'কেস ওয়ার্কফ্লো' : 'Case Workflow', path: '/admin/cases', icon: FolderOpen },
     { name: lang === 'BN' ? 'অ্যাকাউন্টিং' : 'Accounting', path: '/admin/accounting', icon: Layers },
   ]
 
