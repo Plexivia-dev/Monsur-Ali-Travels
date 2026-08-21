@@ -8,6 +8,8 @@ import DropdownPage from '@/pages/DropdownPage'
 import DropdownProfilePage from '@/pages/DropdownProfilePage'
 import DialogPage from '@/pages/DialogPage'
 import { LoginPage } from '@/pages/LoginPage'
+import VisaWorkflowsPage from '@/pages/VisaWorkflowsPage'
+import ActivityLogsPage from '@/pages/ActivityLogsPage'
 import { useAuth } from '@/store/useAuthStore'
 import { Toaster } from '@/components/ui/toast'
 
@@ -33,6 +35,8 @@ export default function App() {
               <Route path="dropdown" element={<DropdownPage />} />
               <Route path="profile-dropdown" element={<DropdownProfilePage />} />
               <Route path="dialog" element={<DialogPage />} />
+              <Route path="visa-workflows" element={<VisaWorkflowsPage />} />
+              <Route path="activity-logs" element={<ActivityLogsPage />} />
             </Route>
           </Route>
 
