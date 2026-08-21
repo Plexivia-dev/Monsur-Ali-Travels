@@ -63,14 +63,14 @@ export function LoginPage() {
                   Email Address
                 </Label>
                 <div className="relative">
-                  <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-muted-foreground/60">
+                  <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-zinc-500">
                     <Mail className="h-4 w-4" />
                   </span>
                   <Input
                     type="email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    className="pl-10 h-10 text-xs bg-background/60 border-border text-foreground focus:border-primary placeholder:text-muted-foreground/40 rounded-lg"
+                    className="pl-10 h-10 text-xs bg-white text-zinc-900 border-zinc-300 placeholder:text-zinc-400 focus:border-zinc-500 focus-visible:ring-0 focus-visible:ring-offset-0 rounded-lg"
                     placeholder="name@example.com"
                     required
                   />
@@ -87,14 +87,14 @@ export function LoginPage() {
                   </a>
                 </div>
                 <div className="relative">
-                  <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-muted-foreground/60">
+                  <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-zinc-500">
                     <Lock className="h-4 w-4" />
                   </span>
                   <Input
                     type="password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    className="pl-10 h-10 text-xs bg-background/60 border-border text-foreground focus:border-primary placeholder:text-muted-foreground/40 rounded-lg"
+                    className="pl-10 h-10 text-xs bg-white text-zinc-900 border-zinc-300 placeholder:text-zinc-400 focus:border-zinc-500 focus-visible:ring-0 focus-visible:ring-offset-0 rounded-lg"
                     placeholder="••••••••"
                     required
                   />
