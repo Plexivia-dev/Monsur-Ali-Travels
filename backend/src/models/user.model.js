@@ -3,7 +3,7 @@ import { generateDid } from "../utils/generateDid.js";
 
 const { models } = mongoose;
 
-export const USER_ROLES = ["Owner", "Admin", "Manager", "Employee", "Agent", "Staff"];
+export const USER_ROLES = ["Owner", "Admin", "Manager", "Staff"];
 
 const userSchema = new Schema(
   {
@@ -17,6 +17,7 @@ const userSchema = new Schema(
       index: true,
     },
     did: { type: String, default: () => generateDid(), unique: true, index: true },
+    employeeDid: { type: String, ref: "Employee", default: null, index: true },
     passwordHash: { type: String, required: true, trim: true, select: false },
     phone: { type: String, required: true, trim: true, index: true },
     refreshToken: { type: String, select: false },
@@ -25,7 +26,7 @@ const userSchema = new Schema(
     emailOtpExpiresAt: { type: Date, select: false },
     twoFactorSecret: { type: String, select: false },
     twoFactorEnabled: { type: Boolean, default: false },
-    role: { type: String, required: true, enum: USER_ROLES, default: "Employee" },
+    role: { type: String, required: true, enum: USER_ROLES, default: "Staff" },
     department: { type: String, trim: true, default: "" },
     designation: { type: String, trim: true, default: "" },
     assets: {

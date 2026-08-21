@@ -21,12 +21,18 @@
 
 ## 👥 2. User Roles & Employee Management
 
-1. **Three Core System Roles:**
-   - **`Owner`**: Full master ownership across all present and future business modules, master financials, system logs, and administrative overrides.
-   - **`Admin`**: High-level operational manager who assigns workflow steps, approves work done, manages users, and oversees daily task boards.
-   - **`Employee`**: Staff / Frontdesk members who create initial client files, execute assigned tasks, and mark steps as "Done".
+1. **Four Exact System Roles:**
+   - **`Owner`**: Master ownership across all present and future business modules, master financials, and system overrides. **NO API CAN CREATE AN OWNER ROLE.** Owner accounts are bootstrapped directly or managed by existing Owner.
+   - **`Admin`**: High-level manager with full operational control (assigning steps, approving completions, assigning staff roles).
+   - **`Manager`**: Mid-level supervisor managing specific department cases or operational queues.
+   - **`Staff`**: Operational staff member executing assigned tasks. **MUST be linked to a valid Employee record (`employeeDid`).**
 
-2. **Dedicated `Employee` Collection:**
+2. **Strict Role Assignment & Staff Requirements:**
+   - Roles (`Admin`, `Manager`, `Staff`) can ONLY be assigned or modified through the Admin scope (`/api/v1/admin/users`) by an Admin or Owner.
+   - Every `Staff` user MUST have a valid `employeeDid` linking them to the `Employee` collection.
+   - Public registration endpoints MUST NEVER allow role selection or creation of `Owner`/`Admin` accounts.
+
+3. **Dedicated `Employee` Collection:**
    - Employee details MUST be stored in the dedicated `Employee` collection (`employee.model.js`).
    - Tracks: Employee Code (`EMP-XXXX`), `userDid`, Designation, Department, Base Salary, Salary Payment History (`salaryHistory`), Join Date, and Access Levels (`Level_1`, `Level_2`, `Manager`, etc.).
    - Granular Permissions: `canCreateCases`, `canUpdateStatus`, `canViewAccounts`, `canManageDocs`.

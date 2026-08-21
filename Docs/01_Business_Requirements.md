@@ -16,32 +16,23 @@ The core objective of this ERP system is to establish a **centralized, transpare
 
 ## 👥 2. User Roles & Permission Hierarchy (RBAC)
 
-The system strictly divides operations among three primary user roles:
+The system strictly divides operations among four explicit user roles (`USER_ROLES = ["Owner", "Admin", "Manager", "Staff"]`):
 
-### 2.1 Owner / Super Admin
-- **Role Purpose:** Full system ownership, strategic oversight, and multi-business expansion capability.
-- **Key Responsibilities & Access:**
-  - Complete visibility over all ongoing cases, staff productivity, financial ledgers, and system logs.
-  - Exclusive rights to define workflow steps, reassign tasks, approve completed steps, and move cases to the next phase.
-  - Ability to view "Today's Updates" (who changed what status today).
-  - Full financial oversight (revenue, expenses, dues, profit/loss).
-  - Scalability to add future new business units under the same master dashboard.
+### 2.1 Owner
+- **Role Purpose:** Full master ownership across present and future business modules, master financials, and system overrides.
+- **Security Rule:** **NO API CAN CREATE AN OWNER ROLE.** Owner accounts are bootstrapped directly or managed by existing Owner.
 
-### 2.2 Staff / Frontdesk
-- **Role Purpose:** Operational execution, initial client onboarding, document creation, and assigned task fulfillment.
-- **Key Responsibilities & Access:**
-  - Create new initial Client profiles and open new Case Files.
-  - View personal "My Assigned Tasks" (only tasks explicitly assigned to them).
-  - Execute assigned processing steps and mark them as "Done" for Admin approval.
-  - Generate Document Studio files (Money Receipts, Invoices, Employment Agreements, Salary Slips).
-  - Restricted from overriding administrative approvals or viewing sensitive global accounting reports.
+### 2.2 Admin
+- **Role Purpose:** High-level manager with full operational control.
+- **Key Rights:** Assigns workflow steps, approves work done, manages users, and assigns staff roles.
 
-### 2.3 Accountant
-- **Role Purpose:** Financial management, payment reconciliation, and ledger reporting.
-- **Key Responsibilities & Access:**
-  - Input and track multi-stage client payment installments (Step 1 Advance, Step 2 Approval, Step 3 Delivery).
-  - Manage office expenses, cash vouchers, employee payroll, and vendor/sub-agency bills.
-  - Generate Client Due Reports and Income/Expense summaries.
+### 2.3 Manager
+- **Role Purpose:** Mid-level supervisor managing specific department queues and team progress.
+
+### 2.4 Staff
+- **Role Purpose:** Operational staff member executing assigned tasks and onboardings.
+- **Mandatory Constraint:** Anyone with the `Staff` role **MUST be a valid Employee** linked via `employeeDid` to the `Employee` collection.
+- **Assignment Constraint:** Roles can ONLY be assigned or modified through the Admin scope (`/api/v1/admin/users`) by an Admin or Owner.
 
 ---
 
