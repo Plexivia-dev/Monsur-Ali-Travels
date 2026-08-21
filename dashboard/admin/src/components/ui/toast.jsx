@@ -8,6 +8,7 @@ export const Toaster = (props) => {
       position="bottom-right"
       theme="dark"
       className="font-sans"
+      closeButton
       toastOptions={{
         classNames: {
           toast: "group flex items-start gap-3 w-[360px] p-4 rounded-xl border font-sans shadow-2xl transition-all duration-300",
@@ -15,6 +16,7 @@ export const Toaster = (props) => {
           error: "border-red-500/35 bg-red-950/20 text-red-400 [&_svg]:text-red-500",
           warning: "border-amber-500/35 bg-amber-950/20 text-amber-400 [&_svg]:text-amber-500",
           info: "border-amber-500/35 bg-amber-950/20 text-amber-400 [&_svg]:text-amber-500",
+          closeButton: "!left-auto !right-0 !top-0 !translate-x-[35%] !-translate-y-[35%] !opacity-100 !bg-gray-900 !text-white !border !border-gray-700 hover:!bg-gray-800 shadow-md",
         },
         style: {
           background: "rgba(9, 9, 11, 0.95)",
