@@ -1,9 +1,8 @@
 import * as React from 'react'
 import { Link, Outlet, useNavigate, useLocation } from 'react-router-dom'
-import { LayoutDashboard, Compass, Layers, User, AlertCircle, LogOut, Menu, X } from 'lucide-react'
+import { LayoutDashboard, Compass, Layers, User, AlertCircle, LogOut, Menu, X, Settings } from 'lucide-react'
 import { RiTranslate2 } from '@remixicon/react'
 import { useAuth } from '@/store/useAuthStore'
-import { LanguageDropdown } from '@/components/blocks/dropdown-language'
 import { ProfileDropdown } from '@/components/blocks/dropdown-profile'
 import { Button } from '@/components/ui/button'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
@@ -16,6 +15,8 @@ export default function AdminLayout() {
 
   const [isCollapsed, setIsCollapsed] = React.useState(false)
   const [isMobileOpen, setIsMobileOpen] = React.useState(false)
+  const [lang, setLang] = React.useState('EN')
+  const [showLogoutConfirm, setShowLogoutConfirm] = React.useState(false)
 
   const handleLogout = async () => {
     await logout()
@@ -24,10 +25,6 @@ export default function AdminLayout() {
 
   const menuItems = [
     { name: 'Overview', path: '/admin', icon: LayoutDashboard },
-    { name: 'Sales Metrics', path: '/admin/metrics', icon: Compass },
-    { name: 'Language Dropdown', path: '/admin/dropdown', icon: Layers },
-    { name: 'Profile Dropdown', path: '/admin/profile-dropdown', icon: User },
-    { name: 'Error Dialog', path: '/admin/dialog', icon: AlertCircle },
   ]
 
   const handleMenuItemClick = (e, itemPath) => {
@@ -69,10 +66,10 @@ export default function AdminLayout() {
             </div>
             <button 
               onClick={() => setIsMobileOpen(false)}
-              className="p-1 rounded-md border border-white/40 text-white/80 hover:text-white hover:border-white transition-colors cursor-pointer shrink-0"
+              className="p-1.5 rounded-md border border-white text-white hover:bg-white/10 transition-colors cursor-pointer shrink-0"
               title="Close Navigation"
             >
-              <X className="size-4" />
+              <X className="size-5" />
             </button>
           </div>
 
@@ -93,21 +90,35 @@ export default function AdminLayout() {
                   }`}
                 >
                   <Icon className={`size-5 shrink-0 ${isActive ? 'text-primary' : 'text-white/85'}`} />
-                  <span className="text-[15px]">{item.name}</span>
+                  <span className="text-[17px]">{item.name}</span>
                 </Link>
               )
             })}
           </nav>
 
-          {/* Footer Logout Button inside flex scroll container */}
-          <div className="p-3 border-t border-white/10 shrink-0 bg-primary">
+          {/* Footer Logout and Settings Buttons inside mobile sidebar drawer */}
+          <div className="p-3 border-t border-white/10 shrink-0 bg-primary flex items-center justify-between gap-3">
             <Button 
               variant="ghost" 
-              onClick={handleLogout}
-              className="w-full justify-start text-white/80 hover:bg-white/10 hover:text-white gap-3 cursor-pointer"
+              onClick={() => {
+                setIsMobileOpen(false)
+                navigate('/admin/dropdown')
+              }}
+              className="flex-1 flex items-center justify-center bg-white text-green-600 hover:bg-white/90 gap-2 rounded-lg py-2.5 cursor-pointer shadow-sm border-0 font-semibold"
             >
-              <LogOut className="size-5 shrink-0 text-white/85" />
-              <span className="text-[15px]">Sign Out</span>
+              <Settings className="size-5 shrink-0 text-green-600" />
+              <span className="text-[15px]">Settings</span>
+            </Button>
+            <Button 
+              variant="ghost" 
+              onClick={() => {
+                setIsMobileOpen(false)
+                setShowLogoutConfirm(true)
+              }}
+              className="flex-1 flex items-center justify-center bg-white text-red-600 hover:bg-white/90 gap-2 rounded-lg py-2.5 cursor-pointer shadow-sm border-0 font-semibold"
+            >
+              <LogOut className="size-5 shrink-0 text-red-600" />
+              <span className="text-[15px]">Log Out</span>
             </Button>
           </div>
         </div>
@@ -126,23 +137,34 @@ export default function AdminLayout() {
           }`}>
             <div 
               onClick={() => isCollapsed && setIsCollapsed(false)}
-              className="flex items-center justify-center cursor-pointer"
+              className={`flex items-center gap-3 cursor-pointer ${isCollapsed ? 'justify-center' : ''}`}
             >
-              <img src={logo} alt="Logo" className="size-8 p-1 bg-white rounded-full object-contain shadow-sm shrink-0" />
+              {isCollapsed ? (
+                <div className="size-8 p-1 bg-white text-primary rounded-full flex items-center justify-center shadow-sm shrink-0">
+                  <Menu className="size-5" />
+                </div>
+              ) : (
+                <>
+                  <img src={logo} alt="Logo" className="size-8 p-1 bg-white rounded-full object-contain shadow-sm shrink-0" />
+                  <span className="font-bold text-sm tracking-wide text-white uppercase font-sans whitespace-nowrap animate-fade-in">
+                    Admin Panel
+                  </span>
+                </>
+              )}
             </div>
             {!isCollapsed && (
               <button 
                 onClick={() => setIsCollapsed(true)}
-                className="p-1 rounded-md border border-white/40 text-white/80 hover:text-white hover:border-white transition-colors cursor-pointer shrink-0"
+                className="p-1.5 rounded-md border border-white text-white hover:bg-white/10 transition-colors cursor-pointer shrink-0"
                 title="Collapse Sidebar"
               >
-                <X className="size-4" />
+                <X className="size-5" />
               </button>
             )}
           </div>
 
-          {/* Navigation Links (With smooth transitions on text opacity & width scales to prevent HMR flicking) */}
-          <nav className="p-3 space-y-2 flex-grow overflow-y-auto">
+          {/* Navigation Links (With clean conditional rendering to prevent horizontal scrollbar overflows) */}
+          <nav className="p-3 space-y-2 flex-grow overflow-x-hidden overflow-y-auto no-scrollbar">
             {menuItems.map((item) => {
               const isActive = location.pathname === item.path
               const Icon = item.icon
@@ -151,7 +173,7 @@ export default function AdminLayout() {
                   key={item.path}
                   to={item.path}
                   onClick={(e) => handleMenuItemClick(e, item.path)}
-                  className={`flex items-center transition-all duration-300 ${
+                  className={`flex items-center transition-all duration-300 overflow-hidden ${
                     isActive 
                       ? 'bg-white text-primary font-bold shadow-md' 
                       : 'text-white/80 hover:bg-white/10 hover:text-white'
@@ -161,32 +183,49 @@ export default function AdminLayout() {
                   <Icon className={`size-5 shrink-0 transition-colors duration-300 ${
                     isActive ? 'text-primary' : 'text-white/85'
                   }`} />
-                  <span className={`text-[15px] whitespace-nowrap overflow-hidden transition-all duration-300 ${
-                    isCollapsed ? 'w-0 opacity-0 pointer-events-none' : 'w-auto opacity-100 ml-1'
-                  }`}>
-                    {item.name}
-                  </span>
+                  {!isCollapsed && (
+                    <span className="text-[17px] whitespace-nowrap ml-1 animate-fade-in">
+                      {item.name}
+                    </span>
+                  )}
                 </Link>
               )
             })}
           </nav>
 
-          {/* Footer Logout Button */}
-          <div className="p-3 border-t border-white/10 shrink-0 bg-primary">
+          {/* Footer Logout and Settings Buttons */}
+          <div className={`p-3 border-t border-white/10 shrink-0 bg-primary flex ${
+            isCollapsed ? 'flex-col items-center gap-3' : 'items-center justify-between gap-3'
+          }`}>
             <Button 
               variant="ghost" 
-              onClick={handleLogout}
-              className={`flex items-center text-white/80 hover:bg-white/10 hover:text-white cursor-pointer transition-all duration-300 ${
-                isCollapsed ? 'size-10 justify-center rounded-xl mx-auto p-0' : 'w-full justify-start gap-3 px-3 py-3 rounded-lg'
+              onClick={() => navigate('/admin/dropdown')}
+              className={`flex items-center bg-white text-green-600 hover:bg-white/90 cursor-pointer transition-all duration-300 shadow-sm border-0 ${
+                isCollapsed ? 'size-10 justify-center rounded-xl p-0' : 'flex-grow justify-center gap-2 px-3 py-2.5 rounded-lg'
               }`}
-              title={isCollapsed ? "Sign Out" : undefined}
+              title="Settings"
             >
-              <LogOut className="size-5 shrink-0 text-white/85" />
-              <span className={`text-[15px] whitespace-nowrap overflow-hidden transition-all duration-300 ${
-                isCollapsed ? 'w-0 opacity-0 pointer-events-none' : 'w-auto opacity-100 ml-1'
-              }`}>
-                Sign Out
-              </span>
+              <Settings className="size-5 shrink-0 text-green-600" />
+              {!isCollapsed && (
+                <span className="text-[15px] font-semibold whitespace-nowrap ml-1 animate-fade-in">
+                  Settings
+                </span>
+              )}
+            </Button>
+            <Button 
+              variant="ghost" 
+              onClick={() => setShowLogoutConfirm(true)}
+              className={`flex items-center bg-white text-red-600 hover:bg-white/90 cursor-pointer transition-all duration-300 shadow-sm border-0 ${
+                isCollapsed ? 'size-10 justify-center rounded-xl p-0' : 'flex-grow justify-center gap-2 px-3 py-2.5 rounded-lg'
+              }`}
+              title="Log Out"
+            >
+              <LogOut className="size-5 shrink-0 text-red-600" />
+              {!isCollapsed && (
+                <span className="text-[15px] font-semibold whitespace-nowrap ml-1 animate-fade-in">
+                  Log Out
+                </span>
+              )}
             </Button>
           </div>
         </div>
@@ -205,19 +244,28 @@ export default function AdminLayout() {
             >
               <Menu className="size-5" />
             </button>
-            <h2 className="font-bold text-base md:text-lg text-white tracking-wide uppercase font-sans">
-              Admin Panel
-            </h2>
           </div>
           <div className="flex items-center gap-4">
-            <LanguageDropdown
-              align="end"
-              trigger={
-                <Button variant="ghost" size="icon" className="rounded-full hover:bg-white/10 text-white">
-                  <RiTranslate2 className="size-5" />
-                </Button>
-              }
-            />
+            <div 
+              onClick={() => setLang(lang === 'EN' ? 'BN' : 'EN')}
+              className="flex items-center bg-white p-1 rounded-full shadow-[0_0_12px_rgba(255,255,255,0.25)] cursor-pointer select-none shrink-0 transition-all duration-200"
+              title={`Switch to ${lang === 'EN' ? 'Bengali' : 'English'}`}
+            >
+              <span className={`text-[11px] font-black uppercase px-2 py-1 rounded-full transition-all duration-200 ${
+                lang === 'EN' 
+                  ? 'bg-primary text-white shadow-sm font-black' 
+                  : 'text-primary/75 hover:text-primary'
+              }`}>
+                EN
+              </span>
+              <span className={`text-[11px] font-black uppercase px-2 py-1 rounded-full transition-all duration-200 ${
+                lang === 'BN' 
+                  ? 'bg-primary text-white shadow-sm font-black' 
+                  : 'text-primary/75 hover:text-primary'
+              }`}>
+                BN
+              </span>
+            </div>
             <ProfileDropdown
               align="end"
               trigger={
@@ -240,6 +288,34 @@ export default function AdminLayout() {
           </div>
         </main>
       </div>
+
+      {/* Sign Out Confirmation Modal Overlay */}
+      {showLogoutConfirm && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm animate-fade-in">
+          <div className="bg-card border border-border rounded-2xl p-6 max-w-md w-full mx-4 shadow-2xl animate-in scale-in duration-200">
+            <h3 className="text-lg font-bold text-foreground">Confirm Sign Out</h3>
+            <p className="text-muted-foreground text-sm mt-2">Are you sure you want to log out of the admin panel?</p>
+            <div className="flex items-center justify-end gap-3 mt-6">
+              <Button 
+                variant="ghost" 
+                onClick={() => setShowLogoutConfirm(false)}
+                className="px-4 py-2 cursor-pointer text-muted-foreground hover:bg-accent rounded-lg font-medium"
+              >
+                Cancel
+              </Button>
+              <Button 
+                onClick={() => {
+                  setShowLogoutConfirm(false)
+                  handleLogout()
+                }}
+                className="px-4 py-2 cursor-pointer bg-red-600 hover:bg-red-700 text-white font-semibold rounded-lg shadow-md border-0"
+              >
+                Sign Out
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
