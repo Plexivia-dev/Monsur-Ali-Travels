@@ -73,5 +73,12 @@ systemLogSchema.index({ 'actionDetails.role': 1, type: 1, createdAt: -1 });
 systemLogSchema.index({ targetCollection: 1, action: 1, createdAt: -1 });
 systemLogSchema.index({ 'actionDetails.did': 1, createdAt: -1 });
 
+// Post-save hook to emit real-time WebSockets activity log event
+systemLogSchema.post('save', function (doc) {
+  if (global.io) {
+    global.io.emit('new_activity_log', doc);
+  }
+});
+
 export const SystemLogModel = mongoose.models.SystemLog || mongoose.model('SystemLog', systemLogSchema);
 export default SystemLogModel;

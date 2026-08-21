@@ -6,12 +6,17 @@ import { useAuth } from '@/store/useAuthStore'
 import { ProfileDropdown } from '@/components/blocks/dropdown-profile'
 import { Button } from '@/components/ui/button'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+import { Toaster } from '@/components/ui/toast'
+import { useSocketNotification } from '@/hooks/useSocketNotification'
 import logo from '@/assets/logo.png'
 
 export default function AdminLayout() {
   const { user, logout } = useAuth()
   const navigate = useNavigate()
   const location = useLocation()
+
+  // Activate real-time socket notification listener
+  useSocketNotification()
 
   const [isCollapsed, setIsCollapsed] = React.useState(false)
   const [isMobileOpen, setIsMobileOpen] = React.useState(false)
@@ -432,6 +437,9 @@ export default function AdminLayout() {
           </div>
         </div>
       )}
+
+      {/* Real-time Themed Toast Notification System */}
+      <Toaster />
     </div>
   )
 }
