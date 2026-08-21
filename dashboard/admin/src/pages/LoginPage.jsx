@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react"
 import { useNavigate, useLocation } from "react-router-dom"
-import { LogIn, Mail, Lock } from "lucide-react"
+import { LogIn, Mail, Lock, Eye, EyeOff } from "lucide-react"
 import { useAuth } from "@/store/useAuthStore"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -17,6 +17,7 @@ export function LoginPage() {
 
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
+  const [showPassword, setShowPassword] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
 
   useEffect(() => {
@@ -91,13 +92,20 @@ export function LoginPage() {
                     <Lock className="h-4 w-4" />
                   </span>
                   <Input
-                    type="password"
+                    type={showPassword ? "text" : "password"}
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    className="pl-10 h-10 text-xs bg-white text-zinc-900 border-zinc-300 placeholder:text-zinc-400 focus:border-zinc-500 focus-visible:ring-0 focus-visible:ring-offset-0 rounded-lg"
+                    className="pl-10 pr-10 h-10 text-xs bg-white text-zinc-900 border-zinc-300 placeholder:text-zinc-400 focus:border-zinc-500 focus-visible:ring-0 focus-visible:ring-offset-0 rounded-lg"
                     placeholder="••••••••"
                     required
                   />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute inset-y-0 right-0 flex items-center pr-3 text-zinc-500 hover:text-zinc-700 focus:outline-none cursor-pointer"
+                  >
+                    {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                  </button>
                 </div>
               </div>
 
