@@ -42,6 +42,9 @@ coreRouter.use("/upload", uploadRouter);
 coreRouter.use("/notifications", notificationRouter);
 // coreRouter.use("/developer", developerRouter);
 
+import adminCaseRouter from "./routes/admin/AdminCaseRoute.js";
+import taskRouter from "./routes/client/TaskRoute.js";
+
 // ==========================================
 // 2. ADMIN SCOPE (Mounted at /api/v1/admin/)
 // ==========================================
@@ -55,6 +58,7 @@ adminRouter.use(auditLog);
 adminRouter.use("/dashboard", dashboardRouter);
 adminRouter.use("/system", systemRouter);
 adminRouter.use("/users", usersRouter);
+adminRouter.use("/cases", adminCaseRouter);
 
 coreRouter.use("/admin", adminRouter);
 
@@ -62,6 +66,7 @@ coreRouter.use("/admin", adminRouter);
 // 3. CLIENT/STAFF SCOPE (Mounted at /api/v1/client/)
 // ==========================================
 const clientRouter = Router();
+clientRouter.use("/tasks", taskRouter);
 clientRouter.use("/cases", caseFileRouter);
 clientRouter.use("/customers", clientRouterInstance);
 clientRouter.use("/clients", clientRouterInstance);

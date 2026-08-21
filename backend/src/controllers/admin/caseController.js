@@ -1,0 +1,148 @@
+import CaseFile from "../../models/caseFile.model.js";
+import TaskModel from "../../models/task.model.js";
+import { NotificationModel } from "../../models/notification.model.js";
+
+/**
+ * 1. Get Case Full Details (360-Degree Admin View)
+ * Populates clientInfo, workflowTasks (with permittedDocs), and financialReceipts
+ */
+export const getCaseFullDetails = async (req, res) => {
+  try {
+    const { caseDid } = req.params;
+
+    const caseDoc = await CaseFile.findOne({ $or: [{ did: caseDid }, { _id: caseDid }] })
+      .populate("clientInfo")
+      .populate({
+        path: "workflowTasks",
+        populate: { path: "permittedDocs" },
+      })
+      .populate("financialReceipts")
+      .lean();
+
+    if (!caseDoc) {
+      return res.status(404).json({ status: "error", message: "Case File not found" });
+    }
+
+    return res.status(200).json({
+      status: "success",
+      data: caseDoc,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      status: "error",
+      message: error.message || "Failed to fetch case details",
+    });
+  }
+};
+
+/**
+ * 2. Assign Task Step (Admin Scope)
+ * Admin assigns a new task step to a staff member with specified document access
+ */
+export const assignTaskStep = async (req, res) => {
+  try {
+    const { caseDid, title, description, assignedToDid, allowedDocumentDids, stepNumber } = req.body;
+    const adminDid = req.user?.did;
+
+    if (!caseDid || !title || !assignedToDid) {
+      return res.status(400).json({ status: "error", message: "caseDid, title, and assignedToDid are required" });
+    }
+
+    const caseDoc = await CaseFile.findOne({ $or: [{ did: caseDid }, { _id: caseDid }] });
+    if (!caseDoc) {
+      return res.status(404).json({ status: "error", message: "Associated Case File not found" });
+    }
+
+    const newTask = await TaskModel.create({
+      caseDid: caseDoc.did,
+      title,
+      description: description || "",
+      stepNumber: stepNumber || 1,
+      assignedToDid,
+      allowedDocumentDids: Array.isArray(allowedDocumentDids) ? allowedDocumentDids : [],
+      status: "Pending",
+      createdByDid: adminDid,
+    });
+
+    // Update case workflow status and push to history
+    caseDoc.assignedToDid = assignedToDid;
+    caseDoc.workflowStatus = `Step ${newTask.stepNumber}: ${title}`;
+    caseDoc.statusHistory.push({
+      status: `Assigned Step: ${title}`,
+      remarks: `Assigned to ${assignedToDid}`,
+      updatedByDid: adminDid,
+      assignedToDid: assignedToDid,
+      date: new Date(),
+    });
+    await caseDoc.save();
+
+    // Trigger Notification for Staff
+    await NotificationModel.create({
+      title: "New Task Assigned",
+      message: `You have been assigned task "${title}" for Case ${caseDoc.caseNumber}.`,
+      module: "visa",
+      type: "info",
+      refId: caseDoc._id,
+      recipientId: assignedToDid,
+      createdBy: req.user?.name || "Admin",
+    }).catch(() => {});
+
+    return res.status(201).json({
+      status: "success",
+      message: "Task step assigned successfully",
+      data: newTask,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      status: "error",
+      message: error.message || "Failed to assign task step",
+    });
+  }
+};
+
+/**
+ * 3. Approve Task Step (Admin Scope)
+ * Admin approves staff's completed task and advances workflow
+ */
+export const approveTaskStep = async (req, res) => {
+  try {
+    const { taskDid } = req.params;
+    const { approvalNotes, nextStatus } = req.body;
+    const adminDid = req.user?.did;
+
+    const task = await TaskModel.findOne({ $or: [{ did: taskDid }, { _id: taskDid }] });
+    if (!task) {
+      return res.status(404).json({ status: "error", message: "Task step not found" });
+    }
+
+    task.status = "Approved";
+    task.approvedByDid = adminDid;
+    task.approvedAt = new Date();
+    if (approvalNotes) task.approvalNotes = approvalNotes;
+    await task.save();
+
+    // Update Case Workflow
+    const caseDoc = await CaseFile.findOne({ did: task.caseDid });
+    if (caseDoc) {
+      caseDoc.workflowStatus = nextStatus || `Approved Step: ${task.title}`;
+      caseDoc.statusHistory.push({
+        status: `Approved Step: ${task.title}`,
+        remarks: approvalNotes || "Task approved by admin",
+        updatedByDid: adminDid,
+        date: new Date(),
+      });
+      await caseDoc.save();
+    }
+
+    return res.status(200).json({
+      status: "success",
+      message: "Task step approved successfully",
+      data: task,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      status: "error",
+      message: error.message || "Failed to approve task step",
+    });
+  }
+};
