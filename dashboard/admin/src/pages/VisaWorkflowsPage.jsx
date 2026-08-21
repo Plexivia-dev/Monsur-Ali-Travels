@@ -31,7 +31,7 @@ export default function VisaWorkflowsPage() {
         <p className="text-muted-foreground text-sm mt-1">Client status updates and visa processing pipeline.</p>
       </div>
 
-      <Card>
+      <Card className="bg-white border border-gray-200 shadow-md">
         <CardHeader>
           <CardTitle className="text-base font-semibold">Client Status Updates</CardTitle>
         </CardHeader>

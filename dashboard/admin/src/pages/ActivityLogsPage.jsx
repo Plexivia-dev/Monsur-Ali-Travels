@@ -44,7 +44,7 @@ export default function ActivityLogsPage() {
 
       <div className="grid gap-4 sm:grid-cols-2">
         {logs.map((log, i) => (
-          <Card key={i} className="shadow-none ring-1 ring-foreground/10 hover:shadow-sm transition-shadow">
+          <Card key={i} className="bg-white border border-gray-200 shadow-md hover:shadow-lg transition-shadow">
             <CardContent className="flex items-start gap-4 pt-4 pb-4">
               <div className={`size-2.5 rounded-full mt-1.5 shrink-0 ${dotColor[log.type]}`} />
               <div className="flex flex-col gap-1 min-w-0 flex-1">

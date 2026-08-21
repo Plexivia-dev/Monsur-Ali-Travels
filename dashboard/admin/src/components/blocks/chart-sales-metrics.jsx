@@ -118,7 +118,7 @@ const revenueChartConfig = {
 
 export const SalesMetricsCard = ({ className }) => {
   return (
-    <Card className={className}>
+    <Card className={`bg-white border border-gray-200 shadow-md ${className ?? ''}`}>
       <CardContent className="pt-6">
         <div className='grid gap-6 lg:grid-cols-5'>
           <div className='flex flex-col justify-between gap-7 lg:col-span-3'>
@@ -132,7 +132,7 @@ export const SalesMetricsCard = ({ className }) => {
 
             <div className='grid gap-4 sm:grid-cols-2'>
               {MetricsData.map((metric, index) => (
-                <Card key={index} className='ring-foreground/10 py-2 shadow-none ring-1'>
+                <Card key={index} className='bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow py-2'>
                   <CardContent className='flex items-center gap-3 px-4 py-2'>
                     <Avatar className='rounded-sm'>
                       <AvatarFallback className='bg-primary/10 text-primary shrink-0 rounded-sm'>
@@ -148,7 +148,7 @@ export const SalesMetricsCard = ({ className }) => {
               ))}
             </div>
           </div>
-          <Card className='ring-foreground/10 flex flex-col gap-2 shadow-none ring-1 lg:col-span-2'>
+          <Card className='bg-white border border-gray-200 shadow-sm flex flex-col gap-2 lg:col-span-2'>
             <CardHeader className='gap-1 flex flex-row items-center justify-between pb-2'>
               <CardTitle className='text-base font-semibold'>Latest Updates</CardTitle>
               <Link
@@ -176,7 +176,7 @@ export const SalesMetricsCard = ({ className }) => {
         </div>
       </CardContent>
       <CardContent>
-        <Card className='ring-foreground/10 shadow-none ring-1'>
+        <Card className='bg-white border border-gray-200 shadow-sm'>
           <CardContent className='pt-5 pb-5 px-5'>
             <div className='flex items-center justify-between mb-4'>
               <span className='text-base font-semibold'>Activity Logs</span>

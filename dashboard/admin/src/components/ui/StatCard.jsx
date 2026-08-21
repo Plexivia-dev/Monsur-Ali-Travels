@@ -24,7 +24,7 @@ export const StatCard = ({
   };
 
   return (
-    <Card className={cn('p-5 border border-border/80 shadow-xs hover:border-border transition-all group', className)}>
+    <Card className={cn('p-5 bg-white border border-gray-200 shadow-md hover:shadow-lg transition-shadow group', className)}>
       <div className="flex items-start justify-between gap-3">
         <div className="space-y-1">
           <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{title}</p>
