@@ -116,13 +116,13 @@ export default function AdminLayout() {
       {/* Desktop Sidebar (Theme color matched to Topbar primary with inverted selection states) */}
       <aside 
         className={`h-screen sticky top-0 flex flex-col justify-between bg-primary border-r border-white/10 transition-all duration-300 ease-in-out hidden md:flex shrink-0 ${
-          isCollapsed ? 'w-20' : 'w-64'
+          isCollapsed ? 'w-16' : 'w-64'
         }`}
       >
         <div className="flex flex-col h-full">
           {/* Header */}
-          <div className={`h-16 px-4 border-b border-white/10 flex items-center bg-primary text-white shrink-0 ${
-            isCollapsed ? 'justify-center' : 'justify-between'
+          <div className={`h-16 border-b border-white/10 flex items-center bg-primary text-white shrink-0 ${
+            isCollapsed ? 'justify-center' : 'px-4 justify-between'
           }`}>
             <div 
               onClick={() => isCollapsed && setIsCollapsed(false)}
@@ -151,11 +151,11 @@ export default function AdminLayout() {
                   key={item.path}
                   to={item.path}
                   onClick={(e) => handleMenuItemClick(e, item.path)}
-                  className={`flex items-center gap-3 px-3 py-3 rounded-lg transition-all duration-300 ${
+                  className={`flex items-center transition-all duration-300 ${
                     isActive 
                       ? 'bg-white text-primary font-bold shadow-md' 
                       : 'text-white/80 hover:bg-white/10 hover:text-white'
-                  } ${isCollapsed ? 'justify-center' : ''}`}
+                  } ${isCollapsed ? 'size-10 justify-center rounded-xl mx-auto' : 'px-3 py-3 rounded-lg w-full gap-3'}`}
                   title={isCollapsed ? item.name : undefined}
                 >
                   <Icon className={`size-5 shrink-0 transition-colors duration-300 ${
@@ -176,8 +176,8 @@ export default function AdminLayout() {
             <Button 
               variant="ghost" 
               onClick={handleLogout}
-              className={`w-full justify-start text-white/80 hover:bg-white/10 hover:text-white gap-3 cursor-pointer ${
-                isCollapsed ? 'px-0 justify-center' : ''
+              className={`flex items-center text-white/80 hover:bg-white/10 hover:text-white cursor-pointer transition-all duration-300 ${
+                isCollapsed ? 'size-10 justify-center rounded-xl mx-auto p-0' : 'w-full justify-start gap-3 px-3 py-3 rounded-lg'
               }`}
               title={isCollapsed ? "Sign Out" : undefined}
             >
