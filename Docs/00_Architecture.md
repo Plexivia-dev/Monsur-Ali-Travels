@@ -245,3 +245,36 @@ Example: PASS-AB4829K513, IVISA-KR7291M042, I-CD5830N271
 ```javascript
 export const ModelName = mongoose.models.ModelName || mongoose.model("ModelName", schema);
 ```
+
+---
+
+## ৯. Git Architecture & Commit Conventions
+
+Every single Git commit message **MUST start with the exact Log ID(s)** from `Docs/Backend/MB01-100.md` or `Docs/Dashboard/MD01-300.md`.
+
+### Commit Message Format:
+```bash
+git commit -m "<LOG_ID>: <brief summary of changes>"
+```
+
+### Examples:
+- Backend only: `git commit -m "MB24: split API into Admin and Client scopes with Audit Logging"`
+- Dashboard only: `git commit -m "MD133: initialize admin-dashboard and configure frontend/VPS deployment"`
+- Combined: `git commit -m "MB24 & MD133: add stage tracking and document attachment to passport submissions"`
+
+---
+
+## ১০. Image & Document Upload Pipeline
+
+Multi-format file uploads (photos, passport scans, NID scans, birth certificates) are processed via `commonUpload.middleware.js`. Files are organized in `/uploads` by current date routing (`YYMMDD`) with auto-generated unique hash prefixes to prevent collisions.
+
+---
+
+## ১১. Domain Connect & SSL Setup
+
+Primary Domain: `monsuralitravels.com` (managed via Cloudflare DNS).
+- `admin.monsuralitravels.com` -> Admin Dashboard SPA
+- `dashboard.monsuralitravels.com` -> Client ERP Main Dashboard SPA
+- `api.monsuralitravels.com` -> Express REST API
+- `monsuralitravels.com` -> Landing Website
+
