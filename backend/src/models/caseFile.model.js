@@ -185,6 +185,28 @@ caseFileSchema.index({
   caseType: "text",
 });
 
+// Virtual Populates for DID relations
+caseFileSchema.virtual("clientInfo", {
+  ref: "Client",
+  localField: "clientDid",
+  foreignField: "did",
+  justOne: true,
+});
+
+caseFileSchema.virtual("workflowTasks", {
+  ref: "Task",
+  localField: "did",
+  foreignField: "caseDid",
+  justOne: false,
+});
+
+caseFileSchema.virtual("financialReceipts", {
+  ref: "MoneyReceipt",
+  localField: "did",
+  foreignField: "caseDid",
+  justOne: false,
+});
+
 // Virtual Populates for CaseFile relations using DIDs
 caseFileSchema.virtual("customerId", {
   ref: "Client",
