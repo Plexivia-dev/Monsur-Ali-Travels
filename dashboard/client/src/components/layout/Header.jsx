@@ -2,6 +2,7 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Search, Bell } from 'lucide-react';
 import { usePortalStore } from '../../store/usePortalStore';
+import { usePortal } from '../../context/PortalContext';
 import { Button } from '@/components/ui/button';
 import {
   Breadcrumb,
@@ -25,6 +26,8 @@ const PORTAL_KEYS = {
 
 const SUBMODULE_KEYS = {
   dashboard: 'nav.agencyDashboard',
+  cases: 'nav.caseFiles',
+  tasks: 'nav.myTasks',
   overview: 'nav.documentStudioHub',
   'clients-all': 'nav.allClients',
   'clients-add': 'nav.addClient',
@@ -66,9 +69,9 @@ export const Header = () => {
   const { t } = useTranslation();
   const activePortal = usePortalStore((state) => state.activePortal);
   const activeSubmodule = usePortalStore((state) => state.activeSubmodule);
-  const switchPortal = usePortalStore((state) => state.switchPortal);
   const setSearchOpen = usePortalStore((state) => state.setSearchOpen);
   const notifications = usePortalStore((state) => state.notifications);
+  const { switchPortal } = usePortal();
 
   const unreadCount = notifications.filter((n) => n.unread).length;
   const portalLabel = PORTAL_KEYS[activePortal] ? t(PORTAL_KEYS[activePortal]) : activePortal;

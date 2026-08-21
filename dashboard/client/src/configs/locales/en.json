@@ -12,6 +12,8 @@
     "data": "Data Records Center",
     "admin": "System Administration",
     "agencyDashboard": "Overview",
+    "caseFiles": "Case Files",
+    "myTasks": "My Tasks",
     "clientsAndAccounts": "Clients & Accounts",
     "allClients": "All Clients",
     "addClient": "Add Client",

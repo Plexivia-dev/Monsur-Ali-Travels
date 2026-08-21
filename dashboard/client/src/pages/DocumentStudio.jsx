@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { usePortalStore } from '../store/usePortalStore';
+import { usePortal } from '../context/PortalContext';
 import {
   FileText,
   FileSignature,
@@ -202,7 +203,7 @@ const CATEGORIES = [
 
 export default function DocumentStudio() {
   const activeSubmodule = usePortalStore((state) => state.activeSubmodule);
-  const switchPortal = usePortalStore((state) => state.switchPortal);
+  const { switchPortal } = usePortal();
   const language = usePortalStore((state) => state.language);
   const isBn = language === 'bn';
 

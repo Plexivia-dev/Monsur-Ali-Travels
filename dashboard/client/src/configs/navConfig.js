@@ -1,16 +1,24 @@
 export const navGroups = [
   {
-    groupLabel: 'Agency',
-    groupKey: 'nav.agency',
+    groupLabel: '',
+    groupKey: '',
     portal: 'agency',
     items: [
       {
-        icon: 'LayoutDashboard',
-        label: 'Overview',
-        key: 'nav.agencyDashboard',
+        icon: 'CheckSquare',
+        label: 'My Tasks',
+        key: 'nav.myTasks',
         portal: 'agency',
-        submodule: 'dashboard',
-        href: '/dashboard/agency/dashboard',
+        submodule: 'tasks',
+        href: '/dashboard/agency/tasks',
+      },
+      {
+        icon: 'FolderOpen',
+        label: 'Case Files',
+        key: 'nav.caseFiles',
+        portal: 'agency',
+        submodule: 'cases',
+        href: '/dashboard/agency/cases',
       },
       {
         icon: 'Building2',

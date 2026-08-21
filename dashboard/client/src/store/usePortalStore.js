@@ -3,20 +3,20 @@ import { create } from 'zustand';
 export const parsePortalFromPath = (pathname) => {
   const parts = pathname.split('/').filter(Boolean);
   let portal = 'agency';
-  let submodule = 'dashboard';
+  let submodule = 'tasks';
 
   if (parts[0] === 'dashboard') {
     if (parts[1]) portal = parts[1];
-    if (parts[2]) submodule = parts[2];
+    if (parts[2]) submodule = parts[2] === 'dashboard' ? 'tasks' : parts[2];
   } else if (parts[0] && parts[0] !== 'login') {
     portal = parts[0];
-    if (parts[1]) submodule = parts[1];
+    if (parts[1]) submodule = parts[1] === 'dashboard' ? 'tasks' : parts[1];
   }
 
   return { portal, submodule };
 };
 
-const initialPath = typeof window !== 'undefined' ? window.location.pathname : '/dashboard/agency/dashboard';
+const initialPath = typeof window !== 'undefined' ? window.location.pathname : '/dashboard/agency/tasks';
 const initialParsed = parsePortalFromPath(initialPath);
 
 export const usePortalStore = create((set, get) => ({

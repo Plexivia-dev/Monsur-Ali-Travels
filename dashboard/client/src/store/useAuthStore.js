@@ -48,6 +48,7 @@ export const useAuthStore = create((set, get) => ({
         phone: apiUser.phone || '',
         address: apiUser.address || '',
         role: apiUser.role || 'Employee',
+        subRole: apiUser.subRole || apiUser.sub_role || '',
         department: apiUser.department || '',
         designation: apiUser.designation || '',
         avatar: apiUser.avatar || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=256&q=80',
@@ -83,6 +84,7 @@ export const useAuthStore = create((set, get) => ({
           phone: apiUser.phone ?? currentUser.phone,
           address: apiUser.address ?? currentUser.address,
           role: apiUser.role || currentUser.role,
+          subRole: apiUser.subRole ?? apiUser.sub_role ?? currentUser.subRole ?? '',
           department: apiUser.department || currentUser.department,
           designation: apiUser.designation || currentUser.designation,
           avatar: apiUser.avatar || currentUser.avatar,
@@ -118,6 +120,7 @@ export const useAuthStore = create((set, get) => ({
         avatar: apiUser.avatar !== undefined ? apiUser.avatar : currentUser.avatar,
         email: apiUser.email || currentUser.email,
         role: apiUser.role || currentUser.role,
+        subRole: apiUser.subRole !== undefined ? apiUser.subRole : (apiUser.sub_role !== undefined ? apiUser.sub_role : currentUser.subRole),
       };
 
       if (typeof window !== 'undefined') {
@@ -162,6 +165,9 @@ export const useAuthStore = create((set, get) => ({
         phone: apiUser.phone || '',
         address: apiUser.address || '',
         role: apiUser.role || 'Employee',
+        subRole: apiUser.subRole || apiUser.sub_role || '',
+        department: apiUser.department || '',
+        designation: apiUser.designation || '',
         avatar: apiUser.avatar || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=256&q=80',
       };
 
@@ -194,6 +200,9 @@ export const useAuthStore = create((set, get) => ({
         phone: apiUser.phone || '',
         address: apiUser.address || '',
         role: apiUser.role,
+        subRole: apiUser.subRole || apiUser.sub_role || '',
+        department: apiUser.department || '',
+        designation: apiUser.designation || '',
         avatar: apiUser.avatar || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=256&q=80',
       };
 

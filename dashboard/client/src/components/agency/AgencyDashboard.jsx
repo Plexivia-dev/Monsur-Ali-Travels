@@ -6,11 +6,11 @@ import { Badge } from '../ui/badge';
 import { Button } from '../ui/button';
 import { Users2, Building2, Clock, DollarSign, TrendingUp, Briefcase } from 'lucide-react';
 import { ResponsiveContainer, AreaChart, Area, XAxis, YAxis, Tooltip, CartesianGrid } from 'recharts';
-import { usePortalStore } from '../../store/usePortalStore';
+import { usePortal } from '../../context/PortalContext';
 
 export const AgencyDashboard = () => {
   const { data: agencyData, isLoading } = useAgencyData();
-  const switchPortal = usePortalStore((state) => state.switchPortal);
+  const { switchPortal } = usePortal();
 
   if (isLoading || !agencyData) {
     return (

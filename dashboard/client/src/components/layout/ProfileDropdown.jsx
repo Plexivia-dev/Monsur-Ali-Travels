@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { LogOut, Settings, User, ShieldCheck } from 'lucide-react';
 import { useAuthStore } from '../../store/useAuthStore';
 import { usePortalStore } from '../../store/usePortalStore';
+import { usePortal } from '../../context/PortalContext';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import {
@@ -19,11 +20,18 @@ export const ProfileDropdown = () => {
   const { t } = useTranslation();
   const user = useAuthStore((state) => state.user);
   const logout = useAuthStore((state) => state.logout);
-  const switchPortal = usePortalStore((state) => state.switchPortal);
+  const { switchPortal } = usePortal();
 
   const displayName = user?.name || 'Administrator';
   const displayEmail = user?.email || 'admin@monsuralitravelsbd.com';
-  const displayRole = user?.role || 'Super Admin';
+  const displayRole = (() => {
+    const role = user?.role || 'Super Admin';
+    if (String(role).toLowerCase() === 'staff') {
+      const sub = user?.subRole || user?.sub_role || user?.designation;
+      return sub ? sub.replace(/_/g, ' ') : 'Staff';
+    }
+    return role;
+  })();
   const initials = displayName
     .split(' ')
     .map((n) => n[0])

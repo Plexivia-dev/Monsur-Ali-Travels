@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { usePortalStore } from '../../store/usePortalStore';
+import { usePortal } from '../../context/PortalContext';
 import {
   Search,
   Building2,
@@ -20,7 +21,7 @@ export const GlobalSearchModal = () => {
   const setSearchOpen = usePortalStore((state) => state.setSearchOpen);
   const searchQuery = usePortalStore((state) => state.searchQuery);
   const setSearchQuery = usePortalStore((state) => state.setSearchQuery);
-  const switchPortal = usePortalStore((state) => state.switchPortal);
+  const { switchPortal } = usePortal();
 
   useEffect(() => {
     const handleKeyDown = (e) => {

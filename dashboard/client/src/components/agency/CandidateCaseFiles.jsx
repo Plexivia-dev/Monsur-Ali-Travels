@@ -27,6 +27,7 @@ import {
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { apiClient } from '../../lib/api-client';
+import { CaseFileCreationModal } from './CaseFileCreationModal';
 
 export function CandidateCaseFiles() {
   const [cases, setCases] = useState([]);
@@ -55,12 +56,16 @@ export function CandidateCaseFiles() {
     setLoading(true);
     try {
       const response = await apiClient.get('/api/v1/client/candidates');
-      if (response && response.data) {
-        setCases(response.data);
-      }
+      const candidateList = Array.isArray(response.data?.data)
+        ? response.data.data
+        : Array.isArray(response.data)
+        ? response.data
+        : [];
+      setCases(candidateList);
     } catch (err) {
       console.error('Failed to load candidate case files:', err);
       toast.error('Failed to load candidates from server.');
+      setCases([]);
     } finally {
       setLoading(false);
     }
@@ -71,7 +76,9 @@ export function CandidateCaseFiles() {
   }, []);
 
   const filteredCases = useMemo(() => {
-    return cases.filter(c => {
+    const safeCases = Array.isArray(cases) ? cases : [];
+    return safeCases.filter((c) => {
+      if (!c) return false;
       const matchesSearch = 
         (c.candidateName || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
         (c.fileNumber || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -95,8 +102,9 @@ export function CandidateCaseFiles() {
     try {
       const response = await apiClient.post('/api/v1/client/candidates', newForm);
       if (response && response.data) {
-        toast.success(`Case File ${response.data.fileNumber} created in database!`);
-        setCases([response.data, ...cases]);
+        const createdCase = response.data?.data || response.data;
+        toast.success(`Case File ${createdCase.fileNumber || 'New'} created in database!`);
+        setCases((prev) => [createdCase, ...(Array.isArray(prev) ? prev : [])]);
         setIsNewModalOpen(false);
         setNewForm({
           candidateName: '',
@@ -396,127 +404,12 @@ export function CandidateCaseFiles() {
         </div>
       )}
 
-      {/* New Candidate Case File Modal */}
-      {isNewModalOpen && (
-        <div className="fixed inset-0 z-50 bg-slate-950/75 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto animate-in fade-in duration-150">
-          <form onSubmit={handleCreateCase} className="bg-card border border-border rounded-2xl max-w-md w-full p-6 space-y-4 shadow-2xl">
-            <div className="flex items-center justify-between border-b border-border pb-3">
-              <h3 className="text-base font-bold text-foreground flex items-center gap-2">
-                <FilePlus2 className="w-5 h-5 text-sky-500" />
-                New Manpower Candidate File
-              </h3>
-              <button
-                type="button"
-                onClick={() => setIsNewModalOpen(false)}
-                className="p-1 rounded text-muted-foreground hover:text-foreground"
-              >
-                <X className="w-4 h-4" />
-              </button>
-            </div>
-
-            <div className="space-y-3 text-xs">
-              <div>
-                <label className="block font-semibold text-muted-foreground mb-1">Candidate Full Name *</label>
-                <input
-                  type="text"
-                  required
-                  placeholder="e.g. Md. Tanvir Hossain"
-                  value={newForm.candidateName}
-                  onChange={(e) => setNewForm({ ...newForm, candidateName: e.target.value })}
-                  className="w-full px-3 py-2 bg-muted/50 border border-border rounded-lg text-foreground focus:outline-none focus:border-primary"
-                />
-              </div>
-
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="block font-semibold text-muted-foreground mb-1">Phone Number</label>
-                  <input
-                    type="text"
-                    placeholder="+88017..."
-                    value={newForm.candidatePhone}
-                    onChange={(e) => setNewForm({ ...newForm, candidatePhone: e.target.value })}
-                    className="w-full px-3 py-2 bg-muted/50 border border-border rounded-lg text-foreground"
-                  />
-                </div>
-                <div>
-                  <label className="block font-semibold text-muted-foreground mb-1">Passport Number *</label>
-                  <input
-                    type="text"
-                    required
-                    placeholder="e.g. A09812345"
-                    value={newForm.passportNumber}
-                    onChange={(e) => setNewForm({ ...newForm, passportNumber: e.target.value })}
-                    className="w-full px-3 py-2 bg-muted/50 border border-border rounded-lg text-foreground font-mono"
-                  />
-                </div>
-              </div>
-
-              <div>
-                <label className="block font-semibold text-muted-foreground mb-1">Trade / Skill Category</label>
-                <select
-                  value={newForm.tradeSkill}
-                  onChange={(e) => setNewForm({ ...newForm, tradeSkill: e.target.value })}
-                  className="w-full px-3 py-2 bg-muted/50 border border-border rounded-lg text-foreground"
-                >
-                  <option value="Heavy Equipment Operator">Heavy Equipment Operator</option>
-                  <option value="Industrial Electrician">Industrial Electrician</option>
-                  <option value="Registered Nurse / Caregiver">Registered Nurse / Caregiver</option>
-                  <option value="Duct Fabricator & HVAC Tech">Duct Fabricator & HVAC Tech</option>
-                  <option value="Pipe Welder (6G)">Pipe Welder (6G)</option>
-                  <option value="General Mason & Plasterer">General Mason & Plasterer</option>
-                </select>
-              </div>
-
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="block font-semibold text-muted-foreground mb-1">Destination Country</label>
-                  <select
-                    value={newForm.destinationCountry}
-                    onChange={(e) => setNewForm({ ...newForm, destinationCountry: e.target.value })}
-                    className="w-full px-3 py-2 bg-muted/50 border border-border rounded-lg text-foreground"
-                  >
-                    <option value="Saudi Arabia">Saudi Arabia</option>
-                    <option value="UAE (Dubai)">UAE (Dubai)</option>
-                    <option value="Qatar">Qatar</option>
-                    <option value="Oman">Oman</option>
-                    <option value="Malaysia">Malaysia</option>
-                  </select>
-                </div>
-                <div>
-                  <label className="block font-semibold text-muted-foreground mb-1">Workflow Channel</label>
-                  <select
-                    value={newForm.workflowType}
-                    onChange={(e) => setNewForm({ ...newForm, workflowType: e.target.value })}
-                    className="w-full px-3 py-2 bg-muted/50 border border-border rounded-lg text-foreground"
-                  >
-                    <option value="destination_partner">Destination Partner</option>
-                    <option value="direct_client">Direct Corporate Client</option>
-                    <option value="outsourced_local">Local Sub-Agency</option>
-                  </select>
-                </div>
-              </div>
-            </div>
-
-            <div className="border-t border-border pt-3 flex items-center justify-end gap-2 text-xs">
-              <button
-                type="button"
-                onClick={() => setIsNewModalOpen(false)}
-                className="px-3 py-1.5 rounded-lg border border-border text-muted-foreground hover:bg-muted"
-              >
-                Cancel
-              </button>
-              <button
-                type="submit"
-                disabled={submitting}
-                className="flex items-center gap-2 px-4 py-1.5 bg-sky-500 hover:bg-sky-400 text-slate-950 font-bold rounded-lg shadow-md cursor-pointer disabled:opacity-50"
-              >
-                {submitting && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
-                Create Candidate Case File
-              </button>
-            </div>
-          </form>
-        </div>
-      )}
+      {/* New 5-Step Case File Creation Stepper Modal */}
+      <CaseFileCreationModal
+        isOpen={isNewModalOpen}
+        onClose={() => setIsNewModalOpen(false)}
+        onSuccess={fetchCandidates}
+      />
     </div>
   );
 }
