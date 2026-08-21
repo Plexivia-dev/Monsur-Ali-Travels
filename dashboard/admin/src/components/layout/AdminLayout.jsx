@@ -54,7 +54,7 @@ export default function AdminLayout() {
 
       {/* Mobile Sidebar drawer (Fixed viewport height constraints to prevent empty bottom spaces) */}
       <aside 
-        className={`fixed top-0 left-0 h-dvh w-64 bg-card border-r border-border flex flex-col justify-between z-50 transition-transform duration-300 ease-in-out md:hidden ${
+        className={`fixed top-0 left-0 h-dvh w-64 bg-primary border-r border-white/10 flex flex-col justify-between z-50 transition-transform duration-300 ease-in-out md:hidden ${
           isMobileOpen ? 'translate-x-0 shadow-2xl' : '-translate-x-full'
         }`}
       >
@@ -64,7 +64,7 @@ export default function AdminLayout() {
             <div className="flex items-center gap-3">
               <img src={logo} alt="Logo" className="size-8 p-1 bg-white rounded-full object-contain shadow-sm shrink-0" />
               <span className="font-bold text-sm tracking-wide text-white uppercase font-sans">
-                Monsur Ali <span className="text-white/80 font-extrabold">Travels</span>
+                Admin Panel
               </span>
             </div>
             <button 
@@ -88,11 +88,11 @@ export default function AdminLayout() {
                   onClick={(e) => handleMenuItemClick(e, item.path)}
                   className={`flex items-center gap-3 px-3 py-3 rounded-lg transition-colors ${
                     isActive 
-                      ? 'bg-primary text-primary-foreground font-semibold shadow-md' 
-                      : 'text-muted-foreground hover:bg-accent hover:text-accent-foreground'
+                      ? 'bg-white text-primary font-bold shadow-md' 
+                      : 'text-white/80 hover:bg-white/10 hover:text-white'
                   }`}
                 >
-                  <Icon className="size-5 shrink-0" />
+                  <Icon className={`size-5 shrink-0 ${isActive ? 'text-primary' : 'text-white/85'}`} />
                   <span className="text-[15px]">{item.name}</span>
                 </Link>
               )
@@ -100,22 +100,22 @@ export default function AdminLayout() {
           </nav>
 
           {/* Footer Logout Button inside flex scroll container */}
-          <div className="p-3 border-t border-border shrink-0 bg-card">
+          <div className="p-3 border-t border-white/10 shrink-0 bg-primary">
             <Button 
               variant="ghost" 
               onClick={handleLogout}
-              className="w-full justify-start text-muted-foreground hover:text-destructive hover:bg-destructive/10 gap-3"
+              className="w-full justify-start text-white/80 hover:bg-white/10 hover:text-white gap-3 cursor-pointer"
             >
-              <LogOut className="size-5 shrink-0" />
+              <LogOut className="size-5 shrink-0 text-white/85" />
               <span className="text-[15px]">Sign Out</span>
             </Button>
           </div>
         </div>
       </aside>
 
-      {/* Desktop Sidebar */}
+      {/* Desktop Sidebar (Theme color matched to Topbar primary with inverted selection states) */}
       <aside 
-        className={`h-screen sticky top-0 flex flex-col justify-between bg-card border-r border-border transition-all duration-300 ease-in-out hidden md:flex shrink-0 ${
+        className={`h-screen sticky top-0 flex flex-col justify-between bg-primary border-r border-white/10 transition-all duration-300 ease-in-out hidden md:flex shrink-0 ${
           isCollapsed ? 'w-20' : 'w-64'
         }`}
       >
@@ -126,14 +126,9 @@ export default function AdminLayout() {
           }`}>
             <div 
               onClick={() => isCollapsed && setIsCollapsed(false)}
-              className={`flex items-center gap-3 ${isCollapsed ? 'cursor-pointer' : ''}`}
+              className="flex items-center justify-center cursor-pointer"
             >
               <img src={logo} alt="Logo" className="size-8 p-1 bg-white rounded-full object-contain shadow-sm shrink-0" />
-              {!isCollapsed && (
-                <span className="font-bold text-sm tracking-wide text-white uppercase font-sans">
-                  Monsur Ali <span className="text-white/80 font-extrabold">Travels</span>
-                </span>
-              )}
             </div>
             {!isCollapsed && (
               <button 
@@ -146,7 +141,7 @@ export default function AdminLayout() {
             )}
           </div>
 
-          {/* Navigation Links */}
+          {/* Navigation Links (With smooth transitions on text opacity & width scales to prevent HMR flicking) */}
           <nav className="p-3 space-y-2 flex-grow overflow-y-auto">
             {menuItems.map((item) => {
               const isActive = location.pathname === item.path
@@ -156,32 +151,42 @@ export default function AdminLayout() {
                   key={item.path}
                   to={item.path}
                   onClick={(e) => handleMenuItemClick(e, item.path)}
-                  className={`flex items-center gap-3 px-3 py-3 rounded-lg transition-colors ${
+                  className={`flex items-center gap-3 px-3 py-3 rounded-lg transition-all duration-300 ${
                     isActive 
-                      ? 'bg-primary text-primary-foreground font-semibold shadow-md' 
-                      : 'text-muted-foreground hover:bg-accent hover:text-accent-foreground'
+                      ? 'bg-white text-primary font-bold shadow-md' 
+                      : 'text-white/80 hover:bg-white/10 hover:text-white'
                   } ${isCollapsed ? 'justify-center' : ''}`}
                   title={isCollapsed ? item.name : undefined}
                 >
-                  <Icon className="size-5 shrink-0" />
-                  {!isCollapsed && <span className="text-[15px]">{item.name}</span>}
+                  <Icon className={`size-5 shrink-0 transition-colors duration-300 ${
+                    isActive ? 'text-primary' : 'text-white/85'
+                  }`} />
+                  <span className={`text-[15px] whitespace-nowrap overflow-hidden transition-all duration-300 ${
+                    isCollapsed ? 'w-0 opacity-0 pointer-events-none' : 'w-auto opacity-100 ml-1'
+                  }`}>
+                    {item.name}
+                  </span>
                 </Link>
               )
             })}
           </nav>
 
           {/* Footer Logout Button */}
-          <div className="p-3 border-t border-border shrink-0 bg-card">
+          <div className="p-3 border-t border-white/10 shrink-0 bg-primary">
             <Button 
               variant="ghost" 
               onClick={handleLogout}
-              className={`w-full justify-start text-muted-foreground hover:text-destructive hover:bg-destructive/10 gap-3 ${
+              className={`w-full justify-start text-white/80 hover:bg-white/10 hover:text-white gap-3 cursor-pointer ${
                 isCollapsed ? 'px-0 justify-center' : ''
               }`}
               title={isCollapsed ? "Sign Out" : undefined}
             >
-              <LogOut className="size-5 shrink-0" />
-              {!isCollapsed && <span className="text-[15px]">Sign Out</span>}
+              <LogOut className="size-5 shrink-0 text-white/85" />
+              <span className={`text-[15px] whitespace-nowrap overflow-hidden transition-all duration-300 ${
+                isCollapsed ? 'w-0 opacity-0 pointer-events-none' : 'w-auto opacity-100 ml-1'
+              }`}>
+                Sign Out
+              </span>
             </Button>
           </div>
         </div>
