@@ -38,6 +38,9 @@ export default function App() {
               <Route path="dialog" element={<DialogPage />} />
               <Route path="visa-workflows" element={<VisaWorkflowsPage />} />
               <Route path="activity-logs" element={<ActivityLogsPage />} />
+              <Route path="system/logs" element={<ActivityLogsPage />} />
+              <Route path="system-logs" element={<ActivityLogsPage />} />
+              <Route path="system" element={<Navigate to="/admin/activity-logs" replace />} />
               <Route path="accounting" element={<Accounting />} />
             </Route>
           </Route>
