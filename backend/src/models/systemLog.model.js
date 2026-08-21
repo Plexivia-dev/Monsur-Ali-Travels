@@ -1,7 +1,14 @@
 import mongoose from 'mongoose';
+import { generateDid } from '../utils/generateDid.js';
 
 const systemLogSchema = new mongoose.Schema(
   {
+    did: {
+      type: String,
+      default: () => generateDid(),
+      unique: true,
+      index: true,
+    },
     userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: false },
     email: { type: String, required: false },
     role: { type: String, required: false },

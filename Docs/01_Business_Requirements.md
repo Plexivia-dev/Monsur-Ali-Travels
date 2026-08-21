@@ -144,4 +144,10 @@ To maintain domain clarity across all code and documentation:
 
 ---
 
-*This document serves as the single source of truth for business logic and operational goals for the Monsur Ali Travels ERP project.*
+## 🔒 6. Mandatory System Architecture Rules
+
+> [!CAUTION]
+> **STRICT RULE: Mandatory DID Field in All Collections**
+> - **Rule:** Every single MongoDB collection/schema MUST include a unique `did` (Decentralized/Domain Identifier) field generated via `generateDid()`.
+> - **Rule:** MongoDB's internal `_id` (ObjectId) MUST NEVER be used or exposed in API contracts, data migrations, lookups, or inter-collection references. All lookups, references, and migrations MUST strictly rely on `did`.
+> - **Reason:** Ensures seamless database migration (e.g., MongoDB to PostgreSQL/Prisma), zero external dependency on MongoDB ObjectId formats, and multi-tenant domain compatibility.

@@ -1,7 +1,14 @@
 import mongoose from "mongoose";
+import { generateDid } from "../utils/generateDid.js";
 
 const notificationSchema = new mongoose.Schema(
   {
+    did: {
+      type: String,
+      default: () => generateDid(),
+      unique: true,
+      index: true,
+    },
     title: {
       type: String,
       required: true,
