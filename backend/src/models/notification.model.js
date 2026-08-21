@@ -72,6 +72,17 @@ notificationSchema.virtual("recipientUser", {
   justOne: true,
 });
 
+// Post-save hook to emit real-time WebSockets notification
+notificationSchema.post("save", function (doc) {
+  if (global.io) {
+    if (doc.recipientUserDid) {
+      global.io.to(`user:${doc.recipientUserDid}`).emit("new_notification", doc);
+    } else {
+      global.io.emit("new_notification", doc);
+    }
+  }
+});
+
 export const NotificationModel =
   mongoose.models.Notification ||
   mongoose.model("Notification", notificationSchema);

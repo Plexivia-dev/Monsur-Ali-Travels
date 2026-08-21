@@ -1,6 +1,6 @@
 import * as React from 'react'
 import { Link, Outlet, useNavigate, useLocation } from 'react-router-dom'
-import { LayoutDashboard, Compass, Layers, User, AlertCircle, LogOut, Menu, X, Settings } from 'lucide-react'
+import { LayoutDashboard, Compass, Layers, User, AlertCircle, LogOut, Menu, X, Settings, Server, FileText, ChevronDown, ChevronRight } from 'lucide-react'
 import { RiTranslate2 } from '@remixicon/react'
 import { useAuth } from '@/store/useAuthStore'
 import { ProfileDropdown } from '@/components/blocks/dropdown-profile'
@@ -15,6 +15,7 @@ export default function AdminLayout() {
 
   const [isCollapsed, setIsCollapsed] = React.useState(false)
   const [isMobileOpen, setIsMobileOpen] = React.useState(false)
+  const [isSystemOpen, setIsSystemOpen] = React.useState(true)
   const [lang, setLang] = React.useState('EN')
   const [showLogoutConfirm, setShowLogoutConfirm] = React.useState(false)
 
@@ -24,8 +25,16 @@ export default function AdminLayout() {
   }
 
   const menuItems = [
-    { name: 'Overview', path: '/admin', icon: LayoutDashboard },
-    { name: 'Accounting', path: '/admin/accounting', icon: Layers },
+    { name: lang === 'BN' ? 'ওভারভিউ' : 'Overview', path: '/admin', icon: LayoutDashboard },
+    { name: lang === 'BN' ? 'অ্যাকাউন্টিং' : 'Accounting', path: '/admin/accounting', icon: Layers },
+  ]
+
+  const systemSubMenuItems = [
+    {
+      name: lang === 'BN' ? 'সিস্টেম লগ' : 'System Logs',
+      path: '/admin/activity-logs',
+      icon: FileText,
+    },
   ]
 
   const handleMenuItemClick = (e, itemPath) => {
@@ -75,7 +84,7 @@ export default function AdminLayout() {
           </div>
 
           {/* Navigation Links */}
-          <nav className="p-3 space-y-2 flex-grow">
+          <nav className="p-3 space-y-2 flex-grow overflow-y-auto">
             {menuItems.map((item) => {
               const isActive = location.pathname === item.path
               const Icon = item.icon
@@ -95,10 +104,53 @@ export default function AdminLayout() {
                 </Link>
               )
             })}
+
+            {/* System Menu (Mobile) */}
+            <div className="space-y-1 pt-1">
+              <button
+                type="button"
+                onClick={() => setIsSystemOpen(!isSystemOpen)}
+                className="w-full flex items-center justify-between px-3 py-3 rounded-lg text-white/90 hover:bg-white/10 hover:text-white transition-colors cursor-pointer"
+              >
+                <div className="flex items-center gap-3">
+                  <Server className="size-5 shrink-0 text-white/85" />
+                  <span className="text-[17px] font-medium">{lang === 'BN' ? 'সিস্টেম' : 'System'}</span>
+                </div>
+                {isSystemOpen ? (
+                  <ChevronDown className="size-4 text-white/70" />
+                ) : (
+                  <ChevronRight className="size-4 text-white/70" />
+                )}
+              </button>
+
+              {isSystemOpen && (
+                <div className="border-l-2 border-white/20 ml-5 pl-2 space-y-1">
+                  {systemSubMenuItems.map((sub) => {
+                    const isSubActive = location.pathname === sub.path
+                    const SubIcon = sub.icon
+                    return (
+                      <Link
+                        key={sub.path}
+                        to={sub.path}
+                        onClick={() => setIsMobileOpen(false)}
+                        className={`flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm transition-all ${
+                          isSubActive
+                            ? 'bg-white text-primary font-bold shadow-md'
+                            : 'text-white/80 hover:bg-white/10 hover:text-white'
+                        }`}
+                      >
+                        <SubIcon className={`size-4 shrink-0 ${isSubActive ? 'text-primary' : 'text-white/85'}`} />
+                        <span>{sub.name}</span>
+                      </Link>
+                    )
+                  })}
+                </div>
+              )}
+            </div>
           </nav>
 
-          {/* Footer Logout and Settings Buttons inside mobile sidebar drawer */}
-          <div className="p-3 border-t border-white/10 shrink-0 bg-primary flex items-center justify-between gap-3">
+          {/* Footer Logout and Settings Buttons inside mobile sidebar drawer (With distinct top border) */}
+          <div className="p-3 border-t-2 border-white/20 shrink-0 bg-primary/95 flex items-center justify-between gap-3 shadow-xs">
             <Button 
               variant="ghost" 
               onClick={() => {
@@ -192,10 +244,72 @@ export default function AdminLayout() {
                 </Link>
               )
             })}
+
+            {/* System Menu (Desktop Collapsible) */}
+            <div className="space-y-1 pt-1">
+              {isCollapsed ? (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setIsCollapsed(false)
+                    setIsSystemOpen(true)
+                  }}
+                  className={`flex items-center size-10 justify-center rounded-xl mx-auto transition-all duration-300 text-white/80 hover:bg-white/10 hover:text-white cursor-pointer ${
+                    location.pathname === '/admin/activity-logs' ? 'bg-white/20 text-white' : ''
+                  }`}
+                  title={lang === 'BN' ? 'সিস্টেম' : 'System'}
+                >
+                  <Server className="size-5 shrink-0 text-white/85" />
+                </button>
+              ) : (
+                <>
+                  <button
+                    type="button"
+                    onClick={() => setIsSystemOpen(!isSystemOpen)}
+                    className="w-full flex items-center justify-between px-3 py-3 rounded-lg text-white/90 hover:bg-white/10 hover:text-white transition-colors cursor-pointer"
+                  >
+                    <div className="flex items-center gap-3">
+                      <Server className="size-5 shrink-0 text-white/85" />
+                      <span className="text-[17px] font-medium whitespace-nowrap ml-1 animate-fade-in">
+                        {lang === 'BN' ? 'সিস্টেম' : 'System'}
+                      </span>
+                    </div>
+                    {isSystemOpen ? (
+                      <ChevronDown className="size-4 text-white/70" />
+                    ) : (
+                      <ChevronRight className="size-4 text-white/70" />
+                    )}
+                  </button>
+
+                  {isSystemOpen && (
+                    <div className="border-l-2 border-white/20 ml-5 pl-2 space-y-1">
+                      {systemSubMenuItems.map((sub) => {
+                        const isSubActive = location.pathname === sub.path
+                        const SubIcon = sub.icon
+                        return (
+                          <Link
+                            key={sub.path}
+                            to={sub.path}
+                            className={`flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm transition-all ${
+                              isSubActive
+                                ? 'bg-white text-primary font-bold shadow-md'
+                                : 'text-white/80 hover:bg-white/10 hover:text-white'
+                            }`}
+                          >
+                            <SubIcon className={`size-4 shrink-0 ${isSubActive ? 'text-primary' : 'text-white/85'}`} />
+                            <span className="whitespace-nowrap">{sub.name}</span>
+                          </Link>
+                        )
+                      })}
+                    </div>
+                  )}
+                </>
+              )}
+            </div>
           </nav>
 
-          {/* Footer Logout and Settings Buttons */}
-          <div className={`p-3 border-t border-white/10 shrink-0 bg-primary flex ${
+          {/* Footer Logout and Settings Buttons (With distinct top border) */}
+          <div className={`p-3 border-t-2 border-white/20 shrink-0 bg-primary/95 flex shadow-xs ${
             isCollapsed ? 'flex-col items-center gap-3' : 'items-center justify-between gap-3'
           }`}>
             <Button 
