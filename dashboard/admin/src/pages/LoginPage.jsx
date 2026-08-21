@@ -5,6 +5,7 @@ import { useAuth } from "@/store/useAuthStore"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card, CardHeader, CardDescription, CardContent } from "@/components/ui/card"
+import { Label } from "@/components/ui/label"
 import { toast } from "@/components/ui/toast"
 import { getErrorMessage } from "@/lib/error-handler"
 import logo from "@/assets/logo.png"
@@ -50,17 +51,17 @@ export function LoginPage() {
         <Card className="shadow-2xl border-border bg-card/90 text-card-foreground backdrop-blur-xl overflow-hidden rounded-2xl">
           <CardHeader className="px-5 pt-5 pb-3 text-center border-b border-border/80 bg-card/40 flex flex-col items-center justify-center">
             <img src={logo} alt="Monsur Ali Travels Logo" className="h-16 w-16 p-2 bg-white rounded-full object-contain mb-1.5 shadow-sm" />
-            <CardDescription className="text-xs text-muted-foreground mt-0.5">
-              Secure store administration portal
+            <CardDescription className="text-sm text-muted-foreground mt-0.5">
+              Secure administration portal
             </CardDescription>
           </CardHeader>
 
           <CardContent className="p-5 space-y-4">
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="space-y-1">
-                <label className="block text-xs font-semibold text-muted-foreground">
+                <Label className="text-muted-foreground">
                   Email Address
-                </label>
+                </Label>
                 <div className="relative">
                   <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-muted-foreground/60">
                     <Mail className="h-4 w-4" />
@@ -78,9 +79,9 @@ export function LoginPage() {
 
               <div className="space-y-1">
                 <div className="flex items-center justify-between">
-                  <label className="block text-xs font-semibold text-muted-foreground">
+                  <Label className="text-muted-foreground">
                     Password
-                  </label>
+                  </Label>
                   <a href="#" className="text-xs text-muted-foreground hover:text-foreground hover:underline">
                     Forgot?
                   </a>
