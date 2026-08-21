@@ -1,5 +1,3 @@
-"use client"
-
 import { TrendingUp } from "lucide-react"
 import { Bar, BarChart, CartesianGrid, XAxis } from "recharts"
 
@@ -15,7 +13,6 @@ import {
   ChartContainer,
   ChartTooltip,
   ChartTooltipContent,
-  type ChartConfig,
 } from "@/components/ui/chart"
 
 export const description = "A bar chart"
@@ -34,7 +31,7 @@ const chartConfig = {
     label: "Desktop",
     color: "var(--chart-1)",
   },
-} satisfies ChartConfig
+}
 
 export function ChartBarDefault() {
   return (

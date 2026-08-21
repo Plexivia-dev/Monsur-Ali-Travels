@@ -1,5 +1,3 @@
-'use client'
-
 import { Bar, BarChart, Label, Pie, PieChart } from 'recharts'
 import {
   TrendingUpIcon,
@@ -10,9 +8,9 @@ import {
   CirclePercentIcon
 } from 'lucide-react'
 
-import { Avatar, AvatarFallback } from '@/components/ui/avatar'
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { type ChartConfig, ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart'
+import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart'
 
 const salesPlanPercentage = 54
 const totalBars = 24
@@ -36,7 +34,7 @@ const salesChartConfig = {
   sales: {
     label: 'Sales'
   }
-} satisfies ChartConfig
+}
 
 const MetricsData = [
   {
@@ -83,9 +81,9 @@ const revenueChartConfig = {
     label: 'March',
     color: 'color-mix(in oklab, var(--primary) 20%, transparent)'
   }
-} satisfies ChartConfig
+}
 
-export const SalesMetricsCard = ({ className }: { className?: string }) => {
+export const SalesMetricsCard = ({ className }) => {
   return (
     <Card className={className}>
       <CardContent className="pt-6">

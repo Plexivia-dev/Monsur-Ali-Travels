@@ -3,15 +3,6 @@ import { AlertTriangle, X } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 
-interface ErrorDialogProps {
-  isOpen?: boolean
-  defaultOpen?: boolean
-  onClose?: () => void
-  trigger?: React.ReactNode
-  title?: string
-  description?: string
-}
-
 export default function ErrorDialog({
   isOpen: controlledIsOpen,
   defaultOpen = false,
@@ -19,7 +10,7 @@ export default function ErrorDialog({
   trigger,
   title = "Confirm Deletion",
   description = "Are you sure you want to perform this action? This operation is permanent and cannot be undone."
-}: ErrorDialogProps) {
+}) {
   const [uncontrolledIsOpen, setUncontrolledIsOpen] = React.useState(defaultOpen)
   const isCurrentlyOpen = controlledIsOpen !== undefined ? controlledIsOpen : uncontrolledIsOpen
 

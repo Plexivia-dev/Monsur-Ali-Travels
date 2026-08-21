@@ -1,7 +1,5 @@
-"use client"
-
 import { TrendingUp } from "lucide-react"
-import { CartesianGrid, LabelList, Line, LineChart, XAxis } from "recharts"
+import { CartesianGrid, Line, LineChart, XAxis } from "recharts"
 
 import {
   Card,
@@ -15,10 +13,9 @@ import {
   ChartContainer,
   ChartTooltip,
   ChartTooltipContent,
-  type ChartConfig,
 } from "@/components/ui/chart"
 
-export const description = "A line chart with a label"
+export const description = "A line chart with dots"
 
 const chartData = [
   { month: "January", desktop: 186, mobile: 80 },
@@ -38,22 +35,21 @@ const chartConfig = {
     label: "Mobile",
     color: "var(--chart-2)",
   },
-} satisfies ChartConfig
+}
 
-export function ChartLineLabel() {
+export function ChartLineDots() {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Line Chart - Label</CardTitle>
+        <CardTitle>Line Chart - Dots</CardTitle>
         <CardDescription>January - June 2024</CardDescription>
       </CardHeader>
       <CardContent>
-        <ChartContainer id="line-label" config={chartConfig}>
+        <ChartContainer id="line-dots" config={chartConfig}>
           <LineChart
             accessibilityLayer
             data={chartData}
             margin={{
-              top: 20,
               left: 12,
               right: 12,
             }}
@@ -68,7 +64,7 @@ export function ChartLineLabel() {
             />
             <ChartTooltip
               cursor={false}
-              content={<ChartTooltipContent indicator="line" />}
+              content={<ChartTooltipContent hideLabel />}
             />
             <Line
               dataKey="desktop"
@@ -81,14 +77,7 @@ export function ChartLineLabel() {
               activeDot={{
                 r: 6,
               }}
-            >
-              <LabelList
-                position="top"
-                offset={12}
-                className="fill-foreground"
-                fontSize={12}
-              />
-            </Line>
+            />
           </LineChart>
         </ChartContainer>
       </CardContent>

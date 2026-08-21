@@ -1,10 +1,5 @@
-"use client"
-
 import * as React from "react"
 import { Label, Pie, PieChart, Sector } from "recharts"
-import type {
-  PieSectorShapeProps,
-} from "recharts/types/polar/Pie"
 
 import {
   Card,
@@ -18,7 +13,6 @@ import {
   ChartStyle,
   ChartTooltip,
   ChartTooltipContent,
-  type ChartConfig,
 } from "@/components/ui/chart"
 import {
   Select,
@@ -68,7 +62,7 @@ const chartConfig = {
     label: "May",
     color: "var(--chart-5)",
   },
-} satisfies ChartConfig
+}
 
 export function ChartPieInteractive() {
   const id = "pie-interactive"
@@ -81,7 +75,7 @@ export function ChartPieInteractive() {
   const months = React.useMemo(() => desktopData.map((item) => item.month), [])
 
   const renderPieShape = React.useCallback(
-    ({ index, outerRadius = 0, ...props }: PieSectorShapeProps) => {
+    ({ index, outerRadius = 0, ...props }) => {
       if (index === activeIndex) {
         return (
           <g>
@@ -113,11 +107,11 @@ export function ChartPieInteractive() {
             className="ml-auto h-7 w-[130px] rounded-lg pl-2.5"
             aria-label="Select a value"
           >
-            <SelectValue placeholder="Select month" value={chartConfig[activeMonth as keyof typeof chartConfig]?.label || activeMonth} />
+            <SelectValue placeholder="Select month" value={chartConfig[activeMonth]?.label || activeMonth} />
           </SelectTrigger>
           <SelectContent align="end" className="rounded-xl">
             {months.map((key) => {
-              const config = chartConfig[key as keyof typeof chartConfig]
+              const config = chartConfig[key]
 
               if (!config) {
                 return null

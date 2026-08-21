@@ -32,7 +32,7 @@ export function LoginPage() {
     }
   }, [user, isAuthLoading, navigate])
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
     if (!email || !password) {
       toast.add({ title: "Please enter both email and password.", type: "error" })
@@ -51,7 +51,7 @@ export function LoginPage() {
   }
 
   const handleGoogleLogin = () => {
-    const clientId = (import.meta as any).env?.VITE_GOOGLE_CLIENT_ID || "your-google-client-id-here"
+    const clientId = import.meta.env?.VITE_GOOGLE_CLIENT_ID || "your-google-client-id-here"
     const redirectUri = window.location.origin + "/login"
     const scope = "openid email profile"
     const responseType = "code"

@@ -1,5 +1,3 @@
-"use client"
-
 import { TrendingUp } from "lucide-react"
 import { Bar, BarChart, XAxis, YAxis } from "recharts"
 
@@ -15,7 +13,6 @@ import {
   ChartContainer,
   ChartTooltip,
   ChartTooltipContent,
-  type ChartConfig,
 } from "@/components/ui/chart"
 
 export const description = "A mixed bar chart"
@@ -52,7 +49,7 @@ const chartConfig = {
     label: "Other",
     color: "var(--chart-5)",
   },
-} satisfies ChartConfig
+}
 
 export function ChartBarMixed() {
   return (
@@ -78,7 +75,7 @@ export function ChartBarMixed() {
               tickMargin={10}
               axisLine={false}
               tickFormatter={(value) =>
-                chartConfig[value as keyof typeof chartConfig]?.label || value
+                chartConfig[value]?.label || value
               }
             />
             <XAxis dataKey="visitors" type="number" hide />

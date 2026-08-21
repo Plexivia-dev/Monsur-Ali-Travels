@@ -1,7 +1,5 @@
-// Third-party Imports
 import { LogOutIcon, SettingsIcon, UserIcon } from 'lucide-react'
 
-// Component Imports
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import {
   DropdownMenu,
@@ -20,13 +18,7 @@ const STATIC_USER = {
   initials: 'JD'
 }
 
-type Props = {
-  trigger?: React.ReactElement
-  defaultOpen?: boolean
-  align?: 'start' | 'center' | 'end'
-}
-
-export function ProfileDropdown({ defaultOpen, align, trigger }: Props) {
+export function ProfileDropdown({ defaultOpen, align, trigger }) {
   const defaultTrigger = (
     <button className='rounded-full relative'>
       <Avatar size='lg' className='cursor-pointer'>
