@@ -70,17 +70,17 @@ function MainLayout() {
 
   return (
     <SidebarProvider defaultOpen={true}>
-      <div className="flex min-h-screen w-full bg-background text-foreground transition-colors">
+      <div className="flex h-screen w-full overflow-hidden bg-background text-foreground transition-colors">
         {/* Navigation Sidebar */}
         <Sidebar />
 
         {/* Main Application Inset */}
-        <SidebarInset className="flex flex-1 flex-col min-w-0 bg-background">
-          {/* Modern Sticky Header */}
+        <SidebarInset className="flex flex-1 flex-col min-w-0 h-screen overflow-hidden bg-background">
+          {/* Modern Sticky Header (Fixed 56px / h-14 height) */}
           <Header />
 
-          {/* Dynamic Portal View Container */}
-          <main className="flex-1 p-4 sm:p-6 lg:p-8 max-w-7xl w-full mx-auto space-y-6">
+          {/* Dynamic Portal View Container (Height strictly 100vh - 56px navbar, scrollable internally) */}
+          <main className="flex-1 overflow-y-auto h-[calc(100vh-3.5rem)] max-h-[calc(100vh-3.5rem)] p-4 sm:p-6 lg:p-8 max-w-7xl w-full mx-auto space-y-6">
             {activePortal === 'factory' && <Factory />}
             {activePortal === 'agency' && <Agency />}
             {activePortal === 'admin' && <Admin />}

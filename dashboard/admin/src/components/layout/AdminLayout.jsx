@@ -234,8 +234,8 @@ export default function AdminLayout() {
 
       {/* Main Content Area */}
       <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
-        {/* Topbar */}
-        <header className="h-16 border-b border-white/10 bg-primary text-white px-6 flex items-center justify-between shrink-0 shadow-sm">
+        {/* Topbar (Fixed pixel height 64px / h-16 matching sidebar header) */}
+        <header className="h-16 shrink-0 border-b border-white/10 bg-primary text-white px-6 flex items-center justify-between shadow-sm z-30">
           <div className="flex items-center gap-3">
             {/* Hamburger button on mobile */}
             <button 
@@ -282,8 +282,8 @@ export default function AdminLayout() {
           </div>
         </header>
 
-        {/* Page Body */}
-        <main className="flex-1 overflow-y-auto p-6 md:p-8 bg-[#EFEFEF]">
+        {/* Page Body (Height strictly 100vh minus 64px navbar, internal scroll only) */}
+        <main className="flex-1 overflow-y-auto h-[calc(100vh-4rem)] max-h-[calc(100vh-4rem)] p-6 md:p-8 bg-[#EFEFEF]">
           <div className="max-w-7xl mx-auto">
             <Outlet />
           </div>
