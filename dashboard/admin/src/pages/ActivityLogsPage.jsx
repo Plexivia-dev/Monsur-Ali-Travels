@@ -163,85 +163,64 @@ export default function ActivityLogsPage() {
       {loading ? (
         <div className="py-20 flex flex-col items-center justify-center space-y-2">
           <Loader2 className="w-8 h-8 text-primary animate-spin" />
-          <p className="text-xs text-muted-foreground font-medium">Loading audit logs...</p>
+          <p className="text-xs text-muted-foreground font-medium">Loading activity logs...</p>
         </div>
       ) : logs.length === 0 ? (
         <Card className="bg-white border border-gray-200 shadow-md p-10 text-center">
           <Database className="w-10 h-10 text-muted-foreground mx-auto mb-2 opacity-50" />
-          <h3 className="text-sm font-semibold text-foreground">No audit logs found</h3>
+          <h3 className="text-sm font-semibold text-foreground">No activity logs found</h3>
           <p className="text-xs text-muted-foreground mt-1">Try adjusting your filters or search query.</p>
         </Card>
       ) : (
-        <div className="grid gap-3 sm:grid-cols-2">
-          {logs.map((log) => {
-            const role = log.actionDetails?.role || 'System';
-            const userName = log.actionDetails?.name || 'System Process';
-            const action = log.action || 'CREATE';
-            const roleBadgeClass = ROLE_BADGE_COLORS[role] || ROLE_BADGE_COLORS.System;
-            const actionBadgeClass = ACTION_COLORS[action] || ACTION_COLORS.CREATE;
+        <Card className="bg-white border border-gray-200 shadow-md overflow-hidden">
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm text-left">
+              <thead className="text-xs text-muted-foreground bg-muted/40 uppercase border-b border-gray-200">
+                <tr>
+                  <th className="px-6 py-4 font-medium">#</th>
+                  <th className="px-6 py-4 font-medium">User</th>
+                  <th className="px-6 py-4 font-medium">Activity Details</th>
+                  <th className="px-6 py-4 font-medium text-right">Time</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-100">
+                {logs.map((log, index) => {
+                  const role = log.actionDetails?.role || 'System';
+                  const userName = log.actionDetails?.name || 'System Process';
+                  const action = (log.action || 'Performed an action').toLowerCase();
+                  const target = log.targetCollection || 'system data';
+                  const serialNo = (page - 1) * 20 + index + 1;
 
-            return (
-              <Card
-                key={log.did || log._id}
-                className="bg-white border border-gray-200 shadow-md hover:shadow-lg transition-all"
-              >
-                <CardContent className="p-4 space-y-3">
-                  <div className="flex items-start justify-between gap-2">
-                    <div className="flex items-center gap-2 min-w-0">
-                      <div className="size-8 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
-                        {role === 'Staff' ? (
-                          <User className="w-4 h-4 text-emerald-600" />
-                        ) : role === 'Admin' || role === 'Owner' ? (
-                          <Shield className="w-4 h-4 text-blue-600" />
-                        ) : (
-                          <Database className="w-4 h-4 text-primary" />
-                        )}
-                      </div>
-                      <div className="min-w-0">
-                        <h4 className="text-xs font-bold text-foreground truncate">{userName}</h4>
-                        <span className={`inline-block text-[10px] font-semibold px-2 py-0.2 rounded-full border ${roleBadgeClass}`}>
-                          {role}
+                  return (
+                    <tr key={log.did || log._id} className="hover:bg-muted/30 transition-colors">
+                      <td className="px-6 py-4 text-muted-foreground w-12">{serialNo}</td>
+                      <td className="px-6 py-4">
+                        <div className="flex flex-col">
+                          <span className="font-semibold text-foreground">{userName}</span>
+                          <span className="text-[10px] text-muted-foreground uppercase">{role}</span>
+                        </div>
+                      </td>
+                      <td className="px-6 py-4">
+                        <span className="text-foreground">
+                          {action === 'create' ? 'Created a new record in' : 
+                           action === 'update' ? 'Updated a record in' : 
+                           action === 'soft_delete' ? 'Deleted a record from' : 
+                           `Performed ${action} on`} <span className="font-semibold">{target}</span>
                         </span>
-                      </div>
-                    </div>
-
-                    <div className="flex items-center gap-1 shrink-0">
-                      <span className={`text-[10px] font-bold uppercase px-2 py-0.5 rounded border ${actionBadgeClass}`}>
-                        {action}
-                      </span>
-                    </div>
-                  </div>
-
-                  <div className="bg-gray-50 border border-gray-100 rounded-lg p-2 text-xs space-y-1">
-                    <div className="flex items-center justify-between text-muted-foreground">
-                      <span>Target Collection:</span>
-                      <span className="font-mono font-semibold text-foreground">{log.targetCollection}</span>
-                    </div>
-                    <div className="flex items-center justify-between text-muted-foreground">
-                      <span>Category:</span>
-                      <span className="font-medium text-primary">{log.type}</span>
-                    </div>
-                  </div>
-
-                  <div className="flex items-center justify-between text-[11px] text-muted-foreground pt-1 border-t border-gray-100">
-                    <span className="flex items-center gap-1">
-                      <Clock className="w-3 h-3 text-muted-foreground" />
-                      {formatTimestamp(log.createdAt)}
-                    </span>
-                    {log.payload && (
-                      <button
-                        onClick={() => setSelectedPayload(log)}
-                        className="flex items-center gap-1 text-primary font-semibold hover:underline cursor-pointer"
-                      >
-                        <Eye className="w-3 h-3" /> View Details
-                      </button>
-                    )}
-                  </div>
-                </CardContent>
-              </Card>
-            );
-          })}
-        </div>
+                      </td>
+                      <td className="px-6 py-4 text-right text-muted-foreground text-xs whitespace-nowrap">
+                        <div className="flex items-center justify-end gap-1.5">
+                          <Clock className="w-3.5 h-3.5" />
+                          {formatTimestamp(log.createdAt)}
+                        </div>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        </Card>
       )}
 
       {/* Pagination Controls */}

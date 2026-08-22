@@ -70,15 +70,12 @@ export default function CaseWorkflow() {
       <div className="bg-gradient-to-r from-slate-900 via-sky-950 to-indigo-950 rounded-2xl p-6 text-white shadow-xl border border-sky-800/30">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div className="space-y-1">
-            <span className="px-2.5 py-0.5 rounded-full bg-sky-500/20 border border-sky-400/30 text-sky-300 text-[10px] font-bold uppercase tracking-widest">
-              Admin Master Control
-            </span>
             <h1 className="text-xl font-black tracking-tight text-white flex items-center gap-2">
               <FolderOpen className="w-5 h-5 text-sky-400" />
-              JIRA-Style Case Workflow Board
+              Client Files
             </h1>
             <p className="text-xs text-sky-100/70 max-w-xl">
-              Master control panel for assigning operational steps, setting document access permissions, approving staff submissions, and advancing case lifecycles.
+              Manage client files, workflow steps, document access permissions, and case lifecycles.
             </p>
           </div>
           <button
