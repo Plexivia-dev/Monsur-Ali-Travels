@@ -11,7 +11,10 @@ import { LoginPage } from '@/pages/LoginPage'
 import VisaWorkflowsPage from '@/pages/VisaWorkflowsPage'
 import CaseWorkflow from '@/pages/CaseWorkflow'
 import ActivityLogsPage from '@/pages/ActivityLogsPage'
-import Accounting from '@/pages/Accounting'
+import AccountingReportsPage from '@/pages/accounting/AccountingReportsPage'
+import AccountingPaymentsPage from '@/pages/accounting/AccountingPaymentsPage'
+import AccountingBillsPage from '@/pages/accounting/AccountingBillsPage'
+import AccountingLogsPage from '@/pages/accounting/AccountingLogsPage'
 import SettingsPage from '@/pages/SettingsPage'
 import NotFoundPage from '@/pages/NotFoundPage'
 import { useAuth } from '@/store/useAuthStore'
@@ -45,7 +48,11 @@ export default function App() {
               <Route path="system/logs" element={<ActivityLogsPage />} />
               <Route path="system-logs" element={<ActivityLogsPage />} />
               <Route path="system" element={<Navigate to="/admin/activity-logs" replace />} />
-              <Route path="accounting" element={<Accounting />} />
+              <Route path="accounting" element={<Navigate to="/admin/accounting/reports" replace />} />
+              <Route path="accounting/reports" element={<AccountingReportsPage />} />
+              <Route path="accounting/payments" element={<AccountingPaymentsPage />} />
+              <Route path="accounting/bills" element={<AccountingBillsPage />} />
+              <Route path="accounting/logs" element={<AccountingLogsPage />} />
               <Route path="settings" element={<SettingsPage />} />
               <Route path="*" element={<NotFoundPage />} />
             </Route>

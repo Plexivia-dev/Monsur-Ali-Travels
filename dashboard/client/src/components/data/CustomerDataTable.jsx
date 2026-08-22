@@ -41,6 +41,16 @@ export function CustomerDataTable() {
   const [isLoading, setIsLoading] = useState(false);
   const [profileItem, setProfileItem] = useState(null);
   const [receiptModalData, setReceiptModalData] = useState(null);
+  const [isCreateClientOpen, setIsCreateClientOpen] = useState(false);
+  const [newClientForm, setNewClientForm] = useState({
+    fullName: '',
+    phone: '',
+    passportNumber: '',
+    email: '',
+    presentAddress: '',
+    customerType: 'Individual',
+  });
+  const [isCreatingClient, setIsCreatingClient] = useState(false);
   const [deleteTarget, setDeleteTarget] = useState(null);
   const [isDeleting, setIsDeleting] = useState(false);
 
@@ -100,6 +110,37 @@ export function CustomerDataTable() {
     }
   };
 
+  const handleCreateClientSubmit = async (e) => {
+    e.preventDefault();
+    if (!newClientForm.fullName.trim() || !newClientForm.phone.trim()) {
+      toast.error('Client Full Name and Phone Number are required.');
+      return;
+    }
+
+    try {
+      setIsCreatingClient(true);
+      const res = await apiClient.post('/api/v1/client/customers', newClientForm);
+      if (res.data?.success || res.data?.status === 'success') {
+        toast.success(`Client ${newClientForm.fullName} registered successfully!`);
+        setIsCreateClientOpen(false);
+        setNewClientForm({
+          fullName: '',
+          phone: '',
+          passportNumber: '',
+          email: '',
+          presentAddress: '',
+          customerType: 'Individual',
+        });
+        fetchData(1);
+      }
+    } catch (err) {
+      console.error('Failed to create client:', err);
+      toast.error(err.response?.data?.message || 'Failed to register client.');
+    } finally {
+      setIsCreatingClient(false);
+    }
+  };
+
   const statusBadge = (status) => {
     const map = {
       Active: 'bg-emerald-500/10 text-emerald-600 border-emerald-500/20',
@@ -118,20 +159,20 @@ export function CustomerDataTable() {
         <div>
           <h2 className="text-lg font-bold text-foreground tracking-tight flex items-center gap-2">
             <Users className="w-5 h-5 text-sky-500" />
-            {t('customers.title', 'Customers')}
+            {t('customers.title', 'Client Profiles & Accounts')}
           </h2>
           <p className="text-xs text-muted-foreground mt-0.5">
-            {t('customers.subtitle', 'Central customer profiles, contact info, service history, and payment ledger.')}
+            {t('customers.subtitle', 'Central client profiles, contact directory, service history, and live financial payment ledgers.')}
           </p>
         </div>
 
         <button
           type="button"
-          onClick={() => switchPortal('data', 'customer-add')}
+          onClick={() => setIsCreateClientOpen(true)}
           className="flex items-center gap-2 bg-sky-600 hover:bg-sky-700 text-white text-xs font-bold px-4 py-2 rounded-lg shadow-xs transition-all cursor-pointer shrink-0"
         >
           <Plus className="w-4 h-4" />
-          <span>{t('customers.addCustomer', 'Add New Customer')}</span>
+          <span>{t('customers.addCustomer', 'Add New Client')}</span>
         </button>
       </div>
 
@@ -464,6 +505,113 @@ export function CustomerDataTable() {
           fetchData(pagination.page);
         }}
       />
+
+      {/* Add New Client Modal */}
+      {isCreateClientOpen && (
+        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="bg-card border border-border rounded-xl shadow-2xl w-full max-w-md overflow-hidden animate-in fade-in zoom-in duration-200">
+            <div className="px-5 py-3.5 border-b border-border bg-muted/30 flex items-center justify-between">
+              <h3 className="text-sm font-bold text-foreground flex items-center gap-2">
+                <Users className="w-4 h-4 text-sky-500" />
+                নতুন ক্লায়েন্ট প্রোফাইল তৈরি (New Client Registration)
+              </h3>
+              <button
+                type="button"
+                onClick={() => setIsCreateClientOpen(false)}
+                className="p-1 rounded-md text-muted-foreground hover:text-foreground"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+            <form onSubmit={handleCreateClientSubmit} className="p-5 space-y-4">
+              <div>
+                <label className="block text-xs font-semibold text-foreground mb-1">
+                  ক্লায়েন্টের পুরো নাম (Full Name) <span className="text-rose-500">*</span>
+                </label>
+                <input
+                  type="text"
+                  required
+                  placeholder="e.g. Md Ikramul Hasan"
+                  value={newClientForm.fullName}
+                  onChange={(e) => setNewClientForm({ ...newClientForm, fullName: e.target.value })}
+                  className="w-full px-3 py-2 bg-background border border-input rounded-lg text-xs focus:border-sky-500 outline-none"
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-xs font-semibold text-foreground mb-1">
+                    মোবাইল নম্বর (Phone) <span className="text-rose-500">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    placeholder="017XXXXXXXX"
+                    value={newClientForm.phone}
+                    onChange={(e) => setNewClientForm({ ...newClientForm, phone: e.target.value })}
+                    className="w-full px-3 py-2 bg-background border border-input rounded-lg text-xs font-mono focus:border-sky-500 outline-none"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-semibold text-foreground mb-1">
+                    পাসপোর্ট নম্বর (Passport No)
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="e.g. A01234567"
+                    value={newClientForm.passportNumber}
+                    onChange={(e) => setNewClientForm({ ...newClientForm, passportNumber: e.target.value.toUpperCase() })}
+                    className="w-full px-3 py-2 bg-background border border-input rounded-lg text-xs font-mono uppercase focus:border-sky-500 outline-none"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-foreground mb-1">
+                  ইমেইল (Email Address)
+                </label>
+                <input
+                  type="email"
+                  placeholder="client@example.com"
+                  value={newClientForm.email}
+                  onChange={(e) => setNewClientForm({ ...newClientForm, email: e.target.value })}
+                  className="w-full px-3 py-2 bg-background border border-input rounded-lg text-xs focus:border-sky-500 outline-none"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-foreground mb-1">
+                  ঠিকানা (Address / Location)
+                </label>
+                <input
+                  type="text"
+                  placeholder="e.g. Jagannathpur, Sunamganj"
+                  value={newClientForm.presentAddress}
+                  onChange={(e) => setNewClientForm({ ...newClientForm, presentAddress: e.target.value })}
+                  className="w-full px-3 py-2 bg-background border border-input rounded-lg text-xs focus:border-sky-500 outline-none"
+                />
+              </div>
+
+              <div className="pt-2 flex items-center justify-end gap-2 border-t border-border">
+                <button
+                  type="button"
+                  onClick={() => setIsCreateClientOpen(false)}
+                  className="px-3 py-1.5 rounded-lg border border-border text-xs font-semibold hover:bg-muted"
+                >
+                  বাতিল (Cancel)
+                </button>
+                <button
+                  type="submit"
+                  disabled={isCreatingClient}
+                  className="px-4 py-1.5 rounded-lg bg-sky-600 hover:bg-sky-700 text-white text-xs font-bold transition-all cursor-pointer shadow-xs disabled:opacity-50"
+                >
+                  {isCreatingClient ? 'সংরক্ষণ হচ্ছে...' : 'প্রোফাইল সেভ করুন'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
 
       {/* Confirm Delete Alert Dialog */}
       <ConfirmDeleteDialog

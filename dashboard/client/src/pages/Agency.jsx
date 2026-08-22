@@ -34,16 +34,20 @@ export default function Agency() {
     case 'candidates-add':
       return <CandidateCaseFiles initialTab={activeSubmodule} />;
 
-    // ── Clients & Accounts ────────────────────────────────────
+    // ── Clients & Accounts (Live Database Records) ───────────
     case 'clients':
     case 'clients-all':
     case 'all-clients':
     case 'clients-add':
     case 'add-client':
-    case 'bills':
     case 'payments':
     case 'clients-payments':
-      return <ClientManagement initialTab={activeSubmodule} />;
+      return <CustomerDataTable />;
+
+    // ── Client Invoices & Bills ────────────────────────────────
+    case 'bills':
+    case 'invoices':
+      return <InvoiceDataTable />;
 
     // ── Default / Fallback → My Tasks ─────────────────────────
     case 'dashboard':

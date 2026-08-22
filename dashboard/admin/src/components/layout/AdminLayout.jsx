@@ -1,6 +1,6 @@
 import * as React from 'react'
 import { Link, Outlet, useNavigate, useLocation } from 'react-router-dom'
-import { LayoutDashboard, Compass, Layers, User, AlertCircle, LogOut, Menu, X, Settings, Server, FileText, ChevronDown, ChevronRight, FolderOpen } from 'lucide-react'
+import { LayoutDashboard, Compass, Layers, User, AlertCircle, LogOut, Menu, X, Settings, Server, FileText, ChevronDown, ChevronRight, FolderOpen, CreditCard, Receipt, PieChart, Wallet } from 'lucide-react'
 import { RiTranslate2 } from '@remixicon/react'
 import { useAuth } from '@/store/useAuthStore'
 import { ProfileDropdown } from '@/components/blocks/dropdown-profile'
@@ -21,6 +21,7 @@ export default function AdminLayout() {
   const [isCollapsed, setIsCollapsed] = React.useState(false)
   const [isMobileOpen, setIsMobileOpen] = React.useState(false)
   const [isSystemOpen, setIsSystemOpen] = React.useState(true)
+  const [isAccountingOpen, setIsAccountingOpen] = React.useState(true)
   const [lang, setLang] = React.useState('EN')
   const [showLogoutConfirm, setShowLogoutConfirm] = React.useState(false)
 
@@ -32,15 +33,17 @@ export default function AdminLayout() {
   const menuItems = [
     { name: lang === 'BN' ? 'ওভারভিউ' : 'Overview', path: '/admin', icon: LayoutDashboard },
     { name: lang === 'BN' ? 'কেস ওয়ার্কফ্লো' : 'Case Workflow', path: '/admin/cases', icon: FolderOpen },
-    { name: lang === 'BN' ? 'অ্যাকাউন্টিং' : 'Accounting', path: '/admin/accounting', icon: Layers },
+  ]
+
+  const accountingSubMenuItems = [
+    { name: lang === 'BN' ? 'রিপোর্টস' : 'Reports', path: '/admin/accounting/reports', icon: PieChart },
+    { name: lang === 'BN' ? 'পেমেন্টস' : 'Payments', path: '/admin/accounting/payments', icon: Wallet },
+    { name: lang === 'BN' ? 'বিলস' : 'Bills', path: '/admin/accounting/bills', icon: Receipt },
+    { name: lang === 'BN' ? 'অ্যাকাউন্টিং লগ' : 'Logs', path: '/admin/accounting/logs', icon: FileText },
   ]
 
   const systemSubMenuItems = [
-    {
-      name: lang === 'BN' ? 'সিস্টেম লগ' : 'System Logs',
-      path: '/admin/activity-logs',
-      icon: FileText,
-    },
+    { name: lang === 'BN' ? 'সিস্টেম লগ' : 'System Logs', path: '/admin/activity-logs', icon: FileText },
   ]
 
   const handleMenuItemClick = (e, itemPath) => {
