@@ -333,3 +333,37 @@ export const googleAuth = async (req, res, next) => {
   }
 };
 
+// GET /auth/me - Get current logged in user profile
+export const getProfile = async (req, res, next) => {
+  try {
+    const user = await UserModel.findById(req.user.did).select("-passwordHash -__v");
+    if (!user) {
+      return res.status(404).json({ status: "error", message: "User not found" });
+    }
+    res.json({ status: "success", data: user });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// PUT /auth/profile - Update current logged in user profile
+export const updateProfile = async (req, res, next) => {
+  try {
+    const { name, phone } = req.body ?? {};
+    
+    const user = await UserModel.findById(req.user.did);
+    if (!user) {
+      return res.status(404).json({ status: "error", message: "User not found" });
+    }
+
+    if (name) user.name = name;
+    if (phone) user.phone = phone;
+    
+    await user.save();
+    
+    const updatedUser = await UserModel.findById(req.user.did).select("-passwordHash -__v");
+    res.json({ status: "success", message: "Profile updated successfully", data: updatedUser });
+  } catch (error) {
+    next(error);
+  }
+};
