@@ -4,6 +4,8 @@ import { useAuthStore } from '../store/useAuthStore';
 import { AgencyEmployees } from '../components/agency/AgencyEmployees';
 import { CandidateCaseFiles } from '../components/agency/CandidateCaseFiles';
 import { ClientManagement } from '../components/agency/ClientManagement';
+import { CustomerDataTable } from '../components/data/CustomerDataTable';
+import { InvoiceDataTable } from '../components/data/InvoiceDataTable';
 import { isRouteAllowedForUser } from '../configs/roleNavConfig';
 import MyTasks from './MyTasks';
 
