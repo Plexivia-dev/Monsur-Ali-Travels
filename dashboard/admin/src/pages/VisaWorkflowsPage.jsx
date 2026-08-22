@@ -1,16 +1,7 @@
-import * as React from 'react'
+import React, { useState, useEffect } from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-
-const workflowItems = [
-  { client: "Imtiaz Ahmed", status: "Biometrics Completed", country: "Canada", date: "2026-08-21" },
-  { client: "Zubaida Rahman", status: "Embassy Interview Scheduled", country: "USA", date: "2026-08-21" },
-  { client: "Kamrul Hasan", status: "Document Verification Pending", country: "UK", date: "2026-08-20" },
-  { client: "Nusrat Jahan", status: "Visa Issued Successfully", country: "Sweden", date: "2026-08-20" },
-  { client: "Farhan Kabir", status: "Application Submitted", country: "Australia", date: "2026-08-19" },
-  { client: "Sadia Islam", status: "Medical Checkup Done", country: "Germany", date: "2026-08-19" },
-  { client: "Mahbub Alam", status: "Visa Refused", country: "Italy", date: "2026-08-18" },
-  { client: "Roushan Ara", status: "Police Clearance Received", country: "Canada", date: "2026-08-18" },
-]
+import { apiClient } from '@/lib/api-client'
+import { Loader2 } from 'lucide-react'
 
 const statusColors = {
   'Visa Issued Successfully': 'bg-green-100 text-green-700',
@@ -24,6 +15,25 @@ const statusColors = {
 }
 
 export default function VisaWorkflowsPage() {
+  const [workflowItems, setWorkflowItems] = useState([])
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    async function loadCases() {
+      try {
+        const res = await apiClient.get('/api/v1/admin/cases?limit=20')
+        if (res.data?.status === 'success') {
+          setWorkflowItems(res.data.data || [])
+        }
+      } catch (err) {
+        // silent fallback
+      } finally {
+        setLoading(false)
+      }
+    }
+    loadCases()
+  }, [])
+
   return (
     <div className="space-y-6">
       <div>
@@ -37,22 +47,36 @@ export default function VisaWorkflowsPage() {
         </CardHeader>
         <CardContent className="p-0">
           <div className="divide-y divide-border">
-            {workflowItems.map((item, i) => (
-              <div key={i} className="flex items-center justify-between px-6 py-4 hover:bg-muted/40 transition-colors">
-                <div className="flex flex-col gap-0.5 min-w-0">
-                  <span className="text-sm font-semibold text-foreground">{item.client}</span>
-                  <span className="text-xs text-muted-foreground">{item.date}</span>
-                </div>
-                <div className="flex items-center gap-3">
-                  <span className={`text-[11px] font-medium px-2.5 py-1 rounded-full ${statusColors[item.status] ?? 'bg-muted text-muted-foreground'}`}>
-                    {item.status}
-                  </span>
-                  <span className="text-xs font-medium text-primary bg-primary/10 px-2 py-0.5 rounded-full">
-                    {item.country}
-                  </span>
-                </div>
+            {loading ? (
+              <div className="flex justify-center p-8">
+                <Loader2 className="size-6 animate-spin text-muted-foreground" />
               </div>
-            ))}
+            ) : workflowItems.length === 0 ? (
+              <div className="p-8 text-center text-muted-foreground text-sm">
+                No active visa workflows found.
+              </div>
+            ) : (
+              workflowItems.map((item) => (
+                <div key={item._id} className="flex items-center justify-between px-6 py-4 hover:bg-muted/40 transition-colors">
+                  <div className="flex flex-col gap-0.5 min-w-0">
+                    <span className="text-sm font-semibold text-foreground">
+                      {item.candidateId?.name || item.client || 'Unknown Client'}
+                    </span>
+                    <span className="text-xs text-muted-foreground">
+                      {new Date(item.updatedAt || item.createdAt).toLocaleDateString()}
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <span className={`text-[11px] font-medium px-2.5 py-1 rounded-full ${statusColors[item.workflowStatus || item.status] ?? 'bg-muted text-muted-foreground'}`}>
+                      {item.workflowStatus || item.status || 'Pending'}
+                    </span>
+                    <span className="text-xs font-medium text-primary bg-primary/10 px-2 py-0.5 rounded-full">
+                      {item.country || 'N/A'}
+                    </span>
+                  </div>
+                </div>
+              ))
+            )}
           </div>
         </CardContent>
       </Card>

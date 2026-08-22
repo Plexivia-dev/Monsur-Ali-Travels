@@ -23,75 +23,43 @@ const ACTION_COLORS = {
   STATUS_TRANSITION: 'bg-indigo-500',
 }
 
-const MetricsData = [
-  {
-    icons: <TrendingUpIcon className='size-5' />,
-    title: 'Received',
-    value: '11,548 BDT'
-  },
-  {
-    icons: <BadgePercentIcon className='size-5' />,
-    title: 'Bills',
-    value: '1,326 BDT'
-  },
-  {
-    icons: <DollarSignIcon className='size-5' />,
-    title: 'New client',
-    value: '17,356'
-  },
-  {
-    icons: <ShoppingBagIcon className='size-5' />,
-    title: 'Files Remaining',
-    value: '248'
-  }
-]
-
-const clientUpdates = [
-  {
-    id: 1,
-    client: "Imtiaz Ahmed",
-    status: "Biometrics Completed",
-    country: "Canada",
-    time: "10 mins ago"
-  },
-  {
-    id: 2,
-    client: "Zubaida Rahman",
-    status: "Embassy Interview Scheduled",
-    country: "USA",
-    time: "2 hours ago"
-  },
-  {
-    id: 3,
-    client: "Kamrul Hasan",
-    status: "Document Verification Pending",
-    country: "UK",
-    time: "4 hours ago"
-  },
-  {
-    id: 4,
-    client: "Nusrat Jahan",
-    status: "Visa Issued Successfully",
-    country: "Sweden",
-    time: "Yesterday"
-  }
-]
-
 export const SalesMetricsCard = ({ className }) => {
   const [liveLogs, setLiveLogs] = useState([])
+  const [metrics, setMetrics] = useState({
+    received: 0,
+    bills: 0,
+    newClients: 0,
+    filesRemaining: 0
+  })
+  const [clientUpdates, setClientUpdates] = useState([])
 
   useEffect(() => {
-    async function loadRecentLogs() {
+    async function loadData() {
       try {
-        const res = await apiClient.get('/api/v1/admin/system/logs?limit=6')
-        if (res.data?.status === 'success') {
-          setLiveLogs(res.data.data || [])
+        const [logsRes, overviewRes, casesRes] = await Promise.all([
+          apiClient.get('/api/v1/admin/system/logs?limit=6').catch(() => ({ data: { data: [] } })),
+          apiClient.get('/api/v1/admin/dashboard/overview').catch(() => ({ data: { data: {} } })),
+          apiClient.get('/api/v1/admin/cases?limit=4').catch(() => ({ data: { data: [] } }))
+        ])
+        
+        if (logsRes.data?.data) setLiveLogs(logsRes.data.data)
+        
+        const overview = overviewRes.data?.data || {}
+        setMetrics({
+          received: overview.billing?.totalPaid || 0,
+          bills: overview.billing?.totalBilled || 0,
+          newClients: overview.totalCandidates || 0,
+          filesRemaining: overview.totalVisas || 0 // Assuming visas or similar
+        })
+
+        if (casesRes.data?.data) {
+          setClientUpdates(casesRes.data.data.slice(0, 4))
         }
       } catch (err) {
         // silent fallback
       }
     }
-    loadRecentLogs()
+    loadData()
   }, [])
 
   const formatTime = (dateStr) => {
@@ -99,6 +67,29 @@ export const SalesMetricsCard = ({ className }) => {
     const d = new Date(dateStr)
     return d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
   }
+
+  const dynamicMetricsData = [
+    {
+      icons: <TrendingUpIcon className='size-5' />,
+      title: 'Received',
+      value: `${metrics.received.toLocaleString()} BDT`
+    },
+    {
+      icons: <BadgePercentIcon className='size-5' />,
+      title: 'Bills',
+      value: `${metrics.bills.toLocaleString()} BDT`
+    },
+    {
+      icons: <DollarSignIcon className='size-5' />,
+      title: 'New client',
+      value: metrics.newClients.toLocaleString()
+    },
+    {
+      icons: <ShoppingBagIcon className='size-5' />,
+      title: 'Files Remaining',
+      value: metrics.filesRemaining.toLocaleString()
+    }
+  ]
 
   return (
     <Card className={`bg-white border border-gray-200 shadow-md ${className ?? ''}`}>
@@ -114,7 +105,7 @@ export const SalesMetricsCard = ({ className }) => {
             </div>
 
             <div className='grid gap-4 sm:grid-cols-2'>
-              {MetricsData.map((metric, index) => (
+              {dynamicMetricsData.map((metric, index) => (
                 <Card key={index} className='bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow py-2'>
                   <CardContent className='flex items-center gap-3 px-4 py-2'>
                     <Avatar className='rounded-sm'>
@@ -142,18 +133,26 @@ export const SalesMetricsCard = ({ className }) => {
               </Link>
             </CardHeader>
             <CardContent className='flex flex-col divide-y divide-border px-4 pb-4'>
-              {clientUpdates.map((item) => (
-                <div key={item.id} className='flex items-start justify-between py-3 gap-3'>
-                  <div className='flex flex-col gap-0.5 min-w-0'>
-                    <span className='text-sm font-semibold text-foreground truncate'>{item.client}</span>
-                    <span className='text-xs text-muted-foreground truncate'>{item.status}</span>
+              {clientUpdates.length === 0 ? (
+                <p className="text-xs text-muted-foreground italic py-2">No updates recorded yet.</p>
+              ) : (
+                clientUpdates.map((item) => (
+                  <div key={item._id || item.id} className='flex items-start justify-between py-3 gap-3'>
+                    <div className='flex flex-col gap-0.5 min-w-0'>
+                      <span className='text-sm font-semibold text-foreground truncate'>
+                        {item.candidateId?.name || item.client || 'Unknown'}
+                      </span>
+                      <span className='text-xs text-muted-foreground truncate'>{item.status || item.workflowStatus}</span>
+                    </div>
+                    <div className='flex flex-col items-end gap-0.5 shrink-0'>
+                      <span className='text-[11px] font-medium bg-primary/10 text-primary rounded-full px-2 py-0.5 whitespace-nowrap'>
+                        {item.country || 'N/A'}
+                      </span>
+                      <span className='text-[11px] text-muted-foreground whitespace-nowrap'>{formatTime(item.updatedAt || item.time)}</span>
+                    </div>
                   </div>
-                  <div className='flex flex-col items-end gap-0.5 shrink-0'>
-                    <span className='text-[11px] font-medium bg-primary/10 text-primary rounded-full px-2 py-0.5 whitespace-nowrap'>{item.country}</span>
-                    <span className='text-[11px] text-muted-foreground whitespace-nowrap'>{item.time}</span>
-                  </div>
-                </div>
-              ))}
+                ))
+              )}
             </CardContent>
           </Card>
         </div>
