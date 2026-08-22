@@ -290,7 +290,6 @@ export const ROLE_NAVIGATION_PRESETS = {
         portal: 'agency',
         items: [
           MASTER_ITEMS.myTasks,
-          MASTER_ITEMS.caseFiles,
           {
             icon: 'Building2',
             label: 'Clients & Billing',

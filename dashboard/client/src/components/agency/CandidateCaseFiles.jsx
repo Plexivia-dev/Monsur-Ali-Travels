@@ -1,26 +1,26 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { 
-  Plus, 
-  Search, 
-  Filter, 
-  Globe2, 
-  Building2, 
-  Handshake, 
-  FolderOpen, 
-  FilePlus2, 
-  User, 
-  Briefcase, 
-  Phone, 
-  Mail, 
-  FileText, 
-  CheckCircle2, 
-  Clock, 
-  AlertCircle, 
-  ChevronRight, 
-  ShieldCheck, 
-  X, 
-  Download, 
-  Upload, 
+import {
+  Plus,
+  Search,
+  Filter,
+  Globe2,
+  Building2,
+  Handshake,
+  FolderOpen,
+  FilePlus2,
+  User,
+  Briefcase,
+  Phone,
+  Mail,
+  FileText,
+  CheckCircle2,
+  Clock,
+  AlertCircle,
+  ChevronRight,
+  ShieldCheck,
+  X,
+  Download,
+  Upload,
   Send,
   Loader2,
   RefreshCw
@@ -59,8 +59,8 @@ export function CandidateCaseFiles() {
       const candidateList = Array.isArray(response.data?.data)
         ? response.data.data
         : Array.isArray(response.data)
-        ? response.data
-        : [];
+          ? response.data
+          : [];
       setCases(candidateList);
     } catch (err) {
       console.error('Failed to load candidate case files:', err);
@@ -79,13 +79,13 @@ export function CandidateCaseFiles() {
     const safeCases = Array.isArray(cases) ? cases : [];
     return safeCases.filter((c) => {
       if (!c) return false;
-      const matchesSearch = 
+      const matchesSearch =
         (c.candidateName || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
         (c.fileNumber || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
         (c.passportNumber || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
         (c.tradeSkill || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
         (c.destinationCountry || '').toLowerCase().includes(searchQuery.toLowerCase());
-      
+
       const matchesWorkflow = workflowFilter === 'all' || c.workflowType === workflowFilter;
       return matchesSearch && matchesWorkflow;
     });
@@ -134,9 +134,6 @@ export function CandidateCaseFiles() {
         <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div className="space-y-1">
             <div className="flex items-center gap-2">
-              <span className="px-2.5 py-0.5 rounded-full bg-sky-500/20 border border-sky-400/30 text-sky-300 text-[11px] font-bold uppercase tracking-wider">
-                Live MongoDB API
-              </span>
               <span className="text-xs text-sky-200/70">Candidate & Agent Workflow</span>
             </div>
             <h1 className="text-xl sm:text-2xl font-black tracking-tight text-white flex items-center gap-2">
@@ -184,33 +181,29 @@ export function CandidateCaseFiles() {
           <Filter className="w-4 h-4 text-muted-foreground shrink-0" />
           <button
             onClick={() => setWorkflowFilter('all')}
-            className={`px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-colors cursor-pointer ${
-              workflowFilter === 'all' ? 'bg-primary text-primary-foreground' : 'bg-muted/50 text-muted-foreground hover:bg-muted'
-            }`}
+            className={`px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-colors cursor-pointer ${workflowFilter === 'all' ? 'bg-primary text-primary-foreground' : 'bg-muted/50 text-muted-foreground hover:bg-muted'
+              }`}
           >
             All Channels ({cases.length})
           </button>
           <button
             onClick={() => setWorkflowFilter('destination_partner')}
-            className={`px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-colors cursor-pointer ${
-              workflowFilter === 'destination_partner' ? 'bg-sky-500/20 text-sky-500 border border-sky-500/30' : 'bg-muted/50 text-muted-foreground hover:bg-muted'
-            }`}
+            className={`px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-colors cursor-pointer ${workflowFilter === 'destination_partner' ? 'bg-sky-500/20 text-sky-500 border border-sky-500/30' : 'bg-muted/50 text-muted-foreground hover:bg-muted'
+              }`}
           >
             Destination Partner
           </button>
           <button
             onClick={() => setWorkflowFilter('direct_client')}
-            className={`px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-colors cursor-pointer ${
-              workflowFilter === 'direct_client' ? 'bg-emerald-500/20 text-emerald-500 border border-emerald-500/30' : 'bg-muted/50 text-muted-foreground hover:bg-muted'
-            }`}
+            className={`px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-colors cursor-pointer ${workflowFilter === 'direct_client' ? 'bg-emerald-500/20 text-emerald-500 border border-emerald-500/30' : 'bg-muted/50 text-muted-foreground hover:bg-muted'
+              }`}
           >
             Direct Corporate
           </button>
           <button
             onClick={() => setWorkflowFilter('outsourced_local')}
-            className={`px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-colors cursor-pointer ${
-              workflowFilter === 'outsourced_local' ? 'bg-purple-500/20 text-purple-500 border border-purple-500/30' : 'bg-muted/50 text-muted-foreground hover:bg-muted'
-            }`}
+            className={`px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-colors cursor-pointer ${workflowFilter === 'outsourced_local' ? 'bg-purple-500/20 text-purple-500 border border-purple-500/30' : 'bg-muted/50 text-muted-foreground hover:bg-muted'
+              }`}
           >
             Local Sub-Agency
           </button>
@@ -248,11 +241,10 @@ export function CandidateCaseFiles() {
                     {c.candidateName}
                   </h3>
                 </div>
-                <span className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider ${
-                  c.workflowType === 'destination_partner' ? 'bg-sky-500/10 text-sky-500 border border-sky-500/20' :
-                  c.workflowType === 'direct_client' ? 'bg-emerald-500/10 text-emerald-500 border border-emerald-500/20' :
-                  'bg-purple-500/10 text-purple-500 border border-purple-500/20'
-                }`}>
+                <span className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider ${c.workflowType === 'destination_partner' ? 'bg-sky-500/10 text-sky-500 border border-sky-500/20' :
+                    c.workflowType === 'direct_client' ? 'bg-emerald-500/10 text-emerald-500 border border-emerald-500/20' :
+                      'bg-purple-500/10 text-purple-500 border border-purple-500/20'
+                  }`}>
                   {(c.workflowType || 'destination_partner').replace('_', ' ')}
                 </span>
               </div>
@@ -287,11 +279,10 @@ export function CandidateCaseFiles() {
                   {(c.steps || []).map((st) => (
                     <div
                       key={st.id}
-                      className={`h-full flex-1 border-r border-background ${
-                        st.status === 'completed' ? 'bg-emerald-500' :
-                        st.status === 'in_progress' ? 'bg-sky-500 animate-pulse' :
-                        'bg-muted-foreground/20'
-                      }`}
+                      className={`h-full flex-1 border-r border-background ${st.status === 'completed' ? 'bg-emerald-500' :
+                          st.status === 'in_progress' ? 'bg-sky-500 animate-pulse' :
+                            'bg-muted-foreground/20'
+                        }`}
                     />
                   ))}
                 </div>
@@ -346,17 +337,16 @@ export function CandidateCaseFiles() {
                 {(selectedCase.steps || []).map((st) => (
                   <div
                     key={st.id}
-                    className={`p-3 rounded-xl border text-xs space-y-1 ${
-                      st.status === 'completed' ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-600 dark:text-emerald-400' :
-                      st.status === 'in_progress' ? 'bg-sky-500/10 border-sky-500/30 text-sky-600 dark:text-sky-400' :
-                      'bg-muted/40 border-border text-muted-foreground'
-                    }`}
+                    className={`p-3 rounded-xl border text-xs space-y-1 ${st.status === 'completed' ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-600 dark:text-emerald-400' :
+                        st.status === 'in_progress' ? 'bg-sky-500/10 border-sky-500/30 text-sky-600 dark:text-sky-400' :
+                          'bg-muted/40 border-border text-muted-foreground'
+                      }`}
                   >
                     <div className="flex items-center justify-between font-bold">
                       <span>Step {st.id}</span>
                       {st.status === 'completed' ? <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500" /> :
-                       st.status === 'in_progress' ? <Clock className="w-3.5 h-3.5 text-sky-500 animate-spin" /> :
-                       <AlertCircle className="w-3.5 h-3.5 text-muted-foreground" />}
+                        st.status === 'in_progress' ? <Clock className="w-3.5 h-3.5 text-sky-500 animate-spin" /> :
+                          <AlertCircle className="w-3.5 h-3.5 text-muted-foreground" />}
                     </div>
                     <p className="font-semibold text-[11px] truncate">{st.title}</p>
                     <p className="text-[10px] opacity-80 leading-tight">{st.description}</p>
