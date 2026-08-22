@@ -1,6 +1,6 @@
 import * as React from 'react'
 import { Link, Outlet, useNavigate, useLocation } from 'react-router-dom'
-import { LayoutDashboard, Compass, Layers, User, AlertCircle, LogOut, Menu, X, Settings, Server, FileText, ChevronDown, ChevronRight, FolderOpen, CreditCard, Receipt, PieChart, Wallet } from 'lucide-react'
+import { LayoutDashboard, Compass, Layers, User, AlertCircle, LogOut, Menu, X, Settings, Server, FileText, ChevronDown, ChevronRight, FolderOpen, CreditCard, Receipt, PieChart, Wallet, Trash2 } from 'lucide-react'
 import { RiTranslate2 } from '@remixicon/react'
 import { useAuth } from '@/store/useAuthStore'
 import { ProfileDropdown } from '@/components/blocks/dropdown-profile'
@@ -41,7 +41,8 @@ export default function AdminLayout() {
   ]
 
   const systemSubMenuItems = [
-    { name: lang === 'BN' ? 'সিস্টেম লগ' : 'System Logs', path: '/admin/activity-logs', icon: FileText },
+    { name: lang === 'BN' ? 'অ্যাক্টিভিটি লগস' : 'Activity Logs', path: '/admin/system/activity-logs', icon: FileText },
+    { name: lang === 'BN' ? 'ট্র্যাশ' : 'Trash', path: '/admin/system/trash', icon: Trash2 },
   ]
 
   const handleMenuItemClick = (e, itemPath) => {
@@ -367,7 +368,7 @@ export default function AdminLayout() {
                     setIsSystemOpen(true)
                   }}
                   className={`flex items-center size-10 justify-center rounded-xl mx-auto transition-all duration-300 text-white/80 hover:bg-white/10 hover:text-white cursor-pointer ${
-                    location.pathname === '/admin/activity-logs' ? 'bg-white/20 text-white' : ''
+                    location.pathname.startsWith('/admin/system') || location.pathname === '/admin/activity-logs' ? 'bg-white/20 text-white' : ''
                   }`}
                   title={lang === 'BN' ? 'সিস্টেম' : 'System'}
                 >

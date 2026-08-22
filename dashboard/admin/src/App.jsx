@@ -11,6 +11,7 @@ import { LoginPage } from '@/pages/LoginPage'
 import VisaWorkflowsPage from '@/pages/VisaWorkflowsPage'
 import CaseWorkflow from '@/pages/CaseWorkflow'
 import ActivityLogsPage from '@/pages/ActivityLogsPage'
+import TrashPage from '@/pages/system/TrashPage'
 import Reports from '@/pages/accounting/Reports'
 import Payments from '@/pages/reports/Payments'
 import Bills from '@/pages/reports/Bills'
@@ -46,9 +47,12 @@ export default function App() {
               <Route path="visa-workflows" element={<VisaWorkflowsPage />} />
               <Route path="cases" element={<CaseWorkflow />} />
               <Route path="activity-logs" element={<ActivityLogsPage />} />
+              <Route path="system/activity-logs" element={<ActivityLogsPage />} />
               <Route path="system/logs" element={<ActivityLogsPage />} />
               <Route path="system-logs" element={<ActivityLogsPage />} />
-              <Route path="system" element={<Navigate to="/admin/activity-logs" replace />} />
+              <Route path="system/trash" element={<TrashPage />} />
+              <Route path="trash" element={<TrashPage />} />
+              <Route path="system" element={<Navigate to="/admin/system/activity-logs" replace />} />
               <Route path="reports" element={<Navigate to="/admin/reports/payments" replace />} />
               <Route path="reports/payments" element={<Payments />} />
               <Route path="reports/bills" element={<Bills />} />
