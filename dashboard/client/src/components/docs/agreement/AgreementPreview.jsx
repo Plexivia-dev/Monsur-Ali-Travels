@@ -2,16 +2,17 @@ import React from 'react';
 import logoImg from '../../../assets/logo.png';
 import { formatToBengaliDate } from '../../../lib/utils';
 
-export function AgreementPreview({ data }) {
-  const currentDate = formatToBengaliDate(data.parties?.agreementDate) || new Date().toLocaleDateString('bn-BD', {
+export function AgreementPreview({ data = {} }) {
+  const safeData = data || {};
+  const currentDate = formatToBengaliDate(safeData.parties?.agreementDate) || new Date().toLocaleDateString('bn-BD', {
     day: 'numeric',
     month: 'long',
     year: 'numeric'
   });
 
-  const salary = data.salary || {};
-  const leave = data.leave || {};
-  const witnesses = data.witnesses || {};
+  const salary = safeData.salary || safeData.compensation || {};
+  const leave = safeData.leave || {};
+  const witnesses = safeData.witnesses || {};
 
   return (
     <div className="bg-white text-slate-900 font-sans p-4 sm:p-6 text-[11px] leading-relaxed space-y-4 print:text-[10px] print:p-2 print:space-y-3">

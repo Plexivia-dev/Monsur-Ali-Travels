@@ -25,10 +25,11 @@ export const ProfileDropdown = () => {
   const displayName = user?.name || 'Administrator';
   const displayEmail = user?.email || 'admin@monsuralitravelsbd.com';
   const displayRole = (() => {
-    const role = user?.role || 'Super Admin';
+    const role = user?.role || 'Staff';
     if (String(role).toLowerCase() === 'staff') {
-      const sub = user?.subRole || user?.sub_role || user?.designation;
-      return sub ? sub.replace(/_/g, ' ') : 'Staff';
+      const sub = user?.subRole || user?.sub_role || user?.designation || user?.department;
+      const formattedSub = sub ? sub.replace(/_/g, ' ') : 'Frontdesk';
+      return `Staff — ${formattedSub}`;
     }
     return role;
   })();

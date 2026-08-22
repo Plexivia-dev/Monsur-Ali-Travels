@@ -2,27 +2,10 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Search, Bell } from 'lucide-react';
 import { usePortalStore } from '../../store/usePortalStore';
-import { usePortal } from '../../context/PortalContext';
 import { Button } from '@/components/ui/button';
-import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbList,
-  BreadcrumbPage,
-  BreadcrumbSeparator,
-} from '@/components/ui/breadcrumb';
 import ModeToggle from './ModeToggle';
 import ProfileDropdown from './ProfileDropdown';
 import LanguageToggle from './LanguageToggle';
-
-const PORTAL_KEYS = {
-  agency: 'nav.agency',
-  factory: 'nav.factory',
-  docs: 'nav.docs',
-  data: 'nav.data',
-  admin: 'nav.admin',
-};
 
 const SUBMODULE_KEYS = {
   dashboard: 'nav.agencyDashboard',
@@ -67,45 +50,16 @@ const PORTALS_WITH_PARENT_PAGE = ['agency', 'factory'];
 
 export const Header = () => {
   const { t } = useTranslation();
-  const activePortal = usePortalStore((state) => state.activePortal);
-  const activeSubmodule = usePortalStore((state) => state.activeSubmodule);
   const setSearchOpen = usePortalStore((state) => state.setSearchOpen);
   const notifications = usePortalStore((state) => state.notifications);
-  const { switchPortal } = usePortal();
 
   const unreadCount = notifications.filter((n) => n.unread).length;
-  const portalLabel = PORTAL_KEYS[activePortal] ? t(PORTAL_KEYS[activePortal]) : activePortal;
-  const submoduleLabel = SUBMODULE_KEYS[activeSubmodule]
-    ? t(SUBMODULE_KEYS[activeSubmodule])
-    : activeSubmodule.replace(/-/g, ' ');
-
-  const hasParentPage = PORTALS_WITH_PARENT_PAGE.includes(activePortal) && activeSubmodule !== 'dashboard';
 
   return (
     <header className="sticky top-0 z-40 bg-card/80 backdrop-blur-md border-b border-border transition-colors">
       <div className="flex h-14 w-full items-center justify-between gap-4 px-4 sm:px-6">
-        {/* Left Side: Breadcrumb */}
-        <div className="flex items-center gap-3 min-w-0">
-          <Breadcrumb className="hidden sm:block">
-            <BreadcrumbList>
-              <BreadcrumbItem>
-                {hasParentPage ? (
-                  <BreadcrumbLink onClick={() => switchPortal(activePortal, 'dashboard')}>
-                    {portalLabel}
-                  </BreadcrumbLink>
-                ) : (
-                  <BreadcrumbLink>
-                    {portalLabel}
-                  </BreadcrumbLink>
-                )}
-              </BreadcrumbItem>
-              <BreadcrumbSeparator />
-              <BreadcrumbItem>
-                <BreadcrumbPage>{submoduleLabel}</BreadcrumbPage>
-              </BreadcrumbItem>
-            </BreadcrumbList>
-          </Breadcrumb>
-        </div>
+        {/* Left Side spacer */}
+        <div className="flex items-center gap-3 min-w-0" />
 
         {/* Right Side: Quick Search, Notifications, Theme Mode, Profile */}
         <div className="flex items-center gap-2">

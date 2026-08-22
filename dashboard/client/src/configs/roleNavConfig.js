@@ -80,8 +80,8 @@ export const MASTER_ITEMS = {
   },
   docCustomerForm: {
     icon: 'UserCheck',
-    label: 'Customer & Guardian Form',
-    key: 'nav.customerGuardianForm',
+    label: 'Client & Guardian Form',
+    key: 'nav.clientGuardianForm',
     portal: 'docs',
     submodule: 'customer-form',
     href: '/dashboard/docs/customer-form',
@@ -170,11 +170,11 @@ export const MASTER_ITEMS = {
   // Data Records Center Items
   dataCustomerProfiles: {
     icon: 'Users',
-    label: 'Customer Profiles',
-    key: 'nav.customerProfiles',
+    label: 'Client Profiles',
+    key: 'nav.clientProfiles',
     portal: 'data',
-    submodule: 'customer-profiles',
-    href: '/dashboard/data/customer-profiles',
+    submodule: 'client-profiles',
+    href: '/dashboard/data/client-profiles',
   },
   dataAgreements: {
     icon: 'FileSignature',
@@ -186,11 +186,11 @@ export const MASTER_ITEMS = {
   },
   dataCustomerApplications: {
     icon: 'UserCheck',
-    label: 'Customer Applications',
-    key: 'nav.customerApplications',
+    label: 'Client Applications',
+    key: 'nav.clientApplications',
     portal: 'data',
-    submodule: 'customer-applications',
-    href: '/dashboard/data/customer-applications',
+    submodule: 'client-applications',
+    href: '/dashboard/data/client-applications',
   },
   dataIndianVisas: {
     icon: 'Stamp',

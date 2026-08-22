@@ -271,10 +271,11 @@ export const Sidebar = () => {
                 </span>
                 <span className="text-[10.5px] text-sky-200 font-medium truncate mt-0.5">
                   {(() => {
-                    const role = user?.role || 'Super Admin';
+                    const role = user?.role || 'Staff';
                     if (String(role).toLowerCase() === 'staff') {
-                      const sub = user?.subRole || user?.sub_role || user?.designation;
-                      return sub ? sub.replace(/_/g, ' ') : 'Staff';
+                      const sub = user?.subRole || user?.sub_role || user?.designation || user?.department;
+                      const formattedSub = sub ? sub.replace(/_/g, ' ') : 'Frontdesk';
+                      return `Staff — ${formattedSub}`;
                     }
                     return role;
                   })()}
