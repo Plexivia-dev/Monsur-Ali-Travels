@@ -61,7 +61,7 @@ export function SystemUsersTable({
     setToggling(id);
     const newActive = currentStatus !== 'Active';
     try {
-      await apiClient.put(`/api/v1/users/${id}`, { isActive: newActive });
+      await apiClient.put(`/api/v1/admin/users/${id}`, { isActive: newActive });
       toast.success(`User status updated to ${newActive ? 'Active' : 'Inactive'}.`);
       queryClient.invalidateQueries({ queryKey: ['system-users'] });
     } catch {
@@ -78,7 +78,7 @@ export function SystemUsersTable({
     if (!deleteTarget) return;
     setIsRevoking(true);
     try {
-      await apiClient.delete(`/api/v1/users/${deleteTarget.id}`);
+      await apiClient.delete(`/api/v1/admin/users/${deleteTarget.id}`);
       toast.success(`Access revoked for ${deleteTarget.name}.`);
       queryClient.invalidateQueries({ queryKey: ['system-users'] });
       onSelectedIdsChange(selectedIds.filter(id => id !== deleteTarget.id));

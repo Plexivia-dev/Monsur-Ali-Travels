@@ -39,7 +39,7 @@ const fetchSystemUsers = async (params) => {
     if (params?.search) queryParams.q = params.search;
     if (params?.role && params.role !== 'All') queryParams.role = params.role;
 
-    const response = await apiClient.get('/api/v1/users', { params: queryParams });
+    const response = await apiClient.get('/api/v1/admin/users', { params: queryParams });
     const userList = response.data?.data || (Array.isArray(response.data) ? response.data : []);
     const meta = response.data?.meta;
 
