@@ -39,9 +39,6 @@ export default function MyTasks() {
       <div className="bg-gradient-to-r from-slate-900 via-sky-950 to-indigo-950 rounded-2xl p-6 text-white shadow-xl border border-sky-800/30">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div className="space-y-1">
-            <span className="px-2.5 py-0.5 rounded-full bg-sky-500/20 border border-sky-400/30 text-sky-300 text-[10px] font-bold uppercase tracking-widest">
-              Staff Portal
-            </span>
             <h1 className="text-xl font-black tracking-tight text-white flex items-center gap-2">
               <CheckCircle2 className="w-5 h-5 text-emerald-400" />
               My Assigned Operational Tasks
@@ -66,11 +63,10 @@ export default function MyTasks() {
           <button
             key={st}
             onClick={() => setStatusFilter(st)}
-            className={`px-3 py-1.5 rounded-lg text-xs font-bold capitalize transition-all cursor-pointer ${
-              statusFilter === st
+            className={`px-3 py-1.5 rounded-lg text-xs font-bold capitalize transition-all cursor-pointer ${statusFilter === st
                 ? 'bg-sky-500 text-slate-950 shadow-sm'
                 : 'bg-muted/40 text-muted-foreground hover:bg-muted'
-            }`}
+              }`}
           >
             {st.replace('_', ' ')}
           </button>
@@ -100,13 +96,12 @@ export default function MyTasks() {
                 <div className="flex items-center justify-between">
                   <span className="text-[10px] font-mono font-bold text-sky-400">Step {task.stepNumber || 1}</span>
                   <span
-                    className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider ${
-                      task.status === 'Approved'
+                    className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider ${task.status === 'Approved'
                         ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20'
                         : task.status === 'Done'
-                        ? 'bg-blue-500/10 text-blue-400 border border-blue-500/20'
-                        : 'bg-amber-500/10 text-amber-400 border border-amber-500/20'
-                    }`}
+                          ? 'bg-blue-500/10 text-blue-400 border border-blue-500/20'
+                          : 'bg-amber-500/10 text-amber-400 border border-amber-500/20'
+                      }`}
                   >
                     {task.status}
                   </span>

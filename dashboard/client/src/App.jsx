@@ -12,6 +12,7 @@ import Admin from './pages/Admin';
 import DocumentStudio from './pages/DocumentStudio';
 import DocumentData from './pages/DocumentData';
 import NotFoundPage from './pages/NotFoundPage';
+import { GlobalErrorBoundary } from './components/common/GlobalErrorBoundary';
 import { ToastContainer } from './components/common/ToastContainer';
 import { GlobalSearchModal } from './components/common/GlobalSearchModal';
 import { Toaster } from './components/ui/sonner';
@@ -105,20 +106,22 @@ function MainLayout() {
 
 export default function App() {
   return (
-    <QueryClientProvider client={queryClient}>
-      <BrowserRouter>
-        <Routes>
-          <Route path="/login" element={<LoginPage />} />
-          <Route
-            path="/*"
-            element={
-              <AuthGuard>
-                <MainLayout />
-              </AuthGuard>
-            }
-          />
-        </Routes>
-      </BrowserRouter>
-    </QueryClientProvider>
+    <GlobalErrorBoundary>
+      <QueryClientProvider client={queryClient}>
+        <BrowserRouter>
+          <Routes>
+            <Route path="/login" element={<LoginPage />} />
+            <Route
+              path="/*"
+              element={
+                <AuthGuard>
+                  <MainLayout />
+                </AuthGuard>
+              }
+            />
+          </Routes>
+        </BrowserRouter>
+      </QueryClientProvider>
+    </GlobalErrorBoundary>
   );
 }
