@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { UserPlus, UserX, Users, Plus, Shield, Search, Mail } from 'lucide-react';
+import { UserPlus, UserX, Users, Plus, Shield, Search, Mail, X } from 'lucide-react';
 import { Modal } from '@/components/ui/Modal';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/Tabs';
 import { Input } from '@/components/ui/input';
@@ -42,27 +42,20 @@ export default function SettingsPage() {
   };
 
   const handleRemove = async (did, subRole) => {
-    if (!window.confirm(`Are you sure you want to remove this user from ${subRole}?`)) return;
     try {
       await apiClient.post('/api/v1/admin/settings/core-team/remove', { did });
-      toast.success('Role removed successfully');
+      toast.success(`${subRole.replace('_', ' ')} unassigned successfully`);
       fetchCoreTeam();
     } catch (error) {
-      toast.error(error?.response?.data?.message || 'Failed to remove role');
+      toast.error('Failed to remove role');
     }
   };
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl md:text-3xl font-bold text-gray-900 font-display">
-            System Settings
-          </h1>
-          <p className="text-gray-500 mt-1 text-sm md:text-base">
-            Manage your organization's settings and core team.
-          </p>
-        </div>
+      <div>
+        <h1 className="text-3xl font-bold tracking-tight text-gray-900">Settings & Administration</h1>
+        <p className="text-muted-foreground text-sm mt-1">Configure company profiles, operational teams, and system defaults.</p>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
@@ -71,12 +64,15 @@ export default function SettingsPage() {
           <Card className="shadow-md border-gray-200 bg-white">
             <CardHeader className="border-b border-gray-100 bg-gray-50/50 pb-4">
               <div className="flex items-center justify-between">
-                <CardTitle className="text-lg flex items-center gap-2">
-                  <Shield className="w-5 h-5 text-primary" />
-                  Core Team
-                </CardTitle>
-                <Button variant="outline" size="sm" className="text-xs h-8">
-                  <Plus className="w-4 h-4 mr-1" /> Add New Role
+                <div>
+                  <CardTitle className="text-lg flex items-center gap-2">
+                    <Shield className="w-5 h-5 text-primary" />
+                    Core Operational Team
+                  </CardTitle>
+                  <p className="text-xs text-gray-500 mt-1">Assign primary staff responsible for key functions.</p>
+                </div>
+                <Button variant="outline" size="sm" onClick={fetchCoreTeam} className="h-8">
+                  Refresh
                 </Button>
               </div>
             </CardHeader>
@@ -95,32 +91,36 @@ export default function SettingsPage() {
                         </div>
 
                         {user ? (
-                          <div className="flex items-center gap-3">
-                            <div className="flex items-center gap-3 bg-white border border-gray-200 rounded-full pl-1 pr-4 py-1 shadow-xs">
-                              <Avatar className="w-8 h-8">
-                                <AvatarFallback className="bg-primary/10 text-primary text-xs font-semibold">
-                                  {user.name?.charAt(0).toUpperCase()}
+                          <div className="flex items-center gap-2.5">
+                            {/* Assigned User Chip with Email */}
+                            <div className="inline-flex items-center gap-2 bg-gray-50 border border-gray-200 rounded-full pl-1 pr-3 py-1 shadow-2xs max-w-xs">
+                              <Avatar className="size-6 text-[10px]">
+                                <AvatarFallback className="bg-primary/10 text-primary font-bold">
+                                  {user.name?.charAt(0).toUpperCase() || user.email?.charAt(0).toUpperCase() || 'U'}
                                 </AvatarFallback>
                               </Avatar>
-                              <div className="flex flex-col">
-                                <span className="text-sm font-medium text-gray-900 leading-tight">{user.name}</span>
+                              <div className="flex flex-col min-w-0">
+                                <span className="text-xs font-semibold text-gray-900 truncate leading-tight">
+                                  {user.email || user.name}
+                                </span>
                               </div>
                             </div>
-                            <Button 
-                              variant="ghost" 
-                              size="icon"
-                              className="text-red-500 hover:bg-red-50 hover:text-red-600 rounded-full"
+
+                            {/* Bordered Cross Button to Remove */}
+                            <button 
+                              type="button"
+                              className="size-7 rounded-full border border-red-200 text-red-500 hover:bg-red-50 hover:text-red-600 hover:border-red-300 flex items-center justify-center transition-all cursor-pointer shadow-2xs shrink-0"
                               onClick={() => handleRemove(user.did, role)}
-                              title="Remove from role"
+                              title={`Remove ${user.email || user.name} from ${role}`}
                             >
-                              <UserX className="w-4 h-4" />
-                            </Button>
+                              <X className="size-3.5" />
+                            </button>
                           </div>
                         ) : (
                           <Button 
                             variant="default" 
                             size="sm"
-                            className="bg-primary hover:bg-primary/90 rounded-full px-5 text-white"
+                            className="bg-primary hover:bg-primary/90 rounded-full px-5 text-white shadow-2xs cursor-pointer"
                             onClick={() => handleOpenAssign(role)}
                           >
                             <UserPlus className="w-4 h-4 mr-2" /> Assign
@@ -212,15 +212,15 @@ function AssignStaffModal({ isOpen, onClose, subRole, onSuccess }) {
     
     try {
       setInviteLoading(true);
-      await apiClient.post('/api/v1/admin/settings/core-team/invite', {
+      const res = await apiClient.post('/api/v1/admin/settings/core-team/invite', {
         name: inviteName,
         email: inviteEmail,
         subRole
       });
-      toast.success(`Invite sent for ${subRole}!`);
-      onSuccess();
+      toast.success(res.data?.message || `Invitation sent to ${inviteEmail} for ${subRole?.replace('_', ' ')}!`);
       setInviteName("");
       setInviteEmail("");
+      onSuccess();
     } catch (error) {
       toast.error(error?.response?.data?.message || 'Failed to send invite');
     } finally {

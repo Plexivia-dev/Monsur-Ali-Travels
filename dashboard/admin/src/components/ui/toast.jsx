@@ -29,47 +29,68 @@ export const Toaster = (props) => {
 }
 
 export const toast = {
+  success: (message, options) => {
+    return sonnerToast.success(message, {
+      icon: <CheckCircle2 className="h-5 w-5 text-green-500 shrink-0 mt-0.5" />,
+      ...options,
+    })
+  },
+  error: (message, options) => {
+    return sonnerToast.error(message, {
+      icon: <AlertCircle className="h-5 w-5 text-red-500 shrink-0 mt-0.5" />,
+      ...options,
+    })
+  },
+  warning: (message, options) => {
+    return sonnerToast.warning(message, {
+      icon: <AlertTriangle className="h-5 w-5 text-amber-500 shrink-0 mt-0.5" />,
+      ...options,
+    })
+  },
+  info: (message, options) => {
+    return sonnerToast.info(message, {
+      icon: <Info className="h-5 w-5 text-amber-500 shrink-0 mt-0.5" />,
+      ...options,
+    })
+  },
+  loading: (message, options) => sonnerToast.loading(message, options),
+  dismiss: (id) => sonnerToast.dismiss(id),
+  close: (id) => sonnerToast.dismiss(id),
+  promise: (promise, data) => sonnerToast.promise(promise, data),
   add: ({ title, description, type, actionProps }) => {
-    const options = {
-      description,
-    }
-
+    const options = { description }
     if (actionProps) {
       options.action = {
         label: actionProps.children,
         onClick: actionProps.onClick,
       }
     }
-
-    // Embed rich icons matching the warning/success/error themes
     if (type === "success") {
-      options.icon = <CheckCircle2 className="h-5 w-5 text-green-500 shrink-0 mt-0.5" />
-      return sonnerToast.success(title, options)
+      return sonnerToast.success(title, {
+        icon: <CheckCircle2 className="h-5 w-5 text-green-500 shrink-0 mt-0.5" />,
+        ...options
+      })
     }
     if (type === "error") {
-      options.icon = <AlertCircle className="h-5 w-5 text-red-500 shrink-0 mt-0.5" />
-      return sonnerToast.error(title, options)
+      return sonnerToast.error(title, {
+        icon: <AlertCircle className="h-5 w-5 text-red-500 shrink-0 mt-0.5" />,
+        ...options
+      })
     }
     if (type === "warning") {
-      options.icon = <AlertTriangle className="h-5 w-5 text-amber-500 shrink-0 mt-0.5" />
-      return sonnerToast.warning(title, options)
+      return sonnerToast.warning(title, {
+        icon: <AlertTriangle className="h-5 w-5 text-amber-500 shrink-0 mt-0.5" />,
+        ...options
+      })
     }
     if (type === "info") {
-      options.icon = <Info className="h-5 w-5 text-amber-500 shrink-0 mt-0.5" />
-      return sonnerToast.info(title, options)
+      return sonnerToast.info(title, {
+        icon: <Info className="h-5 w-5 text-amber-500 shrink-0 mt-0.5" />,
+        ...options
+      })
     }
-    if (type === "loading") {
-      return sonnerToast.loading(title, options)
-    }
-
     return sonnerToast(title, options)
   },
-  close: (id) => {
-    sonnerToast.dismiss(id)
-  },
-  promise: (promise, data) => {
-    return sonnerToast.promise(promise, data)
-  }
 }
 
 export default toast

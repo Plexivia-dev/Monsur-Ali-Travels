@@ -40,6 +40,7 @@ const userSchema = new Schema(
       default: [],
     },
     isActive: { type: Boolean, default: true },
+    status: { type: String, enum: ["Active", "Inactive", "Invited"], default: "Active", index: true },
     lastLogin: { type: Date, default: null },
     createdByDid: { type: String, default: null },
     updatedByDid: { type: String, default: null },
