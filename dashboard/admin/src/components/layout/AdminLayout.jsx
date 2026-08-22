@@ -1,6 +1,6 @@
 import * as React from 'react'
 import { Link, Outlet, useNavigate, useLocation } from 'react-router-dom'
-import { LayoutDashboard, Compass, Layers, User, AlertCircle, LogOut, Menu, X, Settings, Server, FileText, ChevronDown, ChevronRight, FolderOpen, CreditCard, Receipt, PieChart, Wallet, Trash2 } from 'lucide-react'
+import { LayoutDashboard, Compass, Layers, User, AlertCircle, LogOut, Menu, X, Settings, Server, FileText, ChevronDown, ChevronRight, FolderOpen, CreditCard, Receipt, PieChart, Wallet, Trash2, Users, Building2 } from 'lucide-react'
 import { RiTranslate2 } from '@remixicon/react'
 import { useAuth } from '@/store/useAuthStore'
 import { ProfileDropdown } from '@/components/blocks/dropdown-profile'
@@ -20,6 +20,7 @@ export default function AdminLayout() {
 
   const [isCollapsed, setIsCollapsed] = React.useState(false)
   const [isMobileOpen, setIsMobileOpen] = React.useState(false)
+  const [isAgencyOpen, setIsAgencyOpen] = React.useState(true)
   const [isReportsOpen, setIsReportsOpen] = React.useState(true)
   const [isSystemOpen, setIsSystemOpen] = React.useState(true)
   const [lang, setLang] = React.useState('EN')
@@ -32,7 +33,12 @@ export default function AdminLayout() {
 
   const menuItems = [
     { name: lang === 'BN' ? 'ওভারভিউ' : 'Overview', path: '/admin', icon: LayoutDashboard },
+  ]
+
+  const agencySubMenuItems = [
     { name: lang === 'BN' ? 'ক্লায়েন্ট ফাইলস' : 'Client Files', path: '/admin/cases', icon: FolderOpen },
+    { name: lang === 'BN' ? 'ক্লায়েন্টস' : 'Clients', path: '/admin/clients', icon: Users },
+    { name: lang === 'BN' ? 'ইউজারস' : 'Users', path: '/admin/users', icon: User },
   ]
 
   const reportsSubMenuItems = [
@@ -112,6 +118,49 @@ export default function AdminLayout() {
                 </Link>
               )
             })}
+
+            {/* Agency Menu (Mobile) */}
+            <div className="space-y-1 pt-1">
+              <button
+                type="button"
+                onClick={() => setIsAgencyOpen(!isAgencyOpen)}
+                className="w-full flex items-center justify-between px-3 py-3 rounded-lg text-white/90 hover:bg-white/10 hover:text-white transition-colors cursor-pointer"
+              >
+                <div className="flex items-center gap-3">
+                  <Building2 className="size-5 shrink-0 text-white/85" />
+                  <span className="text-[18px] font-semibold">{lang === 'BN' ? 'এজেন্সি' : 'Agency'}</span>
+                </div>
+                {isAgencyOpen ? (
+                  <ChevronDown className="size-4 text-white/70" />
+                ) : (
+                  <ChevronRight className="size-4 text-white/70" />
+                )}
+              </button>
+
+              {isAgencyOpen && (
+                <div className="border-l-2 border-white/20 ml-5 pl-2 space-y-1">
+                  {agencySubMenuItems.map((sub) => {
+                    const isSubActive = location.pathname === sub.path
+                    const SubIcon = sub.icon
+                    return (
+                      <Link
+                        key={sub.path}
+                        to={sub.path}
+                        onClick={() => setIsMobileOpen(false)}
+                        className={`flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-[16px] font-semibold transition-all ${
+                          isSubActive
+                            ? 'bg-white text-primary font-bold shadow-md'
+                            : 'text-white/80 hover:bg-white/10 hover:text-white'
+                        }`}
+                      >
+                        <SubIcon className={`size-4.5 shrink-0 ${isSubActive ? 'text-primary' : 'text-white/85'}`} />
+                        <span>{sub.name}</span>
+                      </Link>
+                    )
+                  })}
+                </div>
+              )}
+            </div>
 
             {/* Reports Menu (Mobile) */}
             <div className="space-y-1 pt-1">
@@ -295,6 +344,68 @@ export default function AdminLayout() {
                 </Link>
               )
             })}
+
+            {/* Agency Menu (Desktop Collapsible) */}
+            <div className="space-y-1 pt-1">
+              {isCollapsed ? (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setIsCollapsed(false)
+                    setIsAgencyOpen(true)
+                  }}
+                  className={`flex items-center size-10 justify-center rounded-xl mx-auto transition-all duration-300 text-white/80 hover:bg-white/10 hover:text-white cursor-pointer ${
+                    location.pathname.startsWith('/admin/agency') || location.pathname === '/admin/cases' || location.pathname === '/admin/clients' || location.pathname === '/admin/users' ? 'bg-white/20 text-white' : ''
+                  }`}
+                  title={lang === 'BN' ? 'এজেন্সি' : 'Agency'}
+                >
+                  <Building2 className="size-5 shrink-0 text-white/85" />
+                </button>
+              ) : (
+                <>
+                  <button
+                    type="button"
+                    onClick={() => setIsAgencyOpen(!isAgencyOpen)}
+                    className="w-full flex items-center justify-between px-3 py-3 rounded-lg text-white/90 hover:bg-white/10 hover:text-white transition-colors cursor-pointer"
+                  >
+                    <div className="flex items-center gap-3">
+                      <Building2 className="size-5 shrink-0 text-white/85" />
+                      <span className="text-[18px] font-semibold whitespace-nowrap ml-1 animate-fade-in">
+                        {lang === 'BN' ? 'এজেন্সি' : 'Agency'}
+                      </span>
+                    </div>
+                    {isAgencyOpen ? (
+                      <ChevronDown className="size-4 text-white/70" />
+                    ) : (
+                      <ChevronRight className="size-4 text-white/70" />
+                    )}
+                  </button>
+
+                  {isAgencyOpen && (
+                    <div className="border-l-2 border-white/20 ml-5 pl-2 space-y-1">
+                      {agencySubMenuItems.map((sub) => {
+                        const isSubActive = location.pathname === sub.path
+                        const SubIcon = sub.icon
+                        return (
+                          <Link
+                            key={sub.path}
+                            to={sub.path}
+                            className={`flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-[16px] font-semibold transition-all ${
+                              isSubActive
+                                ? 'bg-white text-primary font-bold shadow-md'
+                                : 'text-white/80 hover:bg-white/10 hover:text-white'
+                            }`}
+                          >
+                            <SubIcon className={`size-4.5 shrink-0 ${isSubActive ? 'text-primary' : 'text-white/85'}`} />
+                            <span className="whitespace-nowrap">{sub.name}</span>
+                          </Link>
+                        )
+                      })}
+                    </div>
+                  )}
+                </>
+              )}
+            </div>
 
             {/* Reports Menu (Desktop Collapsible) */}
             <div className="space-y-1 pt-1">
