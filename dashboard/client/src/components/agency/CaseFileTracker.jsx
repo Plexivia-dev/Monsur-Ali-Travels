@@ -583,7 +583,7 @@ export function CaseFileTracker() {
           </div>
           <div className="flex items-center gap-2 shrink-0">
             <button onClick={handleRefresh}
-              className="p-2.5 bg-slate-800/70 hover:bg-slate-800 text-sky-400 rounded-xl border border-sky-500/20 transition-all cursor-pointer" title="Refresh">
+              className="p-2.5 bg-white hover:bg-gray-50 text-sky-600 rounded-xl border border-gray-200 transition-all cursor-pointer shadow-sm" title="Refresh">
               <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
             </button>
             <button onClick={() => setNewModalOpen(true)}

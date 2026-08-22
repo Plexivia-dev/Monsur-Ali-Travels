@@ -83,7 +83,7 @@ export default function CaseWorkflow() {
           </div>
           <button
             onClick={fetchCases}
-            className="p-2.5 bg-slate-800/70 hover:bg-slate-800 text-sky-400 rounded-xl border border-sky-500/20 transition-all cursor-pointer"
+            className="p-2.5 bg-white hover:bg-gray-50 text-sky-600 rounded-xl border border-gray-200 transition-all cursor-pointer shadow-sm"
             title="Refresh Cases"
           >
             <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />

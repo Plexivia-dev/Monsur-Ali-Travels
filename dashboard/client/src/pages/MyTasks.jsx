@@ -52,7 +52,7 @@ export default function MyTasks() {
           </div>
           <button
             onClick={fetchMyTasks}
-            className="p-2.5 bg-slate-800/70 hover:bg-slate-800 text-sky-400 rounded-xl border border-sky-500/20 transition-all cursor-pointer self-start md:self-auto"
+            className="p-2.5 bg-white hover:bg-gray-50 text-sky-600 rounded-xl border border-gray-200 transition-all cursor-pointer shadow-sm self-start md:self-auto"
             title="Refresh Tasks"
           >
             <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
