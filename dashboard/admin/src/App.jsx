@@ -12,8 +12,8 @@ import VisaWorkflowsPage from '@/pages/VisaWorkflowsPage'
 import CaseWorkflow from '@/pages/CaseWorkflow'
 import ActivityLogsPage from '@/pages/ActivityLogsPage'
 import Reports from '@/pages/accounting/Reports'
-import Payments from '@/pages/accounting/Payments'
-import Bills from '@/pages/accounting/Bills'
+import Payments from '@/pages/reports/Payments'
+import Bills from '@/pages/reports/Bills'
 import Logs from '@/pages/accounting/Logs'
 import SettingsPage from '@/pages/SettingsPage'
 import NotFoundPage from '@/pages/NotFoundPage'
@@ -49,7 +49,10 @@ export default function App() {
               <Route path="system/logs" element={<ActivityLogsPage />} />
               <Route path="system-logs" element={<ActivityLogsPage />} />
               <Route path="system" element={<Navigate to="/admin/activity-logs" replace />} />
-              <Route path="accounting" element={<Navigate to="/admin/accounting/reports" replace />} />
+              <Route path="reports" element={<Navigate to="/admin/reports/payments" replace />} />
+              <Route path="reports/payments" element={<Payments />} />
+              <Route path="reports/bills" element={<Bills />} />
+              <Route path="accounting" element={<Navigate to="/admin/reports/payments" replace />} />
               <Route path="accounting/reports" element={<Reports />} />
               <Route path="accounting/payments" element={<Payments />} />
               <Route path="accounting/bills" element={<Bills />} />

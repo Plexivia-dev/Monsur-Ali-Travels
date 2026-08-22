@@ -20,8 +20,8 @@ export default function AdminLayout() {
 
   const [isCollapsed, setIsCollapsed] = React.useState(false)
   const [isMobileOpen, setIsMobileOpen] = React.useState(false)
+  const [isReportsOpen, setIsReportsOpen] = React.useState(true)
   const [isSystemOpen, setIsSystemOpen] = React.useState(true)
-  const [isAccountingOpen, setIsAccountingOpen] = React.useState(true)
   const [lang, setLang] = React.useState('EN')
   const [showLogoutConfirm, setShowLogoutConfirm] = React.useState(false)
 
@@ -32,14 +32,12 @@ export default function AdminLayout() {
 
   const menuItems = [
     { name: lang === 'BN' ? 'ওভারভিউ' : 'Overview', path: '/admin', icon: LayoutDashboard },
-    { name: lang === 'BN' ? 'কেস ওয়ার্কফ্লো' : 'Case Workflow', path: '/admin/cases', icon: FolderOpen },
+    { name: lang === 'BN' ? 'ক্লায়েন্ট ফাইলস' : 'Client Files', path: '/admin/cases', icon: FolderOpen },
   ]
 
-  const accountingSubMenuItems = [
-    { name: lang === 'BN' ? 'রিপোর্টস' : 'Reports', path: '/admin/accounting/reports', icon: PieChart },
-    { name: lang === 'BN' ? 'পেমেন্টস' : 'Payments', path: '/admin/accounting/payments', icon: Wallet },
-    { name: lang === 'BN' ? 'বিলস' : 'Bills', path: '/admin/accounting/bills', icon: Receipt },
-    { name: lang === 'BN' ? 'অ্যাকাউন্টিং লগ' : 'Logs', path: '/admin/accounting/logs', icon: FileText },
+  const reportsSubMenuItems = [
+    { name: lang === 'BN' ? 'পেমেন্টস' : 'Payments', path: '/admin/reports/payments', icon: Wallet },
+    { name: lang === 'BN' ? 'বিলস' : 'Bills', path: '/admin/reports/bills', icon: Receipt },
   ]
 
   const systemSubMenuItems = [
@@ -113,6 +111,49 @@ export default function AdminLayout() {
                 </Link>
               )
             })}
+
+            {/* Reports Menu (Mobile) */}
+            <div className="space-y-1 pt-1">
+              <button
+                type="button"
+                onClick={() => setIsReportsOpen(!isReportsOpen)}
+                className="w-full flex items-center justify-between px-3 py-3 rounded-lg text-white/90 hover:bg-white/10 hover:text-white transition-colors cursor-pointer"
+              >
+                <div className="flex items-center gap-3">
+                  <PieChart className="size-5 shrink-0 text-white/85" />
+                  <span className="text-[18px] font-semibold">{lang === 'BN' ? 'রিপোর্টস' : 'Reports'}</span>
+                </div>
+                {isReportsOpen ? (
+                  <ChevronDown className="size-4 text-white/70" />
+                ) : (
+                  <ChevronRight className="size-4 text-white/70" />
+                )}
+              </button>
+
+              {isReportsOpen && (
+                <div className="border-l-2 border-white/20 ml-5 pl-2 space-y-1">
+                  {reportsSubMenuItems.map((sub) => {
+                    const isSubActive = location.pathname === sub.path
+                    const SubIcon = sub.icon
+                    return (
+                      <Link
+                        key={sub.path}
+                        to={sub.path}
+                        onClick={() => setIsMobileOpen(false)}
+                        className={`flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-[16px] font-semibold transition-all ${
+                          isSubActive
+                            ? 'bg-white text-primary font-bold shadow-md'
+                            : 'text-white/80 hover:bg-white/10 hover:text-white'
+                        }`}
+                      >
+                        <SubIcon className={`size-4.5 shrink-0 ${isSubActive ? 'text-primary' : 'text-white/85'}`} />
+                        <span>{sub.name}</span>
+                      </Link>
+                    )
+                  })}
+                </div>
+              )}
+            </div>
 
             {/* System Menu (Mobile) */}
             <div className="space-y-1 pt-1">
@@ -253,6 +294,68 @@ export default function AdminLayout() {
                 </Link>
               )
             })}
+
+            {/* Reports Menu (Desktop Collapsible) */}
+            <div className="space-y-1 pt-1">
+              {isCollapsed ? (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setIsCollapsed(false)
+                    setIsReportsOpen(true)
+                  }}
+                  className={`flex items-center size-10 justify-center rounded-xl mx-auto transition-all duration-300 text-white/80 hover:bg-white/10 hover:text-white cursor-pointer ${
+                    location.pathname.startsWith('/admin/reports') ? 'bg-white/20 text-white' : ''
+                  }`}
+                  title={lang === 'BN' ? 'রিপোর্টস' : 'Reports'}
+                >
+                  <PieChart className="size-5 shrink-0 text-white/85" />
+                </button>
+              ) : (
+                <>
+                  <button
+                    type="button"
+                    onClick={() => setIsReportsOpen(!isReportsOpen)}
+                    className="w-full flex items-center justify-between px-3 py-3 rounded-lg text-white/90 hover:bg-white/10 hover:text-white transition-colors cursor-pointer"
+                  >
+                    <div className="flex items-center gap-3">
+                      <PieChart className="size-5 shrink-0 text-white/85" />
+                      <span className="text-[18px] font-semibold whitespace-nowrap ml-1 animate-fade-in">
+                        {lang === 'BN' ? 'রিপোর্টস' : 'Reports'}
+                      </span>
+                    </div>
+                    {isReportsOpen ? (
+                      <ChevronDown className="size-4 text-white/70" />
+                    ) : (
+                      <ChevronRight className="size-4 text-white/70" />
+                    )}
+                  </button>
+
+                  {isReportsOpen && (
+                    <div className="border-l-2 border-white/20 ml-5 pl-2 space-y-1">
+                      {reportsSubMenuItems.map((sub) => {
+                        const isSubActive = location.pathname === sub.path
+                        const SubIcon = sub.icon
+                        return (
+                          <Link
+                            key={sub.path}
+                            to={sub.path}
+                            className={`flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-[16px] font-semibold transition-all ${
+                              isSubActive
+                                ? 'bg-white text-primary font-bold shadow-md'
+                                : 'text-white/80 hover:bg-white/10 hover:text-white'
+                            }`}
+                          >
+                            <SubIcon className={`size-4.5 shrink-0 ${isSubActive ? 'text-primary' : 'text-white/85'}`} />
+                            <span className="whitespace-nowrap">{sub.name}</span>
+                          </Link>
+                        )
+                      })}
+                    </div>
+                  )}
+                </>
+              )}
+            </div>
 
             {/* System Menu (Desktop Collapsible) */}
             <div className="space-y-1 pt-1">
