@@ -1,0 +1,14 @@
+{
+  "name": "smart-erp",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dash": "npm run dev:dash",
+    "dev:dash": "npx concurrently -n \"ADMIN,CLIENT\" -c \"bgBlue.bold,bgMagenta.bold\" \"npm --prefix dashboard/admin run dev\" \"npm --prefix dashboard/client run dev\"",
+    "build:dash": "npm --prefix dashboard/admin run build && npm --prefix dashboard/client run build",
+    "dev:all": "npx concurrently -n \"BACKEND,FRONTEND,ADMIN,CLIENT\" -c \"bgGreen.bold,bgCyan.bold,bgBlue.bold,bgMagenta.bold\" \"npm --prefix backend run dev\" \"npm --prefix frontend run dev\" \"npm --prefix dashboard/admin run dev\" \"npm --prefix dashboard/client run dev\""
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.2"
+  }
+}

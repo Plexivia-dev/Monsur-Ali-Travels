@@ -13,6 +13,7 @@ import CaseWorkflow from '@/pages/CaseWorkflow'
 import ActivityLogsPage from '@/pages/ActivityLogsPage'
 import Accounting from '@/pages/Accounting'
 import SettingsPage from '@/pages/SettingsPage'
+import NotFoundPage from '@/pages/NotFoundPage'
 import { useAuth } from '@/store/useAuthStore'
 import { Toaster } from '@/components/ui/toast'
 
@@ -46,12 +47,15 @@ export default function App() {
               <Route path="system" element={<Navigate to="/admin/activity-logs" replace />} />
               <Route path="accounting" element={<Accounting />} />
               <Route path="settings" element={<SettingsPage />} />
+              <Route path="*" element={<NotFoundPage />} />
             </Route>
           </Route>
 
-          {/* Fallback routes */}
+          {/* Root redirect */}
           <Route path="/" element={<Navigate to="/admin" replace />} />
-          <Route path="*" element={<Navigate to="/admin" replace />} />
+
+          {/* Global Fallback Route */}
+          <Route path="*" element={<NotFoundPage />} />
         </Routes>
       </BrowserRouter>
       
@@ -60,3 +64,4 @@ export default function App() {
     </>
   )
 }
+

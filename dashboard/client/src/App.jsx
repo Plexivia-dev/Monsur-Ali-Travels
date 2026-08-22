@@ -11,6 +11,7 @@ import Agency from './pages/Agency';
 import Admin from './pages/Admin';
 import DocumentStudio from './pages/DocumentStudio';
 import DocumentData from './pages/DocumentData';
+import NotFoundPage from './pages/NotFoundPage';
 import { ToastContainer } from './components/common/ToastContainer';
 import { GlobalSearchModal } from './components/common/GlobalSearchModal';
 import { Toaster } from './components/ui/sonner';
@@ -68,6 +69,8 @@ function MainLayout() {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [setSearchOpen]);
 
+  const isKnownPortal = ['factory', 'agency', 'admin', 'docs', 'data'].includes(activePortal);
+
   return (
     <SidebarProvider defaultOpen={true}>
       <div className="flex h-screen w-full overflow-hidden bg-background text-foreground transition-colors">
@@ -86,6 +89,7 @@ function MainLayout() {
             {activePortal === 'admin' && <Admin />}
             {activePortal === 'docs' && <DocumentStudio />}
             {activePortal === 'data' && <DocumentData />}
+            {!isKnownPortal && <NotFoundPage />}
           </main>
 
           {/* Global Utilities */}
@@ -97,6 +101,7 @@ function MainLayout() {
     </SidebarProvider>
   );
 }
+
 
 export default function App() {
   return (

@@ -37,7 +37,7 @@ export const useAdminData = () => {
     queryKey: [QUERY_KEYS.ADMIN],
     queryFn: async () => {
       try {
-        const res = await apiClient.get('/api/v1/dashboard/overview');
+        const res = await apiClient.get('/api/v1/admin/dashboard/overview');
         const backendData = res.data?.data || {};
         const mockRes = await mockApi.getAdminData();
         const baseData = mockRes.data || {};
