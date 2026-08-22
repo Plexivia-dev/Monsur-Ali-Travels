@@ -11,12 +11,13 @@ import { LoginPage } from '@/pages/LoginPage'
 import VisaWorkflowsPage from '@/pages/VisaWorkflowsPage'
 import CaseWorkflow from '@/pages/CaseWorkflow'
 import ActivityLogsPage from '@/pages/ActivityLogsPage'
-import AccountingReportsPage from '@/pages/accounting/AccountingReportsPage'
-import AccountingPaymentsPage from '@/pages/accounting/AccountingPaymentsPage'
-import AccountingBillsPage from '@/pages/accounting/AccountingBillsPage'
-import AccountingLogsPage from '@/pages/accounting/AccountingLogsPage'
+import Reports from '@/pages/accounting/Reports'
+import Payments from '@/pages/accounting/Payments'
+import Bills from '@/pages/accounting/Bills'
+import Logs from '@/pages/accounting/Logs'
 import SettingsPage from '@/pages/SettingsPage'
 import NotFoundPage from '@/pages/NotFoundPage'
+import { GlobalErrorBoundary } from '@/components/layout/GlobalErrorBoundary'
 import { useAuth } from '@/store/useAuthStore'
 import { Toaster } from '@/components/ui/toast'
 
@@ -30,7 +31,7 @@ export default function App() {
   }, [fetchProfile])
 
   return (
-    <>
+    <GlobalErrorBoundary>
       <BrowserRouter>
         <Routes>
           <Route path="/login" element={<LoginPage />} />
@@ -49,10 +50,10 @@ export default function App() {
               <Route path="system-logs" element={<ActivityLogsPage />} />
               <Route path="system" element={<Navigate to="/admin/activity-logs" replace />} />
               <Route path="accounting" element={<Navigate to="/admin/accounting/reports" replace />} />
-              <Route path="accounting/reports" element={<AccountingReportsPage />} />
-              <Route path="accounting/payments" element={<AccountingPaymentsPage />} />
-              <Route path="accounting/bills" element={<AccountingBillsPage />} />
-              <Route path="accounting/logs" element={<AccountingLogsPage />} />
+              <Route path="accounting/reports" element={<Reports />} />
+              <Route path="accounting/payments" element={<Payments />} />
+              <Route path="accounting/bills" element={<Bills />} />
+              <Route path="accounting/logs" element={<Logs />} />
               <Route path="settings" element={<SettingsPage />} />
               <Route path="*" element={<NotFoundPage />} />
             </Route>
@@ -68,7 +69,7 @@ export default function App() {
       
       {/* Toast notifications container */}
       <Toaster />
-    </>
+    </GlobalErrorBoundary>
   )
 }
 
