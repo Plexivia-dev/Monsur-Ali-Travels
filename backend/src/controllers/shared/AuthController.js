@@ -349,7 +349,7 @@ export const getProfile = async (req, res, next) => {
 // PUT /auth/profile - Update current logged in user profile
 export const updateProfile = async (req, res, next) => {
   try {
-    const { name, phone } = req.body ?? {};
+    const { name, username, phone, address, avatar } = req.body ?? {};
     
     const user = await UserModel.findById(req.user.did);
     if (!user) {
@@ -357,12 +357,52 @@ export const updateProfile = async (req, res, next) => {
     }
 
     if (name) user.name = name;
-    if (phone) user.phone = phone;
+    if (username !== undefined) user.username = username;
+    if (phone !== undefined) user.phone = phone;
+    if (address !== undefined) user.address = address;
+    if (avatar !== undefined) user.avatar = avatar;
     
     await user.save();
     
     const updatedUser = await UserModel.findById(req.user.did).select("-passwordHash -__v");
     res.json({ status: "success", message: "Profile updated successfully", data: updatedUser });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// POST /auth/change-password - Change password for authenticated user
+export const changePassword = async (req, res, next) => {
+  try {
+    const { currentPassword, newPassword } = req.body ?? {};
+
+    if (!currentPassword || !newPassword) {
+      return res.status(400).json({ status: "error", message: "Current password and new password are required" });
+    }
+
+    if (String(newPassword).length < 6) {
+      return res.status(400).json({ status: "error", message: "New password must be at least 6 characters" });
+    }
+
+    const user = await UserModel.findById(req.user.did).select("+passwordHash");
+    if (!user || !user.passwordHash) {
+      return res.status(404).json({ status: "error", message: "User not found" });
+    }
+
+    const isMatch = (await comparePassword(String(currentPassword), user.passwordHash)) || (await comparePassword(String(currentPassword).trim(), user.passwordHash));
+    if (!isMatch) {
+      return res.status(400).json({ status: "error", message: "Current password is incorrect" });
+    }
+
+    user.passwordHash = await hashPassword(String(newPassword));
+    await user.save();
+
+    logger.info({ userId: user.id }, "User successfully changed password");
+
+    res.json({
+      status: "success",
+      message: "Password changed successfully",
+    });
   } catch (error) {
     next(error);
   }
