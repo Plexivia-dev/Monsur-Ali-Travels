@@ -221,6 +221,7 @@ export const ClientManagement = ({ initialTab = 'all-clients' }) => {
                       onChange={(e) => setFormData({ ...formData, industry: e.target.value })}
                       className="w-full px-3 py-2 bg-background border border-input rounded-lg text-xs focus:ring-2 focus:ring-sky-500 focus:border-transparent outline-none"
                     >
+                      <option value="Agriculture">Agriculture & Farming</option>
                       <option value="Construction">Construction & Infrastructure</option>
                       <option value="Warehousing">Warehousing & Logistics</option>
                       <option value="Facility Mgt">Facility & Building Management</option>
