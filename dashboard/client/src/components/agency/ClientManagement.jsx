@@ -183,16 +183,11 @@ export const ClientManagement = ({ initialTab = 'all-clients' }) => {
       {activeTab === 'add-client' && (
         <Card className="max-w-4xl mx-auto border border-border shadow-md">
           <CardHeader className="border-b border-border bg-muted/20">
-            <div className="flex items-center justify-between">
-              <div>
-                <CardTitle icon={UserPlus}>Add New Client Contract</CardTitle>
-                <p className="text-xs text-muted-foreground mt-0.5">
-                  Register a new client enterprise account for contractor deployments and invoicing.
-                </p>
-              </div>
-              <Badge variant="outline" className="border-sky-500/30 text-sky-500 bg-sky-500/10">
-                New Enterprise Registration
-              </Badge>
+            <div>
+              <CardTitle icon={UserPlus}>Add New Client Contract</CardTitle>
+              <p className="text-xs text-muted-foreground mt-0.5">
+                Register a new client enterprise account for contractor deployments and invoicing.
+              </p>
             </div>
           </CardHeader>
           <CardContent className="p-6">
