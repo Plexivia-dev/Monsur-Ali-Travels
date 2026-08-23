@@ -29,6 +29,7 @@ const mapApiUser = (apiUser, email) => ({
   role: apiUser.role || 'Employee',
   department: apiUser.department || '',
   designation: apiUser.designation || '',
+  subRole: apiUser.subRole || '',
   avatar:
     apiUser.avatar ||
     'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=256&q=80',

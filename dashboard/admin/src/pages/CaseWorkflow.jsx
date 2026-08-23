@@ -2,13 +2,18 @@ import React, { useState, useEffect, useCallback } from 'react';
 import {
   FolderOpen, Plus, Search, Filter, RefreshCw, Loader2,
   CheckCircle2, Clock, AlertCircle, ArrowRightLeft, Send,
-  User, History, FileText, ChevronRight, Eye, Check, X
+  User, History, FileText, ChevronRight, Eye, Check, X,
+  CreditCard
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { apiClient } from '../lib/api-client';
 import { StepAssignModal } from '../components/workflow/StepAssignModal';
+import { useAuth } from '../store/useAuthStore';
 
 export default function CaseWorkflow() {
+  const { user } = useAuth();
+  const isAccountant = user?.subRole?.toLowerCase() === 'accountant' || user?.subRole?.toLowerCase() === 'accounts';
+
   const [cases, setCases] = useState([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
@@ -158,15 +163,30 @@ export default function CaseWorkflow() {
 
               {/* Action Buttons */}
               <div className="pt-3 border-t border-border flex items-center justify-between gap-2">
-                <button
-                  onClick={() => {
-                    setSelectedCase(c);
-                    setAssignModalOpen(true);
-                  }}
-                  className="flex-1 flex items-center justify-center gap-1 py-1.5 bg-sky-500 hover:bg-sky-400 text-slate-950 text-xs font-bold rounded-lg transition-all cursor-pointer"
-                >
-                  <Send className="w-3.5 h-3.5" /> Assign Step
-                </button>
+                {isAccountant ? (
+                  c.status === 'ENTRY' || !c.paymentLedger?.totalPaidAmount ? (
+                    <button
+                      onClick={() => toast.info('Receive Advance Payment modal opening... (WIP)')}
+                      className="flex-1 flex items-center justify-center gap-1 py-1.5 bg-emerald-500 hover:bg-emerald-400 text-slate-950 text-xs font-bold rounded-lg transition-all cursor-pointer"
+                    >
+                      <CreditCard className="w-3.5 h-3.5" /> Receive Advance
+                    </button>
+                  ) : (
+                    <span className="flex-1 text-center text-[11px] font-bold text-emerald-500 bg-emerald-500/10 py-1.5 rounded-lg border border-emerald-500/20">
+                      Payment Received ✓
+                    </span>
+                  )
+                ) : (
+                  <button
+                    onClick={() => {
+                      setSelectedCase(c);
+                      setAssignModalOpen(true);
+                    }}
+                    className="flex-1 flex items-center justify-center gap-1 py-1.5 bg-sky-500 hover:bg-sky-400 text-slate-950 text-xs font-bold rounded-lg transition-all cursor-pointer"
+                  >
+                    <Send className="w-3.5 h-3.5" /> Assign Step
+                  </button>
+                )}
               </div>
             </div>
           ))}

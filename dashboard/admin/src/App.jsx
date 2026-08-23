@@ -18,6 +18,10 @@ import Bills from '@/pages/reports/Bills'
 import Logs from '@/pages/accounting/Logs'
 import SettingsPage from '@/pages/SettingsPage'
 import NotFoundPage from '@/pages/NotFoundPage'
+import AccountingSummary from '@/pages/accounting/AccountingSummary'
+import CashBook from '@/pages/accounting/CashBook'
+import BankLedger from '@/pages/accounting/BankLedger'
+import Expenses from '@/pages/accounting/Expenses'
 import { GlobalErrorBoundary } from '@/components/layout/GlobalErrorBoundary'
 import { useAuth } from '@/store/useAuthStore'
 import { Toaster } from '@/components/ui/toast'
@@ -61,6 +65,12 @@ export default function App() {
               <Route path="accounting/payments" element={<Payments />} />
               <Route path="accounting/bills" element={<Bills />} />
               <Route path="accounting/logs" element={<Logs />} />
+              
+              <Route path="accounting-summary" element={<AccountingSummary />} />
+              <Route path="accounts/cash-book" element={<CashBook />} />
+              <Route path="accounts/bank-ledger" element={<BankLedger />} />
+              <Route path="accounts/expenses" element={<Expenses />} />
+
               <Route path="settings" element={<SettingsPage />} />
               <Route path="*" element={<NotFoundPage />} />
             </Route>

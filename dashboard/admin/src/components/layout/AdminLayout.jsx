@@ -21,6 +21,7 @@ export default function AdminLayout() {
   const [isCollapsed, setIsCollapsed] = React.useState(false)
   const [isMobileOpen, setIsMobileOpen] = React.useState(false)
   const [isAgencyOpen, setIsAgencyOpen] = React.useState(true)
+  const [isAccountsOpen, setIsAccountsOpen] = React.useState(true)
   const [isReportsOpen, setIsReportsOpen] = React.useState(true)
   const [isSystemOpen, setIsSystemOpen] = React.useState(true)
   const [lang, setLang] = React.useState('EN')
@@ -31,14 +32,25 @@ export default function AdminLayout() {
     navigate('/login')
   }
 
+  const isAccountant = user?.subRole?.toLowerCase() === 'accountant' || user?.subRole?.toLowerCase() === 'accounts'
+
   const menuItems = [
-    { name: lang === 'BN' ? 'ওভারভিউ' : 'Overview', path: '/admin', icon: LayoutDashboard },
+    ...(!isAccountant ? [{ name: lang === 'BN' ? 'ওভারভিউ' : 'Overview', path: '/admin', icon: LayoutDashboard }] : []),
+    ...(isAccountant ? [{ name: lang === 'BN' ? 'অ্যাকাউন্টিং সামারি' : 'Accounting Summary', path: '/admin/accounting-summary', icon: PieChart }] : []),
+  ]
+
+  const accountsSubMenuItems = [
+    { name: lang === 'BN' ? 'ক্যাশ বুক' : 'Cash Book', path: '/admin/accounts/cash-book', icon: Wallet },
+    { name: lang === 'BN' ? 'ব্যাংক লেজার' : 'Bank Ledger', path: '/admin/accounts/bank-ledger', icon: Building2 },
+    { name: lang === 'BN' ? 'খরচ (ভাউচার)' : 'Expense Tracking', path: '/admin/accounts/expenses', icon: Receipt },
   ]
 
   const agencySubMenuItems = [
     { name: lang === 'BN' ? 'ক্লায়েন্ট ফাইলস' : 'Client Files', path: '/admin/cases', icon: FolderOpen },
-    { name: lang === 'BN' ? 'ক্লায়েন্টস' : 'Clients', path: '/admin/clients', icon: Users },
-    { name: lang === 'BN' ? 'ইউজারস' : 'Users', path: '/admin/users', icon: User },
+    ...(!isAccountant ? [
+      { name: lang === 'BN' ? 'ক্লায়েন্টস' : 'Clients', path: '/admin/clients', icon: Users },
+      { name: lang === 'BN' ? 'ইউজারস' : 'Users', path: '/admin/users', icon: User },
+    ] : []),
   ]
 
   const reportsSubMenuItems = [
@@ -161,6 +173,51 @@ export default function AdminLayout() {
                 </div>
               )}
             </div>
+
+            {/* Accounts Menu (Mobile) - Only for Accountant */}
+            {isAccountant && (
+              <div className="space-y-1 pt-1">
+                <button
+                  type="button"
+                  onClick={() => setIsAccountsOpen(!isAccountsOpen)}
+                  className="w-full flex items-center justify-between px-3 py-3 rounded-lg text-white/90 hover:bg-white/10 hover:text-white transition-colors cursor-pointer"
+                >
+                  <div className="flex items-center gap-3">
+                    <Wallet className="size-5 shrink-0 text-white/85" />
+                    <span className="text-[18px] font-semibold">{lang === 'BN' ? 'অ্যাকাউন্টস' : 'Accounts'}</span>
+                  </div>
+                  {isAccountsOpen ? (
+                    <ChevronDown className="size-4 text-white/70" />
+                  ) : (
+                    <ChevronRight className="size-4 text-white/70" />
+                  )}
+                </button>
+
+                {isAccountsOpen && (
+                  <div className="border-l-2 border-white/20 ml-5 pl-2 space-y-1">
+                    {accountsSubMenuItems.map((sub) => {
+                      const isSubActive = location.pathname === sub.path
+                      const SubIcon = sub.icon
+                      return (
+                        <Link
+                          key={sub.path}
+                          to={sub.path}
+                          onClick={() => setIsMobileOpen(false)}
+                          className={`flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-[16px] font-semibold transition-all ${
+                            isSubActive
+                              ? 'bg-white/15 text-white shadow-sm'
+                              : 'text-white/70 hover:bg-white/10 hover:text-white'
+                          }`}
+                        >
+                          <SubIcon className={`size-4 shrink-0 ${isSubActive ? 'text-white' : 'text-white/60'}`} />
+                          <span>{sub.name}</span>
+                        </Link>
+                      )
+                    })}
+                  </div>
+                )}
+              </div>
+            )}
 
             {/* Reports Menu (Mobile) */}
             <div className="space-y-1 pt-1">
@@ -407,6 +464,70 @@ export default function AdminLayout() {
               )}
             </div>
 
+            {/* Accounts Menu (Desktop Collapsible) - Only for Accountant */}
+            {isAccountant && (
+              <div className="space-y-1 pt-1">
+                {isCollapsed ? (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setIsCollapsed(false)
+                      setIsAccountsOpen(true)
+                    }}
+                    className={`flex items-center size-10 justify-center rounded-xl mx-auto transition-all duration-300 text-white/80 hover:bg-white/10 hover:text-white cursor-pointer ${
+                      location.pathname.startsWith('/admin/accounts') ? 'bg-white/20 text-white' : ''
+                    }`}
+                    title={lang === 'BN' ? 'অ্যাকাউন্টস' : 'Accounts'}
+                  >
+                    <Wallet className="size-[22px] shrink-0" />
+                  </button>
+                ) : (
+                  <>
+                    <button
+                      type="button"
+                      onClick={() => setIsAccountsOpen(!isAccountsOpen)}
+                      className="w-full flex items-center justify-between px-3 py-3 rounded-xl transition-all duration-300 text-white/90 hover:bg-white/10 hover:text-white cursor-pointer group"
+                    >
+                      <div className="flex items-center gap-3">
+                        <Wallet className="size-5 shrink-0 text-white/85 group-hover:text-white transition-colors" />
+                        <span className="text-[17px] font-semibold tracking-wide whitespace-nowrap">
+                          {lang === 'BN' ? 'অ্যাকাউন্টস' : 'Accounts'}
+                        </span>
+                      </div>
+                      {isAccountsOpen ? (
+                        <ChevronDown className="size-4 text-white/70" />
+                      ) : (
+                        <ChevronRight className="size-4 text-white/70" />
+                      )}
+                    </button>
+
+                    {isAccountsOpen && (
+                      <div className="border-l-2 border-white/20 ml-[22px] pl-2 space-y-1 my-1 overflow-hidden animate-in slide-in-from-top-2">
+                        {accountsSubMenuItems.map((sub) => {
+                          const isSubActive = location.pathname === sub.path
+                          const SubIcon = sub.icon
+                          return (
+                            <Link
+                              key={sub.path}
+                              to={sub.path}
+                              className={`flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-[16px] font-semibold transition-all ${
+                                isSubActive
+                                  ? 'bg-white text-primary font-bold shadow-md'
+                                  : 'text-white/80 hover:bg-white/10 hover:text-white'
+                              }`}
+                            >
+                              <SubIcon className={`size-4.5 shrink-0 ${isSubActive ? 'text-primary' : 'text-white/85'}`} />
+                              <span className="whitespace-nowrap">{sub.name}</span>
+                            </Link>
+                          )
+                        })}
+                      </div>
+                    )}
+                  </>
+                )}
+              </div>
+            )}
+
             {/* Reports Menu (Desktop Collapsible) */}
             <div className="space-y-1 pt-1">
               {isCollapsed ? (
@@ -470,66 +591,68 @@ export default function AdminLayout() {
             </div>
 
             {/* System Menu (Desktop Collapsible) */}
-            <div className="space-y-1 pt-1">
-              {isCollapsed ? (
-                <button
-                  type="button"
-                  onClick={() => {
-                    setIsCollapsed(false)
-                    setIsSystemOpen(true)
-                  }}
-                  className={`flex items-center size-10 justify-center rounded-xl mx-auto transition-all duration-300 text-white/80 hover:bg-white/10 hover:text-white cursor-pointer ${
-                    location.pathname.startsWith('/admin/system') || location.pathname === '/admin/activity-logs' ? 'bg-white/20 text-white' : ''
-                  }`}
-                  title={lang === 'BN' ? 'সিস্টেম' : 'System'}
-                >
-                  <Server className="size-5 shrink-0 text-white/85" />
-                </button>
-              ) : (
-                <>
+            {!isAccountant && (
+              <div className="space-y-1 pt-1">
+                {isCollapsed ? (
                   <button
                     type="button"
-                    onClick={() => setIsSystemOpen(!isSystemOpen)}
-                    className="w-full flex items-center justify-between px-3 py-3 rounded-lg text-white/90 hover:bg-white/10 hover:text-white transition-colors cursor-pointer"
+                    onClick={() => {
+                      setIsCollapsed(false)
+                      setIsSystemOpen(true)
+                    }}
+                    className={`flex items-center size-10 justify-center rounded-xl mx-auto transition-all duration-300 text-white/80 hover:bg-white/10 hover:text-white cursor-pointer ${
+                      location.pathname.startsWith('/admin/system') || location.pathname === '/admin/activity-logs' ? 'bg-white/20 text-white' : ''
+                    }`}
+                    title={lang === 'BN' ? 'সিস্টেম' : 'System'}
                   >
-                    <div className="flex items-center gap-3">
-                      <Server className="size-5 shrink-0 text-white/85" />
-                      <span className="text-[18px] font-semibold whitespace-nowrap ml-1 animate-fade-in">
-                        {lang === 'BN' ? 'সিস্টেম' : 'System'}
-                      </span>
-                    </div>
-                    {isSystemOpen ? (
-                      <ChevronDown className="size-4 text-white/70" />
-                    ) : (
-                      <ChevronRight className="size-4 text-white/70" />
-                    )}
+                    <Server className="size-5 shrink-0 text-white/85" />
                   </button>
+                ) : (
+                  <>
+                    <button
+                      type="button"
+                      onClick={() => setIsSystemOpen(!isSystemOpen)}
+                      className="w-full flex items-center justify-between px-3 py-3 rounded-lg text-white/90 hover:bg-white/10 hover:text-white transition-colors cursor-pointer"
+                    >
+                      <div className="flex items-center gap-3">
+                        <Server className="size-5 shrink-0 text-white/85" />
+                        <span className="text-[18px] font-semibold whitespace-nowrap ml-1 animate-fade-in">
+                          {lang === 'BN' ? 'সিস্টেম' : 'System'}
+                        </span>
+                      </div>
+                      {isSystemOpen ? (
+                        <ChevronDown className="size-4 text-white/70" />
+                      ) : (
+                        <ChevronRight className="size-4 text-white/70" />
+                      )}
+                    </button>
 
-                  {isSystemOpen && (
-                    <div className="border-l-2 border-white/20 ml-5 pl-2 space-y-1">
-                      {systemSubMenuItems.map((sub) => {
-                        const isSubActive = location.pathname === sub.path
-                        const SubIcon = sub.icon
-                        return (
-                          <Link
-                            key={sub.path}
-                            to={sub.path}
-                            className={`flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-[16px] font-semibold transition-all ${
-                              isSubActive
-                                ? 'bg-white text-primary font-bold shadow-md'
-                                : 'text-white/80 hover:bg-white/10 hover:text-white'
-                            }`}
-                          >
-                            <SubIcon className={`size-4.5 shrink-0 ${isSubActive ? 'text-primary' : 'text-white/85'}`} />
-                            <span className="whitespace-nowrap">{sub.name}</span>
-                          </Link>
-                        )
-                      })}
-                    </div>
-                  )}
-                </>
-              )}
-            </div>
+                    {isSystemOpen && (
+                      <div className="border-l-2 border-white/20 ml-5 pl-2 space-y-1">
+                        {systemSubMenuItems.map((sub) => {
+                          const isSubActive = location.pathname === sub.path
+                          const SubIcon = sub.icon
+                          return (
+                            <Link
+                              key={sub.path}
+                              to={sub.path}
+                              className={`flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-[16px] font-semibold transition-all ${
+                                isSubActive
+                                  ? 'bg-white text-primary font-bold shadow-md'
+                                  : 'text-white/80 hover:bg-white/10 hover:text-white'
+                              }`}
+                            >
+                              <SubIcon className={`size-4.5 shrink-0 ${isSubActive ? 'text-primary' : 'text-white/85'}`} />
+                              <span className="whitespace-nowrap">{sub.name}</span>
+                            </Link>
+                          )
+                        })}
+                      </div>
+                    )}
+                  </>
+                )}
+              </div>
+            )}
           </nav>
 
           {/* Footer Logout and Settings Buttons (With distinct top border) */}

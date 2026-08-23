@@ -232,40 +232,26 @@ export function CaseFileCreationModal({ isOpen, onClose, onSuccess }) {
         },
       };
 
-      // 1. Create Case File
-      const caseRes = await apiClient.post('/api/v1/client/candidates', casePayload).catch(async () => {
-        return await apiClient.post('/api/v1/client/cases', casePayload);
-      });
-
-      // 2. If advance payment was made, generate Money Receipt
-      if (advance > 0) {
-        const receiptPayload = {
-          clientName: clientForm.name,
-          clientPhone: clientForm.phone,
-          passportNumber: clientForm.passportNumber,
-          serviceType: `${caseDetails.destinationCountry} - Advance`,
-          purpose: `Advance deposit for ${caseDetails.destinationCountry} Case File`,
-          amount: advance,
-          paymentMethod: financials.paymentMethod,
-          createdByName: user?.name || 'Frontdesk Staff',
-          notes: financials.receiptNotes,
-          caseRef: caseRes?.data?._id || caseRes?.data?.data?._id || null,
-        };
-
-        const receiptRes = await apiClient.post('/api/v1/client/receipts', receiptPayload).catch(() => null);
-        if (receiptRes?.data?.data) {
-          setCreatedReceiptData(receiptRes.data.data);
+      // 1. Create Case File (Using the generic caseFile.controller.js)
+      const formattedPayload = {
+        applicantName: casePayload.candidateName,
+        phone: casePayload.candidatePhone,
+        passportNumber: casePayload.passportNumber,
+        caseType: casePayload.destinationCountry, // Maps to greece/macedonia
+        status: "ENTRY",
+        paymentLedger: {
+          totalAgreedAmount: casePayload.totalAgreedAmount,
+          step1_advance: 0,
+          dueAmount: casePayload.totalAgreedAmount,
+          totalPaidAmount: 0
         }
-      }
+      };
 
-      toast.success('Case File created successfully and handed over to Admin Master Board!');
+      const caseRes = await apiClient.post('/api/v1/client/cases', formattedPayload);
+
+      toast.success('Case File created successfully and handed over to Accountant!');
       if (onSuccess) onSuccess();
-
-      if (advance > 0) {
-        setShowReceiptPrint(true);
-      } else {
-        onClose();
-      }
+      onClose();
     } catch (err) {
       toast.error('Failed to submit case file. Please try again.');
     } finally {
@@ -594,69 +580,27 @@ export function CaseFileCreationModal({ isOpen, onClose, onSuccess }) {
             </div>
           )}
 
-          {/* STEP 4: Advance Payment & Money Receipt */}
+          {/* STEP 4: Package Agreement */}
           {step === 4 && (
             <div className="space-y-4 animate-in fade-in">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <div className="space-y-1">
+                <div className="sm:col-span-2 space-y-1">
                   <label className="font-semibold text-foreground flex items-center gap-1">
-                    <DollarSign className="w-3.5 h-3.5 text-sky-400" /> Total Package Agreed Amount (BDT)
+                    <DollarSign className="w-3.5 h-3.5 text-sky-400" /> Total Package Agreed Amount (BDT) <span className="text-rose-400">*</span>
                   </label>
                   <input
                     type="number"
+                    required
                     placeholder="e.g. 650000"
                     value={financials.totalAgreedAmount}
                     onChange={(e) => setFinancials({ ...financials, totalAgreedAmount: e.target.value })}
-                    className="w-full px-3 py-2 bg-background border border-border rounded-lg text-xs font-mono font-bold focus:border-sky-500 outline-hidden"
+                    className="w-full px-3 py-3 bg-background border border-border rounded-lg text-sm font-mono font-bold focus:border-sky-500 outline-hidden"
                   />
-                </div>
-
-                <div className="space-y-1">
-                  <label className="font-semibold text-foreground flex items-center gap-1">
-                    <CreditCard className="w-3.5 h-3.5 text-emerald-400" /> Today's Advance Received (BDT)
-                  </label>
-                  <input
-                    type="number"
-                    placeholder="e.g. 50000"
-                    value={financials.advanceAmount}
-                    onChange={(e) => setFinancials({ ...financials, advanceAmount: e.target.value })}
-                    className="w-full px-3 py-2 bg-background border border-border rounded-lg text-xs font-mono font-bold text-emerald-400 focus:border-emerald-500 outline-hidden"
-                  />
-                </div>
-
-                <div className="space-y-1">
-                  <label className="font-semibold text-foreground">Payment Method</label>
-                  <select
-                    value={financials.paymentMethod}
-                    onChange={(e) => setFinancials({ ...financials, paymentMethod: e.target.value })}
-                    className="w-full px-3 py-2 bg-background border border-border rounded-lg text-xs focus:border-sky-500 outline-hidden cursor-pointer"
-                  >
-                    <option value="Cash">Cash (নগদ)</option>
-                    <option value="Bank Transfer">Bank Transfer (ব্যাংক ট্রান্সফার)</option>
-                    <option value="bKash">bKash (বিকাশ)</option>
-                    <option value="Nagad">Nagad (নগদ)</option>
-                  </select>
-                </div>
-
-                <div className="space-y-1">
-                  <label className="font-semibold text-foreground">Remaining Due Balance</label>
-                  <div className="px-3 py-2 bg-muted/40 border border-border rounded-lg text-xs font-mono font-bold text-rose-400">
-                    ৳ {Math.max(0, (Number(financials.totalAgreedAmount) || 0) - (Number(financials.advanceAmount) || 0)).toLocaleString()} BDT
-                  </div>
-                </div>
-              </div>
-
-              {Number(financials.advanceAmount) > 0 && (
-                <div className="p-4 bg-emerald-500/10 border border-emerald-500/20 rounded-xl space-y-2">
-                  <div className="flex items-center gap-2 text-emerald-400 font-bold text-xs">
-                    <FileCheck className="w-4 h-4" />
-                    <span>Automatic Money Receipt will be generated upon submission</span>
-                  </div>
-                  <p className="text-[11px] text-muted-foreground">
-                    A formal advance payment voucher will be recorded for {clientForm.name} (Amount: ৳ {Number(financials.advanceAmount).toLocaleString()}). You can immediately print it for the client.
+                  <p className="text-[10px] text-muted-foreground mt-1">
+                    Enter the total agreed amount for the entire processing package. The client will pay the initial advance to the Accountant in the next step.
                   </p>
                 </div>
-              )}
+              </div>
             </div>
           )}
 
@@ -688,8 +632,8 @@ export function CaseFileCreationModal({ isOpen, onClose, onSuccess }) {
                     <span className="font-mono font-bold text-foreground">৳ {Number(financials.totalAgreedAmount || 0).toLocaleString()}</span>
                   </div>
                   <div>
-                    <span className="text-muted-foreground block text-[10px] uppercase font-bold">Advance Deposit</span>
-                    <span className="font-mono font-bold text-emerald-400">৳ {Number(financials.advanceAmount || 0).toLocaleString()} ({financials.paymentMethod})</span>
+                    <span className="text-muted-foreground block text-[10px] uppercase font-bold">Advance Payment Status</span>
+                    <span className="font-semibold text-rose-400">Pending Accountant</span>
                   </div>
                 </div>
 
@@ -713,7 +657,7 @@ export function CaseFileCreationModal({ isOpen, onClose, onSuccess }) {
               <div className="p-3 bg-amber-500/10 border border-amber-500/20 rounded-xl text-amber-300 text-xs flex items-center gap-2">
                 <AlertCircle className="w-4 h-4 shrink-0 text-amber-400" />
                 <span>
-                  Clicking <strong>Submit Case File</strong> will instantly transfer this candidate file to the Admin Master Workflow Board for processor assignment.
+                  Clicking <strong>Submit Case File</strong> will instantly transfer this candidate file to the <strong>Accountant's Queue</strong> to collect the initial advance payment.
                 </span>
               </div>
             </div>
@@ -757,44 +701,11 @@ export function CaseFileCreationModal({ isOpen, onClose, onSuccess }) {
               className="flex items-center gap-2 px-6 py-2 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black rounded-xl transition cursor-pointer text-xs shadow-md"
             >
               {submitting ? <Loader2 className="w-4 h-4 animate-spin" /> : <CheckCircle2 className="w-4 h-4" />}
-              {submitting ? 'Submitting...' : 'Submit Case File & Handoff to Admin'}
+              {submitting ? 'Submitting...' : 'Submit Case File & Request Payment'}
             </button>
           )}
         </div>
       </div>
-
-      {/* Direct Money Receipt Print Modal */}
-      {showReceiptPrint && createdReceiptData && (
-        <div className="fixed inset-0 z-60 flex items-center justify-center p-4 bg-black/85">
-          <div className="bg-white text-slate-900 rounded-2xl p-6 max-w-2xl w-full space-y-4 max-h-[90vh] overflow-y-auto">
-            <div className="flex items-center justify-between border-b pb-3">
-              <h3 className="font-bold text-base flex items-center gap-2">
-                <Printer className="w-5 h-5 text-emerald-600" /> Advance Money Receipt Ready
-              </h3>
-              <button onClick={() => { setShowReceiptPrint(false); onClose(); }} className="text-slate-500 hover:text-slate-900">
-                <X className="w-5 h-5" />
-              </button>
-            </div>
-
-            <MoneyReceiptPrintSlip data={createdReceiptData} />
-
-            <div className="flex justify-end gap-2 pt-2 border-t">
-              <button
-                onClick={() => window.print()}
-                className="px-4 py-2 bg-emerald-600 text-white font-bold rounded-lg text-xs flex items-center gap-1.5"
-              >
-                <Printer className="w-4 h-4" /> Print Money Receipt
-              </button>
-              <button
-                onClick={() => { setShowReceiptPrint(false); onClose(); }}
-                className="px-4 py-2 bg-slate-200 text-slate-800 font-semibold rounded-lg text-xs"
-              >
-                Done & Close
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 }
