@@ -207,13 +207,13 @@ export function IndianVisaForm({ data, onChange, onSubmit, onReset, isSubmitting
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 bg-primary/5 p-4.5 rounded-lg border border-border">
             {[
-              { id: 'passportOriginal', label: t('visa.passportOriginal', 'Original Passport'), desc: 'Minimum 6 months validity passport' },
-              { id: 'nidCopy', label: t('visa.nidCopy', 'NID Copy'), desc: 'NID or online 17-digit birth certificate copy' },
-              { id: 'photoLabPrint', label: t('visa.photoLabPrint', 'Photo (2x2 Lab Print)'), desc: 'White background print' },
-              { id: 'bankSolvency', label: t('visa.bankSolvency', 'Bank Solvency Certificate / Dollar Endorsement'), desc: 'Minimum 20,000 BDT solvency or $200 endorsement' },
-              { id: 'utilityBillCopy', label: t('visa.utilityBill', 'Utility Bill Copy (Electricity/Gas/Water)'), desc: 'Electricity/Water/Gas bill copy' },
-              { id: 'previousVisaCopy', label: t('visa.previousVisa', 'Previous Indian Visa Copy (if any)'), desc: 'Old Indian visa copy' },
-              { id: 'nocTradeLicense', label: t('visa.nocTradeLicense', 'NOC / Trade License / Student ID'), desc: 'Professional/educational document' },
+              { id: 'passportOriginal', label: t('visa.passportOriginal', 'Original Passport'), desc: t('visa.passportOriginalDesc', 'Minimum 2 years validity passport') },
+              { id: 'nidCopy', label: t('visa.nidCopy', 'NID Copy'), desc: t('visa.nidCopyDesc', 'NID or online 17-digit birth certificate copy') },
+              { id: 'photoLabPrint', label: t('visa.photoLabPrint', 'Photo (2x2 Lab Print)'), desc: t('visa.photoLabPrintDesc', 'White background print') },
+              { id: 'bankSolvency', label: t('visa.bankSolvency', 'Bank Solvency Certificate / Dollar Endorsement'), desc: t('visa.bankSolvencyDesc', 'Minimum 20,000 BDT solvency or $200 endorsement') },
+              { id: 'utilityBillCopy', label: t('visa.utilityBill', 'Utility Bill Copy (Electricity/Gas/Water)'), desc: t('visa.utilityBillDesc', 'Electricity/Water/Gas bill copy') },
+              { id: 'previousVisaCopy', label: t('visa.previousVisa', 'Previous Indian Visa Copy (if any)'), desc: t('visa.previousVisaDesc', 'Old Indian visa copy') },
+              { id: 'nocTradeLicense', label: t('visa.nocTradeLicense', 'NOC / Trade License / Student ID'), desc: t('visa.nocTradeLicenseDesc', 'Professional/educational document') },
             ].map(item => (
               <label key={item.id} className="flex items-start gap-2.5 cursor-pointer select-none">
                 <input
