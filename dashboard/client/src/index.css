@@ -183,7 +183,7 @@ button, a, Link, NavLink{
 @media print {
   @page {
     size: A4 portrait;
-    margin: 12mm 14mm 12mm 14mm !important;
+    margin: 0 !important;
   }
 
   html, body {
@@ -193,11 +193,9 @@ button, a, Link, NavLink{
     print-color-adjust: exact !important;
     margin: 0 !important;
     padding: 0 !important;
-    width: 100% !important;
-    height: auto !important;
-    min-height: auto !important;
-    max-height: none !important;
-    overflow: visible !important;
+    width: 210mm !important;
+    height: 297mm !important;
+    overflow: hidden !important;
   }
 
   /* HIDE EVERYTHING ON THE PAGE BY DEFAULT */
@@ -223,7 +221,7 @@ button, a, Link, NavLink{
     visibility: visible !important;
   }
 
-  /* Position printable paper to respect standard page margins */
+  /* Anchor printable paper to exact 210mm x 297mm A4 page coordinates starting at (0,0) */
   .printable-a4-paper,
   #salary-slip-canvas,
   #employment-agreement-canvas,
@@ -231,21 +229,27 @@ button, a, Link, NavLink{
   #printable-indian-visa-canvas,
   #printable-passport-canvas,
   #printable-receipt-canvas {
-    position: static !important;
-    display: flex !important;
-    flex-direction: column !important;
-    justify-content: space-between !important;
-    width: 100% !important;
-    max-width: 100% !important;
-    min-height: 260mm !important;
+    position: fixed !important;
+    left: 0 !important;
+    top: 0 !important;
+    width: 210mm !important;
+    max-width: 210mm !important;
+    min-width: 210mm !important;
+    height: 297mm !important;
+    max-height: 297mm !important;
+    min-height: 297mm !important;
     box-sizing: border-box !important;
-    margin: 0 auto !important;
-    padding: 0 !important;
+    margin: 0 !important;
+    padding: 12mm 14mm !important;
     border: none !important;
     box-shadow: none !important;
     background: #ffffff !important;
     color: #111827 !important;
-    overflow: visible !important;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: space-between !important;
+    overflow: hidden !important;
+    z-index: 999999 !important;
     page-break-inside: avoid !important;
     break-inside: avoid !important;
   }
