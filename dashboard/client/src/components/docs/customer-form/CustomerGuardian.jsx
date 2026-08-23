@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { CustomerGuardianForm } from './CustomerGuardianForm';
 import { CustomerGuardianPreview } from './CustomerGuardianPreview';
 import { getDefaultCustomerGuardianData, generateApplicationNo } from './sampleData';
@@ -7,6 +8,7 @@ import { toast } from 'sonner';
 import { apiClient } from '../../../lib/api-client';
 
 export function CustomerGuardian({ initialData = null, onSavedSuccess = null }) {
+  const { t } = useTranslation();
   const [data, setData] = useState(initialData || getDefaultCustomerGuardianData());
   const [viewMode, setViewMode] = useState('form'); // 'form' | 'preview'
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -19,12 +21,12 @@ export function CustomerGuardian({ initialData = null, onSavedSuccess = null }) 
 
   const handleReset = () => {
     setData(getDefaultCustomerGuardianData());
-    toast.info('ফর্মের তথ্য রিসেট করা হয়েছে।');
+    toast.info(t('customerForm.clearReset', 'Form data reset'));
   };
 
   const handleSaveToDatabase = async () => {
     if (!data.customer?.fullName?.trim()) {
-      toast.error('কাস্টমারের নাম (Customer Full Name) আবশ্যক!');
+      toast.error(t('customerForm.fullNamePlaceholder', 'Customer full name is required'));
       return;
     }
 
@@ -45,19 +47,19 @@ export function CustomerGuardian({ initialData = null, onSavedSuccess = null }) 
         setData(savedDoc);
         toast.success(
           isEdit
-            ? `কাস্টমার ফাইল আপডেট করা হয়েছে! (App No: ${savedDoc.applicationNo})`
-            : `কাস্টমার ফাইল ডাটাবেজে সেভ হয়েছে! (App No: ${savedDoc.applicationNo})`
+            ? `${t('customerForm.updateDb', 'Updated')} (App No: ${savedDoc.applicationNo})`
+            : `${t('customerForm.saveDb', 'Saved')} (App No: ${savedDoc.applicationNo})`
         );
         if (onSavedSuccess) onSavedSuccess(savedDoc);
         setViewMode('preview');
       } else {
-        throw new Error(res.data?.message || 'ডাটাবেজে সংরক্ষণ করতে ব্যর্থ হয়েছে।');
+        throw new Error(res.data?.message || 'Failed to save');
       }
     } catch (err) {
       console.warn('Backend API save warning (offline preview mode):', err);
       const fallbackAppNo = data.applicationNo || generateApplicationNo();
       setData(prev => ({ ...prev, applicationNo: fallbackAppNo }));
-      toast.info(`ফর্ম প্রিভিউ প্রস্তুত! (অফলাইন মোড - App No: ${fallbackAppNo})`);
+      toast.info(`Preview ready (App No: ${fallbackAppNo})`);
       setViewMode('preview');
     } finally {
       setIsSubmitting(false);
@@ -69,30 +71,29 @@ export function CustomerGuardian({ initialData = null, onSavedSuccess = null }) 
   };
 
   const handleWhatsAppShare = () => {
-    const customerName = data.customer?.fullName || 'সম্মানিত কাস্টমার';
+    const customerName = data.customer?.fullName || 'Customer';
     const total = Number(data.payment?.totalAmount || 0).toLocaleString('en-IN');
     const advance = Number(data.payment?.advancePaid || 0).toLocaleString('en-IN');
     const due = Number(data.payment?.dueAmount || 0).toLocaleString('en-IN');
 
     const msg =
-      `*📄 মনসুর আলী ট্রাভেলস (MONSUR ALI TRAVELS)*\n` +
+      `*📄 MONSUR ALI TRAVELS*\n` +
       `*CUSTOMER & GUARDIAN APPLICATION FORM (${data.applicationNo || 'APP-0000'})*\n` +
       `-----------------------------------------\n` +
-      `👤 *কাস্টমারের নাম:* ${customerName}\n` +
-      `📌 *সার্ভিস:* ${data.serviceType || 'Indian Visa'}\n` +
-      `🆔 *NID নম্বর:* ${data.customer?.nidNumber || 'N/A'}\n` +
-      `🛂 *পাসপোর্ট:* ${data.customer?.passportNumber || 'N/A'}\n` +
-      `👥 *অভিভাবক:* ${data.guardian?.fullName || 'N/A'} (${data.guardian?.relationship || 'Guardian'})\n` +
+      `👤 *Name:* ${customerName}\n` +
+      `📌 *Service:* ${data.serviceType || 'Indian Visa'}\n` +
+      `🆔 *NID:* ${data.customer?.nidNumber || 'N/A'}\n` +
+      `🛂 *Passport:* ${data.customer?.passportNumber || 'N/A'}\n` +
+      `👥 *Guardian:* ${data.guardian?.fullName || 'N/A'} (${data.guardian?.relationship || 'Guardian'})\n` +
       `-----------------------------------------\n` +
-      `💰 *মোট ফি:* ৳ ${total}\n` +
-      `✅ *অগ্রিম জমা:* ৳ ${advance}\n` +
-      `⏳ *বকেয়া:* ৳ ${due}\n` +
+      `💰 *Total Fee:* ৳ ${total}\n` +
+      `✅ *Advance Paid:* ৳ ${advance}\n` +
+      `⏳ *Due Amount:* ৳ ${due}\n` +
       `-----------------------------------------\n` +
-      `📅 *তারিখ:* ${data.dateReceived || 'আজ'}\n\n` +
-      `📌 *অফিসিয়াল আপডেট:* আপনার কাস্টমার ফাইল ও অগ্রিম জমার মানি রসিদ ডাটাবেজে সংরক্ষণ করা হয়েছে।\n\n` +
-      `🏢 *মনসুর আলী ট্রাভেলস*\n` +
-      `📍 ঠিকানা: Mominpur Jagannathpur Road, Sunamganj, Post Code 3060\n` +
-      `📞 যোগাযোগ: +8801345579534`;
+      `📅 *Date:* ${data.dateReceived || 'Today'}\n\n` +
+      `🏢 *MONSUR ALI TRAVELS*\n` +
+      `📍 Address: Mominpur Jagannathpur Road, Sunamganj, Post Code 3060\n` +
+      `📞 Phone: +8801345579534`;
 
     window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(msg)}`, '_blank');
   };
@@ -104,10 +105,10 @@ export function CustomerGuardian({ initialData = null, onSavedSuccess = null }) 
         <div>
           <h2 className="text-base font-bold text-foreground tracking-tight flex items-center gap-2">
             <FileText className="w-5 h-5 text-primary" />
-            Customer &amp; Guardian Information Application Form
+            {t('customerForm.title', 'Customer & Guardian Information Application Form')}
           </h2>
           <p className="text-xs text-muted-foreground mt-0.5">
-            কাস্টমার ও অভিভাবকের তথ্য ও ডকুমেন্ট রিকোয়ারমেন্ট অ্যাপ্লিকেশন ফর্ম তৈরি ও প্রিন্ট করুন।
+            {t('customerForm.subtitle', 'Create and print official customer & guardian profile details, file tracking status, and advance payment ledger.')}
           </p>
         </div>
 
@@ -124,7 +125,7 @@ export function CustomerGuardian({ initialData = null, onSavedSuccess = null }) 
               }`}
             >
               <Edit3 className="w-3.5 h-3.5" />
-              <span>Edit Form</span>
+              <span>{t('customerForm.editForm', 'Edit Form')}</span>
             </button>
             <button
               type="button"
@@ -136,7 +137,7 @@ export function CustomerGuardian({ initialData = null, onSavedSuccess = null }) 
               }`}
             >
               <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500" />
-              <span>Print Preview</span>
+              <span>{t('customerForm.printPreview', 'Print Preview')}</span>
             </button>
           </div>
 
@@ -145,7 +146,7 @@ export function CustomerGuardian({ initialData = null, onSavedSuccess = null }) 
             type="button"
             onClick={handleWhatsAppShare}
             className="flex items-center gap-1.5 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 px-3 py-1.5 rounded-xl text-xs font-semibold transition-colors cursor-pointer"
-            title="WhatsApp এ শেয়ার করুন"
+            title="WhatsApp Share"
           >
             <Share2 className="w-3.5 h-3.5" />
             <span className="hidden md:inline">WhatsApp</span>
@@ -159,7 +160,7 @@ export function CustomerGuardian({ initialData = null, onSavedSuccess = null }) 
             className="flex items-center gap-1.5 bg-primary hover:bg-primary/90 text-primary-foreground text-xs font-bold px-3.5 py-2 rounded-xl shadow-xs transition-colors cursor-pointer disabled:opacity-50"
           >
             <Save className="w-3.5 h-3.5" />
-            <span>{isSubmitting ? 'Saving...' : data._id ? 'Update DB' : 'Save DB'}</span>
+            <span>{isSubmitting ? t('customerForm.saving', 'Saving...') : data._id ? t('customerForm.updateDb', 'Update Database') : t('customerForm.saveDb', 'Save to Database')}</span>
           </button>
 
           {/* Print / Download Button */}
@@ -169,7 +170,7 @@ export function CustomerGuardian({ initialData = null, onSavedSuccess = null }) 
             className="flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-4 py-2 rounded-xl shadow-xs transition-colors cursor-pointer"
           >
             <Printer className="w-4 h-4" />
-            <span>Download PDF / Print</span>
+            <span>{t('customerForm.downloadPrint', 'Download PDF / Print')}</span>
           </button>
         </div>
       </div>
