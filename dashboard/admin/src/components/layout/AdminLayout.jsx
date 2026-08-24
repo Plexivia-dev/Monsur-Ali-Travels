@@ -1,6 +1,6 @@
 import * as React from 'react'
 import { Link, Outlet, useNavigate, useLocation } from 'react-router-dom'
-import { LayoutDashboard, Compass, Layers, User, AlertCircle, LogOut, Menu, X, Settings, Server, FileText, ChevronDown, ChevronRight, FolderOpen, CreditCard, Receipt, PieChart, Wallet, Trash2, Users, Building2 } from 'lucide-react'
+import { LayoutDashboard, Compass, Layers, User, AlertCircle, LogOut, Menu, X, Settings, Server, FileText, ChevronDown, ChevronRight, FolderOpen, CreditCard, Receipt, PieChart, Wallet, Trash2, Users, Building2, HardDrive, Cloud } from 'lucide-react'
 import { RiTranslate2 } from '@remixicon/react'
 import { useAuth } from '@/store/useAuthStore'
 import { ProfileDropdown } from '@/components/blocks/dropdown-profile'
@@ -60,6 +60,7 @@ export default function AdminLayout() {
 
   const systemSubMenuItems = [
     { name: lang === 'BN' ? 'অ্যাক্টিভিটি লগস' : 'Activity Logs', path: '/admin/system/activity-logs', icon: FileText },
+    { name: lang === 'BN' ? 'স্টোরেজ ও ক্লাউড সিঙ্ক' : 'Storage & Cloud Sync', path: '/admin/system/storage', icon: HardDrive },
     { name: lang === 'BN' ? 'ট্র্যাশ' : 'Trash', path: '/admin/system/trash', icon: Trash2 },
   ]
 

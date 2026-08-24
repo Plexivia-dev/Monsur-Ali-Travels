@@ -12,6 +12,7 @@ import VisaWorkflowsPage from '@/pages/VisaWorkflowsPage'
 import CaseWorkflow from '@/pages/CaseWorkflow'
 import ActivityLogsPage from '@/pages/ActivityLogsPage'
 import TrashPage from '@/pages/system/TrashPage'
+import StorageSyncPage from '@/pages/system/StorageSyncPage'
 import Reports from '@/pages/accounting/Reports'
 import Payments from '@/pages/reports/Payments'
 import Bills from '@/pages/reports/Bills'
@@ -56,6 +57,8 @@ export default function App() {
               <Route path="system-logs" element={<ActivityLogsPage />} />
               <Route path="system/trash" element={<TrashPage />} />
               <Route path="trash" element={<TrashPage />} />
+              <Route path="system/storage" element={<StorageSyncPage />} />
+              <Route path="storage" element={<StorageSyncPage />} />
               <Route path="system" element={<Navigate to="/admin/system/activity-logs" replace />} />
               <Route path="reports" element={<Navigate to="/admin/reports/payments" replace />} />
               <Route path="reports/payments" element={<Payments />} />
