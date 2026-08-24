@@ -15,14 +15,17 @@ import {
   ChevronRight
 } from 'lucide-react';
 import { toast } from 'sonner';
+import ClientProfileDrawer from '@/components/clients/ClientProfileDrawer';
 
-export default function Payments() {
+// Renders the Payments and Money Receipts audit report for Admin Dashboard
+const Payments = () => {
   const [payments, setPayments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const [page, setPage] = useState(1);
   const [pagination, setPagination] = useState({ totalPages: 1, totalCount: 0 });
+  const [selectedClientDid, setSelectedClientDid] = useState(null);
 
   const fetchPayments = useCallback(async () => {
     setLoading(true);
@@ -207,8 +210,15 @@ export default function Payments() {
                           })}
                         </td>
                         <td className="px-6 py-4">
-                          <div className="flex flex-col">
-                            <span className="font-semibold text-foreground">{client}</span>
+                          <div
+                            onClick={() => {
+                              const did = payment.clientDid || payment.customerId?.did || payment.customerId;
+                              if (did) setSelectedClientDid(did);
+                            }}
+                            className="flex flex-col cursor-pointer group"
+                            title="Click to view full client profile"
+                          >
+                            <span className="font-semibold text-foreground group-hover:text-primary transition-colors">{client}</span>
                             {phone && <span className="text-xs text-muted-foreground">{phone}</span>}
                           </div>
                         </td>
@@ -274,6 +284,16 @@ export default function Payments() {
           </div>
         </div>
       )}
+
+      {/* Client 360 Degree Profile Drawer */}
+      <ClientProfileDrawer
+        clientDid={selectedClientDid}
+        isOpen={Boolean(selectedClientDid)}
+        onClose={() => setSelectedClientDid(null)}
+        onRefresh={fetchPayments}
+      />
     </div>
   );
-}
+};
+
+export default Payments;

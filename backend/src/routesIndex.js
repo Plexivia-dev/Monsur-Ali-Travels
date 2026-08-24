@@ -60,6 +60,7 @@ adminRouter.use(auditLog);
 adminRouter.use("/dashboard", dashboardRouter);
 adminRouter.use("/system", systemRouter);
 adminRouter.use("/users", usersRouter);
+adminRouter.use("/clients", clientRouterInstance);
 adminRouter.use("/cases", adminCaseRouter);
 adminRouter.use("/settings", settingsRouter);
 adminRouter.use("/storage", storageMaintenanceRouter);

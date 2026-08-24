@@ -9,8 +9,10 @@ import { toast } from 'sonner';
 import { apiClient } from '../lib/api-client';
 import { StepAssignModal } from '../components/workflow/StepAssignModal';
 import { useAuth } from '../store/useAuthStore';
+import CreateClientModal from '@/components/clients/CreateClientModal';
 
-export default function CaseWorkflow() {
+// Renders the Client Files & Workflow Step board for Admin Dashboard
+const CaseWorkflow = () => {
   const { user } = useAuth();
   const isAccountant = user?.subRole?.toLowerCase() === 'accountant' || user?.subRole?.toLowerCase() === 'accounts';
 
@@ -19,6 +21,7 @@ export default function CaseWorkflow() {
   const [search, setSearch] = useState('');
   const [selectedCase, setSelectedCase] = useState(null);
   const [assignModalOpen, setAssignModalOpen] = useState(false);
+  const [createModalOpen, setCreateModalOpen] = useState(false);
   const [approvingTaskId, setApprovingTaskId] = useState(null);
 
   const fetchCases = useCallback(async () => {
@@ -83,13 +86,23 @@ export default function CaseWorkflow() {
               Manage client files, workflow steps, document access permissions, and case lifecycles.
             </p>
           </div>
-          <button
-            onClick={fetchCases}
-            className="p-2.5 bg-white hover:bg-gray-50 text-sky-600 rounded-xl border border-gray-200 transition-all cursor-pointer shadow-sm"
-            title="Refresh Cases"
-          >
-            <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
-          </button>
+          <div className="flex items-center gap-2.5">
+            <button
+              onClick={() => setCreateModalOpen(true)}
+              className="flex items-center gap-1.5 px-3.5 py-2 bg-sky-500 hover:bg-sky-400 text-slate-950 rounded-xl font-bold text-xs transition-all cursor-pointer shadow-md"
+            >
+              <Plus className="w-4 h-4" />
+              <span>+ New Client / File</span>
+            </button>
+
+            <button
+              onClick={fetchCases}
+              className="p-2.5 bg-white hover:bg-gray-50 text-sky-600 rounded-xl border border-gray-200 transition-all cursor-pointer shadow-sm"
+              title="Refresh Cases"
+            >
+              <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
+            </button>
+          </div>
         </div>
       </div>
 
@@ -204,6 +217,15 @@ export default function CaseWorkflow() {
           onSuccess={fetchCases}
         />
       )}
+
+      {/* Create New Client & File Modal */}
+      <CreateClientModal
+        isOpen={createModalOpen}
+        onClose={() => setCreateModalOpen(false)}
+        onSuccess={() => fetchCases()}
+      />
     </div>
   );
-}
+};
+
+export default CaseWorkflow;

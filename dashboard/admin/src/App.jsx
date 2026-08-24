@@ -13,6 +13,8 @@ import CaseWorkflow from '@/pages/CaseWorkflow'
 import ActivityLogsPage from '@/pages/ActivityLogsPage'
 import TrashPage from '@/pages/system/TrashPage'
 import StorageSyncPage from '@/pages/system/StorageSyncPage'
+import ClientsPage from '@/pages/ClientsPage'
+import UsersPage from '@/pages/UsersPage'
 import Reports from '@/pages/accounting/Reports'
 import Payments from '@/pages/reports/Payments'
 import Bills from '@/pages/reports/Bills'
@@ -51,6 +53,10 @@ export default function App() {
               <Route path="dialog" element={<DialogPage />} />
               <Route path="visa-workflows" element={<VisaWorkflowsPage />} />
               <Route path="cases" element={<CaseWorkflow />} />
+              <Route path="clients" element={<ClientsPage />} />
+              <Route path="agency/clients" element={<ClientsPage />} />
+              <Route path="users" element={<UsersPage />} />
+              <Route path="agency/users" element={<UsersPage />} />
               <Route path="activity-logs" element={<ActivityLogsPage />} />
               <Route path="system/activity-logs" element={<ActivityLogsPage />} />
               <Route path="system/logs" element={<ActivityLogsPage />} />
