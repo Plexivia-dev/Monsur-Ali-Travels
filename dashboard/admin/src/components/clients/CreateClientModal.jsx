@@ -117,7 +117,7 @@ const CreateClientModal = ({ isOpen, onClose, onSuccess }) => {
             </div>
             <div>
               <h2 className="text-lg font-bold text-foreground">
-                New Client & Case File (নতুন ক্লায়েন্ট ফাইল তৈরি)
+                New Client & Case File
               </h2>
               <p className="text-xs text-muted-foreground mt-0.5">
                 Register a new client profile and initialize their service workflow.
@@ -137,12 +137,12 @@ const CreateClientModal = ({ isOpen, onClose, onSuccess }) => {
           {/* Section 1: Client Personal Info */}
           <div>
             <h3 className="text-xs font-bold uppercase tracking-wider text-primary mb-3">
-              1. Basic Information (প্রাথমিক তথ্য)
+              1. Basic Information
             </h3>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
                 <label className="text-xs font-semibold text-foreground block mb-1.5">
-                  Full Name (পূর্ণ নাম) <span className="text-rose-500">*</span>
+                  Full Name <span className="text-rose-500">*</span>
                 </label>
                 <input
                   type="text"
@@ -157,7 +157,7 @@ const CreateClientModal = ({ isOpen, onClose, onSuccess }) => {
 
               <div>
                 <label className="text-xs font-semibold text-foreground block mb-1.5">
-                  Phone Number (মোবাইল নম্বর) <span className="text-rose-500">*</span>
+                  Phone Number <span className="text-rose-500">*</span>
                 </label>
                 <input
                   type="tel"
@@ -172,7 +172,7 @@ const CreateClientModal = ({ isOpen, onClose, onSuccess }) => {
 
               <div>
                 <label className="text-xs font-semibold text-foreground block mb-1.5">
-                  Email Address (ইমেইল)
+                  Email Address
                 </label>
                 <input
                   type="email"
@@ -186,7 +186,7 @@ const CreateClientModal = ({ isOpen, onClose, onSuccess }) => {
 
               <div>
                 <label className="text-xs font-semibold text-foreground block mb-1.5">
-                  Passport Number (পাসপোর্ট নম্বর)
+                  Passport Number
                 </label>
                 <input
                   type="text"
@@ -200,7 +200,7 @@ const CreateClientModal = ({ isOpen, onClose, onSuccess }) => {
 
               <div>
                 <label className="text-xs font-semibold text-foreground block mb-1.5">
-                  NID Number (জাতীয় পরিচয়পত্র)
+                  NID Number
                 </label>
                 <input
                   type="text"
@@ -214,7 +214,7 @@ const CreateClientModal = ({ isOpen, onClose, onSuccess }) => {
 
               <div>
                 <label className="text-xs font-semibold text-foreground block mb-1.5">
-                  Customer Type (ক্লায়েন্টের ধরন)
+                  Customer Type
                 </label>
                 <select
                   name="customerType"
@@ -222,8 +222,8 @@ const CreateClientModal = ({ isOpen, onClose, onSuccess }) => {
                   onChange={handleChange}
                   className="w-full px-3 py-2 text-xs rounded-xl border border-input bg-background focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
                 >
-                  <option value="Individual">Individual (একক ক্লায়েন্ট)</option>
-                  <option value="Corporate">Corporate / Agency (প্রতিষ্ঠান)</option>
+                  <option value="Individual">Individual</option>
+                  <option value="Corporate">Corporate / Agency</option>
                   <option value="VIP">VIP Customer</option>
                   <option value="Lead">Lead / Prospect</option>
                 </select>
@@ -234,12 +234,12 @@ const CreateClientModal = ({ isOpen, onClose, onSuccess }) => {
           {/* Section 2: Initial Case & Service Details */}
           <div>
             <h3 className="text-xs font-bold uppercase tracking-wider text-primary mb-3">
-              2. Service & Package Details (সার্ভিস ও প্যাকেজ তথ্য)
+              2. Service & Package Details
             </h3>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
                 <label className="text-xs font-semibold text-foreground block mb-1.5">
-                  Service / Case Type (সার্ভিস ক্যাটাগরি)
+                  Service / Case Type
                 </label>
                 <select
                   name="serviceType"
@@ -247,18 +247,18 @@ const CreateClientModal = ({ isOpen, onClose, onSuccess }) => {
                   onChange={handleChange}
                   className="w-full px-3 py-2 text-xs rounded-xl border border-input bg-background focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
                 >
-                  <option value="WORK_PERMIT">Work Permit Visa (ওয়ার্ক পারমিট)</option>
-                  <option value="TOURIST_VISA">Tourist / Visit Visa (ট্যুরিস্ট ভিসা)</option>
-                  <option value="MEDICAL_VISA">Medical Visa (মেডিকেল ভিসা)</option>
-                  <option value="UMRAH_HAJJ">Umrah / Hajj Package (উমরাহ ও হজ)</option>
-                  <option value="STUDENT_VISA">Student Visa (স্টুডেন্ট ভিসা)</option>
+                  <option value="WORK_PERMIT">Work Permit Visa</option>
+                  <option value="TOURIST_VISA">Tourist / Visit Visa</option>
+                  <option value="MEDICAL_VISA">Medical Visa</option>
+                  <option value="UMRAH_HAJJ">Umrah / Hajj Package</option>
+                  <option value="STUDENT_VISA">Student Visa</option>
                   <option value="MANPOWER">Manpower & Emigration</option>
                 </select>
               </div>
 
               <div>
                 <label className="text-xs font-semibold text-foreground block mb-1.5">
-                  Destination Country (গন্তব্য দেশ)
+                  Destination Country
                 </label>
                 <select
                   name="destinationCountry"
@@ -266,21 +266,21 @@ const CreateClientModal = ({ isOpen, onClose, onSuccess }) => {
                   onChange={handleChange}
                   className="w-full px-3 py-2 text-xs rounded-xl border border-input bg-background focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
                 >
-                  <option value="Saudi Arabia">Saudi Arabia (সৌদি আরব)</option>
-                  <option value="Malaysia">Malaysia (মালয়েশিয়া)</option>
-                  <option value="United Arab Emirates">Dubai / UAE (দুবাই)</option>
-                  <option value="Qatar">Qatar (কাতার)</option>
-                  <option value="Oman">Oman (ওমান)</option>
-                  <option value="Kuwait">Kuwait (কুয়েত)</option>
-                  <option value="India">India (ভারত)</option>
-                  <option value="Singapore">Singapore (সিঙ্গাপুর)</option>
+                  <option value="Saudi Arabia">Saudi Arabia</option>
+                  <option value="Malaysia">Malaysia</option>
+                  <option value="United Arab Emirates">Dubai / UAE</option>
+                  <option value="Qatar">Qatar</option>
+                  <option value="Oman">Oman</option>
+                  <option value="Kuwait">Kuwait</option>
+                  <option value="India">India</option>
+                  <option value="Singapore">Singapore</option>
                   <option value="Other">Other Country</option>
                 </select>
               </div>
 
               <div>
                 <label className="text-xs font-semibold text-foreground block mb-1.5">
-                  Total Package Amount (মোট প্যাকেজ ফি ৳)
+                  Total Package Amount (BDT)
                 </label>
                 <input
                   type="number"
@@ -294,7 +294,7 @@ const CreateClientModal = ({ isOpen, onClose, onSuccess }) => {
 
               <div>
                 <label className="text-xs font-semibold text-foreground block mb-1.5">
-                  Initial Advance Paid (অগ্রিম পেমেন্ট ৳)
+                  Initial Advance Paid (BDT)
                 </label>
                 <input
                   type="number"
@@ -311,7 +311,7 @@ const CreateClientModal = ({ isOpen, onClose, onSuccess }) => {
           {/* Section 3: Notes & Address */}
           <div>
             <label className="text-xs font-semibold text-foreground block mb-1.5">
-              Present Address / Notes (ঠিকানা ও নোট)
+              Present Address / Notes
             </label>
             <textarea
               name="address"

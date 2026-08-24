@@ -244,7 +244,7 @@ export default function DocumentStudio() {
             className="inline-flex items-center gap-2 text-xs font-bold text-muted-foreground hover:text-foreground bg-muted/50 hover:bg-muted px-3 py-1.5 rounded-md border border-border transition-all cursor-pointer w-fit"
           >
             <ChevronLeft className="w-4 h-4" />
-            <span>{isBn ? '← সকল ডকুমেন্ট জেনারেটর (Document Studio Hub)' : '← Back to Document Studio Hub'}</span>
+            <span>{isBn ? '← সকল ডকুমেন্ট জেনারেটর' : '← Back to Document Studio Hub'}</span>
           </button>
 
           {activeGenerator && (
@@ -271,7 +271,7 @@ export default function DocumentStudio() {
                 </div>
                 <h1 className="text-2xl sm:text-3xl font-black text-foreground tracking-tight flex items-center gap-3">
                   <FileText className="w-7 h-7 text-primary shrink-0" />
-                  {isBn ? 'ডকুমেন্ট স্টুডিও (Document Studio)' : 'Document Studio'}
+                  {isBn ? 'ডকুমেন্ট স্টুডিও' : 'Document Studio'}
                 </h1>
                 <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed">
                   {isBn
@@ -287,7 +287,7 @@ export default function DocumentStudio() {
                     type="text"
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    placeholder={isBn ? 'ডকুমেন্ট খুঁজুন (যেমন: Invoice, Slip)...' : 'Search generator (e.g. Agreement, Slip)...'}
+                    placeholder={isBn ? 'ডকুমেন্ট খুঁজুন...' : 'Search generator (e.g. Agreement, Slip)...'}
                     className="w-full pl-9 pr-4 py-2.5 bg-background border border-border rounded-md text-xs font-semibold text-foreground focus:ring-2 focus:ring-primary/30 outline-none shadow-xs"
                   />
                   {searchQuery && (

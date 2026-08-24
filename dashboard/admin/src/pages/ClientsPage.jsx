@@ -110,7 +110,7 @@ const ClientsPage = () => {
           </div>
           <h1 className="text-2xl md:text-3xl font-extrabold text-foreground tracking-tight mt-1.5 flex items-center gap-2.5">
             <Users className="size-7 text-primary" />
-            <span>Clients Directory (ক্লায়েন্ট ডিরেক্টরি)</span>
+            <span>Clients Directory</span>
           </h1>
           <p className="text-sm text-muted-foreground mt-0.5">
             Central single source of truth for client records, visa files, workflows, and ledgers.
@@ -134,7 +134,7 @@ const ClientsPage = () => {
             className="flex items-center gap-2 px-4.5 py-2 text-sm font-bold rounded-xl bg-primary text-primary-foreground hover:bg-primary/90 transition-all cursor-pointer shadow-md"
           >
             <UserPlus className="size-4" />
-            <span>+ New Client (নতুন ক্লায়েন্ট)</span>
+            <span>+ New Client</span>
           </button>
         </div>
       </div>
@@ -145,7 +145,7 @@ const ClientsPage = () => {
           <CardContent className="p-5 flex items-center justify-between">
             <div>
               <span className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
-                Total Clients (মোট ক্লায়েন্ট)
+                Total Clients
               </span>
               <div className="text-2xl font-black text-foreground mt-1">
                 {pagination.totalCount}
@@ -161,7 +161,7 @@ const ClientsPage = () => {
           <CardContent className="p-5 flex items-center justify-between">
             <div>
               <span className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
-                Active Cases (চলতি কেস ফাইল)
+                Active Cases
               </span>
               <div className="text-2xl font-black text-foreground mt-1">
                 {clients.reduce((acc, c) => acc + (c.candidateCases?.length || c.applications?.length || 0), 0)}
@@ -235,9 +235,9 @@ const ClientsPage = () => {
               }}
               className="px-3 py-1.5 text-xs rounded-xl border border-input bg-background font-semibold text-foreground focus:outline-none cursor-pointer"
             >
-              <option value="all">All Types (সকল ধরন)</option>
-              <option value="Individual">Individual (একক)</option>
-              <option value="Corporate">Corporate (প্রতিষ্ঠান)</option>
+              <option value="all">All Customer Types</option>
+              <option value="Individual">Individual</option>
+              <option value="Corporate">Corporate</option>
               <option value="VIP">VIP</option>
               <option value="Lead">Lead</option>
             </select>

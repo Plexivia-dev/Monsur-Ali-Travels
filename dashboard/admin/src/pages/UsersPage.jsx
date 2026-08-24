@@ -72,7 +72,7 @@ const UsersPage = () => {
           </div>
           <h1 className="text-2xl md:text-3xl font-extrabold text-foreground tracking-tight mt-1.5 flex items-center gap-2.5">
             <User className="size-7 text-primary" />
-            <span>System Users & Staff (ইউজার ও স্টাফ ম্যানেজমেন্ট)</span>
+            <span>System Users & Staff</span>
           </h1>
           <p className="text-sm text-muted-foreground mt-0.5">
             Manage agency administrators, operations staff, accountants, and user privileges.
@@ -111,7 +111,7 @@ const UsersPage = () => {
             onChange={(e) => setRoleFilter(e.target.value)}
             className="px-3 py-2 text-xs rounded-xl border border-input bg-background font-semibold text-foreground focus:outline-none cursor-pointer"
           >
-            <option value="all">All Roles (সকল রোল)</option>
+            <option value="all">All Roles</option>
             <option value="Admin">Admin</option>
             <option value="Owner">Owner</option>
             <option value="Staff">Staff</option>

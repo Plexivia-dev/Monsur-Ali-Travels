@@ -6,35 +6,35 @@ import { MoneyReceiptPrintSlip } from './MoneyReceiptPrintSlip';
 import { useAuth } from '../../../lib/auth-context';
 
 const SERVICE_OPTIONS = [
-  'ইন্ডিয়ান ভিসা প্রসেসিং (Indian Visa)',
-  'পাসপোর্ট সাবমিশন ও নবায়ন (Passport Service)',
-  'গ্রিস ওয়ার্ক পারমিট কেস (Greece Work Permit)',
-  'উত্তর মেসিডোনিয়া কেস (North Macedonia Case)',
-  'ম্যানপাওয়ার কেস ফাইল (Manpower File)',
-  'এয়ার টিকিট বুকিং (Air Ticket Booking)',
-  'চাকরির চুক্তিপত্র সার্ভিস (Agreement Service)',
-  'সার্ভিস ফি ও কনসালটেন্সি (Service Fee)',
-  'অন্যান্য সার্ভিস (Other Service)',
+  'ইন্ডিয়ান ভিসা প্রসেসিং',
+  'পাসপোর্ট সাবমিশন ও নবায়ন',
+  'গ্রিস ওয়ার্ক পারমিট কেস',
+  'উত্তর মেসিডোনিয়া কেস',
+  'ম্যানপাওয়ার কেস ফাইল',
+  'এয়ার টিকিট বুকিং',
+  'চাকরির চুক্তিপত্র সার্ভিস',
+  'সার্ভিস ফি ও কনসালটেন্সি',
+  'অন্যান্য সার্ভিস',
 ];
 
 export function MoneyReceiptModal({
   isOpen,
   onClose,
   initialData = {},
-  onCreated,
+  onSuccess,
 }) {
-  const { user } = useAuth();
+  const user = useAuth((state) => state.user);
+  const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
-    clientName: '',
-    clientPhone: '',
-    passportNumber: '',
-    serviceType: 'ইন্ডিয়ান ভিসা প্রসেসিং (Indian Visa)',
-    purpose: '',
-    amount: '',
-    amountInWords: '',
-    paymentMethod: 'Cash',
-    createdByName: user?.name || 'ম্যানেজার (Manager)',
-    notes: '',
+    clientName: initialData.clientName || '',
+    clientPhone: initialData.clientPhone || '',
+    passportNumber: initialData.passportNumber || '',
+    serviceType: initialData.serviceType || 'ইন্ডিয়ান ভিসা প্রসেসিং',
+    amount: initialData.amount || '',
+    amountInWords: initialData.amountInWords || '',
+    paymentMethod: initialData.paymentMethod || 'Cash',
+    purpose: initialData.purpose || '',
+    createdByName: user?.name || 'ম্যানেজার',
   });
 
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -48,12 +48,12 @@ export function MoneyReceiptModal({
         clientName: initialData.clientName || initialData.applicantName || initialData.fullName || initialData.name || '',
         clientPhone: initialData.clientPhone || initialData.phone || initialData.mobileNumber || '',
         passportNumber: initialData.passportNumber || '',
-        serviceType: initialData.serviceType || 'ইন্ডিয়ান ভিসা প্রসেসিং (Indian Visa)',
+        serviceType: initialData.serviceType || 'ইন্ডিয়ান ভিসা প্রসেসিং',
         purpose: initialData.purpose || initialData.remarks || '',
         amount: initialData.amount || initialData.totalAmount || initialData.fee || '',
         amountInWords: initialData.amountInWords || '',
         paymentMethod: initialData.paymentMethod || 'Cash',
-        createdByName: user?.name || 'ম্যানেজার (Manager)',
+        createdByName: user?.name || 'ম্যানেজার',
         notes: initialData.notes || '',
         customerId: initialData.customerId || null,
         serviceRef: initialData.serviceRef || null,
@@ -183,7 +183,7 @@ export function MoneyReceiptModal({
               <div className="bg-muted/20 border border-border rounded-xl p-4 space-y-4">
                 <h3 className="text-xs font-bold text-foreground uppercase tracking-wider flex items-center gap-1.5 text-primary">
                   <User className="w-4 h-4" />
-                  ১. গ্রাহকের বিবরণ (Client Details)
+                  ১. গ্রাহকের বিবরণ
                 </h3>
 
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
@@ -236,7 +236,7 @@ export function MoneyReceiptModal({
               <div className="bg-muted/20 border border-border rounded-xl p-4 space-y-4">
                 <h3 className="text-xs font-bold text-foreground uppercase tracking-wider flex items-center gap-1.5 text-primary">
                   <DollarSign className="w-4 h-4" />
-                  ২. সেবার ধরন ও টাকার পরিমাণ (Payment Details)
+                  ২. সেবার ধরন ও টাকার পরিমাণ
                 </h3>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -279,7 +279,7 @@ export function MoneyReceiptModal({
 
                   <div>
                     <label className="block text-xs font-semibold text-foreground mb-1">
-                      টাকার পরিমাণ কথায় (In Words)
+                      টাকার পরিমাণ কথায়
                     </label>
                     <input
                       type="text"
@@ -293,7 +293,7 @@ export function MoneyReceiptModal({
 
                   <div>
                     <label className="block text-xs font-semibold text-foreground mb-1">
-                      পেমেন্ট মাধ্যম (Expected Method)
+                      পেমেন্ট মাধ্যম
                     </label>
                     <select
                       name="paymentMethod"
@@ -301,16 +301,16 @@ export function MoneyReceiptModal({
                       onChange={handleChange}
                       className="w-full px-3 py-2 text-xs rounded-lg border border-input bg-background focus:ring-2 focus:ring-primary/20 focus:border-primary outline-hidden"
                     >
-                      <option value="Cash">নগদ ক্যাশ (Cash)</option>
-                      <option value="Bank Transfer">ব্যাংক ট্রান্সফার (Bank)</option>
-                      <option value="bKash/Nagad">বিকাশ / নগদ (Mobile Banking)</option>
-                      <option value="Cheque">চেক (Cheque)</option>
+                      <option value="Cash">নগদ ক্যাশ</option>
+                      <option value="Bank Transfer">ব্যাংক ট্রান্সফার</option>
+                      <option value="bKash/Nagad">বিকাশ / নগদ</option>
+                      <option value="Cheque">চেক</option>
                     </select>
                   </div>
 
                   <div className="sm:col-span-2">
                     <label className="block text-xs font-semibold text-foreground mb-1">
-                      বিবরণ / নোট (Purpose & Remarks)
+                      বিবরণ ও মন্তব্য
                     </label>
                     <input
                       type="text"

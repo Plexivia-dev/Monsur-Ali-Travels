@@ -35,7 +35,7 @@ function BarcodeSVG({ value = 'MR2026084001' }) {
 }
 
 // Single Voucher Slip Unit Component
-export function VoucherSlipCard({ data = {}, copyTitle = 'Original Copy (মূল কপি)', idSuffix = '' }) {
+export function VoucherSlipCard({ data = {}, copyTitle = 'Original Copy', idSuffix = '' }) {
   const {
     receiptNo = 'MR-2026-084',
     date = new Date().toISOString().split('T')[0],
@@ -48,10 +48,10 @@ export function VoucherSlipCard({ data = {}, copyTitle = 'Original Copy (মূ�
     paymentMethod = 'Cash',
     amount = 50000,
     amountInWords = 'Fifty Thousand Taka Only.',
-    preparedBy = 'প্রদানকারী',
-    receivedBySignature = 'গ্রহণকারী',
-    accountsSignature = 'একাউন্টেন্ট',
-    approvedBySignature = 'জিএম / প্রোপাইটার',
+    preparedBy = 'Customer / Depositor',
+    receivedBySignature = 'Recipient',
+    accountsSignature = 'Accountant',
+    approvedBySignature = 'Authorized Signatory',
   } = data || {};
 
   const formattedAmount = Number(amount || 0).toLocaleString('en-IN');
@@ -288,7 +288,7 @@ export function MoneyReceiptPreview({ data = {} }) {
         {/* First Voucher Slip (Original Copy) */}
         <VoucherSlipCard
           data={data}
-          copyTitle={data.copyType || 'Original Copy (মূল কপি)'}
+          copyTitle={data.copyType || 'Original Copy'}
           idSuffix="-original"
         />
 
@@ -298,7 +298,7 @@ export function MoneyReceiptPreview({ data = {} }) {
             <ScissorDivider />
             <VoucherSlipCard
               data={data}
-              copyTitle="Office Copy (অফিস কপি)"
+              copyTitle="Office Copy"
               idSuffix="-office"
             />
           </>

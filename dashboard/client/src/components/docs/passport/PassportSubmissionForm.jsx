@@ -29,16 +29,16 @@ export function PassportSubmissionForm({ data, onChange, onSubmit, onReset, isSu
           </div>
 
           <div className="flex items-center space-x-2 shrink-0">
-            <label className="text-foreground font-bold text-sm">স্ট্যাটাস (Status):</label>
+            <label className="text-foreground font-bold text-sm">স্ট্যাটাস:</label>
             <select
               value={data.status || 'pending'}
               onChange={e => onChange({ ...data, status: e.target.value })}
               className="bg-background border border-border rounded-[4px] px-3 py-2 text-sm font-bold text-foreground outline-none cursor-pointer"
             >
-              <option value="pending">Pending (অপেক্ষমান)</option>
-              <option value="processing">Processing (প্রসেসিং চলছে)</option>
-              <option value="submitted">Submitted (জমা দেওয়া হয়েছে)</option>
-              <option value="delivered">Delivered (সম্পন্ন / ডেলিভার্ড)</option>
+              <option value="pending">অপেক্ষমান</option>
+              <option value="processing">প্রসেসিং চলছে</option>
+              <option value="submitted">জমা দেওয়া হয়েছে</option>
+              <option value="delivered">সম্পন্ন / ডেলিভার্ড</option>
             </select>
           </div>
         </div>

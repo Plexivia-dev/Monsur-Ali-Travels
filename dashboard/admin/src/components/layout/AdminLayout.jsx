@@ -42,7 +42,7 @@ export default function AdminLayout() {
   const accountsSubMenuItems = [
     { name: lang === 'BN' ? 'ক্যাশ বুক' : 'Cash Book', path: '/admin/accounts/cash-book', icon: Wallet },
     { name: lang === 'BN' ? 'ব্যাংক লেজার' : 'Bank Ledger', path: '/admin/accounts/bank-ledger', icon: Building2 },
-    { name: lang === 'BN' ? 'খরচ (ভাউচার)' : 'Expense Tracking', path: '/admin/accounts/expenses', icon: Receipt },
+    { name: lang === 'BN' ? 'ভাউচার খরচ' : 'Expense Tracking', path: '/admin/accounts/expenses', icon: Receipt },
   ]
 
   const agencySubMenuItems = [

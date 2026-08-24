@@ -79,7 +79,7 @@ function SingleReceiptSlip({ data = {}, copyType = 'গ্রাহক কপি
       {/* Title Bar */}
       <div className="flex items-center justify-between bg-slate-100 border border-slate-300 px-2.5 py-0.5 my-1.5 rounded">
         <span className="text-[11px] font-bold text-slate-800 tracking-wide uppercase">
-          অভ্যন্তরীণ মানি রিসিট ও পেমেন্ট টোকেন (Money Receipt)
+          মানি রিসিট ও পেমেন্ট টোকেন
         </span>
         <span className={`text-[9.5px] font-bold px-1.5 py-0.5 rounded border uppercase flex items-center gap-1 ${
           isConfirmed 
@@ -94,24 +94,24 @@ function SingleReceiptSlip({ data = {}, copyType = 'গ্রাহক কপি
       {/* Client & Service Info Grid */}
       <div className="grid grid-cols-2 gap-x-3 gap-y-1 text-xs border border-slate-200 rounded p-2 bg-slate-50/50 mb-1.5">
         <div>
-          <span className="text-slate-500 text-[9.5px] uppercase font-bold block">গ্রাহকের নাম (Client Name):</span>
+          <span className="text-slate-500 text-[9.5px] uppercase font-bold block">গ্রাহকের নাম:</span>
           <span className="font-bold text-slate-900 text-xs">{clientName || 'N/A'}</span>
         </div>
         <div>
-          <span className="text-slate-500 text-[9.5px] uppercase font-bold block">মোবাইল নম্বর (Phone):</span>
+          <span className="text-slate-500 text-[9.5px] uppercase font-bold block">মোবাইল নম্বর:</span>
           <span className="font-mono font-semibold text-slate-800 text-[11px]">{clientPhone || 'N/A'}</span>
         </div>
         <div>
-          <span className="text-slate-500 text-[9.5px] uppercase font-bold block">পাসপোর্ট নম্বর (Passport No):</span>
+          <span className="text-slate-500 text-[9.5px] uppercase font-bold block">পাসপোর্ট নম্বর:</span>
           <span className="font-mono font-bold text-slate-900 uppercase text-[11px]">{passportNumber || 'N/A'}</span>
         </div>
         <div>
-          <span className="text-slate-500 text-[9.5px] uppercase font-bold block">সেবার ধরন (Service Type):</span>
+          <span className="text-slate-500 text-[9.5px] uppercase font-bold block">সেবার ধরন:</span>
           <span className="font-semibold text-slate-900 text-[11px]">{serviceType}</span>
         </div>
         {purpose && (
           <div className="col-span-2 border-t border-slate-200 pt-0.5 mt-0.5">
-            <span className="text-slate-500 text-[9.5px] uppercase font-bold block">বিবরণ / পারপাস (Purpose/Remarks):</span>
+            <span className="text-slate-500 text-[9.5px] uppercase font-bold block">বিবরণ ও উদ্দেশ্য:</span>
             <span className="text-slate-800 text-[10.5px]">{purpose}</span>
           </div>
         )}
@@ -120,7 +120,7 @@ function SingleReceiptSlip({ data = {}, copyType = 'গ্রাহক কপি
       {/* Amount & Payment Method Highlight Box */}
       <div className="flex items-center justify-between border border-slate-900 bg-slate-900 text-white rounded p-2 mb-1.5">
         <div>
-          <div className="text-[9.5px] uppercase font-medium text-slate-300">টাকার পরিমাণ (Amount to Pay / Paid)</div>
+          <div className="text-[9.5px] uppercase font-medium text-slate-300">টাকার পরিমাণ</div>
           <div className="text-base sm:text-lg font-black tracking-tight text-emerald-400">
             ৳ {Number(amount || 0).toLocaleString('en-IN')} BDT
           </div>

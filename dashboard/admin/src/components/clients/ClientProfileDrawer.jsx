@@ -163,11 +163,11 @@ const ClientProfileDrawer = ({ clientDid, isOpen, onClose, onRefresh }) => {
             <div className="text-base font-black text-foreground mt-0.5">{formatCurrency(totalPackageCost)}</div>
           </div>
           <div className="p-3 rounded-xl bg-background border border-border shadow-xs">
-            <span className="text-[11px] font-bold uppercase text-emerald-600">Total Paid (পরিশোধ)</span>
+            <span className="text-[11px] font-bold uppercase text-emerald-600">Total Paid</span>
             <div className="text-base font-black text-emerald-600 mt-0.5">{formatCurrency(totalPaid)}</div>
           </div>
           <div className="p-3 rounded-xl bg-background border border-border shadow-xs">
-            <span className="text-[11px] font-bold uppercase text-rose-600">Due Balance (বকেয়া)</span>
+            <span className="text-[11px] font-bold uppercase text-rose-600">Due Balance</span>
             <div className="text-base font-black text-rose-600 mt-0.5">{formatCurrency(totalDue)}</div>
           </div>
         </div>
@@ -183,7 +183,7 @@ const ClientProfileDrawer = ({ clientDid, isOpen, onClose, onRefresh }) => {
             }`}
           >
             <FolderOpen className="size-4" />
-            <span>Cases & Overview (কেস ও তথ্য)</span>
+            <span>Cases & Overview</span>
             <span className="ml-1 px-1.5 py-0.2 rounded-full text-[10px] bg-muted font-bold">
               {cases.length}
             </span>
@@ -198,7 +198,7 @@ const ClientProfileDrawer = ({ clientDid, isOpen, onClose, onRefresh }) => {
             }`}
           >
             <Layers className="size-4" />
-            <span>Workflow Timeline (ওয়ার্কফ্লো স্টেপ)</span>
+            <span>Workflow Timeline</span>
           </button>
 
           <button
@@ -210,7 +210,7 @@ const ClientProfileDrawer = ({ clientDid, isOpen, onClose, onRefresh }) => {
             }`}
           >
             <CreditCard className="size-4" />
-            <span>Payments & Ledger (পেমেন্ট হিস্ট্রি)</span>
+            <span>Payments & Ledger</span>
             <span className="ml-1 px-1.5 py-0.2 rounded-full text-[10px] bg-muted font-bold">
               {receipts.length}
             </span>
@@ -225,7 +225,7 @@ const ClientProfileDrawer = ({ clientDid, isOpen, onClose, onRefresh }) => {
             }`}
           >
             <FileText className="size-4" />
-            <span>Documents Vault (ডকুমেন্টস)</span>
+            <span>Documents Vault</span>
           </button>
         </div>
 
@@ -237,7 +237,7 @@ const ClientProfileDrawer = ({ clientDid, isOpen, onClose, onRefresh }) => {
               {/* Personal Details Card */}
               <div className="p-4 rounded-2xl bg-muted/30 border border-border space-y-3">
                 <h3 className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
-                  Contact & Identification (পরিচয় ও ঠিকানা)
+                  Contact & Identification
                 </h3>
                 <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 text-xs">
                   <div>
@@ -268,7 +268,7 @@ const ClientProfileDrawer = ({ clientDid, isOpen, onClose, onRefresh }) => {
                 <div className="flex items-center justify-between">
                   <h3 className="text-sm font-bold text-foreground flex items-center gap-2">
                     <FolderOpen className="size-4 text-primary" />
-                    <span>Client Case Files (ক্লায়েন্টের ফাইলসমূহ)</span>
+                    <span>Client Case Files</span>
                   </h3>
                 </div>
 
@@ -324,7 +324,7 @@ const ClientProfileDrawer = ({ clientDid, isOpen, onClose, onRefresh }) => {
             <div className="space-y-4">
               <h3 className="text-sm font-bold text-foreground flex items-center gap-2">
                 <Layers className="size-4 text-primary" />
-                <span>Workflow Processing Steps (পর্যায়ক্রমিক স্টেপ হিস্ট্রি)</span>
+                <span>Workflow Processing Steps</span>
               </h3>
 
               {cases.length === 0 ? (
@@ -394,7 +394,7 @@ const ClientProfileDrawer = ({ clientDid, isOpen, onClose, onRefresh }) => {
             <div className="space-y-4">
               <h3 className="text-sm font-bold text-foreground flex items-center gap-2">
                 <CreditCard className="size-4 text-primary" />
-                <span>Client Money Receipts & Ledger (মানি রিসিট ও পেমেন্ট হিস্ট্রি)</span>
+                <span>Client Money Receipts & Ledger</span>
               </h3>
 
               {receipts.length === 0 ? (
@@ -451,7 +451,7 @@ const ClientProfileDrawer = ({ clientDid, isOpen, onClose, onRefresh }) => {
             <div className="space-y-4">
               <h3 className="text-sm font-bold text-foreground flex items-center gap-2">
                 <FileText className="size-4 text-primary" />
-                <span>Uploaded Documents (সংরক্ষিত ডকুমেন্ট ভল্ট)</span>
+                <span>Uploaded Documents</span>
               </h3>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">

@@ -214,8 +214,8 @@ const StorageSyncPage = () => {
               {overview?.r2Configured ? 'Cloudflare R2 Connected' : 'Local Disk Only'}
             </span>
           </div>
-          <h1 className="text-2xl md:text-3xl font-extrabold text-foreground tracking-tight mt-1.5">
-            Storage & Cloud Sync (ক্লাউড ও স্টোরেজ সিঙ্ক)
+            <h1 className="text-2xl md:text-3xl font-extrabold text-foreground tracking-tight mt-1.5">
+            Storage & Cloud Sync
           </h1>
           <p className="text-sm text-muted-foreground mt-0.5">
             Cloudflare R2 Object Storage, Storage Health, Data Transfer, and Automated Cleanups
@@ -261,7 +261,7 @@ const StorageSyncPage = () => {
           <CardContent className="p-5">
             <div className="flex items-center justify-between">
               <span className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
-                Total Storage Used (মোট স্টোরেজ)
+                Total Storage Used
               </span>
               <div className="p-2 rounded-xl bg-blue-50 dark:bg-blue-950/40 text-blue-600">
                 <HardDrive className="size-5" />
@@ -284,7 +284,7 @@ const StorageSyncPage = () => {
           <CardContent className="p-5">
             <div className="flex items-center justify-between">
               <span className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
-                Data Synced (স্থানান্তরিত ডাটা)
+                Data Synced
               </span>
               <div className="p-2 rounded-xl bg-purple-50 dark:bg-purple-950/40 text-purple-600">
                 <Cloud className="size-5" />
@@ -306,7 +306,7 @@ const StorageSyncPage = () => {
           <CardContent className="p-5">
             <div className="flex items-center justify-between">
               <span className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
-                Last Sync (সর্বশেষ সিঙ্ক)
+                Last Sync
               </span>
               <div className="p-2 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600">
                 <Clock className="size-5" />
@@ -337,7 +337,7 @@ const StorageSyncPage = () => {
           <CardContent className="p-5">
             <div className="flex items-center justify-between">
               <span className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
-                Orphan Pending (রিক্লেইম যোগ্য)
+                Orphan Pending
               </span>
               <div className="p-2 rounded-xl bg-amber-50 dark:bg-amber-950/40 text-amber-600">
                 <Trash2 className="size-5" />
@@ -363,7 +363,7 @@ const StorageSyncPage = () => {
             <div className="flex items-center gap-2 mb-4">
               <Layers className="size-4.5 text-primary" />
               <h2 className="text-base font-bold text-foreground">
-                Storage Distribution by Category (ক্যাটাগরি ভিত্তিক ফাইল রিপোর্ট)
+                Storage Distribution by Category
               </h2>
             </div>
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3">
@@ -401,7 +401,7 @@ const StorageSyncPage = () => {
           }`}
         >
           <Trash2 className="size-4" />
-          <span>Orphan File Cleanups (অব্যবহৃত ফাইল ব্যাচ)</span>
+          <span>Orphan File Cleanups</span>
           {overview?.pendingBatchesCount > 0 && (
             <span className="px-1.5 py-0.2 rounded-full text-xs font-bold bg-amber-500 text-white">
               {overview.pendingBatchesCount}
@@ -418,7 +418,7 @@ const StorageSyncPage = () => {
           }`}
         >
           <Clock className="size-4" />
-          <span>Sync & Transfer History (সিঙ্ক হিস্ট্রি)</span>
+          <span>Sync & Transfer History</span>
         </button>
       </div>
 

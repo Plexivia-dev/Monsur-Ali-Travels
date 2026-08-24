@@ -176,10 +176,10 @@ export function ReceiptConfirmModal({
                     onChange={(e) => setPaymentMethod(e.target.value)}
                     className="w-full px-3 py-2 text-xs rounded-lg border border-input bg-background focus:ring-2 focus:ring-primary/20 focus:border-primary outline-hidden"
                   >
-                    <option value="Cash">নগদ ক্যাশ (Cash)</option>
-                    <option value="Bank Transfer">ব্যাংক ট্রান্সফার (Bank)</option>
-                    <option value="bKash/Nagad">বিকাশ / নগদ (Mobile)</option>
-                    <option value="Cheque">চেক (Cheque)</option>
+                    <option value="Cash">নগদ ক্যাশ</option>
+                    <option value="Bank Transfer">ব্যাংক ট্রান্সফার</option>
+                    <option value="bKash/Nagad">বিকাশ / নগদ</option>
+                    <option value="Cheque">চেক</option>
                   </select>
                 </div>
 
@@ -190,7 +190,7 @@ export function ReceiptConfirmModal({
                   <input
                     type="text"
                     disabled
-                    value={user?.name || 'একাউন্টেন্ট (Accountant)'}
+                    value={user?.name || 'একাউন্টেন্ট'}
                     className="w-full px-3 py-2 text-xs rounded-lg border border-input bg-muted text-foreground outline-hidden opacity-80"
                   />
                 </div>
