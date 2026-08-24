@@ -12,6 +12,7 @@ import dashboardRouter from "./routes/admin/DashboardRoute.js";
 import systemRouter from "./routes/admin/SystemRoute.js";
 import usersRouter from "./routes/admin/UsersRoute.js";
 import settingsRouter from "./routes/admin/SettingsRoute.js";
+import storageMaintenanceRouter from "./routes/admin/StorageMaintenanceRoute.js";
 
 // --- CLIENT (STAFF) ROUTES ---
 import candidateRouter from "./routes/client/CandidateRoute.js";
@@ -61,6 +62,7 @@ adminRouter.use("/system", systemRouter);
 adminRouter.use("/users", usersRouter);
 adminRouter.use("/cases", adminCaseRouter);
 adminRouter.use("/settings", settingsRouter);
+adminRouter.use("/storage", storageMaintenanceRouter);
 
 coreRouter.use("/admin", adminRouter);
 

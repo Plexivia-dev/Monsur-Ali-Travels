@@ -6,6 +6,7 @@ import { connectDatabase } from "./database/index.js";
 import { env } from "./config/env.js";
 import { logger } from "./config/logger.js";
 import { createShutdownHandler } from "./helper/sutdownHelper.js";
+import { startStorageMaintenanceScheduler, stopStorageMaintenanceScheduler } from "./jobs/storageMaintenance.job.js";
 
 async function bootstrap() {
   // await connectMySQL();
@@ -42,12 +43,18 @@ async function bootstrap() {
 
   server.listen(port, "0.0.0.0", () => {
     logger.info({ port, environment: env.NODE_ENV }, "Server listening");
+    startStorageMaintenanceScheduler();
   });
 
   const shutdown = createShutdownHandler(server);
 
-  process.on("SIGINT", () => void shutdown("SIGINT"));
-  process.on("SIGTERM", () => void shutdown("SIGTERM"));
+  const handleGracefulExit = (signal) => {
+    stopStorageMaintenanceScheduler();
+    void shutdown(signal);
+  };
+
+  process.on("SIGINT", () => handleGracefulExit("SIGINT"));
+  process.on("SIGTERM", () => handleGracefulExit("SIGTERM"));
   process.on("uncaughtException", (error) => {
     logger.fatal({ err: error }, "Uncaught exception");
     void shutdown("uncaughtException");
