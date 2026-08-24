@@ -22,7 +22,19 @@ uploadRouter.post('/base64', (req, res) => {
   UploadController.uploadBase64(req, res);
 });
 
-// 4. Delete File from Server Disk
+// 4. Generate Presigned Upload URL (for direct client upload to R2)
+// POST /api/v1/upload/presigned-upload
+uploadRouter.post('/presigned-upload', (req, res) => {
+  UploadController.getPresignedUpload(req, res);
+});
+
+// 5. Generate Presigned View / Download URL (for secure time-limited view)
+// POST /api/v1/upload/presigned-view
+uploadRouter.post('/presigned-view', (req, res) => {
+  UploadController.getPresignedView(req, res);
+});
+
+// 6. Delete File from Server Disk / Cloudflare R2
 // DELETE /api/v1/upload
 uploadRouter.delete('/', (req, res) => {
   UploadController.deleteFile(req, res);

@@ -24,6 +24,12 @@ const envSchema = z.object({
   SMTP_PASSWORD: z.string().default(""),
   SMTP_FROM_NAME: z.string().default("Monsur Ali Travels"),
   SMTP_FROM: z.string().optional(),
+  R2_ACCOUNT_ID: z.string().optional(),
+  R2_ACCESS_KEY_ID: z.string().optional(),
+  R2_SECRET_ACCESS_KEY: z.string().optional(),
+  R2_BUCKET_NAME: z.string().default("monsuralitravels-erp-docs"),
+  R2_ENDPOINT: z.string().optional(),
+  R2_PUBLIC_DOMAIN: z.string().optional(),
 });
 
 const parsed = envSchema.safeParse(process.env);
