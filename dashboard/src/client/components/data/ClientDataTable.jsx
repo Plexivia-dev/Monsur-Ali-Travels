@@ -699,6 +699,5 @@ function ServiceBadge({ label, count = 0 }) {
   );
 }
 
-export { ClientDataTable as ClientDataTable };
 export default ClientDataTable;
 

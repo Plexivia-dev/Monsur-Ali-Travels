@@ -7,9 +7,9 @@ export { AgreementForm } from './components/agreement/AgreementForm';
 export { AgreementPreview } from './components/agreement/AgreementPreview';
 
 // Client Form
-export { ClientGuardian, ClientGuardian as ClientGuardian } from './components/client-form/ClientGuardian';
-export { ClientGuardianForm, ClientGuardianForm as ClientGuardianForm } from './components/client-form/ClientGuardianForm';
-export { ClientGuardianPreview, ClientGuardianPreview as ClientGuardianPreview } from './components/client-form/ClientGuardianPreview';
+export { ClientGuardian } from './components/client-form/ClientGuardian';
+export { ClientGuardianForm } from './components/client-form/ClientGuardianForm';
+export { ClientGuardianPreview } from './components/client-form/ClientGuardianPreview';
 export {
   STATUS_OPTIONS as CUSTOMER_STATUS_OPTIONS,
   STATUS_OPTIONS,
