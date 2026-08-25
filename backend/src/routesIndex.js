@@ -33,6 +33,10 @@ import { auditLog } from "./middlewares/auditLog.js";
 
 const coreRouter = Router();
 
+import accountsRouter from "./routes/shared/AccountsRoute.js";
+import adminCaseRouter from "./routes/admin/AdminCaseRoute.js";
+import taskRouter from "./routes/client/TaskRoute.js";
+
 // ==========================================
 // 1. SHARED ROUTES (Mounted directly at /api/v1/)
 // ==========================================
@@ -41,10 +45,8 @@ coreRouter.use("/qr", qrRouter);
 coreRouter.use("/qrcode", qrRouter);
 coreRouter.use("/upload", uploadRouter);
 coreRouter.use("/notifications", notificationRouter);
+coreRouter.use("/accounts", authenticateToken, auditLog, accountsRouter);
 // coreRouter.use("/developer", developerRouter);
-
-import adminCaseRouter from "./routes/admin/AdminCaseRoute.js";
-import taskRouter from "./routes/client/TaskRoute.js";
 
 // ==========================================
 // 2. ADMIN SCOPE (Mounted at /api/v1/admin/)
@@ -63,6 +65,7 @@ adminRouter.use("/clients", clientRoute);
 adminRouter.use("/cases", adminCaseRouter);
 adminRouter.use("/settings", settingsRouter);
 adminRouter.use("/storage", storageMaintenanceRouter);
+adminRouter.use("/accounts", accountsRouter);
 
 coreRouter.use("/admin", adminRouter);
 
@@ -72,6 +75,7 @@ coreRouter.use("/admin", adminRouter);
 const clientScopeRouter = Router();
 clientScopeRouter.use(authenticateToken);
 clientScopeRouter.use(auditLog);
+clientScopeRouter.use("/accounts", accountsRouter);
 clientScopeRouter.use("/tasks", taskRouter);
 clientScopeRouter.use("/cases", caseFileRouter);
 clientScopeRouter.use("/clients", clientRoute);

@@ -11,6 +11,7 @@ import Agency from './pages/Agency';
 import Admin from './pages/Admin';
 import DocumentStudio from './pages/DocumentStudio';
 import DocumentData from './pages/DocumentData';
+import Accounts from './pages/Accounts';
 import NotFoundPage from './pages/NotFoundPage';
 import { GlobalErrorBoundary } from './components/common/GlobalErrorBoundary';
 import { ToastContainer } from './components/common/ToastContainer';
@@ -69,7 +70,7 @@ function MainLayout() {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [setSearchOpen]);
 
-  const isKnownPortal = ['factory', 'agency', 'admin', 'docs', 'data'].includes(activePortal);
+  const isKnownPortal = ['factory', 'agency', 'admin', 'docs', 'data', 'accounts'].includes(activePortal);
 
   return (
     <DashboardLayout
@@ -88,6 +89,7 @@ function MainLayout() {
       {activePortal === 'admin' && <Admin />}
       {activePortal === 'docs' && <DocumentStudio />}
       {activePortal === 'data' && <DocumentData />}
+      {activePortal === 'accounts' && <Accounts />}
       {!isKnownPortal && <NotFoundPage />}
     </DashboardLayout>
   );

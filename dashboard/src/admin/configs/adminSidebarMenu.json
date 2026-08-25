@@ -54,16 +54,37 @@
     "items": [
       {
         "id": "accounts-group",
-        "name": "Cash & Ledgers",
-        "nameBn": "অ্যাকাউন্টিং খতিয়ান",
+        "name": "Accounts",
+        "nameBn": "অ্যাকাউন্টস",
         "icon": "Wallet",
         "childItems": [
+          {
+            "id": "payments",
+            "name": "Payments",
+            "nameBn": "পেমেন্টস",
+            "path": "/admin/accounts/payments",
+            "icon": "Wallet"
+          },
+          {
+            "id": "bills",
+            "name": "Bills",
+            "nameBn": "বিলস",
+            "path": "/admin/accounts/bills",
+            "icon": "Receipt"
+          },
+          {
+            "id": "reports",
+            "name": "Reports",
+            "nameBn": "রিপোর্টস",
+            "path": "/admin/accounts/reports",
+            "icon": "FileSpreadsheet"
+          },
           {
             "id": "cash-book",
             "name": "Cash Book",
             "nameBn": "ক্যাশ বুক",
             "path": "/admin/accounts/cash-book",
-            "icon": "Wallet"
+            "icon": "BookOpen"
           },
           {
             "id": "bank-ledger",

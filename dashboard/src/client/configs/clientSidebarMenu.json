@@ -92,6 +92,48 @@
     ]
   },
   {
+    "groupLabel": "Accounts",
+    "groupLabelBn": "হিসাব ও লেজার",
+    "roles": ["admin", "owner", "superadmin", "accountant", "representative"],
+    "items": [
+      {
+        "id": "accounts-group",
+        "name": "Accounts",
+        "nameBn": "অ্যাকাউন্টস",
+        "icon": "Wallet",
+        "childItems": [
+          {
+            "id": "acc-payments",
+            "name": "Payments",
+            "nameBn": "পেমেন্টস",
+            "portal": "accounts",
+            "submodule": "payments",
+            "path": "/dashboard/accounts/payments",
+            "icon": "Wallet"
+          },
+          {
+            "id": "acc-bills",
+            "name": "Bills",
+            "nameBn": "বিলস",
+            "portal": "accounts",
+            "submodule": "bills",
+            "path": "/dashboard/accounts/bills",
+            "icon": "Receipt"
+          },
+          {
+            "id": "acc-reports",
+            "name": "Reports",
+            "nameBn": "রিপোর্টস",
+            "portal": "accounts",
+            "submodule": "reports",
+            "path": "/dashboard/accounts/reports",
+            "icon": "FileSpreadsheet"
+          }
+        ]
+      }
+    ]
+  },
+  {
     "groupLabel": "Document Studio",
     "groupLabelBn": "ডকুমেন্ট স্টুডিও",
     "items": [
