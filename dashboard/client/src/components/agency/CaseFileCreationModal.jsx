@@ -6,27 +6,17 @@ import {
   UserPlus,
   Globe2,
   Briefcase,
-  FileText,
   UploadCloud,
   CheckCircle2,
-  DollarSign,
-  Printer,
   ChevronRight,
   ChevronLeft,
   Loader2,
-  AlertCircle,
-  Clock,
   ShieldCheck,
   Building2,
-  Phone,
-  Mail,
-  CreditCard,
-  FileCheck
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { apiClient } from '../../lib/api-client';
 import { useAuth } from '../../lib/auth-context';
-import { MoneyReceiptPrintSlip } from '../docs/receipt/MoneyReceiptPrintSlip';
 
 const DESTINATION_OPTIONS = [
   { value: 'Greece (Work Permit)', label: 'Greece (Work Permit)', flag: '🇬🇷' },
@@ -51,7 +41,7 @@ export function CaseFileCreationModal({ isOpen, onClose, onSuccess }) {
   const [step, setStep] = useState(1);
   const [submitting, setSubmitting] = useState(false);
 
-  // Step 1: Client Selection & Creation
+  // Step 1: Client Selection & Details
   const [clientMode, setClientMode] = useState('new'); // 'search' or 'new'
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState([]);
@@ -66,15 +56,13 @@ export function CaseFileCreationModal({ isOpen, onClose, onSuccess }) {
     address: '',
   });
 
-  // Step 2: Destination & Case Details
   const [caseDetails, setCaseDetails] = useState({
     destinationCountry: 'Greece (Work Permit)',
     tradeSkill: 'General Worker',
-    priority: 'normal',
     notes: '',
   });
 
-  // Step 3: Document Uploads
+  // Step 2: Document Uploads
   const [documents, setDocuments] = useState({
     passportScan: null,
     passportScanName: '',
@@ -83,18 +71,6 @@ export function CaseFileCreationModal({ isOpen, onClose, onSuccess }) {
     additionalDoc: null,
     additionalDocName: '',
   });
-
-  // Step 4: Advance Financials & Receipt
-  const [financials, setFinancials] = useState({
-    totalAgreedAmount: '',
-    advanceAmount: '',
-    paymentMethod: 'Cash',
-    receiptNotes: 'Advance payment for overseas work permit case processing',
-  });
-
-  // Generated receipt state for direct printing
-  const [createdReceiptData, setCreatedReceiptData] = useState(null);
-  const [showReceiptPrint, setShowReceiptPrint] = useState(false);
 
   // Search existing clients with debounce
   useEffect(() => {
@@ -164,35 +140,18 @@ export function CaseFileCreationModal({ isOpen, onClose, onSuccess }) {
         toast.error('Please provide passport number.');
         return false;
       }
-      return true;
-    }
-
-    if (step === 2) {
       if (!caseDetails.destinationCountry) {
         toast.error('Please select destination country.');
         return false;
       }
       return true;
     }
-
-    if (step === 3) {
-      return true;
-    }
-
-    if (step === 4) {
-      if (financials.advanceAmount && Number(financials.advanceAmount) > Number(financials.totalAgreedAmount || 0) && Number(financials.totalAgreedAmount) > 0) {
-        toast.error('Advance amount cannot exceed total agreed amount.');
-        return false;
-      }
-      return true;
-    }
-
     return true;
   };
 
   const handleNext = () => {
     if (validateStep()) {
-      setStep((prev) => Math.min(prev + 1, 5));
+      setStep((prev) => Math.min(prev + 1, 2));
     }
   };
 
@@ -204,52 +163,29 @@ export function CaseFileCreationModal({ isOpen, onClose, onSuccess }) {
   const handleSubmitCase = async () => {
     setSubmitting(true);
     try {
-      const agreed = Number(financials.totalAgreedAmount) || 0;
-      const advance = Number(financials.advanceAmount) || 0;
-      const due = Math.max(0, agreed - advance);
-
-      const casePayload = {
-        candidateName: clientForm.name,
-        candidatePhone: clientForm.phone,
-        candidateEmail: clientForm.email,
+      const formattedPayload = {
+        applicantName: clientForm.name,
+        phone: clientForm.phone,
         passportNumber: clientForm.passportNumber,
-        address: clientForm.address,
-        destinationCountry: caseDetails.destinationCountry,
-        tradeSkill: caseDetails.tradeSkill,
-        casePriority: caseDetails.priority,
-        status: 'New', // Immediate handoff status
-        workflowStatus: 'Received',
-        totalAgreedAmount: agreed,
-        advanceAmount: advance,
-        dueAmount: due,
+        caseType: caseDetails.destinationCountry,
+        status: "ENTRY",
         notes: caseDetails.notes,
-        createdByDid: user?.did || user?.id,
-        createdByName: user?.name || 'Frontdesk Staff',
+        paymentLedger: {
+          totalAgreedAmount: 0,
+          step1_advance: 0,
+          dueAmount: 0,
+          totalPaidAmount: 0
+        },
         documents: {
           passportScanName: documents.passportScanName,
           photoName: documents.photoName,
           additionalDocName: documents.additionalDocName,
-        },
-      };
-
-      // 1. Create Case File (Using the generic caseFile.controller.js)
-      const formattedPayload = {
-        applicantName: casePayload.candidateName,
-        phone: casePayload.candidatePhone,
-        passportNumber: casePayload.passportNumber,
-        caseType: casePayload.destinationCountry, // Maps to greece/macedonia
-        status: "ENTRY",
-        paymentLedger: {
-          totalAgreedAmount: casePayload.totalAgreedAmount,
-          step1_advance: 0,
-          dueAmount: casePayload.totalAgreedAmount,
-          totalPaidAmount: 0
         }
       };
 
-      const caseRes = await apiClient.post('/api/v1/client/cases', formattedPayload);
+      await apiClient.post('/api/v1/client/cases', formattedPayload);
 
-      toast.success('Case File created successfully and handed over to Accountant!');
+      toast.success('Case File submitted to Admin Queue for verification.');
       if (onSuccess) onSuccess();
       onClose();
     } catch (err) {
@@ -270,12 +206,12 @@ export function CaseFileCreationModal({ isOpen, onClose, onSuccess }) {
             </div>
             <div>
               <h2 className="text-base font-bold text-foreground flex items-center gap-2">
-                <span>New Case File Entry</span>
+                <span>Candidate Intake</span>
                 <span className="px-2 py-0.5 rounded-full text-[10px] bg-sky-500/10 text-sky-400 border border-sky-400/20 font-mono">
-                  Step {step} of 5
+                  Step {step} of 2
                 </span>
               </h2>
-              <p className="text-xs text-muted-foreground">Frontdesk Onboarding & Admin Handoff Wizard</p>
+              <p className="text-xs text-muted-foreground">Frontdesk Onboarding to Admin Queue</p>
             </div>
           </div>
           <button
@@ -289,13 +225,10 @@ export function CaseFileCreationModal({ isOpen, onClose, onSuccess }) {
 
         {/* Stepper Progress Bar */}
         <div className="px-6 py-3 bg-card border-b border-border/60">
-          <div className="grid grid-cols-5 gap-2">
+          <div className="grid grid-cols-2 gap-2">
             {[
-              { num: 1, title: 'Client Info' },
-              { num: 2, title: 'Country & Trade' },
-              { num: 3, title: 'Document Vault' },
-              { num: 4, title: 'Advance Payment' },
-              { num: 5, title: 'Admin Handoff' },
+              { num: 1, title: 'Client Info & Destination' },
+              { num: 2, title: 'Document Vault & Notes' },
             ].map((s) => (
               <div key={s.num} className="flex flex-col items-center gap-1">
                 <div
@@ -433,25 +366,9 @@ export function CaseFileCreationModal({ isOpen, onClose, onSuccess }) {
                     className="w-full px-3 py-2 bg-background border border-border rounded-lg text-xs focus:border-sky-500 outline-hidden"
                   />
                 </div>
-
-                <div className="sm:col-span-2 space-y-1">
-                  <label className="font-semibold text-foreground">Present Address / Hometown</label>
-                  <input
-                    type="text"
-                    placeholder="e.g. Jagannathpur, Sunamganj"
-                    value={clientForm.address}
-                    onChange={(e) => setClientForm({ ...clientForm, address: e.target.value })}
-                    className="w-full px-3 py-2 bg-background border border-border rounded-lg text-xs focus:border-sky-500 outline-hidden"
-                  />
-                </div>
               </div>
-            </div>
-          )}
-
-          {/* STEP 2: Destination & Case Details */}
-          {step === 2 && (
-            <div className="space-y-4 animate-in fade-in">
-              <div className="space-y-2">
+              
+              <div className="space-y-2 pt-2 border-t border-border/50">
                 <label className="font-bold text-foreground text-sm flex items-center gap-1.5">
                   <Globe2 className="w-4 h-4 text-sky-400" />
                   Select Destination Country & Program <span className="text-rose-400">*</span>
@@ -477,7 +394,7 @@ export function CaseFileCreationModal({ isOpen, onClose, onSuccess }) {
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
+              <div className="grid grid-cols-1 gap-3 pt-2">
                 <div className="space-y-1">
                   <label className="font-semibold text-foreground flex items-center gap-1">
                     <Briefcase className="w-3.5 h-3.5 text-sky-400" /> Trade / Applied Position
@@ -492,38 +409,12 @@ export function CaseFileCreationModal({ isOpen, onClose, onSuccess }) {
                     ))}
                   </select>
                 </div>
-
-                <div className="space-y-1">
-                  <label className="font-semibold text-foreground flex items-center gap-1">
-                    <Clock className="w-3.5 h-3.5 text-sky-400" /> Case Priority
-                  </label>
-                  <select
-                    value={caseDetails.priority}
-                    onChange={(e) => setCaseDetails({ ...caseDetails, priority: e.target.value })}
-                    className="w-full px-3 py-2 bg-background border border-border rounded-lg text-xs focus:border-sky-500 outline-hidden cursor-pointer"
-                  >
-                    <option value="normal">Normal Processing</option>
-                    <option value="high">High Priority</option>
-                    <option value="urgent">Urgent / Fast-Track</option>
-                  </select>
-                </div>
-
-                <div className="sm:col-span-2 space-y-1">
-                  <label className="font-semibold text-foreground">Special Instructions / Case Notes</label>
-                  <textarea
-                    rows={2}
-                    placeholder="Add any specific notes for Admin or Processor..."
-                    value={caseDetails.notes}
-                    onChange={(e) => setCaseDetails({ ...caseDetails, notes: e.target.value })}
-                    className="w-full px-3 py-2 bg-background border border-border rounded-lg text-xs focus:border-sky-500 outline-hidden"
-                  />
-                </div>
               </div>
             </div>
           )}
 
-          {/* STEP 3: Document Vault Uploads */}
-          {step === 3 && (
+          {/* STEP 2: Document Vault Uploads & Notes */}
+          {step === 2 && (
             <div className="space-y-4 animate-in fade-in">
               <div className="p-3 bg-sky-500/10 border border-sky-400/20 rounded-xl text-sky-300 text-xs flex items-center gap-2">
                 <ShieldCheck className="w-4 h-4 shrink-0 text-sky-400" />
@@ -577,88 +468,16 @@ export function CaseFileCreationModal({ isOpen, onClose, onSuccess }) {
                   <input type="file" accept="image/*,.pdf" className="hidden" onChange={(e) => handleFileChange(e, 'additionalDoc')} />
                 </label>
               </div>
-            </div>
-          )}
-
-          {/* STEP 4: Package Agreement */}
-          {step === 4 && (
-            <div className="space-y-4 animate-in fade-in">
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <div className="sm:col-span-2 space-y-1">
-                  <label className="font-semibold text-foreground flex items-center gap-1">
-                    <DollarSign className="w-3.5 h-3.5 text-sky-400" /> Total Package Agreed Amount (BDT) <span className="text-rose-400">*</span>
-                  </label>
-                  <input
-                    type="number"
-                    required
-                    placeholder="e.g. 650000"
-                    value={financials.totalAgreedAmount}
-                    onChange={(e) => setFinancials({ ...financials, totalAgreedAmount: e.target.value })}
-                    className="w-full px-3 py-3 bg-background border border-border rounded-lg text-sm font-mono font-bold focus:border-sky-500 outline-hidden"
-                  />
-                  <p className="text-[10px] text-muted-foreground mt-1">
-                    Enter the total agreed amount for the entire processing package. The client will pay the initial advance to the Accountant in the next step.
-                  </p>
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* STEP 5: Review & Admin Handoff */}
-          {step === 5 && (
-            <div className="space-y-4 animate-in fade-in">
-              <div className="p-4 bg-muted/20 border border-border rounded-xl space-y-3">
-                <div className="flex items-center justify-between border-b border-border pb-2">
-                  <div>
-                    <h3 className="font-black text-foreground text-sm">{clientForm.name}</h3>
-                    <p className="text-[11px] text-muted-foreground font-mono">{clientForm.phone} | Passport: {clientForm.passportNumber}</p>
-                  </div>
-                  <span className="px-3 py-1 rounded-full text-xs font-bold bg-sky-500/20 text-sky-400 border border-sky-400/30">
-                    Status: New (Pending Admin Handoff)
-                  </span>
-                </div>
-
-                <div className="grid grid-cols-2 gap-2 text-xs">
-                  <div>
-                    <span className="text-muted-foreground block text-[10px] uppercase font-bold">Program & Country</span>
-                    <span className="font-bold text-foreground">{caseDetails.destinationCountry}</span>
-                  </div>
-                  <div>
-                    <span className="text-muted-foreground block text-[10px] uppercase font-bold">Applied Skill / Trade</span>
-                    <span className="font-semibold text-foreground">{caseDetails.tradeSkill}</span>
-                  </div>
-                  <div>
-                    <span className="text-muted-foreground block text-[10px] uppercase font-bold">Total Agreed Amount</span>
-                    <span className="font-mono font-bold text-foreground">৳ {Number(financials.totalAgreedAmount || 0).toLocaleString()}</span>
-                  </div>
-                  <div>
-                    <span className="text-muted-foreground block text-[10px] uppercase font-bold">Advance Payment Status</span>
-                    <span className="font-semibold text-rose-400">Pending Accountant</span>
-                  </div>
-                </div>
-
-                <div className="pt-2 border-t border-border flex items-center gap-2">
-                  <span className="text-[10px] font-bold text-muted-foreground uppercase">Vault Files:</span>
-                  {documents.passportScanName ? (
-                    <span className="px-2 py-0.5 bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 rounded text-[10px]">
-                      Passport Attached
-                    </span>
-                  ) : (
-                    <span className="px-2 py-0.5 bg-muted text-muted-foreground rounded text-[10px]">No Passport File</span>
-                  )}
-                  {documents.photoName && (
-                    <span className="px-2 py-0.5 bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 rounded text-[10px]">
-                      Photo Attached
-                    </span>
-                  )}
-                </div>
-              </div>
-
-              <div className="p-3 bg-amber-500/10 border border-amber-500/20 rounded-xl text-amber-300 text-xs flex items-center gap-2">
-                <AlertCircle className="w-4 h-4 shrink-0 text-amber-400" />
-                <span>
-                  Clicking <strong>Submit Case File</strong> will instantly transfer this candidate file to the <strong>Accountant's Queue</strong> to collect the initial advance payment.
-                </span>
+              
+              <div className="space-y-1">
+                <label className="font-semibold text-foreground">Special Instructions / Case Notes</label>
+                <textarea
+                  rows={2}
+                  placeholder="Add any specific notes for Admin or Processor..."
+                  value={caseDetails.notes}
+                  onChange={(e) => setCaseDetails({ ...caseDetails, notes: e.target.value })}
+                  className="w-full px-3 py-2 bg-background border border-border rounded-lg text-xs focus:border-sky-500 outline-hidden"
+                />
               </div>
             </div>
           )}
@@ -685,7 +504,7 @@ export function CaseFileCreationModal({ isOpen, onClose, onSuccess }) {
             </button>
           )}
 
-          {step < 5 ? (
+          {step < 2 ? (
             <button
               type="button"
               onClick={handleNext}
@@ -701,7 +520,7 @@ export function CaseFileCreationModal({ isOpen, onClose, onSuccess }) {
               className="flex items-center gap-2 px-6 py-2 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black rounded-xl transition cursor-pointer text-xs shadow-md"
             >
               {submitting ? <Loader2 className="w-4 h-4 animate-spin" /> : <CheckCircle2 className="w-4 h-4" />}
-              {submitting ? 'Submitting...' : 'Submit Case File & Request Payment'}
+              {submitting ? 'Submitting...' : 'Submit to Admin Queue'}
             </button>
           )}
         </div>

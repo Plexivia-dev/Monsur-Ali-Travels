@@ -462,16 +462,29 @@ export default function CaseWorkflow() {
 
                           {/* Card Action CTAs */}
                           <div className="pt-2 border-t border-border flex items-center justify-between gap-2">
-                            <button
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                navigate(`/admin/cases/${caseId}`);
-                              }}
-                              className="flex-1 py-1.5 px-2 bg-primary/10 hover:bg-primary/20 text-primary text-[11px] font-bold rounded-lg transition cursor-pointer flex items-center justify-center gap-1 shadow-2xs"
-                            >
-                              <Eye className="size-3" />
-                              <span>ডজিয়ার দেখুন</span>
-                            </button>
+                            {col.id === 'ENTRY' ? (
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  handleStageChange(caseId, 'PROCESSING');
+                                }}
+                                className="flex-1 py-1.5 px-2 bg-emerald-500 hover:bg-emerald-600 text-white text-[11px] font-bold rounded-lg transition cursor-pointer flex items-center justify-center gap-1 shadow-2xs"
+                              >
+                                <CheckCircle2 className="size-3" />
+                                <span>Approve Intake</span>
+                              </button>
+                            ) : (
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  navigate(`/admin/cases/${caseId}`);
+                                }}
+                                className="flex-1 py-1.5 px-2 bg-primary/10 hover:bg-primary/20 text-primary text-[11px] font-bold rounded-lg transition cursor-pointer flex items-center justify-center gap-1 shadow-2xs"
+                              >
+                                <Eye className="size-3" />
+                                <span>ডজিয়ার দেখুন</span>
+                              </button>
+                            )}
 
                             <button
                               onClick={(e) => {

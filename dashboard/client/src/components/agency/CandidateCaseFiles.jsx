@@ -27,10 +27,14 @@ import {
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { apiClient } from '../../lib/api-client';
+import { useAuth } from '../../lib/auth-context';
+import { getRoleKey } from '../../configs/roleNavConfig';
 import { CaseFileCreationModal } from './CaseFileCreationModal';
 import { CaseWorkspaceDrawer } from './CaseWorkspaceDrawer';
 
 export function CandidateCaseFiles() {
+  const { user } = useAuth();
+  const roleKey = getRoleKey(user);
   const [cases, setCases] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
@@ -260,8 +264,8 @@ export function CandidateCaseFiles() {
           {filteredCases.map((c) => (
             <div
               key={c._id || c.fileNumber}
-              onClick={() => setSelectedCase(c)}
-              className="bg-card border border-border hover:border-sky-500/50 rounded-xl p-5 shadow-sm hover:shadow-md transition-all cursor-pointer space-y-4 group"
+              onClick={() => roleKey !== 'frontdesk' && setSelectedCase(c)}
+              className={`bg-card border border-border hover:border-sky-500/50 rounded-xl p-5 shadow-sm hover:shadow-md transition-all ${roleKey !== 'frontdesk' ? 'cursor-pointer' : ''} space-y-4 group`}
             >
               {/* Header: File Ref & Workflow Tag */}
               <div className="flex items-center justify-between border-b border-border/60 pb-3">
@@ -321,9 +325,11 @@ export function CandidateCaseFiles() {
               {/* Footer Action CTA */}
               <div className="pt-2 flex items-center justify-between text-xs text-muted-foreground border-t border-border/40">
                 <span className="text-[10px]">DB Ref: {c._id ? c._id.substring(0, 8) + '...' : c.fileNumber}</span>
-                <span className="text-sky-500 font-bold flex items-center gap-1 group-hover:translate-x-0.5 transition-transform">
-                  View Dossier <ChevronRight className="w-3.5 h-3.5" />
-                </span>
+                {roleKey !== 'frontdesk' && (
+                  <span className="text-sky-500 font-bold flex items-center gap-1 group-hover:translate-x-0.5 transition-transform">
+                    View Dossier <ChevronRight className="w-3.5 h-3.5" />
+                  </span>
+                )}
               </div>
             </div>
           ))}
@@ -331,12 +337,14 @@ export function CandidateCaseFiles() {
       )}
 
       {/* Comprehensive Case Workspace Drawer (Tasks, Documents, Notes, Pipeline) */}
-      <CaseWorkspaceDrawer
-        caseId={selectedCase?._id || selectedCase?.did}
-        isOpen={Boolean(selectedCase)}
-        onClose={() => setSelectedCase(null)}
-        onRefresh={fetchCandidates}
-      />
+      {roleKey !== 'frontdesk' && (
+        <CaseWorkspaceDrawer
+          caseId={selectedCase?._id || selectedCase?.did}
+          isOpen={Boolean(selectedCase)}
+          onClose={() => setSelectedCase(null)}
+          onRefresh={fetchCandidates}
+        />
+      )}
 
       {/* New 5-Step Case File Creation Stepper Modal */}
       <CaseFileCreationModal

@@ -59,6 +59,11 @@ export const getCaseFullDetails = async (req, res) => {
  */
 export const assignTaskStep = async (req, res) => {
   try {
+    const userRole = req.user?.role?.toLowerCase() || '';
+    if (!['admin', 'manager', 'owner', 'superadmin'].includes(userRole)) {
+      return res.status(403).json({ status: "error", message: "Forbidden: Only Admin or Manager can assign tasks." });
+    }
+
     const { caseDid, title, description, assignedToDid, allowedDocumentDids, stepNumber } = req.body;
     const adminDid = req.user?.did;
 
@@ -124,6 +129,11 @@ export const assignTaskStep = async (req, res) => {
  */
 export const approveTaskStep = async (req, res) => {
   try {
+    const userRole = req.user?.role?.toLowerCase() || '';
+    if (!['admin', 'manager', 'owner', 'superadmin'].includes(userRole)) {
+      return res.status(403).json({ status: "error", message: "Forbidden: Only Admin or Manager can approve tasks." });
+    }
+
     const { taskDid } = req.params;
     const { approvalNotes, nextStatus } = req.body;
     const adminDid = req.user?.did;

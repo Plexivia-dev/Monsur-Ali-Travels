@@ -568,6 +568,14 @@ export const updateWorkflowStatus = async (req, res) => {
     const { id } = req.params;
     const { workflowStatus, assignedTo, remarks } = req.body;
     const updatedBy = req.user?.did;
+    
+    const userRole = req.user?.role?.toLowerCase() || '';
+    if (!['admin', 'manager', 'superadmin'].includes(userRole)) {
+      return res.status(403).json({
+        success: false,
+        message: "Forbidden: Only Admin or Manager can update case workflow status or reassign staff."
+      });
+    }
 
     const caseDoc = await CaseFile.findOne({ did: id });
     if (!caseDoc) {
