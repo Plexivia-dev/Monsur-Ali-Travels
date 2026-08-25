@@ -14,10 +14,10 @@ All collections strictly contain a unique `did` (Domain Identifier) field for re
 |---|---|---|---|---|
 | 1 | **Client** | `client.model.js` | `clients` | Client bio info, NID, passport, guardian details & attachment repository. |
 | 2 | **CaseFile** | `caseFile.model.js` | `casefiles` | Main processing dossier for visa, passport & work permit pipelines. |
-| 3 | **CandidateCaseFile** | `candidateCaseFile.model.js` | `candidatecasefiles` | Overseas manpower candidate deployment pipelines. |
+| 3 | **ClientCaseFile** | `clientCaseFile.model.js` | `candidatecasefiles` | Overseas manpower candidate deployment pipelines. |
 | 4 | **IndianVisaSubmission**| `indianVisaSubmission.model.js` | `indianvisasubmissions` | Indian Visa specific appointment & submission forms. |
 | 5 | **PassportSubmission**  | `passportSubmission.model.js` | `passportsubmissions` | Passport receipt, submission & delivery tracking. |
-| 6 | **CustomerGuardian**    | `customerGuardianApplication.model.js` | `customerguardians` | Guardian affidavit & relationship authorization forms. |
+| 6 | **ClientGuardian**    | `clientGuardianApplication.model.js` | `customerguardians` | Guardian affidavit & relationship authorization forms. |
 | 7 | **EmploymentAgreement** | `employmentAgreement.model.js` | `employment-agreement` | Legal employment contracts & manpower agreement studio. |
 | 8 | **MoneyReceipt**        | `moneyreceipts.model.js` | `moneyreceipts` | Official payment receipt generation with QR verification code. |
 | 9 | **Invoice**             | `invoice.model.js` | `invoices` | Billing invoices generated for clients. |
@@ -62,7 +62,7 @@ The system segregates data access between **`dashboard/client`** (Staff / Frontd
   1. **New Client Onboarding:** Create new `Client` profile, upload passport/NID scans.
   2. **Case Entry:** Open a new `CaseFile` (initial intake entry).
   3. **My Assigned Tasks:** Filtered view displaying only `casefiles` where `assignedToDid === currentUser.did`. Staff executes task & clicks **"Mark as Done"**.
-  4. **Document Studio:** Issue `MoneyReceipt`, `Invoice`, `EmploymentAgreement`, and `CustomerGuardian` forms.
+  4. **Document Studio:** Issue `MoneyReceipt`, `Invoice`, `EmploymentAgreement`, and `ClientGuardian` forms.
   5. **Notification Hub:** View real-time alerts when a case is assigned/handed over to them.
 
 ### 🔴 Portal B: Admin Dashboard (`dashboard/admin`) — Owner & Admin Master Control

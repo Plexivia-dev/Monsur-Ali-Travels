@@ -35,15 +35,15 @@ const ACTION_COLORS = {
 };
 
 const TARGET_LABELS = {
-  clients: 'Client (কাস্টমার)',
-  customers: 'Client (কাস্টমার)',
+  clients: 'Client (ক্লায়েন্ট)',
+  clients: 'Client (ক্লায়েন্ট)',
   caseFiles: 'Case File (ফাইল)',
   tasks: 'Task (টাস্ক)',
   moneyReceipts: 'Money Receipt (রিসিপ্ট)',
   cashVouchers: 'Cash Voucher (ভাউচার)',
   invoices: 'Invoice (ইনভয়েস)',
   salarySlips: 'Salary / Payroll',
-  candidates: 'Candidate (ক্যান্ডিডেট)',
+  clients: 'Client (ক্লায়েন্ট)',
   passports: 'Passport Record',
   indianVisas: 'Indian Visa',
   agreements: 'Agreement Document',

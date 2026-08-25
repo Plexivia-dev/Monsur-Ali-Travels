@@ -25,7 +25,7 @@ const CreateClientModal = ({ isOpen, onClose, onSuccess }) => {
     email: '',
     passportNumber: '',
     nidNumber: '',
-    customerType: 'Individual',
+    clientType: 'Individual',
     serviceType: 'WORK_PERMIT',
     destinationCountry: 'Saudi Arabia',
     packageAmount: '',
@@ -65,7 +65,7 @@ const CreateClientModal = ({ isOpen, onClose, onSuccess }) => {
         email: formData.email.trim() || undefined,
         passportNumber: formData.passportNumber.trim() || undefined,
         nidNumber: formData.nidNumber.trim() || undefined,
-        customerType: formData.customerType,
+        clientType: formData.clientType,
         presentAddress: formData.address.trim() || undefined,
         notes: formData.notes.trim() || undefined,
       };
@@ -214,17 +214,17 @@ const CreateClientModal = ({ isOpen, onClose, onSuccess }) => {
 
               <div>
                 <label className="text-xs font-semibold text-foreground block mb-1.5">
-                  Customer Type
+                  Client Type
                 </label>
                 <select
-                  name="customerType"
-                  value={formData.customerType}
+                  name="clientType"
+                  value={formData.clientType}
                   onChange={handleChange}
                   className="w-full px-3 py-2 text-xs rounded-xl border border-input bg-background focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
                 >
                   <option value="Individual">Individual</option>
                   <option value="Corporate">Corporate / Agency</option>
-                  <option value="VIP">VIP Customer</option>
+                  <option value="VIP">VIP Client</option>
                   <option value="Lead">Lead / Prospect</option>
                 </select>
               </div>

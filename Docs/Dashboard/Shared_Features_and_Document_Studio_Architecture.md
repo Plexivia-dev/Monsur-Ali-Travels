@@ -27,7 +27,7 @@ dashboard/src/shared/
   │   ├── document-studio/
   │   │   ├── components/                 # 12 Document Generator Modules
   │   │   │   ├── agreement/              # Employment Agreement
-  │   │   │   ├── customer-form/          # Customer & Guardian Application
+  │   │   │   ├── customer-form/          # Client & Guardian Application
   │   │   │   ├── indian-visa/            # Indian Visa Application & Port Slip
   │   │   │   ├── passport/               # Passport Custody Voucher Slip
   │   │   │   ├── idcard/                 # Dual-sided Employee Identity Card
@@ -60,7 +60,7 @@ dashboard/src/shared/
 | # | Generator Identifier | English Title | Bengali Title | Category | Badge | Primary Features |
 |---|---|---|---|---|---|---|
 | 1 | `agreement` | Employment Agreement | নিয়োগ চুক্তিপত্র | Contracts & Legal | Legal Contract | Bilingual (Bangla & English) standard overseas agency contract |
-| 2 | `customer-form` | Customer & Guardian Form | কাস্টমার ও অভিভাবক ফরম | Contracts & Forms | Application Form | Applicant profile, guardian guarantee, tracking number, WhatsApp share |
+| 2 | `customer-form` | Client & Guardian Form | কাস্টমার ও অভিভাবক ফরম | Contracts & Forms | Application Form | Applicant profile, guardian guarantee, tracking number, WhatsApp share |
 | 3 | `indian-visa` | Indian Visa Submission File | ইন্ডিয়ান ভিসা ফাইল | Visa & Passport | Visa File | Applicant details, port selection, appointment slip, barcode |
 | 4 | `passport-sub` | Passport Submission Slip | পাসপোর্ট জমা রশিদ | Visa & Passport | Custody Slip | Handover voucher, barcode, passport validity tracker |
 | 5 | `idcard` | Employee ID Card | কর্মচারী আইডি কার্ড | HR & Identity | Identity Card | Front & back card, QR code, blood group, designation |
@@ -90,7 +90,7 @@ export default function MyPage() {
 
 ```jsx
 import {
-  CustomerGuardian,
+  ClientGuardian,
   EmploymentAgreement,
   IndianVisa,
   SalarySlip,
@@ -101,7 +101,7 @@ import {
 export default function SingleDocView() {
   return (
     <div>
-      <CustomerGuardian
+      <ClientGuardian
         initialData={existingCustomerData}
         onSavedSuccess={(savedDoc) => console.log('Saved:', savedDoc)}
       />
@@ -119,7 +119,7 @@ import {
   getGeneratorById,
 } from '@/shared/features/document-studio';
 
-const docInfo = getGeneratorById('customer-form');
+const docInfo = getGeneratorById('client-form');
 console.log(docInfo.title, docInfo.badge);
 ```
 
@@ -129,8 +129,8 @@ console.log(docInfo.title, docInfo.badge);
 
 ### 1. Client Dashboard Integration
 - **File:** `dashboard/src/client/pages/DocumentStudio.jsx`
-- **Route:** `/dashboard/docs` (Hub Overview) & `/dashboard/docs/:generator` (e.g. `/dashboard/docs/customer-form`)
-- **State Sync:** Synced with Zustand `usePortalStore` (`activePortal: 'docs'`, `activeSubmodule: 'customer-form'`).
+- **Route:** `/dashboard/docs` (Hub Overview) & `/dashboard/docs/:generator` (e.g. `/dashboard/docs/client-form`)
+- **State Sync:** Synced with Zustand `usePortalStore` (`activePortal: 'docs'`, `activeSubmodule: 'client-form'`).
 - **Navbar Styling:** Top-left Back button in the navbar navigates directly back to `/dashboard/docs/overview`.
 
 ```jsx

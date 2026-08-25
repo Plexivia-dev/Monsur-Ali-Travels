@@ -195,7 +195,7 @@ export default function CaseWorkflow() {
               </h1>
             </div>
             <p className="text-xs sm:text-sm text-sky-100/70 max-w-2xl leading-relaxed">
-              Master overseas visa pipeline management. Track candidate stages, assign operational tasks, approve completions, and monitor milestone payments.
+              Master overseas visa pipeline management. Track client stages, assign operational tasks, approve completions, and monitor milestone payments.
             </p>
           </div>
 
@@ -370,7 +370,7 @@ export default function CaseWorkflow() {
                             </span>
                           </div>
 
-                          {/* Candidate Name & Destination */}
+                          {/* Client Name & Destination */}
                           <div>
                             <h4 className="font-bold text-sm text-foreground group-hover:text-primary transition-colors leading-tight">
                               {c.applicantName || c.clientInfo?.fullName || 'Applicant'}

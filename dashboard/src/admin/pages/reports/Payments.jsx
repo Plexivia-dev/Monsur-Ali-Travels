@@ -167,7 +167,7 @@ const Payments = () => {
                 <tr>
                   <th className="px-6 py-4 font-medium">Receipt No</th>
                   <th className="px-6 py-4 font-medium">Date</th>
-                  <th className="px-6 py-4 font-medium">Client / Candidate</th>
+                  <th className="px-6 py-4 font-medium">Client</th>
                   <th className="px-6 py-4 font-medium">Service / Purpose</th>
                   <th className="px-6 py-4 font-medium">Amount</th>
                   <th className="px-6 py-4 font-medium">Method</th>
@@ -192,8 +192,8 @@ const Payments = () => {
                   </tr>
                 ) : (
                   payments.map((payment) => {
-                    const client = payment.clientName || payment.customerId?.fullName || 'N/A';
-                    const phone = payment.clientPhone || payment.customerId?.phone || '';
+                    const client = payment.clientName || payment.clientId?.fullName || 'N/A';
+                    const phone = payment.clientPhone || payment.clientId?.phone || '';
                     const isConfirmed = payment.status === 'confirmed' || payment.status === 'paid';
                     const isCancelled = payment.status === 'cancelled';
 
@@ -212,7 +212,7 @@ const Payments = () => {
                         <td className="px-6 py-4">
                           <div
                             onClick={() => {
-                              const did = payment.clientDid || payment.customerId?.did || payment.customerId;
+                              const did = payment.clientDid || payment.clientId?.did || payment.clientId;
                               if (did) setSelectedClientDid(did);
                             }}
                             className="flex flex-col cursor-pointer group"

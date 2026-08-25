@@ -29,7 +29,7 @@ const ClientsPage = () => {
   const [clients, setClients] = useState([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
-  const [customerTypeFilter, setCustomerTypeFilter] = useState('all');
+  const [clientTypeFilter, setClientTypeFilter] = useState('all');
   const [page, setPage] = useState(1);
   const [pagination, setPagination] = useState({ totalPages: 1, totalCount: 0 });
 
@@ -46,7 +46,7 @@ const ClientsPage = () => {
         limit: '15',
       });
       if (search.trim()) params.append('search', search.trim());
-      if (customerTypeFilter !== 'all') params.append('customerType', customerTypeFilter);
+      if (clientTypeFilter !== 'all') params.append('clientType', clientTypeFilter);
 
       const res = await apiClient.get(`/api/v1/client/clients?${params.toString()}`);
       if (res.data?.status === 'success' || res.data?.success) {
@@ -63,7 +63,7 @@ const ClientsPage = () => {
     } finally {
       setLoading(false);
     }
-  }, [page, search, customerTypeFilter]);
+  }, [page, search, clientTypeFilter]);
 
   useEffect(() => {
     fetchClients();
@@ -164,7 +164,7 @@ const ClientsPage = () => {
                 Active Cases
               </span>
               <div className="text-2xl font-black text-foreground mt-1">
-                {clients.reduce((acc, c) => acc + (c.candidateCases?.length || c.applications?.length || 0), 0)}
+                {clients.reduce((acc, c) => acc + (c.clientCases?.length || c.applications?.length || 0), 0)}
               </div>
             </div>
             <div className="p-3 rounded-2xl bg-purple-50 dark:bg-purple-950/40 text-purple-600">
@@ -228,14 +228,14 @@ const ClientsPage = () => {
           <div className="flex items-center gap-2">
             <Filter className="size-3.5 text-muted-foreground" />
             <select
-              value={customerTypeFilter}
+              value={clientTypeFilter}
               onChange={(e) => {
-                setCustomerTypeFilter(e.target.value);
+                setClientTypeFilter(e.target.value);
                 setPage(1);
               }}
               className="px-3 py-1.5 text-xs rounded-xl border border-input bg-background font-semibold text-foreground focus:outline-none cursor-pointer"
             >
-              <option value="all">All Customer Types</option>
+              <option value="all">All Client Types</option>
               <option value="Individual">Individual</option>
               <option value="Corporate">Corporate</option>
               <option value="VIP">VIP</option>
@@ -275,7 +275,7 @@ const ClientsPage = () => {
                     <th className="py-3.5 px-4">Client Name & DID</th>
                     <th className="py-3.5 px-4">Contact Info</th>
                     <th className="py-3.5 px-4">Passport & NID</th>
-                    <th className="py-3.5 px-4">Customer Type</th>
+                    <th className="py-3.5 px-4">Client Type</th>
                     <th className="py-3.5 px-4">Active Files</th>
                     <th className="py-3.5 px-4">Status</th>
                     <th className="py-3.5 px-4">Created Date</th>
@@ -284,7 +284,7 @@ const ClientsPage = () => {
                 </thead>
                 <tbody className="divide-y divide-border">
                   {clients.map((client) => {
-                    const casesCount = (client.candidateCases?.length || 0) + (client.applications?.length || 0);
+                    const casesCount = (client.clientCases?.length || 0) + (client.applications?.length || 0);
                     return (
                       <tr
                         key={client.did || client._id}
@@ -336,7 +336,7 @@ const ClientsPage = () => {
 
                         <td className="py-3.5 px-4 text-xs">
                           <span className="px-2.5 py-0.5 rounded-full font-bold bg-muted text-muted-foreground border border-border">
-                            {client.customerType || 'Individual'}
+                            {client.clientType || 'Individual'}
                           </span>
                         </td>
 

@@ -122,7 +122,7 @@ const ClientProfileDrawer = ({ clientDid, isOpen, onClose, onRefresh }) => {
                     {client.fullName}
                   </h2>
                   <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-primary/10 text-primary border border-primary/20">
-                    {client.customerType || 'Individual'}
+                    {client.clientType || 'Individual'}
                   </span>
                   <span className={`px-2 py-0.5 rounded-full text-[11px] font-bold ${
                     client.status === 'Active' ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300' : 'bg-muted text-muted-foreground'

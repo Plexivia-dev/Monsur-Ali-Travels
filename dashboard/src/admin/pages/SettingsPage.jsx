@@ -184,7 +184,7 @@ function AssignStaffModal({ isOpen, onClose, subRole, onSuccess }) {
   const fetchStaffList = async () => {
     try {
       setLoading(true);
-      const res = await apiClient.get('/api/v1/admin/settings/staff-candidates');
+      const res = await apiClient.get('/api/v1/admin/settings/staff-clients');
       setStaffList(res.data.data || []);
     } catch (error) {
       toast.error('Failed to load staff list');

@@ -78,7 +78,7 @@ export default function VisaWorkflowsPage() {
                     </div>
                     <div className="flex flex-col gap-0.5 min-w-0">
                       <span className="text-sm font-semibold text-foreground group-hover:text-primary transition-colors">
-                        {item.applicantName || item.candidateId?.name || item.client || 'Client File'}
+                        {item.applicantName || item.clientId?.name || item.client || 'Client File'}
                       </span>
                       <span className="text-xs text-muted-foreground font-mono">
                         {item.caseNumber || 'CASE'} • {new Date(item.updatedAt || item.createdAt).toLocaleDateString()}

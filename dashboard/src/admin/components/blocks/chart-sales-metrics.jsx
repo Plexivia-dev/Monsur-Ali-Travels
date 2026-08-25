@@ -48,7 +48,7 @@ export const SalesMetricsCard = ({ className }) => {
         setMetrics({
           received: overview.billing?.totalPaid || 0,
           bills: overview.billing?.totalBilled || 0,
-          newClients: overview.totalCandidates || 0,
+          newClients: overview.totalClients || 0,
           filesRemaining: overview.totalVisas || 0 // Assuming visas or similar
         })
 
@@ -140,7 +140,7 @@ export const SalesMetricsCard = ({ className }) => {
                   <div key={item._id || item.id} className='flex items-start justify-between py-3 gap-3'>
                     <div className='flex flex-col gap-0.5 min-w-0'>
                       <span className='text-sm font-semibold text-foreground truncate'>
-                        {item.candidateId?.name || item.client || 'Unknown'}
+                        {item.clientId?.name || item.client || 'Unknown'}
                       </span>
                       <span className='text-xs text-muted-foreground truncate'>{item.status || item.workflowStatus}</span>
                     </div>

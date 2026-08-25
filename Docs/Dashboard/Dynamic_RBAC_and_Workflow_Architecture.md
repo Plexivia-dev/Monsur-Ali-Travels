@@ -46,7 +46,7 @@ graph LR
 ### Step Breakdown:
 1. **Step 1: Client Selection or Instant Onboarding**
    - Live debounce search across existing records by Name, Phone, or Passport Number.
-   - If client is new, inline entry for Candidate Name, Phone/WhatsApp, Passport Number, Email, and Address.
+   - If client is new, inline entry for Client Name, Phone/WhatsApp, Passport Number, Email, and Address.
 2. **Step 2: Destination Country & Case Details**
    - Destination options:
      - `Greece (Work Permit)` 🇬🇷
