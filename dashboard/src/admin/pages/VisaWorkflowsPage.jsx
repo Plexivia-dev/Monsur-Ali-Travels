@@ -4,6 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { apiClient } from '@/lib/api-client'
 import { Loader2, Eye, FolderOpen } from 'lucide-react'
 import { CaseDetailDrawer } from '@/components/workflow/CaseDetailDrawer'
+import { HeaderTitle } from '@shared/components/common/HeaderTitle'
 
 const statusColors = {
   'Visa Issued Successfully': 'bg-green-100 text-green-700',
@@ -46,10 +47,12 @@ export default function VisaWorkflowsPage() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-3xl font-bold tracking-tight">Visa Workflows</h1>
-        <p className="text-muted-foreground text-sm mt-1">Client status updates, dossier records, and visa processing pipeline.</p>
-      </div>
+      <HeaderTitle
+        variant="general"
+        icon={FolderOpen}
+        title="Visa Workflows"
+        subtitle="Client status updates, dossier records, and visa processing pipeline."
+      />
 
       <Card className="bg-white border border-gray-200 shadow-md">
         <CardHeader>

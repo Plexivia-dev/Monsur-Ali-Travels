@@ -7,6 +7,7 @@ import { Input, Select } from "../ui/input";
 import { Button } from "../ui/button";
 import { Users2, UserPlus, Building2 } from 'lucide-react';
 import { usePortalStore } from '../../store/usePortalStore';
+import { HeaderTitle } from '@shared/components/common/HeaderTitle';
 
 export const AgencyEmployees = () => {
   const { data: agencyData, isLoading } = useAgencyData();
@@ -117,20 +118,18 @@ export const AgencyEmployees = () => {
   return (
     <div className="space-y-6">
       {/* Header Bar */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-card p-5 border border-border rounded-2xl">
-        <div>
-          <h2 className="text-lg font-bold text-foreground flex items-center gap-2">
-            <Users2 className="w-5 h-5 text-primary" />
-            Placed Contractor Workforce & Timesheets
-          </h2>
-          <p className="text-xs text-muted-foreground mt-1">
-            Manage field staffing deployments, client assignments, hourly pay rates, and agency margins.
-          </p>
-        </div>
-        <Button variant="primary" icon={UserPlus} onClick={() => setIsModalOpen(true)}>
-          New Placement
-        </Button>
-      </div>
+      <HeaderTitle
+        variant="general"
+        icon={Users2}
+        title="Placed Contractor Workforce & Timesheets"
+        subtitle="Manage field staffing deployments, client assignments, hourly pay rates, and agency margins."
+        actions={
+          <Button variant="primary" onClick={() => setIsModalOpen(true)}>
+            <UserPlus className="size-4 mr-1.5 inline" />
+            New Placement
+          </Button>
+        }
+      />
 
       {/* Main Table */}
       <DataTable

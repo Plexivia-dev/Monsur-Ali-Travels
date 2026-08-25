@@ -10,6 +10,7 @@ import { toast } from '@/components/ui/toast';
 import { Spinner } from '@/components/ui/spinner';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { apiClient } from '@/lib/api-client';
+import { HeaderTitle } from '@shared/components/common/HeaderTitle';
 
 const SUB_ROLES = ["Frontdesk", "Lawyer", "Visa_Processor", "Accountant", "Representative", "ClientManager"];
 
@@ -53,10 +54,12 @@ export default function SettingsPage() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-3xl font-bold tracking-tight text-gray-900">Settings & Administration</h1>
-        <p className="text-muted-foreground text-sm mt-1">Configure company profiles, operational teams, and system defaults.</p>
-      </div>
+      <HeaderTitle
+        variant="general"
+        icon={Shield}
+        title="Settings & Administration"
+        subtitle="Configure company profiles, operational teams, and system defaults."
+      />
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         {/* LEFT COLUMN - CORE TEAM */}

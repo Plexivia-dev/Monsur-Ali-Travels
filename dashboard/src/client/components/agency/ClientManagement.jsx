@@ -4,6 +4,7 @@ import { usePortalStore } from '../../store/usePortalStore';
 import { Card, CardHeader, CardTitle, CardContent } from '../ui/card';
 import { Badge } from '../ui/badge';
 import { Button } from '../ui/button';
+import { HeaderTitle } from '@shared/components/common/HeaderTitle';
 import {
   Building2,
   UserPlus,
@@ -177,6 +178,46 @@ export const ClientManagement = ({ initialTab = 'all-clients' }) => {
 
   return (
     <div className="space-y-6">
+      <HeaderTitle
+        variant="general"
+        icon={Building2}
+        title="Client Management & Accounts"
+        subtitle="Register and manage client contracts, hourly bill rates, timesheets, and invoices."
+        actions={
+          <div className="bg-slate-800/80 p-1 rounded-xl flex items-center gap-1 border border-sky-500/20">
+            <button
+              onClick={() => setActiveTab('all-clients')}
+              className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
+                activeTab === 'all-clients'
+                  ? 'bg-sky-500 text-slate-950 shadow-xs'
+                  : 'text-sky-300 hover:text-white'
+              }`}
+            >
+              All Clients
+            </button>
+            <button
+              onClick={() => setActiveTab('add-client')}
+              className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
+                activeTab === 'add-client'
+                  ? 'bg-sky-500 text-slate-950 shadow-xs'
+                  : 'text-sky-300 hover:text-white'
+              }`}
+            >
+              Add Contract
+            </button>
+            <button
+              onClick={() => setActiveTab('payments')}
+              className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
+                activeTab === 'payments'
+                  ? 'bg-sky-500 text-slate-950 shadow-xs'
+                  : 'text-sky-300 hover:text-white'
+              }`}
+            >
+              Payments & Ledger
+            </button>
+          </div>
+        }
+      />
       {/* ========================================================================= */}
       {/* TAB 1: ADD NEW CLIENTS FORM */}
       {/* ========================================================================= */}
