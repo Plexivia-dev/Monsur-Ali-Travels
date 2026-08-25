@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { apiClient } from '@/lib/api-client';
 import {
@@ -13,28 +13,24 @@ import {
   Eye,
   CheckCircle2,
   AlertCircle,
-  Loader2,
   TrendingUp,
 } from 'lucide-react';
 import { toast } from 'sonner';
 import CreateClientModal from '@/components/clients/CreateClientModal';
 import ClientProfileDrawer from '@/components/clients/ClientProfileDrawer';
-import {
-  UnifiedDataTable,
-  DataTableColumnHeader,
-} from '@/components/ui/unified-table';
+import { UnifiedDataTable } from '@shared/components/tables/UnifiedDataTable';
 import { HeaderTitle } from '@shared/components/common/HeaderTitle';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 
-// Renders the Client Management & Directory page for Admin Dashboard
-const ClientsPage = () => {
+export function ClientsPage() {
   const [clients, setClients] = useState([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
-  const [clientTypeFilter, setClientTypeFilter] = useState('all');
+  const [activeTab, setActiveTab] = useState('all');
   const [page, setPage] = useState(1);
-  const [pagination, setPagination] = useState({ totalPages: 1, totalCount: 0 });
+  const [limit, setLimit] = useState(15);
+  const [meta, setMeta] = useState({ totalCount: 0, totalPages: 1 });
 
   // Modal & Drawer State
   const [createModalOpen, setCreateModalOpen] = useState(false);
@@ -44,19 +40,26 @@ const ClientsPage = () => {
   const fetchClients = useCallback(async () => {
     setLoading(true);
     try {
-      const params = new URLSearchParams({
-        page: page.toString(),
-        limit: '15',
-      });
-      if (search.trim()) params.append('search', search.trim());
-      if (clientTypeFilter !== 'all') params.append('clientType', clientTypeFilter);
+      const params = {
+        page,
+        limit,
+      };
+      if (search.trim()) params.search = search.trim();
+      if (activeTab !== 'all') {
+        if (['Active', 'Inactive', 'Archived'].includes(activeTab)) {
+          params.status = activeTab;
+        } else {
+          params.clientType = activeTab;
+        }
+      }
 
-      const res = await apiClient.get(`/api/v1/client/clients?${params.toString()}`);
+      const res = await apiClient.get('/api/v1/client/clients', { params });
       if (res.data?.status === 'success' || res.data?.success) {
-        setClients(res.data.data || []);
-        setPagination({
-          totalPages: res.data.pagination?.totalPages || 1,
-          totalCount: res.data.pagination?.totalCount || (res.data.data ? res.data.data.length : 0),
+        const clientList = res.data.data || [];
+        setClients(clientList);
+        setMeta({
+          totalCount: res.data.pagination?.totalCount || clientList.length,
+          totalPages: res.data.pagination?.totalPages || Math.ceil(clientList.length / limit) || 1,
         });
       }
     } catch (err) {
@@ -66,7 +69,7 @@ const ClientsPage = () => {
     } finally {
       setLoading(false);
     }
-  }, [page, search, clientTypeFilter]);
+  }, [page, limit, search, activeTab]);
 
   useEffect(() => {
     fetchClients();
@@ -75,157 +78,153 @@ const ClientsPage = () => {
   // Formats ISO date string into readable local representation
   const formatDate = (dateStr) => {
     if (!dateStr) return '—';
-    return new Date(dateStr).toLocaleDateString('en-US', {
-      month: 'short',
+    return new Date(dateStr).toLocaleDateString('en-GB', {
       day: 'numeric',
+      month: 'short',
       year: 'numeric',
     });
   };
 
-  // TanStack Table Column Definitions
-  const columns = useMemo(
-    () => [
-      {
-        accessorKey: 'fullName',
-        header: ({ column }) => <DataTableColumnHeader column={column} title="Client Name & DID" />,
-        cell: ({ row }) => {
-          const client = row.original;
-          return (
-            <div className="flex items-center gap-3">
-              <div className="size-9 rounded-xl bg-primary/10 border border-primary/20 text-primary flex items-center justify-center font-bold text-xs shrink-0">
-                {client.fullName?.charAt(0)?.toUpperCase() || 'C'}
-              </div>
-              <div>
-                <span className="font-bold text-foreground hover:text-primary transition-colors block">
-                  {client.fullName}
-                </span>
-                <div className="font-mono text-[10px] text-muted-foreground truncate max-w-[140px]">
-                  {client.did?.slice(0, 16)}...
-                </div>
-              </div>
-            </div>
-          );
-        },
-        enableSorting: true,
-      },
-      {
-        accessorKey: 'phone',
-        header: ({ column }) => <DataTableColumnHeader column={column} title="Contact Info" />,
-        cell: ({ row }) => {
-          const client = row.original;
-          return (
-            <div className="text-xs space-y-0.5">
-              <div className="font-semibold text-foreground flex items-center gap-1">
-                <Phone className="size-3 text-primary" />
-                {client.phone}
-              </div>
-              {client.email && (
-                <div className="text-muted-foreground truncate max-w-[150px]">
-                  {client.email}
-                </div>
-              )}
-            </div>
-          );
-        },
-      },
-      {
-        accessorKey: 'passportNumber',
-        header: ({ column }) => <DataTableColumnHeader column={column} title="Passport & NID" />,
-        cell: ({ row }) => {
-          const client = row.original;
-          return (
-            <div className="font-mono text-xs">
-              {client.passportNumber ? (
-                <span className="font-bold text-sky-600 dark:text-sky-400 block">
-                  {client.passportNumber}
-                </span>
-              ) : (
-                <span className="text-muted-foreground italic block">—</span>
-              )}
-              {client.nidNumber && (
-                <div className="text-[10px] text-muted-foreground">
-                  NID: {client.nidNumber}
-                </div>
-              )}
-            </div>
-          );
-        },
-      },
-      {
-        accessorKey: 'clientType',
-        header: ({ column }) => <DataTableColumnHeader column={column} title="Client Type" />,
-        cell: ({ row }) => (
-          <Badge variant="secondary" className="font-bold text-xs">
-            {row.getValue('clientType') || 'Individual'}
-          </Badge>
-        ),
-      },
-      {
-        id: 'activeFiles',
-        header: ({ column }) => <DataTableColumnHeader column={column} title="Active Files" />,
-        cell: ({ row }) => {
-          const client = row.original;
-          const casesCount = (client.clientCases?.length || 0) + (client.applications?.length || 0);
-          return (
-            <span className="px-2.5 py-0.5 rounded-full font-bold bg-primary/10 text-primary border border-primary/20 text-xs">
-              {casesCount} Files
-            </span>
-          );
-        },
-      },
-      {
-        accessorKey: 'status',
-        header: ({ column }) => <DataTableColumnHeader column={column} title="Status" />,
-        cell: ({ row }) => {
-          const status = row.getValue('status') || 'Active';
-          const isActive = status === 'Active';
-          return (
-            <Badge
-              className={
-                isActive
-                  ? 'bg-emerald-100 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 border-emerald-200'
-                  : 'bg-muted text-muted-foreground'
-              }
-            >
-              {status}
-            </Badge>
-          );
-        },
-      },
-      {
-        accessorKey: 'createdAt',
-        header: ({ column }) => <DataTableColumnHeader column={column} title="Created Date" />,
-        cell: ({ row }) => (
-          <span className="text-xs text-muted-foreground">
-            {formatDate(row.getValue('createdAt'))}
-          </span>
-        ),
-      },
-      {
-        id: 'actions',
-        header: () => <div className="text-right text-xs uppercase font-semibold text-muted-foreground">Actions</div>,
-        cell: ({ row }) => (
-          <div className="text-right">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={(e) => {
-                e.stopPropagation();
-                setSelectedClientDid(row.original.did);
-              }}
-              className="h-7 px-2.5 text-xs font-semibold cursor-pointer gap-1"
-            >
-              <Eye className="size-3.5 text-primary" />
-              <span>View 360°</span>
-            </Button>
+  // Column Definitions for UnifiedDataTable
+  const columns = [
+    {
+      accessorKey: 'fullName',
+      header: 'Client Name & DID',
+      cell: ({ row }) => (
+        <div className="flex items-center gap-3">
+          <div className="size-9 rounded-xl bg-primary/10 border border-primary/20 text-primary flex items-center justify-center font-bold text-xs shrink-0 shadow-xs">
+            {row.fullName?.charAt(0)?.toUpperCase() || 'C'}
           </div>
-        ),
-        enableSorting: false,
-        enableHiding: false,
+          <div>
+            <span
+              onClick={() => setSelectedClientDid(row.did)}
+              className="font-bold text-foreground hover:text-primary transition-colors block cursor-pointer"
+            >
+              {row.fullName || 'Unnamed Client'}
+            </span>
+            <div className="font-mono text-[10px] text-muted-foreground truncate max-w-[140px]">
+              {row.did ? `${row.did.slice(0, 16)}...` : '—'}
+            </div>
+          </div>
+        </div>
+      ),
+    },
+    {
+      accessorKey: 'phone',
+      header: 'Contact Info',
+      cell: ({ row }) => (
+        <div className="text-xs space-y-0.5">
+          <div className="font-semibold text-foreground flex items-center gap-1">
+            <Phone className="size-3 text-primary shrink-0" />
+            <span>{row.phone || '—'}</span>
+          </div>
+          {row.email && (
+            <div className="text-muted-foreground truncate max-w-[150px] text-[11px]">
+              {row.email}
+            </div>
+          )}
+        </div>
+      ),
+    },
+    {
+      accessorKey: 'passportNumber',
+      header: 'Passport & NID',
+      cell: ({ row }) => (
+        <div className="font-mono text-xs">
+          {row.passportNumber ? (
+            <span className="font-bold text-sky-600 dark:text-sky-400 block">
+              {row.passportNumber}
+            </span>
+          ) : (
+            <span className="text-muted-foreground italic block">—</span>
+          )}
+          {row.nidNumber && (
+            <div className="text-[10px] text-muted-foreground">
+              NID: {row.nidNumber}
+            </div>
+          )}
+        </div>
+      ),
+    },
+    {
+      accessorKey: 'clientType',
+      header: 'Client Type',
+      cell: ({ row }) => (
+        <Badge variant="secondary" className="font-bold text-[11px] border border-border">
+          {row.clientType || 'Individual'}
+        </Badge>
+      ),
+    },
+    {
+      accessorKey: 'activeFiles',
+      header: 'Active Files',
+      cell: ({ row }) => {
+        const casesCount = (row.clientCases?.length || 0) + (row.applications?.length || 0);
+        return (
+          <span className="px-2.5 py-0.5 rounded-full font-bold bg-primary/10 text-primary border border-primary/20 text-xs">
+            {casesCount} Files
+          </span>
+        );
       },
-    ],
-    []
-  );
+    },
+    {
+      accessorKey: 'status',
+      header: 'Status',
+      cell: ({ row }) => {
+        const st = row.status || 'Active';
+        const isActive = st === 'Active';
+        return (
+          <span
+            className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-bold border ${
+              isActive
+                ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20'
+                : 'bg-muted text-muted-foreground border-border'
+            }`}
+          >
+            {isActive && <CheckCircle2 className="w-3 h-3 mr-1" />}
+            {st}
+          </span>
+        );
+      },
+    },
+    {
+      accessorKey: 'createdAt',
+      header: 'Created Date',
+      cell: ({ row }) => (
+        <span className="text-xs text-muted-foreground font-medium">
+          {formatDate(row.createdAt)}
+        </span>
+      ),
+    },
+    {
+      id: 'actions',
+      header: 'Action',
+      cell: ({ row }) => (
+        <div className="text-right">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={(e) => {
+              e.stopPropagation();
+              setSelectedClientDid(row.did);
+            }}
+            className="h-7 px-2.5 text-xs font-semibold cursor-pointer gap-1 shadow-xs"
+          >
+            <Eye className="size-3.5 text-primary" />
+            <span>360° Profile</span>
+          </Button>
+        </div>
+      ),
+    },
+  ];
+
+  const filterTabs = [
+    { id: 'all', label: 'All Clients', count: meta.totalCount },
+    { id: 'Active', label: 'Active Status' },
+    { id: 'Individual', label: 'Individual' },
+    { id: 'Group', label: 'Group / Pilgrimage' },
+    { id: 'Corporate', label: 'Corporate Agent' },
+  ];
 
   return (
     <div className="space-y-6 pb-12">
@@ -233,24 +232,24 @@ const ClientsPage = () => {
       <HeaderTitle
         variant="general"
         icon={Users}
-        title="Client Management"
-        badge={`${pagination.totalCount} Registered Clients`}
-        subtitle="Unified database of visa applicants, pilgrimage groups, and corporate agents with full 360° milestone history."
+        title="Client Directory & CRM"
+        badge={`${meta.totalCount} Registered Clients`}
+        subtitle="Centralized database of visa candidates, pilgrimage groups, and corporate representatives with full 360° milestone records."
         actions={
           <>
             <button
               onClick={() => fetchClients()}
-              className="p-2.5 bg-slate-800/80 hover:bg-slate-800 text-sky-400 rounded-xl border border-sky-500/20 transition-all cursor-pointer shadow-xs"
+              className="p-2.5 bg-card hover:bg-muted text-primary rounded-xl border border-border transition-all cursor-pointer shadow-xs"
               title="Refresh Records"
             >
               <RefreshCw className={`size-4 ${loading ? 'animate-spin' : ''}`} />
             </button>
             <button
               onClick={() => setCreateModalOpen(true)}
-              className="flex items-center justify-center gap-2 px-4 py-2.5 bg-sky-500 hover:bg-sky-400 text-slate-950 font-bold text-xs rounded-xl shadow-lg hover:shadow-sky-500/25 transition-all cursor-pointer shrink-0"
+              className="flex items-center justify-center gap-2 px-4 py-2.5 bg-primary hover:bg-primary/90 text-primary-foreground font-bold text-xs rounded-xl shadow-md transition-all cursor-pointer shrink-0"
             >
               <UserPlus className="size-4" />
-              <span>New Client File</span>
+              <span>Register New Client</span>
             </button>
           </>
         }
@@ -265,7 +264,7 @@ const ClientsPage = () => {
                 Total Directory
               </span>
               <div className="text-2xl font-black text-foreground mt-1">
-                {pagination.totalCount}
+                {meta.totalCount}
               </div>
             </div>
             <div className="p-3 rounded-2xl bg-blue-50 dark:bg-blue-950/40 text-blue-600">
@@ -297,7 +296,8 @@ const ClientsPage = () => {
                 Active Status Ratio
               </span>
               <div className="text-2xl font-black text-emerald-600 mt-1">
-                {clients.filter((c) => c.status === 'Active' || !c.status).length} <span className="text-xs font-normal text-muted-foreground">Active</span>
+                {clients.filter((c) => c.status === 'Active' || !c.status).length}{' '}
+                <span className="text-xs font-normal text-muted-foreground">Active</span>
               </div>
             </div>
             <div className="p-3 rounded-2xl bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600">
@@ -310,14 +310,14 @@ const ClientsPage = () => {
           <CardContent className="p-5 flex items-center justify-between">
             <div>
               <span className="text-xs font-bold uppercase tracking-wider text-primary">
-                Quick Actions
+                Quick Action
               </span>
               <div className="mt-1.5">
                 <button
                   onClick={() => setCreateModalOpen(true)}
                   className="text-xs font-bold text-primary hover:underline flex items-center gap-1 cursor-pointer"
                 >
-                  <UserPlus className="size-3.5" /> Register New File
+                  <UserPlus className="size-3.5" /> Register Client
                 </button>
               </div>
             </div>
@@ -328,33 +328,29 @@ const ClientsPage = () => {
         </Card>
       </div>
 
-      {/* TanStack Unified Data Table */}
+      {/* Unified Data Table */}
       <UnifiedDataTable
+        title="All Registered Clients"
+        subtitle="Full CRM client records with contact info, passports, file history, and 360° profile access"
         columns={columns}
         data={clients}
-        isLoading={loading}
-        loadingRowCount={5}
-        enablePagination={true}
-        pageSize={15}
-        pageSizeOptions={[10, 15, 25, 50]}
-        enableSorting={true}
-        enableFiltering={true}
-        enableRowSelection={false}
-        enableExport={true}
-        exportFilename="monsur-ali-travels-clients"
-        searchPlaceholder="Search by Name, Phone, Passport, DID..."
-        onRowClick={(client) => setSelectedClientDid(client.did)}
-        emptyTitle="No client records found."
-        emptyDescription="Click '+ New Client File' to register a new client and case workflow."
-        emptyAction={
-          <Button
-            onClick={() => setCreateModalOpen(true)}
-            size="sm"
-            className="text-xs font-bold cursor-pointer"
-          >
-            <UserPlus className="size-3.5 mr-1" /> Register Client
-          </Button>
-        }
+        loading={loading}
+        totalItems={meta.totalCount}
+        page={page}
+        limit={limit}
+        onPageChange={setPage}
+        onLimitChange={setLimit}
+        onSearch={setSearch}
+        searchPlaceholder="Search by Client Name, Phone, Passport, NID, DID..."
+        filterTabs={filterTabs}
+        activeTab={activeTab}
+        onTabChange={(tab) => {
+          setActiveTab(tab);
+          setPage(1);
+        }}
+        onRefresh={fetchClients}
+        exportFileName="monsur-ali-travels-clients.csv"
+        emptyMessage="No client records found. Click '+ Register New Client' to create one."
       />
 
       {/* Create New Client Modal */}
@@ -375,6 +371,6 @@ const ClientsPage = () => {
       />
     </div>
   );
-};
+}
 
 export default ClientsPage;
