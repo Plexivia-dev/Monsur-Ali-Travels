@@ -1,0 +1,165 @@
+[
+  {
+    "groupLabel": "Core Overview",
+    "groupLabelBn": "প্রধান মেনু",
+    "items": [
+      {
+        "id": "overview",
+        "name": "Overview",
+        "nameBn": "ওভারভিউ",
+        "path": "/admin",
+        "icon": "LayoutDashboard"
+      },
+      {
+        "id": "docs",
+        "name": "Document Studio",
+        "nameBn": "ডকুমেন্ট স্টুডিও",
+        "path": "/admin/docs",
+        "icon": "FileSpreadsheet"
+      },
+      {
+        "id": "accounting-summary",
+        "name": "Accounting Summary",
+        "nameBn": "অ্যাকাউন্টিং সামারি",
+        "path": "/admin/accounting-summary",
+        "icon": "PieChart",
+        "roles": ["owner", "superadmin", "admin", "accountant", "accounts"]
+      }
+    ]
+  },
+  {
+    "groupLabel": "Agency Workspace",
+    "groupLabelBn": "এজেন্সি",
+    "items": [
+      {
+        "id": "agency-group",
+        "name": "Agency & Clients",
+        "nameBn": "ক্লায়েন্ট ফাইলস ও টিম",
+        "icon": "Building2",
+        "childItems": [
+          {
+            "id": "cases",
+            "name": "Client Files",
+            "nameBn": "ক্লায়েন্ট ফাইলস",
+            "path": "/admin/cases",
+            "icon": "FolderOpen"
+          },
+          {
+            "id": "clients",
+            "name": "Clients",
+            "nameBn": "ক্লায়েন্টস",
+            "path": "/admin/clients",
+            "icon": "Users"
+          },
+          {
+            "id": "users",
+            "name": "Users",
+            "nameBn": "ইউজারস",
+            "path": "/admin/users",
+            "icon": "User"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "groupLabel": "Accounts & Ledger",
+    "groupLabelBn": "হিসাব ও লেজার",
+    "roles": ["owner", "superadmin", "admin", "accountant", "accounts"],
+    "items": [
+      {
+        "id": "accounts-group",
+        "name": "Cash & Ledgers",
+        "nameBn": "অ্যাকাউন্টিং খতিয়ান",
+        "icon": "Wallet",
+        "childItems": [
+          {
+            "id": "cash-book",
+            "name": "Cash Book",
+            "nameBn": "ক্যাশ বুক",
+            "path": "/admin/accounts/cash-book",
+            "icon": "Wallet"
+          },
+          {
+            "id": "bank-ledger",
+            "name": "Bank Ledger",
+            "nameBn": "ব্যাংক লেজার",
+            "path": "/admin/accounts/bank-ledger",
+            "icon": "Building2"
+          },
+          {
+            "id": "expenses",
+            "name": "Expense Tracking",
+            "nameBn": "ভাউচার খরচ",
+            "path": "/admin/accounts/expenses",
+            "icon": "Receipt"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "groupLabel": "Reports",
+    "groupLabelBn": "রিপোর্টস ও ভাউচার",
+    "items": [
+      {
+        "id": "reports-group",
+        "name": "Vouchers & Bills",
+        "nameBn": "পেমেন্টস ও বিলস",
+        "icon": "PieChart",
+        "childItems": [
+          {
+            "id": "payments",
+            "name": "Payments",
+            "nameBn": "পেমেন্টস",
+            "path": "/admin/reports/payments",
+            "icon": "Wallet"
+          },
+          {
+            "id": "bills",
+            "name": "Bills",
+            "nameBn": "বিলস",
+            "path": "/admin/reports/bills",
+            "icon": "Receipt"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "groupLabel": "System & Logs",
+    "groupLabelBn": "সিস্টেম ও স্টোরেজ",
+    "excludeRoles": ["accountant", "accounts"],
+    "items": [
+      {
+        "id": "system-group",
+        "name": "Logs & Cloud",
+        "nameBn": "লগস ও ক্লাউড স্টোরেজ",
+        "icon": "Server",
+        "childItems": [
+          {
+            "id": "activity-logs",
+            "name": "Activity Logs",
+            "nameBn": "অ্যাক্টিভিটি লগস",
+            "path": "/admin/system/activity-logs",
+            "icon": "FileText"
+          },
+          {
+            "id": "storage",
+            "name": "Storage & Cloud Sync",
+            "nameBn": "স্টোরেজ ও ক্লাউড সিঙ্ক",
+            "path": "/admin/system/storage",
+            "icon": "HardDrive"
+          },
+          {
+            "id": "trash",
+            "name": "Trash",
+            "nameBn": "ট্র্যাশ",
+            "path": "/admin/system/trash",
+            "icon": "Trash2"
+          }
+        ]
+      }
+    ]
+  }
+]
