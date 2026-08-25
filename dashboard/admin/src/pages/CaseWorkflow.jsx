@@ -8,6 +8,7 @@ import {
 import { toast } from 'sonner';
 import { apiClient } from '../lib/api-client';
 import { StepAssignModal } from '../components/workflow/StepAssignModal';
+import { AddPaymentModal } from '../components/workflow/AddPaymentModal';
 import { useAuth } from '../store/useAuthStore';
 import CreateClientModal from '@/components/clients/CreateClientModal';
 
@@ -21,6 +22,7 @@ const CaseWorkflow = () => {
   const [search, setSearch] = useState('');
   const [selectedCase, setSelectedCase] = useState(null);
   const [assignModalOpen, setAssignModalOpen] = useState(false);
+  const [paymentModalOpen, setPaymentModalOpen] = useState(false);
   const [createModalOpen, setCreateModalOpen] = useState(false);
   const [approvingTaskId, setApprovingTaskId] = useState(null);
 
@@ -179,10 +181,13 @@ const CaseWorkflow = () => {
                 {isAccountant ? (
                   c.status === 'ENTRY' || !c.paymentLedger?.totalPaidAmount ? (
                     <button
-                      onClick={() => toast.info('Receive Advance Payment modal opening... (WIP)')}
-                      className="flex-1 flex items-center justify-center gap-1 py-1.5 bg-emerald-500 hover:bg-emerald-400 text-slate-950 text-xs font-bold rounded-lg transition-all cursor-pointer"
+                      onClick={() => {
+                        setSelectedCase(c);
+                        setPaymentModalOpen(true);
+                      }}
+                      className="flex-1 flex items-center justify-center gap-1 py-1.5 bg-emerald-500 hover:bg-emerald-400 text-slate-950 text-xs font-bold rounded-lg transition-all cursor-pointer shadow-sm"
                     >
-                      <CreditCard className="w-3.5 h-3.5" /> Receive Advance
+                      <CreditCard className="w-3.5 h-3.5" /> Add Payment
                     </button>
                   ) : (
                     <span className="flex-1 text-center text-[11px] font-bold text-emerald-500 bg-emerald-500/10 py-1.5 rounded-lg border border-emerald-500/20">
@@ -212,6 +217,18 @@ const CaseWorkflow = () => {
           caseDoc={selectedCase}
           onClose={() => {
             setAssignModalOpen(false);
+            setSelectedCase(null);
+          }}
+          onSuccess={fetchCases}
+        />
+      )}
+
+      {/* Add Payment Modal */}
+      {paymentModalOpen && selectedCase && (
+        <AddPaymentModal
+          caseDoc={selectedCase}
+          onClose={() => {
+            setPaymentModalOpen(false);
             setSelectedCase(null);
           }}
           onSuccess={fetchCases}

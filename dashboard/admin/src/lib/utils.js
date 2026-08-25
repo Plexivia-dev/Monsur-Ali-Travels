@@ -28,3 +28,11 @@ export function timeAgo(isoDate) {
 export function truncate(str, max = 50) {
   return str.length > max ? str.slice(0, max) + '…' : str;
 }
+
+/** Format DD/MM/YYYY */
+export function formatToDdMmYyyy(dateInput) {
+  if (!dateInput) return '';
+  const d = new Date(dateInput);
+  if (isNaN(d.getTime())) return '';
+  return d.toLocaleDateString('en-GB'); // This gives DD/MM/YYYY format out of the box
+}

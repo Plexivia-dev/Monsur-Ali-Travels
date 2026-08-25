@@ -6,6 +6,7 @@ import { CandidateCaseFiles } from '../components/agency/CandidateCaseFiles';
 import { ClientManagement } from '../components/agency/ClientManagement';
 import { CustomerDataTable } from '../components/data/CustomerDataTable';
 import { InvoiceDataTable } from '../components/data/InvoiceDataTable';
+import { ClientKanbanBoard } from '../components/agency/ClientKanbanBoard';
 import { isRouteAllowedForUser } from '../configs/roleNavConfig';
 import MyTasks from './MyTasks';
 
@@ -35,6 +36,12 @@ export default function Agency() {
     case 'candidates-all':
     case 'candidates-add':
       return <CandidateCaseFiles initialTab={activeSubmodule} />;
+
+    // ── Client Kanban Board ──────────────────────────────────
+    case 'pipeline':
+    case 'board':
+    case 'kanban':
+      return <ClientKanbanBoard />;
 
     // ── Clients & Accounts (Live Database Records) ───────────
     case 'clients':

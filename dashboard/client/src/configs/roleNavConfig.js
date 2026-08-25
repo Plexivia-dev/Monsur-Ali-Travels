@@ -23,8 +23,22 @@ export const MASTER_ITEMS = {
     label: 'Case Files',
     key: 'nav.caseFiles',
     portal: 'agency',
-    submodule: 'cases',
-    href: '/dashboard/agency/cases',
+    childItems: [
+      {
+        icon: 'FilePlus2',
+        label: 'Candidate Profiles',
+        key: 'nav.candidates',
+        portal: 'agency',
+        submodule: 'cases',
+      },
+      {
+        icon: 'Briefcase',
+        label: 'Client Pipeline',
+        key: 'nav.pipeline',
+        portal: 'agency',
+        submodule: 'pipeline',
+      },
+    ],
   },
 
   // Clients & Accounts
