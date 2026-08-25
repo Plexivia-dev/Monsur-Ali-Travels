@@ -146,7 +146,7 @@ export const DropdownMenuRadioItem = ({ children, value, selectedValue, onSelect
 
   return (
     <div
-      onClick={() => onSelect(value)}
+      onClick={() => onSelect && onSelect(value)}
       className={cn(
         "relative flex cursor-pointer select-none items-center rounded-sm py-1.5 px-2 text-xs outline-none transition-colors hover:bg-accent hover:text-accent-foreground",
         isSelected && "bg-accent/80 font-semibold",
@@ -162,3 +162,26 @@ export const DropdownMenuRadioItem = ({ children, value, selectedValue, onSelect
     </div>
   )
 }
+
+export const DropdownMenuCheckboxItem = ({ children, checked, onCheckedChange, setIsOpen, className }) => {
+  return (
+    <div
+      onClick={() => {
+        if (onCheckedChange) onCheckedChange(!checked)
+      }}
+      className={cn(
+        "relative flex cursor-pointer select-none items-center rounded-sm py-1.5 px-2 text-xs outline-none transition-colors hover:bg-accent hover:text-accent-foreground",
+        checked && "font-medium",
+        className
+      )}
+    >
+      <span className="flex h-3.5 w-3.5 items-center justify-center mr-2 border border-border rounded-xs bg-background">
+        {checked && (
+          <span className="h-2 w-2 rounded-xs bg-primary" />
+        )}
+      </span>
+      {children}
+    </div>
+  )
+}
+
