@@ -292,6 +292,5 @@ export class ClientGuardianController {
   }
 }
 
-export const ClientGuardianController = ClientGuardianController;
 export default ClientGuardianController;
 
