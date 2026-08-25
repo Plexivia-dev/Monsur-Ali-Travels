@@ -16,14 +16,9 @@ import TrashPage from '@/pages/system/TrashPage'
 import StorageSyncPage from '@/pages/system/StorageSyncPage'
 import ClientsPage from '@/pages/ClientsPage'
 import UsersPage from '@/pages/UsersPage'
-import Reports from '@/pages/accounting/Reports'
-import Payments from '@/pages/reports/Payments'
-import Bills from '@/pages/reports/Bills'
-import Logs from '@/pages/accounting/Logs'
 import SettingsPage from '@/pages/SettingsPage'
 import DocumentStudioPage from '@/pages/DocumentStudioPage'
 import NotFoundPage from '@/pages/NotFoundPage'
-import AccountingSummary from '@/pages/accounting/AccountingSummary'
 import CashBook from '@/pages/accounting/CashBook'
 import BankLedger from '@/pages/accounting/BankLedger'
 import Expenses from '@/pages/accounting/Expenses'
@@ -74,16 +69,7 @@ export default function App() {
               <Route path="system/storage" element={<StorageSyncPage />} />
               <Route path="storage" element={<StorageSyncPage />} />
               <Route path="system" element={<Navigate to="/admin/system/activity-logs" replace />} />
-              <Route path="reports" element={<Navigate to="/admin/reports/payments" replace />} />
-              <Route path="reports/payments" element={<Payments />} />
-              <Route path="reports/bills" element={<Bills />} />
-              <Route path="accounting" element={<Navigate to="/admin/reports/payments" replace />} />
-              <Route path="accounting/reports" element={<Reports />} />
-              <Route path="accounting/payments" element={<Payments />} />
-              <Route path="accounting/bills" element={<Bills />} />
-              <Route path="accounting/logs" element={<Logs />} />
               
-              <Route path="accounting-summary" element={<AccountingSummary />} />
               <Route path="accounts/cash-book" element={<CashBook />} />
               <Route path="accounts/bank-ledger" element={<BankLedger />} />
               <Route path="accounts/expenses" element={<Expenses />} />
