@@ -7,7 +7,6 @@ import {
   Sparkles,
   ArrowRight,
   Printer,
-  ChevronLeft,
 } from 'lucide-react';
 import { DOCUMENT_GENERATORS, CATEGORIES } from '../configs/documentGenerators';
 import { EmploymentAgreement } from '../components/agreement/EmploymentAgreement';
@@ -83,16 +82,6 @@ export function DocumentStudioPage({
     }
   };
 
-  const handleBackToOverview = () => {
-    const isAdmin = location.pathname.startsWith('/admin');
-    if (isAdmin) {
-      navigate('/admin/docs');
-    } else if (location.pathname.startsWith('/dashboard')) {
-      navigate('/dashboard/docs/overview');
-    }
-    setLocalSubmodule(null);
-  };
-
   const filteredGenerators = DOCUMENT_GENERATORS.filter((gen) => {
     const matchesCategory = selectedCategory === 'all' || gen.category === selectedCategory;
     const q = searchQuery.toLowerCase().trim();
@@ -106,43 +95,8 @@ export function DocumentStudioPage({
     return matchesCategory && matchesSearch;
   });
 
-  const activeGenerator = DOCUMENT_GENERATORS.find(
-    (g) =>
-      g.id === resolvedSubmodule ||
-      (resolvedSubmodule === 'receipt' && g.id === 'money-receipt') ||
-      (resolvedSubmodule === 'certificate-exp' && g.id === 'experience-certificate') ||
-      (resolvedSubmodule === 'certificate-char' && g.id === 'character-certificate') ||
-      (resolvedSubmodule === 'certificate-marr' && g.id === 'marriage-certificate')
-  );
-
-  const isAdminRoute = location.pathname.startsWith('/admin');
-
   return (
     <div className="space-y-6">
-      {/* If in Admin route and viewing a specific generator, offer a clean breadcrumb back button */}
-      {!isOverview && isAdminRoute && (
-        <div className="no-print bg-card border border-border px-4 py-2.5 rounded-xl shadow-xs flex items-center justify-between gap-3">
-          <button
-            type="button"
-            onClick={handleBackToOverview}
-            className="inline-flex items-center gap-1.5 text-xs font-semibold text-muted-foreground hover:text-foreground bg-muted/60 hover:bg-muted px-3 py-1.5 rounded-lg border border-border transition-colors cursor-pointer"
-          >
-            <ChevronLeft className="w-4 h-4" />
-            <span>{isBn ? 'ডকুমেন্ট স্টুডিও হাব' : 'Document Studio Hub'}</span>
-          </button>
-          {activeGenerator && (
-            <div className="flex items-center gap-2">
-              <span className={`text-[11px] font-semibold px-2.5 py-0.5 rounded-full border ${activeGenerator.badgeStyle}`}>
-                {activeGenerator.badge}
-              </span>
-              <span className="text-xs font-bold text-foreground">
-                {isBn ? activeGenerator.bnTitle : activeGenerator.title}
-              </span>
-            </div>
-          )}
-        </div>
-      )}
-
       {isOverview && (
         <div className="space-y-6 animate-in fade-in-50 duration-200">
           <div className="relative overflow-hidden bg-card border border-border p-6 sm:p-8 rounded-2xl shadow-xs border-b-2 border-b-primary/40">
