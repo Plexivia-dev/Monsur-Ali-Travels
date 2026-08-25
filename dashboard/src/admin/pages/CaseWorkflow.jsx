@@ -1,27 +1,18 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   FolderOpen,
   Plus,
   Search,
-  Filter,
   RefreshCw,
   Loader2,
   CheckCircle2,
   Clock,
   AlertCircle,
-  ArrowRightLeft,
-  Send,
-  User,
-  History,
   FileText,
-  ChevronRight,
   Eye,
-  Check,
-  X,
   CreditCard,
   Layers,
-  Kanban,
   Table as TableIcon,
   Globe2,
   Phone,
@@ -29,6 +20,13 @@ import {
   Download,
   Calendar,
   Building2,
+  ChevronDown,
+  ChevronRight,
+  ArrowRight,
+  UserCheck,
+  Award,
+  Sparkles,
+  Plane,
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { apiClient } from '../lib/api-client';
@@ -36,55 +34,77 @@ import { StepAssignModal } from '../components/workflow/StepAssignModal';
 import { AddPaymentModal } from '../components/workflow/AddPaymentModal';
 import { useAuth } from '../store/useAuthStore';
 import CreateClientModal from '@/components/clients/CreateClientModal';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
 
-const PIPELINE_COLUMNS = [
+const STAGES = [
   {
     id: 'ENTRY',
-    title: '1. File Intake (ফাইল এন্ট্রি)',
-    description: 'Initial client registration & document verification',
-    badgeColor: 'bg-slate-100 text-slate-800 border-slate-300 dark:bg-slate-800 dark:text-slate-200',
-    headerBg: 'bg-slate-500/10 border-slate-200 dark:border-slate-800',
+    title: '1. File Intake & Verification',
+    titleBn: 'ফাইল এন্ট্রি ও যাচাই',
+    description: 'Initial client intake, passport verification, and document onboarding',
+    badgeColor: 'bg-slate-500/10 text-slate-700 dark:text-slate-300 border-slate-300 dark:border-slate-700',
+    headerBg: 'bg-slate-50 dark:bg-slate-900/60 border-slate-200 dark:border-slate-800',
+    accentColor: 'text-slate-600 dark:text-slate-400',
+    stepNumber: 1,
+    icon: FolderOpen,
   },
   {
     id: 'PROCESSING',
-    title: '2. Processing (ডকুমেন্ট প্রসেসিং)',
-    description: 'Lawyer handoff & official portal submission',
-    badgeColor: 'bg-sky-100 text-sky-800 border-sky-300 dark:bg-sky-950 dark:text-sky-300',
-    headerBg: 'bg-sky-500/10 border-sky-200 dark:border-sky-800',
+    title: '2. Document Processing & Portal Submission',
+    titleBn: 'ডকুমেন্ট প্রসেসিং ও পোর্টাল সাবমিশন',
+    description: 'Official government portal application, translation & lawyer vetting',
+    badgeColor: 'bg-sky-500/10 text-sky-700 dark:text-sky-300 border-sky-300 dark:border-sky-800',
+    headerBg: 'bg-sky-50/50 dark:bg-sky-950/30 border-sky-200 dark:border-sky-800/60',
+    accentColor: 'text-sky-600 dark:text-sky-400',
+    stepNumber: 2,
+    icon: Layers,
   },
   {
     id: 'APPROVED_OFFER_LETTER',
-    title: '3. Offer Approved (অফার লেটার প্রাপ্ত)',
-    description: 'Government permit issued, prepare for Indian visa',
-    badgeColor: 'bg-indigo-100 text-indigo-800 border-indigo-300 dark:bg-indigo-950 dark:text-indigo-300',
-    headerBg: 'bg-indigo-500/10 border-indigo-200 dark:border-indigo-800',
+    title: '3. Approved Offer Letter & Work Permit',
+    titleBn: 'অফার লেটার ও ওয়ার্ক পারমিট প্রাপ্ত',
+    description: 'Government work permit approved, ready for embassy/consulate scheduling',
+    badgeColor: 'bg-indigo-500/10 text-indigo-700 dark:text-indigo-300 border-indigo-300 dark:border-indigo-800',
+    headerBg: 'bg-indigo-50/50 dark:bg-indigo-950/30 border-indigo-200 dark:border-indigo-800/60',
+    accentColor: 'text-indigo-600 dark:text-indigo-400',
+    stepNumber: 3,
+    icon: Award,
   },
   {
     id: 'SUBMITTED_EMBASSY_BSF',
-    title: '4. Embassy/VFS (এমব্যাসি ও ভিসা)',
-    description: 'Delhi embassy biometrics, PCC & visa interview',
-    badgeColor: 'bg-amber-100 text-amber-800 border-amber-300 dark:bg-amber-950 dark:text-amber-300',
-    headerBg: 'bg-amber-500/10 border-amber-200 dark:border-amber-800',
+    title: '4. Embassy & VFS Biometrics',
+    titleBn: 'এমব্যাসি ও বায়োমেট্রিক জমা',
+    description: 'VFS Global/Embassy biometrics, PCC verification & visa interview',
+    badgeColor: 'bg-amber-500/10 text-amber-700 dark:text-amber-300 border-amber-300 dark:border-amber-800',
+    headerBg: 'bg-amber-50/50 dark:bg-amber-950/30 border-amber-200 dark:border-amber-800/60',
+    accentColor: 'text-amber-600 dark:text-amber-400',
+    stepNumber: 4,
+    icon: UserCheck,
   },
   {
     id: 'COMPLETED_DELIVERED',
-    title: '5. Completed & Delivered (ভিসা ডেলিভার্ড)',
-    description: 'Visa stamped, final payment settled & flight ready',
-    badgeColor: 'bg-emerald-100 text-emerald-800 border-emerald-300 dark:bg-emerald-950 dark:text-emerald-300',
-    headerBg: 'bg-emerald-500/10 border-emerald-200 dark:border-emerald-800',
+    title: '5. Completed & Visa Delivered',
+    titleBn: 'ভিসা ডেলিভার্ড ও ফ্লাইট প্রস্তুত',
+    description: 'Visa issued and stamped, final settlement complete, and flight ready',
+    badgeColor: 'bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 border-emerald-300 dark:border-emerald-800',
+    headerBg: 'bg-emerald-50/50 dark:bg-emerald-950/30 border-emerald-200 dark:border-emerald-800/60',
+    accentColor: 'text-emerald-600 dark:text-emerald-400',
+    stepNumber: 5,
+    icon: Plane,
   },
 ];
 
 export default function CaseWorkflow() {
   const navigate = useNavigate();
   const { user } = useAuth();
-  const isAccountant = user?.subRole?.toLowerCase() === 'accountant' || user?.subRole?.toLowerCase() === 'accounts';
 
   const [cases, setCases] = useState([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
   const [destinationFilter, setDestinationFilter] = useState('all');
-  const [viewMode, setViewMode] = useState('kanban'); // 'kanban' | 'table'
+  const [activeStageFilter, setActiveStageFilter] = useState('all');
+  const [collapsedStages, setCollapsedStages] = useState({});
 
   // Modals
   const [selectedCaseForAction, setSelectedCaseForAction] = useState(null);
@@ -92,14 +112,10 @@ export default function CaseWorkflow() {
   const [paymentModalOpen, setPaymentModalOpen] = useState(false);
   const [createModalOpen, setCreateModalOpen] = useState(false);
 
-  // Drag-and-drop state
-  const [draggedCardId, setDraggedCardId] = useState(null);
-  const [dragOverStage, setDragOverStage] = useState(null);
-
   const fetchCases = useCallback(async () => {
     setLoading(true);
     try {
-      const res = await apiClient.get('/api/v1/client/cases?limit=100&sortBy=updatedAt&sortOrder=desc');
+      const res = await apiClient.get('/api/v1/client/cases?limit=200&sortBy=updatedAt&sortOrder=desc');
       const data = res.data?.data || res.data?.cases || res.data || [];
       setCases(Array.isArray(data) ? data : []);
     } catch (err) {
@@ -114,72 +130,135 @@ export default function CaseWorkflow() {
     fetchCases();
   }, [fetchCases]);
 
+  const toggleStageCollapse = (stageId) => {
+    setCollapsedStages((prev) => ({
+      ...prev,
+      [stageId]: !prev[stageId],
+    }));
+  };
+
   const handleStageChange = async (caseId, newStatus) => {
     try {
       await apiClient.patch(`/api/v1/client/cases/${caseId}/workflow`, {
         status: newStatus,
-        remarks: `Stage changed to ${newStatus} by Admin`,
+        remarks: `Stage updated to ${newStatus} by Admin`,
       });
-      toast.success(`Case stage updated to ${newStatus.replace(/_/g, ' ')}`);
+      toast.success(`Case stage advanced to ${newStatus.replace(/_/g, ' ')}`);
       fetchCases();
     } catch (err) {
       toast.error('Failed to update stage.');
     }
   };
 
-  const handleDragStart = (e, caseId) => {
-    setDraggedCardId(caseId);
-    e.dataTransfer.setData('text/plain', caseId);
-  };
+  // Filter Cases based on Search & Destination
+  const filteredCases = useMemo(() => {
+    return cases.filter((c) => {
+      const q = search.toLowerCase();
+      const matchesSearch =
+        !q ||
+        (c.applicantName || c.clientName || '').toLowerCase().includes(q) ||
+        (c.passportNumber || '').toLowerCase().includes(q) ||
+        (c.caseNumber || c.fileNumber || '').toLowerCase().includes(q) ||
+        (c.phone || c.clientPhone || '').toLowerCase().includes(q);
 
-  const handleDragOver = (e, stageId) => {
-    e.preventDefault();
-    if (dragOverStage !== stageId) {
-      setDragOverStage(stageId);
+      const matchesDest =
+        destinationFilter === 'all' ||
+        (c.destinationCountry || c.caseType || '').toLowerCase().includes(destinationFilter.toLowerCase());
+
+      return matchesSearch && matchesDest;
+    });
+  }, [cases, search, destinationFilter]);
+
+  // Group filtered cases into the 5 stages
+  const groupedCases = useMemo(() => {
+    const groups = {};
+    for (const stage of STAGES) {
+      groups[stage.id] = [];
     }
-  };
+    groups.OTHER = [];
 
-  const handleDrop = async (e, targetStage) => {
-    e.preventDefault();
-    setDragOverStage(null);
-    const caseId = e.dataTransfer.getData('text/plain') || draggedCardId;
-    if (!caseId) return;
-
-    // Optimistic UI Update
-    setCases((prev) =>
-      prev.map((c) => (c.did === caseId || c._id === caseId ? { ...c, status: targetStage } : c))
-    );
-
-    await handleStageChange(caseId, targetStage);
-    setDraggedCardId(null);
-  };
-
-  const filteredCases = cases.filter((c) => {
-    const q = search.toLowerCase();
-    const matchesSearch =
-      !q ||
-      (c.applicantName || '').toLowerCase().includes(q) ||
-      (c.passportNumber || '').toLowerCase().includes(q) ||
-      (c.caseNumber || '').toLowerCase().includes(q) ||
-      (c.phone || '').toLowerCase().includes(q);
-
-    const matchesDest =
-      destinationFilter === 'all' ||
-      (c.destinationCountry || c.caseType || '').toLowerCase().includes(destinationFilter.toLowerCase());
-
-    return matchesSearch && matchesDest;
-  });
+    for (const c of filteredCases) {
+      const st = String(c.workflowStatus || c.status || 'ENTRY').toUpperCase();
+      if (st === 'ENTRY' || st === 'NEW') {
+        groups.ENTRY.push(c);
+      } else if (st === 'PROCESSING') {
+        groups.PROCESSING.push(c);
+      } else if (st === 'APPROVED_OFFER_LETTER' || st === 'FLIGHT_BOOKED') {
+        groups.APPROVED_OFFER_LETTER.push(c);
+      } else if (st === 'SUBMITTED_EMBASSY_BSF' || st === 'VISA_SUBMITTED') {
+        groups.SUBMITTED_EMBASSY_BSF.push(c);
+      } else if (st === 'COMPLETED_DELIVERED' || st === 'COMPLETED') {
+        groups.COMPLETED_DELIVERED.push(c);
+      } else {
+        groups.OTHER.push(c);
+      }
+    }
+    return groups;
+  }, [filteredCases]);
 
   // Calculate Aggregate KPIs
   const totalCases = cases.length;
   const inProcessing = cases.filter((c) => c.status === 'PROCESSING' || c.status === 'APPROVED_OFFER_LETTER').length;
   const inEmbassy = cases.filter((c) => c.status === 'SUBMITTED_EMBASSY_BSF').length;
   const delivered = cases.filter((c) => c.status === 'COMPLETED_DELIVERED').length;
-  const totalAgreedVolume = cases.reduce((acc, c) => acc + (c.paymentLedger?.totalAgreedAmount || c.packageCost || 0), 0);
-  const totalCollectedVolume = cases.reduce((acc, c) => acc + (c.paymentLedger?.totalPaidAmount || c.initialPaidAmount || 0), 0);
+
+  const handleExportAllCasesCsv = () => {
+    if (cases.length === 0) {
+      toast.error('No case files to export');
+      return;
+    }
+
+    const headers = [
+      'Case Number',
+      'Date',
+      'Applicant Name',
+      'Phone',
+      'Passport Number',
+      'Destination Country',
+      'Trade Skill',
+      'Stage',
+      'Package Amount',
+      'Paid Amount',
+      'Due Amount',
+    ];
+
+    const rows = [headers.join(',')];
+
+    for (const c of cases) {
+      const ledger = c.paymentLedger || {};
+      const totalAgreed = ledger.totalAgreedAmount || c.packageCost || 0;
+      const totalPaid = ledger.totalPaidAmount || c.initialPaidAmount || 0;
+      const totalDue = ledger.dueAmount !== undefined ? ledger.dueAmount : Math.max(0, totalAgreed - totalPaid);
+
+      rows.push(
+        [
+          `"${c.caseNumber || c.fileNumber || ''}"`,
+          `"${c.createdAt ? new Date(c.createdAt).toISOString().slice(0, 10) : ''}"`,
+          `"${c.applicantName || c.clientName || ''}"`,
+          `"${c.phone || c.clientPhone || ''}"`,
+          `"${c.passportNumber || ''}"`,
+          `"${c.destinationCountry || ''}"`,
+          `"${c.tradeSkill || ''}"`,
+          `"${c.workflowStatus || c.status || 'ENTRY'}"`,
+          totalAgreed,
+          totalPaid,
+          totalDue,
+        ].join(',')
+      );
+    }
+
+    const blob = new Blob([rows.join('\r\n')], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `cases-workflow-export-${new Date().toISOString().slice(0, 10)}.csv`;
+    link.click();
+    URL.revokeObjectURL(url);
+    toast.success('Case Workflow CSV exported successfully!');
+  };
 
   return (
-    <div className="space-y-6 pb-12 animate-in fade-in duration-200">
+    <div className="space-y-6 pb-16 animate-in fade-in duration-200">
       {/* Top Banner Control Center */}
       <div className="bg-gradient-to-r from-slate-950 via-slate-900 to-indigo-950 rounded-3xl p-6 sm:p-8 text-white shadow-2xl border border-sky-500/20 relative overflow-hidden">
         <div className="absolute right-0 top-0 w-96 h-96 bg-sky-500/10 rounded-full blur-3xl pointer-events-none" />
@@ -191,38 +270,49 @@ export default function CaseWorkflow() {
                 <FolderOpen className="size-5" />
               </div>
               <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-white">
-                Case Workflow & Pipeline Board
+                Case Files & Workflow Directory
               </h1>
             </div>
             <p className="text-xs sm:text-sm text-sky-100/70 max-w-2xl leading-relaxed">
-              Master overseas visa pipeline management. Track client stages, assign operational tasks, approve completions, and monitor milestone payments.
+              Stage-grouped operational table. Manage overseas visa processing, milestone tracking, client ledgers, and official dossier files.
             </p>
           </div>
 
           <div className="flex flex-wrap items-center gap-3">
-            <button
+            <Button
               onClick={() => setCreateModalOpen(true)}
-              className="flex items-center gap-2 px-4 py-2.5 bg-sky-500 hover:bg-sky-400 text-slate-950 rounded-xl font-bold text-xs transition shadow-lg cursor-pointer hover:scale-102 active:scale-98"
+              className="h-10 px-4 bg-sky-500 hover:bg-sky-400 text-slate-950 rounded-xl font-bold text-xs transition shadow-lg cursor-pointer gap-2"
             >
               <Plus className="size-4" />
-              <span>New Client Case Entry</span>
-            </button>
+              <span>New Client Case</span>
+            </Button>
 
-            <button
+            <Button
+              variant="outline"
+              onClick={handleExportAllCasesCsv}
+              className="h-10 px-3 bg-white/10 hover:bg-white/20 border border-white/20 text-white rounded-xl text-xs font-semibold gap-1.5 cursor-pointer"
+            >
+              <Download className="size-4" />
+              <span>Export CSV</span>
+            </Button>
+
+            <Button
+              variant="outline"
+              size="icon"
               onClick={fetchCases}
-              className="p-2.5 bg-white/10 hover:bg-white/20 border border-white/15 text-white rounded-xl transition cursor-pointer"
+              className="h-10 w-10 bg-white/10 hover:bg-white/20 border border-white/20 text-white rounded-xl cursor-pointer"
               title="Refresh Pipeline"
             >
               <RefreshCw className={`size-4 ${loading ? 'animate-spin' : ''}`} />
-            </button>
+            </Button>
           </div>
         </div>
 
         {/* 4 Pipeline Stat Pills */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-6 pt-6 border-t border-white/10 text-xs">
           <div className="bg-white/5 border border-white/10 rounded-2xl p-3.5 backdrop-blur-xs">
-            <span className="text-[10px] text-sky-200/70 uppercase font-bold block">Total Active Files</span>
-            <span className="text-lg font-black text-white mt-0.5 block">{totalCases} Cases</span>
+            <span className="text-[10px] text-sky-200/70 uppercase font-bold block">Total Active Cases</span>
+            <span className="text-lg font-black text-white mt-0.5 block">{totalCases} Files</span>
           </div>
           <div className="bg-white/5 border border-white/10 rounded-2xl p-3.5 backdrop-blur-xs">
             <span className="text-[10px] text-sky-200/70 uppercase font-bold block">In Document Processing</span>
@@ -239,360 +329,355 @@ export default function CaseWorkflow() {
         </div>
       </div>
 
-      {/* Filter & View Switcher Bar */}
-      <div className="bg-card border border-border p-4 rounded-2xl shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div className="flex flex-wrap items-center gap-3 flex-1 max-w-xl">
-          <div className="relative flex-1 min-w-[220px]">
-            <Search className="size-4 absolute left-3.5 top-3 text-muted-foreground" />
-            <input
-              type="text"
-              placeholder="Search by client name, passport number, or case ID..."
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 text-xs bg-muted/40 border border-border rounded-xl text-foreground focus:outline-none focus:border-primary shadow-xs"
-            />
+      {/* Filter Toolbar & Stage Tabs */}
+      <div className="bg-card border border-border p-4 rounded-2xl shadow-xs space-y-4">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-3">
+          <div className="flex flex-wrap items-center gap-3 flex-1">
+            {/* Search Input */}
+            <div className="relative flex-1 min-w-[240px]">
+              <Search className="size-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-muted-foreground" />
+              <input
+                type="text"
+                placeholder="Search by client name, passport number, case ID, or phone..."
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                className="w-full pl-10 pr-4 py-2 text-xs bg-muted/40 border border-border rounded-xl text-foreground focus:outline-none focus:border-primary shadow-xs"
+              />
+            </div>
+
+            {/* Destination Country Filter */}
+            <select
+              value={destinationFilter}
+              onChange={(e) => setDestinationFilter(e.target.value)}
+              className="px-3 py-2 text-xs bg-muted/40 border border-border rounded-xl text-foreground focus:outline-none cursor-pointer"
+            >
+              <option value="all">All Destinations (সকল দেশ)</option>
+              <option value="saudi">Saudi Arabia (সৌদি)</option>
+              <option value="greece">Greece (গ্রীস)</option>
+              <option value="macedonia">N. Macedonia (ম্যাসিডোনিয়া)</option>
+              <option value="croatia">Croatia (ক্রোয়েশিয়া)</option>
+              <option value="qatar">Qatar (কাতার)</option>
+              <option value="dubai">Dubai / UAE (দুবাই)</option>
+            </select>
           </div>
-
-          <select
-            value={destinationFilter}
-            onChange={(e) => setDestinationFilter(e.target.value)}
-            className="px-3 py-2 text-xs bg-muted/40 border border-border rounded-xl text-foreground focus:outline-none cursor-pointer"
-          >
-            <option value="all">All Destinations (সকল দেশ)</option>
-            <option value="greece">Greece (গ্রীস)</option>
-            <option value="macedonia">N. Macedonia (ম্যাসিডোনিয়া)</option>
-            <option value="saudi">Saudi Arabia (সৌদি)</option>
-            <option value="croatia">Croatia (ক্রোয়েশিয়া)</option>
-          </select>
         </div>
 
-        {/* View Switcher (Kanban vs Table) */}
-        <div className="flex items-center gap-1 bg-muted p-1 rounded-xl border border-border shrink-0 self-start md:self-auto">
+        {/* Stage Filter Quick Pills */}
+        <div className="flex items-center gap-1.5 overflow-x-auto pb-1 no-scrollbar border-t border-border pt-3">
           <button
-            onClick={() => setViewMode('kanban')}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition cursor-pointer ${
-              viewMode === 'kanban' ? 'bg-card text-foreground shadow-xs' : 'text-muted-foreground hover:text-foreground'
+            type="button"
+            onClick={() => setActiveStageFilter('all')}
+            className={`px-3 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition cursor-pointer ${
+              activeStageFilter === 'all'
+                ? 'bg-primary text-primary-foreground shadow-xs'
+                : 'bg-muted/50 text-muted-foreground hover:text-foreground border border-border'
             }`}
           >
-            <Kanban className="size-3.5" />
-            <span>Kanban Pipeline</span>
+            All Stages ({filteredCases.length})
           </button>
-          <button
-            onClick={() => setViewMode('table')}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition cursor-pointer ${
-              viewMode === 'table' ? 'bg-card text-foreground shadow-xs' : 'text-muted-foreground hover:text-foreground'
-            }`}
-          >
-            <TableIcon className="size-3.5" />
-            <span>Table View</span>
-          </button>
-        </div>
-      </div>
 
-      {/* Main Content Area */}
-      {loading ? (
-        <div className="py-32 flex flex-col items-center justify-center space-y-3">
-          <Loader2 className="size-8 text-primary animate-spin" />
-          <p className="text-xs font-bold text-muted-foreground">Loading Pipeline Board...</p>
-        </div>
-      ) : viewMode === 'kanban' ? (
-        /* KANBAN BOARD VIEW */
-        <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4 items-start overflow-x-auto pb-6">
-          {PIPELINE_COLUMNS.map((col) => {
-            const columnCases = filteredCases.filter((c) => {
-              const status = c.status || 'ENTRY';
-              if (col.id === 'ENTRY') return status === 'ENTRY' || status === 'New';
-              if (col.id === 'PROCESSING') return status === 'PROCESSING';
-              if (col.id === 'APPROVED_OFFER_LETTER') return status === 'APPROVED_OFFER_LETTER' || status === 'FLIGHT_BOOKED';
-              if (col.id === 'SUBMITTED_EMBASSY_BSF') return status === 'SUBMITTED_EMBASSY_BSF' || status === 'VISA_SUBMITTED';
-              if (col.id === 'COMPLETED_DELIVERED') return status === 'COMPLETED_DELIVERED' || status === 'COMPLETED';
-              return false;
-            });
-
-            const isDropTarget = dragOverStage === col.id;
-
+          {STAGES.map((s) => {
+            const count = groupedCases[s.id]?.length || 0;
+            const isActive = activeStageFilter === s.id;
             return (
-              <div
-                key={col.id}
-                onDragOver={(e) => handleDragOver(e, col.id)}
-                onDrop={(e) => handleDrop(e, col.id)}
-                className={`bg-card/60 border rounded-2xl flex flex-col min-h-[580px] max-h-[82vh] transition-all ${
-                  isDropTarget
-                    ? 'border-primary ring-2 ring-primary/20 bg-primary/5'
-                    : 'border-border'
+              <button
+                key={s.id}
+                type="button"
+                onClick={() => setActiveStageFilter(s.id)}
+                className={`px-3 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition cursor-pointer flex items-center gap-1.5 ${
+                  isActive
+                    ? 'bg-primary text-primary-foreground shadow-xs'
+                    : 'bg-card text-muted-foreground hover:text-foreground border border-border'
                 }`}
               >
-                {/* Column Header */}
-                <div className={`p-4 border-b rounded-t-2xl flex items-start justify-between gap-2 ${col.headerBg}`}>
-                  <div>
-                    <h3 className="text-xs font-black text-foreground tracking-tight">{col.title}</h3>
-                    <p className="text-[10px] text-muted-foreground mt-0.5 line-clamp-1">{col.description}</p>
-                  </div>
-                  <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold border shrink-0 ${col.badgeColor}`}>
-                    {columnCases.length}
-                  </span>
-                </div>
-
-                {/* Cards Container */}
-                <div className="p-3 space-y-3 flex-1 overflow-y-auto pr-1.5">
-                  {columnCases.length === 0 ? (
-                    <div className="h-40 border border-dashed border-border/80 rounded-xl flex flex-col items-center justify-center text-center p-4 text-muted-foreground/60">
-                      <FolderOpen className="size-6 mb-1 opacity-40" />
-                      <span className="text-[11px] font-semibold">No cases in this stage</span>
-                      <span className="text-[9px]">Drag cards here to advance</span>
-                    </div>
-                  ) : (
-                    columnCases.map((c) => {
-                      const caseId = c.did || c._id;
-                      const ledger = c.paymentLedger || {};
-                      const totalAgreed = ledger.totalAgreedAmount || c.packageCost || 0;
-                      const totalPaid = ledger.totalPaidAmount || c.initialPaidAmount || 0;
-                      const totalDue = ledger.dueAmount !== undefined ? ledger.dueAmount : Math.max(0, totalAgreed - totalPaid);
-
-                      return (
-                        <div
-                          key={caseId}
-                          draggable
-                          onDragStart={(e) => handleDragStart(e, caseId)}
-                          onClick={() => navigate(`/admin/cases/${caseId}`)}
-                          className="bg-card border border-border p-4 rounded-xl shadow-xs hover:border-primary/60 hover:shadow-md transition-all cursor-grab active:cursor-grabbing group select-none space-y-3"
-                        >
-                          {/* Card Top: Case Number & Date */}
-                          <div className="flex items-center justify-between">
-                            <span className="font-mono text-[10px] font-black text-primary bg-primary/10 px-2 py-0.5 rounded border border-primary/20">
-                              {c.caseNumber || 'CASE-001'}
-                            </span>
-                            <span className="text-[10px] text-muted-foreground font-mono">
-                              {new Date(c.createdAt || Date.now()).toLocaleDateString('en-GB', {
-                                day: '2-digit',
-                                month: 'short',
-                              })}
-                            </span>
-                          </div>
-
-                          {/* Client Name & Destination */}
-                          <div>
-                            <h4 className="font-bold text-sm text-foreground group-hover:text-primary transition-colors leading-tight">
-                              {c.applicantName || c.clientInfo?.fullName || 'Applicant'}
-                            </h4>
-                            <div className="flex flex-wrap items-center gap-1.5 mt-1.5 text-[11px]">
-                              <span className="px-2 py-0.5 rounded bg-muted text-muted-foreground font-semibold text-[10px]">
-                                {c.destinationCountry || c.caseType?.toUpperCase()}
-                              </span>
-                              <span className="px-2 py-0.5 rounded bg-muted text-muted-foreground font-medium text-[10px]">
-                                {c.tradeSkill || 'General Worker'}
-                              </span>
-                            </div>
-                          </div>
-
-                          {/* Passport & Contact Details */}
-                          <div className="space-y-1 text-[11px] text-muted-foreground pt-1 border-t border-border/50">
-                            {c.passportNumber && (
-                              <div className="flex items-center gap-1.5 font-mono text-sky-600 dark:text-sky-400 font-bold">
-                                <FileText className="size-3" />
-                                <span>{c.passportNumber}</span>
-                              </div>
-                            )}
-                            {c.phone && (
-                              <div className="flex items-center gap-1.5">
-                                <Phone className="size-3" />
-                                <span>{c.phone}</span>
-                              </div>
-                            )}
-                          </div>
-
-                          {/* 5-Step Mini Pipeline Progress */}
-                          <div className="space-y-1 pt-1">
-                            <div className="flex items-center justify-between text-[10px] text-muted-foreground font-semibold">
-                              <span>Pipeline Step:</span>
-                              <span className="text-primary font-bold">
-                                {col.id === 'ENTRY'
-                                  ? 'Step 1/5'
-                                  : col.id === 'PROCESSING'
-                                  ? 'Step 2/5'
-                                  : col.id === 'APPROVED_OFFER_LETTER'
-                                  ? 'Step 3/5'
-                                  : col.id === 'SUBMITTED_EMBASSY_BSF'
-                                  ? 'Step 4/5'
-                                  : 'Step 5/5'}
-                              </span>
-                            </div>
-                            <div className="grid grid-cols-5 gap-1 h-1.5 rounded-full overflow-hidden bg-muted">
-                              <div className="bg-emerald-500 rounded-full" />
-                              <div
-                                className={`rounded-full ${
-                                  col.id !== 'ENTRY' ? 'bg-emerald-500' : 'bg-muted-foreground/20'
-                                }`}
-                              />
-                              <div
-                                className={`rounded-full ${
-                                  col.id === 'APPROVED_OFFER_LETTER' ||
-                                  col.id === 'SUBMITTED_EMBASSY_BSF' ||
-                                  col.id === 'COMPLETED_DELIVERED'
-                                    ? 'bg-emerald-500'
-                                    : 'bg-muted-foreground/20'
-                                }`}
-                              />
-                              <div
-                                className={`rounded-full ${
-                                  col.id === 'SUBMITTED_EMBASSY_BSF' || col.id === 'COMPLETED_DELIVERED'
-                                    ? 'bg-emerald-500'
-                                    : 'bg-muted-foreground/20'
-                                }`}
-                              />
-                              <div
-                                className={`rounded-full ${
-                                  col.id === 'COMPLETED_DELIVERED' ? 'bg-emerald-500' : 'bg-muted-foreground/20'
-                                }`}
-                              />
-                            </div>
-                          </div>
-
-                          {/* Financial Snapshot Pill */}
-                          <div className="p-2 rounded-lg bg-muted/40 border border-border flex items-center justify-between text-[10px]">
-                            <div>
-                              <span className="text-muted-foreground block text-[9px]">পরিশোধ</span>
-                              <span className="font-bold text-emerald-600">৳{Number(totalPaid).toLocaleString('en-IN')}</span>
-                            </div>
-                            <div className="text-right">
-                              <span className="text-muted-foreground block text-[9px]">বকেয়া</span>
-                              <span className="font-bold text-rose-600">৳{Number(totalDue).toLocaleString('en-IN')}</span>
-                            </div>
-                          </div>
-
-                          {/* Card Action CTAs */}
-                          <div className="pt-2 border-t border-border flex items-center justify-between gap-2">
-                            {col.id === 'ENTRY' ? (
-                              <button
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  handleStageChange(caseId, 'PROCESSING');
-                                }}
-                                className="flex-1 py-1.5 px-2 bg-emerald-500 hover:bg-emerald-600 text-white text-[11px] font-bold rounded-lg transition cursor-pointer flex items-center justify-center gap-1 shadow-2xs"
-                              >
-                                <CheckCircle2 className="size-3" />
-                                <span>Approve Intake</span>
-                              </button>
-                            ) : (
-                              <button
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  navigate(`/admin/cases/${caseId}`);
-                                }}
-                                className="flex-1 py-1.5 px-2 bg-primary/10 hover:bg-primary/20 text-primary text-[11px] font-bold rounded-lg transition cursor-pointer flex items-center justify-center gap-1 shadow-2xs"
-                              >
-                                <Eye className="size-3" />
-                                <span>ডজিয়ার দেখুন</span>
-                              </button>
-                            )}
-
-                            <button
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                setSelectedCaseForAction(c);
-                                setAssignModalOpen(true);
-                              }}
-                              className="py-1.5 px-2 bg-muted hover:bg-muted/80 text-foreground text-[11px] font-bold rounded-lg transition cursor-pointer flex items-center gap-1"
-                              title="Assign Step"
-                            >
-                              <Layers className="size-3" />
-                            </button>
-
-                            <button
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                setSelectedCaseForAction(c);
-                                setPaymentModalOpen(true);
-                              }}
-                              className="py-1.5 px-2 bg-emerald-500/15 hover:bg-emerald-500/25 text-emerald-700 dark:text-emerald-300 text-[11px] font-bold rounded-lg transition cursor-pointer flex items-center gap-1"
-                              title="Record Payment"
-                            >
-                              <Receipt className="size-3" />
-                            </button>
-                          </div>
-                        </div>
-                      );
-                    })
-                  )}
-                </div>
-              </div>
+                <span>{s.title.split(' ')[1]}</span>
+                <span
+                  className={`px-1.5 py-0.2 rounded-full text-[10px] ${
+                    isActive ? 'bg-white/20 text-white' : 'bg-muted text-muted-foreground'
+                  }`}
+                >
+                  {count}
+                </span>
+              </button>
             );
           })}
         </div>
-      ) : (
-        /* TABLE VIEW */
-        <div className="bg-card border border-border rounded-2xl shadow-xs overflow-hidden">
-          <div className="overflow-x-auto">
-            <table className="w-full text-xs text-left">
-              <thead className="bg-muted/40 uppercase text-muted-foreground border-b border-border font-semibold">
-                <tr>
-                  <th className="px-5 py-4">কেস আইডি</th>
-                  <th className="px-5 py-4">আবেদনকারীর নাম</th>
-                  <th className="px-5 py-4">পাসপোর্ট নম্বর</th>
-                  <th className="px-5 py-4">গন্তব্য ও স্কিল</th>
-                  <th className="px-5 py-4">বর্তমান স্টেজ</th>
-                  <th className="px-5 py-4">মোট বিল</th>
-                  <th className="px-5 py-4">জমা ও বকেয়া</th>
-                  <th className="px-5 py-4 text-right">অ্যাকশন</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-border">
-                {filteredCases.map((c) => {
-                  const caseId = c.did || c._id;
-                  const ledger = c.paymentLedger || {};
-                  const totalAgreed = ledger.totalAgreedAmount || c.packageCost || 0;
-                  const totalPaid = ledger.totalPaidAmount || c.initialPaidAmount || 0;
-                  const totalDue = ledger.dueAmount !== undefined ? ledger.dueAmount : Math.max(0, totalAgreed - totalPaid);
+      </div>
 
-                  return (
-                    <tr
-                      key={caseId}
-                      onClick={() => navigate(`/admin/cases/${caseId}`)}
-                      className="hover:bg-muted/30 transition cursor-pointer"
+      {/* Main Grouped Stage Tables */}
+      {loading ? (
+        <div className="py-32 flex flex-col items-center justify-center space-y-3 bg-card border border-border rounded-3xl">
+          <Loader2 className="size-8 text-primary animate-spin" />
+          <p className="text-xs font-bold text-muted-foreground">Loading Workflow Groups...</p>
+        </div>
+      ) : (
+        <div className="space-y-6">
+          {STAGES.filter((s) => activeStageFilter === 'all' || activeStageFilter === s.id).map((stage) => {
+            const stageCases = groupedCases[stage.id] || [];
+            const isCollapsed = Boolean(collapsedStages[stage.id]);
+            const StageIcon = stage.icon;
+
+            const totalStageAgreed = stageCases.reduce(
+              (acc, c) => acc + (c.paymentLedger?.totalAgreedAmount || c.packageCost || 0),
+              0
+            );
+            const totalStagePaid = stageCases.reduce(
+              (acc, c) => acc + (c.paymentLedger?.totalPaidAmount || c.initialPaidAmount || 0),
+              0
+            );
+
+            return (
+              <div
+                key={stage.id}
+                className="bg-card border border-border rounded-2xl shadow-xs overflow-hidden transition-all"
+              >
+                {/* Stage Header Banner with Toggle */}
+                <div
+                  onClick={() => toggleStageCollapse(stage.id)}
+                  className={`px-5 py-4 border-b border-border flex items-center justify-between gap-4 cursor-pointer select-none transition-colors ${stage.headerBg} hover:opacity-95`}
+                >
+                  <div className="flex items-center gap-3">
+                    <div className="p-2 rounded-xl bg-card border border-border text-foreground shrink-0 shadow-xs">
+                      <StageIcon className={`size-5 ${stage.accentColor}`} />
+                    </div>
+                    <div>
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <h2 className="text-sm font-black text-foreground tracking-tight">{stage.title}</h2>
+                        <span className="text-xs text-muted-foreground font-semibold">({stage.titleBn})</span>
+                        <Badge variant="outline" className={`font-bold text-[11px] ${stage.badgeColor}`}>
+                          {stageCases.length} Files
+                        </Badge>
+                      </div>
+                      <p className="text-[11px] text-muted-foreground mt-0.5">{stage.description}</p>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-4 shrink-0">
+                    <div className="hidden sm:block text-right">
+                      <span className="text-[10px] text-muted-foreground uppercase font-bold block">Stage Volume</span>
+                      <span className="text-xs font-black text-foreground font-mono">
+                        ৳{Number(totalStageAgreed).toLocaleString('en-BD')}
+                      </span>
+                    </div>
+                    <button
+                      type="button"
+                      className="p-1.5 rounded-lg bg-card border border-border text-muted-foreground hover:text-foreground"
                     >
-                      <td className="px-5 py-4 font-mono font-bold text-primary">
-                        {c.caseNumber || 'CASE-001'}
-                      </td>
-                      <td className="px-5 py-4">
-                        <div className="font-bold text-foreground">{c.applicantName || 'Applicant'}</div>
-                        <div className="text-[11px] text-muted-foreground">{c.phone || '—'}</div>
-                      </td>
-                      <td className="px-5 py-4 font-mono font-bold text-sky-600 dark:text-sky-400">
-                        {c.passportNumber || '—'}
-                      </td>
-                      <td className="px-5 py-4">
-                        <span className="font-semibold text-foreground">{c.destinationCountry || c.caseType?.toUpperCase()}</span>
-                        <span className="text-[10px] text-muted-foreground block">{c.tradeSkill || 'General Worker'}</span>
-                      </td>
-                      <td className="px-5 py-4">
-                        <span className="px-2.5 py-1 rounded-full text-[10px] font-bold bg-primary/10 text-primary border border-primary/20">
-                          {c.workflowStatus || c.status}
+                      {isCollapsed ? <ChevronRight className="size-4" /> : <ChevronDown className="size-4" />}
+                    </button>
+                  </div>
+                </div>
+
+                {/* Stage Table Content */}
+                {!isCollapsed && (
+                  <div className="overflow-x-auto">
+                    {stageCases.length === 0 ? (
+                      <div className="py-12 text-center text-muted-foreground flex flex-col items-center justify-center gap-1.5">
+                        <FolderOpen className="size-7 text-muted-foreground/40" />
+                        <span className="text-xs font-semibold">No active case files in this stage</span>
+                        <span className="text-[11px] text-muted-foreground/80">
+                          New cases or advanced files will appear here automatically.
                         </span>
-                      </td>
-                      <td className="px-5 py-4 font-black text-foreground">
-                        ৳{Number(totalAgreed).toLocaleString('en-IN')}
-                      </td>
-                      <td className="px-5 py-4">
-                        <div className="font-bold text-emerald-600">জমা: ৳{Number(totalPaid).toLocaleString('en-IN')}</div>
-                        <div className="font-bold text-rose-600 text-[11px]">বকেয়া: ৳{Number(totalDue).toLocaleString('en-IN')}</div>
-                      </td>
-                      <td className="px-5 py-4 text-right">
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            navigate(`/admin/cases/${caseId}`);
-                          }}
-                          className="px-3 py-1.5 bg-primary text-primary-foreground font-bold rounded-lg text-xs hover:bg-primary/90 transition cursor-pointer shadow-xs"
-                        >
-                          ডজিয়ার দেখুন
-                        </button>
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
+                      </div>
+                    ) : (
+                      <table className="w-full text-xs text-left border-collapse">
+                        <thead className="bg-muted/40 uppercase text-muted-foreground border-b border-border text-[11px] font-bold tracking-wider">
+                          <tr>
+                            <th className="px-4 py-3">File No & Date</th>
+                            <th className="px-4 py-3">Applicant Details</th>
+                            <th className="px-4 py-3">Destination & Trade</th>
+                            <th className="px-4 py-3">Pipeline Step</th>
+                            <th className="px-4 py-3">Assigned Officer</th>
+                            <th className="px-4 py-3">Financial Ledger</th>
+                            <th className="px-4 py-3 text-right">Actions</th>
+                          </tr>
+                        </thead>
+                        <tbody className="divide-y divide-border">
+                          {stageCases.map((c) => {
+                            const caseId = c.did || c._id;
+                            const ledger = c.paymentLedger || {};
+                            const totalAgreed = ledger.totalAgreedAmount || c.packageCost || 0;
+                            const totalPaid = ledger.totalPaidAmount || c.initialPaidAmount || 0;
+                            const totalDue =
+                              ledger.dueAmount !== undefined
+                                ? ledger.dueAmount
+                                : Math.max(0, totalAgreed - totalPaid);
+
+                            const applicant = c.applicantName || c.clientName || 'Applicant';
+                            const passport = c.passportNumber || '—';
+                            const phone = c.phone || c.clientPhone || '';
+                            const destination = c.destinationCountry || c.caseType?.toUpperCase() || 'Saudi Arabia';
+                            const skill = c.tradeSkill || 'General Worker';
+                            const officer = c.assignedOfficer || c.assignedTo?.name || 'Unassigned';
+
+                            return (
+                              <tr
+                                key={caseId}
+                                className="hover:bg-muted/30 transition-colors group cursor-pointer"
+                                onClick={() => navigate(`/admin/cases/${caseId}`)}
+                              >
+                                {/* File No & Date */}
+                                <td className="px-4 py-3.5">
+                                  <div className="flex flex-col">
+                                    <span className="font-mono font-bold text-primary text-xs">
+                                      {c.caseNumber || c.fileNumber || 'CASE-001'}
+                                    </span>
+                                    <span className="text-[10px] text-muted-foreground">
+                                      {c.createdAt
+                                        ? new Date(c.createdAt).toLocaleDateString('en-GB', {
+                                            day: 'numeric',
+                                            month: 'short',
+                                            year: 'numeric',
+                                          })
+                                        : '—'}
+                                    </span>
+                                  </div>
+                                </td>
+
+                                {/* Applicant Details */}
+                                <td className="px-4 py-3.5">
+                                  <div>
+                                    <span className="font-bold text-foreground hover:text-primary transition-colors text-xs block">
+                                      {applicant}
+                                    </span>
+                                    <div className="flex items-center gap-2 text-[11px] text-muted-foreground mt-0.5">
+                                      {phone && (
+                                        <span className="flex items-center gap-1">
+                                          <Phone className="size-2.5" />
+                                          {phone}
+                                        </span>
+                                      )}
+                                      {passport !== '—' && (
+                                        <span className="font-mono font-bold text-sky-600 dark:text-sky-400">
+                                          ({passport})
+                                        </span>
+                                      )}
+                                    </div>
+                                  </div>
+                                </td>
+
+                                {/* Destination & Trade */}
+                                <td className="px-4 py-3.5">
+                                  <div className="space-y-0.5">
+                                    <span className="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-bold bg-muted text-foreground border border-border">
+                                      {destination}
+                                    </span>
+                                    <span className="text-[11px] text-muted-foreground block truncate max-w-[130px]">
+                                      {skill}
+                                    </span>
+                                  </div>
+                                </td>
+
+                                {/* Pipeline Step Progress */}
+                                <td className="px-4 py-3.5">
+                                  <div className="space-y-1.5 min-w-[110px]">
+                                    <div className="flex items-center justify-between text-[10px]">
+                                      <span className="font-bold text-foreground">
+                                        Step {stage.stepNumber} of 5
+                                      </span>
+                                    </div>
+                                    <div className="grid grid-cols-5 gap-1 h-1.5 rounded-full overflow-hidden bg-muted">
+                                      {[1, 2, 3, 4, 5].map((step) => (
+                                        <div
+                                          key={step}
+                                          className={`rounded-full ${
+                                            step <= stage.stepNumber
+                                              ? 'bg-emerald-500'
+                                              : 'bg-muted-foreground/20'
+                                          }`}
+                                        />
+                                      ))}
+                                    </div>
+                                  </div>
+                                </td>
+
+                                {/* Assigned Officer */}
+                                <td className="px-4 py-3.5">
+                                  <span className="text-xs text-foreground font-medium flex items-center gap-1.5">
+                                    <span className="size-6 rounded-full bg-primary/10 text-primary flex items-center justify-center font-bold text-[10px] shrink-0">
+                                      {officer.charAt(0).toUpperCase()}
+                                    </span>
+                                    <span className="truncate max-w-[100px]">{officer}</span>
+                                  </span>
+                                </td>
+
+                                {/* Financial Ledger */}
+                                <td className="px-4 py-3.5">
+                                  <div className="space-y-0.5 font-mono text-xs">
+                                    <div className="font-bold text-foreground">
+                                      ৳{Number(totalAgreed).toLocaleString('en-BD')}
+                                    </div>
+                                    <div className="flex items-center gap-2 text-[11px]">
+                                      <span className="text-emerald-600 font-semibold">
+                                        Pd: ৳{Number(totalPaid).toLocaleString('en-BD')}
+                                      </span>
+                                      {totalDue > 0 && (
+                                        <span className="text-rose-600 font-semibold">
+                                          Due: ৳{Number(totalDue).toLocaleString('en-BD')}
+                                        </span>
+                                      )}
+                                    </div>
+                                  </div>
+                                </td>
+
+                                {/* Action Buttons */}
+                                <td className="px-4 py-3.5 text-right">
+                                  <div className="flex items-center justify-end gap-1.5" onClick={(e) => e.stopPropagation()}>
+                                    {stage.stepNumber < 5 && (
+                                      <Button
+                                        size="sm"
+                                        variant="default"
+                                        onClick={() => {
+                                          const nextStageId = STAGES[stage.stepNumber]?.id;
+                                          if (nextStageId) {
+                                            handleStageChange(caseId, nextStageId);
+                                          }
+                                        }}
+                                        className="h-7 px-2 text-[11px] font-bold cursor-pointer gap-1"
+                                        title="Advance to Next Stage"
+                                      >
+                                        <span>Advance</span>
+                                        <ArrowRight className="size-3" />
+                                      </Button>
+                                    )}
+
+                                    <Button
+                                      size="sm"
+                                      variant="outline"
+                                      onClick={() => {
+                                        setSelectedCaseForAction(c);
+                                        setPaymentModalOpen(true);
+                                      }}
+                                      className="h-7 px-2 text-[11px] font-semibold cursor-pointer gap-1"
+                                      title="Record Payment"
+                                    >
+                                      <Receipt className="size-3 text-emerald-600" />
+                                      <span className="hidden sm:inline">Pay</span>
+                                    </Button>
+
+                                    <Button
+                                      size="sm"
+                                      variant="outline"
+                                      onClick={() => navigate(`/admin/cases/${caseId}`)}
+                                      className="h-7 px-2 text-[11px] font-semibold cursor-pointer gap-1"
+                                      title="View 360° Case Dossier"
+                                    >
+                                      <Eye className="size-3 text-primary" />
+                                      <span className="hidden sm:inline">Dossier</span>
+                                    </Button>
+                                  </div>
+                                </td>
+                              </tr>
+                            );
+                          })}
+                        </tbody>
+                      </table>
+                    )}
+                  </div>
+                )}
+              </div>
+            );
+          })}
         </div>
       )}
 
@@ -613,8 +698,8 @@ export default function CaseWorkflow() {
         <AddPaymentModal
           caseDoc={selectedCaseForAction}
           caseDid={selectedCaseForAction.did || selectedCaseForAction._id}
-          caseNumber={selectedCaseForAction.caseNumber}
-          applicantName={selectedCaseForAction.applicantName}
+          caseNumber={selectedCaseForAction.caseNumber || selectedCaseForAction.fileNumber}
+          applicantName={selectedCaseForAction.applicantName || selectedCaseForAction.clientName}
           dueAmount={selectedCaseForAction.paymentLedger?.dueAmount || 0}
           onClose={() => {
             setPaymentModalOpen(false);
