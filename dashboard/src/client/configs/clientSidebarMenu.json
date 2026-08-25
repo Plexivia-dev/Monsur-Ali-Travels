@@ -1,46 +1,5 @@
 [
   {
-    "groupLabel": "Operations",
-    "groupLabelBn": "অপারেশনস",
-    "items": [
-      {
-        "id": "tasks",
-        "name": "My Tasks",
-        "nameBn": "আমার কাজ",
-        "portal": "agency",
-        "submodule": "tasks",
-        "path": "/dashboard/agency/tasks",
-        "icon": "CheckSquare"
-      },
-      {
-        "id": "caseFiles",
-        "name": "Case Files",
-        "nameBn": "কেস ফাইলস",
-        "icon": "FolderOpen",
-        "childItems": [
-          {
-            "id": "cases",
-            "name": "Client Profiles",
-            "nameBn": "ক্লায়েন্ট প্রোফাইল",
-            "portal": "agency",
-            "submodule": "cases",
-            "path": "/dashboard/agency/cases",
-            "icon": "FilePlus2"
-          },
-          {
-            "id": "pipeline",
-            "name": "Client Pipeline",
-            "nameBn": "ক্লায়েন্ট পাইপলাইন",
-            "portal": "agency",
-            "submodule": "pipeline",
-            "path": "/dashboard/agency/pipeline",
-            "icon": "Briefcase"
-          }
-        ]
-      }
-    ]
-  },
-  {
     "groupLabel": "Agency",
     "groupLabelBn": "এজেন্সি",
     "roles": ["admin", "owner", "superadmin", "accountant", "representative"],
