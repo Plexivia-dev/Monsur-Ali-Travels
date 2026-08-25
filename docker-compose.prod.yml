@@ -37,8 +37,8 @@ services:
 
   dashboard:
     build:
-      context: ./dashboard/client
-      dockerfile: Dockerfile
+      context: ./dashboard
+      dockerfile: Dockerfile.client
       args:
         - VITE_API_BASE_URL=${VITE_API_BASE_URL:-https://api.monsuralitravels.com}
     container_name: monsuralitravels-dashboard-live
@@ -50,8 +50,8 @@ services:
 
   dashboard-admin:
     build:
-      context: ./dashboard/admin
-      dockerfile: Dockerfile
+      context: ./dashboard
+      dockerfile: Dockerfile.admin
       args:
         - VITE_API_BASE_URL=${VITE_API_BASE_URL:-https://api.monsuralitravels.com}
     container_name: monsuralitravels-dashboard-admin-live
