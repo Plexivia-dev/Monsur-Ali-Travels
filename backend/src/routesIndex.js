@@ -15,8 +15,7 @@ import settingsRouter from "./routes/admin/SettingsRoute.js";
 import storageMaintenanceRouter from "./routes/admin/StorageMaintenanceRoute.js";
 
 // --- CLIENT (STAFF) ROUTES ---
-import clientRouter from "./routes/client/ClientRoute.js";
-import clientRouterInstance from "./routes/client/ClientRoute.js";
+import clientRoute from "./routes/client/ClientRoute.js";
 import caseFileRouter from "./routes/client/CaseFileRoute.js";
 import agreementRouter from "./routes/client/AgreementRoute.js";
 import indianVisaRouter from "./routes/client/IndianVisaRoute.js";
@@ -60,7 +59,7 @@ adminRouter.use(auditLog);
 adminRouter.use("/dashboard", dashboardRouter);
 adminRouter.use("/system", systemRouter);
 adminRouter.use("/users", usersRouter);
-adminRouter.use("/clients", clientRouterInstance);
+adminRouter.use("/clients", clientRoute);
 adminRouter.use("/cases", adminCaseRouter);
 adminRouter.use("/settings", settingsRouter);
 adminRouter.use("/storage", storageMaintenanceRouter);
@@ -70,25 +69,23 @@ coreRouter.use("/admin", adminRouter);
 // ==========================================
 // 3. CLIENT/STAFF SCOPE (Mounted at /api/v1/client/)
 // ==========================================
-const clientRouter = Router();
-clientRouter.use(authenticateToken);
-clientRouter.use(auditLog);
-clientRouter.use("/tasks", taskRouter);
-clientRouter.use("/cases", caseFileRouter);
-clientRouter.use("/clients", clientRouterInstance);
-clientRouter.use("/clients", clientRouterInstance);
-clientRouter.use("/clients", clientRouter);
-clientRouter.use("/agreements", agreementRouter);
-clientRouter.use("/indian-visas", indianVisaRouter);
-clientRouter.use("/passports", passportRouter);
-clientRouter.use("/payrolls", payrollRouter);
-clientRouter.use("/invoices", invoiceRouter);
-clientRouter.use("/receipts", moneyReceiptRouter);
-clientRouter.use("/money-receipts", moneyReceiptRouter);
-clientRouter.use("/cash-vouchers", cashVoucherRouter);
-clientRouter.use("/docs", docsRouter);
-clientRouter.use("/sendEmail", emailRouter);
+const clientScopeRouter = Router();
+clientScopeRouter.use(authenticateToken);
+clientScopeRouter.use(auditLog);
+clientScopeRouter.use("/tasks", taskRouter);
+clientScopeRouter.use("/cases", caseFileRouter);
+clientScopeRouter.use("/clients", clientRoute);
+clientScopeRouter.use("/agreements", agreementRouter);
+clientScopeRouter.use("/indian-visas", indianVisaRouter);
+clientScopeRouter.use("/passports", passportRouter);
+clientScopeRouter.use("/payrolls", payrollRouter);
+clientScopeRouter.use("/invoices", invoiceRouter);
+clientScopeRouter.use("/receipts", moneyReceiptRouter);
+clientScopeRouter.use("/money-receipts", moneyReceiptRouter);
+clientScopeRouter.use("/cash-vouchers", cashVoucherRouter);
+clientScopeRouter.use("/docs", docsRouter);
+clientScopeRouter.use("/sendEmail", emailRouter);
 
-coreRouter.use("/client", clientRouter);
+coreRouter.use("/client", clientScopeRouter);
 
 export default coreRouter;
