@@ -146,3 +146,66 @@ export const approveTaskStep = async (req, res) => {
     });
   }
 };
+
+/**
+ * 4. Add Payment (Accountant/Admin Scope)
+ * Records a payment, auto-calculates remaining due, generates a receipt record.
+ */
+export const addPayment = async (req, res) => {
+  try {
+    const { caseDid } = req.params;
+    const { amount, paymentType, paymentMethod, notes } = req.body;
+    const adminDid = req.user?.did;
+
+    if (!amount || amount <= 0) {
+      return res.status(400).json({ status: "error", message: "Valid amount is required" });
+    }
+
+    const caseDoc = await CaseFile.findOne({ $or: [{ did: caseDid }, { _id: caseDid }] });
+    if (!caseDoc) {
+      return res.status(404).json({ status: "error", message: "Associated Case File not found" });
+    }
+
+    const paymentAmount = Number(amount);
+    if (!caseDoc.paymentLedger) {
+      caseDoc.paymentLedger = { totalAgreedAmount: 0, totalPaidAmount: 0, step1_advance: 0, dueAmount: 0 };
+    }
+
+    // Update payment ledger
+    caseDoc.paymentLedger.totalPaidAmount = (caseDoc.paymentLedger.totalPaidAmount || 0) + paymentAmount;
+    caseDoc.paymentLedger.dueAmount = Math.max(0, caseDoc.paymentLedger.totalAgreedAmount - caseDoc.paymentLedger.totalPaidAmount);
+
+    if (paymentType === "Advance Payment") {
+      caseDoc.paymentLedger.step1_advance = paymentAmount;
+    }
+
+    // Advance workflow state if it's the initial entry
+    if (caseDoc.status === "ENTRY" || !caseDoc.workflowStatus) {
+      caseDoc.status = "PROCESSING";
+      caseDoc.workflowStatus = "Initial Payment Done";
+    }
+
+    // Record status history
+    caseDoc.statusHistory.push({
+      status: `Payment Received: ${paymentType}`,
+      remarks: `Amount: BDT ${paymentAmount} via ${paymentMethod}. ${notes || ""}`,
+      updatedByDid: adminDid,
+      date: new Date(),
+    });
+
+    // TODO: Create actual Financial Receipt document if needed, but for now caseDoc tracking is primary
+    
+    await caseDoc.save();
+
+    return res.status(201).json({
+      status: "success",
+      message: "Payment recorded successfully",
+      data: caseDoc.paymentLedger,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      status: "error",
+      message: error.message || "Failed to process payment",
+    });
+  }
+};

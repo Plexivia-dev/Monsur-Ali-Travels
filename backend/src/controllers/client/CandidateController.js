@@ -188,3 +188,29 @@ export const deleteCandidate = async (req, res, next) => {
     next(err);
   }
 };
+
+// PATCH /candidates/:id/status - Update candidate status
+export const updateCandidateStatus = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const { status } = req.body;
+
+    const candidate = await CandidateCaseFileModel.findOneAndUpdate(
+      { $or: [{ _id: id.match(/^[0-9a-fA-F]{24}$/) ? id : null }, { did: id }, { fileNumber: id }] },
+      { status },
+      { new: true, runValidators: true }
+    );
+
+    if (!candidate) {
+      return res.status(404).json({ status: "error", message: "Candidate not found" });
+    }
+
+    res.json({
+      status: "success",
+      message: "Candidate status updated",
+      data: candidate,
+    });
+  } catch (err) {
+    next(err);
+  }
+};
