@@ -22,6 +22,7 @@ import NotFoundPage from '@/pages/NotFoundPage'
 import CashBook from '@/pages/accounting/CashBook'
 import BankLedger from '@/pages/accounting/BankLedger'
 import Expenses from '@/pages/accounting/Expenses'
+import UnifiedTableShowcasePage from '@/pages/UnifiedTableShowcasePage'
 import { GlobalErrorBoundary } from '@/components/layout/GlobalErrorBoundary'
 import { useAuth } from '@/store/useAuthStore'
 import { Toaster } from '@/components/ui/toast'
@@ -52,6 +53,8 @@ export default function App() {
               <Route path="dropdown" element={<DropdownPage />} />
               <Route path="profile-dropdown" element={<DropdownProfilePage />} />
               <Route path="dialog" element={<DialogPage />} />
+              <Route path="datatable" element={<UnifiedTableShowcasePage />} />
+              <Route path="tables" element={<UnifiedTableShowcasePage />} />
               <Route path="visa-workflows" element={<VisaWorkflowsPage />} />
               <Route path="visa-workflows/:id" element={<CaseDetailPage />} />
               <Route path="cases" element={<CaseWorkflow />} />
