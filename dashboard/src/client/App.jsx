@@ -3,7 +3,7 @@ import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-route
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { useAuthStore } from './store/useAuthStore';
 import { usePortalStore } from './store/usePortalStore';
-import { SidebarProvider, SidebarInset } from './components/ui/sidebar';
+import { DashboardLayout } from '@shared/components/layout/DashboardLayout';
 import { Sidebar } from './components/layout/Sidebar';
 import { Header } from './components/layout/Header';
 import Factory from './pages/Factory';
@@ -72,33 +72,24 @@ function MainLayout() {
   const isKnownPortal = ['factory', 'agency', 'admin', 'docs', 'data'].includes(activePortal);
 
   return (
-    <SidebarProvider defaultOpen={true}>
-      <div className="flex h-screen w-full overflow-hidden bg-background text-foreground transition-colors">
-        {/* Navigation Sidebar */}
-        <Sidebar />
-
-        {/* Main Application Inset */}
-        <SidebarInset className="flex flex-1 flex-col min-w-0 h-screen overflow-hidden bg-background">
-          {/* Modern Sticky Header (Fixed 56px / h-14 height) */}
-          <Header />
-
-          {/* Dynamic Portal View Container (Height strictly 100vh - 56px navbar, scrollable internally) */}
-          <main className="flex-1 overflow-y-auto h-[calc(100vh-3.5rem)] max-h-[calc(100vh-3.5rem)] p-4 sm:p-6 lg:p-8 max-w-7xl w-full mx-auto space-y-6">
-            {activePortal === 'factory' && <Factory />}
-            {activePortal === 'agency' && <Agency />}
-            {activePortal === 'admin' && <Admin />}
-            {activePortal === 'docs' && <DocumentStudio />}
-            {activePortal === 'data' && <DocumentData />}
-            {!isKnownPortal && <NotFoundPage />}
-          </main>
-
-          {/* Global Utilities */}
+    <DashboardLayout
+      sidebar={<Sidebar />}
+      header={<Header />}
+      toasts={
+        <>
           <ToastContainer />
           <Toaster />
-          <GlobalSearchModal />
-        </SidebarInset>
-      </div>
-    </SidebarProvider>
+        </>
+      }
+      modals={<GlobalSearchModal />}
+    >
+      {activePortal === 'factory' && <Factory />}
+      {activePortal === 'agency' && <Agency />}
+      {activePortal === 'admin' && <Admin />}
+      {activePortal === 'docs' && <DocumentStudio />}
+      {activePortal === 'data' && <DocumentData />}
+      {!isKnownPortal && <NotFoundPage />}
+    </DashboardLayout>
   );
 }
 

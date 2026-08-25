@@ -1,0 +1,302 @@
+[
+  {
+    "groupLabel": "Operations",
+    "groupLabelBn": "অপারেশনস",
+    "items": [
+      {
+        "id": "tasks",
+        "name": "My Tasks",
+        "nameBn": "আমার কাজ",
+        "portal": "agency",
+        "submodule": "tasks",
+        "path": "/dashboard/agency/tasks",
+        "icon": "CheckSquare"
+      },
+      {
+        "id": "caseFiles",
+        "name": "Case Files",
+        "nameBn": "কেস ফাইলস",
+        "icon": "FolderOpen",
+        "childItems": [
+          {
+            "id": "cases",
+            "name": "Candidate Profiles",
+            "nameBn": "ক্যান্ডিডেট প্রোফাইল",
+            "portal": "agency",
+            "submodule": "cases",
+            "path": "/dashboard/agency/cases",
+            "icon": "FilePlus2"
+          },
+          {
+            "id": "pipeline",
+            "name": "Client Pipeline",
+            "nameBn": "ক্লায়েন্ট পাইপলাইন",
+            "portal": "agency",
+            "submodule": "pipeline",
+            "path": "/dashboard/agency/pipeline",
+            "icon": "Briefcase"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "groupLabel": "Agency & Clients",
+    "groupLabelBn": "ক্লায়েন্টস ও হিসাব",
+    "roles": ["admin", "owner", "superadmin", "accountant", "representative"],
+    "items": [
+      {
+        "id": "clients-group",
+        "name": "Clients & Billing",
+        "nameBn": "ক্লায়েন্ট ও বিলিং",
+        "icon": "Building2",
+        "childItems": [
+          {
+            "id": "clients-all",
+            "name": "All Clients",
+            "nameBn": "সকল ক্লায়েন্ট",
+            "portal": "agency",
+            "submodule": "clients-all",
+            "path": "/dashboard/agency/clients-all",
+            "icon": "Users"
+          },
+          {
+            "id": "clients-add",
+            "name": "Add Client",
+            "nameBn": "নতুন ক্লায়েন্ট",
+            "portal": "agency",
+            "submodule": "clients-add",
+            "path": "/dashboard/agency/clients-add",
+            "icon": "UserPlus"
+          },
+          {
+            "id": "bills",
+            "name": "Client Bills",
+            "nameBn": "ইনভয়েস ও বিল",
+            "portal": "agency",
+            "submodule": "bills",
+            "path": "/dashboard/agency/bills",
+            "icon": "Receipt"
+          },
+          {
+            "id": "payments",
+            "name": "Client Payments",
+            "nameBn": "পেমেন্ট রেকর্ড",
+            "portal": "agency",
+            "submodule": "payments",
+            "path": "/dashboard/agency/payments",
+            "icon": "CreditCard"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "groupLabel": "Document Studio",
+    "groupLabelBn": "ডকুমেন্ট স্টুডিও",
+    "items": [
+      {
+        "id": "docs-group",
+        "name": "Studio Generators",
+        "nameBn": "ডকুমেন্ট জেনারেটর",
+        "icon": "FileSpreadsheet",
+        "childItems": [
+          {
+            "id": "doc-hub",
+            "name": "Studio Hub Overview",
+            "nameBn": "সকল জেনারেটর (হাব)",
+            "portal": "docs",
+            "submodule": "overview",
+            "path": "/dashboard/docs/overview",
+            "icon": "LayoutGrid"
+          },
+          {
+            "id": "doc-agreement",
+            "name": "Employment Agreement",
+            "nameBn": "নিয়োগ চুক্তিপত্র",
+            "portal": "docs",
+            "submodule": "agreement",
+            "path": "/dashboard/docs/agreement",
+            "icon": "FileSignature"
+          },
+          {
+            "id": "doc-customer-form",
+            "name": "Customer & Guardian Form",
+            "nameBn": "কাস্টমার ও অভিভাবক ফরম",
+            "portal": "docs",
+            "submodule": "customer-form",
+            "path": "/dashboard/docs/customer-form",
+            "icon": "UserCheck"
+          },
+          {
+            "id": "doc-indian-visa",
+            "name": "Indian Visa Submission",
+            "nameBn": "ইন্ডিয়ান ভিসা ফাইল",
+            "portal": "docs",
+            "submodule": "indian-visa",
+            "path": "/dashboard/docs/indian-visa",
+            "icon": "Stamp"
+          },
+          {
+            "id": "doc-passport-sub",
+            "name": "Passport Submission Slip",
+            "nameBn": "পাসপোর্ট জমা রশিদ",
+            "portal": "docs",
+            "submodule": "passport-sub",
+            "path": "/dashboard/docs/passport-sub",
+            "icon": "BookOpen"
+          },
+          {
+            "id": "doc-idcard",
+            "name": "Employee ID Card",
+            "nameBn": "কর্মচারী আইডি কার্ড",
+            "portal": "docs",
+            "submodule": "idcard",
+            "path": "/dashboard/docs/idcard",
+            "icon": "Contact"
+          },
+          {
+            "id": "doc-payroll",
+            "name": "Salary Slip",
+            "nameBn": "বেতন স্লিপ",
+            "portal": "docs",
+            "submodule": "payroll",
+            "path": "/dashboard/docs/payroll",
+            "icon": "Banknote"
+          },
+          {
+            "id": "doc-invoice",
+            "name": "Invoice Billing",
+            "nameBn": "ইনভয়েস ও বিলিং",
+            "portal": "docs",
+            "submodule": "invoice",
+            "path": "/dashboard/docs/invoice",
+            "icon": "ReceiptText"
+          },
+          {
+            "id": "doc-money-receipt",
+            "name": "Money Receipt Voucher",
+            "nameBn": "মানি রিসিট ভাউচার",
+            "portal": "docs",
+            "submodule": "money-receipt",
+            "path": "/dashboard/docs/money-receipt",
+            "icon": "Receipt"
+          },
+          {
+            "id": "doc-cash-voucher",
+            "name": "Cash Money Voucher",
+            "nameBn": "ক্যাশ মানি ভাউচার",
+            "portal": "docs",
+            "submodule": "cash-voucher",
+            "path": "/dashboard/docs/cash-voucher",
+            "icon": "Wallet"
+          },
+          {
+            "id": "doc-exp-cert",
+            "name": "Experience Certificate",
+            "nameBn": "অভিজ্ঞতা সনদপত্র",
+            "portal": "docs",
+            "submodule": "experience-certificate",
+            "path": "/dashboard/docs/experience-certificate",
+            "icon": "Award"
+          },
+          {
+            "id": "doc-char-cert",
+            "name": "Character Certificate",
+            "nameBn": "চারিত্রিক সনদপত্র",
+            "portal": "docs",
+            "submodule": "character-certificate",
+            "path": "/dashboard/docs/character-certificate",
+            "icon": "ShieldCheck"
+          },
+          {
+            "id": "doc-marr-cert",
+            "name": "Marriage Certificate",
+            "nameBn": "বিবাহ সনদপত্র",
+            "portal": "docs",
+            "submodule": "marriage-certificate",
+            "path": "/dashboard/docs/marriage-certificate",
+            "icon": "Heart"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "groupLabel": "Data Records Center",
+    "groupLabelBn": "ডাটা রেকর্ডস",
+    "items": [
+      {
+        "id": "data-group",
+        "name": "Records Management",
+        "nameBn": "সংরক্ষিত তথ্য",
+        "icon": "Database",
+        "childItems": [
+          {
+            "id": "data-profiles",
+            "name": "Client Profiles",
+            "nameBn": "কাস্টমার ডাটাবেস",
+            "portal": "data",
+            "submodule": "client-profiles",
+            "path": "/dashboard/data/client-profiles",
+            "icon": "Users"
+          },
+          {
+            "id": "data-agreements",
+            "name": "Agreement Records",
+            "nameBn": "চুক্তিপত্র রেকর্ড",
+            "portal": "data",
+            "submodule": "agreements",
+            "path": "/dashboard/data/agreements",
+            "icon": "FileSignature"
+          },
+          {
+            "id": "data-applications",
+            "name": "Client Applications",
+            "nameBn": "ফরম রেকর্ড",
+            "portal": "data",
+            "submodule": "client-applications",
+            "path": "/dashboard/data/client-applications",
+            "icon": "UserCheck"
+          },
+          {
+            "id": "data-indian-visas",
+            "name": "Indian Visa Records",
+            "nameBn": "ভিসা রেকর্ড",
+            "portal": "data",
+            "submodule": "indian-visas",
+            "path": "/dashboard/data/indian-visas",
+            "icon": "Stamp"
+          },
+          {
+            "id": "data-passports",
+            "name": "Passport Submissions",
+            "nameBn": "পাসপোর্ট রেকর্ড",
+            "portal": "data",
+            "submodule": "passports",
+            "path": "/dashboard/data/passports",
+            "icon": "BookOpen"
+          },
+          {
+            "id": "data-salary-slips",
+            "name": "Salary Slips",
+            "nameBn": "বেতন রেকর্ড",
+            "portal": "data",
+            "submodule": "salary-slips",
+            "path": "/dashboard/data/salary-slips",
+            "icon": "Banknote"
+          },
+          {
+            "id": "data-invoices",
+            "name": "Invoices & Billing",
+            "nameBn": "ইনভয়েস রেকর্ড",
+            "portal": "data",
+            "submodule": "invoices",
+            "path": "/dashboard/data/invoices",
+            "icon": "ReceiptText"
+          }
+        ]
+      }
+    ]
+  }
+]

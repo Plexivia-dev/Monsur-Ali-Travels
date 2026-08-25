@@ -27,8 +27,7 @@ import {
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { apiClient } from '../../lib/api-client';
-import { useAuth } from '../../lib/auth-context';
-import { getRoleKey } from '../../configs/roleNavConfig';
+import { PageTitle } from '@shared/components/layout/PageTitle';
 import { CaseFileCreationModal } from './CaseFileCreationModal';
 import { CaseWorkspaceDrawer } from './CaseWorkspaceDrawer';
 
@@ -164,25 +163,15 @@ export function CandidateCaseFiles() {
   return (
     <div className="space-y-6">
       {/* Top Banner Header */}
-      <div className="bg-gradient-to-r from-sky-900 via-indigo-900 to-slate-900 rounded-2xl p-6 text-white shadow-xl border border-sky-800/40 relative overflow-hidden">
-        <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-4">
-          <div className="space-y-1">
-            <div className="flex items-center gap-2">
-              <span className="text-xs text-sky-200/70">Candidate & Agent Workflow</span>
-            </div>
-            <h1 className="text-xl sm:text-2xl font-black tracking-tight text-white flex items-center gap-2">
-              <Globe2 className="w-6 h-6 text-sky-400" />
-              Candidate Case Files & Agent Pipeline
-            </h1>
-            <p className="text-xs text-sky-100/80 max-w-2xl leading-relaxed">
-              Track 5-stage deployment pipelines for overseas manpower candidates, manage destination agency allocations, local sub-agencies, and live MongoDB document verification vaults.
-            </p>
-          </div>
-
-          <div className="flex items-center gap-2">
+      <PageTitle
+        title="Candidate Case Files & Agent Pipeline"
+        description="Track 5-stage deployment pipelines for overseas manpower candidates, manage destination agency allocations, local sub-agencies, and live MongoDB document verification vaults."
+        icon={Globe2}
+        actions={
+          <>
             <button
               onClick={fetchCandidates}
-              className="p-2.5 bg-slate-800/80 hover:bg-slate-800 text-sky-400 rounded-xl border border-sky-500/20 transition-all cursor-pointer"
+              className="p-2.5 bg-slate-800/80 hover:bg-slate-800 text-sky-400 rounded-xl border border-sky-500/20 transition-all cursor-pointer shadow-xs"
               title="Refresh Data"
             >
               <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
@@ -194,9 +183,9 @@ export function CandidateCaseFiles() {
               <Plus className="w-4 h-4" />
               New Candidate File
             </button>
-          </div>
-        </div>
-      </div>
+          </>
+        }
+      />
 
       {/* Filter Bar & Search */}
       <div className="bg-card border border-border rounded-xl p-4 flex flex-col sm:flex-row items-center justify-between gap-4">

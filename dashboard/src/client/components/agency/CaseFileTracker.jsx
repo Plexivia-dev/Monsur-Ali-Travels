@@ -9,6 +9,7 @@ import {
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { apiClient } from '../../lib/api-client';
+import { PageTitle } from '@shared/components/layout/PageTitle';
 
 // ─── Workflow Status Config ──────────────────────────────────────────────────
 const WORKFLOW_STATUSES = [
@@ -566,33 +567,28 @@ export function CaseFileTracker() {
   return (
     <div className="space-y-5">
       {/* ── Header Banner ── */}
-      <div className="bg-gradient-to-r from-slate-900 via-sky-950 to-indigo-950 rounded-2xl p-6 text-white shadow-xl border border-sky-800/30 relative overflow-hidden">
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_rgba(56,189,248,0.08),_transparent_60%)]" />
-        <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-4">
-          <div className="space-y-1">
-            <div className="flex items-center gap-2">
-              <span className="px-2.5 py-0.5 rounded-full bg-sky-500/20 border border-sky-400/30 text-sky-300 text-[10px] font-bold uppercase tracking-widest">Live Tracking</span>
-            </div>
-            <h1 className="text-xl font-black tracking-tight text-white flex items-center gap-2">
-              <FolderOpen className="w-5 h-5 text-sky-400" />
-              Case File Workflow Tracker
-            </h1>
-            <p className="text-xs text-sky-100/70 leading-relaxed max-w-xl">
-              Track visa, work permit, and passport files through every stage — from receipt to handoff, approval, and final delivery. Full history and notification trail maintained.
-            </p>
-          </div>
-          <div className="flex items-center gap-2 shrink-0">
-            <button onClick={handleRefresh}
-              className="p-2.5 bg-white hover:bg-gray-50 text-sky-600 rounded-xl border border-gray-200 transition-all cursor-pointer shadow-sm" title="Refresh">
+      <PageTitle
+        title="Case File Workflow Tracker"
+        description="Track visa, work permit, and passport files through every stage — from receipt to handoff, approval, and final delivery. Full history and notification trail maintained."
+        icon={FolderOpen}
+        actions={
+          <>
+            <button
+              onClick={handleRefresh}
+              className="p-2.5 bg-slate-800/80 hover:bg-slate-800 text-sky-400 rounded-xl border border-sky-500/20 transition-all cursor-pointer shadow-xs"
+              title="Refresh"
+            >
               <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
             </button>
-            <button onClick={() => setNewModalOpen(true)}
-              className="flex items-center gap-2 px-4 py-2.5 bg-sky-500 hover:bg-sky-400 text-slate-950 font-bold text-xs rounded-xl shadow-lg transition-all cursor-pointer">
+            <button
+              onClick={() => setNewModalOpen(true)}
+              className="flex items-center gap-2 px-4 py-2.5 bg-sky-500 hover:bg-sky-400 text-slate-950 font-bold text-xs rounded-xl shadow-lg transition-all cursor-pointer"
+            >
               <Plus className="w-4 h-4" /> New Case File
             </button>
-          </div>
-        </div>
-      </div>
+          </>
+        }
+      />
 
       {/* ── Stat Cards ── */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
