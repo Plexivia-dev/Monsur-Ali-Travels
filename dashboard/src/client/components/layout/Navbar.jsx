@@ -13,6 +13,7 @@ import {
   CheckCheck,
   ChevronDown
 } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 
 export const Navbar = () => {
   const { activePortal, activeSubmodule, switchPortal, setSearchOpen, notifications, markAllNotificationsRead, isSidebarOpen, toggleSidebar } = usePortal();
@@ -39,9 +40,10 @@ export const Navbar = () => {
 
         {/* Portal Selector Dropdown Button */}
         <div className="relative">
-          <button
+          <Button
+            variant="ghost"
             onClick={() => setPortalMenuOpen(!portalMenuOpen)}
-            className="flex items-center gap-2.5 px-3 py-1.5 rounded-xl hover:bg-muted transition-colors cursor-pointer group"
+            className="flex items-center gap-2.5 px-3 py-1.5 rounded-xl cursor-pointer group"
           >
             <div className={`p-1.5 rounded-lg ${currentPortal.badgeBg}`}>
               <PortalIcon className="w-4 h-4" />
@@ -53,64 +55,68 @@ export const Navbar = () => {
               </div>
               <p className="text-[10px] text-muted-foreground capitalize">{activeSubmodule} Module</p>
             </div>
-          </button>
+            </Button>
 
           {/* Quick Portal Switcher Dropdown Menu */}
           {portalMenuOpen && (
             <div className="absolute top-full left-0 mt-2 w-64 bg-card border border-border rounded-xl shadow-xl z-50 p-2 space-y-1 animate-in zoom-in-95 duration-100">
               <p className="px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Switch Active Portal</p>
 
-              <button
+              <Button
+                variant="ghost"
                 onClick={() => {
                   switchPortal('docs', 'agreement');
                   setPortalMenuOpen(false);
                 }}
-                className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg text-xs font-medium transition-colors cursor-pointer ${
-                  activePortal === 'docs' ? 'bg-emerald-500/10 text-emerald-500 font-semibold' : 'hover:bg-muted text-foreground'
+                className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg text-xs font-medium cursor-pointer ${
+                  activePortal === 'docs' ? 'bg-emerald-500/10 text-emerald-500 font-semibold' : 'text-foreground'
                 }`}
               >
                 <FileSpreadsheet className="w-4 h-4 text-emerald-500" />
                 <span>Document Center</span>
-              </button>
+              </Button>
 
-              <button
+              <Button
+                variant="ghost"
                 onClick={() => {
                   switchPortal('agency', 'dashboard');
                   setPortalMenuOpen(false);
                 }}
-                className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg text-xs font-medium transition-colors cursor-pointer ${
-                  activePortal === 'agency' ? 'bg-sky-500/10 text-sky-500 font-semibold' : 'hover:bg-muted text-foreground'
+                className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg text-xs font-medium cursor-pointer ${
+                  activePortal === 'agency' ? 'bg-sky-500/10 text-sky-500 font-semibold' : 'text-foreground'
                 }`}
               >
                 <Users2 className="w-4 h-4 text-sky-500" />
                 <span>Manpower Agency Portal</span>
-              </button>
+              </Button>
 
-              <button
+              <Button
+                variant="ghost"
                 onClick={() => {
                   switchPortal('factory', 'dashboard');
                   setPortalMenuOpen(false);
                 }}
-                className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg text-xs font-medium transition-colors cursor-pointer ${
-                  activePortal === 'factory' ? 'bg-amber-500/10 text-amber-500 font-semibold' : 'hover:bg-muted text-foreground'
+                className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg text-xs font-medium cursor-pointer ${
+                  activePortal === 'factory' ? 'bg-amber-500/10 text-amber-500 font-semibold' : 'text-foreground'
                 }`}
               >
                 <Factory className="w-4 h-4 text-amber-500" />
                 <span>Brick Factory Portal</span>
-              </button>
+              </Button>
 
-              <button
+              <Button
+                variant="ghost"
                 onClick={() => {
                   switchPortal('admin', 'overview');
                   setPortalMenuOpen(false);
                 }}
-                className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg text-xs font-medium transition-colors cursor-pointer ${
-                  activePortal === 'admin' ? 'bg-purple-500/10 text-purple-500 font-semibold' : 'hover:bg-muted text-foreground'
+                className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg text-xs font-medium cursor-pointer ${
+                  activePortal === 'admin' ? 'bg-purple-500/10 text-purple-500 font-semibold' : 'text-foreground'
                 }`}
               >
                 <Shield className="w-4 h-4 text-purple-500" />
                 <span>System Administration</span>
-              </button>
+              </Button>
             </div>
           )}
         </div>
@@ -119,40 +125,44 @@ export const Navbar = () => {
       {/* Right: Search, Notifications, Theme Toggle */}
       <div className="flex items-center gap-2">
         {/* Global Search Quick Trigger */}
-        <button
+        <Button
+          variant="ghost"
           onClick={() => setSearchOpen(true)}
-          className="flex items-center gap-2 px-3 py-1.5 rounded-lg border border-border bg-muted/50 text-muted-foreground hover:text-foreground text-xs transition-colors cursor-pointer"
+          className="flex items-center gap-2 px-3 py-1.5 rounded-lg border border-border bg-muted/50 text-muted-foreground hover:text-foreground text-xs cursor-pointer"
         >
           <Search className="w-4 h-4" />
           <span className="hidden md:inline">Quick Search...</span>
           <kbd className="hidden md:inline px-1.5 py-0.5 text-[10px] font-mono rounded bg-background border border-border text-muted-foreground">
             Ctrl+K
           </kbd>
-        </button>
+        </Button>
 
         {/* Notifications Popover */}
         <div className="relative">
-          <button
+          <Button
+            variant="ghost"
+            size="icon"
             onClick={() => setNotifOpen(!notifOpen)}
-            className="relative p-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted transition-colors cursor-pointer"
+            className="relative text-muted-foreground hover:text-foreground cursor-pointer"
           >
             <Bell className="w-5 h-5" />
             {unreadCount > 0 && (
               <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-rose-500 animate-pulse" />
             )}
-          </button>
+          </Button>
 
           {notifOpen && (
             <div className="absolute top-full right-0 mt-2 w-80 bg-card border border-border rounded-xl shadow-xl z-50 overflow-hidden animate-in zoom-in-95 duration-100">
               <div className="p-3 bg-muted/40 border-b border-border flex items-center justify-between">
                 <h4 className="text-xs font-bold uppercase tracking-wider text-foreground">Notifications</h4>
                 {unreadCount > 0 && (
-                  <button
+                  <Button
+                    variant="link"
                     onClick={markAllNotificationsRead}
-                    className="text-[11px] text-primary hover:underline flex items-center gap-1 cursor-pointer"
+                    className="text-[11px] text-primary flex items-center gap-1 cursor-pointer p-0 h-auto"
                   >
                     <CheckCheck className="w-3.5 h-3.5" /> Mark read
-                  </button>
+                  </Button>
                 )}
               </div>
 
@@ -177,13 +187,15 @@ export const Navbar = () => {
         </div>
 
         {/* Theme Toggle Button */}
-        <button
+        <Button
+          variant="ghost"
+          size="icon"
           onClick={toggleTheme}
           title={isDark ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
-          className="p-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted transition-colors cursor-pointer"
+          className="text-muted-foreground hover:text-foreground cursor-pointer"
         >
           {isDark ? <Sun className="w-5 h-5 text-amber-400" /> : <Moon className="w-5 h-5 text-slate-600" />}
-        </button>
+        </Button>
       </div>
     </header>
   );

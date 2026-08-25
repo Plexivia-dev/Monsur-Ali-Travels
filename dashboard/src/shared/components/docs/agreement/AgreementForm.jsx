@@ -29,6 +29,7 @@ import { DatePicker } from '../../ui/date-picker';
 import { Input, Select } from '../../ui/input';
 import { Label } from '../../ui/label';
 import { Textarea } from '../../ui/textarea';
+import { Button } from '@/components/ui/button';
 
 export function AgreementForm({ formData, setFormData, onSubmit, onReset, isSubmitting = false }) {
   const { t } = useTranslation();
@@ -109,14 +110,16 @@ export function AgreementForm({ formData, setFormData, onSubmit, onReset, isSubm
           </h2>
         </div>
 
-        <button
+        <Button
           type="button"
+          variant="reset"
+          size="sm"
           onClick={() => setResetDialogOpen(true)}
-          className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold border border-border bg-muted/40 hover:bg-muted text-muted-foreground hover:text-foreground transition-all cursor-pointer shrink-0 self-start sm:self-auto"
+          className="shrink-0 self-start sm:self-auto"
         >
           <RotateCcw className="w-3.5 h-3.5" />
           <span>{t('agreement.reset', 'Reset')}</span>
-        </button>
+        </Button>
       </div>
 
       {/* Corporate Stepper Header */}
@@ -623,31 +626,34 @@ export function AgreementForm({ formData, setFormData, onSubmit, onReset, isSubm
         {/* Step Navigation Bar */}
         <div className="bg-card border border-border p-4 rounded-xl flex items-center justify-between gap-3 shadow-sm">
           {currentStep > 1 ? (
-            <button
+            <Button
               type="button"
+              variant="outline"
+              size="sm"
               onClick={handlePrev}
-              className="flex items-center gap-1.5 px-4 py-2 rounded-lg text-xs font-semibold border border-border bg-muted/40 hover:bg-muted text-foreground transition-all cursor-pointer"
             >
               <ChevronLeft className="w-4 h-4" />
               <span>{t('agreement.back', 'Back')}</span>
-            </button>
+            </Button>
           ) : (
             <div />
           )}
 
           {currentStep < 4 ? (
-            <button
+            <Button
               type="submit"
-              className="flex items-center gap-2 px-5 py-2 rounded-lg text-xs font-semibold bg-primary text-primary-foreground hover:bg-primary/95 shadow-sm transition-all cursor-pointer"
+              variant="primary"
+              size="sm"
             >
               <span>{t('agreement.next', 'Next Step')}</span>
               <ChevronRight className="w-4 h-4" />
-            </button>
+            </Button>
           ) : (
-            <button
+            <Button
               type="submit"
+              variant="primary"
+              size="default"
               disabled={isSubmitting}
-              className="flex items-center gap-2 px-5 py-2.5 rounded-lg text-xs font-semibold bg-primary text-primary-foreground hover:bg-primary/95 disabled:opacity-60 shadow-sm transition-all cursor-pointer"
             >
               {isSubmitting ? (
                 <>
@@ -660,7 +666,7 @@ export function AgreementForm({ formData, setFormData, onSubmit, onReset, isSubm
                   <span>{t('agreement.submit', 'Generate & Preview')}</span>
                 </>
               )}
-            </button>
+            </Button>
           )}
         </div>
       </form>
@@ -678,20 +684,22 @@ export function AgreementForm({ formData, setFormData, onSubmit, onReset, isSubm
             </DialogDescription>
           </DialogHeader>
           <DialogFooter className="gap-2 sm:gap-0 mt-2">
-            <button
+            <Button
               type="button"
+              variant="outline"
+              size="sm"
               onClick={() => setResetDialogOpen(false)}
-              className="px-4 py-1.5 text-xs font-semibold rounded-lg border border-border hover:bg-muted text-foreground transition-all cursor-pointer"
             >
               {t('common.cancel', 'Cancel')}
-            </button>
-            <button
+            </Button>
+            <Button
               type="button"
+              variant="destructive"
+              size="sm"
               onClick={confirmReset}
-              className="px-4 py-1.5 text-xs font-bold rounded-lg bg-destructive text-destructive-foreground shadow-sm transition-all cursor-pointer"
             >
               {t('agreement.yesReset', 'Yes, Reset')}
-            </button>
+            </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

@@ -10,12 +10,12 @@ export const ModeToggle = () => {
     <Button
       variant="ghost"
       size="icon"
-      className="relative cursor-pointer text-muted-foreground hover:text-foreground"
+      className="relative cursor-pointer text-white hover:text-white hover:bg-white/15 rounded-lg h-8 w-8 transition-colors"
       onClick={toggleTheme}
       title={isDark ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
     >
-      <MoonStar className={`w-4 h-4 transition-transform duration-200 ${isDark ? 'scale-100' : 'scale-0'}`} />
-      <Sun className={`w-4 h-4 absolute transition-transform duration-200 ${isDark ? 'scale-0' : 'scale-100'}`} />
+      <MoonStar className={`w-4 h-4 text-white transition-transform duration-200 ${isDark ? 'scale-100' : 'scale-0'}`} />
+      <Sun className={`w-4 h-4 text-white absolute transition-transform duration-200 ${isDark ? 'scale-0' : 'scale-100'}`} />
       <span className="sr-only">Toggle theme</span>
     </Button>
   );

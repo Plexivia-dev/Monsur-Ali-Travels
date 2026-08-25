@@ -49,14 +49,14 @@ export const ProfileDropdown = () => {
     <DropdownMenu>
       <DropdownMenuTrigger
         render={
-          <Button variant="ghost" size="icon" className="relative rounded-full hover:bg-muted/80 cursor-pointer" />
+          <Button variant="ghost" size="icon" className="relative rounded-full hover:bg-white/20 cursor-pointer h-8 w-8 ring-1 ring-white/30" />
         }
       >
         <Avatar className="size-8">
           <AvatarImage src={user?.avatar || ''} alt={displayName} />
-          <AvatarFallback className="bg-primary/10 text-primary font-semibold text-xs">{initials}</AvatarFallback>
+          <AvatarFallback className="bg-white/20 text-white font-bold text-xs">{initials}</AvatarFallback>
         </Avatar>
-        <span className="ring-background absolute right-0 bottom-0 block size-2.5 rounded-full bg-emerald-500 ring-2" />
+        <span className="ring-sidebar absolute right-0 bottom-0 block size-2.5 rounded-full bg-emerald-400 ring-2" />
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-64 p-1.5 shadow-lg border border-border">
         <DropdownMenuGroup>

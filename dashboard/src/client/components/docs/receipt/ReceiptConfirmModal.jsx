@@ -5,6 +5,7 @@ import { toast } from 'sonner';
 import { useAuth } from '../../../lib/auth-context';
 import { formatToDdMmYyyy } from '../../../lib/utils';
 import { MoneyReceiptPrintSlip } from './MoneyReceiptPrintSlip';
+import { Button } from '@/components/ui/button';
 
 export function ReceiptConfirmModal({
   isOpen,

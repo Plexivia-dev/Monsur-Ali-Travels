@@ -5,6 +5,7 @@ import { getDefaultCashVoucherData, generateVoucherNo } from './sampleData';
 import { Printer, Share2, ArrowLeft } from 'lucide-react';
 import { toast } from 'sonner';
 import { apiClient } from '../../../lib/api-client';
+import { Button } from '@/components/ui/button';
 
 export function CashVoucher() {
   const [data, setData] = useState(getDefaultCashVoucherData());
@@ -109,33 +110,36 @@ export function CashVoucher() {
         <div className="space-y-4">
           {/* Action Toolbar */}
           <div className="flex flex-col sm:flex-row items-center justify-between gap-3 bg-card border border-border p-4 rounded-2xl shadow-xs no-print">
-            <button
+            <Button
               type="button"
+              variant="outline"
+              size="sm"
               onClick={() => setViewMode('form')}
-              className="flex items-center gap-2 bg-muted hover:bg-muted/80 text-foreground px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer"
             >
               <ArrowLeft className="w-4 h-4" />
               <span>Back to Edit Form</span>
-            </button>
+            </Button>
 
             <div className="flex items-center gap-2 w-full sm:w-auto flex-wrap justify-end">
-              <button
+              <Button
                 type="button"
+                variant="success"
+                size="sm"
                 onClick={handleWhatsAppShare}
-                className="flex items-center gap-1.5 bg-emerald-600 hover:bg-emerald-700 text-white px-3.5 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer shadow-xs"
               >
                 <Share2 className="w-3.5 h-3.5" />
                 <span>WhatsApp</span>
-              </button>
+              </Button>
 
-              <button
+              <Button
                 type="button"
+                variant="primary"
+                size="sm"
                 onClick={handlePrint}
-                className="flex items-center gap-2 bg-primary hover:bg-primary/90 text-primary-foreground px-5 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer shadow-xs"
               >
                 <Printer className="w-4 h-4" />
                 <span>Print Voucher (A4)</span>
-              </button>
+              </Button>
             </div>
           </div>
 

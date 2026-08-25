@@ -4,6 +4,7 @@ import { apiClient } from '../../../lib/api-client';
 import { toast } from 'sonner';
 import { MoneyReceiptPrintSlip } from './MoneyReceiptPrintSlip';
 import { useAuth } from '../../../lib/auth-context';
+import { Button } from '@/components/ui/button';
 
 const SERVICE_OPTIONS = [
   'ইন্ডিয়ান ভিসা প্রসেসিং',

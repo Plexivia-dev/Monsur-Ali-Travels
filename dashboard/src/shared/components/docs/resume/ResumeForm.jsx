@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { User, Briefcase, GraduationCap, Wrench, Settings, Plus, Trash2 } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 
 export function ResumeForm({ data, onChange }) {
   const [activeTab, setActiveTab] = useState('personal');

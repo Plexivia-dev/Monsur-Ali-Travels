@@ -18,7 +18,6 @@ import {
   Search,
   Sparkles,
   ArrowRight,
-  ChevronLeft,
   Printer,
 } from 'lucide-react';
 import { EmploymentAgreement } from '../components/docs/agreement/EmploymentAgreement';
@@ -225,41 +224,8 @@ export default function DocumentStudio() {
     return matchesCategory && matchesSearch;
   });
 
-  const activeGenerator = DOCUMENT_GENERATORS.find(
-    (g) =>
-      g.id === activeSubmodule ||
-      (activeSubmodule === 'receipt' && g.id === 'money-receipt') ||
-      (activeSubmodule === 'certificate-exp' && g.id === 'experience-certificate') ||
-      (activeSubmodule === 'certificate-char' && g.id === 'character-certificate') ||
-      (activeSubmodule === 'certificate-marr' && g.id === 'marriage-certificate')
-  );
-
   return (
     <div className="space-y-6">
-      {!isOverview && (
-        <div className="bg-card border border-border px-4 py-3 rounded-md shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-          <button
-            type="button"
-            onClick={() => switchPortal('docs', 'overview')}
-            className="inline-flex items-center gap-2 text-xs font-bold text-muted-foreground hover:text-foreground bg-muted/50 hover:bg-muted px-3 py-1.5 rounded-md border border-border transition-all cursor-pointer w-fit"
-          >
-            <ChevronLeft className="w-4 h-4" />
-            <span>{isBn ? '← সকল ডকুমেন্ট জেনারেটর' : '← Back to Document Studio Hub'}</span>
-          </button>
-
-          {activeGenerator && (
-            <div className="flex items-center gap-2">
-              <span className={`text-[11px] font-semibold px-2.5 py-0.5 rounded-full border ${activeGenerator.badgeStyle}`}>
-                {activeGenerator.badge}
-              </span>
-              <span className="text-xs font-bold text-foreground">
-                {isBn ? activeGenerator.bnTitle : activeGenerator.title}
-              </span>
-            </div>
-          )}
-        </div>
-      )}
-
       {isOverview && (
         <div className="space-y-6 animate-in fade-in-50 duration-200">
           <div className="relative overflow-hidden bg-card border border-border p-6 sm:p-8 rounded-lg shadow-xs border-b-2 border-b-primary/40">

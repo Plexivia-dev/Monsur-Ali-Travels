@@ -5,8 +5,10 @@
   "scripts": {
     "dash": "npm --prefix dashboard run dev",
     "dev:dash": "npm --prefix dashboard run dev",
+    "dev:admin": "npm --prefix dashboard run dev:admin",
+    "dev:client": "npm --prefix dashboard run dev:client",
     "build:dash": "npm --prefix dashboard run build",
-    "dev:all": "npx concurrently -n \"BACKEND,FRONTEND,DASHBOARD\" -c \"bgGreen.bold,bgCyan.bold,bgBlue.bold\" \"npm --prefix backend run dev\" \"npm --prefix frontend run dev\" \"npm --prefix dashboard run dev\""
+    "dev:all": "npx concurrently -n \"BACKEND,FRONTEND,ADMIN,CLIENT\" -c \"bgGreen.bold,bgCyan.bold,bgBlue.bold,bgMagenta.bold\" \"npm --prefix backend run dev\" \"npm --prefix frontend run dev\" \"npm --prefix dashboard run dev:admin\" \"npm --prefix dashboard run dev:client\""
   },
   "devDependencies": {
     "concurrently": "^9.1.2"

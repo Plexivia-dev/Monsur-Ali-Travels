@@ -22,6 +22,7 @@ import { toast } from 'sonner';
 import { usePortal } from '../../context/PortalContext';
 import { MoneyReceiptModal } from '../docs/receipt/MoneyReceiptModal';
 import { ConfirmDeleteDialog } from '@/components/ui/confirm-delete-dialog';
+import { Button } from '@/components/ui/button';
 import { useTranslation } from 'react-i18next';
 import { CaseWorkspaceDrawer } from '../agency/CaseWorkspaceDrawer';
 

@@ -36,6 +36,7 @@ import { SERVICE_TYPES, STATUS_OPTIONS, getServiceLabel, getStatusLabel } from '
 import { ExistingCustomerAlertModal } from '../common/ExistingCustomerAlertModal';
 import { apiClient } from '../../../lib/api-client';
 import { toast } from 'sonner';
+import { Button } from '@/components/ui/button';
 
 export function CustomerGuardianForm({ data, onChange, onReset, onSave, onPreview, isSubmitting }) {
   const { t, i18n } = useTranslation();
@@ -276,14 +277,15 @@ export function CustomerGuardianForm({ data, onChange, onReset, onSave, onPrevie
         </div>
 
         <div className="flex items-center gap-2">
-          <button
+          <Button
             type="button"
+            variant="reset"
+            size="sm"
             onClick={onReset}
-            className="flex items-center gap-1.5 text-xs font-medium text-muted-foreground hover:text-foreground bg-muted hover:bg-muted/80 px-3 py-1.5 rounded-lg transition-colors cursor-pointer"
           >
             <RefreshCw className="w-3.5 h-3.5" />
             <span>{t('customerForm.clearReset', 'Clear / Reset Form')}</span>
-          </button>
+          </Button>
         </div>
       </div>
 
@@ -549,14 +551,15 @@ export function CustomerGuardianForm({ data, onChange, onReset, onSave, onPrevie
             <FileText className="w-4 h-4" />
             <span>{t('customerForm.requirementDocs', '3. Customer Requirement Documents')}</span>
           </div>
-          <button
+          <Button
             type="button"
+            variant="secondary"
+            size="xs"
             onClick={handleAddDoc}
-            className="inline-flex items-center gap-1 bg-white/20 hover:bg-white/30 text-white px-2.5 py-1 rounded-lg text-[11px] font-semibold transition-colors cursor-pointer"
           >
             <Plus className="w-3 h-3" />
             <span>{t('customerForm.addDocument', 'Add Document')}</span>
-          </button>
+          </Button>
         </div>
 
         <div className="border border-border rounded-xl overflow-hidden text-xs">
@@ -1037,24 +1040,24 @@ export function CustomerGuardianForm({ data, onChange, onReset, onSave, onPrevie
         </div>
 
         <div className="flex items-center gap-3">
-          <button
+          <Button
             type="button"
+            variant="outline"
             onClick={onPreview}
-            className="flex items-center gap-2 border border-border hover:bg-muted text-foreground text-xs font-bold px-4 py-2.5 rounded-xl transition-colors cursor-pointer"
           >
             <Eye className="w-4 h-4" />
             <span>{t('customerForm.printPreview', 'Print Preview')}</span>
-          </button>
+          </Button>
 
-          <button
+          <Button
             type="button"
+            variant="success"
             onClick={onSave}
             disabled={isSubmitting}
-            className="flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-6 py-2.5 rounded-xl shadow-xs hover:shadow-md transition-all cursor-pointer disabled:opacity-50"
           >
             <Save className="w-4 h-4" />
             <span>{isSubmitting ? t('customerForm.saving', 'Saving...') : data._id ? t('customerForm.updateDb', 'Update Database') : t('customerForm.saveDb', 'Save to Database')}</span>
-          </button>
+          </Button>
         </div>
       </div>
 

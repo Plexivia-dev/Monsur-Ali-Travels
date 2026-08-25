@@ -8,6 +8,7 @@ import { usePortal } from '../../context/PortalContext';
 import { PassportSubmissionPreview } from '../docs/passport/PassportSubmissionPreview';
 import { MoneyReceiptModal } from '../docs/receipt/MoneyReceiptModal';
 import { ConfirmDeleteDialog } from '@/components/ui/confirm-delete-dialog';
+import { Button } from '@/components/ui/button';
 import { useTranslation } from 'react-i18next';
 
 const PASSPORT_STAGES = [

@@ -1,6 +1,7 @@
 import React from 'react';
 import { PrintablePaper } from '../common/PrintablePaper';
 import { Printer, CheckCircle, Clock, AlertTriangle } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 import logoImg from '../../../assets/logo.png';
 import { formatToDdMmYyyy } from '../../../lib/utils';
 import agencyInfo from '../../../lib/information.json';
@@ -77,14 +78,15 @@ export function InvoicePreview({ data = {}, onPrint }) {
           <span className="text-xs">A4 Vector Print Ready</span>
         </div>
 
-        <button
+        <Button
           type="button"
+          variant="success"
+          size="sm"
           onClick={handlePrintAction}
-          className="flex items-center space-x-1.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-3.5 py-1.5 rounded-[4px] shadow-xs transition-all cursor-pointer"
         >
           <Printer className="w-3.5 h-3.5" />
           <span>Print Invoice / PDF</span>
-        </button>
+        </Button>
       </div>
 
       {/* Printable A4 Paper Wrapper */}

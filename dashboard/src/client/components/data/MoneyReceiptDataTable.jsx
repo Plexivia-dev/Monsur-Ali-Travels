@@ -27,6 +27,7 @@ import { MoneyReceiptModal } from '../docs/receipt/MoneyReceiptModal';
 import { ReceiptConfirmModal } from '../docs/receipt/ReceiptConfirmModal';
 import { MoneyReceiptPrintSlip } from '../docs/receipt/MoneyReceiptPrintSlip';
 import { ConfirmDeleteDialog } from '@/components/ui/confirm-delete-dialog';
+import { Button } from '@/components/ui/button';
 import { useTranslation } from 'react-i18next';
 
 export function MoneyReceiptDataTable() {

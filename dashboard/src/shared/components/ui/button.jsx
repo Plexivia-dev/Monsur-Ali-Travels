@@ -27,10 +27,12 @@ const buttonVariants = cva(
           'bg-rose-500/15 text-rose-600 dark:text-rose-400 border border-rose-500/25 hover:bg-rose-500/25',
         warning:
           'bg-rose-600 hover:bg-rose-700 text-white shadow-xs',
+        reset:
+          'bg-rose-600 hover:bg-rose-700 text-white shadow-xs',
         success:
           'bg-emerald-600 hover:bg-emerald-700 text-white shadow-xs',
         info:
-          'bg-amber-600 hover:bg-amber-700 text-white shadow-xs',
+          'bg-blue-600 hover:bg-blue-700 text-white shadow-xs',
         link: 'text-primary underline-offset-4 hover:underline cursor-pointer',
       },
       size: {
@@ -51,11 +53,30 @@ const buttonVariants = cva(
   }
 );
 
+/**
+ * Unified Button — use across all dashboards.
+ *
+ * Props:
+ *   variant      — primary | secondary | reset | success | info | destructive |
+ *                  cancel | outline | ghost | link | delete | danger | warning
+ *   size         — default | xs | sm | lg | icon | icon-xs | icon-sm | icon-lg
+ *   icon         — Lucide icon component (optional)
+ *   iconPosition — 'left' (default) | 'right'
+ *
+ * Examples:
+ *   <Button variant="primary" icon={Save}>Save</Button>
+ *   <Button variant="reset" icon={RefreshCw}>Reset</Button>
+ *   <Button variant="success" icon={CheckCircle2}>Confirm</Button>
+ *   <Button variant="info" size="sm">Learn More</Button>
+ *   <Button variant="cancel">Cancel</Button>
+ */
 function Button({
   className,
   variant = 'default',
   size = 'default',
-  asChild = false,
+  icon: Icon,
+  iconPosition = 'left',
+  children,
   ...props
 }) {
   return (
@@ -63,7 +84,11 @@ function Button({
       data-slot="button"
       className={cn(buttonVariants({ variant, size, className }))}
       {...props}
-    />
+    >
+      {Icon && iconPosition === 'left' && <Icon />}
+      {children}
+      {Icon && iconPosition === 'right' && <Icon />}
+    </button>
   );
 }
 

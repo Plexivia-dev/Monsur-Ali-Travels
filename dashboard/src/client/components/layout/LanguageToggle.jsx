@@ -20,13 +20,13 @@ export const LanguageToggle = () => {
     <Button
       variant="ghost"
       size="sm"
-      className="h-8 px-2.5 flex items-center gap-1.5 cursor-pointer text-muted-foreground hover:text-foreground rounded-lg border border-border/40 hover:bg-muted/60 transition-all duration-200"
+      className="h-8 px-2.5 flex items-center gap-1.5 cursor-pointer text-white bg-white/10 hover:bg-white/20 hover:text-white rounded-lg border border-white/20 transition-all duration-200"
       onClick={handleToggle}
       title={currentLang === 'en' ? 'বাংলায় পরিবর্তন করুন' : 'Switch to English'}
       aria-label="Toggle Language"
     >
-      <Languages className="w-3.5 h-3.5 text-sky-400" />
-      <span className="text-[11px] font-bold tracking-wider uppercase">
+      <Languages className="w-3.5 h-3.5 text-white" />
+      <span className="text-[11px] font-bold tracking-wider uppercase text-white">
         {currentLang === 'en' ? 'EN' : 'বাং'}
       </span>
     </Button>

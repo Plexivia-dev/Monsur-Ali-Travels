@@ -2,6 +2,7 @@ import React, { useCallback } from 'react';
 import { PlusCircle, Trash2 } from 'lucide-react';
 import { numberToWords, numberToWordsBn, generateVoucherNo } from './sampleData';
 import { useTranslation } from 'react-i18next';
+import { Button } from '@/components/ui/button';
 
 export function CashVoucherForm({ data, onChange, onReset, onSave, onPreview, isSubmitting }) {
   const { t } = useTranslation();
@@ -157,14 +158,15 @@ export function CashVoucherForm({ data, onChange, onReset, onSave, onPreview, is
 
         {/* Bottom Section: Add Row Button on Left & Totals on Right */}
         <div className="mt-4 flex flex-col sm:flex-row items-start justify-between gap-4">
-          <button
+          <Button
             type="button"
+            variant="success"
+            size="sm"
             onClick={addItem}
-            className="flex items-center gap-1.5 text-xs font-bold text-white bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 px-4 py-2 rounded-xl shadow-xs transition-all cursor-pointer"
           >
             <PlusCircle className="w-4 h-4" />
             <span>{t('cashVoucherForm.addRow', 'Add Row')}</span>
-          </button>
+          </Button>
 
           {/* Totals */}
           <div className="flex flex-col items-end gap-1 text-xs w-full sm:w-auto">
@@ -241,28 +243,28 @@ export function CashVoucherForm({ data, onChange, onReset, onSave, onPreview, is
 
       {/* Actions */}
       <div className="flex flex-col sm:flex-row items-center justify-end gap-3">
-        <button
+        <Button
           type="button"
+          variant="reset"
           onClick={onReset}
-          className="px-5 py-2 bg-muted hover:bg-muted/80 text-foreground text-xs font-bold rounded-xl transition-all cursor-pointer"
         >
           {t('cashVoucherForm.reset', 'Reset')}
-        </button>
-        <button
+        </Button>
+        <Button
           type="button"
+          variant="outline"
           onClick={onPreview}
-          className="px-5 py-2 bg-secondary hover:bg-secondary/80 text-secondary-foreground text-xs font-bold rounded-xl transition-all cursor-pointer"
         >
           {t('cashVoucherForm.previewOnly', 'Preview Only')}
-        </button>
-        <button
+        </Button>
+        <Button
           type="button"
+          variant="primary"
           onClick={onSave}
           disabled={isSubmitting}
-          className="px-6 py-2 bg-primary hover:bg-primary/90 text-primary-foreground text-xs font-bold rounded-xl transition-all cursor-pointer disabled:opacity-60"
         >
           {isSubmitting ? t('cashVoucherForm.saving', 'Saving...') : t('cashVoucherForm.savePreview', 'Save & Preview')}
-        </button>
+        </Button>
       </div>
     </div>
   );

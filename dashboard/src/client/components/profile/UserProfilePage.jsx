@@ -262,11 +262,13 @@ export function UserProfilePage() {
               </Avatar>
 
               {/* Upload Action Button */}
-              <button
+              <Button
                 type="button"
+                variant="primary"
+                size="icon"
                 onClick={() => fileInputRef.current?.click()}
                 disabled={isUploadingPhoto}
-                className="absolute bottom-0 right-0 p-2 rounded-full bg-primary text-primary-foreground shadow-lg hover:bg-primary/90 transition-all cursor-pointer ring-2 ring-background group-hover:scale-105"
+                className="absolute bottom-0 right-0 rounded-full shadow-lg ring-2 ring-background group-hover:scale-105 cursor-pointer"
                 title={t('account.changePhoto', 'Change Photo')}
               >
                 {isUploadingPhoto ? (
@@ -274,7 +276,7 @@ export function UserProfilePage() {
                 ) : (
                   <Camera className="w-4 h-4" />
                 )}
-              </button>
+              </Button>
               <input
                 ref={fileInputRef}
                 type="file"
@@ -530,13 +532,15 @@ export function UserProfilePage() {
                       className="pr-9 h-9 text-xs"
                       required
                     />
-                    <button
+                    <Button
                       type="button"
+                      variant="ghost"
+                      size="icon"
                       onClick={() => setShowCurrentPassword(!showCurrentPassword)}
-                      className="absolute right-2.5 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground cursor-pointer"
+                      className="absolute right-1 top-1/2 -translate-y-1/2 h-7 w-7 text-muted-foreground hover:text-foreground cursor-pointer"
                     >
                       {showCurrentPassword ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
-                    </button>
+                    </Button>
                   </div>
                 </div>
 
@@ -554,13 +558,15 @@ export function UserProfilePage() {
                       className="pr-9 h-9 text-xs"
                       required
                     />
-                    <button
+                    <Button
                       type="button"
+                      variant="ghost"
+                      size="icon"
                       onClick={() => setShowNewPassword(!showNewPassword)}
-                      className="absolute right-2.5 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground cursor-pointer"
+                      className="absolute right-1 top-1/2 -translate-y-1/2 h-7 w-7 text-muted-foreground hover:text-foreground cursor-pointer"
                     >
                       {showNewPassword ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
-                    </button>
+                    </Button>
                   </div>
                 </div>
 
@@ -578,13 +584,15 @@ export function UserProfilePage() {
                       className="pr-9 h-9 text-xs"
                       required
                     />
-                    <button
+                    <Button
                       type="button"
+                      variant="ghost"
+                      size="icon"
                       onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                      className="absolute right-2.5 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground cursor-pointer"
+                      className="absolute right-1 top-1/2 -translate-y-1/2 h-7 w-7 text-muted-foreground hover:text-foreground cursor-pointer"
                     >
                       {showConfirmPassword ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
-                    </button>
+                    </Button>
                   </div>
                 </div>
               </CardContent>

@@ -24,6 +24,7 @@ import { PAYMENT_METHODS, SERVICE_PURPOSES, numberToWords } from './sampleData';
 import { apiClient } from '../../../lib/api-client';
 import { toast } from 'sonner';
 import { useTranslation } from 'react-i18next';
+import { Button } from '@/components/ui/button';
 
 export function MoneyReceiptForm({ data, onChange, onReset, onSave, onPreview, isSubmitting }) {
   const { t } = useTranslation();

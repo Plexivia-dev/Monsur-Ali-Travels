@@ -8,6 +8,7 @@ import { usePortal } from '../../context/PortalContext';
 import { IndianVisaPreview } from '../docs/indian-visa/IndianVisaPreview';
 import { MoneyReceiptModal } from '../docs/receipt/MoneyReceiptModal';
 import { ConfirmDeleteDialog } from '@/components/ui/confirm-delete-dialog';
+import { Button } from '@/components/ui/button';
 
 const VISA_STAGES = [
   { id: 'received', label: 'File Received', color: 'bg-amber-500/10 text-amber-600 border-amber-500/20' },

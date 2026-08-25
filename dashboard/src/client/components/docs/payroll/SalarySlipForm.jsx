@@ -22,6 +22,7 @@ import {
   DialogFooter,
 } from '@/components/ui/dialog';
 import { DatePicker } from '../../ui/date-picker';
+import { Button } from '@/components/ui/button';
 
 // Number to Words converter for BDT currency
 export function numberToWords(num) {
@@ -136,14 +137,16 @@ export function SalarySlipForm({ formData, setFormData, onSubmit, onReset, isSub
           </h2>
         </div>
 
-        <button
+        <Button
           type="button"
+          variant="reset"
+          size="sm"
           onClick={() => setResetDialogOpen(true)}
-          className="flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-semibold border border-border bg-muted/40 hover:bg-muted text-muted-foreground hover:text-foreground transition-all cursor-pointer shrink-0 self-start sm:self-auto"
+          className="shrink-0 self-start sm:self-auto"
         >
           <RotateCcw className="w-3.5 h-3.5" />
           <span>Reset</span>
-        </button>
+        </Button>
       </div>
 
       {/* Corporate Clean Stepper (Max 4px Border Radius) */}
@@ -563,31 +566,34 @@ export function SalarySlipForm({ formData, setFormData, onSubmit, onReset, isSub
         {/* Step Navigation Bar */}
         <div className="bg-card border border-border p-4 rounded-md flex items-center justify-between gap-3 shadow-xs">
           {currentStep > 1 ? (
-            <button
+            <Button
               type="button"
+              variant="outline"
+              size="sm"
               onClick={handlePrev}
-              className="flex items-center gap-1.5 px-4 py-2 rounded-md text-xs font-bold border border-border bg-muted/40 hover:bg-muted text-foreground transition-all cursor-pointer"
             >
               <ChevronLeft className="w-4 h-4" />
               <span>Previous Step</span>
-            </button>
+            </Button>
           ) : (
             <div />
           )}
 
           {currentStep < 4 ? (
-            <button
+            <Button
               type="submit"
-              className="flex items-center gap-2 px-5 py-2 rounded-md text-xs font-bold bg-primary text-primary-foreground hover:bg-primary/90 shadow-xs transition-all cursor-pointer"
+              variant="primary"
+              size="sm"
             >
               <span>Next Step</span>
               <ChevronRight className="w-4 h-4" />
-            </button>
+            </Button>
           ) : (
-            <button
+            <Button
               type="submit"
+              variant="success"
+              size="default"
               disabled={isSubmitting}
-              className="flex items-center gap-2 px-5 py-2.5 rounded-md text-xs font-bold bg-emerald-600 hover:bg-emerald-700 disabled:opacity-60 text-white shadow-xs transition-all cursor-pointer"
             >
               {isSubmitting ? (
                 <>
@@ -600,7 +606,7 @@ export function SalarySlipForm({ formData, setFormData, onSubmit, onReset, isSub
                   <span>Generate Salary Slip & View Preview</span>
                 </>
               )}
-            </button>
+            </Button>
           )}
         </div>
       </form>
@@ -618,20 +624,22 @@ export function SalarySlipForm({ formData, setFormData, onSubmit, onReset, isSub
             </DialogDescription>
           </DialogHeader>
           <DialogFooter className="gap-2 sm:gap-0 mt-2">
-            <button
+            <Button
               type="button"
+              variant="outline"
+              size="sm"
               onClick={() => setResetDialogOpen(false)}
-              className="px-4 py-1.5 text-xs font-semibold rounded-md border border-border hover:bg-muted text-foreground transition-all cursor-pointer"
             >
               Cancel
-            </button>
-            <button
+            </Button>
+            <Button
               type="button"
+              variant="destructive"
+              size="sm"
               onClick={confirmReset}
-              className="px-4 py-1.5 text-xs font-bold rounded-md bg-rose-600 hover:bg-rose-700 text-white shadow-xs transition-all cursor-pointer"
             >
               Yes, Reset Form
-            </button>
+            </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

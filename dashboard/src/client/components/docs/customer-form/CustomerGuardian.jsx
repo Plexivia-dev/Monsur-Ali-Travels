@@ -6,6 +6,7 @@ import { getDefaultCustomerGuardianData, generateApplicationNo } from './sampleD
 import { Printer, Edit3, CheckCircle2, FileText, Download, Share2, Sparkles, Save, Database } from 'lucide-react';
 import { toast } from 'sonner';
 import { apiClient } from '../../../lib/api-client';
+import { Button } from '@/components/ui/button';
 
 export function CustomerGuardian({ initialData = null, onSavedSuccess = null }) {
   const { t } = useTranslation();
@@ -142,36 +143,28 @@ export function CustomerGuardian({ initialData = null, onSavedSuccess = null }) 
           </div>
 
           {/* WhatsApp Share */}
-          <button
+          <Button
             type="button"
+            variant="outline"
+            size="sm"
             onClick={handleWhatsAppShare}
-            className="flex items-center gap-1.5 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 px-3 py-1.5 rounded-xl text-xs font-semibold transition-colors cursor-pointer"
+            className="bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 border-emerald-500/20"
             title="WhatsApp Share"
           >
             <Share2 className="w-3.5 h-3.5" />
             <span className="hidden md:inline">WhatsApp</span>
-          </button>
-
-          {/* Save to DB button */}
-          <button
-            type="button"
-            onClick={handleSaveToDatabase}
-            disabled={isSubmitting}
-            className="flex items-center gap-1.5 bg-primary hover:bg-primary/90 text-primary-foreground text-xs font-bold px-3.5 py-2 rounded-xl shadow-xs transition-colors cursor-pointer disabled:opacity-50"
-          >
-            <Save className="w-3.5 h-3.5" />
-            <span>{isSubmitting ? t('customerForm.saving', 'Saving...') : data._id ? t('customerForm.updateDb', 'Update Database') : t('customerForm.saveDb', 'Save to Database')}</span>
-          </button>
+          </Button>
 
           {/* Print / Download Button */}
-          <button
+          <Button
             type="button"
+            variant="success"
+            size="sm"
             onClick={handlePrint}
-            className="flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-4 py-2 rounded-xl shadow-xs transition-colors cursor-pointer"
           >
             <Printer className="w-4 h-4" />
             <span>{t('customerForm.downloadPrint', 'Download PDF / Print')}</span>
-          </button>
+          </Button>
         </div>
       </div>
 

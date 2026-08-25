@@ -1,6 +1,7 @@
 import React from 'react';
 import { PrintablePaper } from '../common/PrintablePaper';
 import { Printer, CheckCircle2, Clock, ShieldCheck, QrCode } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 import agencyInfo from '../../../lib/information.json';
 import logoImg from '../../../assets/logo.png';
 import { formatToDdMmYyyy } from '../../../lib/utils';
@@ -213,13 +214,14 @@ export function MoneyReceiptPrintSlip({ data = {}, onPrint }) {
           <span className="text-[11px]">১ পৃষ্ঠায় ২টি কপি (গ্রাহক ও অফিস)</span>
         </div>
 
-        <button
+        <Button
+          variant="primary"
+          size="sm"
           onClick={handlePrint}
-          className="flex items-center space-x-1.5 bg-primary hover:bg-primary/90 text-primary-foreground text-xs font-semibold px-4 py-1.5 rounded-lg shadow-xs transition-all cursor-pointer"
         >
           <Printer className="w-3.5 h-3.5" />
           <span>প্রিন্ট রিসিট / PDF</span>
-        </button>
+        </Button>
       </div>
 
       {/* A4 Paper Canvas - Clean Compact Padding */}

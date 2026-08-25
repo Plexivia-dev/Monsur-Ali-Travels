@@ -8,6 +8,7 @@ import { usePortal } from '../../context/PortalContext';
 import { AgreementPreview } from '../docs/agreement/AgreementPreview';
 import { PrintablePaper } from '../docs/common/PrintablePaper';
 import { ConfirmDeleteDialog } from '@/components/ui/confirm-delete-dialog';
+import { Button } from '@/components/ui/button';
 import { useTranslation } from 'react-i18next';
 
 // Normalize nested backend schema to the exact structure expected by AgreementPreview
