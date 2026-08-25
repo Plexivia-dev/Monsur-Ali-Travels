@@ -32,11 +32,13 @@ export default function AdminLayout() {
     navigate('/login')
   }
 
-  const isAccountant = user?.subRole?.toLowerCase() === 'accountant' || user?.subRole?.toLowerCase() === 'accounts'
+  const userRole = user?.role?.toLowerCase()
+  const isOwner = userRole === 'owner' || userRole === 'superadmin' || userRole === 'admin'
+  const isAccountant = !isOwner && (user?.subRole?.toLowerCase() === 'accountant' || user?.subRole?.toLowerCase() === 'accounts')
 
   const menuItems = [
-    ...(!isAccountant ? [{ name: lang === 'BN' ? 'ওভারভিউ' : 'Overview', path: '/admin', icon: LayoutDashboard }] : []),
-    ...(isAccountant ? [{ name: lang === 'BN' ? 'অ্যাকাউন্টিং সামারি' : 'Accounting Summary', path: '/admin/accounting-summary', icon: PieChart }] : []),
+    { name: lang === 'BN' ? 'ওভারভিউ' : 'Overview', path: '/admin', icon: LayoutDashboard },
+    ...(isAccountant || isOwner ? [{ name: lang === 'BN' ? 'অ্যাকাউন্টিং সামারি' : 'Accounting Summary', path: '/admin/accounting-summary', icon: PieChart }] : []),
   ]
 
   const accountsSubMenuItems = [
@@ -47,10 +49,8 @@ export default function AdminLayout() {
 
   const agencySubMenuItems = [
     { name: lang === 'BN' ? 'ক্লায়েন্ট ফাইলস' : 'Client Files', path: '/admin/cases', icon: FolderOpen },
-    ...(!isAccountant ? [
-      { name: lang === 'BN' ? 'ক্লায়েন্টস' : 'Clients', path: '/admin/clients', icon: Users },
-      { name: lang === 'BN' ? 'ইউজারস' : 'Users', path: '/admin/users', icon: User },
-    ] : []),
+    { name: lang === 'BN' ? 'ক্লায়েন্টস' : 'Clients', path: '/admin/clients', icon: Users },
+    { name: lang === 'BN' ? 'ইউজারস' : 'Users', path: '/admin/users', icon: User },
   ]
 
   const reportsSubMenuItems = [
