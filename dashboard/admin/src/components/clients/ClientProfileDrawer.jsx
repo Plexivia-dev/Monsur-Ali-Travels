@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
   X,
   User,
@@ -24,14 +25,17 @@ import {
 } from 'lucide-react';
 import { apiClient } from '@/lib/api-client';
 import { toast } from 'sonner';
+import { CaseDetailDrawer } from '@/components/workflow/CaseDetailDrawer';
 
 // Renders a slide-over 360-degree drawer view of a client's profile, workflow history, documents, and payments
 const ClientProfileDrawer = ({ clientDid, isOpen, onClose, onRefresh }) => {
+  const navigate = useNavigate();
   const [client, setClient] = useState(null);
   const [cases, setCases] = useState([]);
   const [receipts, setReceipts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('overview'); // 'overview' | 'workflow' | 'payments' | 'documents'
+  const [selectedCaseDidForDetail, setSelectedCaseDidForDetail] = useState(null);
 
   // Fetches full 360-degree profile data for the active client
   const fetchClientProfile = useCallback(async () => {
@@ -281,20 +285,29 @@ const ClientProfileDrawer = ({ clientDid, isOpen, onClose, onRefresh }) => {
                     {cases.map((c) => (
                       <div
                         key={c.did || c._id}
-                        className="p-4 rounded-xl border border-border bg-background shadow-xs hover:border-primary/40 transition-all space-y-3"
+                        onClick={() => {
+                          onClose();
+                          navigate(`/admin/cases/${c.did || c._id}`);
+                        }}
+                        className="p-4 rounded-xl border border-border bg-background shadow-xs hover:border-primary/60 hover:shadow-sm transition-all space-y-3 cursor-pointer group"
                       >
                         <div className="flex items-start justify-between">
                           <div>
                             <span className="text-xs font-mono font-bold text-primary">
                               {c.caseNumber || c.fileNumber || 'CASE-001'}
                             </span>
-                            <h4 className="text-sm font-bold text-foreground mt-0.5">
+                            <h4 className="text-sm font-bold text-foreground group-hover:text-primary transition-colors mt-0.5">
                               {c.destinationCountry} — {c.caseType?.replace('_', ' ')}
                             </h4>
                           </div>
-                          <span className="px-2.5 py-1 rounded-full text-xs font-bold bg-primary/10 text-primary border border-primary/20">
-                            {c.workflowStatus || c.status || 'Received'}
-                          </span>
+                          <div className="flex items-center gap-2">
+                            <span className="px-2.5 py-1 rounded-full text-xs font-bold bg-primary/10 text-primary border border-primary/20">
+                              {c.workflowStatus || c.status || 'Received'}
+                            </span>
+                            <span className="text-xs font-bold text-primary flex items-center gap-0.5">
+                              Open <ArrowUpRight className="size-3.5" />
+                            </span>
+                          </div>
                         </div>
 
                         <div className="grid grid-cols-3 gap-2 text-xs pt-2 border-t border-border/60">
@@ -337,9 +350,14 @@ const ClientProfileDrawer = ({ clientDid, isOpen, onClose, onRefresh }) => {
                     const tasks = c.workflowTasks || [];
                     return (
                       <div key={c.did || c._id} className="space-y-3">
-                        <div className="flex items-center justify-between bg-muted/40 px-3.5 py-2 rounded-xl border border-border">
+                        <div
+                          onClick={() => setSelectedCaseDidForDetail(c.did || c._id)}
+                          className="flex items-center justify-between bg-muted/40 hover:bg-muted/70 px-3.5 py-2 rounded-xl border border-border cursor-pointer transition-colors"
+                        >
                           <span className="text-xs font-bold font-mono text-primary">{c.caseNumber}</span>
-                          <span className="text-xs font-semibold text-muted-foreground">{c.destinationCountry}</span>
+                          <span className="text-xs font-semibold text-foreground flex items-center gap-1">
+                            {c.destinationCountry} <ArrowUpRight className="size-3 text-primary" />
+                          </span>
                         </div>
 
                         {tasks.length === 0 ? (
@@ -489,6 +507,17 @@ const ClientProfileDrawer = ({ clientDid, isOpen, onClose, onRefresh }) => {
           )}
         </div>
       </div>
+
+      {/* Case Detail & Dossier Drawer */}
+      <CaseDetailDrawer
+        caseDid={selectedCaseDidForDetail}
+        isOpen={Boolean(selectedCaseDidForDetail)}
+        onClose={() => setSelectedCaseDidForDetail(null)}
+        onRefresh={() => {
+          fetchClientProfile();
+          if (onRefresh) onRefresh();
+        }}
+      />
     </div>
   );
 };

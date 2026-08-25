@@ -1,9 +1,8 @@
 import React, { useState, useRef } from 'react';
 import { X, CreditCard, Plus, Loader2, Printer, CheckCircle } from 'lucide-react';
-import { toast } from 'sonner';
-import { apiClient } from '../../../lib/api-client';
-import { formatToDdMmYyyy } from '../../../lib/utils';
-import agencyInfo from '../../../lib/information.json';
+import { apiClient } from '@/lib/api-client';
+import { formatToDdMmYyyy } from '@/lib/utils';
+import agencyInfo from '@/lib/information.json';
 
 // A4 Printable Wrapper specific to the admin flow
 const PrintablePaper = ({ children, id = 'printable-document-canvas' }) => (

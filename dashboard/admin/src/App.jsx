@@ -10,6 +10,7 @@ import DialogPage from '@/pages/DialogPage'
 import { LoginPage } from '@/pages/LoginPage'
 import VisaWorkflowsPage from '@/pages/VisaWorkflowsPage'
 import CaseWorkflow from '@/pages/CaseWorkflow'
+import CaseDetailPage from '@/pages/CaseDetailPage'
 import ActivityLogsPage from '@/pages/ActivityLogsPage'
 import TrashPage from '@/pages/system/TrashPage'
 import StorageSyncPage from '@/pages/system/StorageSyncPage'
@@ -52,7 +53,9 @@ export default function App() {
               <Route path="profile-dropdown" element={<DropdownProfilePage />} />
               <Route path="dialog" element={<DialogPage />} />
               <Route path="visa-workflows" element={<VisaWorkflowsPage />} />
+              <Route path="visa-workflows/:id" element={<CaseDetailPage />} />
               <Route path="cases" element={<CaseWorkflow />} />
+              <Route path="cases/:id" element={<CaseDetailPage />} />
               <Route path="clients" element={<ClientsPage />} />
               <Route path="agency/clients" element={<ClientsPage />} />
               <Route path="users" element={<UsersPage />} />

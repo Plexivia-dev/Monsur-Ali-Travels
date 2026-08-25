@@ -23,7 +23,6 @@ const ROLE_BADGE_COLORS = {
   Admin: 'bg-blue-100 text-blue-800 border-blue-300',
   Manager: 'bg-amber-100 text-amber-800 border-amber-300',
   Staff: 'bg-emerald-100 text-emerald-800 border-emerald-300',
-  System: 'bg-gray-100 text-gray-700 border-gray-300',
 };
 
 const ACTION_COLORS = {
@@ -35,13 +34,31 @@ const ACTION_COLORS = {
   STATUS_TRANSITION: 'bg-indigo-500/15 text-indigo-700 border-indigo-300',
 };
 
+const TARGET_LABELS = {
+  clients: 'Client (কাস্টমার)',
+  customers: 'Client (কাস্টমার)',
+  caseFiles: 'Case File (ফাইল)',
+  tasks: 'Task (টাস্ক)',
+  moneyReceipts: 'Money Receipt (রিসিপ্ট)',
+  cashVouchers: 'Cash Voucher (ভাউচার)',
+  invoices: 'Invoice (ইনভয়েস)',
+  salarySlips: 'Salary / Payroll',
+  candidates: 'Candidate (ক্যান্ডিডেট)',
+  passports: 'Passport Record',
+  indianVisas: 'Indian Visa',
+  agreements: 'Agreement Document',
+  users: 'User Profile',
+  general: 'Record',
+};
+
 const TYPE_FILTERS = [
-  { label: 'All Activities', type: 'all', role: 'all' },
+  { label: 'All User Activities', type: 'all', role: 'all' },
   { label: '👥 Staff Actions Only', type: 'all', role: 'Staff' },
-  { label: '🔄 Status Changes', type: 'STATUS_CHANGE', role: 'all' },
+  { label: '👑 Admin & Owner Actions', type: 'all', role: 'Admin' },
+  { label: '🔄 Status Transitions', type: 'STATUS_CHANGE', role: 'all' },
   { label: '💰 Payments & Billing', type: 'PAYMENT', role: 'all' },
-  { label: '📝 Data Entry', type: 'DATA_ENTRY', role: 'all' },
-  { label: '🔐 Auth & System', type: 'AUTH', role: 'all' },
+  { label: '📝 Data Entry & Forms', type: 'DATA_ENTRY', role: 'all' },
+  { label: '🔐 User Logins', type: 'AUTH', role: 'all' },
 ];
 
 export default function ActivityLogsPage() {
@@ -68,14 +85,20 @@ export default function ActivityLogsPage() {
 
       const res = await apiClient.get(`/api/v1/admin/system/logs?${params.toString()}`);
       if (res.data?.status === 'success') {
-        setLogs(res.data.data || []);
+        const rawLogs = res.data.data || [];
+        const humanOnly = rawLogs.filter((l) => {
+          const name = (l.actionDetails?.name || '').toLowerCase();
+          const role = (l.actionDetails?.role || '').toLowerCase();
+          return !name.includes('system') && !role.includes('system') && name.trim() !== '';
+        });
+        setLogs(humanOnly);
         setPagination({
           totalPages: res.data.pagination?.totalPages || 1,
-          totalCount: res.data.pagination?.totalCount || 0,
+          totalCount: humanOnly.length || res.data.pagination?.totalCount || 0,
         });
       }
     } catch (err) {
-      toast.error('Failed to load system activity logs.');
+      toast.error('Failed to load user activity logs.');
       setLogs([]);
     } finally {
       setLoading(false);
@@ -109,14 +132,59 @@ export default function ActivityLogsPage() {
     });
   };
 
+  const formatActionDescription = (action, target) => {
+    const act = (action || '').toUpperCase();
+    const targetLabel = TARGET_LABELS[target] || target;
+
+    if (act === 'CREATE') {
+      return (
+        <span>
+          Created new <span className="font-semibold text-foreground">{targetLabel}</span>
+        </span>
+      );
+    }
+    if (act === 'UPDATE') {
+      return (
+        <span>
+          Updated <span className="font-semibold text-foreground">{targetLabel}</span>
+        </span>
+      );
+    }
+    if (act === 'SOFT_DELETE' || act === 'DELETE') {
+      return (
+        <span>
+          Deleted <span className="font-semibold text-rose-600">{targetLabel}</span>
+        </span>
+      );
+    }
+    if (act === 'AUTH_LOGIN') {
+      return <span className="text-sky-700 font-medium">Logged into the portal</span>;
+    }
+    if (act === 'AUTH_LOGOUT') {
+      return <span className="text-slate-600 font-medium">Logged out of the portal</span>;
+    }
+    if (act === 'STATUS_TRANSITION') {
+      return (
+        <span>
+          Updated status of <span className="font-semibold text-foreground">{targetLabel}</span>
+        </span>
+      );
+    }
+    return (
+      <span>
+        Performed {action} on <span className="font-semibold text-foreground">{targetLabel}</span>
+      </span>
+    );
+  };
+
   return (
     <div className="space-y-6">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight text-foreground">System Activity Logs</h1>
+          <h1 className="text-3xl font-bold tracking-tight text-foreground">User Activity Logs</h1>
           <p className="text-muted-foreground text-sm mt-1">
-            Enterprise audit trail capturing real-time actions, role activities, and status transitions across the ERP.
+            Real-time audit trail tracking actions, updates, and status changes performed by staff and administrators.
           </p>
         </div>
         <button
@@ -151,7 +219,7 @@ export default function ActivityLogsPage() {
           <Search className="w-4 h-4 absolute left-3.5 top-3 text-muted-foreground" />
           <input
             type="text"
-            placeholder="Search by user, action, target collection..."
+            placeholder="Search by user name, action, or module..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             className="w-full pl-10 pr-4 py-2 text-xs bg-white border border-gray-200 rounded-xl text-foreground focus:outline-none focus:border-primary shadow-xs"
@@ -163,13 +231,13 @@ export default function ActivityLogsPage() {
       {loading ? (
         <div className="py-20 flex flex-col items-center justify-center space-y-2">
           <Loader2 className="w-8 h-8 text-primary animate-spin" />
-          <p className="text-xs text-muted-foreground font-medium">Loading activity logs...</p>
+          <p className="text-xs text-muted-foreground font-medium">Loading user activity logs...</p>
         </div>
       ) : logs.length === 0 ? (
         <Card className="bg-white border border-gray-200 shadow-md p-10 text-center">
           <Database className="w-10 h-10 text-muted-foreground mx-auto mb-2 opacity-50" />
-          <h3 className="text-sm font-semibold text-foreground">No activity logs found</h3>
-          <p className="text-xs text-muted-foreground mt-1">Try adjusting your filters or search query.</p>
+          <h3 className="text-sm font-semibold text-foreground">No user activities recorded yet</h3>
+          <p className="text-xs text-muted-foreground mt-1">Actions taken by staff and admin users will appear here.</p>
         </Card>
       ) : (
         <Card className="bg-white border border-gray-200 shadow-md overflow-hidden">
@@ -185,10 +253,10 @@ export default function ActivityLogsPage() {
               </thead>
               <tbody className="divide-y divide-gray-100">
                 {logs.map((log, index) => {
-                  const role = log.actionDetails?.role || 'System';
-                  const userName = log.actionDetails?.name || 'System Process';
-                  const action = (log.action || 'Performed an action').toLowerCase();
-                  const target = log.targetCollection || 'system data';
+                  const role = log.actionDetails?.role || 'Staff';
+                  const userName = log.actionDetails?.name || 'User';
+                  const action = log.action || 'Performed action';
+                  const target = log.targetCollection || 'general';
                   const serialNo = (page - 1) * 20 + index + 1;
 
                   return (
@@ -201,12 +269,11 @@ export default function ActivityLogsPage() {
                         </div>
                       </td>
                       <td className="px-6 py-4">
-                        <span className="text-foreground">
-                          {action === 'create' ? 'Created a new record in' : 
-                           action === 'update' ? 'Updated a record in' : 
-                           action === 'soft_delete' ? 'Deleted a record from' : 
-                           `Performed ${action} on`} <span className="font-semibold">{target}</span>
-                        </span>
+                        {log.summary ? (
+                          <span className="text-foreground">{log.summary}</span>
+                        ) : (
+                          formatActionDescription(action, target)
+                        )}
                       </td>
                       <td className="px-6 py-4 text-right text-muted-foreground text-xs whitespace-nowrap">
                         <div className="flex items-center justify-end gap-1.5">
