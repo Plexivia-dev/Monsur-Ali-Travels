@@ -2,7 +2,6 @@ import React, { useState, useMemo } from 'react';
 import {
   UnifiedDataTable,
   DataTableColumnHeader,
-  DataTableFacetedFilter,
 } from '@/components/ui/unified-table';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -11,18 +10,11 @@ import {
   Plane,
   CheckCircle2,
   Clock,
-  AlertCircle,
   XCircle,
   Eye,
-  FileText,
-  DollarSign,
-  Download,
-  Trash2,
   RefreshCw,
   Sparkles,
-  Users,
   ShieldCheck,
-  Building,
 } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -158,62 +150,62 @@ const SAMPLE_PILGRIMS_DATA = [
   },
 ];
 
+// Status badge helper
+function renderStatusBadge(status) {
+  switch (status) {
+    case 'Issued':
+      return (
+        <Badge className="bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 border-emerald-500/30 gap-1">
+          <CheckCircle2 className="size-3" /> Issued
+        </Badge>
+      );
+    case 'Processing':
+      return (
+        <Badge className="bg-blue-500/15 text-blue-700 dark:text-blue-300 border-blue-500/30 gap-1">
+          <Clock className="size-3" /> Processing
+        </Badge>
+      );
+    case 'Submitted':
+      return (
+        <Badge className="bg-amber-500/15 text-amber-700 dark:text-amber-300 border-amber-500/30 gap-1">
+          <Clock className="size-3" /> Submitted
+        </Badge>
+      );
+    case 'In Review':
+      return (
+        <Badge className="bg-purple-500/15 text-purple-700 dark:text-purple-300 border-purple-500/30 gap-1">
+          <Clock className="size-3" /> In Review
+        </Badge>
+      );
+    case 'Rejected':
+      return (
+        <Badge variant="destructive" className="gap-1">
+          <XCircle className="size-3" /> Rejected
+        </Badge>
+      );
+    default:
+      return <Badge variant="outline">{status}</Badge>;
+  }
+}
+
+// Payment badge helper
+function renderPaymentBadge(status) {
+  switch (status) {
+    case 'Paid':
+      return <Badge className="bg-emerald-600 text-white">Full Paid</Badge>;
+    case 'Partial':
+      return <Badge variant="secondary" className="bg-amber-500/20 text-amber-600 dark:text-amber-400">Partial</Badge>;
+    case 'Unpaid':
+      return <Badge variant="destructive">Unpaid</Badge>;
+    default:
+      return <Badge variant="outline">{status}</Badge>;
+  }
+}
+
 export default function UnifiedTableShowcasePage() {
-  const [data, setData] = useState(SAMPLE_PILGRIMS_DATA);
+  const [data] = useState(SAMPLE_PILGRIMS_DATA);
   const [simulateLoading, setSimulateLoading] = useState(false);
   const [simulateEmpty, setSimulateEmpty] = useState(false);
-
-  // Status badge helper
-  const renderStatusBadge = (status) => {
-    switch (status) {
-      case 'Issued':
-        return (
-          <Badge className="bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 border-emerald-500/30 gap-1">
-            <CheckCircle2 className="size-3" /> Issued
-          </Badge>
-        );
-      case 'Processing':
-        return (
-          <Badge className="bg-blue-500/15 text-blue-700 dark:text-blue-300 border-blue-500/30 gap-1">
-            <Clock className="size-3" /> Processing
-          </Badge>
-        );
-      case 'Submitted':
-        return (
-          <Badge className="bg-amber-500/15 text-amber-700 dark:text-amber-300 border-amber-500/30 gap-1">
-            <Clock className="size-3" /> Submitted
-          </Badge>
-        );
-      case 'In Review':
-        return (
-          <Badge className="bg-purple-500/15 text-purple-700 dark:text-purple-300 border-purple-500/30 gap-1">
-            <Clock className="size-3" /> In Review
-          </Badge>
-        );
-      case 'Rejected':
-        return (
-          <Badge variant="destructive" className="gap-1">
-            <XCircle className="size-3" /> Rejected
-          </Badge>
-        );
-      default:
-        return <Badge variant="outline">{status}</Badge>;
-    }
-  };
-
-  // Payment badge helper
-  const renderPaymentBadge = (status) => {
-    switch (status) {
-      case 'Paid':
-        return <Badge className="bg-emerald-600 text-white">Full Paid</Badge>;
-      case 'Partial':
-        return <Badge variant="secondary" className="bg-amber-500/20 text-amber-600 dark:text-amber-400">Partial</Badge>;
-      case 'Unpaid':
-        return <Badge variant="destructive">Unpaid</Badge>;
-      default:
-        return <Badge variant="outline">{status}</Badge>;
-    }
-  };
 
   // TanStack Column Definitions
   const columns = useMemo(
@@ -512,11 +504,7 @@ export default function UnifiedTableShowcasePage() {
             pageSize={5}
             pageSizeOptions={[5, 10, 20, 50]}
             enableSorting={true}
-            enableFiltering={true}
             enableRowSelection={true}
-            onRowSelectionChange={(selected) => {
-              // Row selection handler
-            }}
             enableExpanding={true}
             renderSubComponent={renderSubComponent}
             enableToolbar={true}

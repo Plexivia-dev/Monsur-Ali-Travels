@@ -10,63 +10,67 @@ import {
   getSortedRowModel,
   getExpandedRowModel,
 } from '@tanstack/react-table/legacy';
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Inbox, ChevronRight, ChevronDown } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { DataTableToolbar } from './data-table-toolbar';
 import { DataTablePagination } from './data-table-pagination';
 
+// Helper component for expander button cell
+function ExpanderCell({ row }) {
+  if (!row.getCanExpand()) return null;
+  return (
+    <button
+      onClick={(e) => {
+        e.stopPropagation();
+        row.toggleExpanded();
+      }}
+      className="p-1 rounded-md hover:bg-muted text-muted-foreground hover:text-foreground cursor-pointer transition-transform"
+    >
+      {row.getIsExpanded() ? (
+        <ChevronDown className="size-4" />
+      ) : (
+        <ChevronRight className="size-4" />
+      )}
+    </button>
+  );
+}
+
+// Helper component for select all checkbox header
+function SelectAllHeader({ table }) {
+  return (
+    <input
+      type="checkbox"
+      className="rounded border-border/80 text-primary focus:ring-primary h-4 w-4 cursor-pointer align-middle"
+      checked={table.getIsAllPageRowsSelected()}
+      ref={(input) => {
+        if (input) {
+          input.indeterminate = table.getIsSomePageRowsSelected();
+        }
+      }}
+      onChange={table.getToggleAllPageRowsSelectedHandler()}
+      aria-label="Select all"
+    />
+  );
+}
+
+// Helper component for single row checkbox cell
+function SelectRowCell({ row }) {
+  return (
+    <input
+      type="checkbox"
+      className="rounded border-border/80 text-primary focus:ring-primary h-4 w-4 cursor-pointer align-middle"
+      checked={row.getIsSelected()}
+      disabled={!row.getCanSelect()}
+      onChange={row.getToggleSelectedHandler()}
+      onClick={(e) => e.stopPropagation()}
+      aria-label="Select row"
+    />
+  );
+}
+
 /**
  * Unified enterprise-grade DataTable powered by TanStack Table
- *
- * @param {Object} props
- * @param {Array} props.columns - TanStack column definitions
- * @param {Array} props.data - Array of table data
- * @param {boolean} [props.isLoading=false] - Show skeleton loading state
- * @param {number} [props.loadingRowCount=5] - Number of skeleton rows to render
- * @param {boolean} [props.enablePagination=true] - Enable pagination
- * @param {number} [props.pageSize=10] - Initial page size
- * @param {Array<number>} [props.pageSizeOptions=[10, 20, 30, 50, 100]] - Page size options
- * @param {boolean} [props.enableSorting=true] - Enable column sorting
- * @param {Array} [props.initialSorting=[]] - Initial sorting state
- * @param {boolean} [props.enableFiltering=true] - Enable filtering
- * @param {boolean} [props.enableRowSelection=false] - Enable row selection checkboxes
- * @param {Function} [props.onRowSelectionChange] - Callback when row selection changes (selectedRows, tableInstance)
- * @param {boolean} [props.enableColumnPinning=false] - Enable sticky column pinning
- * @param {boolean} [props.enableExpanding=false] - Enable row expanding
- * @param {Function} [props.renderSubComponent] - Render function for expanded sub-row: ({ row }) => ReactNode
- * @param {boolean} [props.enableToolbar=true] - Show top search & export toolbar
- * @param {string} [props.searchPlaceholder='Search records...'] - Search input placeholder
- * @param {string} [props.searchKey] - Key to filter on (if not global filter)
- * @param {Array} [props.facetedFilters=[]] - Faceted filter configurations
- * @param {Array} [props.bulkActions=[]] - Bulk action button configs
- * @param {React.ReactNode} [props.customToolbarActions] - Custom action buttons in toolbar
- * @param {boolean} [props.enableExport=true] - Enable CSV/JSON export
- * @param {string} [props.exportFilename='table-records'] - Filename for export
- * @param {string} [props.emptyTitle='No records found'] - Empty state title
- * @param {string} [props.emptyDescription] - Empty state description
- * @param {React.ReactNode} [props.emptyAction] - Action button/link in empty state
- * @param {Function} [props.onRowClick] - Click handler for rows: (row, event) => void
- * @param {string} [props.className] - Container CSS classes
- * @param {string} [props.tableClassName] - Table element CSS classes
- * @param {'compact'|'normal'|'relaxed'} [props.initialDensity='normal'] - Initial row density
- *
- * Server-side / Controlled options:
- * @param {boolean} [props.manualPagination=false] - Server-side pagination
- * @param {number} [props.pageCount] - Total page count for server pagination
- * @param {number} [props.totalCount] - Total row count for server pagination
- * @param {Object} [props.paginationState] - Controlled pagination state { pageIndex, pageSize }
- * @param {Function} [props.onPaginationChange] - Controlled pagination change handler
- * @param {Array} [props.sortingState] - Controlled sorting state
- * @param {Function} [props.onSortingChange] - Controlled sorting change handler
  */
 export function UnifiedDataTable({
   columns = [],
@@ -78,10 +82,8 @@ export function UnifiedDataTable({
   pageSizeOptions = [10, 20, 30, 50, 100],
   enableSorting = true,
   initialSorting = [],
-  enableFiltering = true,
   enableRowSelection = false,
   onRowSelectionChange,
-  enableColumnPinning = false,
   enableExpanding = false,
   renderSubComponent,
   enableToolbar = true,
@@ -103,12 +105,10 @@ export function UnifiedDataTable({
   // Server-side / Controlled Props
   manualPagination = false,
   pageCount,
-  totalCount,
   paginationState: controlledPagination,
   onPaginationChange: setControlledPagination,
   sortingState: controlledSorting,
   onSortingChange: setControlledSorting,
-  ...restProps
 }) {
   // Local states
   const [rowSelection, setRowSelection] = useState({});
@@ -140,24 +140,7 @@ export function UnifiedDataTable({
         size: 40,
         enableSorting: false,
         enableHiding: false,
-        cell: ({ row }) => {
-          if (!row.getCanExpand()) return null;
-          return (
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                row.toggleExpanded();
-              }}
-              className="p-1 rounded-md hover:bg-muted text-muted-foreground hover:text-foreground cursor-pointer transition-transform"
-            >
-              {row.getIsExpanded() ? (
-                <ChevronDown className="size-4" />
-              ) : (
-                <ChevronRight className="size-4" />
-              )}
-            </button>
-          );
-        },
+        cell: ExpanderCell,
       });
     }
 
@@ -165,31 +148,8 @@ export function UnifiedDataTable({
     if (enableRowSelection) {
       cols.push({
         id: 'select',
-        header: ({ table }) => (
-          <input
-            type="checkbox"
-            className="rounded border-border/80 text-primary focus:ring-primary h-4 w-4 cursor-pointer align-middle"
-            checked={table.getIsAllPageRowsSelected()}
-            ref={(input) => {
-              if (input) {
-                input.indeterminate = table.getIsSomePageRowsSelected();
-              }
-            }}
-            onChange={table.getToggleAllPageRowsSelectedHandler()}
-            aria-label="Select all"
-          />
-        ),
-        cell: ({ row }) => (
-          <input
-            type="checkbox"
-            className="rounded border-border/80 text-primary focus:ring-primary h-4 w-4 cursor-pointer align-middle"
-            checked={row.getIsSelected()}
-            disabled={!row.getCanSelect()}
-            onChange={row.getToggleSelectedHandler()}
-            onClick={(e) => e.stopPropagation()}
-            aria-label="Select row"
-          />
-        ),
+        header: SelectAllHeader,
+        cell: SelectRowCell,
         size: 40,
         enableSorting: false,
         enableHiding: false,
@@ -246,7 +206,7 @@ export function UnifiedDataTable({
     pageCount: pageCount,
 
     // Custom row selection identity
-    getRowId: (row, idx) => (row?.id || row?._id || row?.did || String(idx)),
+    getRowId: (row, idx) => (row?.id || row?.['_id'] || row?.did || String(idx)),
   });
 
   // Cell padding based on density state
