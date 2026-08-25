@@ -35,6 +35,9 @@ const userSchema = new Schema(
     },
     department: { type: String, trim: true, default: "" },
     designation: { type: String, trim: true, default: "" },
+    avatar: { type: String, trim: true, default: "" },
+    bio: { type: String, trim: true, default: "" },
+    address: { type: String, trim: true, default: "" },
     assets: {
       type: [String],
       default: [],

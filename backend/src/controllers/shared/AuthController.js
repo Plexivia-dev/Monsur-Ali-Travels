@@ -93,6 +93,7 @@ export const login = async (req, res, next) => {
           did: user.did,
           name: user.name,
           email: user.email,
+          avatar: user.avatar || "",
           role: user.role,
           subRole: user.subRole || "",
           department: user.department || "",
@@ -349,7 +350,7 @@ export const getProfile = async (req, res, next) => {
 // PUT /auth/profile - Update current logged in user profile
 export const updateProfile = async (req, res, next) => {
   try {
-    const { name, username, phone, address, avatar } = req.body ?? {};
+    const { name, username, phone, address, avatar, designation, department, bio } = req.body ?? {};
     
     const user = await UserModel.findOne({ did: req.user.did });
     if (!user) {
@@ -361,6 +362,9 @@ export const updateProfile = async (req, res, next) => {
     if (phone !== undefined) user.phone = phone;
     if (address !== undefined) user.address = address;
     if (avatar !== undefined) user.avatar = avatar;
+    if (designation !== undefined) user.designation = designation;
+    if (department !== undefined) user.department = department;
+    if (bio !== undefined) user.bio = bio;
     
     await user.save();
     
@@ -384,7 +388,7 @@ export const changePassword = async (req, res, next) => {
       return res.status(400).json({ status: "error", message: "New password must be at least 6 characters" });
     }
 
-    const user = await UserModel.findById(req.user.did).select("+passwordHash");
+    const user = await UserModel.findOne({ did: req.user.did }).select("+passwordHash");
     if (!user || !user.passwordHash) {
       return res.status(404).json({ status: "error", message: "User not found" });
     }

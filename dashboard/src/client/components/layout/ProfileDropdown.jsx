@@ -81,14 +81,14 @@ export const ProfileDropdown = () => {
         <DropdownMenuGroup>
           <DropdownMenuItem
             className="flex items-center gap-2 cursor-pointer text-xs py-2"
-            onClick={() => switchPortal('admin', 'profile')}
+            onClick={() => switchPortal('settings', 'profile')}
           >
             <User className="w-4 h-4 text-muted-foreground" />
             <span>{t('header.myProfile', 'My Account & Profile')}</span>
           </DropdownMenuItem>
           <DropdownMenuItem
             className="flex items-center gap-2 cursor-pointer text-xs py-2"
-            onClick={() => switchPortal('admin', 'settings')}
+            onClick={() => switchPortal('settings', 'security')}
           >
             <Settings className="w-4 h-4 text-muted-foreground" />
             <span>{t('header.systemSettings', 'System Settings')}</span>

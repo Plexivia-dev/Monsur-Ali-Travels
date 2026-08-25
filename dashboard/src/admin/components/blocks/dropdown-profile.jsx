@@ -60,11 +60,11 @@ export function ProfileDropdown({ defaultOpen, align, trigger }) {
         <DropdownMenuSeparator />
 
         <DropdownMenuGroup>
-          <DropdownMenuItem onClick={() => navigate('/admin/profile-dropdown')}>
+          <DropdownMenuItem onClick={() => navigate('/admin/settings')}>
             <UserIcon className="size-4" />
             <span>My Account</span>
           </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => navigate('/admin/dropdown')}>
+          <DropdownMenuItem onClick={() => navigate('/admin/settings')}>
             <SettingsIcon className="size-4" />
             <span>Settings</span>
           </DropdownMenuItem>

@@ -1,8 +1,6 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { UserProfileSettingsPage } from '@shared/features/profile';
 
-export function SettingsPage() {
+export default function Settings() {
   return <UserProfileSettingsPage />;
 }
-
-export default SettingsPage;
