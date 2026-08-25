@@ -29,9 +29,9 @@ COPY --chown=nodejs:nodejs --from=builder /app/node_modules ./node_modules
 COPY --chown=nodejs:nodejs --from=builder /app/src ./src
 COPY --chown=nodejs:nodejs --from=builder /app/scripts ./scripts
 
-# Create public, uploads, and documents directories for compatibility
-RUN mkdir -p /app/public /app/uploads /app/src/uploads /app/documents /app/src/documents && \
-    chown -R nodejs:nodejs /app/public /app/uploads /app/src/uploads /app/documents /app/src/documents
+# Create public, uploads, documents, and storage directories with correct ownership
+RUN mkdir -p /app/public /app/uploads /app/src/uploads /app/documents /app/src/documents /app/storage/exports/reports && \
+    chown -R nodejs:nodejs /app/public /app/uploads /app/src/uploads /app/documents /app/src/documents /app/storage
 
 USER nodejs
 

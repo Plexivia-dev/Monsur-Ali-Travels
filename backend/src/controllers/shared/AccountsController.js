@@ -1,4 +1,5 @@
 import fs from "node:fs";
+import os from "node:os";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { MoneyReceiptModel } from "../../models/moneyReceipt.model.js";
@@ -11,9 +12,20 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 // VPS Storage Directory for Archived CSV Exports
-const EXPORT_DIR = path.resolve(__dirname, "../../../storage/exports/reports");
-if (!fs.existsSync(EXPORT_DIR)) {
-  fs.mkdirSync(EXPORT_DIR, { recursive: true });
+function getExportDir() {
+  const preferredDir = path.resolve(__dirname, "../../../storage/exports/reports");
+  try {
+    if (!fs.existsSync(preferredDir)) {
+      fs.mkdirSync(preferredDir, { recursive: true });
+    }
+    return preferredDir;
+  } catch (_err) {
+    const fallbackDir = path.join(os.tmpdir(), "exports/reports");
+    if (!fs.existsSync(fallbackDir)) {
+      fs.mkdirSync(fallbackDir, { recursive: true });
+    }
+    return fallbackDir;
+  }
 }
 
 // ── Helper: Date Range Filter Builder ──────────────────────────────────────────
@@ -740,7 +752,8 @@ export const exportReportCsv = async (req, res, next) => {
     const dateStr = now.toISOString().slice(0, 10);
     const timestamp = Date.now();
     const fileName = `report-${type}-${period || "custom"}-${dateStr}-${timestamp}.csv`;
-    const filePath = path.join(EXPORT_DIR, fileName);
+    const exportDir = getExportDir();
+    const filePath = path.join(exportDir, fileName);
 
     let csvContent = "";
     let recordCount = 0;
@@ -1016,16 +1029,17 @@ export const exportReportCsv = async (req, res, next) => {
 // ── 5. GET /api/v1/accounts/reports/downloads ────────────────────────────────
 export const getExportDownloads = async (_req, res, next) => {
   try {
-    if (!fs.existsSync(EXPORT_DIR)) {
+    const exportDir = getExportDir();
+    if (!fs.existsSync(exportDir)) {
       return res.json({ status: "success", data: [] });
     }
 
-    const files = fs.readdirSync(EXPORT_DIR);
+    const files = fs.readdirSync(exportDir);
     const downloadList = [];
 
     for (const f of files) {
       if (f.endsWith(".csv")) {
-        const fullPath = path.join(EXPORT_DIR, f);
+        const fullPath = path.join(exportDir, f);
         const stat = fs.statSync(fullPath);
         downloadList.push({
           fileName: f,
@@ -1050,7 +1064,8 @@ export const downloadReportFile = async (req, res, next) => {
   try {
     const { fileName } = req.params;
     const sanitized = path.basename(fileName);
-    const fullPath = path.join(EXPORT_DIR, sanitized);
+    const exportDir = getExportDir();
+    const fullPath = path.join(exportDir, sanitized);
 
     if (!fs.existsSync(fullPath)) {
       return res.status(404).json({ status: "error", message: "Report file not found on VPS storage" });
