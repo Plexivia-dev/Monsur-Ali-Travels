@@ -109,5 +109,4 @@ const clientCaseFileSchema = new Schema(
 export const ClientCaseFileModel =
   models.ClientCaseFile || model("ClientCaseFile", clientCaseFileSchema);
 
-export const ClientCaseFileModel = ClientCaseFileModel;
 export default ClientCaseFileModel;

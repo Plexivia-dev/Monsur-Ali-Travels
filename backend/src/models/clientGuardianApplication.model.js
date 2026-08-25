@@ -195,5 +195,4 @@ export const ClientGuardianModel =
   mongoose.models.ClientGuardian ||
   mongoose.model("ClientGuardian", clientGuardianSchema);
 
-export const ClientGuardianModel = ClientGuardianModel;
 export default ClientGuardianModel;
