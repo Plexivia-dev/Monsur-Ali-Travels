@@ -1,7 +1,7 @@
 {
   "name": "Client-Dashboard",
   "private": true,
-  "version": "1.1.4",
+  "version": "1.2.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -10,10 +10,8 @@
     "clean": "rm -rf dist"
   },
   "dependencies": {
-    "@base-ui/react": "^1.6.0",
-    "@tailwindcss/vite": "^4.1.14",
+    "@base-ui/react": "^1.7.0",
     "@tanstack/react-query": "^5.101.4",
-    "@vitejs/plugin-react": "^5.0.4",
     "axios": "^1.19.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
@@ -24,20 +22,22 @@
     "lucide-react": "^1.33.0",
     "motion": "^13.1.0",
     "qrcode": "^1.5.4",
-    "react": "^19.0.1",
-    "react-dom": "^19.0.1",
+    "react": "^19.2.8",
+    "react-dom": "^19.2.8",
     "react-i18next": "^17.0.11",
-    "react-router-dom": "^7.2.0",
+    "react-router-dom": "^7.18.2",
     "recharts": "^3.10.1",
-    "sonner": "^2.0.1",
+    "sonner": "^2.0.8",
     "tailwind-merge": "^3.6.0",
-    "vite": "^6.2.3",
-    "zustand": "^5.0.3"
+    "tw-animate-css": "^1.4.0",
+    "zustand": "^5.0.15"
   },
   "devDependencies": {
+    "@tailwindcss/vite": "^4.3.3",
+    "@vitejs/plugin-react": "^6.1.0",
     "autoprefixer": "^10.4.21",
     "esbuild": "^0.25.0",
-    "tailwindcss": "^4.1.14",
-    "vite": "^6.2.3"
+    "tailwindcss": "^4.3.3",
+    "vite": "^8.2.2"
   }
 }

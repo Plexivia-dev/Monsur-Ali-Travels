@@ -23,6 +23,7 @@ import { usePortal } from '../../context/PortalContext';
 import { MoneyReceiptModal } from '../docs/receipt/MoneyReceiptModal';
 import { ConfirmDeleteDialog } from '@/components/ui/confirm-delete-dialog';
 import { useTranslation } from 'react-i18next';
+import { CaseWorkspaceDrawer } from '../agency/CaseWorkspaceDrawer';
 
 export function CustomerDataTable() {
   const { t } = useTranslation();
@@ -40,6 +41,7 @@ export function CustomerDataTable() {
   const [typeFilter, setTypeFilter] = useState('all');
   const [isLoading, setIsLoading] = useState(false);
   const [profileItem, setProfileItem] = useState(null);
+  const [selectedCaseIdForWorkspace, setSelectedCaseIdForWorkspace] = useState(null);
   const [receiptModalData, setReceiptModalData] = useState(null);
   const [isCreateClientOpen, setIsCreateClientOpen] = useState(false);
   const [newClientForm, setNewClientForm] = useState({
@@ -473,7 +475,19 @@ export function CustomerDataTable() {
               </div>
 
               {/* Actions inside Profile View */}
-              <div className="pt-2 flex justify-end">
+              <div className="pt-2 flex flex-wrap items-center justify-end gap-2">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setSelectedCaseIdForWorkspace(profileItem.did || profileItem._id);
+                    setProfileItem(null);
+                  }}
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-sky-600 hover:bg-sky-700 text-white text-xs font-bold shadow-2xs transition-colors cursor-pointer"
+                >
+                  <FileText className="w-3.5 h-3.5" />
+                  <span>ক্লায়েন্ট কেস ফাইলস ও ডজিয়ার দেখুন</span>
+                </button>
+
                 <button
                   type="button"
                   onClick={() => {
@@ -495,6 +509,14 @@ export function CustomerDataTable() {
           </div>
         </div>
       )}
+
+      {/* Case Workspace Drawer */}
+      <CaseWorkspaceDrawer
+        caseId={selectedCaseIdForWorkspace}
+        isOpen={Boolean(selectedCaseIdForWorkspace)}
+        onClose={() => setSelectedCaseIdForWorkspace(null)}
+        onRefresh={() => fetchData(pagination.page)}
+      />
 
       {/* Money Receipt Modal */}
       <MoneyReceiptModal

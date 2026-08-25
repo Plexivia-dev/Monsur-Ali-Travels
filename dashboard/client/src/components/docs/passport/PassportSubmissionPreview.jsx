@@ -28,12 +28,12 @@ export function PassportSubmissionPreview({ data, onPrint }) {
   } = data;
 
   const checklistItems = [
-    { id: 'nidCopy', label: 'জাতীয় পরিচয়পত্র (NID) কপি / অনলাইন কপি' },
-    { id: 'birthCertOnline', label: '১৭ ডিজিটের অনলাইন জন্ম সনদ (Birth Cert)' },
-    { id: 'oldPassportOriginal', label: 'মূল পুরাতন পাসপোর্ট (Original Old Passport)' },
-    { id: 'photoLabPrint', label: 'পাসপোর্ট সাইজ ল্যাব ছবি (Photo 2x2)' },
-    { id: 'guardianNidCopy', label: 'অভিভাবকের NID ফটোকপি (Guardian NID)' },
-    { id: 'utilityBillCopy', label: 'ইউটিলিটি বিলের কপি (Utility Bill Copy)' },
+    { id: 'nidCopy', label: 'জাতীয় পরিচয়পত্র কপি / অনলাইন কপি' },
+    { id: 'birthCertOnline', label: '১৭ ডিজিটের অনলাইন জন্ম সনদ' },
+    { id: 'oldPassportOriginal', label: 'মূল পুরাতন পাসপোর্ট' },
+    { id: 'photoLabPrint', label: 'পাসপোর্ট সাইজ ল্যাব ছবি' },
+    { id: 'guardianNidCopy', label: 'অভিভাবকের এনআইডি ফটোকপি' },
+    { id: 'utilityBillCopy', label: 'ইউটিলিটি বিলের কপি' },
   ];
 
   return (
@@ -50,20 +50,20 @@ export function PassportSubmissionPreview({ data, onPrint }) {
                 </div>
                 <div>
                   <h1 className="text-xl font-black uppercase tracking-tight text-slate-900">
-                    {agencyInfo.name || 'MONSUR ALI TRAVELS'}
+                    {agencyInfo.name || 'মনসুর আলী ট্রাভেলস'}
                   </h1>
                   <p className="text-[11px] font-semibold text-slate-700">
-                    {agencyInfo.tagline || 'Your Trusted Travel Partner'}
+                    {agencyInfo.tagline || 'আপনার বিশ্বস্ত ট্রাভেল পার্টনার'}
                   </p>
                   <p className="text-[10px] text-slate-600 font-mono mt-0.5">
-                    Office: {agencyInfo.address || 'Mominpur Jagannathpur Road, Sunamganj, Post Code 3060'} | Cell: {agencyInfo.phone || '+8801345579534'}
+                    অফিস: {agencyInfo.address || 'মমিনপুর জগন্নাথপুর রোড, সুনামগঞ্জ, পোস্ট কোড ৩০৬০'} | হেল্পলাইন: {agencyInfo.phone || '+8801345579534'}
                   </p>
                 </div>
               </div>
               
               <div className="text-right font-mono text-xs space-y-0.5">
-                <div className="font-bold text-slate-900">Ref #: <span className="text-emerald-700">{trackingNo || 'PASS-0000'}</span></div>
-                <div className="text-slate-600 text-[11px]">Date: {formatToDdMmYyyy(submissionDate) || 'N/A'}</div>
+                <div className="font-bold text-slate-900">ট্র্যাকিং নং: <span className="text-emerald-700">{trackingNo || 'PASS-0000'}</span></div>
+                <div className="text-slate-600 text-[11px]">তারিখ: {formatToDdMmYyyy(submissionDate) || '—'}</div>
               </div>
             </div>
 
@@ -71,11 +71,8 @@ export function PassportSubmissionPreview({ data, onPrint }) {
             <div className="bg-slate-900 text-white py-2 px-4 rounded-md text-center shadow-sm">
               <h2 className="text-base font-extrabold tracking-wider uppercase flex items-center justify-center gap-2">
                 <ShieldCheck className="w-5 h-5 text-emerald-400" />
-                PASSPORT SUBMISSION & APPLICATION ACKNOWLEDGEMENT
+                পাসপোর্ট জমা ও আবেদন নিশ্চিতকরণ রসিদ
               </h2>
-              <p className="text-[11px] font-semibold text-emerald-300">
-                পাসপোর্ট জমা ও আবেদনের তথ্য রসিদ
-              </p>
             </div>
 
             {/* SECTION 1: APPLICANT INFORMATION */}
@@ -83,7 +80,7 @@ export function PassportSubmissionPreview({ data, onPrint }) {
               <div className="flex items-center gap-1.5 border-b border-slate-900 pb-1">
                 <UserCheck className="w-4 h-4 text-slate-900 shrink-0" />
                 <h3 className="text-xs font-bold uppercase tracking-wide text-slate-900">
-                  ১. আবেদনকারীর ব্যক্তিগত তথ্যাবলী (Applicant Details)
+                  ১. আবেদনকারীর ব্যক্তিগত তথ্যাবলী
                 </h3>
               </div>
 
@@ -100,11 +97,11 @@ export function PassportSubmissionPreview({ data, onPrint }) {
 
                 <div>
                   <span className="text-[10px] font-bold text-slate-500 uppercase block">পূর্ববর্তী পাসপোর্ট নম্বর</span>
-                  <span className="font-mono font-semibold text-slate-900">{previousPassportNo || 'নাই (N/A)'}</span>
+                  <span className="font-mono font-semibold text-slate-900">{previousPassportNo || 'নাই'}</span>
                 </div>
 
                 <div>
-                  <span className="text-[10px] font-bold text-slate-500 uppercase block">মোবাইল নম্বর (Phone)</span>
+                  <span className="text-[10px] font-bold text-slate-500 uppercase block">মোবাইল নম্বর</span>
                   <span className="font-mono font-bold text-slate-900">{applicantPhone || '—'}</span>
                 </div>
 
@@ -114,7 +111,7 @@ export function PassportSubmissionPreview({ data, onPrint }) {
                 </div>
 
                 <div>
-                  <span className="text-[10px] font-bold text-slate-500 uppercase block">ঠিকানা (Address)</span>
+                  <span className="text-[10px] font-bold text-slate-500 uppercase block">ঠিকানা</span>
                   <span className="font-medium text-slate-800">{address || '—'}</span>
                 </div>
               </div>
@@ -128,7 +125,7 @@ export function PassportSubmissionPreview({ data, onPrint }) {
                 <div className="flex items-center gap-1.5 border-b border-slate-900 pb-1">
                   <PhoneCall className="w-3.5 h-3.5 text-slate-900 shrink-0" />
                   <h3 className="text-xs font-bold uppercase tracking-wide text-slate-900">
-                    ২. অভিভাবকের তথ্য (Guardian)
+                    ২. অভিভাবকের তথ্য
                   </h3>
                 </div>
 
@@ -144,7 +141,7 @@ export function PassportSubmissionPreview({ data, onPrint }) {
                 <div className="flex items-center gap-1.5 border-b border-slate-900 pb-1">
                   <FileCheck className="w-3.5 h-3.5 text-slate-900 shrink-0" />
                   <h3 className="text-xs font-bold uppercase tracking-wide text-slate-900">
-                    ৩. পাসপোর্ট ক্যাটাগরি (Specifications)
+                    ৩. পাসপোর্ট ক্যাটাগরি ও বিবরণী
                   </h3>
                 </div>
 
@@ -162,7 +159,7 @@ export function PassportSubmissionPreview({ data, onPrint }) {
             <div className="space-y-2">
               <div className="flex items-center justify-between border-b border-slate-900 pb-1">
                 <h3 className="text-xs font-bold uppercase tracking-wide text-slate-900">
-                  ৪. জমাকৃত ফাইল ও ডকুমেন্টস চেকলিস্ট (Submitted Files Checklist)
+                  ৪. জমাকৃত ফাইল ও ডকুমেন্টস চেকলিস্ট
                 </h3>
               </div>
 
@@ -187,7 +184,7 @@ export function PassportSubmissionPreview({ data, onPrint }) {
 
             {remarks && (
               <div className="p-2.5 border border-slate-300 bg-slate-50 rounded text-xs">
-                <span className="font-bold text-slate-700 block text-[11px] uppercase">মন্তব্য / নোট (Remarks):</span>
+                <span className="font-bold text-slate-700 block text-[11px] uppercase">মন্তব্য / অফিসিয়াল নোট:</span>
                 <p className="text-slate-800 mt-0.5">{remarks}</p>
               </div>
             )}
@@ -202,7 +199,7 @@ export function PassportSubmissionPreview({ data, onPrint }) {
 
             <div className="text-center space-y-1">
               <div className="border-b-2 border-slate-900 w-44 mx-auto mb-1"></div>
-              <div className="font-bold text-xs text-slate-900">{agencyInfo.name || 'MONSUR ALI TRAVELS'}</div>
+              <div className="font-bold text-xs text-slate-900">{agencyInfo.name || 'মনসুর আলী ট্রাভেলস'}</div>
               <div className="text-slate-600 text-[10px]">অনুমোদিত প্রসেসিং কর্মকর্তা</div>
             </div>
           </div>

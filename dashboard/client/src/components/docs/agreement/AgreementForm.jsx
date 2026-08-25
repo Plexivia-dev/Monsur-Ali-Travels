@@ -13,7 +13,8 @@ import {
   ChevronLeft,
   CheckCircle2,
   AlertTriangle,
-  Sparkles
+  Sparkles,
+  Calendar
 } from 'lucide-react';
 import {
   Dialog,
