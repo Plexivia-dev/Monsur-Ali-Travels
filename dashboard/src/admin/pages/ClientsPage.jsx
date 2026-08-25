@@ -4,16 +4,16 @@ import { apiClient } from '@/lib/api-client';
 import {
   Users,
   UserPlus,
-  Search,
   RefreshCw,
   FolderOpen,
   Phone,
-  FileText,
-  CreditCard,
-  Eye,
   CheckCircle2,
-  AlertCircle,
   TrendingUp,
+  Eye,
+  ToggleLeft,
+  ToggleRight,
+  Loader2,
+  Trash2,
 } from 'lucide-react';
 import { toast } from 'sonner';
 import CreateClientModal from '@/components/clients/CreateClientModal';
@@ -35,15 +35,14 @@ export function ClientsPage() {
   // Modal & Drawer State
   const [createModalOpen, setCreateModalOpen] = useState(false);
   const [selectedClientDid, setSelectedClientDid] = useState(null);
+  const [togglingId, setTogglingId] = useState(null);
+  const [deletingId, setDeletingId] = useState(null);
 
   // Fetches paginated client records with filters
   const fetchClients = useCallback(async () => {
     setLoading(true);
     try {
-      const params = {
-        page,
-        limit,
-      };
+      const params = { page, limit };
       if (search.trim()) params.search = search.trim();
       if (activeTab !== 'all') {
         if (['Active', 'Inactive', 'Archived'].includes(activeTab)) {
@@ -54,17 +53,20 @@ export function ClientsPage() {
       }
 
       const res = await apiClient.get('/api/v1/client/clients', { params });
-      if (res.data?.status === 'success' || res.data?.success) {
-        const clientList = res.data.data || [];
-        setClients(clientList);
-        setMeta({
-          totalCount: res.data.pagination?.totalCount || clientList.length,
-          totalPages: res.data.pagination?.totalPages || Math.ceil(clientList.length / limit) || 1,
-        });
+      const responseData = res.data;
+
+      if (responseData?.status === 'success' || responseData?.success || Array.isArray(responseData?.data)) {
+        const clientList = responseData.data || [];
+        const totalCount = Number(responseData.pagination?.totalCount || responseData.total || clientList.length || 0);
+        const totalPages = Number(responseData.pagination?.totalPages || Math.ceil(totalCount / limit) || 1);
+        setMeta({ totalCount, totalPages });
+      } else if (Array.isArray(responseData)) {
+        setClients(responseData);
+        setMeta({ totalCount: responseData.length, totalPages: 1 });
       }
     } catch (err) {
       console.error('Failed to load clients list:', err);
-      toast.error('Failed to load client directory.');
+      toast.error(err.response?.data?.message || 'Failed to load client directory.');
       setClients([]);
     } finally {
       setLoading(false);
@@ -85,7 +87,43 @@ export function ClientsPage() {
     });
   };
 
-  // Column Definitions for UnifiedDataTable
+  // Toggles a client's active/inactive status
+  const handleToggleStatus = useCallback(async (client) => {
+    const clientId = client._id || client.did;
+    if (!clientId) return;
+    const currentStatus = client.status || 'Active';
+    const newStatus = currentStatus === 'Active' ? 'Inactive' : 'Active';
+    setTogglingId(clientId);
+    try {
+      await apiClient.patch(`/api/v1/client/clients/${client.did || client._id}/status`, {
+        status: newStatus,
+      });
+      toast.success(`Client "${client.fullName}" marked as ${newStatus}.`);
+      fetchClients();
+    } catch (err) {
+      toast.error(err.response?.data?.message || 'Failed to update client status.');
+    } finally {
+      setTogglingId(null);
+    }
+  }, [fetchClients]);
+
+  // Deletes a client record after confirmation
+  const handleDeleteClient = useCallback(async (client) => {
+    if (!window.confirm(`Are you sure you want to permanently delete "${client.fullName}"? This action cannot be undone.`)) return;
+    const clientId = client.did || client._id;
+    setDeletingId(clientId);
+    try {
+      await apiClient.delete(`/api/v1/client/clients/${clientId}`);
+      toast.success(`Client "${client.fullName}" deleted successfully.`);
+      fetchClients();
+    } catch (err) {
+      toast.error(err.response?.data?.message || 'Failed to delete client record.');
+    } finally {
+      setDeletingId(null);
+    }
+  }, [fetchClients]);
+
+  // Column Definitions for UnifiedDataTable (custom table — row = raw data object)
   const columns = [
     {
       accessorKey: 'fullName',
@@ -103,7 +141,7 @@ export function ClientsPage() {
               {row.fullName || 'Unnamed Client'}
             </span>
             <div className="font-mono text-[10px] text-muted-foreground truncate max-w-[140px]">
-              {row.did ? `${row.did.slice(0, 16)}...` : '—'}
+              {row.did ? `${row.did.slice(0, 16)}...` : row._id?.slice(0, 16) || '—'}
             </div>
           </div>
         </div>
@@ -156,18 +194,6 @@ export function ClientsPage() {
       ),
     },
     {
-      accessorKey: 'activeFiles',
-      header: 'Active Files',
-      cell: ({ row }) => {
-        const casesCount = (row.clientCases?.length || 0) + (row.applications?.length || 0);
-        return (
-          <span className="px-2.5 py-0.5 rounded-full font-bold bg-primary/10 text-primary border border-primary/20 text-xs">
-            {casesCount} Files
-          </span>
-        );
-      },
-    },
-    {
       accessorKey: 'status',
       header: 'Status',
       cell: ({ row }) => {
@@ -189,7 +215,7 @@ export function ClientsPage() {
     },
     {
       accessorKey: 'createdAt',
-      header: 'Created Date',
+      header: 'Created',
       cell: ({ row }) => (
         <span className="text-xs text-muted-foreground font-medium">
           {formatDate(row.createdAt)}
@@ -198,32 +224,85 @@ export function ClientsPage() {
     },
     {
       id: 'actions',
-      header: 'Action',
-      cell: ({ row }) => (
-        <div className="text-right">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={(e) => {
-              e.stopPropagation();
-              setSelectedClientDid(row.did);
-            }}
-            className="h-7 px-2.5 text-xs font-semibold cursor-pointer gap-1 shadow-xs"
-          >
-            <Eye className="size-3.5 text-primary" />
-            <span>360° Profile</span>
-          </Button>
-        </div>
-      ),
+      header: 'Actions',
+      cell: ({ row }) => {
+        const clientId = row._id || row.did;
+        const isActive = (row.status || 'Active') === 'Active';
+        const isToggling = togglingId === clientId;
+        const isDeleting = deletingId === (row.did || row._id);
+
+        return (
+          <div className="flex items-center gap-1.5">
+            {/* 360° Profile */}
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={(e) => {
+                e.stopPropagation();
+                setSelectedClientDid(row.did);
+              }}
+              className="h-7 px-2.5 text-xs font-semibold cursor-pointer gap-1 shadow-xs"
+              title="View 360° Profile"
+            >
+              <Eye className="size-3.5 text-primary" />
+              <span className="hidden lg:inline">Profile</span>
+            </Button>
+
+            {/* Toggle Active/Inactive */}
+            <Button
+              variant="outline"
+              size="sm"
+              disabled={isToggling}
+              onClick={(e) => {
+                e.stopPropagation();
+                handleToggleStatus(row);
+              }}
+              className={`h-7 px-2 text-xs cursor-pointer gap-1 shadow-xs ${
+                isActive
+                  ? 'text-amber-600 border-amber-200 hover:bg-amber-50'
+                  : 'text-emerald-600 border-emerald-200 hover:bg-emerald-50'
+              }`}
+              title={isActive ? 'Mark Inactive' : 'Mark Active'}
+            >
+              {isToggling ? (
+                <Loader2 className="size-3.5 animate-spin" />
+              ) : isActive ? (
+                <ToggleRight className="size-3.5" />
+              ) : (
+                <ToggleLeft className="size-3.5" />
+              )}
+            </Button>
+
+            {/* Delete */}
+            <Button
+              variant="outline"
+              size="sm"
+              disabled={isDeleting}
+              onClick={(e) => {
+                e.stopPropagation();
+                handleDeleteClient(row);
+              }}
+              className="h-7 px-2 text-xs cursor-pointer gap-1 shadow-xs text-rose-600 border-rose-200 hover:bg-rose-50"
+              title="Delete Client"
+            >
+              {isDeleting ? (
+                <Loader2 className="size-3.5 animate-spin" />
+              ) : (
+                <Trash2 className="size-3.5" />
+              )}
+            </Button>
+          </div>
+        );
+      },
     },
   ];
 
   const filterTabs = [
     { id: 'all', label: 'All Clients', count: meta.totalCount },
-    { id: 'Active', label: 'Active Status' },
+    { id: 'Active', label: 'Active' },
+    { id: 'Inactive', label: 'Inactive' },
     { id: 'Individual', label: 'Individual' },
-    { id: 'Group', label: 'Group / Pilgrimage' },
-    { id: 'Corporate', label: 'Corporate Agent' },
+    { id: 'Corporate', label: 'Corporate' },
   ];
 
   return (
@@ -277,10 +356,10 @@ export function ClientsPage() {
           <CardContent className="p-5 flex items-center justify-between">
             <div>
               <span className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
-                Active Cases
+                This Page
               </span>
               <div className="text-2xl font-black text-foreground mt-1">
-                {clients.reduce((acc, c) => acc + (c.clientCases?.length || c.applications?.length || 0), 0)}
+                {clients.length}
               </div>
             </div>
             <div className="p-3 rounded-2xl bg-purple-50 dark:bg-purple-950/40 text-purple-600">
@@ -293,11 +372,11 @@ export function ClientsPage() {
           <CardContent className="p-5 flex items-center justify-between">
             <div>
               <span className="text-xs font-bold uppercase tracking-wider text-emerald-600">
-                Active Status Ratio
+                Active
               </span>
               <div className="text-2xl font-black text-emerald-600 mt-1">
                 {clients.filter((c) => c.status === 'Active' || !c.status).length}{' '}
-                <span className="text-xs font-normal text-muted-foreground">Active</span>
+                <span className="text-xs font-normal text-muted-foreground">clients</span>
               </div>
             </div>
             <div className="p-3 rounded-2xl bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600">
@@ -331,7 +410,7 @@ export function ClientsPage() {
       {/* Unified Data Table */}
       <UnifiedDataTable
         title="All Registered Clients"
-        subtitle="Full CRM client records with contact info, passports, file history, and 360° profile access"
+        subtitle="Full CRM client records with contact info, passports, and 360° profile access"
         columns={columns}
         data={clients}
         loading={loading}
@@ -339,9 +418,15 @@ export function ClientsPage() {
         page={page}
         limit={limit}
         onPageChange={setPage}
-        onLimitChange={setLimit}
-        onSearch={setSearch}
-        searchPlaceholder="Search by Client Name, Phone, Passport, NID, DID..."
+        onLimitChange={(newLimit) => {
+          setLimit(newLimit);
+          setPage(1);
+        }}
+        onSearch={(val) => {
+          setSearch(val);
+          setPage(1);
+        }}
+        searchPlaceholder="Search by Client Name, Phone, Passport, NID..."
         filterTabs={filterTabs}
         activeTab={activeTab}
         onTabChange={(tab) => {
