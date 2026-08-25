@@ -101,7 +101,7 @@ export function formatAgencyQrText(mode = "text", customAgencyInfo = null) {
 export function formatInvoiceQrText(invoiceData = {}, customAgencyInfo = null) {
   const info = customAgencyInfo || getAgencyInfo();
   const invoiceNo = invoiceData.invoiceNo || "N/A";
-  const clientName = invoiceData.client?.name || "সম্মানিত কাস্টমার";
+  const clientName = invoiceData.client?.name || "সম্মানিত ক্লায়েন্ট";
   const total = invoiceData.grandTotal || invoiceData.subtotal || 0;
   const currency = invoiceData.currency || "BDT";
   const status = invoiceData.paymentStatus || "Paid";

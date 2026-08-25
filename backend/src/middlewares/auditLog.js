@@ -46,10 +46,10 @@ function inferCollectionAndType(url, method) {
   }
 
   // 4. Data Entry & Document Records
-  if (cleanUrl.includes('/candidates')) {
-    return { targetCollection: 'candidates', type: 'DATA_ENTRY' };
+  if (cleanUrl.includes('/clients')) {
+    return { targetCollection: 'clients', type: 'DATA_ENTRY' };
   }
-  if (cleanUrl.includes('/customers') || cleanUrl.includes('/clients')) {
+  if (cleanUrl.includes('/clients') || cleanUrl.includes('/clients')) {
     return { targetCollection: 'clients', type: 'DATA_ENTRY' };
   }
   if (cleanUrl.includes('/agreements')) {
@@ -97,7 +97,7 @@ function generateUserActionSummary(user, targetCollection, action, body = {}) {
     body.name ||
     body.clientName ||
     body.applicantName ||
-    body.candidateName ||
+    body.clientName ||
     body.holderName ||
     body.title ||
     body.passportNumber ||
@@ -112,13 +112,13 @@ function generateUserActionSummary(user, targetCollection, action, body = {}) {
   const status = body.workflowStatus || body.status || body.stage || body.workflowStage;
 
   const targetNames = {
-    clients: 'Client (কাস্টমার)',
+    clients: 'Client (ক্লায়েন্ট)',
     caseFiles: 'Case File (ফাইল)',
     moneyReceipts: 'Money Receipt (টাকা জমার রশিদ)',
     cashVouchers: 'Cash Voucher (খরচের ভাউচার)',
     invoices: 'Invoice (ইনভয়েস)',
     salarySlips: 'Salary Slip (বেতন শিট)',
-    candidates: 'Candidate (ক্যান্ডিডেট)',
+    clients: 'Client (ক্লায়েন্ট)',
     passports: 'Passport Record (পাসপোর্ট)',
     indianVisas: 'Indian Visa (ভিসা আবেদন)',
     agreements: 'Agreement (চুক্তিপত্র)',

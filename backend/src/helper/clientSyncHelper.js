@@ -102,8 +102,8 @@ export async function syncClientProfile({
         client.visaSubmissionDids.push(relationId);
       } else if (relationType === "passport" && !client.passportSubmissionDids.includes(relationId)) {
         client.passportSubmissionDids.push(relationId);
-      } else if (relationType === "case" && !client.candidateCaseDids.includes(relationId)) {
-        client.candidateCaseDids.push(relationId);
+      } else if (relationType === "case" && !client.clientCaseDids.includes(relationId)) {
+        client.clientCaseDids.push(relationId);
       } else if (relationType === "agreement" && !client.agreementDids.includes(relationId)) {
         client.agreementDids.push(relationId);
       } else if (relationType === "invoice" && !client.invoiceDids.includes(relationId)) {

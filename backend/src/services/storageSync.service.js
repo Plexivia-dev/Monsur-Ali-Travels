@@ -14,10 +14,10 @@ import { NotificationModel } from '../models/notification.model.js';
 import { SystemLogModel } from '../models/systemLog.model.js';
 import { DocumentVaultModel } from '../models/documentVault.model.js';
 import Client from '../models/client.model.js';
-import { CandidateCaseFileModel } from '../models/candidateCaseFile.model.js';
+import { ClientCaseFileModel } from '../models/clientCaseFile.model.js';
 import { IndianVisaSubmissionModel } from '../models/indianVisaSubmission.model.js';
 import { PassportSubmissionModel } from '../models/passportSubmission.model.js';
-import { CustomerGuardianModel } from '../models/customerGuardianApplication.model.js';
+import { ClientGuardianModel } from '../models/clientGuardianApplication.model.js';
 import { MoneyReceiptModel } from '../models/moneyReceipt.model.js';
 import { InvoiceModel } from '../models/invoice.model.js';
 import { CashVoucherModel } from '../models/cashVoucher.model.js';
@@ -142,13 +142,13 @@ class StorageSyncService {
       });
     }
 
-    // 3. CandidateCaseFile
-    if (CandidateCaseFileModel) {
-      const candidates = await CandidateCaseFileModel.find(
+    // 3. ClientCaseFile
+    if (ClientCaseFileModel) {
+      const clients = await ClientCaseFileModel.find(
         {},
         'photo passportCopy medicalReport visaCopy files attachments documents'
       ).lean();
-      candidates.forEach((c) => {
+      clients.forEach((c) => {
         addReference(c.photo);
         addReference(c.passportCopy);
         addReference(c.medicalReport);
@@ -183,9 +183,9 @@ class StorageSyncService {
       });
     }
 
-    // 6. CustomerGuardianApplication
-    if (CustomerGuardianModel) {
-      const apps = await CustomerGuardianModel.find(
+    // 6. ClientGuardianApplication
+    if (ClientGuardianModel) {
+      const apps = await ClientGuardianModel.find(
         {},
         'photo signature nidCopy documents'
       ).lean();

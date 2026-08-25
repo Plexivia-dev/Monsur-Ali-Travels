@@ -236,7 +236,7 @@ caseFileSchema.virtual("vaultDocuments", {
 });
 
 // Virtual Populates for CaseFile relations using DIDs
-caseFileSchema.virtual("customerId", {
+caseFileSchema.virtual("clientId", {
   ref: "Client",
   localField: "clientDid",
   foreignField: "did",

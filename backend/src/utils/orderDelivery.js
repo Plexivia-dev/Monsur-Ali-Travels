@@ -25,7 +25,7 @@ function getTransport() {
 
 /**
  * Safely send order notification emails asynchronously without blocking the response.
- * Sends Customer Order Confirmation to Customer & Admin Notification to Admin emails.
+ * Sends Client Order Confirmation to Client & Admin Notification to Admin emails.
  * 
  * @param {Object} order - The created order document/payload
  */
@@ -45,12 +45,12 @@ export function sendOrderEmailsAsynchronously(order) {
 
       // Extract order details with complete alignment to OrderModel schema
       const orderId = order.orderNumber || order.did || order._id?.toString()?.slice(-6) || "N/A";
-      const customerEmail = order.billingInfo?.email || "";
-      const customerName = order.billingInfo?.fullName || "Customer";
-      const customerPhone = order.billingInfo?.phone || "N/A";
+      const clientEmail = order.billingInfo?.email || "";
+      const clientName = order.billingInfo?.fullName || "Client";
+      const clientPhone = order.billingInfo?.phone || "N/A";
       const createdAt = order.createdAt ? new Date(order.createdAt).toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric" }) : new Date().toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric" });
 
-      // Build primary customer address (Billing Address) from OrderModel billingInfo schema
+      // Build primary client address (Billing Address) from OrderModel billingInfo schema
       const primaryAddrParts = [
         order.billingInfo?.address,
         order.billingInfo?.thana,
@@ -59,9 +59,9 @@ export function sendOrderEmailsAsynchronously(order) {
       ].filter(Boolean);
 
       const billingAddress = {
-        name: customerName,
-        phone: customerPhone,
-        email: customerEmail,
+        name: clientName,
+        phone: clientPhone,
+        email: clientEmail,
         street: order.billingInfo?.address || "",
         thana: order.billingInfo?.thana || "",
         district: order.billingInfo?.district || "",
@@ -82,8 +82,8 @@ export function sendOrderEmailsAsynchronously(order) {
           ].filter(Boolean);
 
           shippingAddress = {
-            name: order.shippingInfo.fullName || customerName,
-            phone: order.shippingInfo.phone || customerPhone,
+            name: order.shippingInfo.fullName || clientName,
+            phone: order.shippingInfo.phone || clientPhone,
             street: customStreet,
             thana: order.shippingInfo.thana || "",
             district: order.shippingInfo.district || "",
@@ -121,9 +121,9 @@ export function sendOrderEmailsAsynchronously(order) {
       const formattedOrderData = {
         orderId,
         createdAt,
-        customerName,
-        customerEmail,
-        customerPhone,
+        clientName,
+        clientEmail,
+        clientPhone,
         billingAddress,
         shippingAddress,
         items,
@@ -133,19 +133,19 @@ export function sendOrderEmailsAsynchronously(order) {
         paymentMethod
       };
 
-      // 1. Send Customer Order Confirmation Email (to customer email)
-      if (customerEmail) {
+      // 1. Send Client Order Confirmation Email (to client email)
+      if (clientEmail) {
         try {
-          const customerHtml = buildOrderInvoiceEmailHtml({ order: formattedOrderData });
+          const clientHtml = buildOrderInvoiceEmailHtml({ order: formattedOrderData });
           await activeTransport.sendMail({
             from: fromAddress,
-            to: customerEmail,
+            to: clientEmail,
             subject: `Monsur Ali Travels BD: Order Confirmation - #${orderId}`,
-            html: customerHtml
+            html: clientHtml
           });
-          console.log(`[Email Notification] Customer confirmation email sent to: ${customerEmail}`);
+          console.log(`[Email Notification] Client confirmation email sent to: ${clientEmail}`);
         } catch (custErr) {
-          console.error(`[Email Notification] Failed sending customer email to ${customerEmail}:`, custErr.message);
+          console.error(`[Email Notification] Failed sending client email to ${clientEmail}:`, custErr.message);
         }
       }
 

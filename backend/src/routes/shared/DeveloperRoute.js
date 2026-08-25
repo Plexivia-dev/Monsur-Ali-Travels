@@ -89,8 +89,8 @@ developerRouter.get(
         "/orders/new-order": {
           post: {
             tags: ["Orders"],
-            summary: "Create New Customer Checkout Order",
-            description: "Submits a new order payload and dispatches email notifications to store administrators and customer.",
+            summary: "Create New Client Checkout Order",
+            description: "Submits a new order payload and dispatches email notifications to store administrators and client.",
             requestBody: {
               required: true,
               content: {

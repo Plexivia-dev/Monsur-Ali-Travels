@@ -151,7 +151,7 @@ const indianVisaSubmissionSchema = new mongoose.Schema(
 );
 
 // Virtual Populates for indianVisaSubmission relations using DIDs
-indianVisaSubmissionSchema.virtual("customerId", {
+indianVisaSubmissionSchema.virtual("clientId", {
   ref: "Client",
   localField: "clientDid",
   foreignField: "did",

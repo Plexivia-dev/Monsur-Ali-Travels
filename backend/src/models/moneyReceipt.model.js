@@ -65,7 +65,7 @@ const moneyReceiptSchema = new Schema(
       type: String,
       default: "",
     },
-    // Central Customer reference if available
+    // Central Client reference if available
     clientDid: {
       type: String,
       default: null,
@@ -245,7 +245,7 @@ const moneyReceiptSchema = new Schema(
 );
 
 // Virtual Populates for moneyReceipt relations using DIDs
-moneyReceiptSchema.virtual("customerId", {
+moneyReceiptSchema.virtual("clientId", {
   ref: "Client",
   localField: "clientDid",
   foreignField: "did",

@@ -1,5 +1,5 @@
 /**
- * Customer Order Confirmation Email Template with center-aligned typography hierarchy.
+ * Client Order Confirmation Email Template with center-aligned typography hierarchy.
  * 
  * @param {Object} params
  * @param {Object} params.order - The order details
@@ -14,9 +14,9 @@ export const buildOrderInvoiceEmailHtml = ({
   const {
     orderId = "3870",
     createdAt = new Date().toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" }),
-    customerName = "Ikramul Hoque",
-    customerEmail = "metalhead.developer@gmail.com",
-    customerPhone = "+880 1712-345678",
+    clientName = "Ikramul Hoque",
+    clientEmail = "metalhead.developer@gmail.com",
+    clientPhone = "+880 1712-345678",
     billingAddress = {
       street: "House 45, Road 11, Sector 4",
       city: "Uttara",
@@ -389,7 +389,7 @@ export const buildOrderInvoiceEmailHtml = ({
         
         <h1 class="title">Thank you for your order</h1>
         
-        <p class="greeting">Hello ${customerName},</p>
+        <p class="greeting">Hello ${clientName},</p>
         <p class="message-text">Just to let you know — we've received your order, and it is now being processed.</p>
 
         <!-- Gold Accent Notice Box -->
@@ -446,19 +446,19 @@ export const buildOrderInvoiceEmailHtml = ({
             <td width="48%" class="responsive-col" style="vertical-align: top;">
               <h3 class="address-title">Billing address</h3>
               <p class="address-text">
-                <strong style="color: #FFFFFF;">${billingAddress.name || customerName}</strong><br>
+                <strong style="color: #FFFFFF;">${billingAddress.name || clientName}</strong><br>
                 ${billingStr}<br>
-                ${billingAddress.phone || customerPhone}<br>
-                <a href="mailto:${billingAddress.email || customerEmail}" style="color: #C5A059; text-decoration: none;">${billingAddress.email || customerEmail}</a>
+                ${billingAddress.phone || clientPhone}<br>
+                <a href="mailto:${billingAddress.email || clientEmail}" style="color: #C5A059; text-decoration: none;">${billingAddress.email || clientEmail}</a>
               </p>
             </td>
             <td width="4%" class="responsive-col"></td>
             <td width="48%" class="responsive-col" style="vertical-align: top;">
               <h3 class="address-title">Shipping address</h3>
               <p class="address-text">
-                <strong style="color: #FFFFFF;">${shippingAddress.name || billingAddress.name || customerName}</strong><br>
+                <strong style="color: #FFFFFF;">${shippingAddress.name || billingAddress.name || clientName}</strong><br>
                 ${shippingStr}<br>
-                ${shippingAddress.phone || billingAddress.phone || customerPhone}
+                ${shippingAddress.phone || billingAddress.phone || clientPhone}
               </p>
             </td>
           </tr>

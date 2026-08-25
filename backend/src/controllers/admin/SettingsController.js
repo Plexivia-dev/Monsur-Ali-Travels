@@ -84,11 +84,11 @@ export const getCoreTeam = async (req, res, next) => {
   }
 };
 
-// GET /api/v1/admin/settings/staff-candidates
-export const getStaffCandidates = async (req, res, next) => {
+// GET /api/v1/admin/settings/staff-clients
+export const getStaffClients = async (req, res, next) => {
   try {
     // Get staff members who do NOT have a subRole assigned currently
-    const candidates = await UserModel.find({
+    const clients = await UserModel.find({
       role: "Staff",
       $or: [
         { subRole: { $exists: false } },
@@ -97,7 +97,7 @@ export const getStaffCandidates = async (req, res, next) => {
       ]
     }).select("name email did phone status isActive").lean();
 
-    res.json({ success: true, data: candidates });
+    res.json({ success: true, data: clients });
   } catch (error) {
     next(error);
   }
@@ -114,7 +114,7 @@ export const assignCoreTeamRole = async (req, res, next) => {
     // First remove existing assignment of this subRole (since only one person can hold Accountant, etc.)
     await UserModel.updateMany({ subRole }, { $unset: { subRole: "" } });
 
-    // Update new candidate
+    // Update new client
     const user = await UserModel.findOneAndUpdate(
       { did },
       { role: "Staff", subRole },

@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { 
   getCoreTeam, 
-  getStaffCandidates, 
+  getStaffClients, 
   assignCoreTeamRole, 
   removeCoreTeamRole, 
   inviteCoreTeamUser 
@@ -18,12 +18,12 @@ settingsRouter.get(
   getCoreTeam
 );
 
-// Retrieve available staff candidates for assignment
+// Retrieve available staff clients for assignment
 settingsRouter.get(
-  "/staff-candidates",
+  "/staff-clients",
   authenticateToken,
   authorizeRoles("Owner", "Admin", "Manager", "Superadmin"),
-  getStaffCandidates
+  getStaffClients
 );
 
 // Assign a core team role to existing staff

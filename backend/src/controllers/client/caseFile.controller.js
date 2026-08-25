@@ -20,7 +20,7 @@ function buildGenericCaseQuery(queryParams) {
     followUpOnly,
     startDate,
     endDate,
-    customerId,
+    clientId,
     clientDid,
   } = queryParams;
 
@@ -47,9 +47,9 @@ function buildGenericCaseQuery(queryParams) {
     filter.status = statusesArray.length === 1 ? statusesArray[0] : { $in: statusesArray };
   }
 
-  // 3. Client DID / Customer ID filter
-  if (clientDid || customerId) {
-    filter.clientDid = clientDid || customerId;
+  // 3. Client DID / Client ID filter
+  if (clientDid || clientId) {
+    filter.clientDid = clientDid || clientId;
   }
 
   // 4. Follow-up Call Reminder filter
@@ -114,7 +114,7 @@ export const getAllCases = async (req, res) => {
     const skip = (pageNum - 1) * limitNum;
 
     let queryBuilder = CaseFile.find(filter)
-      .populate("customerId", "clientCode fullName phone passportNumber photo")
+      .populate("clientId", "clientCode fullName phone passportNumber photo")
       .sort(sortOptions)
       .skip(skip)
       .limit(limitNum);
@@ -170,7 +170,7 @@ export const lookupCase = async (req, res) => {
         { caseNumber: searchRegex },
       ],
     })
-      .populate("customerId", "fullName phone passportNumber clientCode")
+      .populate("clientId", "fullName phone passportNumber clientCode")
       .sort({ createdAt: -1 })
       .limit(Number(limit) || 10);
 
@@ -192,7 +192,7 @@ export const getCaseById = async (req, res) => {
     const { id } = req.params;
     const caseDoc = await CaseFile.findOne({ $or: [{ did: id }, { _id: id }] })
       .populate("clientInfo")
-      .populate("customerId")
+      .populate("clientId")
       .populate({
         path: "workflowTasks",
         populate: { path: "permittedDocs" },
@@ -235,11 +235,11 @@ export const getCaseById = async (req, res) => {
   }
 };
 
-// 4. Generic POST Create Case (Auto-links / Creates Customer)
+// 4. Generic POST Create Case (Auto-links / Creates Client)
 export const createCase = async (req, res) => {
   try {
     const {
-      customerId,
+      clientId,
       clientDid,
       applicantName,
       passportNumber,
@@ -262,9 +262,9 @@ export const createCase = async (req, res) => {
       });
     }
 
-    let resolvedClientDid = clientDid || customerId;
+    let resolvedClientDid = clientDid || clientId;
 
-    // If clientDid/customerId is not given, resolve or auto-create Client
+    // If clientDid/clientId is not given, resolve or auto-create Client
     if (!resolvedClientDid && passportNumber) {
       let existingClient = await Client.findOne({
         passportNumber: passportNumber.trim().toUpperCase(),

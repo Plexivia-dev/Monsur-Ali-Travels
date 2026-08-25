@@ -107,7 +107,7 @@ const clientSchema = new Schema(
     applicationDids: { type: [String], default: [] },
     visaSubmissionDids: { type: [String], default: [] },
     passportSubmissionDids: { type: [String], default: [] },
-    candidateCaseDids: { type: [String], default: [] },
+    clientCaseDids: { type: [String], default: [] },
     agreementDids: { type: [String], default: [] },
     invoiceDids: { type: [String], default: [] },
     caseDids: { type: [String], default: [] },
@@ -118,7 +118,7 @@ const clientSchema = new Schema(
       enum: ["Active", "Lead", "Inactive", "Blacklisted", "Archived"],
       default: "Active",
     },
-    customerType: {
+    clientType: {
       type: String,
       enum: ["Individual", "Corporate", "Agent_Referred", "VIP"],
       default: "Individual",
@@ -160,7 +160,7 @@ clientSchema.index({
 
 // Virtual Populates for Client relations using DIDs
 clientSchema.virtual("applications", {
-  ref: "CustomerGuardianApplication",
+  ref: "ClientGuardianApplication",
   localField: "applicationDids",
   foreignField: "did",
 });
@@ -174,9 +174,9 @@ clientSchema.virtual("passportSubmissions", {
   localField: "passportSubmissionDids",
   foreignField: "did",
 });
-clientSchema.virtual("candidateCases", {
-  ref: "CandidateCaseFile",
-  localField: "candidateCaseDids",
+clientSchema.virtual("clientCases", {
+  ref: "ClientCaseFile",
+  localField: "clientCaseDids",
   foreignField: "did",
 });
 clientSchema.virtual("agreements", {

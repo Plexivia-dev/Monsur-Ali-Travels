@@ -10,7 +10,7 @@ class ClientController {
       const page = Math.max(1, parseInt(req.query.page, 10) || 1);
       const limit = req.query.limit !== undefined ? Math.max(1, parseInt(req.query.limit, 10) || 10) : 10;
       const skip = req.query.skip !== undefined ? Math.max(0, parseInt(req.query.skip, 10)) : (page - 1) * limit;
-      const { search, status, customerType } = req.query;
+      const { search, status, clientType } = req.query;
 
       const query = {};
       query.isActive = { $ne: false };
@@ -18,8 +18,8 @@ class ClientController {
       if (status && status !== "all") {
         query.status = status;
       }
-      if (customerType && customerType !== "all") {
-        query.customerType = customerType;
+      if (clientType && clientType !== "all") {
+        query.clientType = clientType;
       }
 
       if (search && search.trim()) {
@@ -39,7 +39,7 @@ class ClientController {
         .populate("applications", "applicationNo serviceType status dateReceived payment")
         .populate("visaSubmissions", "trackingNo visaType status submissionDate")
         .populate("passportSubmissions", "trackingNo passportType status submissionDate")
-        .populate("candidateCases", "fileNumber candidateName destinationCountry tradeSkill workflowStatus")
+        .populate("clientCases", "fileNumber clientName destinationCountry tradeSkill workflowStatus")
         .sort({ createdAt: -1 })
         .skip(skip)
         .limit(limit);
@@ -77,7 +77,7 @@ class ClientController {
         .populate("applications")
         .populate("visaSubmissions")
         .populate("passportSubmissions")
-        .populate("candidateCases")
+        .populate("clientCases")
         .populate("agreements")
         .populate("invoices");
 

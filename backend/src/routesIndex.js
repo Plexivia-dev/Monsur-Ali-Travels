@@ -15,7 +15,7 @@ import settingsRouter from "./routes/admin/SettingsRoute.js";
 import storageMaintenanceRouter from "./routes/admin/StorageMaintenanceRoute.js";
 
 // --- CLIENT (STAFF) ROUTES ---
-import candidateRouter from "./routes/client/CandidateRoute.js";
+import clientRouter from "./routes/client/ClientRoute.js";
 import clientRouterInstance from "./routes/client/ClientRoute.js";
 import caseFileRouter from "./routes/client/CaseFileRoute.js";
 import agreementRouter from "./routes/client/AgreementRoute.js";
@@ -75,9 +75,9 @@ clientRouter.use(authenticateToken);
 clientRouter.use(auditLog);
 clientRouter.use("/tasks", taskRouter);
 clientRouter.use("/cases", caseFileRouter);
-clientRouter.use("/customers", clientRouterInstance);
 clientRouter.use("/clients", clientRouterInstance);
-clientRouter.use("/candidates", candidateRouter);
+clientRouter.use("/clients", clientRouterInstance);
+clientRouter.use("/clients", clientRouter);
 clientRouter.use("/agreements", agreementRouter);
 clientRouter.use("/indian-visas", indianVisaRouter);
 clientRouter.use("/passports", passportRouter);

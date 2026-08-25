@@ -144,7 +144,7 @@ const passportSubmissionSchema = new mongoose.Schema(
 );
 
 // Virtual Populates for passportSubmission relations using DIDs
-passportSubmissionSchema.virtual("customerId", {
+passportSubmissionSchema.virtual("clientId", {
   ref: "Client",
   localField: "clientDid",
   foreignField: "did",

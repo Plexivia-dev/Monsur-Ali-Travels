@@ -4,14 +4,14 @@ import { PassportSubmissionModel } from '../../models/passportSubmission.model.j
 import { EmploymentAgreementModel } from '../../models/employmentAgreement.model.js';
 import { SalarySlipModel } from '../../models/salarySlip.model.js';
 import { UserModel } from '../../models/user.model.js';
-import { CandidateCaseFileModel } from '../../models/candidateCaseFile.model.js';
+import { ClientCaseFileModel } from '../../models/clientCaseFile.model.js';
 import { NotificationModel } from '../../models/notification.model.js';
 
 export const getErpOverviewStats = async (req, res, next) => {
   try {
     const [
       totalUsers,
-      totalCandidates,
+      totalClients,
       totalInvoices,
       totalVisas,
       totalPassports,
@@ -21,7 +21,7 @@ export const getErpOverviewStats = async (req, res, next) => {
       recentNotifications,
     ] = await Promise.all([
       UserModel.countDocuments({ isActive: true }),
-      CandidateCaseFileModel.countDocuments(),
+      ClientCaseFileModel.countDocuments(),
       InvoiceModel.countDocuments(),
       IndianVisaSubmissionModel.countDocuments(),
       PassportSubmissionModel.countDocuments(),
@@ -50,7 +50,7 @@ export const getErpOverviewStats = async (req, res, next) => {
       status: 'success',
       data: {
         totalUsers,
-        totalCandidates,
+        totalClients,
         totalInvoices,
         totalVisas,
         totalPassports,

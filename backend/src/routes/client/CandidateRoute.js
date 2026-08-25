@@ -1,24 +1,24 @@
 import { Router } from "express";
 import {
-  getCandidates,
-  getCandidateById,
-  createCandidate,
-  updateCandidate,
-  deleteCandidate,
-  updateCandidateStatus,
-} from "../../controllers/client/CandidateController.js";
+  getClients,
+  getClientById,
+  createClient,
+  updateClient,
+  deleteClient,
+  updateClientStatus,
+} from "../../controllers/client/ClientController.js";
 
-const candidateRouter = Router();
+const clientRouter = Router();
 
-candidateRouter.route("/")
-  .get(getCandidates)
-  .post(createCandidate);
+clientRouter.route("/")
+  .get(getClients)
+  .post(createClient);
 
-candidateRouter.route("/:id")
-  .get(getCandidateById)
-  .put(updateCandidate)
-  .delete(deleteCandidate);
+clientRouter.route("/:id")
+  .get(getClientById)
+  .put(updateClient)
+  .delete(deleteClient);
 
-candidateRouter.patch("/:id/status", updateCandidateStatus);
+clientRouter.patch("/:id/status", updateClientStatus);
 
-export default candidateRouter;
+export default clientRouter;

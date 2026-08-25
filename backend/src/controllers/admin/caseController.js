@@ -13,7 +13,7 @@ export const getCaseFullDetails = async (req, res) => {
 
     const caseDoc = await CaseFile.findOne({ $or: [{ did: caseDid }, { _id: caseDid }] })
       .populate("clientInfo")
-      .populate("customerId")
+      .populate("clientId")
       .populate({
         path: "workflowTasks",
         populate: { path: "permittedDocs" },
