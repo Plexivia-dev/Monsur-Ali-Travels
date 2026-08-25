@@ -9,6 +9,7 @@ import {
   Printer,
 } from 'lucide-react';
 import { DOCUMENT_GENERATORS, CATEGORIES } from '../configs/documentGenerators';
+import { PageTitle } from '../../../components/layout/PageTitle';
 import { EmploymentAgreement } from '../components/agreement/EmploymentAgreement';
 import { IdCard } from '../components/idcard/IdCard';
 import { SalarySlip } from '../components/payroll/SalarySlip';
@@ -99,47 +100,39 @@ export function DocumentStudioPage({
     <div className="space-y-6">
       {isOverview && (
         <div className="space-y-6 animate-in fade-in-50 duration-200">
-          <div className="relative overflow-hidden bg-card border border-border p-6 sm:p-8 rounded-2xl shadow-xs border-b-2 border-b-primary/40">
-            <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
-              <div className="space-y-2 max-w-2xl">
-                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 text-primary border border-primary/20 text-xs font-bold">
-                  <Sparkles className="w-3.5 h-3.5" />
-                  <span>{isBn ? '১২টি অফিসিয়াল ডকুমেন্ট জেনারেটর' : '12 Document Generators Available'}</span>
-                </div>
-                <h1 className="text-2xl sm:text-3xl font-black text-foreground tracking-tight flex items-center gap-3">
-                  <FileText className="w-7 h-7 text-primary shrink-0" />
-                  {isBn ? 'ডকুমেন্ট স্টুডিও' : 'Document Studio'}
-                </h1>
-                <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed">
-                  {isBn
-                    ? 'ভ্রমণ চুক্তিপত্র, কাস্টমার আবেদন, ভিসা ফাইল, পাসপোর্ট জমা রশিদ, আইডি কার্ড, পে-রোল স্যালারি স্লিপ, ইনভয়েস ও সার্টিফিকেটসহ সকল অফিসিয়াল ডকুমেন্ট সহজে তৈরি ও প্রিন্ট করুন।'
-                    : 'Generate, preview, customize, and print official travel documents, vouchers, agreements, certificates, identity cards, and payroll records.'}
-                </p>
-              </div>
-
+          <PageTitle
+            title={isBn ? 'ডকুমেন্ট স্টুডিও' : 'Document Studio'}
+            description={
+              isBn
+                ? 'ভ্রমণ চুক্তিপত্র, কাস্টমার আবেদন, ভিসা ফাইল, পাসপোর্ট জমা রশিদ, আইডি কার্ড, পে-রোল স্যালারি স্লিপ, ইনভয়েস ও সার্টিফিকেটসহ সকল অফিসিয়াল ডকুমেন্ট সহজে তৈরি ও প্রিন্ট করুন।'
+                : 'Generate, preview, customize, and print official travel documents, vouchers, agreements, certificates, identity cards, and payroll records.'
+            }
+            icon={FileText}
+            badge={isBn ? '১২টি জেনারেটর' : '12 Generators'}
+            actions={
               <div className="w-full md:w-80 shrink-0">
                 <div className="relative">
-                  <Search className="w-4 h-4 text-muted-foreground absolute left-3 top-1/2 -translate-y-1/2" />
+                  <Search className="w-4 h-4 text-sky-300 absolute left-3 top-1/2 -translate-y-1/2" />
                   <input
                     type="text"
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                     placeholder={isBn ? 'ডকুমেন্ট খুঁজুন...' : 'Search generator (e.g. Agreement, Slip)...'}
-                    className="w-full pl-9 pr-4 py-2.5 bg-background border border-border rounded-xl text-xs font-semibold text-foreground focus:ring-2 focus:ring-primary/30 outline-none shadow-xs"
+                    className="w-full pl-9 pr-4 py-2.5 bg-slate-950/60 border border-sky-500/30 rounded-xl text-xs font-semibold text-white placeholder:text-sky-200/50 focus:ring-2 focus:ring-sky-400/40 outline-none shadow-xs"
                   />
                   {searchQuery && (
                     <button
                       type="button"
                       onClick={() => setSearchQuery('')}
-                      className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-muted-foreground hover:text-foreground font-bold cursor-pointer"
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-sky-200 hover:text-white font-bold cursor-pointer"
                     >
                       ✕
                     </button>
                   )}
                 </div>
               </div>
-            </div>
-          </div>
+            }
+          />
 
           <div className="flex items-center gap-2 overflow-x-auto pb-1 no-scrollbar">
             {CATEGORIES.map((cat) => {
