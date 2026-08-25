@@ -247,7 +247,7 @@ export function ExperienceCertificateForm({ data = {}, onChange }) {
         </div>
       </div>
 
-      {/* Employee / Candidate Details */}
+      {/* Employee / Client Details */}
       <div className="bg-card border border-border rounded-xl p-4 space-y-4">
         <h3 className="text-xs font-bold uppercase tracking-wider text-primary flex items-center gap-1.5 border-b border-border pb-2">
           <User className="w-4 h-4" />

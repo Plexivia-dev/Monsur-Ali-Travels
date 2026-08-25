@@ -21,7 +21,7 @@ export const STATUS_OPTIONS = [
   { id: 'processing', label: 'Processing', bn: 'প্রসেসিং চলমান', color: 'bg-purple-500/15 text-purple-600 border-purple-500/30' },
   { id: 'embassy_submitted', label: 'Submitted to Embassy/VFS', bn: 'এম্বাসিতে জমা সম্পন্ন', color: 'bg-indigo-500/15 text-indigo-600 border-indigo-500/30' },
   { id: 'approved', label: 'Visa/File Approved', bn: 'ভিসা/ফাইল অনুমোদিত', color: 'bg-emerald-500/15 text-emerald-600 border-emerald-500/30' },
-  { id: 'delivered', label: 'Delivered to Customer', bn: 'ডেলিভারি সম্পন্ন', color: 'bg-teal-500/15 text-teal-600 border-teal-500/30' },
+  { id: 'delivered', label: 'Delivered to Client', bn: 'ডেলিভারি সম্পন্ন', color: 'bg-teal-500/15 text-teal-600 border-teal-500/30' },
   { id: 'rejected', label: 'Rejected / Cancelled', bn: 'বাতিল / রিজেক্টেড', color: 'bg-rose-500/15 text-rose-600 border-rose-500/30' }
 ];
 
@@ -42,7 +42,7 @@ export function getStatusLabel(statusId, lang = 'en') {
   return statusId;
 }
 
-export function getDefaultCustomerGuardianData() {
+export function getDefaultClientGuardianData() {
   return {
     _id: null,
     applicationNo: generateApplicationNo(),
@@ -50,7 +50,7 @@ export function getDefaultCustomerGuardianData() {
     verifiedBy: '',
     serviceType: 'Indian Visa Application',
     status: 'received',
-    customer: {
+    client: {
       fullName: '',
       nidNumber: '',
       passportNumber: '',
@@ -78,7 +78,7 @@ export function getDefaultCustomerGuardianData() {
       { id: 5, name: 'Bank Statement', submitted: 'Yes', remarks: '' },
       { id: 6, name: "Father's NID Card", submitted: 'Yes', remarks: '' },
       { id: 7, name: "Mother's NID Card", submitted: 'Yes', remarks: '' },
-      { id: 8, name: "Customer's Own NID Card", submitted: 'Yes', remarks: '' }
+      { id: 8, name: "Client's Own NID Card", submitted: 'Yes', remarks: '' }
     ],
     payment: {
       totalAmount: '',

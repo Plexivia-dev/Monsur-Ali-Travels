@@ -223,7 +223,7 @@ export function InvoicePreview({ data = {}, onPrint }) {
           <div className="mt-auto pt-4 print:pt-2 flex justify-between items-end text-xs print:text-[10px] text-slate-900 print:break-inside-avoid page-break-inside-avoid">
             <div className="text-center space-y-1">
               <div className="border-b border-slate-400 w-40 print:w-36 mb-1"></div>
-              <div className="text-xs print:text-[9.5px] text-slate-500 font-medium">Customer Signature</div>
+              <div className="text-xs print:text-[9.5px] text-slate-500 font-medium">Client Signature</div>
             </div>
 
             <div className="text-center space-y-0.5">

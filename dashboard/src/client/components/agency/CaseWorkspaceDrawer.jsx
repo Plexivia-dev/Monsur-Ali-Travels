@@ -72,14 +72,14 @@ export function CaseWorkspaceDrawer({ caseId, isOpen, onClose, onRefresh }) {
         setCaseData(res.data.data);
       } else {
         // Try fallback
-        const altRes = await apiClient.get(`/api/v1/client/candidates/${caseId}`).catch(() => null);
+        const altRes = await apiClient.get(`/api/v1/client/clients/${caseId}`).catch(() => null);
         if (altRes?.data?.data) {
           const raw = altRes.data.data;
           setCaseData({
             did: raw.did || raw._id,
             caseNumber: raw.fileNumber || 'CASE-001',
-            applicantName: raw.candidateName,
-            phone: raw.candidatePhone,
+            applicantName: raw.clientName,
+            phone: raw.clientPhone,
             passportNumber: raw.passportNumber,
             destinationCountry: raw.destinationCountry,
             tradeSkill: raw.tradeSkill,

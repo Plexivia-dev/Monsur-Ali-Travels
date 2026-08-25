@@ -4,7 +4,7 @@ import { formatToDdMmYyyy } from '../../../lib/utils';
 import { STATUS_OPTIONS } from './sampleData';
 import { Paperclip, FileText, Download, Eye, X, Image as ImageIcon, Camera, CreditCard, FileCheck } from 'lucide-react';
 
-export function CustomerGuardianPreview({ data }) {
+export function ClientGuardianPreview({ data }) {
   const [selectedPreviewDoc, setSelectedPreviewDoc] = useState(null);
 
   const {
@@ -13,7 +13,7 @@ export function CustomerGuardianPreview({ data }) {
     verifiedBy,
     serviceType,
     status = 'received',
-    customer = {},
+    client = {},
     guardian = {},
     requirementDocuments = [],
     payment = {},
@@ -26,7 +26,7 @@ export function CustomerGuardianPreview({ data }) {
 
   return (
     <div className="w-full flex flex-col items-center select-none space-y-6">
-      <PrintablePaper id="printable-customer-form-canvas">
+      <PrintablePaper id="printable-client-form-canvas">
         <div className="flex-1 flex flex-col justify-between text-slate-900 font-sans min-h-[990px] print:min-h-0 print:h-auto">
           
           <div className="space-y-3">
@@ -85,13 +85,13 @@ export function CustomerGuardianPreview({ data }) {
                     Full Name:
                   </div>
                   <div className="col-span-3 px-2.5 py-1.5 flex items-center border-r border-slate-300 font-bold text-[11.5px] text-slate-900 uppercase truncate">
-                    {customer.fullName || ''}
+                    {client.fullName || ''}
                   </div>
                   <div className="col-span-3 bg-slate-50/70 font-semibold px-2.5 py-1.5 flex items-center border-r border-slate-300 text-[11px] text-slate-800">
                     NID Number:
                   </div>
                   <div className="col-span-3 px-2.5 py-1.5 flex items-center font-mono font-bold text-[11.5px] text-slate-900">
-                    {customer.nidNumber || ''}
+                    {client.nidNumber || ''}
                   </div>
                 </div>
 
@@ -101,13 +101,13 @@ export function CustomerGuardianPreview({ data }) {
                     Passport Number:
                   </div>
                   <div className="col-span-3 px-2.5 py-1.5 flex items-center border-r border-slate-300 font-mono font-bold text-[11.5px] text-slate-900 uppercase">
-                    {customer.passportNumber || ''}
+                    {client.passportNumber || ''}
                   </div>
                   <div className="col-span-3 bg-slate-50/70 font-semibold px-2.5 py-1.5 flex items-center border-r border-slate-300 text-[11px] text-slate-800 leading-tight">
                     Country previously applied to and rejected by:
                   </div>
                   <div className="col-span-3 px-2.5 py-1.5 flex items-center font-semibold text-[11px] text-slate-900 truncate">
-                    {customer.countryRejected || 'N/A'}
+                    {client.countryRejected || 'N/A'}
                   </div>
                 </div>
 
@@ -117,13 +117,13 @@ export function CustomerGuardianPreview({ data }) {
                     Father Name:
                   </div>
                   <div className="col-span-3 px-2.5 py-1.5 flex items-center border-r border-slate-300 font-semibold text-[11px] text-slate-900 uppercase truncate">
-                    {customer.fatherName || ''}
+                    {client.fatherName || ''}
                   </div>
                   <div className="col-span-3 bg-slate-50/70 font-semibold px-2.5 py-1.5 flex items-center border-r border-slate-300 text-[11px] text-slate-800">
                     Mother Name:
                   </div>
                   <div className="col-span-3 px-2.5 py-1.5 flex items-center font-semibold text-[11px] text-slate-900 uppercase truncate">
-                    {customer.motherName || ''}
+                    {client.motherName || ''}
                   </div>
                 </div>
 
@@ -133,13 +133,13 @@ export function CustomerGuardianPreview({ data }) {
                     Mobile Number:
                   </div>
                   <div className="col-span-3 px-2.5 py-1.5 flex items-center border-r border-slate-300 font-mono font-bold text-[11.5px] text-slate-900">
-                    {customer.mobileNumber || ''}
+                    {client.mobileNumber || ''}
                   </div>
                   <div className="col-span-3 bg-slate-50/70 font-semibold px-2.5 py-1.5 flex items-center border-r border-slate-300 text-[11px] text-slate-800">
                     Email:
                   </div>
                   <div className="col-span-3 px-2.5 py-1.5 flex items-center font-medium text-[11px] text-slate-900 truncate">
-                    {customer.email || ''}
+                    {client.email || ''}
                   </div>
                 </div>
               </div>
@@ -209,7 +209,7 @@ export function CustomerGuardianPreview({ data }) {
                     {guardian.address || ''}
                   </div>
                   <div className="col-span-3 bg-slate-50/70 font-semibold px-2.5 py-1.5 flex items-center border-r border-slate-300 text-[11px] text-slate-800 leading-tight">
-                    Relationship with Customer:
+                    Relationship with Client:
                   </div>
                   <div className="col-span-3 px-2.5 py-1.5 flex items-center font-bold text-[11.5px] text-slate-900">
                     {guardian.relationship || ''}
@@ -308,7 +308,7 @@ export function CustomerGuardianPreview({ data }) {
               {/* Signature Block */}
               <div className="grid grid-cols-3 gap-6 pt-5 pb-1 text-center text-[11px]">
                 <div>
-                  <p className="font-bold text-slate-900 mb-5">Customer Signature</p>
+                  <p className="font-bold text-slate-900 mb-5">Client Signature</p>
                   <div className="border-b border-slate-800 w-3/4 mx-auto mb-1" />
                   <p className="text-[10px] text-slate-700">
                     Date: <span className="font-medium">{formatToDdMmYyyy(declarationDate) || '______________'}</span>

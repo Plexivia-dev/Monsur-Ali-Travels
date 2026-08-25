@@ -5,8 +5,7 @@ import { DataTablePagination } from './DataTablePagination';
 import { toast } from 'sonner';
 import { formatToDdMmYyyy } from '../../lib/utils';
 import { usePortal } from '../../context/PortalContext';
-import { IndianVisaPreview } from '../docs/indian-visa/IndianVisaPreview';
-import { MoneyReceiptModal } from '../docs/receipt/MoneyReceiptModal';
+import { IndianVisaPreview, MoneyReceiptModal } from '@/shared/features/document-studio';
 import { ConfirmDeleteDialog } from '@/components/ui/confirm-delete-dialog';
 import { Button } from '@/components/ui/button';
 

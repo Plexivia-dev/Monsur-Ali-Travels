@@ -1,16 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { CustomerGuardianForm } from './CustomerGuardianForm';
-import { CustomerGuardianPreview } from './CustomerGuardianPreview';
-import { getDefaultCustomerGuardianData, generateApplicationNo } from './sampleData';
+import { ClientGuardianForm } from './ClientGuardianForm';
+import { ClientGuardianPreview } from './ClientGuardianPreview';
+import { getDefaultClientGuardianData, generateApplicationNo } from './sampleData';
 import { Printer, Edit3, CheckCircle2, FileText, Download, Share2, Sparkles, Save, Database } from 'lucide-react';
 import { toast } from 'sonner';
 import { apiClient } from '../../../lib/api-client';
 import { Button } from '@/components/ui/button';
 
-export function CustomerGuardian({ initialData = null, onSavedSuccess = null }) {
+export function ClientGuardian({ initialData = null, onSavedSuccess = null }) {
   const { t } = useTranslation();
-  const [data, setData] = useState(initialData || getDefaultCustomerGuardianData());
+  const [data, setData] = useState(initialData || getDefaultClientGuardianData());
   const [viewMode, setViewMode] = useState('form'); // 'form' | 'preview'
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -21,13 +21,13 @@ export function CustomerGuardian({ initialData = null, onSavedSuccess = null }) 
   }, [initialData]);
 
   const handleReset = () => {
-    setData(getDefaultCustomerGuardianData());
-    toast.info(t('customerForm.clearReset', 'Form data reset'));
+    setData(getDefaultClientGuardianData());
+    toast.info(t('clientForm.clearReset', 'Form data reset'));
   };
 
   const handleSaveToDatabase = async () => {
-    if (!data.customer?.fullName?.trim()) {
-      toast.error(t('customerForm.fullNamePlaceholder', 'Customer full name is required'));
+    if (!data.client?.fullName?.trim()) {
+      toast.error(t('clientForm.fullNamePlaceholder', 'Client full name is required'));
       return;
     }
 
@@ -40,16 +40,16 @@ export function CustomerGuardian({ initialData = null, onSavedSuccess = null }) 
       setIsSubmitting(true);
       const isEdit = Boolean(data._id);
       const res = isEdit
-        ? await apiClient.put(`/api/v1/client/docs/customer-guardians/${data._id}`, payload)
-        : await apiClient.post('/api/v1/client/docs/customer-guardians', payload);
+        ? await apiClient.put(`/api/v1/client/docs/client-guardians/${data._id}`, payload)
+        : await apiClient.post('/api/v1/client/docs/client-guardians', payload);
 
       const savedDoc = res.data?.data;
       if ((res.data?.status === 'success' || res.data?.success) && savedDoc) {
         setData(savedDoc);
         toast.success(
           isEdit
-            ? `${t('customerForm.updateDb', 'Updated')} (App No: ${savedDoc.applicationNo})`
-            : `${t('customerForm.saveDb', 'Saved')} (App No: ${savedDoc.applicationNo})`
+            ? `${t('clientForm.updateDb', 'Updated')} (App No: ${savedDoc.applicationNo})`
+            : `${t('clientForm.saveDb', 'Saved')} (App No: ${savedDoc.applicationNo})`
         );
         if (onSavedSuccess) onSavedSuccess(savedDoc);
         setViewMode('preview');
@@ -72,7 +72,7 @@ export function CustomerGuardian({ initialData = null, onSavedSuccess = null }) 
   };
 
   const handleWhatsAppShare = () => {
-    const customerName = data.customer?.fullName || 'Customer';
+    const clientName = data.client?.fullName || 'Client';
     const total = Number(data.payment?.totalAmount || 0).toLocaleString('en-IN');
     const advance = Number(data.payment?.advancePaid || 0).toLocaleString('en-IN');
     const due = Number(data.payment?.dueAmount || 0).toLocaleString('en-IN');
@@ -81,10 +81,10 @@ export function CustomerGuardian({ initialData = null, onSavedSuccess = null }) 
       `*📄 MONSUR ALI TRAVELS*\n` +
       `*CUSTOMER & GUARDIAN APPLICATION FORM (${data.applicationNo || 'APP-0000'})*\n` +
       `-----------------------------------------\n` +
-      `👤 *Name:* ${customerName}\n` +
+      `👤 *Name:* ${clientName}\n` +
       `📌 *Service:* ${data.serviceType || 'Indian Visa'}\n` +
-      `🆔 *NID:* ${data.customer?.nidNumber || 'N/A'}\n` +
-      `🛂 *Passport:* ${data.customer?.passportNumber || 'N/A'}\n` +
+      `🆔 *NID:* ${data.client?.nidNumber || 'N/A'}\n` +
+      `🛂 *Passport:* ${data.client?.passportNumber || 'N/A'}\n` +
       `👥 *Guardian:* ${data.guardian?.fullName || 'N/A'} (${data.guardian?.relationship || 'Guardian'})\n` +
       `-----------------------------------------\n` +
       `💰 *Total Fee:* ৳ ${total}\n` +
@@ -106,10 +106,10 @@ export function CustomerGuardian({ initialData = null, onSavedSuccess = null }) 
         <div>
           <h2 className="text-base font-bold text-foreground tracking-tight flex items-center gap-2">
             <FileText className="w-5 h-5 text-primary" />
-            {t('customerForm.title', 'Customer & Guardian Information Application Form')}
+            {t('clientForm.title', 'Client & Guardian Information Application Form')}
           </h2>
           <p className="text-xs text-muted-foreground mt-0.5">
-            {t('customerForm.subtitle', 'Create and print official customer & guardian profile details, file tracking status, and advance payment ledger.')}
+            {t('clientForm.subtitle', 'Create and print official client & guardian profile details, file tracking status, and advance payment ledger.')}
           </p>
         </div>
 
@@ -126,7 +126,7 @@ export function CustomerGuardian({ initialData = null, onSavedSuccess = null }) 
               }`}
             >
               <Edit3 className="w-3.5 h-3.5" />
-              <span>{t('customerForm.editForm', 'Edit Form')}</span>
+              <span>{t('clientForm.editForm', 'Edit Form')}</span>
             </button>
             <button
               type="button"
@@ -138,7 +138,7 @@ export function CustomerGuardian({ initialData = null, onSavedSuccess = null }) 
               }`}
             >
               <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500" />
-              <span>{t('customerForm.printPreview', 'Print Preview')}</span>
+              <span>{t('clientForm.printPreview', 'Print Preview')}</span>
             </button>
           </div>
 
@@ -163,14 +163,14 @@ export function CustomerGuardian({ initialData = null, onSavedSuccess = null }) 
             onClick={handlePrint}
           >
             <Printer className="w-4 h-4" />
-            <span>{t('customerForm.downloadPrint', 'Download PDF / Print')}</span>
+            <span>{t('clientForm.downloadPrint', 'Download PDF / Print')}</span>
           </Button>
         </div>
       </div>
 
       {/* Main Content Area */}
       {viewMode === 'form' ? (
-        <CustomerGuardianForm
+        <ClientGuardianForm
           data={data}
           onChange={setData}
           onReset={handleReset}
@@ -180,7 +180,7 @@ export function CustomerGuardian({ initialData = null, onSavedSuccess = null }) 
         />
       ) : (
         <div className="bg-muted/20 border border-border p-4 sm:p-6 rounded-2xl flex flex-col items-center">
-          <CustomerGuardianPreview data={data} />
+          <ClientGuardianPreview data={data} />
         </div>
       )}
     </div>

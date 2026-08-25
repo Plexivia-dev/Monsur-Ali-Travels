@@ -16,8 +16,8 @@ export function getDefaultCharacterCertificateData() {
       logoUrl: "",
     },
 
-    // Candidate Details
-    candidate: {
+    // Client Details
+    client: {
       fullName: "",
       fatherName: "",
       motherName: "",

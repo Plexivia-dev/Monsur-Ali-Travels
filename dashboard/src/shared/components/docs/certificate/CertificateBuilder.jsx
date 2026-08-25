@@ -91,7 +91,7 @@ export function CertificateBuilder() {
       <ExportModal
         isOpen={isExportOpen}
         onClose={() => setIsExportOpen(false)}
-        documentTitle={`${data.candidate.fullName} - Character Certificate`}
+        documentTitle={`${data.client.fullName} - Character Certificate`}
         data={data}
         elementId="printable-certificate-canvas"
       />

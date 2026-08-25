@@ -1,11 +1,11 @@
 import { Badge } from "@/components/ui/badge";
 
-// Check if an order is an In-Store order based on order number prefix, type, or customer email.
+// Check if an order is an In-Store order based on order number prefix, type, or client email.
 export const checkIsInStoreOrder = (order) => {
   if (!order) return false;
   const orderNum = String(order.orderNumber || "").toUpperCase();
   const type = String(order.orderType || "").toLowerCase();
-  const email = String(order.customer?.email || "").toLowerCase();
+  const email = String(order.client?.email || "").toLowerCase();
   return orderNum.startsWith("IS") || type === "instore" || email.includes("instore@monsuralitravels.com");
 };
 
@@ -150,14 +150,14 @@ export const buildUpdatePayload = ({
   paidAmount,
   paymentPhone,
   isDigitalPayment,
-  customerName,
-  customerPhone,
-  customerEmail,
-  customerAddress,
-  customerCity,
-  customerThana,
-  customerDistrict,
-  customerZip,
+  clientName,
+  clientPhone,
+  clientEmail,
+  clientAddress,
+  clientCity,
+  clientThana,
+  clientDistrict,
+  clientZip,
   isInStoreOrder,
   cart,
   subtotal,
@@ -166,7 +166,7 @@ export const buildUpdatePayload = ({
   total,
   user,
 }) => {
-  const formattedPhone = formatPhoneNumber(customerPhone);
+  const formattedPhone = formatPhoneNumber(clientPhone);
   const formattedPaymentPhone = isDigitalPayment && paymentPhone ? formatPhoneNumber(paymentPhone) : "";
 
   let fullPaymentMethod = paymentMethod;
@@ -179,15 +179,15 @@ export const buildUpdatePayload = ({
     paymentMethod: fullPaymentMethod,
     paidAmount: isInStoreOrder ? Number(total || 0) : Number(paidAmount || 0),
     paymentPhone: formattedPaymentPhone,
-    customer: {
-      fullName: customerName.trim(),
+    client: {
+      fullName: clientName.trim(),
       phone: formattedPhone,
-      email: customerEmail.trim() || (isInStoreOrder ? "instore@monsuralitravels.com" : "customer@monsuralitravels.com"),
-      address: customerAddress.trim() || (isInStoreOrder ? "In-Store" : "Delivery Address"),
-      city: customerCity,
-      thana: customerThana,
-      district: customerDistrict,
-      zip: customerZip,
+      email: clientEmail.trim() || (isInStoreOrder ? "instore@monsuralitravels.com" : "client@monsuralitravels.com"),
+      address: clientAddress.trim() || (isInStoreOrder ? "In-Store" : "Delivery Address"),
+      city: clientCity,
+      thana: clientThana,
+      district: clientDistrict,
+      zip: clientZip,
       giftWrap: false,
     },
     items: cart.map((item) => ({

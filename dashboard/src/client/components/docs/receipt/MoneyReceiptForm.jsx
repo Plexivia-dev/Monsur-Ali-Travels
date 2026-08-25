@@ -28,26 +28,26 @@ import { Button } from '@/components/ui/button';
 
 export function MoneyReceiptForm({ data, onChange, onReset, onSave, onPreview, isSubmitting }) {
   const { t } = useTranslation();
-  const [detectedCustomer, setDetectedCustomer] = useState(null);
+  const [detectedClient, setDetectedClient] = useState(null);
   const [hasPromptedFor, setHasPromptedFor] = useState(new Set());
   const lookupTimeoutRef = useRef(null);
 
-  // Auto-detect existing customer by phone or passport
-  const checkExistingCustomer = async (queryValue) => {
+  // Auto-detect existing client by phone or passport
+  const checkExistingClient = async (queryValue) => {
     if (!queryValue || queryValue.length < 7) return;
     if (hasPromptedFor.has(queryValue.trim())) return;
 
     try {
-      const res = await apiClient.get('/api/v1/client/customers/lookup', {
+      const res = await apiClient.get('/api/v1/client/clients/lookup', {
         params: { query: queryValue.trim() },
       });
       if (res.data?.success && res.data?.data && res.data.data.length > 0) {
         const matched = res.data.data[0];
-        setDetectedCustomer(matched);
+        setDetectedClient(matched);
         setHasPromptedFor((prev) => new Set(prev).add(queryValue.trim()));
       }
     } catch (err) {
-      console.warn('Customer lookup skipped:', err.message);
+      console.warn('Client lookup skipped:', err.message);
     }
   };
 
@@ -66,21 +66,21 @@ export function MoneyReceiptForm({ data, onChange, onReset, onSave, onPreview, i
     if (field === 'phone' || field === 'passportNumber') {
       if (lookupTimeoutRef.current) clearTimeout(lookupTimeoutRef.current);
       lookupTimeoutRef.current = setTimeout(() => {
-        checkExistingCustomer(value);
+        checkExistingClient(value);
       }, 700);
     }
   };
 
-  const handleAutoFillCustomer = () => {
-    if (!detectedCustomer) return;
+  const handleAutoFillClient = () => {
+    if (!detectedClient) return;
     onChange((prev) => ({
       ...prev,
-      clientName: detectedCustomer.fullName || prev.clientName,
-      phone: detectedCustomer.phone || prev.phone,
-      passportNumber: detectedCustomer.passportNumber || prev.passportNumber,
+      clientName: detectedClient.fullName || prev.clientName,
+      phone: detectedClient.phone || prev.phone,
+      passportNumber: detectedClient.passportNumber || prev.passportNumber,
     }));
-    toast.success(`Customer "${detectedCustomer.fullName}" info auto-filled!`);
-    setDetectedCustomer(null);
+    toast.success(`Client "${detectedClient.fullName}" info auto-filled!`);
+    setDetectedClient(null);
   };
 
   return (
@@ -110,26 +110,26 @@ export function MoneyReceiptForm({ data, onChange, onReset, onSave, onPreview, i
         </div>
       </div>
 
-      {/* Existing Customer Auto-Fill Notification */}
-      {detectedCustomer && (
+      {/* Existing Client Auto-Fill Notification */}
+      {detectedClient && (
         <div className="bg-sky-500/10 border border-sky-500/30 p-3 rounded-xl flex items-center justify-between gap-3 text-xs animate-in fade-in duration-200">
           <div className="flex items-center gap-2">
             <Sparkles className="w-4 h-4 text-sky-500 shrink-0" />
             <span>
-              Existing customer found: <strong className="text-foreground">{detectedCustomer.fullName}</strong> ({detectedCustomer.phone})
+              Existing client found: <strong className="text-foreground">{detectedClient.fullName}</strong> ({detectedClient.phone})
             </span>
           </div>
           <div className="flex items-center gap-2">
             <button
               type="button"
-              onClick={handleAutoFillCustomer}
+              onClick={handleAutoFillClient}
               className="bg-sky-600 hover:bg-sky-700 text-white px-3 py-1 rounded-lg font-bold text-[11px] cursor-pointer transition-colors shadow-2xs"
             >
               Auto-Fill
             </button>
             <button
               type="button"
-              onClick={() => setDetectedCustomer(null)}
+              onClick={() => setDetectedClient(null)}
               className="text-muted-foreground hover:text-foreground text-[11px] px-1.5 py-1"
             >
               Dismiss

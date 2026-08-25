@@ -47,7 +47,7 @@ export function ResumeBuilder() {
           <button
             onClick={handleResetSample}
             className="flex items-center space-x-1.5 bg-muted/60 hover:bg-muted text-foreground text-xs font-medium px-3 py-1.5 rounded-lg border border-border transition-colors cursor-pointer"
-            title="Load Sample Candidate Profile"
+            title="Load Sample Client Profile"
           >
             <RefreshCw className="w-3.5 h-3.5 text-muted-foreground" />
             <span>Reset Sample</span>

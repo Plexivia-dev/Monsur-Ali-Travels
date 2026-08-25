@@ -33,107 +33,107 @@ import {
 import { BdPhoneInput } from '../../common/BdPhoneInput';
 import { DatePicker } from '../../ui/date-picker';
 import { SERVICE_TYPES, STATUS_OPTIONS, getServiceLabel, getStatusLabel } from './sampleData';
-import { ExistingCustomerAlertModal } from '../common/ExistingCustomerAlertModal';
+import { ExistingClientAlertModal } from '../common/ExistingClientAlertModal';
 import { apiClient } from '../../../lib/api-client';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 
-export function CustomerGuardianForm({ data, onChange, onReset, onSave, onPreview, isSubmitting }) {
+export function ClientGuardianForm({ data, onChange, onReset, onSave, onPreview, isSubmitting }) {
   const { t, i18n } = useTranslation();
   const isBn = i18n.language === 'bn';
   const [selectedPreviewDoc, setSelectedPreviewDoc] = useState(null);
-  const [detectedCustomer, setDetectedCustomer] = useState(null);
+  const [detectedClient, setDetectedClient] = useState(null);
   const [hasPromptedFor, setHasPromptedFor] = useState(new Set());
   const lookupTimeoutRef = useRef(null);
 
-  // Auto-detect existing customer by mobile or passport
-  const checkExistingCustomer = async (queryValue) => {
+  // Auto-detect existing client by mobile or passport
+  const checkExistingClient = async (queryValue) => {
     if (!queryValue || queryValue.length < 8) return;
     if (hasPromptedFor.has(queryValue.trim())) return;
 
     try {
-      const res = await apiClient.get('/api/v1/client/customers/lookup', {
+      const res = await apiClient.get('/api/v1/client/clients/lookup', {
         params: { query: queryValue.trim() }
       });
       if (res.data?.success && res.data?.data && res.data.data.length > 0) {
         const matched = res.data.data[0];
-        setDetectedCustomer(matched);
+        setDetectedClient(matched);
         setHasPromptedFor(prev => new Set(prev).add(queryValue.trim()));
       }
     } catch (err) {
-      console.warn('Customer lookup skipped:', err.message);
+      console.warn('Client lookup skipped:', err.message);
     }
   };
 
-  const handleCustomerChange = (field, value) => {
+  const handleClientChange = (field, value) => {
     onChange(prev => ({
       ...prev,
-      customer: { ...prev.customer, [field]: value }
+      client: { ...prev.client, [field]: value }
     }));
 
     // Trigger lookup for mobileNumber or passportNumber
     if (field === 'mobileNumber' || field === 'passportNumber') {
       if (lookupTimeoutRef.current) clearTimeout(lookupTimeoutRef.current);
       lookupTimeoutRef.current = setTimeout(() => {
-        checkExistingCustomer(value);
+        checkExistingClient(value);
       }, 700);
     }
   };
 
   // Option 1: Auto Fill from Existing Profile
-  const handleAutoFillCustomer = () => {
-    if (!detectedCustomer) return;
+  const handleAutoFillClient = () => {
+    if (!detectedClient) return;
     onChange(prev => ({
       ...prev,
-      customerId: detectedCustomer._id,
-      customer: {
-        ...prev.customer,
-        fullName: detectedCustomer.fullName || prev.customer.fullName,
-        nidNumber: detectedCustomer.nidNumber || prev.customer.nidNumber,
-        passportNumber: detectedCustomer.passportNumber || prev.customer.passportNumber,
-        mobileNumber: detectedCustomer.phone || prev.customer.mobileNumber,
-        email: detectedCustomer.email || prev.customer.email,
-        fatherName: detectedCustomer.fatherName || prev.customer.fatherName,
-        motherName: detectedCustomer.motherName || prev.customer.motherName,
+      clientId: detectedClient._id,
+      client: {
+        ...prev.client,
+        fullName: detectedClient.fullName || prev.client.fullName,
+        nidNumber: detectedClient.nidNumber || prev.client.nidNumber,
+        passportNumber: detectedClient.passportNumber || prev.client.passportNumber,
+        mobileNumber: detectedClient.phone || prev.client.mobileNumber,
+        email: detectedClient.email || prev.client.email,
+        fatherName: detectedClient.fatherName || prev.client.fatherName,
+        motherName: detectedClient.motherName || prev.client.motherName,
       },
       guardian: {
         ...prev.guardian,
-        fullName: detectedCustomer.guardian?.name || prev.guardian.fullName,
-        mobileNumber: detectedCustomer.guardian?.phone || prev.guardian.mobileNumber,
-        nidNumber: detectedCustomer.guardian?.nidNumber || prev.guardian.nidNumber,
-        relationship: detectedCustomer.guardian?.relationship || prev.guardian.relationship,
-        address: detectedCustomer.guardian?.address || prev.guardian.address,
+        fullName: detectedClient.guardian?.name || prev.guardian.fullName,
+        mobileNumber: detectedClient.guardian?.phone || prev.guardian.mobileNumber,
+        nidNumber: detectedClient.guardian?.nidNumber || prev.guardian.nidNumber,
+        relationship: detectedClient.guardian?.relationship || prev.guardian.relationship,
+        address: detectedClient.guardian?.address || prev.guardian.address,
       },
       attachments: {
         ...prev.attachments,
-        passportPhoto: detectedCustomer.attachments?.photo || prev.attachments.passportPhoto,
-        passportScan: detectedCustomer.attachments?.passportScan || prev.attachments.passportScan,
-        nidScan: detectedCustomer.attachments?.nidScan || prev.attachments.nidScan,
+        passportPhoto: detectedClient.attachments?.photo || prev.attachments.passportPhoto,
+        passportScan: detectedClient.attachments?.passportScan || prev.attachments.passportScan,
+        nidScan: detectedClient.attachments?.nidScan || prev.attachments.nidScan,
       }
     }));
-    toast.success(`"${detectedCustomer.fullName}" এর সংরক্ষিত তথ্য ফর্মে অটো-ফিল করা হয়েছে!`);
-    setDetectedCustomer(null);
+    toast.success(`"${detectedClient.fullName}" এর সংরক্ষিত তথ্য ফর্মে অটো-ফিল করা হয়েছে!`);
+    setDetectedClient(null);
   };
 
   // Option 2: Update Existing Profile with current form data
-  const handleUpdateExistingCustomer = () => {
-    if (!detectedCustomer) return;
+  const handleUpdateExistingClient = () => {
+    if (!detectedClient) return;
     onChange(prev => ({
       ...prev,
-      customerId: detectedCustomer._id,
+      clientId: detectedClient._id,
     }));
-    toast.success(`কাস্টমার "${detectedCustomer.fullName}" এর সাথে লিংক করা হয়েছে। সেভ করলে প্রোফাইল আপডেট হবে!`);
-    setDetectedCustomer(null);
+    toast.success(`ক্লায়েন্ট "${detectedClient.fullName}" এর সাথে লিংক করা হয়েছে। সেভ করলে প্রোফাইল আপডেট হবে!`);
+    setDetectedClient(null);
   };
 
   // Option 3: Ignore & Proceed as New Unlinked
   const handleProceedAsNew = () => {
     onChange(prev => ({
       ...prev,
-      customerId: null,
+      clientId: null,
     }));
     toast.info('নতুন আনলিংকড ডকুমেন্ট হিসেবে সংরক্ষণ মোড সক্রিয় করা হয়েছে।');
-    setDetectedCustomer(null);
+    setDetectedClient(null);
   };
 
   const handleGuardianChange = (field, value) => {
@@ -269,10 +269,10 @@ export function CustomerGuardianForm({ data, onChange, onReset, onSave, onPrevie
         <div>
           <h2 className="text-base font-bold text-foreground flex items-center gap-2">
             <FileText className="w-5 h-5 text-primary" />
-            {t('customerForm.title', 'Customer & Guardian Information Application Form')}
+            {t('clientForm.title', 'Client & Guardian Information Application Form')}
           </h2>
           <p className="text-xs text-muted-foreground mt-0.5">
-            {t('customerForm.subtitle', 'Create and print official customer & guardian profile details, file tracking status, and advance payment ledger.')}
+            {t('clientForm.subtitle', 'Create and print official client & guardian profile details, file tracking status, and advance payment ledger.')}
           </p>
         </div>
 
@@ -284,7 +284,7 @@ export function CustomerGuardianForm({ data, onChange, onReset, onSave, onPrevie
             onClick={onReset}
           >
             <RefreshCw className="w-3.5 h-3.5" />
-            <span>{t('customerForm.clearReset', 'Clear / Reset Form')}</span>
+            <span>{t('clientForm.clearReset', 'Clear / Reset Form')}</span>
           </Button>
         </div>
       </div>
@@ -295,7 +295,7 @@ export function CustomerGuardianForm({ data, onChange, onReset, onSave, onPrevie
           <div>
             <label className="block font-bold text-foreground mb-1 flex items-center gap-1.5">
               <Layers className="w-3.5 h-3.5 text-primary" />
-              {t('customerForm.serviceType', 'Service Type')}
+              {t('clientForm.serviceType', 'Service Type')}
             </label>
             <select
               value={data.serviceType || 'Indian Visa Application'}
@@ -313,7 +313,7 @@ export function CustomerGuardianForm({ data, onChange, onReset, onSave, onPrevie
           <div>
             <label className="block font-bold text-foreground mb-1 flex items-center gap-1.5">
               <Activity className="w-3.5 h-3.5 text-amber-500" />
-              {t('customerForm.fileStatus', 'File Processing Status')}
+              {t('clientForm.fileStatus', 'File Processing Status')}
             </label>
             <select
               value={data.status || 'received'}
@@ -329,7 +329,7 @@ export function CustomerGuardianForm({ data, onChange, onReset, onSave, onPrevie
           </div>
 
           <div>
-            <label className="block font-bold text-foreground mb-1">{t('customerForm.applicationNo', 'Application No.')}</label>
+            <label className="block font-bold text-foreground mb-1">{t('clientForm.applicationNo', 'Application No.')}</label>
             <input
               type="text"
               value={data.applicationNo || ''}
@@ -339,7 +339,7 @@ export function CustomerGuardianForm({ data, onChange, onReset, onSave, onPrevie
           </div>
 
           <div>
-            <label className="block font-bold text-foreground mb-1">{t('customerForm.dateReceived', 'Date Received')}</label>
+            <label className="block font-bold text-foreground mb-1">{t('clientForm.dateReceived', 'Date Received')}</label>
             <DatePicker
               value={data.dateReceived || ''}
               onChange={(val) => onChange(prev => ({ ...prev, dateReceived: val, declarationDate: val }))}
@@ -352,97 +352,97 @@ export function CustomerGuardianForm({ data, onChange, onReset, onSave, onPrevie
       <div className="space-y-3">
         <div className="flex items-center gap-2 bg-[#103058] text-white px-3.5 py-2 rounded-xl text-xs font-bold uppercase tracking-wider">
           <User className="w-4 h-4" />
-          <span>{t('customerForm.customerDetails', '1. Customer Details')}</span>
+          <span>{t('clientForm.clientDetails', '1. Client Details')}</span>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 text-xs">
           <div>
             <label className="block font-semibold text-foreground mb-1">
-              {t('customerForm.fullName', 'Full Name')} <span className="text-rose-500 font-bold">*</span>
+              {t('clientForm.fullName', 'Full Name')} <span className="text-rose-500 font-bold">*</span>
             </label>
             <input
               type="text"
-              placeholder={t('customerForm.fullNamePlaceholder', 'Enter customer full name')}
-              value={data.customer?.fullName || ''}
-              onChange={(e) => handleCustomerChange('fullName', e.target.value)}
+              placeholder={t('clientForm.fullNamePlaceholder', 'Enter client full name')}
+              value={data.client?.fullName || ''}
+              onChange={(e) => handleClientChange('fullName', e.target.value)}
               className="w-full px-3 py-2 bg-muted/50 border border-border rounded-lg text-foreground focus:outline-hidden focus:ring-1 focus:ring-primary font-bold"
             />
           </div>
 
           <div>
             <label className="block font-semibold text-foreground mb-1">
-              {t('customerForm.nidNumber', 'NID Number')} <span className="text-rose-500 font-bold">*</span>
+              {t('clientForm.nidNumber', 'NID Number')} <span className="text-rose-500 font-bold">*</span>
             </label>
             <input
               type="text"
-              placeholder={t('customerForm.nidPlaceholder', 'National ID card number')}
-              value={data.customer?.nidNumber || ''}
-              onChange={(e) => handleCustomerChange('nidNumber', e.target.value)}
+              placeholder={t('clientForm.nidPlaceholder', 'National ID card number')}
+              value={data.client?.nidNumber || ''}
+              onChange={(e) => handleClientChange('nidNumber', e.target.value)}
               className="w-full px-3 py-2 bg-muted/50 border border-border rounded-lg text-foreground font-mono focus:outline-hidden focus:ring-1 focus:ring-primary"
             />
           </div>
 
           <div>
-            <label className="block font-semibold text-foreground mb-1">{t('customerForm.passportNumber', 'Passport Number')}</label>
+            <label className="block font-semibold text-foreground mb-1">{t('clientForm.passportNumber', 'Passport Number')}</label>
             <input
               type="text"
-              placeholder={t('customerForm.passportPlaceholder', 'Passport number')}
-              value={data.customer?.passportNumber || ''}
-              onChange={(e) => handleCustomerChange('passportNumber', e.target.value)}
+              placeholder={t('clientForm.passportPlaceholder', 'Passport number')}
+              value={data.client?.passportNumber || ''}
+              onChange={(e) => handleClientChange('passportNumber', e.target.value)}
               className="w-full px-3 py-2 bg-muted/50 border border-border rounded-lg text-foreground font-mono focus:outline-hidden focus:ring-1 focus:ring-primary uppercase"
             />
           </div>
 
           <div>
             <label className="block font-semibold text-foreground mb-1 leading-tight truncate" title="Country previously applied to and rejected by">
-              {t('customerForm.rejectedCountry', 'Rejected Country (if any)')}
+              {t('clientForm.rejectedCountry', 'Rejected Country (if any)')}
             </label>
             <input
               type="text"
-              placeholder={t('customerForm.rejectedCountryPlaceholder', 'Previously rejected country (if any)')}
-              value={data.customer?.countryRejected || ''}
-              onChange={(e) => handleCustomerChange('countryRejected', e.target.value)}
+              placeholder={t('clientForm.rejectedCountryPlaceholder', 'Previously rejected country (if any)')}
+              value={data.client?.countryRejected || ''}
+              onChange={(e) => handleClientChange('countryRejected', e.target.value)}
               className="w-full px-3 py-2 bg-muted/50 border border-border rounded-lg text-foreground focus:outline-hidden focus:ring-1 focus:ring-primary"
             />
           </div>
 
           <div>
-            <label className="block font-semibold text-foreground mb-1">{t('customerForm.fatherName', "Father's Name")}</label>
+            <label className="block font-semibold text-foreground mb-1">{t('clientForm.fatherName', "Father's Name")}</label>
             <input
               type="text"
-              placeholder={t('customerForm.fatherNamePlaceholder', "Enter father's name")}
-              value={data.customer?.fatherName || ''}
-              onChange={(e) => handleCustomerChange('fatherName', e.target.value)}
+              placeholder={t('clientForm.fatherNamePlaceholder', "Enter father's name")}
+              value={data.client?.fatherName || ''}
+              onChange={(e) => handleClientChange('fatherName', e.target.value)}
               className="w-full px-3 py-2 bg-muted/50 border border-border rounded-lg text-foreground focus:outline-hidden focus:ring-1 focus:ring-primary uppercase"
             />
           </div>
 
           <div>
-            <label className="block font-semibold text-foreground mb-1">{t('customerForm.motherName', "Mother's Name")}</label>
+            <label className="block font-semibold text-foreground mb-1">{t('clientForm.motherName', "Mother's Name")}</label>
             <input
               type="text"
-              placeholder={t('customerForm.motherNamePlaceholder', "Enter mother's name")}
-              value={data.customer?.motherName || ''}
-              onChange={(e) => handleCustomerChange('motherName', e.target.value)}
+              placeholder={t('clientForm.motherNamePlaceholder', "Enter mother's name")}
+              value={data.client?.motherName || ''}
+              onChange={(e) => handleClientChange('motherName', e.target.value)}
               className="w-full px-3 py-2 bg-muted/50 border border-border rounded-lg text-foreground focus:outline-hidden focus:ring-1 focus:ring-primary uppercase"
             />
           </div>
 
           <div>
-            <label className="block font-semibold text-foreground mb-1">{t('customerForm.mobileNumber', 'Phone Number')}</label>
+            <label className="block font-semibold text-foreground mb-1">{t('clientForm.mobileNumber', 'Phone Number')}</label>
             <BdPhoneInput
-              value={data.customer?.mobileNumber || ''}
-              onChange={(val) => handleCustomerChange('mobileNumber', val)}
+              value={data.client?.mobileNumber || ''}
+              onChange={(val) => handleClientChange('mobileNumber', val)}
             />
           </div>
 
           <div>
-            <label className="block font-semibold text-foreground mb-1">{t('customerForm.emailAddress', 'Email Address')}</label>
+            <label className="block font-semibold text-foreground mb-1">{t('clientForm.emailAddress', 'Email Address')}</label>
             <input
               type="email"
-              placeholder={t('customerForm.emailPlaceholder', 'Email address')}
-              value={data.customer?.email || ''}
-              onChange={(e) => handleCustomerChange('email', e.target.value)}
+              placeholder={t('clientForm.emailPlaceholder', 'Email address')}
+              value={data.client?.email || ''}
+              onChange={(e) => handleClientChange('email', e.target.value)}
               className="w-full px-3 py-2 bg-muted/50 border border-border rounded-lg text-foreground focus:outline-hidden focus:ring-1 focus:ring-primary"
             />
           </div>
@@ -453,15 +453,15 @@ export function CustomerGuardianForm({ data, onChange, onReset, onSave, onPrevie
       <div className="space-y-3">
         <div className="flex items-center gap-2 bg-[#103058] text-white px-3.5 py-2 rounded-xl text-xs font-bold uppercase tracking-wider">
           <Users className="w-4 h-4" />
-          <span>{t('customerForm.guardianDetails', '2. Guardian Details')}</span>
+          <span>{t('clientForm.guardianDetails', '2. Guardian Details')}</span>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 text-xs">
           <div>
-            <label className="block font-semibold text-foreground mb-1">{t('customerForm.guardianFullName', 'Guardian Full Name')}</label>
+            <label className="block font-semibold text-foreground mb-1">{t('clientForm.guardianFullName', 'Guardian Full Name')}</label>
             <input
               type="text"
-              placeholder={t('customerForm.guardianFullNamePlaceholder', 'Guardian full name')}
+              placeholder={t('clientForm.guardianFullNamePlaceholder', 'Guardian full name')}
               value={data.guardian?.fullName || ''}
               onChange={(e) => handleGuardianChange('fullName', e.target.value)}
               className="w-full px-3 py-2 bg-muted/50 border border-border rounded-lg text-foreground focus:outline-hidden focus:ring-1 focus:ring-primary font-bold"
@@ -469,10 +469,10 @@ export function CustomerGuardianForm({ data, onChange, onReset, onSave, onPrevie
           </div>
 
           <div>
-            <label className="block font-semibold text-foreground mb-1">{t('customerForm.guardianNid', 'NID Card Number')}</label>
+            <label className="block font-semibold text-foreground mb-1">{t('clientForm.guardianNid', 'NID Card Number')}</label>
             <input
               type="text"
-              placeholder={t('customerForm.guardianNidPlaceholder', 'Guardian NID number')}
+              placeholder={t('clientForm.guardianNidPlaceholder', 'Guardian NID number')}
               value={data.guardian?.nidNumber || ''}
               onChange={(e) => handleGuardianChange('nidNumber', e.target.value)}
               className="w-full px-3 py-2 bg-muted/50 border border-border rounded-lg text-foreground font-mono focus:outline-hidden focus:ring-1 focus:ring-primary"
@@ -480,10 +480,10 @@ export function CustomerGuardianForm({ data, onChange, onReset, onSave, onPrevie
           </div>
 
           <div>
-            <label className="block font-semibold text-foreground mb-1">{t('customerForm.fatherName', "Father's Name")}</label>
+            <label className="block font-semibold text-foreground mb-1">{t('clientForm.fatherName', "Father's Name")}</label>
             <input
               type="text"
-              placeholder={t('customerForm.fatherNamePlaceholder', "Enter father's name")}
+              placeholder={t('clientForm.fatherNamePlaceholder', "Enter father's name")}
               value={data.guardian?.fatherName || ''}
               onChange={(e) => handleGuardianChange('fatherName', e.target.value)}
               className="w-full px-3 py-2 bg-muted/50 border border-border rounded-lg text-foreground focus:outline-hidden focus:ring-1 focus:ring-primary uppercase"
@@ -491,10 +491,10 @@ export function CustomerGuardianForm({ data, onChange, onReset, onSave, onPrevie
           </div>
 
           <div>
-            <label className="block font-semibold text-foreground mb-1">{t('customerForm.motherName', "Mother's Name")}</label>
+            <label className="block font-semibold text-foreground mb-1">{t('clientForm.motherName', "Mother's Name")}</label>
             <input
               type="text"
-              placeholder={t('customerForm.motherNamePlaceholder', "Enter mother's name")}
+              placeholder={t('clientForm.motherNamePlaceholder', "Enter mother's name")}
               value={data.guardian?.motherName || ''}
               onChange={(e) => handleGuardianChange('motherName', e.target.value)}
               className="w-full px-3 py-2 bg-muted/50 border border-border rounded-lg text-foreground focus:outline-hidden focus:ring-1 focus:ring-primary uppercase"
@@ -502,7 +502,7 @@ export function CustomerGuardianForm({ data, onChange, onReset, onSave, onPrevie
           </div>
 
           <div>
-            <label className="block font-semibold text-foreground mb-1">{t('customerForm.mobileNumber', 'Phone Number')}</label>
+            <label className="block font-semibold text-foreground mb-1">{t('clientForm.mobileNumber', 'Phone Number')}</label>
             <BdPhoneInput
               value={data.guardian?.mobileNumber || ''}
               onChange={(val) => handleGuardianChange('mobileNumber', val)}
@@ -510,10 +510,10 @@ export function CustomerGuardianForm({ data, onChange, onReset, onSave, onPrevie
           </div>
 
           <div>
-            <label className="block font-semibold text-foreground mb-1">{t('customerForm.emailAddress', 'Email Address')}</label>
+            <label className="block font-semibold text-foreground mb-1">{t('clientForm.emailAddress', 'Email Address')}</label>
             <input
               type="email"
-              placeholder={t('customerForm.emailPlaceholder', 'Email address')}
+              placeholder={t('clientForm.emailPlaceholder', 'Email address')}
               value={data.guardian?.email || ''}
               onChange={(e) => handleGuardianChange('email', e.target.value)}
               className="w-full px-3 py-2 bg-muted/50 border border-border rounded-lg text-foreground focus:outline-hidden focus:ring-1 focus:ring-primary"
@@ -521,10 +521,10 @@ export function CustomerGuardianForm({ data, onChange, onReset, onSave, onPrevie
           </div>
 
           <div>
-            <label className="block font-semibold text-foreground mb-1">{t('customerForm.relationship', 'Relationship with Customer')}</label>
+            <label className="block font-semibold text-foreground mb-1">{t('clientForm.relationship', 'Relationship with Client')}</label>
             <input
               type="text"
-              placeholder={t('customerForm.relationshipPlaceholder', 'e.g. Father, Uncle, Brother')}
+              placeholder={t('clientForm.relationshipPlaceholder', 'e.g. Father, Uncle, Brother')}
               value={data.guardian?.relationship || ''}
               onChange={(e) => handleGuardianChange('relationship', e.target.value)}
               className="w-full px-3 py-2 bg-muted/50 border border-border rounded-lg text-foreground focus:outline-hidden focus:ring-1 focus:ring-primary font-medium"
@@ -532,10 +532,10 @@ export function CustomerGuardianForm({ data, onChange, onReset, onSave, onPrevie
           </div>
 
           <div>
-            <label className="block font-semibold text-foreground mb-1">{t('customerForm.guardianAddress', 'Guardian Address')}</label>
+            <label className="block font-semibold text-foreground mb-1">{t('clientForm.guardianAddress', 'Guardian Address')}</label>
             <input
               type="text"
-              placeholder={t('customerForm.guardianAddressPlaceholder', 'Village, Post Office, District')}
+              placeholder={t('clientForm.guardianAddressPlaceholder', 'Village, Post Office, District')}
               value={data.guardian?.address || ''}
               onChange={(e) => handleGuardianChange('address', e.target.value)}
               className="w-full px-3 py-2 bg-muted/50 border border-border rounded-lg text-foreground focus:outline-hidden focus:ring-1 focus:ring-primary"
@@ -549,7 +549,7 @@ export function CustomerGuardianForm({ data, onChange, onReset, onSave, onPrevie
         <div className="flex items-center justify-between bg-[#103058] text-white px-3.5 py-2 rounded-xl text-xs font-bold uppercase tracking-wider">
           <div className="flex items-center gap-2">
             <FileText className="w-4 h-4" />
-            <span>{t('customerForm.requirementDocs', '3. Customer Requirement Documents')}</span>
+            <span>{t('clientForm.requirementDocs', '3. Client Requirement Documents')}</span>
           </div>
           <Button
             type="button"
@@ -558,7 +558,7 @@ export function CustomerGuardianForm({ data, onChange, onReset, onSave, onPrevie
             onClick={handleAddDoc}
           >
             <Plus className="w-3 h-3" />
-            <span>{t('customerForm.addDocument', 'Add Document')}</span>
+            <span>{t('clientForm.addDocument', 'Add Document')}</span>
           </Button>
         </div>
 
@@ -566,10 +566,10 @@ export function CustomerGuardianForm({ data, onChange, onReset, onSave, onPrevie
           <table className="w-full text-left">
             <thead className="bg-muted/60 text-muted-foreground border-b border-border text-[11px] uppercase font-bold">
               <tr>
-                <th className="py-2 px-3 w-12 text-center">{t('customerForm.no', 'No.')}</th>
-                <th className="py-2 px-3">{t('customerForm.requiredDocument', 'Required Document')}</th>
-                <th className="py-2 px-3 w-36">{t('customerForm.submittedStatus', 'Submitted Status')}</th>
-                <th className="py-2 px-3 w-48">{t('customerForm.remarks', 'Remarks')}</th>
+                <th className="py-2 px-3 w-12 text-center">{t('clientForm.no', 'No.')}</th>
+                <th className="py-2 px-3">{t('clientForm.requiredDocument', 'Required Document')}</th>
+                <th className="py-2 px-3 w-36">{t('clientForm.submittedStatus', 'Submitted Status')}</th>
+                <th className="py-2 px-3 w-48">{t('clientForm.remarks', 'Remarks')}</th>
                 <th className="py-2 px-3 w-10 text-center"></th>
               </tr>
             </thead>
@@ -591,16 +591,16 @@ export function CustomerGuardianForm({ data, onChange, onReset, onSave, onPrevie
                       onChange={(e) => handleDocChange(idx, 'submitted', e.target.value)}
                       className="w-full px-2 py-1 bg-muted/60 border border-border rounded text-xs font-semibold text-foreground focus:ring-1 focus:ring-primary cursor-pointer"
                     >
-                      <option value="Yes">{t('customerForm.submittedYes', 'Yes (Submitted)')}</option>
-                      <option value="No">{t('customerForm.submittedNo', 'No (Missing)')}</option>
-                      <option value="Pending">{t('customerForm.submittedPending', 'Pending')}</option>
-                      <option value="N/A">{t('customerForm.submittedNa', 'N/A')}</option>
+                      <option value="Yes">{t('clientForm.submittedYes', 'Yes (Submitted)')}</option>
+                      <option value="No">{t('clientForm.submittedNo', 'No (Missing)')}</option>
+                      <option value="Pending">{t('clientForm.submittedPending', 'Pending')}</option>
+                      <option value="N/A">{t('clientForm.submittedNa', 'N/A')}</option>
                     </select>
                   </td>
                   <td className="py-2 px-3">
                     <input
                       type="text"
-                      placeholder={t('customerForm.remarksPlaceholder', 'Remarks...')}
+                      placeholder={t('clientForm.remarksPlaceholder', 'Remarks...')}
                       value={doc.remarks || ''}
                       onChange={(e) => handleDocChange(idx, 'remarks', e.target.value)}
                       className="w-full px-2 py-1 bg-muted/50 border border-border rounded text-xs text-foreground focus:ring-1 focus:ring-primary"
@@ -627,12 +627,12 @@ export function CustomerGuardianForm({ data, onChange, onReset, onSave, onPrevie
       <div className="space-y-3">
         <div className="flex items-center gap-2 bg-[#103058] text-white px-3.5 py-2 rounded-xl text-xs font-bold uppercase tracking-wider">
           <DollarSign className="w-4 h-4" />
-          <span>{t('customerForm.paymentDetails', '4. Service Fee & Advance Payment')}</span>
+          <span>{t('clientForm.paymentDetails', '4. Service Fee & Advance Payment')}</span>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3 text-xs bg-muted/30 p-4 rounded-xl border border-border">
           <div>
-            <label className="block font-bold text-foreground mb-1">{t('customerForm.totalAgreedFee', 'Total Agreed Fee')}</label>
+            <label className="block font-bold text-foreground mb-1">{t('clientForm.totalAgreedFee', 'Total Agreed Fee')}</label>
             <div className="relative">
               <span className="absolute left-3 top-2 font-bold text-muted-foreground">৳</span>
               <input
@@ -647,7 +647,7 @@ export function CustomerGuardianForm({ data, onChange, onReset, onSave, onPrevie
 
           <div>
             <label className="block font-bold text-emerald-600 dark:text-emerald-400 mb-1">
-              {t('customerForm.advancePaid', 'Advance Paid')}
+              {t('clientForm.advancePaid', 'Advance Paid')}
             </label>
             <div className="relative">
               <span className="absolute left-3 top-2 font-bold text-emerald-600">৳</span>
@@ -663,7 +663,7 @@ export function CustomerGuardianForm({ data, onChange, onReset, onSave, onPrevie
 
           <div>
             <label className="block font-bold text-rose-600 dark:text-rose-400 mb-1">
-              {t('customerForm.dueAmount', 'Due Amount')}
+              {t('clientForm.dueAmount', 'Due Amount')}
             </label>
             <div className="relative">
               <span className="absolute left-3 top-2 font-bold text-rose-600">৳</span>
@@ -677,13 +677,13 @@ export function CustomerGuardianForm({ data, onChange, onReset, onSave, onPrevie
           </div>
 
           <div>
-            <label className="block font-bold text-foreground mb-1">{t('customerForm.paymentMethod', 'Payment Method')}</label>
+            <label className="block font-bold text-foreground mb-1">{t('clientForm.paymentMethod', 'Payment Method')}</label>
             <select
               value={data.payment?.paymentMethod || 'Cash'}
               onChange={(e) => handlePaymentChange('paymentMethod', e.target.value)}
               className="w-full px-3 py-2 bg-background border border-border rounded-lg text-foreground font-semibold focus:outline-hidden focus:ring-1 focus:ring-primary cursor-pointer"
             >
-              <option value="Cash">{t('customerForm.cash', 'Cash')}</option>
+              <option value="Cash">{t('clientForm.cash', 'Cash')}</option>
               <option value="bKash">bKash</option>
               <option value="Nagad">Nagad</option>
               <option value="Rocket">Rocket</option>
@@ -693,7 +693,7 @@ export function CustomerGuardianForm({ data, onChange, onReset, onSave, onPrevie
           </div>
 
           <div>
-            <label className="block font-bold text-foreground mb-1">{t('customerForm.receiptNo', 'Money Receipt No.')}</label>
+            <label className="block font-bold text-foreground mb-1">{t('clientForm.receiptNo', 'Money Receipt No.')}</label>
             <input
               type="text"
               placeholder="e.g. REC-5829"
@@ -710,9 +710,9 @@ export function CustomerGuardianForm({ data, onChange, onReset, onSave, onPrevie
         <div className="flex items-center justify-between bg-[#103058] text-white px-3.5 py-2 rounded-xl text-xs font-bold uppercase tracking-wider">
           <div className="flex items-center gap-2">
             <Paperclip className="w-4 h-4" />
-            <span>{t('customerForm.attachments', '5. Document Attachments')}</span>
+            <span>{t('clientForm.attachments', '5. Document Attachments')}</span>
           </div>
-          <span className="text-[10px] font-normal opacity-80">{t('customerForm.attachmentsSub', 'Upload Images / PDF (Max 10MB)')}</span>
+          <span className="text-[10px] font-normal opacity-80">{t('clientForm.attachmentsSub', 'Upload Images / PDF (Max 10MB)')}</span>
         </div>
 
         {/* 3 Main Specific Attachment Cards */}
@@ -723,15 +723,15 @@ export function CustomerGuardianForm({ data, onChange, onReset, onSave, onPrevie
               <div className="flex items-center justify-between mb-1.5">
                 <span className="font-bold text-foreground flex items-center gap-1.5">
                   <Camera className="w-4 h-4 text-primary" />
-                  {t('customerForm.passportPhoto', 'Passport Size Photo (2x2)')}
+                  {t('clientForm.passportPhoto', 'Passport Size Photo (2x2)')}
                 </span>
                 {data.attachments?.passportPhoto && (
                   <span className="text-[10px] font-bold text-emerald-600 bg-emerald-500/10 px-2 py-0.5 rounded-md">
-                    {t('customerForm.attached', 'Attached ✓')}
+                    {t('clientForm.attached', 'Attached ✓')}
                   </span>
                 )}
               </div>
-              <p className="text-[11px] text-muted-foreground">{t('customerForm.passportPhotoSub', 'Customer 2x2 lab print photograph')}</p>
+              <p className="text-[11px] text-muted-foreground">{t('clientForm.passportPhotoSub', 'Client 2x2 lab print photograph')}</p>
             </div>
 
             <div className="flex items-center gap-3">
@@ -741,7 +741,7 @@ export function CustomerGuardianForm({ data, onChange, onReset, onSave, onPrevie
                     src={data.attachments.passportPhoto}
                     alt="Passport Photo"
                     className="w-full h-full object-cover cursor-pointer"
-                    onClick={() => setSelectedPreviewDoc({ title: t('customerForm.passportPhoto', 'Passport Size Photo (2x2)'), url: data.attachments.passportPhoto })}
+                    onClick={() => setSelectedPreviewDoc({ title: t('clientForm.passportPhoto', 'Passport Size Photo (2x2)'), url: data.attachments.passportPhoto })}
                   />
                 ) : (
                   <ImageIcon className="w-6 h-6 text-muted-foreground/50" />
@@ -751,7 +751,7 @@ export function CustomerGuardianForm({ data, onChange, onReset, onSave, onPrevie
               <div className="flex-1 space-y-1.5">
                 <label className="inline-flex items-center gap-1.5 bg-primary/10 hover:bg-primary/20 text-primary px-3 py-1.5 rounded-lg text-xs font-semibold cursor-pointer transition-colors w-full justify-center">
                   <Upload className="w-3.5 h-3.5" />
-                  <span>{data.attachments?.passportPhoto ? t('customerForm.changePhoto', 'Change Photo') : t('customerForm.uploadPhoto', 'Upload Photo')}</span>
+                  <span>{data.attachments?.passportPhoto ? t('clientForm.changePhoto', 'Change Photo') : t('clientForm.uploadPhoto', 'Upload Photo')}</span>
                   <input
                     type="file"
                     accept="image/*"
@@ -766,7 +766,7 @@ export function CustomerGuardianForm({ data, onChange, onReset, onSave, onPrevie
                     className="inline-flex items-center gap-1 text-rose-500 hover:text-rose-600 text-[11px] font-medium w-full justify-center cursor-pointer"
                   >
                     <Trash2 className="w-3.5 h-3.5" />
-                    <span>{t('customerForm.remove', 'Remove')}</span>
+                    <span>{t('clientForm.remove', 'Remove')}</span>
                   </button>
                 )}
               </div>
@@ -779,15 +779,15 @@ export function CustomerGuardianForm({ data, onChange, onReset, onSave, onPrevie
               <div className="flex items-center justify-between mb-1.5">
                 <span className="font-bold text-foreground flex items-center gap-1.5">
                   <FileCheck className="w-4 h-4 text-emerald-500" />
-                  {t('customerForm.passportScan', 'Passport Scan Copy')}
+                  {t('clientForm.passportScan', 'Passport Scan Copy')}
                 </span>
                 {data.attachments?.passportScan && (
                   <span className="text-[10px] font-bold text-emerald-600 bg-emerald-500/10 px-2 py-0.5 rounded-md">
-                    {t('customerForm.attached', 'Attached ✓')}
+                    {t('clientForm.attached', 'Attached ✓')}
                   </span>
                 )}
               </div>
-              <p className="text-[11px] text-muted-foreground">{t('customerForm.passportScanSub', 'Information & signature pages of passport')}</p>
+              <p className="text-[11px] text-muted-foreground">{t('clientForm.passportScanSub', 'Information & signature pages of passport')}</p>
             </div>
 
             <div className="flex items-center gap-3">
@@ -798,7 +798,7 @@ export function CustomerGuardianForm({ data, onChange, onReset, onSave, onPrevie
                       src={data.attachments.passportScan}
                       alt="Passport Scan"
                       className="w-full h-full object-cover cursor-pointer"
-                      onClick={() => setSelectedPreviewDoc({ title: t('customerForm.passportScan', 'Passport Scan Copy'), url: data.attachments.passportScan })}
+                      onClick={() => setSelectedPreviewDoc({ title: t('clientForm.passportScan', 'Passport Scan Copy'), url: data.attachments.passportScan })}
                     />
                   ) : (
                     <FileText className="w-7 h-7 text-emerald-500" />
@@ -811,7 +811,7 @@ export function CustomerGuardianForm({ data, onChange, onReset, onSave, onPrevie
               <div className="flex-1 space-y-1.5">
                 <label className="inline-flex items-center gap-1.5 bg-primary/10 hover:bg-primary/20 text-primary px-3 py-1.5 rounded-lg text-xs font-semibold cursor-pointer transition-colors w-full justify-center">
                   <Upload className="w-3.5 h-3.5" />
-                  <span>{data.attachments?.passportScan ? t('customerForm.changeFile', 'Change File') : t('customerForm.uploadFile', 'Upload File')}</span>
+                  <span>{data.attachments?.passportScan ? t('clientForm.changeFile', 'Change File') : t('clientForm.uploadFile', 'Upload File')}</span>
                   <input
                     type="file"
                     accept="image/*,application/pdf"
@@ -823,11 +823,11 @@ export function CustomerGuardianForm({ data, onChange, onReset, onSave, onPrevie
                   <div className="flex items-center justify-between text-[11px]">
                     <button
                       type="button"
-                      onClick={() => setSelectedPreviewDoc({ title: t('customerForm.passportScan', 'Passport Scan Copy'), url: data.attachments.passportScan })}
+                      onClick={() => setSelectedPreviewDoc({ title: t('clientForm.passportScan', 'Passport Scan Copy'), url: data.attachments.passportScan })}
                       className="text-primary hover:underline flex items-center gap-0.5 cursor-pointer"
                     >
                       <Eye className="w-3 h-3" />
-                      <span>{t('customerForm.view', 'View')}</span>
+                      <span>{t('clientForm.view', 'View')}</span>
                     </button>
                     <button
                       type="button"
@@ -835,7 +835,7 @@ export function CustomerGuardianForm({ data, onChange, onReset, onSave, onPrevie
                       className="text-rose-500 hover:text-rose-600 flex items-center gap-0.5 cursor-pointer"
                     >
                       <Trash2 className="w-3.5 h-3.5" />
-                      <span>{t('customerForm.remove', 'Remove')}</span>
+                      <span>{t('clientForm.remove', 'Remove')}</span>
                     </button>
                   </div>
                 )}
@@ -849,15 +849,15 @@ export function CustomerGuardianForm({ data, onChange, onReset, onSave, onPrevie
               <div className="flex items-center justify-between mb-1.5">
                 <span className="font-bold text-foreground flex items-center gap-1.5">
                   <CreditCard className="w-4 h-4 text-purple-500" />
-                  {t('customerForm.nidScan', 'NID Card Scan Copy')}
+                  {t('clientForm.nidScan', 'NID Card Scan Copy')}
                 </span>
                 {data.attachments?.nidScan && (
                   <span className="text-[10px] font-bold text-emerald-600 bg-emerald-500/10 px-2 py-0.5 rounded-md">
-                    {t('customerForm.attached', 'Attached ✓')}
+                    {t('clientForm.attached', 'Attached ✓')}
                   </span>
                 )}
               </div>
-              <p className="text-[11px] text-muted-foreground">{t('customerForm.nidScanSub', 'Front & back scan copy of NID')}</p>
+              <p className="text-[11px] text-muted-foreground">{t('clientForm.nidScanSub', 'Front & back scan copy of NID')}</p>
             </div>
 
             <div className="flex items-center gap-3">
@@ -868,7 +868,7 @@ export function CustomerGuardianForm({ data, onChange, onReset, onSave, onPrevie
                       src={data.attachments.nidScan}
                       alt="NID Scan"
                       className="w-full h-full object-cover cursor-pointer"
-                      onClick={() => setSelectedPreviewDoc({ title: t('customerForm.nidScan', 'NID Card Scan Copy'), url: data.attachments.nidScan })}
+                      onClick={() => setSelectedPreviewDoc({ title: t('clientForm.nidScan', 'NID Card Scan Copy'), url: data.attachments.nidScan })}
                     />
                   ) : (
                     <FileText className="w-7 h-7 text-purple-500" />
@@ -881,7 +881,7 @@ export function CustomerGuardianForm({ data, onChange, onReset, onSave, onPrevie
               <div className="flex-1 space-y-1.5">
                 <label className="inline-flex items-center gap-1.5 bg-primary/10 hover:bg-primary/20 text-primary px-3 py-1.5 rounded-lg text-xs font-semibold cursor-pointer transition-colors w-full justify-center">
                   <Upload className="w-3.5 h-3.5" />
-                  <span>{data.attachments?.nidScan ? t('customerForm.changeFile', 'Change File') : t('customerForm.uploadFile', 'Upload File')}</span>
+                  <span>{data.attachments?.nidScan ? t('clientForm.changeFile', 'Change File') : t('clientForm.uploadFile', 'Upload File')}</span>
                   <input
                     type="file"
                     accept="image/*,application/pdf"
@@ -893,11 +893,11 @@ export function CustomerGuardianForm({ data, onChange, onReset, onSave, onPrevie
                   <div className="flex items-center justify-between text-[11px]">
                     <button
                       type="button"
-                      onClick={() => setSelectedPreviewDoc({ title: t('customerForm.nidScan', 'NID Card Scan Copy'), url: data.attachments.nidScan })}
+                      onClick={() => setSelectedPreviewDoc({ title: t('clientForm.nidScan', 'NID Card Scan Copy'), url: data.attachments.nidScan })}
                       className="text-primary hover:underline flex items-center gap-0.5 cursor-pointer"
                     >
                       <Eye className="w-3 h-3" />
-                      <span>{t('customerForm.view', 'View')}</span>
+                      <span>{t('clientForm.view', 'View')}</span>
                     </button>
                     <button
                       type="button"
@@ -905,7 +905,7 @@ export function CustomerGuardianForm({ data, onChange, onReset, onSave, onPrevie
                       className="text-rose-500 hover:text-rose-600 flex items-center gap-0.5 cursor-pointer"
                     >
                       <Trash2 className="w-3.5 h-3.5" />
-                      <span>{t('customerForm.remove', 'Remove')}</span>
+                      <span>{t('clientForm.remove', 'Remove')}</span>
                     </button>
                   </div>
                 )}
@@ -920,13 +920,13 @@ export function CustomerGuardianForm({ data, onChange, onReset, onSave, onPrevie
             <div>
               <h4 className="font-bold text-foreground flex items-center gap-1.5">
                 <FileText className="w-4 h-4 text-sky-500" />
-                {t('customerForm.otherDocs', 'Other Supporting Documents')}
+                {t('clientForm.otherDocs', 'Other Supporting Documents')}
               </h4>
             </div>
 
             <label className="inline-flex items-center gap-1.5 bg-primary hover:bg-primary/90 text-primary-foreground px-3 py-1.5 rounded-lg text-xs font-semibold cursor-pointer transition-colors shadow-2xs shrink-0">
               <Plus className="w-3.5 h-3.5" />
-              <span>+ {t('customerForm.uploadFile', 'Upload File')}</span>
+              <span>+ {t('clientForm.uploadFile', 'Upload File')}</span>
               <input
                 type="file"
                 accept="image/*,application/pdf,.doc,.docx"
@@ -964,7 +964,7 @@ export function CustomerGuardianForm({ data, onChange, onReset, onSave, onPrevie
                       type="button"
                       onClick={() => setSelectedPreviewDoc({ title: f.name, url: f.fileData })}
                       className="p-1 text-muted-foreground hover:text-foreground hover:bg-muted rounded transition-colors cursor-pointer"
-                      title={t('customerForm.view', 'View')}
+                      title={t('clientForm.view', 'View')}
                     >
                       <Eye className="w-3.5 h-3.5" />
                     </button>
@@ -980,7 +980,7 @@ export function CustomerGuardianForm({ data, onChange, onReset, onSave, onPrevie
                       type="button"
                       onClick={() => handleRemoveOtherFile(idx)}
                       className="p-1 text-muted-foreground hover:text-rose-500 hover:bg-rose-500/10 rounded transition-colors cursor-pointer"
-                      title={t('customerForm.remove', 'Remove')}
+                      title={t('clientForm.remove', 'Remove')}
                     >
                       <Trash2 className="w-3.5 h-3.5" />
                     </button>
@@ -1000,12 +1000,12 @@ export function CustomerGuardianForm({ data, onChange, onReset, onSave, onPrevie
       <div className="p-4 bg-muted/30 border border-border rounded-xl space-y-3">
         <div className="flex items-center gap-2 text-xs font-bold text-foreground">
           <Building className="w-4 h-4 text-primary" />
-          <span>{t('customerForm.officeNotes', 'Office Internal Notes')}</span>
+          <span>{t('clientForm.officeNotes', 'Office Internal Notes')}</span>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
           <div>
-            <label className="block font-medium text-muted-foreground mb-1">{t('customerForm.verifiedBy', 'Verified By (Officer Name)')}</label>
+            <label className="block font-medium text-muted-foreground mb-1">{t('clientForm.verifiedBy', 'Verified By (Officer Name)')}</label>
             <input
               type="text"
               value={data.verifiedBy || ''}
@@ -1015,10 +1015,10 @@ export function CustomerGuardianForm({ data, onChange, onReset, onSave, onPrevie
           </div>
 
           <div>
-            <label className="block font-medium text-muted-foreground mb-1">{t('customerForm.officeNotes', 'Office Internal Notes')}</label>
+            <label className="block font-medium text-muted-foreground mb-1">{t('clientForm.officeNotes', 'Office Internal Notes')}</label>
             <input
               type="text"
-              placeholder={t('customerForm.officeNotesPlaceholder', 'Internal file remarks...')}
+              placeholder={t('clientForm.officeNotesPlaceholder', 'Internal file remarks...')}
               value={data.officeNotes || ''}
               onChange={(e) => onChange(prev => ({ ...prev, officeNotes: e.target.value }))}
               className="w-full px-3 py-1.5 bg-background border border-border rounded-lg text-foreground text-xs"
@@ -1032,7 +1032,7 @@ export function CustomerGuardianForm({ data, onChange, onReset, onSave, onPrevie
         <div className="text-xs text-muted-foreground">
           {data._id ? (
             <span className="text-emerald-600 font-semibold flex items-center gap-1.5">
-              <CheckCircle2 className="w-4 h-4" /> {t('customerForm.updateDb', 'Update Database')}: {data.applicationNo}
+              <CheckCircle2 className="w-4 h-4" /> {t('clientForm.updateDb', 'Update Database')}: {data.applicationNo}
             </span>
           ) : (
             <span>{isBn ? 'নতুন আবেদন এখনো ডাটাবেজে সংরক্ষণ করা হয়নি।' : 'New application not yet saved to database.'}</span>
@@ -1046,7 +1046,7 @@ export function CustomerGuardianForm({ data, onChange, onReset, onSave, onPrevie
             onClick={onPreview}
           >
             <Eye className="w-4 h-4" />
-            <span>{t('customerForm.printPreview', 'Print Preview')}</span>
+            <span>{t('clientForm.printPreview', 'Print Preview')}</span>
           </Button>
 
           <Button
@@ -1056,7 +1056,7 @@ export function CustomerGuardianForm({ data, onChange, onReset, onSave, onPrevie
             disabled={isSubmitting}
           >
             <Save className="w-4 h-4" />
-            <span>{isSubmitting ? t('customerForm.saving', 'Saving...') : data._id ? t('customerForm.updateDb', 'Update Database') : t('customerForm.saveDb', 'Save to Database')}</span>
+            <span>{isSubmitting ? t('clientForm.saving', 'Saving...') : data._id ? t('clientForm.updateDb', 'Update Database') : t('clientForm.saveDb', 'Save to Database')}</span>
           </Button>
         </div>
       </div>
@@ -1121,12 +1121,12 @@ export function CustomerGuardianForm({ data, onChange, onReset, onSave, onPrevie
         </div>
       )}
 
-      {/* Screen Freeze Modal: Duplicate / Existing Customer Prompt */}
-      {detectedCustomer && (
-        <ExistingCustomerAlertModal
-          customer={detectedCustomer}
-          onAutoFill={handleAutoFillCustomer}
-          onUpdateExisting={handleUpdateExistingCustomer}
+      {/* Screen Freeze Modal: Duplicate / Existing Client Prompt */}
+      {detectedClient && (
+        <ExistingClientAlertModal
+          client={detectedClient}
+          onAutoFill={handleAutoFillClient}
+          onUpdateExisting={handleUpdateExistingClient}
           onProceedAsNew={handleProceedAsNew}
         />
       )}

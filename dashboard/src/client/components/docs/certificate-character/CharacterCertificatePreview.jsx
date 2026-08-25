@@ -10,7 +10,7 @@ export function CharacterCertificatePreview({ data = {}, onPrint }) {
     certificateTitle = 'CHARACTER CERTIFICATE',
     certificateSubtitle = 'TO WHOM IT MAY CONCERN',
     authority = {},
-    candidate = {},
+    client = {},
     conduct = {},
     signatory = {},
   } = data || {};
@@ -97,31 +97,31 @@ export function CharacterCertificatePreview({ data = {}, onPrint }) {
             <div className="space-y-4 text-xs sm:text-sm text-slate-900 leading-relaxed text-justify px-2 font-serif">
               
               <p className="indent-6">
-                {conduct.statement || `This is to certify that ${candidate.fullName}, Son of ${candidate.fatherName} and ${candidate.motherName}, resident of ${candidate.presentAddress}, bearing Passport No: ${candidate.passportNo || 'N/A'}, is known to me.`}
+                {conduct.statement || `This is to certify that ${client.fullName}, Son of ${client.fatherName} and ${client.motherName}, resident of ${client.presentAddress}, bearing Passport No: ${client.passportNo || 'N/A'}, is known to me.`}
               </p>
 
-              {/* Candidate Info Grid */}
+              {/* Client Info Grid */}
               <div className="my-3 p-3.5 bg-slate-50 border border-slate-300 rounded-xs font-sans text-xs">
                 <div className="grid grid-cols-2 gap-x-4 gap-y-2">
                   <div>
-                    <span className="text-slate-500 font-medium block text-[10px] uppercase">Candidate Name:</span>
-                    <strong className="text-slate-900 uppercase font-bold">{candidate.fullName}</strong>
+                    <span className="text-slate-500 font-medium block text-[10px] uppercase">Client Name:</span>
+                    <strong className="text-slate-900 uppercase font-bold">{client.fullName}</strong>
                   </div>
                   <div>
                     <span className="text-slate-500 font-medium block text-[10px] uppercase">Father's Name:</span>
-                    <strong className="text-slate-900 uppercase font-bold">{candidate.fatherName}</strong>
+                    <strong className="text-slate-900 uppercase font-bold">{client.fatherName}</strong>
                   </div>
                   <div>
                     <span className="text-slate-500 font-medium block text-[10px] uppercase">Mother's Name:</span>
-                    <strong className="text-slate-900 uppercase font-bold">{candidate.motherName}</strong>
+                    <strong className="text-slate-900 uppercase font-bold">{client.motherName}</strong>
                   </div>
                   <div>
                     <span className="text-slate-500 font-medium block text-[10px] uppercase">Passport / NID No:</span>
-                    <strong className="text-slate-900 font-mono font-bold uppercase">{candidate.passportNo || candidate.nidNo || 'N/A'}</strong>
+                    <strong className="text-slate-900 font-mono font-bold uppercase">{client.passportNo || client.nidNo || 'N/A'}</strong>
                   </div>
                   <div className="col-span-2">
                     <span className="text-slate-500 font-medium block text-[10px] uppercase">Permanent Address:</span>
-                    <strong className="text-slate-900">{candidate.permanentAddress}</strong>
+                    <strong className="text-slate-900">{client.permanentAddress}</strong>
                   </div>
                 </div>
               </div>

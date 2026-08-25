@@ -6,14 +6,14 @@ import { SalarySlip } from './payroll/SalarySlip';
 import { Invoice } from './invoice/Invoice';
 import { PassportSubmission } from './passport/PassportSubmission';
 import { IndianVisa } from './indian-visa/IndianVisa';
-import { CustomerGuardian } from './customer-form/CustomerGuardian';
+import { ClientGuardian } from './client-form/ClientGuardian';
 
 export function DocumentStudioModule() {
   const { activeSubmodule } = usePortal();
 
   return (
     <div className="space-y-5">
-      {(activeSubmodule === 'agreement' || !activeSubmodule || (activeSubmodule !== 'idcard' && activeSubmodule !== 'payroll' && activeSubmodule !== 'invoice' && activeSubmodule !== 'passport-sub' && activeSubmodule !== 'indian-visa' && activeSubmodule !== 'customer-form')) && (
+      {(activeSubmodule === 'agreement' || !activeSubmodule || (activeSubmodule !== 'idcard' && activeSubmodule !== 'payroll' && activeSubmodule !== 'invoice' && activeSubmodule !== 'passport-sub' && activeSubmodule !== 'indian-visa' && activeSubmodule !== 'client-form')) && (
         <EmploymentAgreement />
       )}
       {activeSubmodule === 'payroll' && <SalarySlip />}
@@ -21,7 +21,7 @@ export function DocumentStudioModule() {
       {activeSubmodule === 'passport-sub' && <PassportSubmission />}
       {activeSubmodule === 'indian-visa' && <IndianVisa />}
       {activeSubmodule === 'idcard' && <IdCard />}
-      {activeSubmodule === 'customer-form' && <CustomerGuardian />}
+      {activeSubmodule === 'client-form' && <ClientGuardian />}
     </div>
   );
 }

@@ -13,19 +13,19 @@ import {
 } from 'lucide-react';
 
 /**
- * Modal dialog that freezes the screen when an existing customer matches by phone/passport/NID.
+ * Modal dialog that freezes the screen when an existing client matches by phone/passport/NID.
  * User MUST make a conscious choice before proceeding:
- * 1. Auto-fill from existing customer
- * 2. Update existing customer data with current form entries
+ * 1. Auto-fill from existing client
+ * 2. Update existing client data with current form entries
  * 3. Ignore & create new document unlinked
  */
-export function ExistingCustomerAlertModal({
-  customer,
+export function ExistingClientAlertModal({
+  client,
   onAutoFill,
   onUpdateExisting,
   onProceedAsNew
 }) {
-  if (!customer) return null;
+  if (!client) return null;
 
   return (
     <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4 select-none animate-in fade-in duration-200">
@@ -39,10 +39,10 @@ export function ExistingCustomerAlertModal({
             </div>
             <div>
               <h3 className="text-base font-bold text-foreground">
-                কাস্টমার ম্যাচ পাওয়া গেছে! (Customer Found)
+                ক্লায়েন্ট ম্যাচ পাওয়া গেছে! (Client Found)
               </h3>
               <p className="text-xs text-muted-foreground mt-0.5">
-                এই মোবাইল নম্বর বা পাসপোর্টে ডাটাবেজে ইতিমধ্যে একজন কাস্টমার রেজিস্টার করা আছে।
+                এই মোবাইল নম্বর বা পাসপোর্টে ডাটাবেজে ইতিমধ্যে একজন ক্লায়েন্ট রেজিস্টার করা আছে।
               </p>
             </div>
           </div>
@@ -53,33 +53,33 @@ export function ExistingCustomerAlertModal({
           </span>
         </div>
 
-        {/* Existing Customer Profile Card */}
+        {/* Existing Client Profile Card */}
         <div className="bg-muted/40 border border-border p-4 rounded-xl space-y-2.5 text-xs">
           <div className="flex items-center justify-between">
             <span className="font-mono text-primary font-bold text-[11px]">
-              {customer.customerCode || 'CUST-RECORD'}
+              {client.clientCode || 'CUST-RECORD'}
             </span>
             <span className="font-semibold text-foreground">
-              {customer.applications?.length || 0} টি সার্ভিস রেকর্ড লিংকড
+              {client.applications?.length || 0} টি সার্ভিস রেকর্ড লিংকড
             </span>
           </div>
 
           <div className="grid grid-cols-2 gap-2 text-foreground font-medium pt-1">
             <div>
               <span className="text-muted-foreground block text-[10.5px]">পূর্ণ নাম:</span>
-              <span className="font-bold text-sm">{customer.fullName}</span>
+              <span className="font-bold text-sm">{client.fullName}</span>
             </div>
             <div>
               <span className="text-muted-foreground block text-[10.5px]">মোবাইল নম্বর:</span>
-              <span className="font-mono font-bold">{customer.phone}</span>
+              <span className="font-mono font-bold">{client.phone}</span>
             </div>
             <div>
               <span className="text-muted-foreground block text-[10.5px]">পাসপোর্ট নম্বর:</span>
-              <span className="font-mono font-bold">{customer.passportNumber || 'N/A'}</span>
+              <span className="font-mono font-bold">{client.passportNumber || 'N/A'}</span>
             </div>
             <div>
               <span className="text-muted-foreground block text-[10.5px]">জাতীয় পরিচয়পত্র (NID):</span>
-              <span className="font-mono font-bold">{customer.nidNumber || 'N/A'}</span>
+              <span className="font-mono font-bold">{client.nidNumber || 'N/A'}</span>
             </div>
           </div>
         </div>
@@ -101,7 +101,7 @@ export function ExistingCustomerAlertModal({
                 <CopyCheck className="w-4 h-4 shrink-0" />
                 <div>
                   <p>অটো ফিল করুন</p>
-                  <p className="text-[10px] font-normal opacity-80">কাস্টমারের সেভ করা ডাটা ফর্মে বসান</p>
+                  <p className="text-[10px] font-normal opacity-80">ক্লায়েন্টের সেভ করা ডাটা ফর্মে বসান</p>
                 </div>
               </div>
               <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />

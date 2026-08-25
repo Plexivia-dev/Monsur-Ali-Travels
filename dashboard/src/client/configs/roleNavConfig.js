@@ -17,7 +17,7 @@ export const MASTER_ITEMS = {
     href: '/dashboard/agency/tasks',
   },
 
-  // Case Files (Candidates)
+  // Case Files (Clients)
   caseFiles: {
     icon: 'FolderOpen',
     label: 'Case Files',
@@ -26,8 +26,8 @@ export const MASTER_ITEMS = {
     childItems: [
       {
         icon: 'FilePlus2',
-        label: 'Candidate Profiles',
-        key: 'nav.candidates',
+        label: 'Client Profiles',
+        key: 'nav.clients',
         portal: 'agency',
         submodule: 'cases',
       },
@@ -92,13 +92,13 @@ export const MASTER_ITEMS = {
     submodule: 'agreement',
     href: '/dashboard/docs/agreement',
   },
-  docCustomerForm: {
+  docClientForm: {
     icon: 'UserCheck',
     label: 'Client & Guardian Form',
     key: 'nav.clientGuardianForm',
     portal: 'docs',
-    submodule: 'customer-form',
-    href: '/dashboard/docs/customer-form',
+    submodule: 'client-form',
+    href: '/dashboard/docs/client-form',
   },
   docIndianVisa: {
     icon: 'Stamp',
@@ -182,7 +182,7 @@ export const MASTER_ITEMS = {
   },
 
   // Data Records Center Items
-  dataCustomerProfiles: {
+  dataClientProfiles: {
     icon: 'Users',
     label: 'Client Profiles',
     key: 'nav.clientProfiles',
@@ -198,7 +198,7 @@ export const MASTER_ITEMS = {
     submodule: 'agreements',
     href: '/dashboard/data/agreements',
   },
-  dataCustomerApplications: {
+  dataClientApplications: {
     icon: 'UserCheck',
     label: 'Client Applications',
     key: 'nav.clientApplications',
@@ -257,8 +257,8 @@ export const ROLE_NAVIGATION_PRESETS = {
           MASTER_ITEMS.myTasks,
           {
             icon: 'FilePlus2',
-            label: 'Candidate Intake',
-            key: 'nav.candidates',
+            label: 'Client Intake',
+            key: 'nav.clients',
             portal: 'agency',
             submodule: 'cases',
             href: '/dashboard/agency/cases',
@@ -269,7 +269,7 @@ export const ROLE_NAVIGATION_PRESETS = {
             key: 'nav.docs',
             portal: 'docs',
             childItems: [
-              MASTER_ITEMS.docCustomerForm,
+              MASTER_ITEMS.docClientForm,
               MASTER_ITEMS.docPassportSub,
             ],
           },
@@ -321,7 +321,7 @@ export const ROLE_NAVIGATION_PRESETS = {
         items: [
           MASTER_ITEMS.dataInvoices,
           MASTER_ITEMS.dataSalarySlips,
-          MASTER_ITEMS.dataCustomerProfiles,
+          MASTER_ITEMS.dataClientProfiles,
         ],
       },
     ],
@@ -347,7 +347,7 @@ export const ROLE_NAVIGATION_PRESETS = {
             childItems: [
               MASTER_ITEMS.docIndianVisa,
               MASTER_ITEMS.docPassportSub,
-              MASTER_ITEMS.docCustomerForm,
+              MASTER_ITEMS.docClientForm,
               MASTER_ITEMS.docAgreement,
             ],
           },
@@ -360,8 +360,8 @@ export const ROLE_NAVIGATION_PRESETS = {
         items: [
           MASTER_ITEMS.dataIndianVisas,
           MASTER_ITEMS.dataPassports,
-          MASTER_ITEMS.dataCustomerApplications,
-          MASTER_ITEMS.dataCustomerProfiles,
+          MASTER_ITEMS.dataClientApplications,
+          MASTER_ITEMS.dataClientProfiles,
         ],
       },
     ],
@@ -386,7 +386,7 @@ export const ROLE_NAVIGATION_PRESETS = {
             portal: 'docs',
             childItems: [
               MASTER_ITEMS.docAgreement,
-              MASTER_ITEMS.docCustomerForm,
+              MASTER_ITEMS.docClientForm,
               MASTER_ITEMS.docExpCert,
               MASTER_ITEMS.docCharCert,
               MASTER_ITEMS.docMarrCert,
@@ -400,8 +400,8 @@ export const ROLE_NAVIGATION_PRESETS = {
         portal: 'data',
         items: [
           MASTER_ITEMS.dataAgreements,
-          MASTER_ITEMS.dataCustomerApplications,
-          MASTER_ITEMS.dataCustomerProfiles,
+          MASTER_ITEMS.dataClientApplications,
+          MASTER_ITEMS.dataClientProfiles,
         ],
       },
     ],
@@ -432,7 +432,7 @@ export const ROLE_NAVIGATION_PRESETS = {
             key: 'nav.docs',
             portal: 'docs',
             childItems: [
-              MASTER_ITEMS.docCustomerForm,
+              MASTER_ITEMS.docClientForm,
               MASTER_ITEMS.docMoneyReceipt,
             ],
           },
@@ -443,8 +443,8 @@ export const ROLE_NAVIGATION_PRESETS = {
         groupKey: 'nav.data',
         portal: 'data',
         items: [
-          MASTER_ITEMS.dataCustomerProfiles,
-          MASTER_ITEMS.dataCustomerApplications,
+          MASTER_ITEMS.dataClientProfiles,
+          MASTER_ITEMS.dataClientApplications,
         ],
       },
     ],
@@ -482,7 +482,7 @@ export const ROLE_NAVIGATION_PRESETS = {
             childItems: [
               MASTER_ITEMS.docHub,
               MASTER_ITEMS.docAgreement,
-              MASTER_ITEMS.docCustomerForm,
+              MASTER_ITEMS.docClientForm,
               MASTER_ITEMS.docIndianVisa,
               MASTER_ITEMS.docPassportSub,
               MASTER_ITEMS.docIdCard,
@@ -502,9 +502,9 @@ export const ROLE_NAVIGATION_PRESETS = {
         groupKey: 'nav.data',
         portal: 'data',
         items: [
-          MASTER_ITEMS.dataCustomerProfiles,
+          MASTER_ITEMS.dataClientProfiles,
           MASTER_ITEMS.dataAgreements,
-          MASTER_ITEMS.dataCustomerApplications,
+          MASTER_ITEMS.dataClientApplications,
           MASTER_ITEMS.dataIndianVisas,
           MASTER_ITEMS.dataPassports,
           MASTER_ITEMS.dataSalarySlips,

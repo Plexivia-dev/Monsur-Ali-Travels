@@ -43,13 +43,13 @@ export function ClientKanbanBoard() {
   const fetchCases = async () => {
     setLoading(true);
     try {
-      // Fetch both candidate and case files
+      // Fetch both client and case files
       const [candRes, caseRes] = await Promise.allSettled([
-        apiClient.get('/api/v1/client/candidates'),
+        apiClient.get('/api/v1/client/clients'),
         apiClient.get('/api/v1/client/cases?limit=100')
       ]);
 
-      const candidates = candRes.status === 'fulfilled' ? (candRes.value.data?.data || candRes.value.data || []) : [];
+      const clients = candRes.status === 'fulfilled' ? (candRes.value.data?.data || candRes.value.data || []) : [];
       const rawCases = caseRes.status === 'fulfilled' ? (caseRes.value.data?.data || caseRes.value.data?.cases || caseRes.value.data || []) : [];
 
       // Normalize cases into unified board cards
@@ -57,8 +57,8 @@ export function ClientKanbanBoard() {
         _id: c.did || c._id,
         did: c.did,
         fileNumber: c.caseNumber || c.fileNumber || 'CASE-001',
-        candidateName: c.applicantName || c.clientInfo?.fullName || 'Applicant',
-        candidatePhone: c.phone || c.clientInfo?.phone || '—',
+        clientName: c.applicantName || c.clientInfo?.fullName || 'Applicant',
+        clientPhone: c.phone || c.clientInfo?.phone || '—',
         passportNumber: c.passportNumber || c.clientInfo?.passportNumber || '—',
         destinationCountry: c.destinationCountry || c.caseType?.toUpperCase() || 'Overseas',
         tradeSkill: c.tradeSkill || c.caseType?.replace('_', ' ') || 'General',
@@ -76,12 +76,12 @@ export function ClientKanbanBoard() {
 
       // Combine unique records
       const existingDids = new Set(normalizedCases.map(c => c._id));
-      const normalizedCandidates = (Array.isArray(candidates) ? candidates : []).filter(c => !existingDids.has(c._id || c.did)).map(c => ({
+      const normalizedClients = (Array.isArray(clients) ? clients : []).filter(c => !existingDids.has(c._id || c.did)).map(c => ({
         _id: c._id || c.did,
         did: c.did,
         fileNumber: c.fileNumber || 'CAND-001',
-        candidateName: c.candidateName || 'Candidate',
-        candidatePhone: c.candidatePhone || '—',
+        clientName: c.clientName || 'Client',
+        clientPhone: c.clientPhone || '—',
         passportNumber: c.passportNumber || '—',
         destinationCountry: c.destinationCountry || 'Overseas',
         tradeSkill: c.tradeSkill || 'General Worker',
@@ -94,7 +94,7 @@ export function ClientKanbanBoard() {
         rawCase: c
       }));
 
-      setCases([...normalizedCases, ...normalizedCandidates]);
+      setCases([...normalizedCases, ...normalizedClients]);
     } catch (err) {
       toast.error('Failed to load cases for board.');
     } finally {
@@ -166,7 +166,7 @@ export function ClientKanbanBoard() {
         status: backendStatus,
         remarks: `Moved to ${destStatus}`
       }).catch(async () => {
-        await apiClient.patch(`/api/v1/client/candidates/${cardId}/status`, {
+        await apiClient.patch(`/api/v1/client/clients/${cardId}/status`, {
           status: destStatus
         });
       });
@@ -262,7 +262,7 @@ export function ClientKanbanBoard() {
                   </div>
                   
                   <h4 className="font-bold text-sm text-foreground group-hover:text-primary transition-colors leading-tight mb-1">
-                    {c.candidateName}
+                    {c.clientName}
                   </h4>
                   
                   <div className="text-[11px] text-muted-foreground flex items-center gap-1.5 mt-2">
@@ -272,7 +272,7 @@ export function ClientKanbanBoard() {
 
                   <div className="text-[11px] text-muted-foreground flex items-center gap-1.5 mt-1">
                     <Phone className="w-3.5 h-3.5 text-muted-foreground" />
-                    <span className="truncate">{c.candidatePhone || 'N/A'}</span>
+                    <span className="truncate">{c.clientPhone || 'N/A'}</span>
                   </div>
 
                   {/* Card Footer: Trade Skill + Open Dossier Link */}

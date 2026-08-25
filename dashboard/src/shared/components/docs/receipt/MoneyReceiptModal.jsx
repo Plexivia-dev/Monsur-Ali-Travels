@@ -56,7 +56,7 @@ export function MoneyReceiptModal({
         paymentMethod: initialData.paymentMethod || 'Cash',
         createdByName: user?.name || 'ম্যানেজার',
         notes: initialData.notes || '',
-        customerId: initialData.customerId || null,
+        clientId: initialData.clientId || null,
         serviceRef: initialData.serviceRef || null,
       });
     }

@@ -54,7 +54,7 @@ const fetchOrders = async (params) => {
       return {
         id,
         orderNumber: o.orderNumber || `ORD-${o._id?.slice(-8) || id}`,
-        customerName: o.customer?.fullName || 'Guest Customer',
+        clientName: o.client?.fullName || 'Guest Client',
         date: o.createdAt || new Date().toISOString(),
         totalAmount: o.totals?.total || 0,
         paymentStatus,

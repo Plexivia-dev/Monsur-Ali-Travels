@@ -54,7 +54,7 @@ export function RecentTransactionsTable() {
           <TableHeader>
             <TableRow>
               <TableHead className="w-[100px]">Order ID</TableHead>
-              <TableHead>Customer</TableHead>
+              <TableHead>Client</TableHead>
               <TableHead>Status</TableHead>
               <TableHead className="text-right">Amount</TableHead>
             </TableRow>
@@ -77,8 +77,8 @@ export function RecentTransactionsTable() {
                       {tx.orderNumber}
                     </Link>
                   </TableCell>
-                  <TableCell className="max-w-[120px] truncate text-xs" title={tx.customerName}>
-                    {tx.customerName}
+                  <TableCell className="max-w-[120px] truncate text-xs" title={tx.clientName}>
+                    {tx.clientName}
                   </TableCell>
                   <TableCell>{getStatusBadge(tx.orderStatus || tx.paymentStatus)}</TableCell>
                   <TableCell className="text-right font-semibold text-xs">

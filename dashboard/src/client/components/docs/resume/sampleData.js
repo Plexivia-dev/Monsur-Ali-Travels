@@ -19,7 +19,7 @@ export const SAMPLE_RESUME = {
       isCurrent: true,
       bullets: [
         "Directed daily workforce deployments for overseas technical manpower placements, achieving a 98% client satisfaction rate.",
-        "Implemented streamlined candidate verification workflows, reducing onboarding lead times by 35%.",
+        "Implemented streamlined client verification workflows, reducing onboarding lead times by 35%.",
         "Managed operational budgets and compliance standards across regional recruitment centers."
       ]
     },

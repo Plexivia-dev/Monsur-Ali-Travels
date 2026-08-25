@@ -1,10 +1,10 @@
 import React from 'react';
 
 export function CertificateForm({ data, onChange }) {
-  const handleCandidateChange = (field, value) => {
+  const handleClientChange = (field, value) => {
     onChange({
       ...data,
-      candidate: { ...data.candidate, [field]: value }
+      client: { ...data.client, [field]: value }
     });
   };
 
@@ -72,15 +72,15 @@ export function CertificateForm({ data, onChange }) {
 
       {/* CANDIDATE DETAILS */}
       <div className="border-t border-border pt-3 space-y-3">
-        <h4 className="font-semibold text-foreground text-xs uppercase tracking-wider">আবেদনকারীর বিবরণ (Candidate Information)</h4>
+        <h4 className="font-semibold text-foreground text-xs uppercase tracking-wider">আবেদনকারীর বিবরণ (Client Information)</h4>
         
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div>
             <label className="block text-muted-foreground mb-1">পূর্ণ নাম (বাংলা)</label>
             <input
               type="text"
-              value={data.candidate.fullName}
-              onChange={e => handleCandidateChange('fullName', e.target.value)}
+              value={data.client.fullName}
+              onChange={e => handleClientChange('fullName', e.target.value)}
               className="w-full bg-background border border-input rounded-lg px-3 py-2 text-foreground outline-none"
             />
           </div>
@@ -89,8 +89,8 @@ export function CertificateForm({ data, onChange }) {
             <label className="block text-muted-foreground mb-1">Full Name (English)</label>
             <input
               type="text"
-              value={data.candidate.fullNameEn}
-              onChange={e => handleCandidateChange('fullNameEn', e.target.value)}
+              value={data.client.fullNameEn}
+              onChange={e => handleClientChange('fullNameEn', e.target.value)}
               className="w-full bg-background border border-input rounded-lg px-3 py-2 text-foreground outline-none"
             />
           </div>
@@ -99,8 +99,8 @@ export function CertificateForm({ data, onChange }) {
             <label className="block text-muted-foreground mb-1">পিতার নাম / Father's Name</label>
             <input
               type="text"
-              value={data.candidate.fatherName}
-              onChange={e => handleCandidateChange('fatherName', e.target.value)}
+              value={data.client.fatherName}
+              onChange={e => handleClientChange('fatherName', e.target.value)}
               className="w-full bg-background border border-input rounded-lg px-3 py-2 text-foreground outline-none"
             />
           </div>
@@ -109,8 +109,8 @@ export function CertificateForm({ data, onChange }) {
             <label className="block text-muted-foreground mb-1">মাতার নাম / Mother's Name</label>
             <input
               type="text"
-              value={data.candidate.motherName}
-              onChange={e => handleCandidateChange('motherName', e.target.value)}
+              value={data.client.motherName}
+              onChange={e => handleClientChange('motherName', e.target.value)}
               className="w-full bg-background border border-input rounded-lg px-3 py-2 text-foreground outline-none"
             />
           </div>
@@ -119,8 +119,8 @@ export function CertificateForm({ data, onChange }) {
             <label className="block text-muted-foreground mb-1">পাসপোর্ট নম্বর / Passport No</label>
             <input
               type="text"
-              value={data.candidate.passportNo}
-              onChange={e => handleCandidateChange('passportNo', e.target.value)}
+              value={data.client.passportNo}
+              onChange={e => handleClientChange('passportNo', e.target.value)}
               className="w-full bg-background border border-input rounded-lg px-3 py-2 text-foreground font-mono outline-none"
             />
           </div>
@@ -129,8 +129,8 @@ export function CertificateForm({ data, onChange }) {
             <label className="block text-muted-foreground mb-1">জাতীয় পরিচয়পত্র / NID No</label>
             <input
               type="text"
-              value={data.candidate.nidNo}
-              onChange={e => handleCandidateChange('nidNo', e.target.value)}
+              value={data.client.nidNo}
+              onChange={e => handleClientChange('nidNo', e.target.value)}
               className="w-full bg-background border border-input rounded-lg px-3 py-2 text-foreground font-mono outline-none"
             />
           </div>
@@ -142,8 +142,8 @@ export function CertificateForm({ data, onChange }) {
             <label className="block text-muted-foreground mb-1">গ্রাম/মহল্লা</label>
             <input
               type="text"
-              value={data.candidate.village}
-              onChange={e => handleCandidateChange('village', e.target.value)}
+              value={data.client.village}
+              onChange={e => handleClientChange('village', e.target.value)}
               className="w-full bg-background border border-input rounded-lg px-2.5 py-1.5 text-foreground outline-none"
             />
           </div>
@@ -152,8 +152,8 @@ export function CertificateForm({ data, onChange }) {
             <label className="block text-muted-foreground mb-1">ডাকঘর</label>
             <input
               type="text"
-              value={data.candidate.postOffice}
-              onChange={e => handleCandidateChange('postOffice', e.target.value)}
+              value={data.client.postOffice}
+              onChange={e => handleClientChange('postOffice', e.target.value)}
               className="w-full bg-background border border-input rounded-lg px-2.5 py-1.5 text-foreground outline-none"
             />
           </div>
@@ -162,8 +162,8 @@ export function CertificateForm({ data, onChange }) {
             <label className="block text-muted-foreground mb-1">উপজেলা/থানা</label>
             <input
               type="text"
-              value={data.candidate.upazila}
-              onChange={e => handleCandidateChange('upazila', e.target.value)}
+              value={data.client.upazila}
+              onChange={e => handleClientChange('upazila', e.target.value)}
               className="w-full bg-background border border-input rounded-lg px-2.5 py-1.5 text-foreground outline-none"
             />
           </div>
@@ -172,8 +172,8 @@ export function CertificateForm({ data, onChange }) {
             <label className="block text-muted-foreground mb-1">জেলা</label>
             <input
               type="text"
-              value={data.candidate.district}
-              onChange={e => handleCandidateChange('district', e.target.value)}
+              value={data.client.district}
+              onChange={e => handleClientChange('district', e.target.value)}
               className="w-full bg-background border border-input rounded-lg px-2.5 py-1.5 text-foreground outline-none"
             />
           </div>

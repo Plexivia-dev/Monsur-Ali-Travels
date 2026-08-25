@@ -26,16 +26,16 @@ const mapBilling = (billing) => {
     billing.id ||
     billing._id ||
     'Unknown';
-  const customerName =
-    order.customer?.fullName ||
+  const clientName =
+    order.client?.fullName ||
     billing.billingEmail ||
     billing.billingPhone ||
-    'Guest Customer';
+    'Guest Client';
 
   return {
     id: billing.id || billing._id || invoiceId,
     invoiceId,
-    customerName,
+    clientName,
     date: formatDate(billing.billingDate || billing.createdAt || billing.updatedAt),
     dueDate: formatDate(billing.dueDate || billing.billingDate || billing.createdAt),
     amount:

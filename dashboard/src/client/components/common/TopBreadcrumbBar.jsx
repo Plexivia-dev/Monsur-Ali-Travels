@@ -15,16 +15,16 @@ import { Button } from '@/components/ui/button';
 
 const PORTAL_LABELS = {
   docs: { label: 'Document Studio', icon: FileSpreadsheet, homeSub: 'agreement', hasParentPage: false },
-  data: { label: 'Data Records Center', icon: Database, homeSub: 'customer-profiles', hasParentPage: false },
+  data: { label: 'Data Records Center', icon: Database, homeSub: 'client-profiles', hasParentPage: false },
   agency: { label: 'Manpower Agency', icon: Users2, homeSub: 'dashboard', hasParentPage: true },
   factory: { label: 'Brick Factory', icon: Factory, homeSub: 'dashboard', hasParentPage: true },
   admin: { label: 'System Admin', icon: Shield, homeSub: 'users', hasParentPage: false },
 };
 
 const SUBMODULE_LABELS = {
-  'customer-form': 'Customer & Guardian Form',
-  'customer-forms': 'Customer & Guardian Form',
-  'customer-guardians': 'Customer Application Files',
+  'client-form': 'Client & Guardian Form',
+  'client-forms': 'Client & Guardian Form',
+  'client-guardians': 'Client Application Files',
   agreement: 'Employment Agreement',
   agreements: 'Employment Agreements',
   idcard: 'Employee ID Card',
@@ -42,13 +42,13 @@ const SUBMODULE_LABELS = {
   'certificate-exp': 'Experience Certificate',
   'certificate-char': 'Character Certificate',
   'certificate-marr': 'Marriage Certificate',
-  'customer-profiles': 'Customer Profiles',
+  'client-profiles': 'Client Profiles',
 
   dashboard: 'Dashboard Overview',
-  'candidates-all': 'All Candidates',
-  'candidates-add': 'Add New Candidate',
-  candidates: 'Candidate Case Files',
-  cases: 'Candidate Case Files',
+  'clients-all': 'All Clients',
+  'clients-add': 'Add New Client',
+  clients: 'Client Case Files',
+  cases: 'Client Case Files',
   'clients-all': 'All Client Accounts',
   'clients-add': 'Add New Client',
   bills: 'Billing & Invoices',

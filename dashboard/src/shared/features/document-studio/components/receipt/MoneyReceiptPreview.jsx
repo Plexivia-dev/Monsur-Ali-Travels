@@ -48,7 +48,7 @@ export function VoucherSlipCard({ data = {}, copyTitle = 'Original Copy', idSuff
     paymentMethod = 'Cash',
     amount = 50000,
     amountInWords = 'Fifty Thousand Taka Only.',
-    preparedBy = 'Customer / Depositor',
+    preparedBy = 'Client / Depositor',
     receivedBySignature = 'Recipient',
     accountsSignature = 'Accountant',
     approvedBySignature = 'Authorized Signatory',

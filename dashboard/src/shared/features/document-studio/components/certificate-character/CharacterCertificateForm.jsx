@@ -256,11 +256,11 @@ export function CharacterCertificateForm({ data = {}, onChange }) {
         </div>
       </div>
 
-      {/* Candidate Details */}
+      {/* Client Details */}
       <div className="bg-card border border-border rounded-xl p-4 space-y-4">
         <h3 className="text-xs font-bold uppercase tracking-wider text-primary flex items-center gap-1.5 border-b border-border pb-2">
           <User className="w-4 h-4" />
-          ৩. প্রার্থীর ব্যক্তিগত তথ্য (Candidate Information)
+          ৩. প্রার্থীর ব্যক্তিগত তথ্য (Client Information)
         </h3>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -268,8 +268,8 @@ export function CharacterCertificateForm({ data = {}, onChange }) {
             <label className="block text-xs font-semibold mb-1">প্রার্থীর নাম (Full Name)</label>
             <input
               type="text"
-              value={data.candidate?.fullName || ''}
-              onChange={(e) => handleChange('candidate', 'fullName', e.target.value)}
+              value={data.client?.fullName || ''}
+              onChange={(e) => handleChange('client', 'fullName', e.target.value)}
               className="w-full px-3 py-2 text-xs rounded-lg border border-input bg-background font-bold focus:ring-1 focus:ring-primary outline-hidden uppercase"
             />
           </div>
@@ -278,8 +278,8 @@ export function CharacterCertificateForm({ data = {}, onChange }) {
             <label className="block text-xs font-semibold mb-1">পিতার নাম (Father's Name)</label>
             <input
               type="text"
-              value={data.candidate?.fatherName || ''}
-              onChange={(e) => handleChange('candidate', 'fatherName', e.target.value)}
+              value={data.client?.fatherName || ''}
+              onChange={(e) => handleChange('client', 'fatherName', e.target.value)}
               className="w-full px-3 py-2 text-xs rounded-lg border border-input bg-background font-bold focus:ring-1 focus:ring-primary outline-hidden uppercase"
             />
           </div>
@@ -288,8 +288,8 @@ export function CharacterCertificateForm({ data = {}, onChange }) {
             <label className="block text-xs font-semibold mb-1">মাতার নাম (Mother's Name)</label>
             <input
               type="text"
-              value={data.candidate?.motherName || ''}
-              onChange={(e) => handleChange('candidate', 'motherName', e.target.value)}
+              value={data.client?.motherName || ''}
+              onChange={(e) => handleChange('client', 'motherName', e.target.value)}
               className="w-full px-3 py-2 text-xs rounded-lg border border-input bg-background font-bold focus:ring-1 focus:ring-primary outline-hidden uppercase"
             />
           </div>
@@ -298,8 +298,8 @@ export function CharacterCertificateForm({ data = {}, onChange }) {
             <label className="block text-xs font-semibold mb-1">পাসপোর্ট নম্বর (Passport No)</label>
             <input
               type="text"
-              value={data.candidate?.passportNo || ''}
-              onChange={(e) => handleChange('candidate', 'passportNo', e.target.value)}
+              value={data.client?.passportNo || ''}
+              onChange={(e) => handleChange('client', 'passportNo', e.target.value)}
               className="w-full px-3 py-2 text-xs font-mono rounded-lg border border-input bg-background uppercase focus:ring-1 focus:ring-primary outline-hidden"
             />
           </div>
@@ -308,8 +308,8 @@ export function CharacterCertificateForm({ data = {}, onChange }) {
             <label className="block text-xs font-semibold mb-1">স্থায়ী ঠিকানা (Permanent Address)</label>
             <input
               type="text"
-              value={data.candidate?.permanentAddress || ''}
-              onChange={(e) => handleChange('candidate', 'permanentAddress', e.target.value)}
+              value={data.client?.permanentAddress || ''}
+              onChange={(e) => handleChange('client', 'permanentAddress', e.target.value)}
               className="w-full px-3 py-2 text-xs rounded-lg border border-input bg-background focus:ring-1 focus:ring-primary outline-hidden"
             />
           </div>

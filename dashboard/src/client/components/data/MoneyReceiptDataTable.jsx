@@ -23,9 +23,7 @@ import { apiClient } from '../../lib/api-client';
 import { DataTablePagination } from './DataTablePagination';
 import { toast } from 'sonner';
 import { formatToDdMmYyyy } from '../../lib/utils';
-import { MoneyReceiptModal } from '../docs/receipt/MoneyReceiptModal';
-import { ReceiptConfirmModal } from '../docs/receipt/ReceiptConfirmModal';
-import { MoneyReceiptPrintSlip } from '../docs/receipt/MoneyReceiptPrintSlip';
+import { MoneyReceiptModal, ReceiptConfirmModal, MoneyReceiptPrintSlip } from '@/shared/features/document-studio';
 import { ConfirmDeleteDialog } from '@/components/ui/confirm-delete-dialog';
 import { Button } from '@/components/ui/button';
 import { useTranslation } from 'react-i18next';
@@ -161,7 +159,7 @@ export function MoneyReceiptDataTable() {
               {t('moneyReceipts.title', 'Money Receipts & Payment Collection')}
             </h1>
             <p className="text-xs text-muted-foreground">
-              {t('moneyReceipts.subtitle', 'All transaction tokens, advance receipts, and customer payment vouchers.')}
+              {t('moneyReceipts.subtitle', 'All transaction tokens, advance receipts, and client payment vouchers.')}
             </p>
           </div>
         </div>
@@ -302,7 +300,7 @@ export function MoneyReceiptDataTable() {
             <thead className="bg-muted/50 border-b border-border text-muted-foreground uppercase text-[10px] font-bold">
               <tr>
                 <th className="px-4 py-3">{t('tables.tokenNo', 'Token No')}</th>
-                <th className="px-4 py-3">{t('tables.customerDetails', 'Customer Details')}</th>
+                <th className="px-4 py-3">{t('tables.clientDetails', 'Client Details')}</th>
                 <th className="px-4 py-3">{t('tables.serviceDetails', 'Service Details')}</th>
                 <th className="px-4 py-3">{t('tables.amount', 'Amount')}</th>
                 <th className="px-4 py-3">{t('tables.status', 'Status')}</th>

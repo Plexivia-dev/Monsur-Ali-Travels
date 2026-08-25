@@ -72,7 +72,7 @@ export function MoneyReceipt() {
   };
 
   const handleWhatsAppShare = () => {
-    const clientName = data.clientName || 'Customer';
+    const clientName = data.clientName || 'Client';
     const amountStr = Number(data.amount || 0).toLocaleString('en-IN');
 
     const msg =

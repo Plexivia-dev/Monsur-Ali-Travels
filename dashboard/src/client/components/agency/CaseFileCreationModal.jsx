@@ -82,8 +82,8 @@ export function CaseFileCreationModal({ isOpen, onClose, onSuccess }) {
     const timer = setTimeout(async () => {
       setSearching(true);
       try {
-        const res = await apiClient.get(`/api/v1/client/customers?search=${encodeURIComponent(searchQuery)}`);
-        const data = res.data?.data?.customers || res.data?.data || res.data || [];
+        const res = await apiClient.get(`/api/v1/client/clients?search=${encodeURIComponent(searchQuery)}`);
+        const data = res.data?.data?.clients || res.data?.data || res.data || [];
         setSearchResults(Array.isArray(data) ? data : []);
       } catch (err) {
         setSearchResults([]);
@@ -129,11 +129,11 @@ export function CaseFileCreationModal({ isOpen, onClose, onSuccess }) {
   const validateStep = () => {
     if (step === 1) {
       if (!clientForm.name.trim()) {
-        toast.error('Please provide candidate / client full name.');
+        toast.error('Please provide client full name.');
         return false;
       }
       if (!clientForm.phone.trim()) {
-        toast.error('Please provide candidate phone number.');
+        toast.error('Please provide client phone number.');
         return false;
       }
       if (!clientForm.passportNumber.trim()) {
@@ -206,7 +206,7 @@ export function CaseFileCreationModal({ isOpen, onClose, onSuccess }) {
             </div>
             <div>
               <h2 className="text-base font-bold text-foreground flex items-center gap-2">
-                <span>Candidate Intake</span>
+                <span>Client Intake</span>
                 <span className="px-2 py-0.5 rounded-full text-[10px] bg-sky-500/10 text-sky-400 border border-sky-400/20 font-mono">
                   Step {step} of 2
                 </span>
@@ -316,7 +316,7 @@ export function CaseFileCreationModal({ isOpen, onClose, onSuccess }) {
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
                 <div className="space-y-1">
                   <label className="font-semibold text-foreground flex items-center gap-1">
-                    Candidate Full Name <span className="text-rose-400">*</span>
+                    Client Full Name <span className="text-rose-400">*</span>
                   </label>
                   <input
                     type="text"
@@ -360,7 +360,7 @@ export function CaseFileCreationModal({ isOpen, onClose, onSuccess }) {
                   <label className="font-semibold text-foreground">Email Address (Optional)</label>
                   <input
                     type="email"
-                    placeholder="candidate@example.com"
+                    placeholder="client@example.com"
                     value={clientForm.email}
                     onChange={(e) => setClientForm({ ...clientForm, email: e.target.value })}
                     className="w-full px-3 py-2 bg-background border border-border rounded-lg text-xs focus:border-sky-500 outline-hidden"
@@ -418,7 +418,7 @@ export function CaseFileCreationModal({ isOpen, onClose, onSuccess }) {
             <div className="space-y-4 animate-in fade-in">
               <div className="p-3 bg-sky-500/10 border border-sky-400/20 rounded-xl text-sky-300 text-xs flex items-center gap-2">
                 <ShieldCheck className="w-4 h-4 shrink-0 text-sky-400" />
-                <span>Uploaded documents will be directly stored in the candidate's secure Document Vault.</span>
+                <span>Uploaded documents will be directly stored in the client's secure Document Vault.</span>
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -439,10 +439,10 @@ export function CaseFileCreationModal({ isOpen, onClose, onSuccess }) {
                   )}
                 </div>
 
-                {/* Candidate Photo */}
+                {/* Client Photo */}
                 <div className="p-4 border-2 border-dashed border-border rounded-xl bg-muted/15 flex flex-col items-center justify-center text-center space-y-2 relative">
                   <User className="w-7 h-7 text-sky-400" />
-                  <span className="font-bold text-foreground text-xs">Candidate Passport Photo</span>
+                  <span className="font-bold text-foreground text-xs">Client Passport Photo</span>
                   <span className="text-[10px] text-muted-foreground">White background 35x45mm</span>
                   {documents.photoName ? (
                     <span className="px-2.5 py-1 bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 rounded-md font-mono text-[11px] truncate max-w-xs">

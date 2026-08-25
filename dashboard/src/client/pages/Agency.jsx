@@ -2,9 +2,9 @@ import React from 'react';
 import { usePortalStore } from '../store/usePortalStore';
 import { useAuthStore } from '../store/useAuthStore';
 import { AgencyEmployees } from '../components/agency/AgencyEmployees';
-import { CandidateCaseFiles } from '../components/agency/CandidateCaseFiles';
+import { ClientCaseFiles } from '../components/agency/ClientCaseFiles';
 import { ClientManagement } from '../components/agency/ClientManagement';
-import { CustomerDataTable } from '../components/data/CustomerDataTable';
+import { ClientDataTable } from '../components/data/ClientDataTable';
 import { InvoiceDataTable } from '../components/data/InvoiceDataTable';
 import { ClientKanbanBoard } from '../components/agency/ClientKanbanBoard';
 import { isRouteAllowedForUser } from '../configs/roleNavConfig';
@@ -30,12 +30,12 @@ export default function Agency() {
     case 'employees':
       return <AgencyEmployees />;
 
-    // ── Case Files (Candidates) ────────────────────────────────
+    // ── Case Files (Clients) ────────────────────────────────
     case 'cases':
-    case 'candidates':
-    case 'candidates-all':
-    case 'candidates-add':
-      return <CandidateCaseFiles initialTab={activeSubmodule} />;
+    case 'clients':
+    case 'clients-all':
+    case 'clients-add':
+      return <ClientCaseFiles initialTab={activeSubmodule} />;
 
     // ── Client Kanban Board ──────────────────────────────────
     case 'pipeline':
@@ -51,7 +51,7 @@ export default function Agency() {
     case 'add-client':
     case 'payments':
     case 'clients-payments':
-      return <CustomerDataTable />;
+      return <ClientDataTable />;
 
     // ── Client Invoices & Bills ────────────────────────────────
     case 'bills':

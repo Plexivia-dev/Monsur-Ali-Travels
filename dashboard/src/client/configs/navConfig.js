@@ -84,11 +84,11 @@ export const navGroups = [
           },
           {
             icon: 'UserCheck',
-            label: 'Customer & Guardian Form',
-            key: 'nav.customerGuardianForm',
+            label: 'Client & Guardian Form',
+            key: 'nav.clientGuardianForm',
             portal: 'docs',
-            submodule: 'customer-form',
-            href: '/dashboard/docs/customer-form',
+            submodule: 'client-form',
+            href: '/dashboard/docs/client-form',
           },
           {
             icon: 'Stamp',
@@ -181,11 +181,11 @@ export const navGroups = [
     items: [
       {
         icon: 'Users',
-        label: 'Customer Profiles',
-        key: 'nav.customerProfiles',
+        label: 'Client Profiles',
+        key: 'nav.clientProfiles',
         portal: 'data',
-        submodule: 'customer-profiles',
-        href: '/dashboard/data/customer-profiles',
+        submodule: 'client-profiles',
+        href: '/dashboard/data/client-profiles',
       },
       {
         icon: 'FileSignature',
@@ -197,11 +197,11 @@ export const navGroups = [
       },
       {
         icon: 'UserCheck',
-        label: 'Customer Applications',
-        key: 'nav.customerApplications',
+        label: 'Client Applications',
+        key: 'nav.clientApplications',
         portal: 'data',
-        submodule: 'customer-applications',
-        href: '/dashboard/data/customer-applications',
+        submodule: 'client-applications',
+        href: '/dashboard/data/client-applications',
       },
       {
         icon: 'Stamp',

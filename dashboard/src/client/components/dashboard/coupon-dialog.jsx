@@ -309,7 +309,7 @@ export function CouponDialog({ open, onOpenChange, couponToEdit }) {
           <DialogDescription>
             {isEdit
               ? 'Update the settings for this discount code.'
-              : 'Add a new promotion code to reward your customers.'}
+              : 'Add a new promotion code to reward your clients.'}
           </DialogDescription>
         </DialogHeader>
 

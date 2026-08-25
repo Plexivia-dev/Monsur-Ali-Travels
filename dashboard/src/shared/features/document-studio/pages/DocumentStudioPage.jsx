@@ -16,7 +16,7 @@ import { SalarySlip } from '../components/payroll/SalarySlip';
 import { Invoice } from '../components/invoice/Invoice';
 import { PassportSubmission } from '../components/passport/PassportSubmission';
 import { IndianVisa } from '../components/indian-visa/IndianVisa';
-import { CustomerGuardian } from '../components/customer-form/CustomerGuardian';
+import { ClientGuardian } from '../components/client-form/ClientGuardian';
 import { MoneyReceipt } from '../components/receipt/MoneyReceipt';
 import { CashVoucher } from '../components/cash-voucher/CashVoucher';
 import { ExperienceCertificate } from '../components/certificate-experience/ExperienceCertificate';
@@ -104,7 +104,7 @@ export function DocumentStudioPage({
             title={isBn ? 'ডকুমেন্ট স্টুডিও' : 'Document Studio'}
             description={
               isBn
-                ? 'ভ্রমণ চুক্তিপত্র, কাস্টমার আবেদন, ভিসা ফাইল, পাসপোর্ট জমা রশিদ, আইডি কার্ড, পে-রোল স্যালারি স্লিপ, ইনভয়েস ও সার্টিফিকেটসহ সকল অফিসিয়াল ডকুমেন্ট সহজে তৈরি ও প্রিন্ট করুন।'
+                ? 'ভ্রমণ চুক্তিপত্র, ক্লায়েন্ট আবেদন, ভিসা ফাইল, পাসপোর্ট জমা রশিদ, আইডি কার্ড, পে-রোল স্যালারি স্লিপ, ইনভয়েস ও সার্টিফিকেটসহ সকল অফিসিয়াল ডকুমেন্ট সহজে তৈরি ও প্রিন্ট করুন।'
                 : 'Generate, preview, customize, and print official travel documents, vouchers, agreements, certificates, identity cards, and payroll records.'
             }
             icon={FileText}
@@ -230,7 +230,7 @@ export function DocumentStudioPage({
       )}
 
       {resolvedSubmodule === 'agreement' && <EmploymentAgreement />}
-      {resolvedSubmodule === 'customer-form' && <CustomerGuardian />}
+      {resolvedSubmodule === 'client-form' && <ClientGuardian />}
       {resolvedSubmodule === 'indian-visa' && <IndianVisa />}
       {resolvedSubmodule === 'passport-sub' && <PassportSubmission />}
       {resolvedSubmodule === 'idcard' && <IdCard />}

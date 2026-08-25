@@ -6,7 +6,7 @@ import logoImg from '../../../assets/logo.png';
 import { formatToDdMmYyyy } from '../../../lib/utils';
 
 // Helper component for single half-page receipt slip
-function SingleReceiptSlip({ data = {}, copyType = 'গ্রাহক কপি (Customer Copy)' }) {
+function SingleReceiptSlip({ data = {}, copyType = 'গ্রাহক কপি (Client Copy)' }) {
   const {
     receiptNo = 'MR-000000-0000',
     clientName = '',
@@ -197,7 +197,7 @@ function SingleReceiptSlip({ data = {}, copyType = 'গ্রাহক কপি
 
 /**
  * Main Printable Money Receipt Sheet
- * Formatted as an A4 page with 2 slips (Customer Copy & Office Copy)
+ * Formatted as an A4 page with 2 slips (Client Copy & Office Copy)
  */
 export function MoneyReceiptPrintSlip({ data = {}, onPrint }) {
   const handlePrint = onPrint || (() => window.print());
@@ -224,8 +224,8 @@ export function MoneyReceiptPrintSlip({ data = {}, onPrint }) {
 
       {/* A4 Paper Canvas - Clean Compact Padding */}
       <PrintablePaper id="printable-receipt-canvas" className="p-4 sm:p-5 space-y-2.5 min-h-0 flex-col justify-start">
-        {/* Top Half: Customer Copy */}
-        <SingleReceiptSlip data={data} copyType="গ্রাহক কপি (Customer Copy)" />
+        {/* Top Half: Client Copy */}
+        <SingleReceiptSlip data={data} copyType="গ্রাহক কপি (Client Copy)" />
 
         {/* Perforated Divider Line */}
         <div className="relative py-0.5 text-center select-none">

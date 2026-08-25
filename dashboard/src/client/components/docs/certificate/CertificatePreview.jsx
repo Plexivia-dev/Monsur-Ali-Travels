@@ -4,7 +4,7 @@ import { Printer, Award, ShieldCheck, CheckCircle2 } from 'lucide-react';
 import logoImg from '../../../assets/logo.png';
 
 export function CertificatePreview({ data, onPrint }) {
-  const { memoNo, issueDate, language, candidate, conduct, authority } = data;
+  const { memoNo, issueDate, language, client, conduct, authority } = data;
 
   const isBn = language === 'bn';
 
@@ -75,15 +75,15 @@ export function CertificatePreview({ data, onPrint }) {
               {isBn ? (
                 <>
                   <p>
-                    এই মর্মে প্রত্যয়ন করা যাইতেছে যে, <strong>{candidate.fullName}</strong>, 
-                    পিতা: <strong>{candidate.fatherName}</strong>, 
-                    মাতা: <strong>{candidate.motherName}</strong>, 
-                    গ্রাম/মহল্লা: <strong>{candidate.village}</strong>, 
-                    ডাকঘর: <strong>{candidate.postOffice}</strong>, 
-                    উপজেলা/থানা: <strong>{candidate.upazila}</strong>, 
-                    জেলা: <strong>{candidate.district}</strong>। 
-                    {candidate.passportNo && <>পাসপোর্ট নম্বর: <strong className="font-mono">{candidate.passportNo}</strong>, </>}
-                    {candidate.nidNo && <>জাতীয় পরিচয়পত্র নম্বর: <strong className="font-mono">{candidate.nidNo}</strong>।</>}
+                    এই মর্মে প্রত্যয়ন করা যাইতেছে যে, <strong>{client.fullName}</strong>, 
+                    পিতা: <strong>{client.fatherName}</strong>, 
+                    মাতা: <strong>{client.motherName}</strong>, 
+                    গ্রাম/মহল্লা: <strong>{client.village}</strong>, 
+                    ডাকঘর: <strong>{client.postOffice}</strong>, 
+                    উপজেলা/থানা: <strong>{client.upazila}</strong>, 
+                    জেলা: <strong>{client.district}</strong>। 
+                    {client.passportNo && <>পাসপোর্ট নম্বর: <strong className="font-mono">{client.passportNo}</strong>, </>}
+                    {client.nidNo && <>জাতীয় পরিচয়পত্র নম্বর: <strong className="font-mono">{client.nidNo}</strong>।</>}
                   </p>
 
                   <p>
@@ -93,12 +93,12 @@ export function CertificatePreview({ data, onPrint }) {
               ) : (
                 <>
                   <p>
-                    This is to certify that <strong>{candidate.fullNameEn || candidate.fullName}</strong>, 
-                    Son/Daughter of <strong>{candidate.fatherName}</strong> and <strong>{candidate.motherName}</strong>, 
-                    resident of Village: <strong>{candidate.village}</strong>, Post Office: <strong>{candidate.postOffice}</strong>, 
-                    Upazila: <strong>{candidate.upazila}</strong>, District: <strong>{candidate.district}</strong>. 
-                    {candidate.passportNo && <>Passport No: <strong className="font-mono">{candidate.passportNo}</strong>, </>}
-                    {candidate.nidNo && <>NID No: <strong className="font-mono">{candidate.nidNo}</strong>.</>}
+                    This is to certify that <strong>{client.fullNameEn || client.fullName}</strong>, 
+                    Son/Daughter of <strong>{client.fatherName}</strong> and <strong>{client.motherName}</strong>, 
+                    resident of Village: <strong>{client.village}</strong>, Post Office: <strong>{client.postOffice}</strong>, 
+                    Upazila: <strong>{client.upazila}</strong>, District: <strong>{client.district}</strong>. 
+                    {client.passportNo && <>Passport No: <strong className="font-mono">{client.passportNo}</strong>, </>}
+                    {client.nidNo && <>NID No: <strong className="font-mono">{client.nidNo}</strong>.</>}
                   </p>
 
                   <p>

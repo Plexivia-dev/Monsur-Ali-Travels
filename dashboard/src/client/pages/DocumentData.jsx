@@ -1,12 +1,12 @@
 import React from 'react';
 import { usePortalStore } from '../store/usePortalStore';
-import { CustomerDataTable } from '../components/data/CustomerDataTable';
+import { ClientDataTable } from '../components/data/ClientDataTable';
 import { AgreementDataTable } from '../components/data/AgreementDataTable';
 import { IndianVisaDataTable } from '../components/data/IndianVisaDataTable';
 import { PassportSubmissionDataTable } from '../components/data/PassportSubmissionDataTable';
 import { SalarySlipDataTable } from '../components/data/SalarySlipDataTable';
 import { InvoiceDataTable } from '../components/data/InvoiceDataTable';
-import { CustomerGuardianDataTable } from '../components/data/CustomerGuardianDataTable';
+import { ClientGuardianDataTable } from '../components/data/ClientGuardianDataTable';
 import { MoneyReceiptDataTable } from '../components/data/MoneyReceiptDataTable';
 
 export default function DocumentData() {
@@ -16,10 +16,10 @@ export default function DocumentData() {
     // ── Client Profiles ──────────────────────────────────────
     case 'client-profiles':
     case 'client-add':
-    case 'customer-profiles':
-    case 'customer-add':
+    case 'client-profiles':
+    case 'client-add':
     case 'clients-all':
-      return <CustomerDataTable />;
+      return <ClientDataTable />;
 
     // ── Agreement Records ──────────────────────────────────────
     case 'agreements':
@@ -31,11 +31,11 @@ export default function DocumentData() {
     case 'client-applications':
     case 'client-guardians':
     case 'client-forms':
-    case 'customer-applications':
-    case 'customer-guardians':
-    case 'customer-forms':
-    case 'customers':
-      return <CustomerGuardianDataTable />;
+    case 'client-applications':
+    case 'client-guardians':
+    case 'client-forms':
+    case 'clients':
+      return <ClientGuardianDataTable />;
 
     // ── Indian Visa Records ────────────────────────────────────
     case 'indian-visas':
@@ -64,8 +64,8 @@ export default function DocumentData() {
     case 'tokens':
       return <MoneyReceiptDataTable />;
 
-    // ── Default / Fallback → Customer Profiles ─────────────────
+    // ── Default / Fallback → Client Profiles ─────────────────
     default:
-      return <CustomerDataTable />;
+      return <ClientDataTable />;
   }
 }

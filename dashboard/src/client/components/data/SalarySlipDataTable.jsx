@@ -5,7 +5,7 @@ import { DataTablePagination } from './DataTablePagination';
 import { toast } from 'sonner';
 import { formatToDdMmYyyy } from '../../lib/utils';
 import { usePortal } from '../../context/PortalContext';
-import { SalarySlipPreview } from '../docs/payroll/SalarySlipPreview';
+import { SalarySlipPreview } from '@/shared/features/document-studio';
 import { ConfirmDeleteDialog } from '@/components/ui/confirm-delete-dialog';
 import { useTranslation } from 'react-i18next';
 

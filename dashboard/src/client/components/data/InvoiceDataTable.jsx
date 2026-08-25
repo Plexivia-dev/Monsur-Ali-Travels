@@ -5,7 +5,7 @@ import { DataTablePagination } from './DataTablePagination';
 import { toast } from 'sonner';
 import { formatToDdMmYyyy } from '../../lib/utils';
 import { usePortal } from '../../context/PortalContext';
-import { InvoicePreview } from '../docs/invoice/InvoicePreview';
+import { InvoicePreview } from '@/shared/features/document-studio';
 import { ConfirmDeleteDialog } from '@/components/ui/confirm-delete-dialog';
 import { useTranslation } from 'react-i18next';
 
@@ -97,7 +97,7 @@ export function InvoiceDataTable() {
             {t('invoices.title', 'Invoices & Billing History')}
           </h2>
           <p className="text-xs text-muted-foreground mt-0.5">
-            {t('invoices.subtitle', 'Customer and agency billing invoice records, payment status, and due accounts.')}
+            {t('invoices.subtitle', 'Client and agency billing invoice records, payment status, and due accounts.')}
           </p>
         </div>
 
@@ -155,7 +155,7 @@ export function InvoiceDataTable() {
               <tr className="bg-muted/50 text-muted-foreground font-bold border-b border-border">
                 <th className="p-3 w-12 text-center">#</th>
                 <th className="p-3">{t('tables.invoiceNo', 'Invoice No')}</th>
-                <th className="p-3">{t('tables.customerClient', 'Customer / Client')}</th>
+                <th className="p-3">{t('tables.clientClient', 'Client / Client')}</th>
                 <th className="p-3">{t('tables.issueDate', 'Issue Date')}</th>
                 <th className="p-3">{t('tables.dueDate', 'Due Date')}</th>
                 <th className="p-3">{t('tables.itemCount', 'Items')}</th>

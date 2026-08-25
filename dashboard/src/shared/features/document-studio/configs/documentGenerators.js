@@ -28,9 +28,9 @@ export const DOCUMENT_GENERATORS = [
     badgeStyle: 'bg-blue-50 text-blue-700 dark:bg-blue-950/50 dark:text-blue-300 border-blue-200 dark:border-blue-800',
   },
   {
-    id: 'customer-form',
-    title: 'Customer & Guardian Form',
-    bnTitle: 'কাস্টমার ও অভিভাবক ফরম',
+    id: 'client-form',
+    title: 'Client & Guardian Form',
+    bnTitle: 'ক্লায়েন্ট ও অভিভাবক ফরম',
     category: 'contracts',
     categoryLabel: 'Contracts & Forms',
     description: 'Applicant profile, guardian guarantee, emergency contacts and legal declaration.',

@@ -197,7 +197,7 @@ export function OrdersTable({
               />
             </TableHead>
             <TableHead className="w-[150px]">Order ID</TableHead>
-            <TableHead className="w-[180px]">Customer Name</TableHead>
+            <TableHead className="w-[180px]">Client Name</TableHead>
             <TableHead className="w-[110px]">Date</TableHead>
             <TableHead className="w-[120px]">Total Amount</TableHead>
             <TableHead className="w-[100px]">Payment</TableHead>
@@ -242,7 +242,7 @@ export function OrdersTable({
                   <span className="font-semibold truncate block" title={order.orderNumber}>{order.orderNumber}</span>
                 </TableCell>
                 <TableCell className="max-w-[180px]">
-                  <span className="truncate block" title={order.customerName}>{order.customerName}</span>
+                  <span className="truncate block" title={order.clientName}>{order.clientName}</span>
                 </TableCell>
                 <TableCell className="w-[110px] text-muted-foreground whitespace-nowrap">
                   {new Date(order.date).toLocaleDateString()}

@@ -158,7 +158,7 @@ export function MembersTable({
                 }}
               />
             </TableHead>
-            <TableHead className="w-[200px] min-w-[160px]">Customer</TableHead>
+            <TableHead className="w-[200px] min-w-[160px]">Client</TableHead>
             <TableHead className="w-[200px]">Email</TableHead>
             <TableHead className="w-[130px]">Phone</TableHead>
             <TableHead className="w-[100px] text-right">Total Orders</TableHead>

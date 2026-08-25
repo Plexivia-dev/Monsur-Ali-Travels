@@ -3,7 +3,7 @@ export function getDefaultCertificateData() {
     memoNo: "",
     issueDate: new Date().toISOString().split("T")[0],
     language: "bn", // 'bn' | 'en'
-    candidate: {
+    client: {
       fullName: "",
       fullNameEn: "",
       fatherName: "",
