@@ -1,18 +1,17 @@
-import React, { useState, useEffect, useCallback, useMemo } from 'react';
-import { Card, CardContent } from '@/components/ui/card';
+﻿import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { apiClient } from '@/lib/api-client';
 import {
   User,
-  Shield,
-  Search,
+  UserPlus,
   RefreshCw,
-  Mail,
-  Phone,
   CheckCircle2,
   XCircle,
   Loader2,
-  Key,
-  ShieldAlert,
+  Shield,
+  ToggleLeft,
+  ToggleRight,
+  X,
+  Calendar,
 } from 'lucide-react';
 import { toast } from 'sonner';
 import {
@@ -27,17 +26,30 @@ import { Button } from '@/components/ui/button';
 const UsersPage = () => {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [createModalOpen, setCreateModalOpen] = useState(false);
+  const [createLoading, setCreateLoading] = useState(false);
+  const [togglingId, setTogglingId] = useState(null);
+  const [createForm, setCreateForm] = useState({
+    fullName: '',
+    email: '',
+    phone: '',
+    password: '',
+    role: 'Staff',
+  });
 
   // Fetches system users list
   const fetchUsers = useCallback(async () => {
     setLoading(true);
     try {
       const res = await apiClient.get('/api/v1/admin/users');
-      const data = res.data?.data || res.data?.users || [];
+      const data =
+        res.data?.data ||
+        res.data?.users ||
+        (Array.isArray(res.data) ? res.data : []);
       setUsers(Array.isArray(data) ? data : []);
     } catch (err) {
       console.error('Failed to load users list:', err);
-      toast.error('Failed to load system users.');
+      toast.error(err.response?.data?.message || 'Failed to load system users.');
       setUsers([]);
     } finally {
       setLoading(false);
@@ -47,6 +59,68 @@ const UsersPage = () => {
   useEffect(() => {
     fetchUsers();
   }, [fetchUsers]);
+
+  // Formats ISO date string into readable date
+  const formatDate = (dateStr) => {
+    if (!dateStr) return '\u2014';
+    return new Date(dateStr).toLocaleDateString('en-GB', {
+      day: 'numeric',
+      month: 'short',
+      year: 'numeric',
+    });
+  };
+
+  // Creates a new system user
+  const handleCreateUser = async (e) => {
+    e.preventDefault();
+    if (!createForm.fullName.trim()) return toast.error('Full name is required.');
+    if (!createForm.email.trim()) return toast.error('Email is required.');
+    if (!createForm.password.trim() || createForm.password.length < 6)
+      return toast.error('Password must be at least 6 characters.');
+
+    setCreateLoading(true);
+    try {
+      await apiClient.post('/api/v1/admin/users', {
+        fullName: createForm.fullName.trim(),
+        email: createForm.email.trim(),
+        phone: createForm.phone.trim() || undefined,
+        password: createForm.password,
+        role: createForm.role,
+      });
+      toast.success(`User "${createForm.fullName}" created successfully!`);
+      setCreateModalOpen(false);
+      setCreateForm({ fullName: '', email: '', phone: '', password: '', role: 'Staff' });
+      fetchUsers();
+    } catch (err) {
+      toast.error(err.response?.data?.message || 'Failed to create user.');
+    } finally {
+      setCreateLoading(false);
+    }
+  };
+
+  // Toggles a user's active/suspended status
+  const handleToggleStatus = useCallback(
+    async (user) => {
+      const userId = user._id || user.did;
+      if (!userId) return;
+      const currentActive = user.isActive !== false;
+      setTogglingId(userId);
+      try {
+        await apiClient.patch(`/api/v1/admin/users/${userId}/status`, {
+          isActive: !currentActive,
+        });
+        toast.success(
+          `User "${user.fullName || user.name}" ${!currentActive ? 'activated' : 'suspended'} successfully.`
+        );
+        fetchUsers();
+      } catch (err) {
+        toast.error(err.response?.data?.message || 'Failed to update user status.');
+      } finally {
+        setTogglingId(null);
+      }
+    },
+    [fetchUsers]
+  );
 
   // TanStack Column Definitions
   const columns = useMemo(
@@ -65,7 +139,7 @@ const UsersPage = () => {
               <div>
                 <span className="font-bold text-foreground block">{name}</span>
                 <div className="font-mono text-[10px] text-muted-foreground">
-                  DID: {u.did ? `${u.did.slice(0, 14)}...` : u._id?.slice(0, 14) || '—'}
+                  {u.did ? `DID: ${u.did.slice(0, 14)}...` : u._id ? `ID: ${u._id.slice(0, 14)}...` : '\u2014'}
                 </div>
               </div>
             </div>
@@ -78,7 +152,7 @@ const UsersPage = () => {
         header: ({ column }) => <DataTableColumnHeader column={column} title="Email" />,
         cell: ({ row }) => (
           <span className="text-xs font-medium text-foreground">
-            {row.getValue('email') || '—'}
+            {row.getValue('email') || '\u2014'}
           </span>
         ),
       },
@@ -87,13 +161,13 @@ const UsersPage = () => {
         header: ({ column }) => <DataTableColumnHeader column={column} title="Phone" />,
         cell: ({ row }) => (
           <span className="text-xs font-mono text-muted-foreground">
-            {row.getValue('phone') || '—'}
+            {row.getValue('phone') || '\u2014'}
           </span>
         ),
       },
       {
         accessorKey: 'role',
-        header: ({ column }) => <DataTableColumnHeader column={column} title="Role & Sub-Role" />,
+        header: ({ column }) => <DataTableColumnHeader column={column} title="Role" />,
         cell: ({ row }) => {
           const u = row.original;
           return (
@@ -109,13 +183,11 @@ const UsersPage = () => {
             </div>
           );
         },
-        filterFn: (row, id, value) => {
-          return value.includes(row.getValue(id));
-        },
+        filterFn: (row, id, value) => value.includes(row.getValue(id)),
       },
       {
         accessorKey: 'isActive',
-        header: ({ column }) => <DataTableColumnHeader column={column} title="Account Status" />,
+        header: ({ column }) => <DataTableColumnHeader column={column} title="Status" />,
         cell: ({ row }) => {
           const active = row.getValue('isActive') !== false;
           return (
@@ -131,8 +203,52 @@ const UsersPage = () => {
           );
         },
       },
+      {
+        accessorKey: 'createdAt',
+        header: ({ column }) => <DataTableColumnHeader column={column} title="Joined" />,
+        cell: ({ row }) => (
+          <span className="text-xs text-muted-foreground font-medium">
+            {formatDate(row.getValue('createdAt'))}
+          </span>
+        ),
+      },
+      {
+        id: 'actions',
+        header: 'Actions',
+        cell: ({ row }) => {
+          const u = row.original;
+          const userId = u._id || u.did;
+          const isToggling = togglingId === userId;
+          const isActive = u.isActive !== false;
+          return (
+            <Button
+              variant="outline"
+              size="sm"
+              disabled={isToggling}
+              onClick={(e) => {
+                e.stopPropagation();
+                handleToggleStatus(u);
+              }}
+              className={`h-7 px-2.5 text-xs font-semibold cursor-pointer gap-1 shadow-xs ${
+                isActive
+                  ? 'text-rose-600 border-rose-200 hover:bg-rose-50'
+                  : 'text-emerald-600 border-emerald-200 hover:bg-emerald-50'
+              }`}
+            >
+              {isToggling ? (
+                <Loader2 className="size-3.5 animate-spin" />
+              ) : isActive ? (
+                <ToggleRight className="size-3.5" />
+              ) : (
+                <ToggleLeft className="size-3.5" />
+              )}
+              <span>{isActive ? 'Suspend' : 'Activate'}</span>
+            </Button>
+          );
+        },
+      },
     ],
-    []
+    [handleToggleStatus, togglingId]
   );
 
   const facetedFilters = [
@@ -153,22 +269,28 @@ const UsersPage = () => {
       {/* Header Banner */}
       <HeaderTitle
         variant="general"
-        icon={User}
+        icon={Shield}
         title="System Users & Staff"
-        badge={`${users.length} Total Users & Staff`}
-        subtitle="Manage agency administrators, operations staff, accountants, and user privileges."
+        badge={`${users.length} Total`}
+        subtitle="Manage agency administrators, operations staff, accountants, and user account privileges."
         actions={
-          <Button
-            onClick={fetchUsers}
-            disabled={loading}
-            variant="outline"
-            size="sm"
-            className="flex items-center gap-2 text-xs font-semibold cursor-pointer bg-slate-800/80 hover:bg-slate-800 text-sky-400 border-sky-500/20"
-            title="Refresh Users"
-          >
-            <RefreshCw className={`size-3.5 ${loading ? 'animate-spin' : ''}`} />
-            <span>Refresh</span>
-          </Button>
+          <>
+            <button
+              onClick={fetchUsers}
+              disabled={loading}
+              className="p-2.5 bg-card hover:bg-muted text-primary rounded-xl border border-border transition-all cursor-pointer shadow-xs"
+              title="Refresh Users"
+            >
+              <RefreshCw className={`size-4 ${loading ? 'animate-spin' : ''}`} />
+            </button>
+            <button
+              onClick={() => setCreateModalOpen(true)}
+              className="flex items-center justify-center gap-2 px-4 py-2.5 bg-primary hover:bg-primary/90 text-primary-foreground font-bold text-xs rounded-xl shadow-md transition-all cursor-pointer shrink-0"
+            >
+              <UserPlus className="size-4" />
+              <span>Add New User</span>
+            </button>
+          </>
         }
       />
 
@@ -186,10 +308,129 @@ const UsersPage = () => {
         facetedFilters={facetedFilters}
         enableExport={true}
         exportFilename="system-users-directory"
-        searchPlaceholder="Search by Name, Email, Phone..."
-        emptyTitle="No users found matching criteria."
-        emptyDescription="There are no system users matching the search filter."
+        searchPlaceholder="Search by Name, Email, Phone, Role..."
+        emptyTitle="No users found."
+        emptyDescription="No system users match the current search or filter criteria."
       />
+
+      {/* Create User Modal */}
+      {createModalOpen && (
+        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="bg-background rounded-2xl border border-border shadow-2xl max-w-lg w-full flex flex-col overflow-hidden">
+            {/* Modal Header */}
+            <div className="p-5 border-b border-border flex items-center justify-between bg-muted/40">
+              <div className="flex items-center gap-3">
+                <div className="p-2.5 rounded-xl bg-primary/10 text-primary">
+                  <UserPlus className="size-5" />
+                </div>
+                <div>
+                  <h2 className="text-lg font-bold text-foreground">Add System User</h2>
+                  <p className="text-xs text-muted-foreground mt-0.5">
+                    Create a new agency staff or admin account.
+                  </p>
+                </div>
+              </div>
+              <button
+                onClick={() => setCreateModalOpen(false)}
+                className="p-1.5 rounded-lg border border-border hover:bg-muted text-muted-foreground cursor-pointer"
+              >
+                <X className="size-4" />
+              </button>
+            </div>
+
+            {/* Modal Form */}
+            <form onSubmit={handleCreateUser} className="p-6 space-y-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label className="text-xs font-semibold text-foreground block mb-1.5">
+                    Full Name <span className="text-rose-500">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    value={createForm.fullName}
+                    onChange={(e) => setCreateForm((p) => ({ ...p, fullName: e.target.value }))}
+                    placeholder="e.g. Md. Rafiqul Islam"
+                    required
+                    className="w-full px-3.5 py-2 text-xs rounded-xl border border-input bg-background focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                  />
+                </div>
+                <div>
+                  <label className="text-xs font-semibold text-foreground block mb-1.5">
+                    Role <span className="text-rose-500">*</span>
+                  </label>
+                  <select
+                    value={createForm.role}
+                    onChange={(e) => setCreateForm((p) => ({ ...p, role: e.target.value }))}
+                    className="w-full px-3 py-2 text-xs rounded-xl border border-input bg-background focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                  >
+                    <option value="Owner">Owner</option>
+                    <option value="Admin">Admin</option>
+                    <option value="Staff">Staff</option>
+                    <option value="Accountant">Accountant</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="text-xs font-semibold text-foreground block mb-1.5">
+                    Email Address <span className="text-rose-500">*</span>
+                  </label>
+                  <input
+                    type="email"
+                    value={createForm.email}
+                    onChange={(e) => setCreateForm((p) => ({ ...p, email: e.target.value }))}
+                    placeholder="e.g. user@agency.com"
+                    required
+                    className="w-full px-3.5 py-2 text-xs rounded-xl border border-input bg-background focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                  />
+                </div>
+                <div>
+                  <label className="text-xs font-semibold text-foreground block mb-1.5">
+                    Phone Number
+                  </label>
+                  <input
+                    type="tel"
+                    value={createForm.phone}
+                    onChange={(e) => setCreateForm((p) => ({ ...p, phone: e.target.value }))}
+                    placeholder="e.g. +880 1712-345678"
+                    className="w-full px-3.5 py-2 text-xs rounded-xl border border-input bg-background focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                  />
+                </div>
+                <div className="sm:col-span-2">
+                  <label className="text-xs font-semibold text-foreground block mb-1.5">
+                    Password <span className="text-rose-500">*</span>
+                  </label>
+                  <input
+                    type="password"
+                    value={createForm.password}
+                    onChange={(e) => setCreateForm((p) => ({ ...p, password: e.target.value }))}
+                    placeholder="Minimum 6 characters"
+                    required
+                    minLength={6}
+                    className="w-full px-3.5 py-2 text-xs rounded-xl border border-input bg-background focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary font-mono"
+                  />
+                </div>
+              </div>
+
+              <div className="pt-3 border-t border-border flex items-center justify-end gap-2.5">
+                <button
+                  type="button"
+                  onClick={() => setCreateModalOpen(false)}
+                  className="px-4 py-2 text-xs font-semibold rounded-xl border border-input hover:bg-muted text-foreground transition-all cursor-pointer"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={createLoading}
+                  className="flex items-center gap-2 px-5 py-2 text-xs font-bold rounded-xl bg-primary text-primary-foreground hover:bg-primary/90 transition-all cursor-pointer shadow-md disabled:opacity-50"
+                >
+                  {createLoading ? <Loader2 className="size-4 animate-spin" /> : <CheckCircle2 className="size-4" />}
+                  <span>{createLoading ? 'Creating...' : 'Create User'}</span>
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
