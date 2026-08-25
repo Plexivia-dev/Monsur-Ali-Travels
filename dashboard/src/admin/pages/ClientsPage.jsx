@@ -23,6 +23,7 @@ import {
   UnifiedDataTable,
   DataTableColumnHeader,
 } from '@/components/ui/unified-table';
+import { HeaderTitle } from '@shared/components/common/HeaderTitle';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 
@@ -229,43 +230,31 @@ const ClientsPage = () => {
   return (
     <div className="space-y-6 pb-12">
       {/* Header Banner */}
-      <div className="relative overflow-hidden rounded-3xl bg-linear-to-r from-primary/10 via-primary/5 to-transparent border border-primary/20 p-6 md:p-8">
-        <div className="relative z-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
-          <div className="space-y-1.5">
-            <div className="flex items-center gap-2">
-              <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-primary/15 text-primary border border-primary/20 flex items-center gap-1">
-                <Users className="size-3" /> Directory & Ledger
-              </span>
-              <span className="text-xs text-muted-foreground">
-                • {pagination.totalCount} Registered Clients
-              </span>
-            </div>
-            <h1 className="text-2xl md:text-3xl font-black tracking-tight text-foreground">
-              Client Management
-            </h1>
-            <p className="text-xs md:text-sm text-muted-foreground max-w-xl">
-              Unified database of visa applicants, pilgrimage groups, and corporate agents with full 360° milestone history.
-            </p>
-          </div>
-
-          <div className="flex items-center gap-3 w-full md:w-auto">
+      <HeaderTitle
+        variant="general"
+        icon={Users}
+        title="Client Management"
+        badge={`${pagination.totalCount} Registered Clients`}
+        subtitle="Unified database of visa applicants, pilgrimage groups, and corporate agents with full 360° milestone history."
+        actions={
+          <>
             <button
               onClick={() => fetchClients()}
-              className="p-2.5 rounded-xl border border-border bg-background hover:bg-muted text-muted-foreground hover:text-foreground transition-colors cursor-pointer shadow-xs"
+              className="p-2.5 bg-slate-800/80 hover:bg-slate-800 text-sky-400 rounded-xl border border-sky-500/20 transition-all cursor-pointer shadow-xs"
               title="Refresh Records"
             >
-              <RefreshCw className={`size-4 ${loading ? 'animate-spin text-primary' : ''}`} />
+              <RefreshCw className={`size-4 ${loading ? 'animate-spin' : ''}`} />
             </button>
             <button
               onClick={() => setCreateModalOpen(true)}
-              className="flex-1 md:flex-initial flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-primary text-primary-foreground font-bold text-xs hover:bg-primary/90 shadow-md shadow-primary/20 transition-all cursor-pointer"
+              className="flex items-center justify-center gap-2 px-4 py-2.5 bg-sky-500 hover:bg-sky-400 text-slate-950 font-bold text-xs rounded-xl shadow-lg hover:shadow-sky-500/25 transition-all cursor-pointer shrink-0"
             >
               <UserPlus className="size-4" />
               <span>New Client File</span>
             </button>
-          </div>
-        </div>
-      </div>
+          </>
+        }
+      />
 
       {/* KPI Stats Overview */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">

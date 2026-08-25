@@ -3,6 +3,7 @@ import {
   UnifiedDataTable,
   DataTableColumnHeader,
 } from '@/components/ui/unified-table';
+import { HeaderTitle } from '@shared/components/common/HeaderTitle';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
@@ -442,43 +443,35 @@ export default function UnifiedTableShowcasePage() {
   return (
     <div className="space-y-6 pb-12">
       {/* Page Header */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-border/80 pb-5">
-        <div>
-          <div className="flex items-center gap-2">
-            <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-primary/10 text-primary border border-primary/20 flex items-center gap-1">
-              <Sparkles className="size-3" /> TanStack Table Unified Datagrid
-            </span>
+      <HeaderTitle
+        variant="general"
+        icon={Sparkles}
+        title="Unified DataTable Showcase"
+        badge="TanStack Table Suite"
+        subtitle="Enterprise headless table suite with multi-sorting, global/faceted search, column pinning, row selection, expandable rows, and CSV/JSON export."
+        actions={
+          <div className="flex flex-wrap items-center gap-2">
+            <Button
+              variant={simulateLoading ? 'default' : 'outline'}
+              size="sm"
+              onClick={() => setSimulateLoading(!simulateLoading)}
+              className="text-xs font-semibold cursor-pointer h-8 bg-slate-800/80 hover:bg-slate-800 text-sky-400 border-sky-500/20"
+            >
+              <RefreshCw className={`size-3.5 mr-1.5 ${simulateLoading ? 'animate-spin' : ''}`} />
+              {simulateLoading ? 'Loading Mode (ON)' : 'Simulate Loading'}
+            </Button>
+
+            <Button
+              variant={simulateEmpty ? 'default' : 'outline'}
+              size="sm"
+              onClick={() => setSimulateEmpty(!simulateEmpty)}
+              className="text-xs font-semibold cursor-pointer h-8 bg-slate-800/80 hover:bg-slate-800 text-sky-400 border-sky-500/20"
+            >
+              {simulateEmpty ? 'Empty State (ON)' : 'Simulate Empty'}
+            </Button>
           </div>
-          <h1 className="text-2xl font-black tracking-tight text-foreground mt-1">
-            Unified DataTable Showcase
-          </h1>
-          <p className="text-xs text-muted-foreground mt-0.5">
-            Enterprise headless table suite with multi-sorting, global/faceted search, column pinning, row selection, expandable rows, and CSV/JSON export.
-          </p>
-        </div>
-
-        {/* Demo State Controls */}
-        <div className="flex flex-wrap items-center gap-2">
-          <Button
-            variant={simulateLoading ? 'default' : 'outline'}
-            size="sm"
-            onClick={() => setSimulateLoading(!simulateLoading)}
-            className="text-xs font-semibold cursor-pointer h-8"
-          >
-            <RefreshCw className={`size-3.5 mr-1.5 ${simulateLoading ? 'animate-spin' : ''}`} />
-            {simulateLoading ? 'Loading Mode (ON)' : 'Simulate Loading'}
-          </Button>
-
-          <Button
-            variant={simulateEmpty ? 'default' : 'outline'}
-            size="sm"
-            onClick={() => setSimulateEmpty(!simulateEmpty)}
-            className="text-xs font-semibold cursor-pointer h-8"
-          >
-            {simulateEmpty ? 'Empty State (ON)' : 'Simulate Empty'}
-          </Button>
-        </div>
-      </div>
+        }
+      />
 
       {/* Main Table Instance */}
       <Card className="rounded-2xl border border-border shadow-xs overflow-hidden">

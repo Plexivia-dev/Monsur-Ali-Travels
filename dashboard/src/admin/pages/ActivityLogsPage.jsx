@@ -19,6 +19,7 @@ import {
   UnifiedDataTable,
   DataTableColumnHeader,
 } from '@/components/ui/unified-table';
+import { HeaderTitle } from '@shared/components/common/HeaderTitle';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 
@@ -210,39 +211,26 @@ export default function ActivityLogsPage() {
   return (
     <div className="space-y-6 pb-12">
       {/* Header Banner */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-gradient-to-r from-primary/10 via-primary/5 to-transparent p-6 rounded-2xl border border-primary/20 shadow-xs">
-        <div>
-          <div className="flex items-center gap-2">
-            <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-primary text-primary-foreground uppercase tracking-wider">
-              Security & Audit
-            </span>
-            <span className="text-xs font-semibold text-muted-foreground">
-              {logs.length} Logged Actions
-            </span>
-          </div>
-          <h1 className="text-2xl md:text-3xl font-extrabold text-foreground tracking-tight mt-1.5 flex items-center gap-2.5">
-            <Shield className="size-7 text-primary" />
-            <span>Activity & Audit Trail</span>
-          </h1>
-          <p className="text-sm text-muted-foreground mt-0.5">
-            Real-time immutable audit trail for staff actions, document creations, visa statuses, and login sessions.
-          </p>
-        </div>
-
-        <div className="flex items-center gap-2.5">
+      <HeaderTitle
+        variant="general"
+        icon={Shield}
+        title="Activity & Audit Trail"
+        badge={`${logs.length} Logged Actions`}
+        subtitle="Real-time immutable audit trail for staff actions, document creations, visa statuses, and login sessions."
+        actions={
           <Button
             onClick={fetchLogs}
             disabled={loading}
             variant="outline"
             size="sm"
-            className="flex items-center gap-2 text-xs font-semibold cursor-pointer"
+            className="flex items-center gap-2 text-xs font-semibold cursor-pointer bg-slate-800/80 hover:bg-slate-800 text-sky-400 border-sky-500/20"
             title="Refresh Logs"
           >
             <RefreshCw className={`size-3.5 ${loading ? 'animate-spin' : ''}`} />
             <span>Refresh</span>
           </Button>
-        </div>
-      </div>
+        }
+      />
 
       {/* Filter Tabs */}
       <div className="flex items-center gap-2 overflow-x-auto pb-1 no-scrollbar">
