@@ -114,6 +114,8 @@ export function AgreementDataTable() {
   const [status, setStatus] = useState('all');
   const [isLoading, setIsLoading] = useState(false);
   const [previewItem, setPreviewItem] = useState(null);
+  const [deleteTarget, setDeleteTarget] = useState(null);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const fetchData = async (page = 1, limit = pagination.limit, searchQuery = search, statusFilter = status) => {
     try {
@@ -146,6 +148,21 @@ export function AgreementDataTable() {
   const handleSearchSubmit = (e) => {
     e.preventDefault();
     fetchData(1, pagination.limit, search, status);
+  };
+
+  const handleConfirmDelete = async () => {
+    if (!deleteTarget) return;
+    try {
+      setIsDeleting(true);
+      await apiClient.delete(`/api/v1/client/docs/agreements/${deleteTarget.id}`);
+      toast.success(`চুক্তিপত্র "${deleteTarget.agreementId || deleteTarget.id}" সফলভাবে মুছে ফেলা হয়েছে।`);
+      setDeleteTarget(null);
+      fetchData(pagination.page);
+    } catch (err) {
+      toast.error('চুক্তিপত্র মুছে ফেলতে ব্যর্থ হয়েছে।');
+    } finally {
+      setIsDeleting(false);
+    }
   };
 
   const handlePrint = () => {
