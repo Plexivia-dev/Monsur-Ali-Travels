@@ -22,23 +22,30 @@ export function sanitizePayload(data) {
 }
 
 /**
- * Enterprise helper to record structured audit logs asynchronously and dispatch notifications.
+ * Enterprise helper to record structured audit logs for REAL USERS.
+ * Never logs automated system calls or unnamed processes.
  */
 export async function logSystemAction({
   type = 'DATA_ENTRY',
   targetCollection = 'general',
   action = 'CREATE',
+  summary = '',
   user = null,
   payload = null,
   ipAddress = '',
   userAgent = '',
 }) {
   try {
-    const userDid = user?.did || user?.id || user?._id?.toString() || 'SYSTEM';
-    const userName = user?.name || user?.email || 'System Process';
-    const userRole = ['Owner', 'Admin', 'Manager', 'Staff'].includes(user?.role)
+    // STRICT RULE: Only record logs for real authenticated human users
+    if (!user || (!user.name && !user.email) || user.role === 'System' || user.name === 'System Process') {
+      return null;
+    }
+
+    const userDid = user.did || user.id || user._id?.toString();
+    const userName = user.name || user.email;
+    const userRole = ['Owner', 'Admin', 'Manager', 'Staff', 'Super_Admin', 'Superadmin'].includes(user.role)
       ? user.role
-      : 'System';
+      : 'Staff';
 
     const logEntry = new SystemLogModel({
       did: generateDid(),
@@ -47,6 +54,7 @@ export async function logSystemAction({
       type,
       targetCollection,
       action,
+      summary: summary || `${userName} (${userRole}) performed ${action} on ${targetCollection}`,
       actionDetails: {
         did: userDid,
         name: userName,
@@ -62,9 +70,9 @@ export async function logSystemAction({
 
     // Auto-create notification for real-time broadcast to Admin Dashboard
     try {
-      const formattedType = String(type || 'LOG').replace(/_/g, ' ');
+      const formattedType = String(type || 'USER_ACTIVITY').replace(/_/g, ' ');
       const actionTitle = `${formattedType}: ${action}`;
-      const actionMsg = `${userName} (${userRole}) performed ${action} on ${targetCollection}`;
+      const actionMsg = summary || `${userName} (${userRole}) performed ${action} on ${targetCollection}`;
       const notifType = action === 'SOFT_DELETE' ? 'danger' : action === 'CREATE' ? 'success' : 'info';
 
       await NotificationModel.create({

@@ -1,5 +1,6 @@
 import CaseFile from "../../models/caseFile.model.js";
 import TaskModel from "../../models/task.model.js";
+import DocumentVaultModel from "../../models/documentVault.model.js";
 import { NotificationModel } from "../../models/notification.model.js";
 
 /**
@@ -12,16 +13,33 @@ export const getCaseFullDetails = async (req, res) => {
 
     const caseDoc = await CaseFile.findOne({ $or: [{ did: caseDid }, { _id: caseDid }] })
       .populate("clientInfo")
+      .populate("customerId")
       .populate({
         path: "workflowTasks",
         populate: { path: "permittedDocs" },
       })
       .populate("financialReceipts")
+      .populate("vaultDocuments")
       .lean();
 
     if (!caseDoc) {
       return res.status(404).json({ status: "error", message: "Case File not found" });
     }
+
+    // Merge Document Vault records
+    let clientDocs = [];
+    if (caseDoc.clientDid) {
+      clientDocs = await DocumentVaultModel.find({ clientDid: caseDoc.clientDid }).lean();
+    }
+
+    const mergedDocs = [...(caseDoc.vaultDocuments || [])];
+    const existingDocDids = new Set(mergedDocs.map((d) => d.did || d._id?.toString()));
+    for (const d of clientDocs) {
+      if (!existingDocDids.has(d.did || d._id?.toString())) {
+        mergedDocs.push(d);
+      }
+    }
+    caseDoc.vaultDocuments = mergedDocs;
 
     return res.status(200).json({
       status: "success",

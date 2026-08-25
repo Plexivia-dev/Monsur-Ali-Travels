@@ -1,4 +1,4 @@
-﻿import { Router } from "express";
+import { Router } from "express";
 import {
   getAllCases,
   lookupCase,
@@ -8,7 +8,10 @@ import {
   deleteCase,
   getDueSummary,
   bulkImportCases,
-  updateWorkflowStatus
+  updateWorkflowStatus,
+  addCaseInternalMessage,
+  uploadCaseDocument,
+  completeTaskStep
 } from "../../controllers/client/caseFile.controller.js";
 
 const caseFileRouter = Router();
@@ -34,7 +37,14 @@ caseFileRouter.post("/bulk", bulkImportCases);
 caseFileRouter.post("/bulk-import", bulkImportCases);
 
 // ==========================================
-// 4. Pure Generic REST CRUD Endpoints
+// 4. Case Collaboration, Documents & Tasks
+// ==========================================
+caseFileRouter.post("/:id/messages", addCaseInternalMessage);
+caseFileRouter.post("/:id/documents", uploadCaseDocument);
+caseFileRouter.patch("/tasks/:taskDid/complete", completeTaskStep);
+
+// ==========================================
+// 5. Pure Generic REST CRUD Endpoints
 // ==========================================
 // Query params: ?caseType=greece&status=ENTRY&page=1&limit=20&search=...&sortBy=createdAt&sortOrder=desc
 caseFileRouter.get("/", getAllCases);

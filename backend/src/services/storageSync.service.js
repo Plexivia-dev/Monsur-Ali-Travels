@@ -551,28 +551,6 @@ class StorageSyncService {
 
     await batch.save();
 
-    // Log in SystemLog
-    await SystemLogModel.create({
-      did: generateDid(),
-      type: 'SYSTEM',
-      targetCollection: 'orphan-cleanup-batches',
-      action: 'SOFT_DELETE',
-      createdBy: adminName,
-      updatedBy: adminName,
-      actionDetails: {
-        did: adminDid,
-        name: adminName,
-        role: 'Admin',
-      },
-      payload: {
-        batchDid: batch.did,
-        batchNumber: batch.batchNumber,
-        deletedFromDiskCount,
-        deletedFromR2Count,
-        reclaimedBytes: batch.totalReclaimableBytes,
-      },
-    });
-
     // Notify Admin of completed purge
     const freedMB = (batch.totalReclaimableBytes / (1024 * 1024)).toFixed(2);
     await NotificationModel.create({

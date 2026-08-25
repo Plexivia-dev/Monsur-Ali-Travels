@@ -93,6 +93,7 @@ const caseFileSchema = new Schema(
         status: { type: String, required: true },
         remarks: { type: String, default: "" },
         updatedByDid: { type: String, ref: "User" },
+        updatedByName: { type: String, default: "" },
         assignedToDid: { type: String, ref: "User" },
         date: { type: Date, default: Date.now },
       }
@@ -129,13 +130,33 @@ const caseFileSchema = new Schema(
       type: String,
       default: "",
     },
+    // Internal Staff Communication & Case Notes (Direct collaboration)
+    internalMessages: [
+      {
+        did: { type: String, default: () => generateDid() },
+        senderDid: { type: String, required: true },
+        senderName: { type: String, required: true },
+        senderRole: { type: String, default: "Staff" },
+        message: { type: String, required: true, trim: true },
+        attachments: [{ fileName: String, fileUrl: String }],
+        createdAt: { type: Date, default: Date.now },
+      }
+    ],
     createdByDid: {
       type: String,
       default: null,
     },
+    createdByName: {
+      type: String,
+      default: "",
+    },
     updatedByDid: {
       type: String,
       default: null,
+    },
+    assignedToName: {
+      type: String,
+      default: "",
     },
   },
   {
@@ -202,6 +223,13 @@ caseFileSchema.virtual("workflowTasks", {
 
 caseFileSchema.virtual("financialReceipts", {
   ref: "MoneyReceipt",
+  localField: "did",
+  foreignField: "caseDid",
+  justOne: false,
+});
+
+caseFileSchema.virtual("vaultDocuments", {
+  ref: "DocumentVault",
   localField: "did",
   foreignField: "caseDid",
   justOne: false,

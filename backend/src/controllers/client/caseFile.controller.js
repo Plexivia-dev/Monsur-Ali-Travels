@@ -1,5 +1,8 @@
 import CaseFile from "../../models/caseFile.model.js";
 import Client from "../../models/client.model.js";
+import TaskModel from "../../models/task.model.js";
+import DocumentVaultModel from "../../models/documentVault.model.js";
+import { generateDid } from "../../utils/generateDid.js";
 
 /**
  * Generic Query Builder Helper (like .NET IQueryable filter builder)
@@ -187,7 +190,16 @@ export const lookupCase = async (req, res) => {
 export const getCaseById = async (req, res) => {
   try {
     const { id } = req.params;
-    const caseDoc = await CaseFile.findOne({ did: id }).populate("customerId");
+    const caseDoc = await CaseFile.findOne({ $or: [{ did: id }, { _id: id }] })
+      .populate("clientInfo")
+      .populate("customerId")
+      .populate({
+        path: "workflowTasks",
+        populate: { path: "permittedDocs" },
+      })
+      .populate("financialReceipts")
+      .populate("vaultDocuments")
+      .lean();
 
     if (!caseDoc) {
       return res.status(404).json({
@@ -195,6 +207,21 @@ export const getCaseById = async (req, res) => {
         message: "Case file not found",
       });
     }
+
+    // Also fetch client documents if any
+    let clientDocs = [];
+    if (caseDoc.clientDid) {
+      clientDocs = await DocumentVaultModel.find({ clientDid: caseDoc.clientDid }).lean();
+    }
+
+    const mergedDocs = [...(caseDoc.vaultDocuments || [])];
+    const existingDocDids = new Set(mergedDocs.map((d) => d.did || d._id?.toString()));
+    for (const d of clientDocs) {
+      if (!existingDocDids.has(d.did || d._id?.toString())) {
+        mergedDocs.push(d);
+      }
+    }
+    caseDoc.vaultDocuments = mergedDocs;
 
     return res.status(200).json({
       success: true,
@@ -265,6 +292,9 @@ export const createCase = async (req, res) => {
       });
     }
 
+    const creatorName = req.user?.name || "Staff Member";
+    const creatorDid = req.user?.did || req.user?.id || null;
+
     const newCase = await CaseFile.create({
       clientDid: resolvedClientDid,
       applicantName,
@@ -277,13 +307,29 @@ export const createCase = async (req, res) => {
       paymentLedger,
       extraData,
       remarks,
-      createdByDid: req.user?.did || null,
+      createdByDid: creatorDid,
+      createdByName: creatorName,
+      statusHistory: [
+        {
+          status: status || "ENTRY",
+          remarks: `Case file created by ${creatorName}`,
+          updatedByDid: creatorDid,
+          updatedByName: creatorName,
+          date: new Date(),
+        },
+      ],
     });
 
-    // Add case reference to Client
+    // Add case reference to Client and update totals
     await Client.findOneAndUpdate(
       { did: resolvedClientDid },
-      { $addToSet: { caseDids: newCase.did } }
+      {
+        $addToSet: { caseDids: newCase.did },
+        $inc: {
+          totalBilledAmount: paymentLedger?.totalAgreedAmount || 0,
+          totalDueAmount: paymentLedger?.dueAmount || paymentLedger?.totalAgreedAmount || 0,
+        },
+      }
     ).catch(() => {});
 
     return res.status(201).json({
@@ -580,6 +626,141 @@ export const updateWorkflowStatus = async (req, res) => {
     return res.status(500).json({
       success: false,
       message: error.message || "Failed to update workflow",
+    });
+  }
+};
+
+/**
+ * 10. Post Internal Staff Communication / Quick Note
+ */
+export const addCaseInternalMessage = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { message, attachments } = req.body;
+
+    if (!message || !message.trim()) {
+      return res.status(400).json({
+        success: false,
+        message: "Message content is required",
+      });
+    }
+
+    const caseDoc = await CaseFile.findOne({ $or: [{ did: id }, { _id: id }] });
+    if (!caseDoc) {
+      return res.status(404).json({
+        success: false,
+        message: "Case file not found",
+      });
+    }
+
+    const newMsg = {
+      did: generateDid(),
+      senderDid: req.user?.did || req.user?.id || "STAFF-01",
+      senderName: req.user?.name || "Staff Member",
+      senderRole: req.user?.role || "Staff",
+      message: message.trim(),
+      attachments: Array.isArray(attachments) ? attachments : [],
+      createdAt: new Date(),
+    };
+
+    if (!Array.isArray(caseDoc.internalMessages)) {
+      caseDoc.internalMessages = [];
+    }
+
+    caseDoc.internalMessages.push(newMsg);
+    await caseDoc.save();
+
+    return res.status(201).json({
+      success: true,
+      message: "Message posted successfully",
+      data: newMsg,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: error.message || "Failed to post message",
+    });
+  }
+};
+
+/**
+ * 11. Upload / Attach Document to Case Vault
+ */
+export const uploadCaseDocument = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { documentName, fileName, fileUrl, fileType, fileSize, accessLevel } = req.body;
+
+    if (!documentName || !fileUrl) {
+      return res.status(400).json({
+        success: false,
+        message: "Document name and File URL are required",
+      });
+    }
+
+    const caseDoc = await CaseFile.findOne({ $or: [{ did: id }, { _id: id }] });
+    if (!caseDoc) {
+      return res.status(404).json({
+        success: false,
+        message: "Case file not found",
+      });
+    }
+
+    const newDoc = await DocumentVaultModel.create({
+      clientDid: caseDoc.clientDid,
+      caseDid: caseDoc.did,
+      documentName: documentName.trim(),
+      fileName: fileName || documentName.trim(),
+      fileUrl: fileUrl.trim(),
+      fileType: fileType || "application/octet-stream",
+      fileSize: fileSize || "1.2 MB",
+      accessLevel: accessLevel || "Restricted",
+      uploadedByDid: req.user?.did || req.user?.id || null,
+      uploadedByName: req.user?.name || "Staff Member",
+    });
+
+    return res.status(201).json({
+      success: true,
+      message: "Document uploaded to case vault successfully",
+      data: newDoc,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: error.message || "Failed to upload document",
+    });
+  }
+};
+
+/**
+ * 12. Complete Task Step by Staff
+ */
+export const completeTaskStep = async (req, res) => {
+  try {
+    const { taskDid } = req.params;
+    const { remarks } = req.body;
+
+    const task = await TaskModel.findOne({ $or: [{ did: taskDid }, { _id: taskDid }] });
+    if (!task) {
+      return res.status(404).json({
+        success: false,
+        message: "Task step not found",
+      });
+    }
+
+    task.status = "Done";
+    task.notes = remarks || task.notes;
+    await task.save();
+
+    return res.status(200).json({
+      success: true,
+      message: "Task marked as Done by staff",
+      data: task,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: error.message || "Failed to complete task",
     });
   }
 };

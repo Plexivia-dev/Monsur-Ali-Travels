@@ -12,7 +12,23 @@ export const getSystemLogs = async (req, res, next) => {
 
     const { role, type, targetCollection, action, userDid, search, from, to } = req.query;
 
-    const query = { isActive: { $ne: false } };
+    // Strict filter: Exclude all non-human / System Process records
+    const query = {
+      isActive: { $ne: false },
+      'actionDetails.name': { $nin: ['System Process', 'SYSTEM', 'System', 'system', null, ''], $not: /system/i },
+      'actionDetails.role': { $nin: ['System', 'SYSTEM', 'system', null, ''], $not: /system/i },
+      type: { $nin: ['SYSTEM', 'SYSTEM_POLL'] },
+    };
+
+    // Clean up any legacy "System Process" dummy logs immediately
+    await SystemLogModel.deleteMany({
+      $or: [
+        { 'actionDetails.name': { $regex: /system/i } },
+        { 'actionDetails.role': { $regex: /system/i } },
+        { createdBy: { $regex: /system/i } },
+        { type: 'SYSTEM' },
+      ],
+    }).catch(() => {});
 
     // 1. Role Filter
     if (role && role !== 'all') {
@@ -88,16 +104,22 @@ export const getSystemLogs = async (req, res, next) => {
  */
 export const getSystemLogStats = async (req, res, next) => {
   try {
+    const baseMatch = {
+      isActive: { $ne: false },
+      'actionDetails.name': { $nin: ['System Process', 'SYSTEM', 'System', null, ''] },
+      'actionDetails.role': { $nin: ['System', 'SYSTEM', null, ''] },
+    };
+
     const [byRole, byType, totalCount] = await Promise.all([
       SystemLogModel.aggregate([
-        { $match: { isActive: { $ne: false } } },
+        { $match: baseMatch },
         { $group: { _id: '$actionDetails.role', count: { $sum: 1 } } },
       ]),
       SystemLogModel.aggregate([
-        { $match: { isActive: { $ne: false } } },
+        { $match: baseMatch },
         { $group: { _id: '$type', count: { $sum: 1 } } },
       ]),
-      SystemLogModel.countDocuments({ isActive: { $ne: false } }),
+      SystemLogModel.countDocuments(baseMatch),
     ]);
 
     return res.json({

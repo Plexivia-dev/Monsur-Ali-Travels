@@ -1,3 +1,6 @@
+import jwt from 'jsonwebtoken';
+import { env } from '../config/env.js';
+import { UserModel } from '../models/user.model.js';
 import { logSystemAction } from '../helper/auditLogger.js';
 
 /**
@@ -84,13 +87,112 @@ function mapMethodToAction(method, explicitAction) {
 }
 
 /**
- * Universal middleware to intercept and log all modifying API operations.
+ * Generates an informative human summary of the user's data action.
+ */
+function generateUserActionSummary(user, targetCollection, action, body = {}) {
+  const userName = user.name || user.email || 'User';
+  const role = user.role || 'Staff';
+
+  const identifier =
+    body.name ||
+    body.clientName ||
+    body.applicantName ||
+    body.candidateName ||
+    body.holderName ||
+    body.title ||
+    body.passportNumber ||
+    body.receiptNumber ||
+    body.voucherNumber ||
+    body.invoiceNumber ||
+    body.caseNumber ||
+    body.fileNumber ||
+    '';
+
+  const amount = body.amount || body.paidAmount || body.netSalary || body.totalAmount || body.total;
+  const status = body.workflowStatus || body.status || body.stage || body.workflowStage;
+
+  const targetNames = {
+    clients: 'Client (কাস্টমার)',
+    caseFiles: 'Case File (ফাইল)',
+    moneyReceipts: 'Money Receipt (টাকা জমার রশিদ)',
+    cashVouchers: 'Cash Voucher (খরচের ভাউচার)',
+    invoices: 'Invoice (ইনভয়েস)',
+    salarySlips: 'Salary Slip (বেতন শিট)',
+    candidates: 'Candidate (ক্যান্ডিডেট)',
+    passports: 'Passport Record (পাসপোর্ট)',
+    indianVisas: 'Indian Visa (ভিসা আবেদন)',
+    agreements: 'Agreement (চুক্তিপত্র)',
+    tasks: 'Task (টাস্ক)',
+  };
+
+  const targetLabel = targetNames[targetCollection] || targetCollection;
+
+  if (action === 'STATUS_TRANSITION' || (status && (action === 'UPDATE' || targetCollection === 'caseFiles'))) {
+    return `${userName} (${role}) updated status of ${targetLabel} to "${status || 'Updated'}"${identifier ? ` for ${identifier}` : ''}`;
+  }
+
+  if (action === 'CREATE') {
+    if (amount) {
+      return `${userName} (${role}) entered new ${targetLabel} of ৳${Number(amount).toLocaleString('en-IN')}${identifier ? ` (#${identifier})` : ''}`;
+    }
+    return `${userName} (${role}) created new ${targetLabel}${identifier ? `: ${identifier}` : ''}`;
+  }
+
+  if (action === 'UPDATE') {
+    if (amount) {
+      return `${userName} (${role}) edited ${targetLabel} (৳${Number(amount).toLocaleString('en-IN')})${identifier ? ` (#${identifier})` : ''}`;
+    }
+    return `${userName} (${role}) edited ${targetLabel}${identifier ? `: ${identifier}` : ''}`;
+  }
+
+  if (action === 'SOFT_DELETE' || action === 'DELETE') {
+    return `${userName} (${role}) deleted ${targetLabel}${identifier ? ` (${identifier})` : ''}`;
+  }
+
+  return `${userName} (${role}) performed ${action} on ${targetLabel}`;
+}
+
+/**
+ * Universal middleware to intercept and log ONLY REAL USER BUSINESS DATA operations.
+ * Strictly ignores system automated tasks, polling, unauthenticated calls, or internal API hits.
  */
 export const auditLog = async (req, res, next) => {
   if (['POST', 'PUT', 'PATCH', 'DELETE'].includes(req.method)) {
     res.on('finish', async () => {
-      // Only log successful or client-accepted operations (status < 400)
+      // Only log successful operations
       if (res.statusCode < 400) {
+        let user = req.user;
+
+        // If req.user is not yet attached, extract from authorization token
+        if (!user && req.headers.authorization) {
+          try {
+            const [scheme, token] = req.headers.authorization.split(' ');
+            if (scheme === 'Bearer' && token) {
+              const payload = jwt.verify(token, env.ACCESS_TOKEN_SECRET);
+              const userDid = payload?.did || payload?.userId || payload?.id || payload?.sub;
+              if (userDid) {
+                const dbUser = await UserModel.findOne({ did: userDid }).lean();
+                if (dbUser && dbUser.isActive !== false) {
+                  user = {
+                    _id: dbUser.did,
+                    id: dbUser.did,
+                    userId: dbUser.did,
+                    did: dbUser.did,
+                    name: dbUser.name,
+                    email: dbUser.email,
+                    role: dbUser.role,
+                  };
+                }
+              }
+            }
+          } catch (_) {}
+        }
+
+        // STRICT FILTER: If there is no real authenticated human user, NEVER log anything!
+        if (!user || !user.name || user.name === 'System Process' || user.role === 'System') {
+          return;
+        }
+
         const xRealIp = req.headers['x-real-ip'];
         const xForwardedFor = req.headers['x-forwarded-for'];
         const ipAddress = (xRealIp || (xForwardedFor ? xForwardedFor.split(',')[0].trim() : null) || req.ip || req.socket?.remoteAddress || '').replace(/^::ffff:/, '');
@@ -98,12 +200,14 @@ export const auditLog = async (req, res, next) => {
 
         const { targetCollection, type, action: inferredAction } = inferCollectionAndType(req.originalUrl, req.method);
         const action = mapMethodToAction(req.method, inferredAction);
+        const summary = generateUserActionSummary(user, targetCollection, action, req.body || {});
 
         await logSystemAction({
           type,
           targetCollection,
           action,
-          user: req.user || null,
+          summary,
+          user,
           payload: {
             method: req.method,
             endpoint: req.originalUrl,

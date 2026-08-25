@@ -71,6 +71,7 @@ coreRouter.use("/admin", adminRouter);
 // 3. CLIENT/STAFF SCOPE (Mounted at /api/v1/client/)
 // ==========================================
 const clientRouter = Router();
+clientRouter.use(authenticateToken);
 clientRouter.use(auditLog);
 clientRouter.use("/tasks", taskRouter);
 clientRouter.use("/cases", caseFileRouter);

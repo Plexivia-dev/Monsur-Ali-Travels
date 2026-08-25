@@ -56,10 +56,13 @@ const systemLogSchema = new mongoose.Schema(
       userAgent: { type: String, default: '' },
     },
 
-    // 7. Change Payload & Metadata
+    // 7. Human-readable action summary
+    summary: { type: String, default: '' },
+
+    // 8. Change Payload & Metadata
     payload: { type: mongoose.Schema.Types.Mixed },
 
-    // 8. Soft-Delete & Active Flag
+    // 9. Soft-Delete & Active Flag
     isActive: { type: Boolean, default: true, index: true },
   },
   {
