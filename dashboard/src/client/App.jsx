@@ -53,10 +53,9 @@ function MainLayout() {
   const setSearchOpen = usePortalStore((state) => state.setSearchOpen);
   const syncFromLocation = usePortalStore((state) => state.syncFromLocation);
 
-  // Sync URL changes with Zustand portal store
   useEffect(() => {
     syncFromLocation(location.pathname);
-  }, [location.pathname, syncFromLocation]);
+  }, [location.pathname]);
 
   // Global Keyboard Shortcut for Search (Ctrl+K or Cmd+K)
   useEffect(() => {

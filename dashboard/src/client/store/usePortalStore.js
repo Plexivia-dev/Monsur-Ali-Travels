@@ -61,32 +61,33 @@ export const usePortalStore = create((set, get) => ({
   },
 
   setActivePortal: (portal) => {
-    const { activeSubmodule } = get();
-    set({ activePortal: portal });
-    if (typeof window !== 'undefined' && window.location.pathname !== '/login') {
-      window.history.pushState(null, '', `/dashboard/${portal}/${activeSubmodule}`);
+    const { activePortal } = get();
+    if (activePortal !== portal) {
+      set({ activePortal: portal });
     }
   },
 
   setActiveSubmodule: (submodule) => {
-    const { activePortal } = get();
-    set({ activeSubmodule: submodule });
-    if (typeof window !== 'undefined' && window.location.pathname !== '/login') {
-      window.history.pushState(null, '', `/dashboard/${activePortal}/${submodule}`);
+    const { activeSubmodule } = get();
+    if (activeSubmodule !== submodule) {
+      set({ activeSubmodule: submodule });
     }
   },
 
   switchPortal: (portal, submodule = 'dashboard') => {
-    set({ activePortal: portal, activeSubmodule: submodule });
-    if (typeof window !== 'undefined' && window.location.pathname !== '/login') {
-      window.history.pushState(null, '', `/dashboard/${portal}/${submodule}`);
+    const { activePortal, activeSubmodule } = get();
+    if (activePortal !== portal || activeSubmodule !== submodule) {
+      set({ activePortal: portal, activeSubmodule: submodule });
     }
   },
 
   syncFromLocation: (pathname) => {
-    if (pathname !== '/login') {
+    if (pathname && pathname !== '/login') {
       const { portal, submodule } = parsePortalFromPath(pathname);
-      set({ activePortal: portal, activeSubmodule: submodule });
+      const state = get();
+      if (state.activePortal !== portal || state.activeSubmodule !== submodule) {
+        set({ activePortal: portal, activeSubmodule: submodule });
+      }
     }
   },
 
