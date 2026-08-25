@@ -336,7 +336,7 @@ export const googleAuth = async (req, res, next) => {
 // GET /auth/me - Get current logged in user profile
 export const getProfile = async (req, res, next) => {
   try {
-    const user = await UserModel.findById(req.user.did).select("-passwordHash -__v");
+    const user = await UserModel.findOne({ did: req.user.did }).select("-passwordHash -__v");
     if (!user) {
       return res.status(404).json({ status: "error", message: "User not found" });
     }
@@ -351,7 +351,7 @@ export const updateProfile = async (req, res, next) => {
   try {
     const { name, username, phone, address, avatar } = req.body ?? {};
     
-    const user = await UserModel.findById(req.user.did);
+    const user = await UserModel.findOne({ did: req.user.did });
     if (!user) {
       return res.status(404).json({ status: "error", message: "User not found" });
     }
@@ -364,7 +364,7 @@ export const updateProfile = async (req, res, next) => {
     
     await user.save();
     
-    const updatedUser = await UserModel.findById(req.user.did).select("-passwordHash -__v");
+    const updatedUser = await UserModel.findOne({ did: req.user.did }).select("-passwordHash -__v");
     res.json({ status: "success", message: "Profile updated successfully", data: updatedUser });
   } catch (error) {
     next(error);
