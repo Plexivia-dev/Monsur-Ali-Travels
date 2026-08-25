@@ -1,1 +1,1 @@
-export { ClientDataTable, ClientDataTable as ClientDataTable, default } from './ClientDataTable';
+export { ClientDataTable, default } from './ClientDataTable';
