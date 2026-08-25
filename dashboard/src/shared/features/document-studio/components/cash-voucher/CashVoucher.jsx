@@ -6,6 +6,7 @@ import { Printer, Share2, ArrowLeft } from 'lucide-react';
 import { toast } from 'sonner';
 import { apiClient } from '@shared/lib/api-client';
 import { Button } from '@/components/ui/button';
+import { HeaderTitle } from '@shared/components/common/HeaderTitle';
 
 export function CashVoucher() {
   const [data, setData] = useState(getDefaultCashVoucherData());
@@ -109,39 +110,44 @@ export function CashVoucher() {
       {viewMode === 'preview' && (
         <div className="space-y-4">
           {/* Action Toolbar */}
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-3 bg-card border border-border p-4 rounded-2xl shadow-xs no-print">
-            <Button
-              type="button"
-              variant="outline"
-              size="sm"
-              onClick={() => setViewMode('form')}
-            >
-              <ArrowLeft className="w-4 h-4" />
-              <span>Back to Edit Form</span>
-            </Button>
+          <HeaderTitle
+            variant="printables"
+            title={`ক্যাশ মানি ভাউচার (Voucher: ${data.voucherNo || 'MAT-KV'})`}
+            subtitle="ক্যাশ ভাউচার প্রস্তুত সম্পন্ন। সরাসরি প্রিন্ট করুন অথবা তথ্যে পরিবর্তন আনতে এডিট করুন।"
+            actions={
+              <>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setViewMode('form')}
+                >
+                  <ArrowLeft className="w-4 h-4 mr-1" />
+                  <span>Edit Form</span>
+                </Button>
 
-            <div className="flex items-center gap-2 w-full sm:w-auto flex-wrap justify-end">
-              <Button
-                type="button"
-                variant="success"
-                size="sm"
-                onClick={handleWhatsAppShare}
-              >
-                <Share2 className="w-3.5 h-3.5" />
-                <span>WhatsApp</span>
-              </Button>
+                <Button
+                  type="button"
+                  variant="success"
+                  size="sm"
+                  onClick={handleWhatsAppShare}
+                >
+                  <Share2 className="w-3.5 h-3.5 mr-1" />
+                  <span>WhatsApp</span>
+                </Button>
 
-              <Button
-                type="button"
-                variant="primary"
-                size="sm"
-                onClick={handlePrint}
-              >
-                <Printer className="w-4 h-4" />
-                <span>Print Voucher (A4)</span>
-              </Button>
-            </div>
-          </div>
+                <Button
+                  type="button"
+                  variant="primary"
+                  size="sm"
+                  onClick={handlePrint}
+                >
+                  <Printer className="w-4 h-4 mr-1" />
+                  <span>Print Voucher (A4)</span>
+                </Button>
+              </>
+            }
+          />
 
           {/* Printable Preview */}
           <CashVoucherPreview data={data} />
