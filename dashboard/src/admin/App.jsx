@@ -21,6 +21,7 @@ import Payments from '@/pages/reports/Payments'
 import Bills from '@/pages/reports/Bills'
 import Logs from '@/pages/accounting/Logs'
 import SettingsPage from '@/pages/SettingsPage'
+import DocumentStudioPage from '@/pages/DocumentStudioPage'
 import NotFoundPage from '@/pages/NotFoundPage'
 import AccountingSummary from '@/pages/accounting/AccountingSummary'
 import CashBook from '@/pages/accounting/CashBook'
@@ -48,6 +49,10 @@ export default function App() {
           <Route element={<ProtectedRoute />}>
             <Route path="/admin" element={<AdminLayout />}>
               <Route index element={<DashboardHome />} />
+              <Route path="docs" element={<DocumentStudioPage />} />
+              <Route path="docs/:generator" element={<DocumentStudioPage />} />
+              <Route path="document-studio" element={<Navigate to="/admin/docs" replace />} />
+              <Route path="document-studio/:generator" element={<DocumentStudioPage />} />
               <Route path="metrics" element={<WidgetCardPreview />} />
               <Route path="dropdown" element={<DropdownPage />} />
               <Route path="profile-dropdown" element={<DropdownProfilePage />} />
