@@ -16,7 +16,31 @@ export const accountsService = {
     return res.data;
   },
 
-  // ── 3. Reports Summary ──────────────────────────────────────────────────────
+  // ── 3. Salaries ─────────────────────────────────────────────────────────────
+  async getSalaries(params = {}) {
+    const res = await apiClient.get('/api/v1/accounts/salaries', { params });
+    return res.data;
+  },
+
+  // ── 4. Expenses (Cash Vouchers) ─────────────────────────────────────────────
+  async getExpenses(params = {}) {
+    const res = await apiClient.get('/api/v1/accounts/expenses', { params });
+    return res.data;
+  },
+
+  // ── 5. Cash Book ────────────────────────────────────────────────────────────
+  async getCashBook(params = {}) {
+    const res = await apiClient.get('/api/v1/accounts/cash-book', { params });
+    return res.data?.data;
+  },
+
+  // ── 6. Bank Ledger ──────────────────────────────────────────────────────────
+  async getBankLedger(params = {}) {
+    const res = await apiClient.get('/api/v1/accounts/bank-ledger', { params });
+    return res.data?.data;
+  },
+
+  // ── 7. Reports Summary ──────────────────────────────────────────────────────
   async getReportsSummary(params = {}) {
     const res = await apiClient.get('/api/v1/accounts/reports/summary', { params });
     return res.data?.data;

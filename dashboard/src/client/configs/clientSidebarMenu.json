@@ -80,6 +80,24 @@
             "icon": "Receipt"
           },
           {
+            "id": "acc-salaries",
+            "name": "Salary Slips",
+            "nameBn": "বেতন হিসাব",
+            "portal": "accounts",
+            "submodule": "salaries",
+            "path": "/dashboard/accounts/salaries",
+            "icon": "Banknote"
+          },
+          {
+            "id": "acc-expenses",
+            "name": "Expense Tracking",
+            "nameBn": "ভাউচার খরচ",
+            "portal": "accounts",
+            "submodule": "expenses",
+            "path": "/dashboard/accounts/expenses",
+            "icon": "Receipt"
+          },
+          {
             "id": "acc-reports",
             "name": "Reports",
             "nameBn": "রিপোর্টস",
@@ -103,76 +121,24 @@
         "icon": "FileSpreadsheet",
         "childItems": [
           {
-            "id": "doc-hub",
-            "name": "Studio Hub Overview",
-            "nameBn": "সকল জেনারেটর (হাব)",
-            "portal": "docs",
-            "submodule": "overview",
-            "path": "/dashboard/docs/overview",
-            "icon": "LayoutGrid"
-          },
-          {
-            "id": "doc-agreement",
-            "name": "Employment Agreement",
-            "nameBn": "নিয়োগ চুক্তিপত্র",
-            "portal": "docs",
-            "submodule": "agreement",
-            "path": "/dashboard/docs/agreement",
-            "icon": "FileSignature"
-          },
-          {
-            "id": "doc-client-form",
-            "name": "Client & Guardian Form",
-            "nameBn": "ক্লায়েন্ট ও অভিভাবক ফরম",
-            "portal": "docs",
-            "submodule": "client-form",
-            "path": "/dashboard/docs/client-form",
-            "icon": "UserCheck"
-          },
-          {
-            "id": "doc-indian-visa",
-            "name": "Indian Visa Submission",
-            "nameBn": "ইন্ডিয়ান ভিসা ফাইল",
-            "portal": "docs",
-            "submodule": "indian-visa",
-            "path": "/dashboard/docs/indian-visa",
-            "icon": "Stamp"
-          },
-          {
-            "id": "doc-passport-sub",
-            "name": "Passport Submission Slip",
-            "nameBn": "পাসপোর্ট জমা রশিদ",
-            "portal": "docs",
-            "submodule": "passport-sub",
-            "path": "/dashboard/docs/passport-sub",
-            "icon": "BookOpen"
-          },
-          {
-            "id": "doc-idcard",
-            "name": "Employee ID Card",
-            "nameBn": "কর্মচারী আইডি কার্ড",
-            "portal": "docs",
-            "submodule": "idcard",
-            "path": "/dashboard/docs/idcard",
-            "icon": "Contact"
-          },
-          {
             "id": "doc-payroll",
             "name": "Salary Slip",
             "nameBn": "বেতন স্লিপ",
             "portal": "docs",
             "submodule": "payroll",
             "path": "/dashboard/docs/payroll",
-            "icon": "Banknote"
+            "icon": "Banknote",
+            "roles": ["owner", "superadmin", "admin", "accountant", "accounts"]
           },
           {
             "id": "doc-invoice",
-            "name": "Invoice Billing",
-            "nameBn": "ইনভয়েস ও বিলিং",
+            "name": "Invoice",
+            "nameBn": "ইনভয়েস",
             "portal": "docs",
             "submodule": "invoice",
             "path": "/dashboard/docs/invoice",
-            "icon": "ReceiptText"
+            "icon": "ReceiptText",
+            "roles": ["owner", "superadmin", "admin", "accountant", "accounts"]
           },
           {
             "id": "doc-money-receipt",
@@ -181,7 +147,8 @@
             "portal": "docs",
             "submodule": "money-receipt",
             "path": "/dashboard/docs/money-receipt",
-            "icon": "Receipt"
+            "icon": "Receipt",
+            "roles": ["owner", "superadmin", "admin", "accountant", "accounts"]
           },
           {
             "id": "doc-cash-voucher",
@@ -190,7 +157,48 @@
             "portal": "docs",
             "submodule": "cash-voucher",
             "path": "/dashboard/docs/cash-voucher",
-            "icon": "Wallet"
+            "icon": "Wallet",
+            "roles": ["owner", "superadmin", "admin", "accountant", "accounts"]
+          },
+          {
+            "id": "doc-agreement",
+            "name": "Employment Agreement",
+            "nameBn": "নিয়োগ চুক্তিপত্র",
+            "portal": "docs",
+            "submodule": "agreement",
+            "path": "/dashboard/docs/agreement",
+            "icon": "FileSignature",
+            "roles": ["owner", "superadmin", "admin", "frontdesk", "staff", "lawyer", "representative"]
+          },
+          {
+            "id": "doc-client-form",
+            "name": "Client & Guardian Form",
+            "nameBn": "ক্লায়েন্ট ও অভিভাবক ফরম",
+            "portal": "docs",
+            "submodule": "client-form",
+            "path": "/dashboard/docs/client-form",
+            "icon": "UserCheck",
+            "roles": ["owner", "superadmin", "admin", "frontdesk", "staff", "lawyer", "representative", "visa_processor"]
+          },
+          {
+            "id": "doc-indian-visa",
+            "name": "Indian Visa Submission",
+            "nameBn": "ইন্ডিয়ান ভিসা ফাইল",
+            "portal": "docs",
+            "submodule": "indian-visa",
+            "path": "/dashboard/docs/indian-visa",
+            "icon": "Stamp",
+            "roles": ["owner", "superadmin", "admin", "frontdesk", "staff", "visa_processor"]
+          },
+          {
+            "id": "doc-passport-sub",
+            "name": "Passport Submission Slip",
+            "nameBn": "পাসপোর্ট জমা রশিদ",
+            "portal": "docs",
+            "submodule": "passport-sub",
+            "path": "/dashboard/docs/passport-sub",
+            "icon": "BookOpen",
+            "roles": ["owner", "superadmin", "admin", "frontdesk", "staff", "visa_processor"]
           },
           {
             "id": "doc-exp-cert",
@@ -199,16 +207,8 @@
             "portal": "docs",
             "submodule": "experience-certificate",
             "path": "/dashboard/docs/experience-certificate",
-            "icon": "Award"
-          },
-          {
-            "id": "doc-char-cert",
-            "name": "Character Certificate",
-            "nameBn": "চারিত্রিক সনদপত্র",
-            "portal": "docs",
-            "submodule": "character-certificate",
-            "path": "/dashboard/docs/character-certificate",
-            "icon": "ShieldCheck"
+            "icon": "Award",
+            "roles": ["owner", "superadmin", "admin", "frontdesk", "staff", "lawyer"]
           },
           {
             "id": "doc-marr-cert",
@@ -217,7 +217,28 @@
             "portal": "docs",
             "submodule": "marriage-certificate",
             "path": "/dashboard/docs/marriage-certificate",
-            "icon": "Heart"
+            "icon": "Heart",
+            "roles": ["owner", "superadmin", "admin", "frontdesk", "staff", "lawyer"]
+          },
+          {
+            "id": "doc-char-cert",
+            "name": "Character Certificate",
+            "nameBn": "চারিত্রিক সনদপত্র",
+            "portal": "docs",
+            "submodule": "character-certificate",
+            "path": "/dashboard/docs/character-certificate",
+            "icon": "ShieldCheck",
+            "roles": ["owner", "superadmin", "admin", "frontdesk", "staff", "lawyer"]
+          },
+          {
+            "id": "doc-idcard",
+            "name": "Employee ID Card",
+            "nameBn": "কর্মচারী আইডি কার্ড",
+            "portal": "docs",
+            "submodule": "idcard",
+            "path": "/dashboard/docs/idcard",
+            "icon": "Contact",
+            "roles": ["owner", "superadmin", "admin"]
           }
         ]
       }
@@ -226,6 +247,7 @@
   {
     "groupLabel": "Data Records Center",
     "groupLabelBn": "ডাটা রেকর্ডস",
+    "roles": ["admin", "owner", "superadmin", "frontdesk", "staff", "lawyer", "representative", "visa_processor"],
     "items": [
       {
         "id": "data-group",
@@ -277,24 +299,6 @@
             "submodule": "passports",
             "path": "/dashboard/data/passports",
             "icon": "BookOpen"
-          },
-          {
-            "id": "data-salary-slips",
-            "name": "Salary Slips",
-            "nameBn": "বেতন রেকর্ড",
-            "portal": "data",
-            "submodule": "salary-slips",
-            "path": "/dashboard/data/salary-slips",
-            "icon": "Banknote"
-          },
-          {
-            "id": "data-invoices",
-            "name": "Invoices & Billing",
-            "nameBn": "ইনভয়েস রেকর্ড",
-            "portal": "data",
-            "submodule": "invoices",
-            "path": "/dashboard/data/invoices",
-            "icon": "ReceiptText"
           }
         ]
       }

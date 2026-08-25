@@ -1,1 +1,6 @@
-﻿import React from 'react'; export default function Expenses() { return <div className='p-6 text-center text-gray-500'>Expenses (WIP)</div>; }
+import React from 'react';
+import { ExpensesPage } from '@shared/features/accounts';
+
+export default function Expenses() {
+  return <ExpensesPage />;
+}

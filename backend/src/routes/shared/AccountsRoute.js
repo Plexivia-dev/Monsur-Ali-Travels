@@ -2,6 +2,10 @@ import { Router } from "express";
 import {
   getPayments,
   getBills,
+  getSalaries,
+  getExpenses,
+  getCashBook,
+  getBankLedger,
   getReportsSummary,
   exportReportCsv,
   getExportDownloads,
@@ -13,6 +17,10 @@ const accountsRouter = Router();
 // Accounts Data Endpoints
 accountsRouter.get("/payments", getPayments);
 accountsRouter.get("/bills", getBills);
+accountsRouter.get("/salaries", getSalaries);
+accountsRouter.get("/expenses", getExpenses);
+accountsRouter.get("/cash-book", getCashBook);
+accountsRouter.get("/bank-ledger", getBankLedger);
 
 // Reports Summary & VPS Storage CSV Exports
 accountsRouter.get("/reports/summary", getReportsSummary);

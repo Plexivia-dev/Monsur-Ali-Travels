@@ -117,10 +117,10 @@ export function CharacterCertificateForm({ data = {}, onChange }) {
 
       {/* Issuing Authority Section */}
       <div className="bg-card border border-border rounded-xl p-4 space-y-4">
-        <h3 className="text-xs font-bold uppercase tracking-wider text-primary flex items-center gap-1.5 border-b border-border pb-2">
-          <Building2 className="w-4 h-4" />
-          ১. ইস্যুকারী প্রতিষ্ঠান বা কর্তৃপক্ষের তথ্য (Issuing Authority)
-        </h3>
+        <div className="flex items-center gap-1.5 bg-gradient-to-r from-sky-600 via-sky-700 to-[#0B3A60] text-white px-4 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider shadow-xs">
+          <Building2 className="w-4 h-4 text-sky-200" />
+          <span>১. ইস্যুকারী প্রতিষ্ঠান বা কর্তৃপক্ষের তথ্য (Issuing Authority)</span>
+        </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div className="sm:col-span-2">
@@ -218,10 +218,10 @@ export function CharacterCertificateForm({ data = {}, onChange }) {
 
       {/* Certificate Reference & Title */}
       <div className="bg-card border border-border rounded-xl p-4 space-y-4">
-        <h3 className="text-xs font-bold uppercase tracking-wider text-primary flex items-center gap-1.5 border-b border-border pb-2">
-          <FileText className="w-4 h-4" />
-          ২. সার্টিফিকেটের শিরোনাম ও রেফারেন্স (Title & Date)
-        </h3>
+        <div className="flex items-center gap-1.5 bg-gradient-to-r from-sky-600 via-sky-700 to-[#0B3A60] text-white px-4 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider shadow-xs">
+          <FileText className="w-4 h-4 text-sky-200" />
+          <span>২. সার্টিফিকেটের শিরোনাম ও রেফারেন্স (Title & Date)</span>
+        </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
           <div>
@@ -258,10 +258,10 @@ export function CharacterCertificateForm({ data = {}, onChange }) {
 
       {/* Client Details */}
       <div className="bg-card border border-border rounded-xl p-4 space-y-4">
-        <h3 className="text-xs font-bold uppercase tracking-wider text-primary flex items-center gap-1.5 border-b border-border pb-2">
-          <User className="w-4 h-4" />
-          ৩. প্রার্থীর ব্যক্তিগত তথ্য (Client Information)
-        </h3>
+        <div className="flex items-center gap-1.5 bg-gradient-to-r from-sky-600 via-sky-700 to-[#0B3A60] text-white px-4 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider shadow-xs">
+          <User className="w-4 h-4 text-sky-200" />
+          <span>৩. প্রার্থীর ব্যক্তিগত তথ্য (Client Information)</span>
+        </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div>
@@ -318,10 +318,10 @@ export function CharacterCertificateForm({ data = {}, onChange }) {
 
       {/* Statement Section */}
       <div className="bg-card border border-border rounded-xl p-4 space-y-4">
-        <h3 className="text-xs font-bold uppercase tracking-wider text-primary flex items-center gap-1.5 border-b border-border pb-2">
-          <FileText className="w-4 h-4" />
-          ৪. চারিত্রিক প্রত্যয়ন ও সুপারিশ (Statement & Recommendation)
-        </h3>
+        <div className="flex items-center gap-1.5 bg-gradient-to-r from-sky-600 via-sky-700 to-[#0B3A60] text-white px-4 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider shadow-xs">
+          <FileText className="w-4 h-4 text-sky-200" />
+          <span>৪. চারিত্রিক প্রত্যয়ন ও সুপারিশ (Statement & Recommendation)</span>
+        </div>
 
         <div className="space-y-3">
           <div>
@@ -348,10 +348,10 @@ export function CharacterCertificateForm({ data = {}, onChange }) {
 
       {/* Signatory */}
       <div className="bg-card border border-border rounded-xl p-4 space-y-4">
-        <h3 className="text-xs font-bold uppercase tracking-wider text-primary flex items-center gap-1.5 border-b border-border pb-2">
-          <ShieldCheck className="w-4 h-4" />
-          ৫. স্বাক্ষরকারী কর্মকর্তা (Authorized Signatory)
-        </h3>
+        <div className="flex items-center gap-1.5 bg-gradient-to-r from-sky-600 via-sky-700 to-[#0B3A60] text-white px-4 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider shadow-xs">
+          <ShieldCheck className="w-4 h-4 text-sky-200" />
+          <span>৫. স্বাক্ষরকারী কর্মকর্তা (Authorized Signatory)</span>
+        </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div>

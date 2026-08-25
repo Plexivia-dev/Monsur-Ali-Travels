@@ -75,14 +75,80 @@ export const MASTER_ITEMS = {
     href: '/dashboard/agency/payments',
   },
 
+  // Accounts Hub Items
+  accPayments: {
+    icon: 'Wallet',
+    label: 'Payments',
+    key: 'nav.payments',
+    portal: 'accounts',
+    submodule: 'payments',
+    href: '/dashboard/accounts/payments',
+  },
+  accBills: {
+    icon: 'Receipt',
+    label: 'Bills',
+    key: 'nav.bills',
+    portal: 'accounts',
+    submodule: 'bills',
+    href: '/dashboard/accounts/bills',
+  },
+  accSalaries: {
+    icon: 'Banknote',
+    label: 'Salary Slips',
+    key: 'nav.salarySlip',
+    portal: 'accounts',
+    submodule: 'salaries',
+    href: '/dashboard/accounts/salaries',
+  },
+  accExpenses: {
+    icon: 'Receipt',
+    label: 'Expense Tracking',
+    key: 'nav.expenses',
+    portal: 'accounts',
+    submodule: 'expenses',
+    href: '/dashboard/accounts/expenses',
+  },
+  accReports: {
+    icon: 'FileSpreadsheet',
+    label: 'Reports',
+    key: 'nav.reports',
+    portal: 'accounts',
+    submodule: 'reports',
+    href: '/dashboard/accounts/reports',
+  },
+
   // Document Studio Items
-  docHub: {
-    icon: 'LayoutGrid',
-    label: 'All Generators (Studio Hub)',
-    key: 'nav.documentStudioHub',
+  docPayroll: {
+    icon: 'Banknote',
+    label: 'Salary Slip',
+    key: 'nav.salarySlip',
     portal: 'docs',
-    submodule: 'overview',
-    href: '/dashboard/docs/overview',
+    submodule: 'payroll',
+    href: '/dashboard/docs/payroll',
+  },
+  docInvoice: {
+    icon: 'ReceiptText',
+    label: 'Invoice',
+    key: 'nav.invoice',
+    portal: 'docs',
+    submodule: 'invoice',
+    href: '/dashboard/docs/invoice',
+  },
+  docMoneyReceipt: {
+    icon: 'Receipt',
+    label: 'Money Receipt Voucher',
+    key: 'nav.moneyReceipt',
+    portal: 'docs',
+    submodule: 'money-receipt',
+    href: '/dashboard/docs/money-receipt',
+  },
+  docCashVoucher: {
+    icon: 'Wallet',
+    label: 'Cash Money Voucher',
+    key: 'nav.cashVoucher',
+    portal: 'docs',
+    submodule: 'cash-voucher',
+    href: '/dashboard/docs/cash-voucher',
   },
   docAgreement: {
     icon: 'FileSignature',
@@ -123,38 +189,6 @@ export const MASTER_ITEMS = {
     portal: 'docs',
     submodule: 'idcard',
     href: '/dashboard/docs/idcard',
-  },
-  docPayroll: {
-    icon: 'Banknote',
-    label: 'Monthly Salary Slip',
-    key: 'nav.salarySlip',
-    portal: 'docs',
-    submodule: 'payroll',
-    href: '/dashboard/docs/payroll',
-  },
-  docInvoice: {
-    icon: 'ReceiptText',
-    label: 'Invoice Billing',
-    key: 'nav.invoice',
-    portal: 'docs',
-    submodule: 'invoice',
-    href: '/dashboard/docs/invoice',
-  },
-  docMoneyReceipt: {
-    icon: 'Receipt',
-    label: 'Money Receipt Voucher',
-    key: 'nav.moneyReceipt',
-    portal: 'docs',
-    submodule: 'money-receipt',
-    href: '/dashboard/docs/money-receipt',
-  },
-  docCashVoucher: {
-    icon: 'Wallet',
-    label: 'Cash Money Voucher',
-    key: 'nav.cashVoucher',
-    portal: 'docs',
-    submodule: 'cash-voucher',
-    href: '/dashboard/docs/cash-voucher',
   },
   docExpCert: {
     icon: 'Award',
@@ -222,22 +256,6 @@ export const MASTER_ITEMS = {
     submodule: 'passports',
     href: '/dashboard/data/passports',
   },
-  dataSalarySlips: {
-    icon: 'Banknote',
-    label: 'Salary Slips',
-    key: 'nav.salarySlipRecords',
-    portal: 'data',
-    submodule: 'salary-slips',
-    href: '/dashboard/data/salary-slips',
-  },
-  dataInvoices: {
-    icon: 'ReceiptText',
-    label: 'Invoices & Billing',
-    key: 'nav.invoiceRecords',
-    portal: 'data',
-    submodule: 'invoices',
-    href: '/dashboard/data/invoices',
-  },
 };
 
 /**
@@ -265,14 +283,30 @@ export const ROLE_NAVIGATION_PRESETS = {
           },
           {
             icon: 'FileText',
-            label: 'Intake Forms',
+            label: 'Document Studio',
             key: 'nav.docs',
             portal: 'docs',
             childItems: [
+              MASTER_ITEMS.docAgreement,
               MASTER_ITEMS.docClientForm,
+              MASTER_ITEMS.docIndianVisa,
               MASTER_ITEMS.docPassportSub,
+              MASTER_ITEMS.docExpCert,
+              MASTER_ITEMS.docMarrCert,
             ],
           },
+        ],
+      },
+      {
+        groupLabel: 'Records Management',
+        groupKey: 'nav.data',
+        portal: 'data',
+        items: [
+          MASTER_ITEMS.dataClientProfiles,
+          MASTER_ITEMS.dataAgreements,
+          MASTER_ITEMS.dataClientApplications,
+          MASTER_ITEMS.dataIndianVisas,
+          MASTER_ITEMS.dataPassports,
         ],
       },
     ],
@@ -280,48 +314,38 @@ export const ROLE_NAVIGATION_PRESETS = {
 
   // ─── ACCOUNTANT ────────────────────────────────────────────────────────────
   accountant: {
-    defaultPortal: 'agency',
-    defaultSubmodule: 'tasks',
+    defaultPortal: 'accounts',
+    defaultSubmodule: 'payments',
     navGroups: [
       {
-        groupLabel: '',
-        groupKey: '',
-        portal: 'agency',
+        groupLabel: 'Accounts & Ledger',
+        groupKey: 'nav.accounts',
+        portal: 'accounts',
         items: [
-          MASTER_ITEMS.myTasks,
-          {
-            icon: 'Building2',
-            label: 'Clients & Billing',
-            key: 'nav.clientsAndAccounts',
-            portal: 'agency',
-            childItems: [
-              MASTER_ITEMS.clientsAll,
-              MASTER_ITEMS.clientBills,
-              MASTER_ITEMS.clientPayments,
-            ],
-          },
+          MASTER_ITEMS.accPayments,
+          MASTER_ITEMS.accBills,
+          MASTER_ITEMS.accSalaries,
+          MASTER_ITEMS.accExpenses,
+          MASTER_ITEMS.accReports,
+        ],
+      },
+      {
+        groupLabel: 'Document Studio',
+        groupKey: 'nav.docs',
+        portal: 'docs',
+        items: [
           {
             icon: 'FileText',
             label: 'Financial Documents',
             key: 'nav.docs',
             portal: 'docs',
             childItems: [
+              MASTER_ITEMS.docPayroll,
+              MASTER_ITEMS.docInvoice,
               MASTER_ITEMS.docMoneyReceipt,
               MASTER_ITEMS.docCashVoucher,
-              MASTER_ITEMS.docInvoice,
-              MASTER_ITEMS.docPayroll,
             ],
           },
-        ],
-      },
-      {
-        groupLabel: 'Financial Records',
-        groupKey: 'nav.data',
-        portal: 'data',
-        items: [
-          MASTER_ITEMS.dataInvoices,
-          MASTER_ITEMS.dataSalarySlips,
-          MASTER_ITEMS.dataClientProfiles,
         ],
       },
     ],
@@ -480,21 +504,32 @@ export const ROLE_NAVIGATION_PRESETS = {
             key: 'nav.docs',
             portal: 'docs',
             childItems: [
-              MASTER_ITEMS.docHub,
-              MASTER_ITEMS.docAgreement,
-              MASTER_ITEMS.docClientForm,
-              MASTER_ITEMS.docIndianVisa,
-              MASTER_ITEMS.docPassportSub,
-              MASTER_ITEMS.docIdCard,
               MASTER_ITEMS.docPayroll,
               MASTER_ITEMS.docInvoice,
               MASTER_ITEMS.docMoneyReceipt,
               MASTER_ITEMS.docCashVoucher,
+              MASTER_ITEMS.docAgreement,
+              MASTER_ITEMS.docClientForm,
+              MASTER_ITEMS.docIndianVisa,
+              MASTER_ITEMS.docPassportSub,
               MASTER_ITEMS.docExpCert,
               MASTER_ITEMS.docCharCert,
               MASTER_ITEMS.docMarrCert,
+              MASTER_ITEMS.docIdCard,
             ],
           },
+        ],
+      },
+      {
+        groupLabel: 'Accounts Hub',
+        groupKey: 'nav.accounts',
+        portal: 'accounts',
+        items: [
+          MASTER_ITEMS.accPayments,
+          MASTER_ITEMS.accBills,
+          MASTER_ITEMS.accSalaries,
+          MASTER_ITEMS.accExpenses,
+          MASTER_ITEMS.accReports,
         ],
       },
       {
@@ -507,8 +542,6 @@ export const ROLE_NAVIGATION_PRESETS = {
           MASTER_ITEMS.dataClientApplications,
           MASTER_ITEMS.dataIndianVisas,
           MASTER_ITEMS.dataPassports,
-          MASTER_ITEMS.dataSalarySlips,
-          MASTER_ITEMS.dataInvoices,
         ],
       },
     ],
@@ -533,6 +566,10 @@ export function getRoleKey(user) {
     if (subRole.includes('lawyer') || subRole.includes('legal')) return 'lawyer';
     if (subRole.includes('rep') || subRole.includes('client') || subRole.includes('agent')) return 'representative';
     return 'frontdesk'; // Default staff fallback
+  }
+
+  if (role === 'accountant' || role === 'accounts') {
+    return 'accountant';
   }
 
   return 'admin';
@@ -584,3 +621,4 @@ export function isRouteAllowedForUser(user, portal, submodule) {
 
   return false;
 }
+

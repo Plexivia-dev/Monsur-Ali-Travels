@@ -1,1 +1,6 @@
-﻿import React from 'react'; export default function BankLedger() { return <div className='p-6 text-center text-gray-500'>Bank Ledger (WIP)</div>; }
+import React from 'react';
+import { BankLedgerPage } from '@shared/features/accounts';
+
+export default function BankLedger() {
+  return <BankLedgerPage />;
+}

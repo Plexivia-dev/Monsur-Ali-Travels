@@ -22,7 +22,7 @@ import NotFoundPage from '@/pages/NotFoundPage'
 import CashBook from '@/pages/accounting/CashBook'
 import BankLedger from '@/pages/accounting/BankLedger'
 import Expenses from '@/pages/accounting/Expenses'
-import { PaymentsPage, BillsPage, ReportsPage } from '@shared/features/accounts'
+import { PaymentsPage, BillsPage, ReportsPage, SalarySlipsPage } from '@shared/features/accounts'
 import UnifiedTableShowcasePage from '@/pages/UnifiedTableShowcasePage'
 import { GlobalErrorBoundary } from '@/components/layout/GlobalErrorBoundary'
 import { useAuth } from '@/store/useAuthStore'
@@ -76,6 +76,7 @@ export default function App() {
               
               <Route path="accounts/payments" element={<PaymentsPage />} />
               <Route path="accounts/bills" element={<BillsPage />} />
+              <Route path="accounts/salaries" element={<SalarySlipsPage />} />
               <Route path="accounts/reports" element={<ReportsPage />} />
               <Route path="accounts/cash-book" element={<CashBook />} />
               <Route path="accounts/bank-ledger" element={<BankLedger />} />

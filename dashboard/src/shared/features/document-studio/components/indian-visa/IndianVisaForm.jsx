@@ -75,11 +75,11 @@ export function IndianVisaForm({ data, onChange, onSubmit, onReset, isSubmitting
         </div>
 
         {/* SECTION 1: APPLICANT DETAILS */}
-        <div className="border-t border-border pt-5 space-y-4">
-          <h4 className="font-semibold text-foreground text-sm uppercase tracking-wider text-primary flex items-center gap-1.5">
-            <UserCheck className="w-4 h-4 text-primary" />
-            {t('visa.applicantInfo', '1. Applicant Information')}
-          </h4>
+        <div className="space-y-4">
+          <div className="flex items-center gap-2 bg-gradient-to-r from-sky-600 via-sky-700 to-[#0B3A60] text-white px-4 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider shadow-xs">
+            <UserCheck className="w-4 h-4 text-sky-200" />
+            <span>{t('visa.applicantInfo', '1. Applicant Information')}</span>
+          </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
             <div className="space-y-1.5">
@@ -148,11 +148,11 @@ export function IndianVisaForm({ data, onChange, onSubmit, onReset, isSubmitting
         </div>
 
         {/* SECTION 2: VISA SPECIFICATIONS */}
-        <div className="border-t border-border pt-5 space-y-4">
-          <h4 className="font-semibold text-foreground text-sm uppercase tracking-wider text-primary flex items-center gap-1.5">
-            <FileCheck className="w-4 h-4 text-primary" />
-            {t('visa.visaDetails', '2. Visa Details')}
-          </h4>
+        <div className="space-y-4">
+          <div className="flex items-center gap-2 bg-gradient-to-r from-sky-600 via-sky-700 to-[#0B3A60] text-white px-4 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider shadow-xs">
+            <FileCheck className="w-4 h-4 text-sky-200" />
+            <span>{t('visa.visaDetails', '2. Visa Details')}</span>
+          </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
             <div className="space-y-1.5">
@@ -200,10 +200,11 @@ export function IndianVisaForm({ data, onChange, onSubmit, onReset, isSubmitting
         </div>
 
         {/* SECTION 3: DOCUMENTS CHECKLIST */}
-        <div className="border-t border-border pt-5 space-y-4">
-          <h4 className="font-semibold text-foreground text-sm uppercase tracking-wider text-primary">
-            {t('visa.documents', '3. Required Documents Checklist')}
-          </h4>
+        <div className="space-y-4">
+          <div className="flex items-center gap-2 bg-gradient-to-r from-sky-600 via-sky-700 to-[#0B3A60] text-white px-4 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider shadow-xs">
+            <FileCheck className="w-4 h-4 text-sky-200" />
+            <span>{t('visa.documents', '3. Required Documents Checklist')}</span>
+          </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 bg-primary/5 p-4.5 rounded-lg border border-border">
             {[

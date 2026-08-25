@@ -70,11 +70,11 @@ export function PassportSubmissionForm({ data, onChange, onSubmit, onReset, isSu
         </div>
 
         {/* SECTION 1: APPLICANT DETAILS */}
-        <div className="border-t border-border pt-5 space-y-4">
-          <h4 className="font-bold text-foreground text-sm uppercase tracking-wider text-emerald-600 flex items-center gap-1.5">
-            <UserCheck className="w-4 h-4 text-emerald-600" />
-            ১. আবেদনকারীর প্রয়োজনীয় তথ্য
-          </h4>
+        <div className="space-y-4">
+          <div className="flex items-center gap-2 bg-gradient-to-r from-sky-600 via-sky-700 to-[#0B3A60] text-white px-4 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider shadow-xs">
+            <UserCheck className="w-4 h-4 text-sky-200" />
+            <span>১. আবেদনকারীর প্রয়োজনীয় তথ্য</span>
+          </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             <div>
@@ -145,11 +145,11 @@ export function PassportSubmissionForm({ data, onChange, onSubmit, onReset, isSu
         </div>
 
         {/* SECTION 2: GUARDIAN DETAILS */}
-        <div className="border-t border-border pt-5 space-y-4">
-          <h4 className="font-bold text-foreground text-sm uppercase tracking-wider text-emerald-600 flex items-center gap-1.5">
-            <PhoneCall className="w-4 h-4 text-emerald-600" />
-            ২. অভিভাবকের তথ্য
-          </h4>
+        <div className="space-y-4">
+          <div className="flex items-center gap-2 bg-gradient-to-r from-sky-600 via-sky-700 to-[#0B3A60] text-white px-4 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider shadow-xs">
+            <PhoneCall className="w-4 h-4 text-sky-200" />
+            <span>২. অভিভাবকের তথ্য</span>
+          </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <div>
@@ -189,11 +189,11 @@ export function PassportSubmissionForm({ data, onChange, onSubmit, onReset, isSu
         </div>
 
         {/* SECTION 3: SPECIFICATIONS */}
-        <div className="border-t border-border pt-5 space-y-4">
-          <h4 className="font-bold text-foreground text-sm uppercase tracking-wider text-emerald-600 flex items-center gap-1.5">
-            <FileCheck className="w-4 h-4 text-emerald-600" />
-            ৩. পাসপোর্ট স্পেসিফিকেশন ও অপশন
-          </h4>
+        <div className="space-y-4">
+          <div className="flex items-center gap-2 bg-gradient-to-r from-sky-600 via-sky-700 to-[#0B3A60] text-white px-4 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider shadow-xs">
+            <FileCheck className="w-4 h-4 text-sky-200" />
+            <span>৩. পাসপোর্ট স্পেসিফিকেশন ও অপশন</span>
+          </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             <div>
@@ -249,10 +249,11 @@ export function PassportSubmissionForm({ data, onChange, onSubmit, onReset, isSu
         </div>
 
         {/* SECTION 4: DOCUMENTS CHECKLIST */}
-        <div className="border-t border-border pt-5 space-y-4">
-          <h4 className="font-bold text-foreground text-sm uppercase tracking-wider text-emerald-600">
-            ৪. প্রাপ্ত কাগজপত্রের চেকলিস্ট
-          </h4>
+        <div className="space-y-4">
+          <div className="flex items-center gap-2 bg-gradient-to-r from-sky-600 via-sky-700 to-[#0B3A60] text-white px-4 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider shadow-xs">
+            <FileCheck className="w-4 h-4 text-sky-200" />
+            <span>৪. প্রাপ্ত কাগজপত্রের চেকলিস্ট</span>
+          </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 bg-emerald-500/5 p-4 rounded-xl border border-emerald-500/20">
             {[

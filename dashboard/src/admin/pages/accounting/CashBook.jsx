@@ -1,1 +1,6 @@
-﻿import React from 'react'; export default function CashBook() { return <div className='p-6 text-center text-gray-500'>Cash Book (WIP)</div>; }
+import React from 'react';
+import { CashBookPage } from '@shared/features/accounts';
+
+export default function CashBook() {
+  return <CashBookPage />;
+}

@@ -27,7 +27,8 @@
             "name": "Client Files",
             "nameBn": "ক্লায়েন্ট ফাইলস",
             "path": "/admin/cases",
-            "icon": "FolderOpen"
+            "icon": "FolderOpen",
+            "excludeRoles": ["accountant", "accounts"]
           },
           {
             "id": "clients",
@@ -41,7 +42,8 @@
             "name": "Users",
             "nameBn": "ইউজারস",
             "path": "/admin/users",
-            "icon": "User"
+            "icon": "User",
+            "roles": ["owner", "superadmin", "admin"]
           }
         ]
       }
@@ -73,11 +75,18 @@
             "icon": "Receipt"
           },
           {
-            "id": "reports",
-            "name": "Reports",
-            "nameBn": "রিপোর্টস",
-            "path": "/admin/accounts/reports",
-            "icon": "FileSpreadsheet"
+            "id": "salaries",
+            "name": "Salary Slips",
+            "nameBn": "বেতন হিসাব",
+            "path": "/admin/accounts/salaries",
+            "icon": "Banknote"
+          },
+          {
+            "id": "expenses",
+            "name": "Expense Tracking",
+            "nameBn": "ভাউচার খরচ",
+            "path": "/admin/accounts/expenses",
+            "icon": "Receipt"
           },
           {
             "id": "cash-book",
@@ -94,11 +103,11 @@
             "icon": "Building2"
           },
           {
-            "id": "expenses",
-            "name": "Expense Tracking",
-            "nameBn": "ভাউচার খরচ",
-            "path": "/admin/accounts/expenses",
-            "icon": "Receipt"
+            "id": "reports",
+            "name": "Reports",
+            "nameBn": "রিপোর্টস",
+            "path": "/admin/accounts/reports",
+            "icon": "FileSpreadsheet"
           }
         ]
       }
@@ -115,95 +124,100 @@
         "icon": "FileSpreadsheet",
         "childItems": [
           {
-            "id": "doc-hub",
-            "name": "Studio Hub Overview",
-            "nameBn": "সকল জেনারেটর (হাব)",
-            "path": "/admin/docs",
-            "icon": "LayoutGrid"
-          },
-          {
-            "id": "doc-agreement",
-            "name": "Employment Agreement",
-            "nameBn": "নিয়োগ চুক্তিপত্র",
-            "path": "/admin/docs/agreement",
-            "icon": "FileSignature"
-          },
-          {
-            "id": "doc-client-form",
-            "name": "Client & Guardian Form",
-            "nameBn": "ক্লায়েন্ট ও অভিভাবক ফরম",
-            "path": "/admin/docs/client-form",
-            "icon": "UserCheck"
-          },
-          {
-            "id": "doc-indian-visa",
-            "name": "Indian Visa Submission",
-            "nameBn": "ইন্ডিয়ান ভিসা ফাইল",
-            "path": "/admin/docs/indian-visa",
-            "icon": "Stamp"
-          },
-          {
-            "id": "doc-passport-sub",
-            "name": "Passport Submission Slip",
-            "nameBn": "পাসপোর্ট জমা রশিদ",
-            "path": "/admin/docs/passport-sub",
-            "icon": "BookOpen"
-          },
-          {
-            "id": "doc-idcard",
-            "name": "Employee ID Card",
-            "nameBn": "কর্মচারী আইডি কার্ড",
-            "path": "/admin/docs/idcard",
-            "icon": "Contact"
-          },
-          {
             "id": "doc-payroll",
             "name": "Salary Slip",
             "nameBn": "বেতন স্লিপ",
             "path": "/admin/docs/payroll",
-            "icon": "Banknote"
+            "icon": "Banknote",
+            "roles": ["owner", "superadmin", "admin", "accountant", "accounts"]
           },
           {
             "id": "doc-invoice",
-            "name": "Invoice Billing",
-            "nameBn": "ইনভয়েস ও বিলিং",
+            "name": "Invoice",
+            "nameBn": "ইনভয়েস",
             "path": "/admin/docs/invoice",
-            "icon": "ReceiptText"
+            "icon": "ReceiptText",
+            "roles": ["owner", "superadmin", "admin", "accountant", "accounts"]
           },
           {
             "id": "doc-money-receipt",
             "name": "Money Receipt Voucher",
             "nameBn": "মানি রিসিট ভাউচার",
             "path": "/admin/docs/money-receipt",
-            "icon": "Receipt"
+            "icon": "Receipt",
+            "roles": ["owner", "superadmin", "admin", "accountant", "accounts"]
           },
           {
             "id": "doc-cash-voucher",
             "name": "Cash Money Voucher",
             "nameBn": "ক্যাশ মানি ভাউচার",
             "path": "/admin/docs/cash-voucher",
-            "icon": "Wallet"
+            "icon": "Wallet",
+            "roles": ["owner", "superadmin", "admin", "accountant", "accounts"]
+          },
+          {
+            "id": "doc-agreement",
+            "name": "Employment Agreement",
+            "nameBn": "নিয়োগ চুক্তিপত্র",
+            "path": "/admin/docs/agreement",
+            "icon": "FileSignature",
+            "roles": ["owner", "superadmin", "admin", "frontdesk", "staff", "lawyer", "representative"]
+          },
+          {
+            "id": "doc-client-form",
+            "name": "Client & Guardian Form",
+            "nameBn": "ক্লায়েন্ট ও অভিভাবক ফরম",
+            "path": "/admin/docs/client-form",
+            "icon": "UserCheck",
+            "roles": ["owner", "superadmin", "admin", "frontdesk", "staff", "lawyer", "representative", "visa_processor"]
+          },
+          {
+            "id": "doc-indian-visa",
+            "name": "Indian Visa Submission",
+            "nameBn": "ইন্ডিয়ান ভিসা ফাইল",
+            "path": "/admin/docs/indian-visa",
+            "icon": "Stamp",
+            "roles": ["owner", "superadmin", "admin", "frontdesk", "staff", "visa_processor"]
+          },
+          {
+            "id": "doc-passport-sub",
+            "name": "Passport Submission Slip",
+            "nameBn": "পাসপোর্ট জমা রশিদ",
+            "path": "/admin/docs/passport-sub",
+            "icon": "BookOpen",
+            "roles": ["owner", "superadmin", "admin", "frontdesk", "staff", "visa_processor"]
           },
           {
             "id": "doc-exp-cert",
             "name": "Experience Certificate",
             "nameBn": "অভিজ্ঞতা সনদপত্র",
             "path": "/admin/docs/experience-certificate",
-            "icon": "Award"
-          },
-          {
-            "id": "doc-char-cert",
-            "name": "Character Certificate",
-            "nameBn": "চারিত্রিক সনদপত্র",
-            "path": "/admin/docs/character-certificate",
-            "icon": "ShieldCheck"
+            "icon": "Award",
+            "roles": ["owner", "superadmin", "admin", "frontdesk", "staff", "lawyer"]
           },
           {
             "id": "doc-marr-cert",
             "name": "Marriage Certificate",
             "nameBn": "বিবাহ সনদপত্র",
             "path": "/admin/docs/marriage-certificate",
-            "icon": "Heart"
+            "icon": "Heart",
+            "roles": ["owner", "superadmin", "admin", "frontdesk", "staff", "lawyer"]
+          },
+          {
+            "id": "doc-char-cert",
+            "name": "Character Certificate",
+            "nameBn": "চারিত্রিক সনদপত্র",
+            "path": "/admin/docs/character-certificate",
+            "icon": "ShieldCheck",
+            "roles": ["owner", "superadmin", "admin", "frontdesk", "staff", "lawyer"]
+          },
+          {
+            "id": "doc-idcard",
+            "name": "Employee ID Card",
+            "nameBn": "কর্মচারী আইডি কার্ড",
+            "path": "/admin/docs/idcard",
+            "icon": "Contact",
+            "roles": ["owner", "superadmin", "admin"]
           }
         ]
       }
@@ -212,7 +226,7 @@
   {
     "groupLabel": "System & Logs",
     "groupLabelBn": "সিস্টেম ও স্টোরেজ",
-    "excludeRoles": ["accountant", "accounts"],
+    "excludeRoles": ["accountant", "accounts", "frontdesk", "staff"],
     "items": [
       {
         "id": "system-group",

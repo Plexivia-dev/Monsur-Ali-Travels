@@ -24,10 +24,10 @@ export function MarriageCertificateForm({ data = {}, onChange }) {
       
       {/* 1. Registrar / Kazi Office Information */}
       <div className="bg-card border border-border rounded-xl p-4 space-y-4">
-        <h3 className="text-xs font-bold uppercase tracking-wider text-primary flex items-center gap-1.5 border-b border-border pb-2">
-          <Building2 className="w-4 h-4" />
-          ১. কাজী অফিস বা রেজিস্ট্রি তথ্য (Registrar / Kazi Office)
-        </h3>
+        <div className="flex items-center gap-1.5 bg-gradient-to-r from-sky-600 via-sky-700 to-[#0B3A60] text-white px-4 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider shadow-xs">
+          <Building2 className="w-4 h-4 text-sky-200" />
+          <span>১. কাজী অফিস বা রেজিস্ট্রি তথ্য (Registrar / Kazi Office)</span>
+        </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div className="sm:col-span-2">
@@ -74,10 +74,10 @@ export function MarriageCertificateForm({ data = {}, onChange }) {
 
       {/* 2. Certificate Meta & Marriage Dates */}
       <div className="bg-card border border-border rounded-xl p-4 space-y-4">
-        <h3 className="text-xs font-bold uppercase tracking-wider text-primary flex items-center gap-1.5 border-b border-border pb-2">
-          <Calendar className="w-4 h-4" />
-          ২. রেজিস্ট্রেশন ও বিবাহের তারিখ (Registration Details)
-        </h3>
+        <div className="flex items-center gap-1.5 bg-gradient-to-r from-sky-600 via-sky-700 to-[#0B3A60] text-white px-4 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider shadow-xs">
+          <Calendar className="w-4 h-4 text-sky-200" />
+          <span>২. রেজিস্ট্রেশন ও বিবাহের তারিখ (Registration Details)</span>
+        </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
           <div>
@@ -136,10 +136,10 @@ export function MarriageCertificateForm({ data = {}, onChange }) {
 
       {/* 3. Groom Details (বর) */}
       <div className="bg-card border border-border rounded-xl p-4 space-y-4">
-        <h3 className="text-xs font-bold uppercase tracking-wider text-primary flex items-center gap-1.5 border-b border-border pb-2">
-          <User className="w-4 h-4" />
-          ৩. বরের বিবরণ (Groom Information)
-        </h3>
+        <div className="flex items-center gap-1.5 bg-gradient-to-r from-sky-600 via-sky-700 to-[#0B3A60] text-white px-4 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider shadow-xs">
+          <User className="w-4 h-4 text-sky-200" />
+          <span>৩. বরের বিবরণ (Groom Information)</span>
+        </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div>
@@ -206,10 +206,10 @@ export function MarriageCertificateForm({ data = {}, onChange }) {
 
       {/* 4. Bride Details (কনে) */}
       <div className="bg-card border border-border rounded-xl p-4 space-y-4">
-        <h3 className="text-xs font-bold uppercase tracking-wider text-primary flex items-center gap-1.5 border-b border-border pb-2">
-          <Heart className="w-4 h-4" />
-          ৪. কনের বিবরণ (Bride Information)
-        </h3>
+        <div className="flex items-center gap-1.5 bg-gradient-to-r from-sky-600 via-sky-700 to-[#0B3A60] text-white px-4 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider shadow-xs">
+          <Heart className="w-4 h-4 text-sky-200" />
+          <span>৪. কনের বিবরণ (Bride Information)</span>
+        </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div>
@@ -276,10 +276,10 @@ export function MarriageCertificateForm({ data = {}, onChange }) {
 
       {/* 5. Dower & Terms */}
       <div className="bg-card border border-border rounded-xl p-4 space-y-4">
-        <h3 className="text-xs font-bold uppercase tracking-wider text-primary flex items-center gap-1.5 border-b border-border pb-2">
-          <DollarSign className="w-4 h-4" />
-          ৫. দেনমোহর ও সাক্ষীদের বিবরণ (Dower & Witnesses)
-        </h3>
+        <div className="flex items-center gap-1.5 bg-gradient-to-r from-sky-600 via-sky-700 to-[#0B3A60] text-white px-4 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider shadow-xs">
+          <DollarSign className="w-4 h-4 text-sky-200" />
+          <span>৫. দেনমোহর ও সাক্ষীদের বিবরণ (Dower & Witnesses)</span>
+        </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div>

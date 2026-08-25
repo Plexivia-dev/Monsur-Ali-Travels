@@ -350,8 +350,8 @@ export function ClientGuardianForm({ data, onChange, onReset, onSave, onPreview,
 
       {/* 1. CUSTOMER DETAILS */}
       <div className="space-y-3">
-        <div className="flex items-center gap-2 bg-[#103058] text-white px-3.5 py-2 rounded-xl text-xs font-bold uppercase tracking-wider">
-          <User className="w-4 h-4" />
+        <div className="flex items-center gap-2 bg-gradient-to-r from-sky-600 via-sky-700 to-[#0B3A60] text-white px-4 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider shadow-xs">
+          <User className="w-4 h-4 text-sky-200" />
           <span>{t('clientForm.clientDetails', '1. Client Details')}</span>
         </div>
 
@@ -451,8 +451,8 @@ export function ClientGuardianForm({ data, onChange, onReset, onSave, onPreview,
 
       {/* 2. GUARDIAN DETAILS */}
       <div className="space-y-3">
-        <div className="flex items-center gap-2 bg-[#103058] text-white px-3.5 py-2 rounded-xl text-xs font-bold uppercase tracking-wider">
-          <Users className="w-4 h-4" />
+        <div className="flex items-center gap-2 bg-gradient-to-r from-sky-600 via-sky-700 to-[#0B3A60] text-white px-4 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider shadow-xs">
+          <Users className="w-4 h-4 text-sky-200" />
           <span>{t('clientForm.guardianDetails', '2. Guardian Details')}</span>
         </div>
 
@@ -546,9 +546,9 @@ export function ClientGuardianForm({ data, onChange, onReset, onSave, onPreview,
 
       {/* 3. CUSTOMER REQUIREMENT DOCUMENTS */}
       <div className="space-y-3">
-        <div className="flex items-center justify-between bg-[#103058] text-white px-3.5 py-2 rounded-xl text-xs font-bold uppercase tracking-wider">
+        <div className="flex items-center justify-between bg-gradient-to-r from-sky-600 via-sky-700 to-[#0B3A60] text-white px-4 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider shadow-xs">
           <div className="flex items-center gap-2">
-            <FileText className="w-4 h-4" />
+            <FileText className="w-4 h-4 text-sky-200" />
             <span>{t('clientForm.requirementDocs', '3. Client Requirement Documents')}</span>
           </div>
           <Button
@@ -625,8 +625,8 @@ export function ClientGuardianForm({ data, onChange, onReset, onSave, onPreview,
 
       {/* 4. ADVANCE PAYMENT DETAILS */}
       <div className="space-y-3">
-        <div className="flex items-center gap-2 bg-[#103058] text-white px-3.5 py-2 rounded-xl text-xs font-bold uppercase tracking-wider">
-          <DollarSign className="w-4 h-4" />
+        <div className="flex items-center gap-2 bg-gradient-to-r from-sky-600 via-sky-700 to-[#0B3A60] text-white px-4 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider shadow-xs">
+          <DollarSign className="w-4 h-4 text-sky-200" />
           <span>{t('clientForm.paymentDetails', '4. Service Fee & Advance Payment')}</span>
         </div>
 
@@ -707,9 +707,9 @@ export function ClientGuardianForm({ data, onChange, onReset, onSave, onPreview,
 
       {/* 5. DOCUMENT ATTACHMENTS (ছবি, পাসপোর্ট ও অন্যান্য ফাইল) */}
       <div className="space-y-3">
-        <div className="flex items-center justify-between bg-[#103058] text-white px-3.5 py-2 rounded-xl text-xs font-bold uppercase tracking-wider">
+        <div className="flex items-center justify-between bg-gradient-to-r from-sky-600 via-sky-700 to-[#0B3A60] text-white px-4 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider shadow-xs">
           <div className="flex items-center gap-2">
-            <Paperclip className="w-4 h-4" />
+            <Paperclip className="w-4 h-4 text-sky-200" />
             <span>{t('clientForm.attachments', '5. Document Attachments')}</span>
           </div>
           <span className="text-[10px] font-normal opacity-80">{t('clientForm.attachmentsSub', 'Upload Images / PDF (Max 10MB)')}</span>
