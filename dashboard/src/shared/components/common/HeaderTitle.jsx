@@ -56,11 +56,11 @@ export function HeaderTitle({
     return (
       <div
         className={cn(
-          'no-print bg-card border border-border/80 p-4 sm:p-5 rounded-2xl shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-4 text-card-foreground transition-all',
+          'no-print bg-card border border-border/80 p-4 sm:p-5 rounded-2xl shadow-xs flex flex-col lg:flex-row lg:items-center justify-between gap-4 text-card-foreground transition-all',
           className
         )}
       >
-        <div className="space-y-1 min-w-0">
+        <div className="space-y-1 min-w-0 flex-1">
           <div className="flex items-center gap-2 flex-wrap">
             <h2
               className={cn(
@@ -111,9 +111,9 @@ export function HeaderTitle({
       <div className="absolute -top-24 -right-24 w-72 h-72 bg-sky-500/15 rounded-full blur-3xl pointer-events-none" />
       <div className="absolute -bottom-24 -left-24 w-72 h-72 bg-indigo-500/15 rounded-full blur-3xl pointer-events-none" />
 
-      <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div className="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-4">
         {/* Left: Heading & Description */}
-        <div className="space-y-1.5 min-w-0">
+        <div className="space-y-1.5 min-w-0 flex-1">
           <div className="flex items-center gap-2.5 flex-wrap">
             <h1
               className={cn(
