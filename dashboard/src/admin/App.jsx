@@ -90,6 +90,7 @@ export default function App() {
 
           {/* Root redirect */}
           <Route path="/" element={<Navigate to="/admin" replace />} />
+          <Route path="/admin.html" element={<Navigate to="/admin" replace />} />
 
           {/* Global Fallback Route */}
           <Route path="*" element={<NotFoundPage />} />

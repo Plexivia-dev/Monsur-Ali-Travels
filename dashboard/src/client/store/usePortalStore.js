@@ -1,9 +1,16 @@
 import { create } from 'zustand';
 
 export const parsePortalFromPath = (pathname) => {
-  const parts = pathname.split('/').filter(Boolean);
+  const cleanPath = (pathname || '')
+    .replace(/^\/client\.html\/?/i, '/')
+    .replace(/^\/client\/?/i, '/');
+  const parts = cleanPath.split('/').filter(Boolean);
   let portal = 'agency';
   let submodule = 'tasks';
+
+  if (parts.length === 0) {
+    return { portal: 'agency', submodule: 'tasks' };
+  }
 
   if (parts[0] === 'dashboard') {
     if (parts[1]) portal = parts[1];
@@ -11,6 +18,12 @@ export const parsePortalFromPath = (pathname) => {
   } else if (parts[0] && parts[0] !== 'login') {
     portal = parts[0];
     if (parts[1]) submodule = parts[1] === 'dashboard' ? 'tasks' : parts[1];
+  }
+
+  const validPortals = ['factory', 'agency', 'admin', 'docs', 'data'];
+  if (!validPortals.includes(portal)) {
+    portal = 'agency';
+    submodule = 'tasks';
   }
 
   return { portal, submodule };

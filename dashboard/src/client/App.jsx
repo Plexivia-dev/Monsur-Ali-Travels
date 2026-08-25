@@ -111,6 +111,8 @@ export default function App() {
         <BrowserRouter>
           <Routes>
             <Route path="/login" element={<LoginPage />} />
+            <Route path="/client.html" element={<Navigate to="/dashboard/agency/tasks" replace />} />
+            <Route path="/client" element={<Navigate to="/dashboard/agency/tasks" replace />} />
             <Route
               path="/*"
               element={
