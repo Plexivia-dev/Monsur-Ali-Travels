@@ -22,7 +22,12 @@ export function LoginPage() {
 
   useEffect(() => {
     if (!isAuthLoading && user) {
-      navigate("/admin")
+      const roleStr = String(user.role || '').toLowerCase()
+      if (['owner', 'admin'].includes(roleStr)) {
+        navigate("/admin", { replace: true })
+      } else {
+        window.location.replace("/client.html")
+      }
     }
   }, [user, isAuthLoading, navigate])
 

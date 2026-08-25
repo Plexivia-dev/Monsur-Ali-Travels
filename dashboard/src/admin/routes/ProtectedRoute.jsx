@@ -20,10 +20,14 @@ export function ProtectedRoute({ allowedRoles = ADMIN_ROLES }) {
     return <Navigate to="/login" replace />
   }
 
-  const hasAccess = allowedRoles.includes(user.role)
+  const roleStr = String(user.role || '').toLowerCase()
+  const normalizedAllowed = (allowedRoles || ADMIN_ROLES).map((r) => String(r).toLowerCase())
+  const hasAccess = normalizedAllowed.includes(roleStr)
+
   if (!hasAccess) {
-    // Redirect standard employees / unauthorized users to login
-    return <Navigate to="/login" replace />
+    // Standard staff / non-admin user -> redirect cleanly to client portal
+    window.location.replace('/client.html')
+    return null
   }
 
   return <Outlet />
