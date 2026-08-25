@@ -9,21 +9,6 @@
         "nameBn": "ওভারভিউ",
         "path": "/admin",
         "icon": "LayoutDashboard"
-      },
-      {
-        "id": "docs",
-        "name": "Document Studio",
-        "nameBn": "ডকুমেন্ট স্টুডিও",
-        "path": "/admin/docs",
-        "icon": "FileSpreadsheet"
-      },
-      {
-        "id": "accounting-summary",
-        "name": "Accounting Summary",
-        "nameBn": "অ্যাকাউন্টিং সামারি",
-        "path": "/admin/accounting-summary",
-        "icon": "PieChart",
-        "roles": ["owner", "superadmin", "admin", "accountant", "accounts"]
       }
     ]
   },
@@ -33,8 +18,8 @@
     "items": [
       {
         "id": "agency-group",
-        "name": "Agency & Clients",
-        "nameBn": "ক্লায়েন্ট ফাইলস ও টিম",
+        "name": "Agency",
+        "nameBn": "এজেন্সি",
         "icon": "Building2",
         "childItems": [
           {

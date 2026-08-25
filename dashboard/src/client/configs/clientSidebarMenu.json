@@ -20,8 +20,8 @@
         "childItems": [
           {
             "id": "cases",
-            "name": "Candidate Profiles",
-            "nameBn": "ক্যান্ডিডেট প্রোফাইল",
+            "name": "Client Profiles",
+            "nameBn": "ক্লায়েন্ট প্রোফাইল",
             "portal": "agency",
             "submodule": "cases",
             "path": "/dashboard/agency/cases",
@@ -41,8 +41,8 @@
     ]
   },
   {
-    "groupLabel": "Agency & Clients",
-    "groupLabelBn": "ক্লায়েন্টস ও হিসাব",
+    "groupLabel": "Agency",
+    "groupLabelBn": "এজেন্সি",
     "roles": ["admin", "owner", "superadmin", "accountant", "representative"],
     "items": [
       {
@@ -120,12 +120,12 @@
             "icon": "FileSignature"
           },
           {
-            "id": "doc-customer-form",
-            "name": "Customer & Guardian Form",
-            "nameBn": "কাস্টমার ও অভিভাবক ফরম",
+            "id": "doc-client-form",
+            "name": "Client & Guardian Form",
+            "nameBn": "ক্লায়েন্ট ও অভিভাবক ফরম",
             "portal": "docs",
-            "submodule": "customer-form",
-            "path": "/dashboard/docs/customer-form",
+            "submodule": "client-form",
+            "path": "/dashboard/docs/client-form",
             "icon": "UserCheck"
           },
           {
@@ -235,7 +235,7 @@
           {
             "id": "data-profiles",
             "name": "Client Profiles",
-            "nameBn": "কাস্টমার ডাটাবেস",
+            "nameBn": "ক্লায়েন্ট ডাটাবেস",
             "portal": "data",
             "submodule": "client-profiles",
             "path": "/dashboard/data/client-profiles",
