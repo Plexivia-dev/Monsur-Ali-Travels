@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { cn } from '@/lib/utils';
 import { ChevronLeft, ChevronRight, Inbox } from 'lucide-react';
 import { Button } from './button';
+import { UnifiedDataTable } from './unified-table';
 
 function Table({ className, ...props }) {
   return (
@@ -69,14 +70,34 @@ function TableCaption({ className, ...props }) {
   return <caption data-slot="table-caption" className={cn('mt-4 text-sm text-muted-foreground', className)} {...props} />;
 }
 
+/**
+ * Standard DataTable (Supports both simple lightweight mapping and delegates to UnifiedDataTable when rich columns are supplied)
+ */
 export const DataTable = ({
   columns = [],
   data = [],
   pagination = true,
   itemsPerPage = 10,
   className = '',
+  ...props
 }) => {
   const [currentPage, setCurrentPage] = useState(1);
+
+  // If using TanStack Column Def format (accessorKey or id or cell func), render UnifiedDataTable
+  const isTanStackDef = columns.some((c) => c.accessorKey || c.accessorFn || typeof c.header === 'function');
+
+  if (isTanStackDef) {
+    return (
+      <UnifiedDataTable
+        columns={columns}
+        data={data}
+        enablePagination={pagination}
+        pageSize={itemsPerPage}
+        className={className}
+        {...props}
+      />
+    );
+  }
 
   const totalPages = Math.ceil((data?.length || 0) / itemsPerPage) || 1;
   const startIndex = (currentPage - 1) * itemsPerPage;
@@ -171,6 +192,8 @@ export {
   TableRow,
   TableCell,
   TableCaption,
+  UnifiedDataTable,
 };
 
+export * from './unified-table';
 export default Table;
