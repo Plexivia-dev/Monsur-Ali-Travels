@@ -86,12 +86,12 @@ export function PassportSubmissionDataTable() {
     try {
       setIsDeleting(true);
       await apiClient.delete(`/api/v1/client/docs/passports/${deleteTarget.id}`);
-      toast.success('পাসপোর্ট ফাইল রেকর্ড মুছে ফেলা হয়েছে।');
+      toast.success('Passport record deleted successfully.');
       setDeleteTarget(null);
       fetchData(pagination.page, pagination.limit, search, status);
     } catch (err) {
       console.error('Failed to delete passport record:', err);
-      toast.error('পাসপোর্ট ফাইল মুছতে সমস্যা হয়েছে।');
+      toast.error('Failed to delete passport record.');
     } finally {
       setIsDeleting(false);
     }
@@ -110,17 +110,17 @@ export function PassportSubmissionDataTable() {
       setIsUpdatingStage(true);
       const payload = {
         status: newStage,
-        note: stageNote || `স্ট্যাটাস পরিবর্তন করে "${newStage}" করা হয়েছে।`,
+        note: stageNote || `Status updated to "${newStage}".`,
         document: stageDocument.fileUrl ? stageDocument : null,
       };
 
       await apiClient.patch(`/api/v1/client/passports/${stageModalItem._id}/stage`, payload);
-      toast.success(`পাসপোর্ট স্ট্যাটাস সফলভাবে "${newStage}" এ আপডেট করা হয়েছে!`);
+      toast.success(`Passport status successfully updated to "${newStage}"!`);
       setStageModalItem(null);
       fetchData(pagination.page, pagination.limit, search, status);
     } catch (err) {
       console.error('Failed to update stage:', err);
-      toast.error('পাসপোর্ট স্ট্যাটাস আপডেট করতে সমস্যা হয়েছে।');
+      toast.error('Failed to update passport status.');
     } finally {
       setIsUpdatingStage(false);
     }
@@ -144,7 +144,7 @@ export function PassportSubmissionDataTable() {
           fileUrl: res.data.data.url,
           fileType: file.type.includes('image') ? 'image' : 'pdf'
         });
-        toast.success(`ডকুমেন্ট "${file.name}" সফলভাবে আপলোড হয়েছে!`);
+        toast.success(`Document "${file.name}" uploaded successfully!`);
       }
     } catch (err) {
       console.error('Upload failed:', err);
@@ -241,7 +241,7 @@ export function PassportSubmissionDataTable() {
                 <tr>
                   <td colSpan={8} className="text-center py-10 text-muted-foreground">
                     <RefreshCw className="w-5 h-5 animate-spin mx-auto text-primary mb-2" />
-                    <span>ডাটা লোড হচ্ছে...</span>
+                    <span>Loading data...</span>
                   </td>
                 </tr>
               ) : data.length === 0 ? (
@@ -280,7 +280,7 @@ export function PassportSubmissionDataTable() {
                             type="button"
                             onClick={() => handleOpenStageModal(item)}
                             className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10.5px] font-bold border transition-all hover:scale-105 cursor-pointer shadow-2xs ${stageInfo.color}`}
-                            title="ক্লিক করে স্ট্যাটাস ও ডকুমেন্ট পরিবর্তন করুন"
+                            title="Click to update status and documents"
                           >
                             <Edit3 className="w-3 h-3" />
                             <span>{t('visaStatus.' + stageInfo.id, stageInfo.label)}</span>
@@ -297,8 +297,8 @@ export function PassportSubmissionDataTable() {
                               clientName: item.applicantName,
                               clientPhone: item.applicantPhone,
                               passportNumber: item.passportNo || item.trackingNo,
-                              serviceType: 'পাসপোর্ট সাবমিশন ও নবায়ন (Passport Service)',
-                              purpose: `পাসপোর্ট ফাইল ফি - ট্র্যাকিং #${item.trackingNo}`,
+                              serviceType: 'Passport Submission & Renewal',
+                              purpose: `Passport File Fee - Tracking #${item.trackingNo}`,
                               serviceRef: { modelName: 'PassportSubmission', docId: item._id, trackingId: item.trackingNo },
                             })
                           }
@@ -351,10 +351,10 @@ export function PassportSubmissionDataTable() {
             <div className="px-5 py-3.5 border-b border-border bg-card flex items-center justify-between gap-3">
               <div>
                 <h3 className="text-sm font-bold text-foreground">
-                  পাসপোর্ট জমা রসিদ — {previewItem.trackingNo || ''}
+                  Passport Submission Receipt — {previewItem.trackingNo || ''}
                 </h3>
                 <p className="text-[11px] text-muted-foreground">
-                  আবেদনকারী: {previewItem.applicantName || '—'} | টাইপ: {previewItem.passportType || '—'}
+                  Applicant: {previewItem.applicantName || '—'} | Type: {previewItem.passportType || '—'}
                 </p>
               </div>
 
@@ -414,9 +414,9 @@ export function PassportSubmissionDataTable() {
                   <Edit3 className="w-5 h-5" />
                 </div>
                 <div>
-                  <h3 className="text-sm font-bold text-foreground">পাসপোর্ট প্রসেসিং স্টেজ আপডেট</h3>
+                  <h3 className="text-sm font-bold text-foreground">Update Passport Workflow Stage</h3>
                   <p className="text-xs text-muted-foreground">
-                    ট্র্যাকিং: <span className="font-mono font-bold text-emerald-600">{stageModalItem.trackingNo}</span> | {stageModalItem.applicantName}
+                    Tracking No: <span className="font-mono font-bold text-emerald-600">{stageModalItem.trackingNo}</span> | {stageModalItem.applicantName}
                   </p>
                 </div>
               </div>
@@ -432,7 +432,7 @@ export function PassportSubmissionDataTable() {
             {/* Stage Dropdown Selector */}
             <div className="space-y-1.5">
               <label className="block text-xs font-bold text-foreground">
-                নতুন স্ট্যাটাস / স্টেজ নির্বাচন করুন:
+                Select New Status Stage:
               </label>
               <select
                 value={newStage}
@@ -451,13 +451,13 @@ export function PassportSubmissionDataTable() {
             <div className="space-y-1.5 bg-muted/40 p-3.5 rounded-xl border border-border text-xs">
               <label className="block font-bold text-foreground flex items-center gap-1.5">
                 <Paperclip className="w-4 h-4 text-primary" />
-                <span>স্টেজের ডকুমেন্ট সংযুক্ত করুন (ঐচ্ছিক):</span>
+                <span>Attach Stage Verification Document (Optional):</span>
               </label>
               
               <div className="flex items-center gap-2 pt-1">
                 <label className="flex items-center gap-2 bg-background border border-border hover:bg-muted/80 text-foreground px-3 py-2 rounded-lg text-xs font-semibold cursor-pointer transition-colors shrink-0">
                   <Upload className="w-4 h-4 text-primary" />
-                  <span>ফাইল সিলেক্ট করুন</span>
+                  <span>Choose File</span>
                   <input
                     type="file"
                     className="hidden"
@@ -466,7 +466,7 @@ export function PassportSubmissionDataTable() {
                   />
                 </label>
                 <div className="text-[11px] text-muted-foreground truncate">
-                  {stageDocument.name ? stageDocument.name : 'কোনো ফাইল সিলেক্ট করা নেই'}
+                  {stageDocument.name ? stageDocument.name : 'No file chosen'}
                 </div>
               </div>
             </div>
@@ -474,13 +474,13 @@ export function PassportSubmissionDataTable() {
             {/* Remarks / Notes */}
             <div className="space-y-1.5">
               <label className="block text-xs font-bold text-foreground">
-                মন্তব্য / নোট (ঐচ্ছিক):
+                Remarks / Notes (Optional):
               </label>
               <textarea
                 value={stageNote}
                 onChange={(e) => setStageNote(e.target.value)}
                 rows={3}
-                placeholder="প্রসেস সম্পর্কে কোনো বিশেষ তথ্য থাকলে লিখুন..."
+                placeholder="Enter stage remarks or notes..."
                 className="w-full px-3.5 py-2.5 bg-background border border-border rounded-xl text-foreground text-xs focus:ring-1 focus:ring-primary outline-hidden resize-none"
               />
             </div>
@@ -492,7 +492,7 @@ export function PassportSubmissionDataTable() {
                 onClick={() => setStageModalItem(null)}
                 className="px-4 py-2 bg-muted hover:bg-muted/85 border border-border text-foreground text-xs font-bold rounded-lg transition-colors cursor-pointer"
               >
-                বাতিল
+                Rejected
               </button>
               <button
                 type="button"
@@ -500,7 +500,7 @@ export function PassportSubmissionDataTable() {
                 onClick={handleSaveStageUpdate}
                 className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-lg shadow-xs transition-colors flex items-center gap-1.5 cursor-pointer disabled:opacity-50"
               >
-                {isUpdatingStage ? 'আপডেট হচ্ছে...' : 'সংরক্ষণ করুন'}
+                {isUpdatingStage ? 'Updating...' : 'Save Changes'}
               </button>
             </div>
           </div>

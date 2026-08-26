@@ -247,7 +247,7 @@ export function OrdersTable({
                 <TableCell className="w-[110px] text-muted-foreground whitespace-nowrap">
                   {new Date(order.date).toLocaleDateString()}
                 </TableCell>
-                <TableCell className="w-[120px] font-medium whitespace-nowrap">৳{order.totalAmount.toFixed(2)}</TableCell>
+                <TableCell className="w-[120px] font-medium whitespace-nowrap">BDT {order.totalAmount.toFixed(2)}</TableCell>
                 <TableCell className="w-[100px]">{getPaymentBadge(order.paymentStatus)}</TableCell>
                 <TableCell className="w-[120px]">{getFulfillmentBadge(order.orderStatus)}</TableCell>
                 <TableCell className="text-right w-[60px]">

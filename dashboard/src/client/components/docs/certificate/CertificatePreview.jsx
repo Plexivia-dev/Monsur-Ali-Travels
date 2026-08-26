@@ -1,7 +1,7 @@
 import React from 'react';
 import { PrintablePaper } from '../common/PrintablePaper';
 import { Printer, Award, ShieldCheck, CheckCircle2 } from 'lucide-react';
-import logoImg from '../../../assets/logo.png';
+import logoImg from '@shared/assets/logo.png';
 
 export function CertificatePreview({ data, onPrint }) {
   const { memoNo, issueDate, language, client, conduct, authority } = data;
@@ -57,15 +57,15 @@ export function CertificatePreview({ data, onPrint }) {
 
             {/* Memo & Date Row */}
             <div className="flex justify-between items-center text-xs font-bold font-mono text-slate-800 border-b border-slate-300 pb-2">
-              <div>স্মারক নং / Ref: <span className="underline">{memoNo}</span></div>
-              <div>তারিখ / Date: <span className="underline">{issueDate}</span></div>
+              <div>Ref No: <span className="underline">{memoNo}</span></div>
+              <div>Date: <span className="underline">{issueDate}</span></div>
             </div>
 
             {/* Certificate Title */}
             <div className="text-center py-2">
               <div className="inline-block border-2 border-slate-900 px-8 py-2 rounded-md bg-slate-50">
                 <h2 className="text-xl sm:text-2xl font-black uppercase tracking-widest text-slate-900">
-                  {isBn ? 'চারিত্রিক সনদপত্র' : 'CHARACTER CERTIFICATE'}
+                  {isBn ? 'Character Certificate & Testimonial' : 'CHARACTER CERTIFICATE'}
                 </h2>
               </div>
             </div>
@@ -75,19 +75,19 @@ export function CertificatePreview({ data, onPrint }) {
               {isBn ? (
                 <>
                   <p>
-                    এই মর্মে প্রত্যয়ন করা যাইতেছে যে, <strong>{client.fullName}</strong>, 
-                    পিতা: <strong>{client.fatherName}</strong>, 
-                    মাতা: <strong>{client.motherName}</strong>, 
-                    গ্রাম/মহল্লা: <strong>{client.village}</strong>, 
-                    ডাকঘর: <strong>{client.postOffice}</strong>, 
-                    উপজেলা/থানা: <strong>{client.upazila}</strong>, 
-                    জেলা: <strong>{client.district}</strong>। 
-                    {client.passportNo && <>পাসপোর্ট নম্বর: <strong className="font-mono">{client.passportNo}</strong>, </>}
-                    {client.nidNo && <>জাতীয় পরিচয়পত্র নম্বর: <strong className="font-mono">{client.nidNo}</strong>।</>}
+                    This is to certify that <strong>{client.fullName}</strong>, 
+                    Son/Daughter of: <strong>{client.fatherName}</strong>, 
+                    Mother: <strong>{client.motherName}</strong>, 
+                    Village / Area: <strong>{client.village}</strong>, 
+                    Post Office: <strong>{client.postOffice}</strong>, 
+                    Upazila / Police Station: <strong>{client.upazila}</strong>, 
+                    District: <strong>{client.district}</strong>। 
+                    {client.passportNo && <>Passport Number: <strong className="font-mono">{client.passportNo}</strong>, </>}
+                    {client.nidNo && <>National ID No: <strong className="font-mono">{client.nidNo}</strong>।</>}
                   </p>
 
                   <p>
-                    তিনি বিগত <strong>{conduct.durationYears}</strong> বছর যাবৎ আমার ব্যক্তিগতভাবে পরিচিত। {conduct.statementBn}
+                    He/She is known to me personally for the last <strong>{conduct.durationYears}</strong> years. {conduct.statementEn}
                   </p>
                 </>
               ) : (
@@ -108,13 +108,15 @@ export function CertificatePreview({ data, onPrint }) {
               )}
             </div>
 
-            {/* Signature Section */}
+            {/* Seal & Signature Section */}
             <div className="pt-12 grid grid-cols-2 gap-8 items-end text-xs font-semibold text-slate-900">
               
-              <div>
-                <p className="text-[10px] text-slate-500 italic">
-                  This certificate is issued upon proper verification and holds official validity.
-                </p>
+              {/* Seal Placeholder */}
+              <div className="text-center space-y-2">
+                <div className="w-24 h-24 rounded-full border-2 border-dashed border-slate-400 mx-auto flex items-center justify-center text-[10px] text-slate-400 font-mono">
+                  [ Official Seal ]
+                </div>
+                <div className="text-[11px] text-slate-600">Official Seal</div>
               </div>
 
               {/* Signature Line */}

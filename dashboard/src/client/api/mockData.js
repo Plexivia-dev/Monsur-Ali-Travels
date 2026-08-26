@@ -127,17 +127,17 @@ export const initialAdminData = {
     timeframes: {
       'Today': {
         totalExpense: 185000,
-        totalExpenseFormatted: '৳1,85,000',
+        totalExpenseFormatted: 'BDT 1,85,000',
         expenseBreakdown: { factory: 125000, agency: 60000 },
         totalCashIn: 340000,
-        totalCashInFormatted: '৳3,40,000',
+        totalCashInFormatted: 'BDT 3,40,000',
         cashInBreakdown: { factory: 210000, agency: 130000 },
         attendanceRate: 94.5,
         attendanceDetails: '212 / 224 Workers Present',
         attendanceBreakdown: { factory: '92% (115/125)', agency: '97% (97/99)' },
         pendingPaymentsDues: 875000,
-        pendingPaymentsFormatted: '৳8,75,000',
-        pendingBreakdown: { factory: '৳3,50,000 (Supplier & Fuel Dues)', agency: '৳5,25,000 (Uncollected Invoices)' },
+        pendingPaymentsFormatted: 'BDT 8,75,000',
+        pendingBreakdown: { factory: 'BDT 3,50,000 (Supplier & Fuel Dues)', agency: 'BDT 5,25,000 (Uncollected Invoices)' },
         cashFlowTrends: [
           { time: '08:00 AM', cashIn: 45000, expense: 20000, factoryCash: 30000, agencyCash: 15000 },
           { time: '10:00 AM', cashIn: 85000, expense: 35000, factoryCash: 55000, agencyCash: 30000 },
@@ -154,17 +154,17 @@ export const initialAdminData = {
       },
       'Last 7 Days': {
         totalExpense: 1280000,
-        totalExpenseFormatted: '৳12,80,000',
+        totalExpenseFormatted: 'BDT 12,80,000',
         expenseBreakdown: { factory: 850000, agency: 430000 },
         totalCashIn: 2450000,
-        totalCashInFormatted: '৳24,50,000',
+        totalCashInFormatted: 'BDT 24,50,000',
         cashInBreakdown: { factory: 1500000, agency: 950000 },
         attendanceRate: 93.8,
         attendanceDetails: '1,480 / 1,578 Daily Shifts',
         attendanceBreakdown: { factory: '91.5%', agency: '96.2%' },
         pendingPaymentsDues: 875000,
-        pendingPaymentsFormatted: '৳8,75,000',
-        pendingBreakdown: { factory: '৳3,50,000', agency: '৳5,25,000' },
+        pendingPaymentsFormatted: 'BDT 8,75,000',
+        pendingBreakdown: { factory: 'BDT 3,50,000', agency: 'BDT 5,25,000' },
         cashFlowTrends: [
           { time: 'Mon', cashIn: 320000, expense: 170000, factoryCash: 200000, agencyCash: 120000 },
           { time: 'Tue', cashIn: 380000, expense: 190000, factoryCash: 230000, agencyCash: 150000 },
@@ -182,17 +182,17 @@ export const initialAdminData = {
       },
       'Last 30 Days': {
         totalExpense: 5420000,
-        totalExpenseFormatted: '৳54,20,000',
+        totalExpenseFormatted: 'BDT 54,20,000',
         expenseBreakdown: { factory: 3600000, agency: 1820000 },
         totalCashIn: 9850000,
-        totalCashInFormatted: '৳98,50,000',
+        totalCashInFormatted: 'BDT 98,50,000',
         cashInBreakdown: { factory: 6100000, agency: 3750000 },
         attendanceRate: 92.4,
         attendanceDetails: '6,210 / 6,720 Shifts Completed',
         attendanceBreakdown: { factory: '90.8%', agency: '95.1%' },
         pendingPaymentsDues: 875000,
-        pendingPaymentsFormatted: '৳8,75,000',
-        pendingBreakdown: { factory: '৳3,50,000', agency: '৳5,25,000' },
+        pendingPaymentsFormatted: 'BDT 8,75,000',
+        pendingBreakdown: { factory: 'BDT 3,50,000', agency: 'BDT 5,25,000' },
         cashFlowTrends: [
           { time: 'Week 1', cashIn: 2200000, expense: 1250000, factoryCash: 1350000, agencyCash: 850000 },
           { time: 'Week 2', cashIn: 2450000, expense: 1380000, factoryCash: 1520000, agencyCash: 930000 },
@@ -217,7 +217,7 @@ export const initialAdminData = {
       avatar: 'SP',
       title: 'Brick Order #ORD-9021 Placed',
       description: 'Client Apex Infra placed a brick order for 50,000 Red Clay Solid Bricks.',
-      amount: '৳2,50,000',
+      amount: 'BDT 2,50,000',
       type: 'income',
       status: 'In Progress'
     },
@@ -229,8 +229,8 @@ export const initialAdminData = {
       user: 'Supervisor Ramesh Kumar',
       avatar: 'RK',
       title: 'Worker Wage Payout Approved',
-      description: 'Manager Suresh Patel approved a worker payout of ৳50,000 for Kiln & Molding Crew.',
-      amount: '৳50,000',
+      description: 'Manager Suresh Patel approved a worker payout of BDT 50,000 for Kiln & Molding Crew.',
+      amount: 'BDT 50,000',
       type: 'expense',
       status: 'Approved'
     },
@@ -243,7 +243,7 @@ export const initialAdminData = {
       avatar: 'JT',
       title: 'Agency Client Payment Received',
       description: 'Agency client Metro Builders completed payment for Invoice #INV-AG01.',
-      amount: '৳1,80,000',
+      amount: 'BDT 1,80,000',
       type: 'income',
       status: 'Completed'
     },
@@ -269,7 +269,7 @@ export const initialAdminData = {
       avatar: 'PS',
       title: 'Raw Coal Shipment Delivered',
       description: 'Coal India Supplies delivered 25 Tons Anthracite Coal to Raw Material Yard.',
-      amount: '৳1,42,000',
+      amount: 'BDT 1,42,000',
       type: 'expense',
       status: 'Completed'
     },
@@ -295,15 +295,15 @@ export const initialAdminData = {
       avatar: 'MC',
       title: 'Utility Electricity Bill Settled',
       description: 'Industrial high voltage electricity bill paid to Apex Power Grid.',
-      amount: '৳56,000',
+      amount: 'BDT 56,000',
       type: 'expense',
       status: 'Completed'
     }
   ],
   globalStats: {
-    totalRevenueMonthly: '৳98,50,000',
-    totalExpensesMonthly: '৳54,20,000',
-    netOperatingProfit: '৳44,30,000',
+    totalRevenueMonthly: 'BDT 98,50,000',
+    totalExpensesMonthly: 'BDT 54,20,000',
+    netOperatingProfit: 'BDT 44,30,000',
     profitMarginPercent: '45.0%',
     activeUsers: 18,
     systemHealth: '100% Operational',
@@ -311,12 +311,12 @@ export const initialAdminData = {
   },
   auditLogs: [
     { id: 'LOG-1092', timestamp: '2026-08-12 03:10:14', module: 'System Admin', user: 'Alexander Wright', userRole: 'Super Admin', action: 'Modified System Rate Limits & Firewalls', details: 'Updated owner API rate limits and enhanced remote monitoring IP whitelist.', status: 'Info', ip: '192.168.1.45' },
-    { id: 'LOG-1091', timestamp: '2026-08-12 02:45:22', module: 'Brick Factory', user: 'Suresh Patel', userRole: 'Factory Manager', action: 'Approved Coal Vendor Bill #BILL-FB01', details: 'Authorized payment of ৳1,42,000 to Coal India Supplies Ltd via direct bank wire.', status: 'Success', ip: '10.0.4.12' },
+    { id: 'LOG-1091', timestamp: '2026-08-12 02:45:22', module: 'Brick Factory', user: 'Suresh Patel', userRole: 'Factory Manager', action: 'Approved Coal Vendor Bill #BILL-FB01', details: 'Authorized payment of BDT 1,42,000 to Coal India Supplies Ltd via direct bank wire.', status: 'Success', ip: '10.0.4.12' },
     { id: 'LOG-1090', timestamp: '2026-08-12 01:12:05', module: 'Manpower Agency', user: 'Jessica Taylor', userRole: 'HR Manager', action: 'Added 4 New Contractor Profiles', details: 'Registered forklift operators EMP-A07 to EMP-A10 for Apex Logistics.', status: 'Success', ip: '172.16.0.88' },
     { id: 'LOG-1089', timestamp: '2026-08-11 22:30:00', module: 'System Admin', user: 'System Auto-Backup', userRole: 'Automated Job', action: 'Database Snapshot Executed (GCP Cloud Storage)', details: 'Daily database backup archive created successfully (Size: 142 MB).', status: 'Info', ip: 'Internal Cron' },
     { id: 'LOG-1088', timestamp: '2026-08-11 19:15:40', module: 'System Admin', user: 'Marcus Chen', userRole: 'Finance Controller', action: 'Exported Global Financial Reconciliation PDF', details: 'Downloaded monthly consolidated P&L and tax report for owner review.', status: 'Warning', ip: '192.168.1.102' },
     { id: 'LOG-1087', timestamp: '2026-08-11 16:40:12', module: 'Brick Factory', user: 'Ramesh Kumar', userRole: 'Kiln Supervisor', action: 'Updated Kiln Temperature Telemetry', details: 'Adjusted Kiln A temperature setpoint to 1,050°C for Batch #892 firing cycle.', status: 'Success', ip: '10.0.4.18' },
-    { id: 'LOG-1086', timestamp: '2026-08-11 14:22:00', module: 'Manpower Agency', user: 'David Miller', userRole: 'Account Officer', action: 'Generated Client Invoice #INV-AG04', details: 'Issued billing statement for ৳1,14,000 to Global Tech Park Facility.', status: 'Success', ip: '172.16.0.95' },
+    { id: 'LOG-1086', timestamp: '2026-08-11 14:22:00', module: 'Manpower Agency', user: 'David Miller', userRole: 'Account Officer', action: 'Generated Client Invoice #INV-AG04', details: 'Issued billing statement for BDT 1,14,000 to Global Tech Park Facility.', status: 'Success', ip: '172.16.0.95' },
     { id: 'LOG-1085', timestamp: '2026-08-11 11:05:30', module: 'Brick Factory', user: 'Priya Sharma', userRole: 'Inventory Officer', action: 'Raw Clay Soil Stock Check', details: 'Recorded 145 Tons clay soil inventory in Raw Yard Sector 2.', status: 'Info', ip: '10.0.4.20' }
   ],
   reportsList: [
@@ -329,10 +329,10 @@ export const initialAdminData = {
       fileSize: '2.4 MB',
       format: 'PDF',
       status: 'Ready',
-      summary: 'Combined gross cash in ৳98,50,000, total expenses ৳54,20,000 across Factory and Agency with ৳44,30,000 net surplus.',
+      summary: 'Combined gross cash in BDT 98,50,000, total expenses BDT 54,20,000 across Factory and Agency with BDT 44,30,000 net surplus.',
       highlights: [
-        { label: 'Combined Cash In', value: '৳98,50,000' },
-        { label: 'Total Operating Costs', value: '৳54,20,000' },
+        { label: 'Combined Cash In', value: 'BDT 98,50,000' },
+        { label: 'Total Operating Costs', value: 'BDT 54,20,000' },
         { label: 'Net Profit Margin', value: '45.0%' }
       ]
     },
@@ -345,11 +345,11 @@ export const initialAdminData = {
       fileSize: '1.8 MB',
       format: 'XLSX',
       status: 'Ready',
-      summary: '1,250,000 molded bricks produced, 18.4 Tons coal buffer remaining, total worker wages disbursed ৳38,50,000.',
+      summary: '1,250,000 molded bricks produced, 18.4 Tons coal buffer remaining, total worker wages disbursed BDT 38,50,000.',
       highlights: [
         { label: 'Total Bricks Produced', value: '1,250,000 Units' },
         { label: 'Kiln Efficiency', value: '98.8%' },
-        { label: 'Fuel Expense', value: '৳4,10,000' }
+        { label: 'Fuel Expense', value: 'BDT 4,10,000' }
       ]
     },
     {
@@ -379,8 +379,8 @@ export const initialAdminData = {
       status: 'Ready',
       summary: 'Quarterly VAT and worker withholding tax reconciliation for domestic tax authority filing.',
       highlights: [
-        { label: 'VAT Liability', value: '৳6,20,000' },
-        { label: 'Withholding Tax', value: '৳3,40,000' },
+        { label: 'VAT Liability', value: 'BDT 6,20,000' },
+        { label: 'Withholding Tax', value: 'BDT 3,40,000' },
         { label: 'Filing Status', value: 'Compliant' }
       ]
     },
@@ -393,18 +393,18 @@ export const initialAdminData = {
       fileSize: '1.2 MB',
       format: 'XLSX',
       status: 'Ready',
-      summary: '224 combined workers, 94.2% average attendance rate, total payroll disbursed ৳48,20,000.',
+      summary: '224 combined workers, 94.2% average attendance rate, total payroll disbursed BDT 48,20,000.',
       highlights: [
         { label: 'Total Workforce', value: '224 Staff' },
         { label: 'Attendance Rate', value: '94.2%' },
-        { label: 'Total Wages Paid', value: '৳48,20,000' }
+        { label: 'Total Wages Paid', value: 'BDT 48,20,000' }
       ]
     }
   ],
   systemSettings: {
     companyName: 'Smart ERP Holdings Inc.',
     taxRegistrationNumber: 'TAX-88392019',
-    currencySymbol: '৳',
+    currencySymbol: 'BDT ',
     dateFormat: 'YYYY-MM-DD',
     autoBackupFrequency: 'Daily (02:00 AM)',
     webhookUrl: 'https://api.smarterp.io/v1/webhooks/events',

@@ -4,7 +4,8 @@ import { MoneyReceiptPreview } from './MoneyReceiptPreview';
 import { getDefaultMoneyReceiptData, generateReceiptNo } from './sampleData';
 import { Printer, Edit3, Share2, ArrowLeft, CheckCircle2 } from 'lucide-react';
 import { toast } from 'sonner';
-import { apiClient } from '../../../lib/api-client';
+import { apiClient } from '@shared/lib/api-client';
+import { printDocument } from '@shared/lib/utils';
 
 export function MoneyReceipt() {
   const [data, setData] = useState(getDefaultMoneyReceiptData());
@@ -68,7 +69,11 @@ export function MoneyReceipt() {
   };
 
   const handlePrint = () => {
-    window.print();
+    printDocument({
+      docId: data.receiptNo,
+      docType: 'Money_Receipt',
+      clientName: data.clientName,
+    });
   };
 
   const handleWhatsAppShare = () => {
@@ -82,7 +87,7 @@ export function MoneyReceipt() {
       `👤 *Client / Passenger:* ${clientName}\n` +
       `🛂 *Passport:* ${data.passportNumber || 'N/A'}\n` +
       `📌 *Purpose:* ${data.purpose || 'Visa / Ticket Booking'}\n` +
-      `💰 *Total Amount:* ৳ ${amountStr}\n` +
+      `💰 *Total Amount:* BDT  ${amountStr}\n` +
       `💳 *Payment Method:* ${data.paymentMethod || 'Cash'}\n` +
       `📅 *Date:* ${data.date || 'Today'} (${data.time || '11:30 AM'})\n` +
       `✍️ *Received By:* ${data.receivedBy || 'Accounts Officer'}\n` +

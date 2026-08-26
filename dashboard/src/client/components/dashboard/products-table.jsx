@@ -240,7 +240,7 @@ export function ProductsTable({
                 </TableCell>
 
                 {/* Price */}
-                <TableCell className="w-[100px] font-medium">৳{product.price.toFixed(2)}</TableCell>
+                <TableCell className="w-[100px] font-medium">BDT {product.price.toFixed(2)}</TableCell>
 
                 {/* Stock status */}
                 <TableCell className="w-[120px] min-w-[120px]">

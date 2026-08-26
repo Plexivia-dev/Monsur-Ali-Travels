@@ -112,7 +112,7 @@ export function ClientGuardianForm({ data, onChange, onReset, onSave, onPreview,
         nidScan: detectedClient.attachments?.nidScan || prev.attachments.nidScan,
       }
     }));
-    toast.success(`"${detectedClient.fullName}" এর সংরক্ষিত তথ্য ফর্মে অটো-ফিল করা হয়েছে!`);
+    toast.success(`"${detectedClient.fullName}"  records have been auto-filled into form!`);
     setDetectedClient(null);
   };
 
@@ -123,7 +123,7 @@ export function ClientGuardianForm({ data, onChange, onReset, onSave, onPreview,
       ...prev,
       clientId: detectedClient._id,
     }));
-    toast.success(`ক্লায়েন্ট "${detectedClient.fullName}" এর সাথে লিংক করা হয়েছে। সেভ করলে প্রোফাইল আপডেট হবে!`);
+    toast.success(`Client "${detectedClient.fullName}" linked successfully. Saving will update client profile!`);
     setDetectedClient(null);
   };
 
@@ -133,7 +133,7 @@ export function ClientGuardianForm({ data, onChange, onReset, onSave, onPreview,
       ...prev,
       clientId: null,
     }));
-    toast.info('নতুন আনলিংকড ডকুমেন্ট হিসেবে সংরক্ষণ মোড সক্রিয় করা হয়েছে।');
+    toast.info('Switched to new standalone document creation mode.');
     setDetectedClient(null);
   };
 
@@ -167,7 +167,7 @@ export function ClientGuardianForm({ data, onChange, onReset, onSave, onPreview,
     const file = e.target.files[0];
     if (file) {
       if (file.size > 8 * 1024 * 1024) {
-        toast.error('ফাইলের সাইজ ৮ MB এর কম হতে হবে!');
+        toast.error('File size must be under 8 MB!');
         return;
       }
       const reader = new FileReader();
@@ -179,7 +179,7 @@ export function ClientGuardianForm({ data, onChange, onReset, onSave, onPreview,
             [field]: reader.result
           }
         }));
-        toast.success('ডকুমেন্ট সফলভাবে আপলোড হয়েছে!');
+        toast.success('Document uploaded successfully!');
       };
       reader.readAsDataURL(file);
     }
@@ -193,14 +193,14 @@ export function ClientGuardianForm({ data, onChange, onReset, onSave, onPreview,
         [field]: ''
       }
     }));
-    toast.info('ডকুমেন্ট মুছে ফেলা হয়েছে।');
+    toast.info('Document deleted successfully.');
   };
 
   const handleOtherFileUpload = (e) => {
     const file = e.target.files[0];
     if (file) {
       if (file.size > 10 * 1024 * 1024) {
-        toast.error('ফাইলের সাইজ ১০ MB এর কম হতে হবে!');
+        toast.error('File size must be under 10 MB!');
         return;
       }
       const reader = new FileReader();
@@ -218,7 +218,7 @@ export function ClientGuardianForm({ data, onChange, onReset, onSave, onPreview,
             otherFiles: [...(prev.attachments?.otherFiles || []), newFile]
           }
         }));
-        toast.success(`"${file.name}" যুক্ত হয়েছে!`);
+        toast.success(`"${file.name}" added successfully!`);
       };
       reader.readAsDataURL(file);
     }
@@ -249,7 +249,7 @@ export function ClientGuardianForm({ data, onChange, onReset, onSave, onPreview,
     if (!file) return;
 
     if (file.size > 20 * 1024 * 1024) {
-      toast.error(t('clientForm.fileTooLarge', 'ফাইলের সাইজ ২০ MB এর কম হতে হবে!'));
+      toast.error(t('clientForm.fileTooLarge', 'File size must be under 20 MB!'));
       return;
     }
 
@@ -293,7 +293,7 @@ export function ClientGuardianForm({ data, onChange, onReset, onSave, onPreview,
           return { ...prev, requirementDocuments: list };
         });
 
-        toast.success(`"${file.name}" ${t('clientForm.uploadedSuccess', 'সফলভাবে আপলোড হয়েছে!')}`);
+        toast.success(`"${file.name}" ${t('clientForm.uploadedSuccess', 'uploaded successfully!')}`);
       } catch (err) {
         console.warn('API Upload fallback to local data URL:', err);
         onChange(prev => {
@@ -309,7 +309,7 @@ export function ClientGuardianForm({ data, onChange, onReset, onSave, onPreview,
           };
           return { ...prev, requirementDocuments: list };
         });
-        toast.info(`"${file.name}" যুক্ত হয়েছে।`);
+        toast.info(`"${file.name}" added successfully.`);
       } finally {
         setUploadingDocIndex(null);
         e.target.value = '';
@@ -332,7 +332,7 @@ export function ClientGuardianForm({ data, onChange, onReset, onSave, onPreview,
       };
       return { ...prev, requirementDocuments: list };
     });
-    toast.info(t('clientForm.fileRemoved', 'ডকুমেন্ট ফাইল মুছে ফেলা হয়েছে।'));
+    toast.info(t('clientForm.fileRemoved', 'Document attachment removed.'));
   };
 
   const handleAddDoc = () => {
@@ -786,7 +786,7 @@ export function ClientGuardianForm({ data, onChange, onReset, onSave, onPreview,
           <div>
             <label className="block font-bold text-foreground mb-1">{t('clientForm.totalAgreedFee', 'Total Agreed Fee')}</label>
             <div className="relative">
-              <span className="absolute left-3 top-2 font-bold text-muted-foreground">৳</span>
+              <span className="absolute left-3 top-2 font-bold text-muted-foreground">BDT </span>
               <input
                 type="number"
                 placeholder="0"
@@ -802,7 +802,7 @@ export function ClientGuardianForm({ data, onChange, onReset, onSave, onPreview,
               {t('clientForm.advancePaid', 'Advance Paid')}
             </label>
             <div className="relative">
-              <span className="absolute left-3 top-2 font-bold text-emerald-600">৳</span>
+              <span className="absolute left-3 top-2 font-bold text-emerald-600">BDT </span>
               <input
                 type="number"
                 placeholder="0"
@@ -818,7 +818,7 @@ export function ClientGuardianForm({ data, onChange, onReset, onSave, onPreview,
               {t('clientForm.dueAmount', 'Due Amount')}
             </label>
             <div className="relative">
-              <span className="absolute left-3 top-2 font-bold text-rose-600">৳</span>
+              <span className="absolute left-3 top-2 font-bold text-rose-600">BDT </span>
               <input
                 type="number"
                 readOnly
@@ -857,7 +857,7 @@ export function ClientGuardianForm({ data, onChange, onReset, onSave, onPreview,
         </div>
       </div>
 
-      {/* 5. DOCUMENT ATTACHMENTS (ছবি, পাসপোর্ট ও অন্যান্য ফাইল) */}
+      {/* 5. DOCUMENT ATTACHMENTS (Photos, Passports & Attachments) */}
       <div className="space-y-3">
         <div className="flex items-center justify-between bg-gradient-to-r from-sky-600 via-sky-700 to-[#0B3A60] text-white px-4 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider shadow-xs">
           <div className="flex items-center gap-2">
@@ -1142,7 +1142,7 @@ export function ClientGuardianForm({ data, onChange, onReset, onSave, onPreview,
             </div>
           ) : (
             <div className="text-center py-4 text-muted-foreground text-[11.5px] border border-dashed border-border rounded-lg bg-background/50">
-              {isBn ? 'কোনো অতিরিক্ত ফাইল সংযুক্ত করা হয়নি।' : 'No additional documents attached.'}
+              {isBn ? 'No additional documents attached.' : 'No additional documents attached.'}
             </div>
           )}
         </div>
@@ -1187,7 +1187,7 @@ export function ClientGuardianForm({ data, onChange, onReset, onSave, onPreview,
               <CheckCircle2 className="w-4 h-4" /> {t('clientForm.updateDb', 'Update Database')}: {data.applicationNo}
             </span>
           ) : (
-            <span>{isBn ? 'নতুন আবেদন এখনো ডাটাবেজে সংরক্ষণ করা হয়নি।' : 'New application not yet saved to database.'}</span>
+            <span>{isBn ? 'New application not yet saved to database.' : 'New application not yet saved to database.'}</span>
           )}
         </div>
 
@@ -1264,7 +1264,7 @@ export function ClientGuardianForm({ data, onChange, onReset, onSave, onPreview,
                     className="inline-flex items-center gap-2 bg-primary text-primary-foreground text-xs font-bold px-4 py-2 rounded-xl shadow-xs"
                   >
                     <Download className="w-4 h-4" />
-                    <span>ডাউনলোড করে ফাইলটি দেখুন</span>
+                    <span>Download & View Attachment</span>
                   </a>
                 </div>
               )}

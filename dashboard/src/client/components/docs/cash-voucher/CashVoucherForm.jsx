@@ -90,11 +90,9 @@ export function CashVoucherForm({ data, onChange, onReset, onSave, onPreview, is
       </div>
 
       {/* Expense Items */}
-      <div className="bg-card border border-border rounded-2xl p-5 shadow-xs">
-        <div className="mb-4">
-          <h3 className="text-sm font-bold text-foreground">
-            {t('cashVoucherForm.expenseItems', 'Expense Items')}
-          </h3>
+      <div className="bg-card border border-border rounded-2xl p-5 shadow-xs space-y-4">
+        <div className="flex items-center gap-2 bg-gradient-to-r from-sky-600 via-sky-700 to-[#0B3A60] text-white px-4 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider shadow-xs">
+          <span>{t('cashVoucherForm.expenseItems', '1. Expense Line Items & Breakdown')}</span>
         </div>
 
         <div className="overflow-x-auto rounded-xl border border-border">
@@ -197,10 +195,10 @@ export function CashVoucherForm({ data, onChange, onReset, onSave, onPreview, is
       </div>
 
       {/* Signatures */}
-      <div className="bg-card border border-border rounded-2xl p-5 shadow-xs">
-        <h3 className="text-sm font-bold text-foreground mb-4">
-          {t('cashVoucherForm.signatures', 'Signatures & Authorizations')}
-        </h3>
+      <div className="bg-card border border-border rounded-2xl p-5 shadow-xs space-y-4">
+        <div className="flex items-center gap-2 bg-gradient-to-r from-sky-600 via-sky-700 to-[#0B3A60] text-white px-4 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider shadow-xs">
+          <span>{t('cashVoucherForm.signatures', '2. Signatures & Authorizations')}</span>
+        </div>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           <div>
             <label className="block text-xs font-semibold text-muted-foreground mb-1">

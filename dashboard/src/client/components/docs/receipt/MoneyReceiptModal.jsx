@@ -1,21 +1,22 @@
 import React, { useState, useEffect } from 'react';
 import { X, Receipt, Check, Printer, ArrowLeft, Loader2, Sparkles, User, Phone, ShieldCheck, DollarSign, FileText } from 'lucide-react';
-import { apiClient } from '../../../lib/api-client';
+import { apiClient } from '@shared/lib/api-client';
+import { printDocument } from '@shared/lib/utils';
 import { toast } from 'sonner';
 import { MoneyReceiptPrintSlip } from './MoneyReceiptPrintSlip';
-import { useAuth } from '../../../lib/auth-context';
+import { useAuth } from '@shared/lib/auth-context';
 import { Button } from '@/components/ui/button';
 
 const SERVICE_OPTIONS = [
-  'ইন্ডিয়ান ভিসা প্রসেসিং',
-  'পাসপোর্ট সাবমিশন ও নবায়ন',
-  'গ্রিস ওয়ার্ক পারমিট কেস',
-  'উত্তর মেসিডোনিয়া কেস',
-  'ম্যানপাওয়ার কেস ফাইল',
-  'এয়ার টিকিট বুকিং',
-  'চাকরির চুক্তিপত্র সার্ভিস',
-  'সার্ভিস ফি ও কনসালটেন্সি',
-  'অন্যান্য সার্ভিস',
+  'Indian Visa Processing',
+  'Passport Submission & Renewal',
+  'Greece Work Permit Case',
+  'North Macedonia Case',
+  'Manpower Case File',
+  'Air Ticket Booking',
+  'Employment Contract Service',
+  'Service Fee & Consultancy',
+  'Other Service',
 ];
 
 export function MoneyReceiptModal({
@@ -30,12 +31,12 @@ export function MoneyReceiptModal({
     clientName: initialData.clientName || '',
     clientPhone: initialData.clientPhone || '',
     passportNumber: initialData.passportNumber || '',
-    serviceType: initialData.serviceType || 'ইন্ডিয়ান ভিসা প্রসেসিং',
+    serviceType: initialData.serviceType || 'Indian Visa Processing',
     amount: initialData.amount || '',
     amountInWords: initialData.amountInWords || '',
     paymentMethod: initialData.paymentMethod || 'Cash',
     purpose: initialData.purpose || '',
-    createdByName: user?.name || 'ম্যানেজার',
+    createdByName: user?.name || 'Manager',
   });
 
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -49,12 +50,12 @@ export function MoneyReceiptModal({
         clientName: initialData.clientName || initialData.applicantName || initialData.fullName || initialData.name || '',
         clientPhone: initialData.clientPhone || initialData.phone || initialData.mobileNumber || '',
         passportNumber: initialData.passportNumber || '',
-        serviceType: initialData.serviceType || 'ইন্ডিয়ান ভিসা প্রসেসিং',
+        serviceType: initialData.serviceType || 'Indian Visa Processing',
         purpose: initialData.purpose || initialData.remarks || '',
         amount: initialData.amount || initialData.totalAmount || initialData.fee || '',
         amountInWords: initialData.amountInWords || '',
         paymentMethod: initialData.paymentMethod || 'Cash',
-        createdByName: user?.name || 'ম্যানেজার',
+        createdByName: user?.name || 'Manager',
         notes: initialData.notes || '',
         clientId: initialData.clientId || null,
         serviceRef: initialData.serviceRef || null,
@@ -72,11 +73,11 @@ export function MoneyReceiptModal({
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!formData.clientName.trim()) {
-      toast.error('অনুগ্রহ করে গ্রাহকের নাম প্রদান করুন।');
+      toast.error('Please provide client name.');
       return;
     }
     if (!formData.amount || Number(formData.amount) <= 0) {
-      toast.error('অনুগ্রহ করে সঠিক টাকার পরিমাণ প্রদান করুন।');
+      toast.error('Please provide a valid received amount.');
       return;
     }
 
@@ -91,23 +92,27 @@ export function MoneyReceiptModal({
       if (res.data?.success || res.data?.status === 'success') {
         const receipt = res.data.data;
         setCreatedReceipt(receipt);
-        toast.success(`পেমেন্ট টোকেন #${receipt.receiptNo} সফলভাবে তৈরি হয়েছে!`);
+        toast.success(`Payment Token #${receipt.receiptNo} created successfully!`);
         if (onCreated) {
           onCreated(receipt);
         }
       } else {
-        toast.error(res.data?.message || 'টোকেন তৈরি করতে সমস্যা হয়েছে।');
+        toast.error(res.data?.message || 'Failed to create receipt token.');
       }
     } catch (err) {
       console.error('Failed to create money receipt:', err);
-      toast.error(err.response?.data?.message || 'টোকেন তৈরিতে সার্ভার ত্রুটি।');
+      toast.error(err.response?.data?.message || 'Server error while creating token.');
     } finally {
       setIsSubmitting(false);
     }
   };
 
   const handlePrint = () => {
-    window.print();
+    printDocument({
+      docId: createdReceipt?.receiptNo || formData.receiptNo,
+      docType: 'Money_Receipt',
+      clientName: createdReceipt?.clientName || formData.clientName,
+    });
   };
 
   return (
@@ -122,15 +127,15 @@ export function MoneyReceiptModal({
             </div>
             <div>
               <h2 className="text-base sm:text-lg font-bold text-foreground flex items-center gap-2">
-                {createdReceipt ? 'টোকেন প্রিন্ট ও প্রিভিউ' : 'নতুন পেমেন্ট টোকেন ও মানি রিসিট তৈরি'}
+                {createdReceipt ? 'Print & Preview Token' : 'Create New Payment Token & Money Receipt'}
                 <span className="text-xs bg-primary/10 text-primary px-2 py-0.5 rounded-full font-mono">
-                  অভ্যন্তরীণ অফিস ব্যবহার
+                  Internal Office Use
                 </span>
               </h2>
               <p className="text-xs text-muted-foreground">
                 {createdReceipt 
-                  ? 'গ্রাহককে এই টোকেনটি দিন — একাউন্টেন্টে সিল মাইরা ক্যাশ জমা নিবে।' 
-                  : 'ম্যানেজার এই স্লিপটি তৈরি করে গ্রাহককে একাউন্টেন্টের কাছে পাঠাবেন।'}
+                  ? 'Hand over this slip to cashier for seal and cash deposit confirmation.' 
+                  : 'Manager issues this token slip for cashier seal and cash collection.'}
               </p>
             </div>
           </div>
@@ -151,7 +156,7 @@ export function MoneyReceiptModal({
               <div className="flex items-center justify-between bg-emerald-500/10 border border-emerald-500/20 text-emerald-700 p-3.5 rounded-xl text-xs sm:text-sm font-semibold">
                 <div className="flex items-center gap-2">
                   <Check className="w-5 h-5 text-emerald-600" />
-                  <span>টোকেন তৈরি সম্পন্ন! টোকেন নং: <strong className="font-mono text-base">{createdReceipt.receiptNo}</strong></span>
+                  <span>Token Issued Successfully! Token No: <strong className="font-mono text-base">{createdReceipt.receiptNo}</strong></span>
                 </div>
                 <div className="flex items-center gap-2">
                   <button
@@ -159,14 +164,14 @@ export function MoneyReceiptModal({
                     className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-border bg-background hover:bg-muted text-foreground text-xs font-medium cursor-pointer"
                   >
                     <ArrowLeft className="w-3.5 h-3.5" />
-                    <span>নতুন টোকেন</span>
+                    <span>New Token</span>
                   </button>
                   <button
                     onClick={handlePrint}
                     className="flex items-center gap-1.5 px-4 py-1.5 rounded-lg bg-primary hover:bg-primary/90 text-primary-foreground text-xs font-bold shadow-xs cursor-pointer"
                   >
                     <Printer className="w-4 h-4" />
-                    <span>প্রিন্ট করুন</span>
+                    <span>Print Token</span>
                   </button>
                 </div>
               </div>
@@ -184,20 +189,20 @@ export function MoneyReceiptModal({
               <div className="bg-muted/20 border border-border rounded-xl p-4 space-y-4">
                 <h3 className="text-xs font-bold text-foreground uppercase tracking-wider flex items-center gap-1.5 text-primary">
                   <User className="w-4 h-4" />
-                  ১. গ্রাহকের বিবরণ
+                  1. Client Details
                 </h3>
 
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                   <div>
                     <label className="block text-xs font-semibold text-foreground mb-1">
-                      গ্রাহকের নাম <span className="text-rose-500">*</span>
+                      Client Full Name <span className="text-rose-500">*</span>
                     </label>
                     <input
                       type="text"
                       name="clientName"
                       value={formData.clientName}
                       onChange={handleChange}
-                      placeholder="e.g. মোঃ করিম হোসেন"
+                      placeholder="e.g. Md. Karim Hossain"
                       required
                       className="w-full px-3 py-2 text-xs rounded-lg border border-input bg-background focus:ring-2 focus:ring-primary/20 focus:border-primary outline-hidden"
                     />
@@ -205,7 +210,7 @@ export function MoneyReceiptModal({
 
                   <div>
                     <label className="block text-xs font-semibold text-foreground mb-1">
-                      মোবাইল নম্বর
+                      Phone Number
                     </label>
                     <input
                       type="text"
@@ -219,7 +224,7 @@ export function MoneyReceiptModal({
 
                   <div>
                     <label className="block text-xs font-semibold text-foreground mb-1">
-                      পাসপোর্ট নম্বর
+                      Passport Number
                     </label>
                     <input
                       type="text"
@@ -237,13 +242,13 @@ export function MoneyReceiptModal({
               <div className="bg-muted/20 border border-border rounded-xl p-4 space-y-4">
                 <h3 className="text-xs font-bold text-foreground uppercase tracking-wider flex items-center gap-1.5 text-primary">
                   <DollarSign className="w-4 h-4" />
-                  ২. সেবার ধরন ও টাকার পরিমাণ
+                  2. Service Details & Amount
                 </h3>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
                     <label className="block text-xs font-semibold text-foreground mb-1">
-                      সেবার ধরন <span className="text-rose-500">*</span>
+                      Service Category <span className="text-rose-500">*</span>
                     </label>
                     <select
                       name="serviceType"
@@ -261,10 +266,10 @@ export function MoneyReceiptModal({
 
                   <div>
                     <label className="block text-xs font-semibold text-foreground mb-1">
-                      টাকার পরিমাণ (৳) <span className="text-rose-500">*</span>
+                      Received Amount (BDT) (BDT ) <span className="text-rose-500">*</span>
                     </label>
                     <div className="relative">
-                      <span className="absolute left-3 top-2 text-xs font-bold text-muted-foreground">৳</span>
+                      <span className="absolute left-3 top-2 text-xs font-bold text-muted-foreground">BDT </span>
                       <input
                         type="number"
                         name="amount"
@@ -280,21 +285,21 @@ export function MoneyReceiptModal({
 
                   <div>
                     <label className="block text-xs font-semibold text-foreground mb-1">
-                      টাকার পরিমাণ কথায়
+                      Received Amount in Words
                     </label>
                     <input
                       type="text"
                       name="amountInWords"
                       value={formData.amountInWords}
                       onChange={handleChange}
-                      placeholder="e.g. পাঁচ হাজার টাকা মাত্র"
+                      placeholder="e.g. Five Thousand BDT Only"
                       className="w-full px-3 py-2 text-xs rounded-lg border border-input bg-background focus:ring-2 focus:ring-primary/20 focus:border-primary outline-hidden"
                     />
                   </div>
 
                   <div>
                     <label className="block text-xs font-semibold text-foreground mb-1">
-                      পেমেন্ট মাধ্যম
+                      Payment Method
                     </label>
                     <select
                       name="paymentMethod"
@@ -302,23 +307,23 @@ export function MoneyReceiptModal({
                       onChange={handleChange}
                       className="w-full px-3 py-2 text-xs rounded-lg border border-input bg-background focus:ring-2 focus:ring-primary/20 focus:border-primary outline-hidden"
                     >
-                      <option value="Cash">নগদ ক্যাশ</option>
-                      <option value="Bank Transfer">ব্যাংক ট্রান্সফার</option>
-                      <option value="bKash/Nagad">বিকাশ / নগদ</option>
-                      <option value="Cheque">চেক</option>
+                      <option value="Cash">Direct Cash</option>
+                      <option value="Bank Transfer">Bank Transfer</option>
+                      <option value="bKash/Nagad">bKash / Nagad</option>
+                      <option value="Cheque">Cheque</option>
                     </select>
                   </div>
 
                   <div className="sm:col-span-2">
                     <label className="block text-xs font-semibold text-foreground mb-1">
-                      বিবরণ ও মন্তব্য
+                      Description & Purpose
                     </label>
                     <input
                       type="text"
                       name="purpose"
                       value={formData.purpose}
                       onChange={handleChange}
-                      placeholder="e.g. গ্রিস ওয়ার্ক পারমিটের ১ম কিস্তি / ভিসা সাবমিশন ফি"
+                      placeholder="e.g. Advance deposit for visa dossier processing"
                       className="w-full px-3 py-2 text-xs rounded-lg border border-input bg-background focus:ring-2 focus:ring-primary/20 focus:border-primary outline-hidden"
                     />
                   </div>
@@ -327,8 +332,8 @@ export function MoneyReceiptModal({
 
               {/* Creator & Internal Info */}
               <div className="flex items-center justify-between text-xs text-muted-foreground px-1">
-                <span>টোকেন প্রস্তুতকারী: <strong>{formData.createdByName}</strong></span>
-                <span className="text-[11px] italic">* টোকেন সেভ হলে অটোমেটিক প্রিন্ট রেডি হবে।</span>
+                <span>Token Prepared By: <strong>{formData.createdByName}</strong></span>
+                <span className="text-[11px] italic">* Saving will generate instant printable voucher token.</span>
               </div>
 
               {/* Actions */}
@@ -338,7 +343,7 @@ export function MoneyReceiptModal({
                   onClick={onClose}
                   className="px-4 py-2 text-xs font-semibold rounded-lg border border-border text-foreground hover:bg-muted transition-colors cursor-pointer"
                 >
-                  বাতিল করুন
+                  Cancel
                 </button>
                 <button
                   type="submit"
@@ -348,12 +353,12 @@ export function MoneyReceiptModal({
                   {isSubmitting ? (
                     <>
                       <Loader2 className="w-4 h-4 animate-spin" />
-                      <span>টোকেন জেনারেট হচ্ছে...</span>
+                      <span>Generating Token...</span>
                     </>
                   ) : (
                     <>
                       <Receipt className="w-4 h-4" />
-                      <span>টোকেন তৈরি ও প্রিন্ট করুন</span>
+                      <span>Create Token & Print</span>
                     </>
                   )}
                 </button>

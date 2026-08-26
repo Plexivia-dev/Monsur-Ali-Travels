@@ -101,29 +101,29 @@ export function MoneyReceiptDataTable() {
         handedOverToBank: newState,
       });
       if (res.data?.success || res.data?.status === 'success') {
-        toast.success(`ব্যাংক ডিপোজিট স্ট্যাটাস আপডেট হয়েছে।`);
+        toast.success(`Bank deposit status updated.`);
         setBankDepositTarget(null);
         fetchData(pagination.page);
         fetchSummary();
       }
     } catch (err) {
-      toast.error('ব্যাংক স্ট্যাটাস আপডেট করতে সমস্যা হয়েছে।');
+      toast.error('Failed to update bank status.');
     }
   };
 
   const handleCancelReceipt = async (item) => {
-    const reason = window.prompt(`টোকেন #${item.receiptNo} বাতিল করার কারণ লিখুন:`, 'ক্লায়েন্ট সার্ভিস বাতিল করেছে');
+    const reason = window.prompt(`Enter cancellation reason for Token #${item.receiptNo}:`, 'Client cancelled request');
     if (reason === null) return;
 
     try {
       const res = await apiClient.patch(`/api/v1/client/receipts/${item._id || item.id}/cancel`, { reason });
       if (res.data?.success || res.data?.status === 'success') {
-        toast.success(`টোকেন #${item.receiptNo} বাতিল করা হয়েছে।`);
+        toast.success(`Token #${item.receiptNo} has been cancelled.`);
         fetchData(pagination.page);
         fetchSummary();
       }
     } catch (err) {
-      toast.error('টোকেন বাতিল করতে ব্যর্থ।');
+      toast.error('Failed to cancel token.');
     }
   };
 
@@ -133,13 +133,13 @@ export function MoneyReceiptDataTable() {
       setIsDeleting(true);
       const res = await apiClient.delete(`/api/v1/client/receipts/${deleteTarget.id}`);
       if (res.data?.success || res.data?.status === 'success') {
-        toast.success(`টোকেন #${deleteTarget.receiptNo} সফলভাবে মুছে ফেলা হয়েছে।`);
+        toast.success(`Token #${deleteTarget.receiptNo} deleted successfully.`);
         setDeleteTarget(null);
         fetchData(pagination.page);
         fetchSummary();
       }
     } catch (err) {
-      toast.error('টোকেন মুছতে ব্যর্থ হয়েছে।');
+      toast.error('Failed to delete token.');
     } finally {
       setIsDeleting(false);
     }
@@ -180,12 +180,12 @@ export function MoneyReceiptDataTable() {
           {/* Card 1: Today Confirmed */}
           <div className="bg-card border border-border rounded-xl p-3.5 shadow-xs flex items-center justify-between">
             <div>
-              <span className="text-[11px] text-muted-foreground uppercase font-bold block">আজকের সংগৃহীত ক্যাশ</span>
+              <span className="text-[11px] text-muted-foreground uppercase font-bold block">Today's Total Cash Collected</span>
               <span className="text-lg sm:text-xl font-black text-emerald-600 font-mono">
-                ৳ {Number(summary.todayConfirmed?.amount || 0).toLocaleString('en-IN')}
+                BDT  {Number(summary.todayConfirmed?.amount || 0).toLocaleString('en-IN')}
               </span>
               <span className="text-[10px] text-muted-foreground block mt-0.5">
-                {summary.todayConfirmed?.count || 0} টি রিসিট সিল করা
+                {summary.todayConfirmed?.count || 0} Receipts Confirmed
               </span>
             </div>
             <div className="p-2.5 rounded-xl bg-emerald-500/10 text-emerald-600">
@@ -196,12 +196,12 @@ export function MoneyReceiptDataTable() {
           {/* Card 2: Pending at Cashier */}
           <div className="bg-card border border-border rounded-xl p-3.5 shadow-xs flex items-center justify-between">
             <div>
-              <span className="text-[11px] text-muted-foreground uppercase font-bold block">ক্যাশিয়ার পেন্ডিং টোকেন</span>
+              <span className="text-[11px] text-muted-foreground uppercase font-bold block">Cashier Pending Tokens</span>
               <span className="text-lg sm:text-xl font-black text-amber-600 font-mono">
-                ৳ {Number(summary.pending?.amount || 0).toLocaleString('en-IN')}
+                BDT  {Number(summary.pending?.amount || 0).toLocaleString('en-IN')}
               </span>
               <span className="text-[10px] text-muted-foreground block mt-0.5">
-                {summary.pending?.count || 0} টি টোকেন লাইনে আছে
+                {summary.pending?.count || 0} Tokens in Queue
               </span>
             </div>
             <div className="p-2.5 rounded-xl bg-amber-500/10 text-amber-600">
@@ -212,12 +212,12 @@ export function MoneyReceiptDataTable() {
           {/* Card 3: Cash In Office */}
           <div className="bg-card border border-border rounded-xl p-3.5 shadow-xs flex items-center justify-between">
             <div>
-              <span className="text-[11px] text-muted-foreground uppercase font-bold block">অফিসে অবশিষ্ট ক্যাশ</span>
+              <span className="text-[11px] text-muted-foreground uppercase font-bold block">Undeposited Cash Balance</span>
               <span className="text-lg sm:text-xl font-black text-primary font-mono">
-                ৳ {Number(summary.cashInOffice || 0).toLocaleString('en-IN')}
+                BDT  {Number(summary.cashInOffice || 0).toLocaleString('en-IN')}
               </span>
               <span className="text-[10px] text-muted-foreground block mt-0.5">
-                ব্যাংকে জমা দেওয়া বাকি
+                Pending Bank Deposit
               </span>
             </div>
             <div className="p-2.5 rounded-xl bg-primary/10 text-primary">
@@ -228,12 +228,12 @@ export function MoneyReceiptDataTable() {
           {/* Card 4: Bank Deposited */}
           <div className="bg-card border border-border rounded-xl p-3.5 shadow-xs flex items-center justify-between">
             <div>
-              <span className="text-[11px] text-muted-foreground uppercase font-bold block">ব্যাংকে জমা সম্পন্ন</span>
+              <span className="text-[11px] text-muted-foreground uppercase font-bold block">Bank Deposited</span>
               <span className="text-lg sm:text-xl font-black text-blue-600 font-mono">
-                ৳ {Number(summary.bankDeposited?.amount || 0).toLocaleString('en-IN')}
+                BDT  {Number(summary.bankDeposited?.amount || 0).toLocaleString('en-IN')}
               </span>
               <span className="text-[10px] text-muted-foreground block mt-0.5">
-                {summary.bankDeposited?.count || 0} টি রিসিট ডিপোজিট
+                {summary.bankDeposited?.count || 0} Receipts Deposited
               </span>
             </div>
             <div className="p-2.5 rounded-xl bg-blue-500/10 text-blue-600">
@@ -252,7 +252,7 @@ export function MoneyReceiptDataTable() {
             type="text"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            placeholder="টোকেন নং (MR-...), নাম, ফোন বা পাসপোর্ট..."
+            placeholder="Search Token (MR-...), Client Name, Phone, Passport..."
             className="w-full pl-9 pr-4 py-2 text-xs rounded-lg border border-input bg-background focus:ring-2 focus:ring-primary/20 focus:border-primary outline-hidden"
           />
         </form>
@@ -261,10 +261,10 @@ export function MoneyReceiptDataTable() {
           {/* Status Filter */}
           <div className="flex items-center space-x-1 bg-muted p-1 rounded-lg text-xs font-semibold">
             {[
-              { id: 'all', label: 'সকল' },
-              { id: 'pending', label: '⏳ পেন্ডিং' },
-              { id: 'confirmed', label: '✅ সিল সম্পন্ন' },
-              { id: 'cancelled', label: '❌ বাতিল' },
+              { id: 'all', label: 'All' },
+              { id: 'pending', label: '⏳ Pending' },
+              { id: 'confirmed', label: '✅ Seal Verified' },
+              { id: 'cancelled', label: '❌ Rejected' },
             ].map((tab) => (
               <button
                 key={tab.id}
@@ -286,7 +286,7 @@ export function MoneyReceiptDataTable() {
               fetchSummary();
             }}
             className="p-2 rounded-lg border border-border bg-background hover:bg-muted text-muted-foreground hover:text-foreground cursor-pointer"
-            title="রিফ্রেশ"
+            title="Refresh"
           >
             <RefreshCw className={`w-4 h-4 ${isLoading ? 'animate-spin' : ''}`} />
           </button>
@@ -315,7 +315,7 @@ export function MoneyReceiptDataTable() {
                 <tr>
                   <td colSpan="9" className="text-center py-12 text-muted-foreground">
                     <RefreshCw className="w-6 h-6 animate-spin mx-auto mb-2 text-primary" />
-                    <span>লোড হচ্ছে...</span>
+                    <span>Loading...</span>
                   </td>
                 </tr>
               ) : data.length === 0 ? (
@@ -347,7 +347,7 @@ export function MoneyReceiptDataTable() {
                       <td className="px-4 py-3">
                         <div className="font-bold text-foreground">{item.clientName}</div>
                         <div className="text-[11px] font-mono text-muted-foreground flex items-center gap-1.5">
-                          <span>{item.clientPhone || 'ফোন নেই'}</span>
+                          <span>{item.clientPhone || 'No phone'}</span>
                           {item.passportNumber && (
                             <span className="bg-muted px-1.5 py-0.2 rounded uppercase text-[10px] font-semibold text-slate-700">
                               {item.passportNumber}
@@ -369,7 +369,7 @@ export function MoneyReceiptDataTable() {
                       {/* Amount */}
                       <td className="px-4 py-3 font-mono">
                         <span className="font-black text-sm text-foreground">
-                          ৳ {Number(item.amount || 0).toLocaleString('en-IN')}
+                          BDT  {Number(item.amount || 0).toLocaleString('en-IN')}
                         </span>
                         <span className="text-[10px] text-muted-foreground block">
                           ({item.paymentMethod || 'Cash'})
@@ -381,39 +381,39 @@ export function MoneyReceiptDataTable() {
                         {isConfirmed && (
                           <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold bg-emerald-500/10 text-emerald-700 border border-emerald-500/20">
                             <CheckCircle2 className="w-3 h-3" />
-                            সিল নিশ্চিত
+                            Verified Seal
                           </span>
                         )}
                         {isPending && (
                           <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold bg-amber-500/10 text-amber-700 border border-amber-500/20">
                             <Clock className="w-3 h-3" />
-                            পেন্ডিং
+                            Pending
                           </span>
                         )}
                         {isCancelled && (
                           <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold bg-rose-500/10 text-rose-700 border border-rose-500/20">
                             <XCircle className="w-3 h-3" />
-                            বাতিল
+                            Rejected
                           </span>
                         )}
                       </td>
 
                       {/* Created By */}
                       <td className="px-4 py-3 text-muted-foreground">
-                        <div className="font-medium text-foreground">{item.createdByName || 'ম্যানেজার'}</div>
+                        <div className="font-medium text-foreground">{item.createdByName || 'Manager'}</div>
                       </td>
 
                       {/* Confirmed By */}
                       <td className="px-4 py-3 text-muted-foreground">
                         {isConfirmed ? (
                           <div>
-                            <div className="font-bold text-emerald-700">{item.confirmedByName || 'একাউন্টেন্ট'}</div>
+                            <div className="font-bold text-emerald-700">{item.confirmedByName || 'Accountant'}</div>
                             <div className="text-[10px] text-muted-foreground font-mono">
                               {formatToDdMmYyyy(item.confirmedAt)}
                             </div>
                           </div>
                         ) : (
-                          <span className="text-slate-400 italic">এখনও সিল হয়নি</span>
+                          <span className="text-slate-400 italic">Not Yet Sealed</span>
                         )}
                       </td>
 
@@ -427,10 +427,10 @@ export function MoneyReceiptDataTable() {
                                 ? 'bg-blue-500/10 text-blue-700 border-blue-300'
                                 : 'bg-muted text-muted-foreground border-border hover:border-blue-400'
                             }`}
-                            title="ক্লিক করে ব্যাংক স্ট্যাটাস পরিবর্তন করুন"
+                            title="Click to toggle bank deposit status"
                           >
                             <Building2 className="w-3 h-3" />
-                            {item.handedOverToBank ? 'ব্যাংক জমা সম্পন্ন' : 'অফিসে আছে'}
+                            {item.handedOverToBank ? 'Bank Deposited' : 'In Office Vault'}
                           </button>
                         ) : (
                           <span className="text-[10px] text-muted-foreground">-</span>
@@ -446,10 +446,10 @@ export function MoneyReceiptDataTable() {
                             <button
                               onClick={() => setConfirmModalItem(item)}
                               className="flex items-center gap-1 px-2.5 py-1 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-[11px] shadow-2xs transition-all cursor-pointer"
-                              title="ক্যাশ গ্রহণ ও সিল নিশ্চিত করুন"
+                              title="Confirm Cash & Apply Seal"
                             >
                               <ShieldCheck className="w-3.5 h-3.5" />
-                              <span>সিল দিন</span>
+                              <span>Apply Seal</span>
                             </button>
                           )}
 
@@ -457,7 +457,7 @@ export function MoneyReceiptDataTable() {
                           <button
                             onClick={() => setPreviewItem(item)}
                             className="p-1.5 rounded-lg border border-border bg-background hover:bg-muted text-foreground transition-colors cursor-pointer"
-                            title="টোকেন প্রিভিউ ও প্রিন্ট"
+                            title="Token   Print"
                           >
                             <Printer className="w-3.5 h-3.5" />
                           </button>
@@ -467,7 +467,7 @@ export function MoneyReceiptDataTable() {
                             <button
                               onClick={() => handleCancelReceipt(item)}
                               className="p-1.5 rounded-lg border border-border bg-background hover:bg-rose-50 text-muted-foreground hover:text-rose-600 transition-colors cursor-pointer"
-                              title="টোকেন বাতিল করুন"
+                              title="Token Rejected "
                             >
                               <XCircle className="w-3.5 h-3.5" />
                             </button>
@@ -477,7 +477,7 @@ export function MoneyReceiptDataTable() {
                           <button
                             onClick={() => setDeleteTarget({ id: item._id || item.id, receiptNo: item.receiptNo })}
                             className="p-1.5 rounded-lg border border-border bg-background hover:bg-rose-50 text-muted-foreground hover:text-rose-600 transition-colors cursor-pointer"
-                            title="মুছে ফেলুন"
+                            title="Delete"
                           >
                             <Trash2 className="w-3.5 h-3.5" />
                           </button>
@@ -531,7 +531,7 @@ export function MoneyReceiptDataTable() {
               <div className="flex items-center space-x-2">
                 <Receipt className="w-5 h-5 text-primary" />
                 <span className="font-bold text-foreground">
-                  মানি রিসিট ও টোকেন প্রিন্ট প্রিভিউ (#{previewItem.receiptNo})
+                  Money Receipt  Token Print  (#{previewItem.receiptNo})
                 </span>
               </div>
               <button

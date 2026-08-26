@@ -123,7 +123,7 @@ export function CouponsTable({
   }
 
   const formatDiscount = (type, value) => {
-    return type === 'percentage' ? `${value}% OFF` : `৳${value.toFixed(0)} OFF`;
+    return type === 'percentage' ? `${value}% OFF` : `BDT ${value.toFixed(0)} OFF`;
   };
 
   const getValidityBadge = (validFrom, validTo) => {
@@ -253,7 +253,7 @@ export function CouponsTable({
                   </TableCell>
 
                   <TableCell className="font-medium text-muted-foreground">
-                    ৳{(coupon.minOrderAmount ?? 0).toFixed(0)}
+                    BDT {(coupon.minOrderAmount ?? 0).toFixed(0)}
                   </TableCell>
 
                   <TableCell className="font-mono text-xs">

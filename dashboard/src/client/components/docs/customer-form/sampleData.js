@@ -6,23 +6,23 @@ export function generateApplicationNo() {
 }
 
 export const SERVICE_TYPES = [
-  { id: 'indian_visa', label: 'Indian Visa Application', bn: 'ইন্ডিয়ান ভিসা আবেদন' },
-  { id: 'work_permit', label: 'Work Permit & Job Placement', bn: 'ওয়ার্ক পারমিট ও জব ভিসা' },
-  { id: 'tourist_visa', label: 'Tourist / Visit Visa', bn: 'ট্যুরিস্ট / ভিজিট ভিসা' },
-  { id: 'passport_services', label: 'Passport Services', bn: 'পাসপোর্ট সেবা ও রিনিউ' },
-  { id: 'umrah_package', label: 'Umrah Processing', bn: 'উমরাহ প্রসেসিং' },
-  { id: 'air_ticket', label: 'Air Ticket Booking', bn: 'এয়ার টিকিট বুকিং' },
-  { id: 'other_services', label: 'Other Consular Services', bn: 'অন্যান্য কনস্যুলার সেবা' }
+  { id: 'indian_visa', label: 'Indian Visa Application', bn: '' },
+  { id: 'work_permit', label: 'Work Permit & Job Placement', bn: '' },
+  { id: 'tourist_visa', label: 'Tourist / Visit Visa', bn: '' },
+  { id: 'passport_services', label: 'Passport Services', bn: '' },
+  { id: 'umrah_package', label: 'Umrah Processing', bn: '' },
+  { id: 'air_ticket', label: 'Air Ticket Booking', bn: '' },
+  { id: 'other_services', label: 'Other Consular Services', bn: '' }
 ];
 
 export const STATUS_OPTIONS = [
-  { id: 'received', label: 'File Received', bn: 'ফাইল গৃহীত', color: 'bg-blue-500/15 text-blue-600 border-blue-500/30' },
-  { id: 'under_review', label: 'Under Verification', bn: 'কাগজপত্র যাচাইাধীন', color: 'bg-amber-500/15 text-amber-600 border-amber-500/30' },
-  { id: 'processing', label: 'Processing', bn: 'প্রসেসিং চলমান', color: 'bg-purple-500/15 text-purple-600 border-purple-500/30' },
-  { id: 'embassy_submitted', label: 'Submitted to Embassy/VFS', bn: 'এম্বাসিতে জমা সম্পন্ন', color: 'bg-indigo-500/15 text-indigo-600 border-indigo-500/30' },
-  { id: 'approved', label: 'Visa/File Approved', bn: 'ভিসা/ফাইল অনুমোদিত', color: 'bg-emerald-500/15 text-emerald-600 border-emerald-500/30' },
-  { id: 'delivered', label: 'Delivered to Client', bn: 'ডেলিভারি সম্পন্ন', color: 'bg-teal-500/15 text-teal-600 border-teal-500/30' },
-  { id: 'rejected', label: 'Rejected / Cancelled', bn: 'বাতিল / রিজেক্টেড', color: 'bg-rose-500/15 text-rose-600 border-rose-500/30' }
+  { id: 'received', label: 'File Received', bn: '', color: 'bg-blue-500/15 text-blue-600 border-blue-500/30' },
+  { id: 'under_review', label: 'Under Verification', bn: '', color: 'bg-amber-500/15 text-amber-600 border-amber-500/30' },
+  { id: 'processing', label: 'Processing', bn: '', color: 'bg-purple-500/15 text-purple-600 border-purple-500/30' },
+  { id: 'embassy_submitted', label: 'Submitted to Embassy/VFS', bn: '', color: 'bg-indigo-500/15 text-indigo-600 border-indigo-500/30' },
+  { id: 'approved', label: 'Visa/File Approved', bn: '', color: 'bg-emerald-500/15 text-emerald-600 border-emerald-500/30' },
+  { id: 'delivered', label: 'Delivered to Client', bn: '', color: 'bg-teal-500/15 text-teal-600 border-teal-500/30' },
+  { id: 'rejected', label: 'Rejected / Cancelled', bn: '', color: 'bg-rose-500/15 text-rose-600 border-rose-500/30' }
 ];
 
 export function getServiceLabel(serviceValue, lang = 'en') {

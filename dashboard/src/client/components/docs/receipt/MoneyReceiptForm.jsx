@@ -18,10 +18,10 @@ import {
   Search,
   ExternalLink,
 } from 'lucide-react';
-import { BdPhoneInput } from '../../common/BdPhoneInput';
-import { DatePicker } from '../../ui/date-picker';
+import { BdPhoneInput } from '@/components/common/BdPhoneInput';
+import { DatePicker } from '@/components/ui/date-picker';
 import { PAYMENT_METHODS, SERVICE_PURPOSES, numberToWords } from './sampleData';
-import { apiClient } from '../../../lib/api-client';
+import { apiClient } from '@shared/lib/api-client';
 import { toast } from 'sonner';
 import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
@@ -186,8 +186,8 @@ export function MoneyReceiptForm({ data, onChange, onReset, onSave, onPreview, i
 
       {/* Section 1: Passenger / Client Details */}
       <div className="space-y-3">
-        <div className="flex items-center gap-2 bg-[#0B3A60] text-white px-3.5 py-2 rounded-xl text-xs font-bold uppercase tracking-wider">
-          <User className="w-4 h-4" />
+        <div className="flex items-center gap-2 bg-gradient-to-r from-sky-600 via-sky-700 to-[#0B3A60] text-white px-4 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider shadow-xs">
+          <User className="w-4 h-4 text-sky-200" />
           <span>1. Client &amp; Passenger Information</span>
         </div>
 
@@ -199,7 +199,7 @@ export function MoneyReceiptForm({ data, onChange, onReset, onSave, onPreview, i
               value={data.clientName || ''}
               placeholder="e.g. Md. Abdul Karim"
               onChange={(e) => handleFieldChange('clientName', e.target.value)}
-              className="w-full px-3 py-2 bg-background border border-border rounded-lg text-foreground font-semibold text-xs focus:ring-1 focus:ring-primary"
+              className="w-full px-3 py-2 bg-background border border-border rounded-xl text-foreground font-semibold text-xs focus:ring-2 focus:ring-sky-400/40 outline-none"
             />
           </div>
 
@@ -210,7 +210,7 @@ export function MoneyReceiptForm({ data, onChange, onReset, onSave, onPreview, i
               value={data.passportNumber || ''}
               placeholder="e.g. A08492014"
               onChange={(e) => handleFieldChange('passportNumber', e.target.value)}
-              className="w-full px-3 py-2 bg-background border border-border rounded-lg text-foreground font-mono font-medium text-xs focus:ring-1 focus:ring-primary"
+              className="w-full px-3 py-2 bg-background border border-border rounded-xl text-foreground font-mono font-medium text-xs focus:ring-2 focus:ring-sky-400/40 outline-none"
             />
           </div>
 
@@ -226,8 +226,8 @@ export function MoneyReceiptForm({ data, onChange, onReset, onSave, onPreview, i
 
       {/* Section 2: Service Purpose & Authorizer */}
       <div className="space-y-3">
-        <div className="flex items-center gap-2 bg-[#0B3A60] text-white px-3.5 py-2 rounded-xl text-xs font-bold uppercase tracking-wider">
-          <Layers className="w-4 h-4" />
+        <div className="flex items-center gap-2 bg-gradient-to-r from-sky-600 via-sky-700 to-[#0B3A60] text-white px-4 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider shadow-xs">
+          <Layers className="w-4 h-4 text-sky-200" />
           <span>2. Purpose, Service Head &amp; Officer</span>
         </div>
 
@@ -240,7 +240,7 @@ export function MoneyReceiptForm({ data, onChange, onReset, onSave, onPreview, i
               value={data.purpose || ''}
               placeholder="e.g. Visa Processing & Flight Ticket Booking (Saudi Arabia)"
               onChange={(e) => handleFieldChange('purpose', e.target.value)}
-              className="w-full px-3 py-2 bg-background border border-border rounded-lg text-foreground font-medium text-xs focus:ring-1 focus:ring-primary"
+              className="w-full px-3 py-2 bg-background border border-border rounded-xl text-foreground font-medium text-xs focus:ring-2 focus:ring-sky-400/40 outline-none"
             />
             <datalist id="service-purpose-options">
               {SERVICE_PURPOSES.map((sp, idx) => (
@@ -257,14 +257,14 @@ export function MoneyReceiptForm({ data, onChange, onReset, onSave, onPreview, i
                 value={data.receivedBy || ''}
                 placeholder="e.g. Md. Tanvir Hossain"
                 onChange={(e) => handleFieldChange('receivedBy', e.target.value)}
-                className="w-full px-3 py-2 bg-background border border-border rounded-lg text-foreground font-medium text-xs focus:ring-1 focus:ring-primary"
+                className="w-full px-3 py-2 bg-background border border-border rounded-xl text-foreground font-medium text-xs focus:ring-2 focus:ring-sky-400/40 outline-none"
               />
               <input
                 type="text"
                 value={data.receivedByRole || ''}
                 placeholder="Role (e.g. Accounts Officer)"
                 onChange={(e) => handleFieldChange('receivedByRole', e.target.value)}
-                className="w-full px-3 py-2 bg-background border border-border rounded-lg text-foreground text-xs focus:ring-1 focus:ring-primary"
+                className="w-full px-3 py-2 bg-background border border-border rounded-xl text-foreground text-xs focus:ring-2 focus:ring-sky-400/40 outline-none"
               />
             </div>
           </div>
@@ -273,8 +273,8 @@ export function MoneyReceiptForm({ data, onChange, onReset, onSave, onPreview, i
 
       {/* Section 3: Payment & Amount */}
       <div className="space-y-3">
-        <div className="flex items-center gap-2 bg-[#0B3A60] text-white px-3.5 py-2 rounded-xl text-xs font-bold uppercase tracking-wider">
-          <DollarSign className="w-4 h-4" />
+        <div className="flex items-center gap-2 bg-gradient-to-r from-sky-600 via-sky-700 to-[#0B3A60] text-white px-4 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider shadow-xs">
+          <DollarSign className="w-4 h-4 text-sky-200" />
           <span>3. Payment Method &amp; Amount Breakdown</span>
         </div>
 
@@ -285,7 +285,7 @@ export function MoneyReceiptForm({ data, onChange, onReset, onSave, onPreview, i
               {PAYMENT_METHODS.map((pm) => (
                 <label
                   key={pm.id}
-                  className={`flex items-center gap-2 p-2 rounded-lg border text-xs cursor-pointer transition-all ${
+                  className={`flex items-center gap-2 p-2 rounded-xl border text-xs cursor-pointer transition-all ${
                     data.paymentMethod === pm.id
                       ? 'bg-primary/10 border-primary text-primary font-bold'
                       : 'bg-background border-border text-foreground hover:bg-muted'
@@ -307,27 +307,27 @@ export function MoneyReceiptForm({ data, onChange, onReset, onSave, onPreview, i
 
           <div className="sm:col-span-2 space-y-3">
             <div>
-              <label className="block font-bold text-foreground mb-1">Total Amount (টাকার পরিমাণ) *</label>
+              <label className="block font-bold text-foreground mb-1">Total Amount (BDT) *</label>
               <div className="relative">
-                <span className="absolute left-3 top-2.5 font-bold text-muted-foreground">৳</span>
+                <span className="absolute left-3 top-2.5 font-bold text-muted-foreground">BDT </span>
                 <input
                   type="number"
                   value={data.amount || ''}
                   placeholder="e.g. 50000"
                   onChange={(e) => handleFieldChange('amount', e.target.value)}
-                  className="w-full pl-8 pr-3 py-2 bg-background border border-border rounded-lg text-foreground font-mono font-bold text-sm focus:ring-1 focus:ring-primary"
+                  className="w-full pl-8 pr-3 py-2 bg-background border border-border rounded-xl text-foreground font-mono font-bold text-sm focus:ring-2 focus:ring-sky-400/40 outline-none"
                 />
               </div>
             </div>
 
             <div>
-              <label className="block font-bold text-foreground mb-1">Amount in Words (কথায়)</label>
+              <label className="block font-bold text-foreground mb-1">Amount in Words (In Words)</label>
               <input
                 type="text"
                 value={data.amountInWords || ''}
                 placeholder="e.g. Fifty Thousand Taka Only."
                 onChange={(e) => handleFieldChange('amountInWords', e.target.value)}
-                className="w-full px-3 py-2 bg-background border border-border rounded-lg text-foreground font-medium text-xs italic focus:ring-1 focus:ring-primary"
+                className="w-full px-3 py-2 bg-background border border-border rounded-xl text-foreground font-medium text-xs italic focus:ring-2 focus:ring-sky-400/40 outline-none"
               />
             </div>
           </div>
@@ -336,8 +336,8 @@ export function MoneyReceiptForm({ data, onChange, onReset, onSave, onPreview, i
 
       {/* Section 4: Signatures & Authorizations */}
       <div className="space-y-3">
-        <div className="flex items-center gap-2 bg-[#0B3A60] text-white px-3.5 py-2 rounded-xl text-xs font-bold uppercase tracking-wider">
-          <FileText className="w-4 h-4" />
+        <div className="flex items-center gap-2 bg-gradient-to-r from-sky-600 via-sky-700 to-[#0B3A60] text-white px-4 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider shadow-xs">
+          <FileText className="w-4 h-4 text-sky-200" />
           <span>4. Signatures &amp; Approvals</span>
         </div>
 
@@ -347,7 +347,7 @@ export function MoneyReceiptForm({ data, onChange, onReset, onSave, onPreview, i
             <input
               type="text"
               value={data.preparedBy || ''}
-              placeholder="প্রদানকারী"
+              placeholder="Paid By"
               onChange={(e) => handleFieldChange('preparedBy', e.target.value)}
               className="w-full px-3 py-1.5 bg-background border border-border rounded-lg text-foreground text-xs"
             />
@@ -358,7 +358,7 @@ export function MoneyReceiptForm({ data, onChange, onReset, onSave, onPreview, i
             <input
               type="text"
               value={data.receivedBySignature || ''}
-              placeholder="গ্রহণকারী"
+              placeholder="Received By"
               onChange={(e) => handleFieldChange('receivedBySignature', e.target.value)}
               className="w-full px-3 py-1.5 bg-background border border-border rounded-lg text-foreground text-xs"
             />
@@ -369,7 +369,7 @@ export function MoneyReceiptForm({ data, onChange, onReset, onSave, onPreview, i
             <input
               type="text"
               value={data.accountsSignature || ''}
-              placeholder="একাউন্টেন্ট"
+              placeholder="Accountant"
               onChange={(e) => handleFieldChange('accountsSignature', e.target.value)}
               className="w-full px-3 py-1.5 bg-background border border-border rounded-lg text-foreground text-xs"
             />
@@ -380,7 +380,7 @@ export function MoneyReceiptForm({ data, onChange, onReset, onSave, onPreview, i
             <input
               type="text"
               value={data.approvedBySignature || ''}
-              placeholder="জিএম / প্রোপাইটার"
+              placeholder="General Manager / Proprietor"
               onChange={(e) => handleFieldChange('approvedBySignature', e.target.value)}
               className="w-full px-3 py-1.5 bg-background border border-border rounded-lg text-foreground text-xs"
             />

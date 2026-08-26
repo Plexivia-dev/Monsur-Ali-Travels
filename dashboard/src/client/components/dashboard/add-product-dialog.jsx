@@ -294,7 +294,7 @@ export function AddProductDialog() {
             <>
               <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-1.5">
-                  <label className="text-xs font-semibold">Price (৳)</label>
+                  <label className="text-xs font-semibold">Price (BDT )</label>
                   <Input
                     type="number"
                     step="0.01"
@@ -305,7 +305,7 @@ export function AddProductDialog() {
                   />
                 </div>
                 <div className="space-y-1.5">
-                  <label className="text-xs font-semibold">Offer Price (৳)</label>
+                  <label className="text-xs font-semibold">Offer Price (BDT )</label>
                   <Input
                     type="number"
                     step="0.01"
@@ -375,7 +375,7 @@ export function AddProductDialog() {
                     </div>
                     <div className="space-y-1">
                       <label className="text-[10px] font-medium text-muted-foreground">
-                        Price (৳)
+                        Price (BDT )
                       </label>
                       <Input
                         type="number"

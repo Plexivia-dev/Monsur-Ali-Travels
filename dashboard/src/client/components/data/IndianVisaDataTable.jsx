@@ -94,17 +94,17 @@ export function IndianVisaDataTable() {
       setIsUpdatingStage(true);
       const payload = {
         status: newStage,
-        note: stageNote || `স্ট্যাটাস পরিবর্তন করে "${newStage}" করা হয়েছে।`,
+        note: stageNote || `Status updated to "${newStage}".`,
         document: stageDocument.fileUrl ? stageDocument : null,
       };
 
       await apiClient.patch(`/api/v1/client/indian-visas/${stageModalItem._id}/stage`, payload);
-      toast.success(`ভিসা স্ট্যাটাস সফলভাবে "${newStage}" এ আপডেট করা হয়েছে!`);
+      toast.success(`Visa status successfully updated to "${newStage}"!`);
       setStageModalItem(null);
       fetchData(pagination.page, pagination.limit, search, status);
     } catch (err) {
       console.error('Failed to update stage:', err);
-      toast.error('ভিসা স্ট্যাটাস আপডেট করতে সমস্যা হয়েছে।');
+      toast.error('Failed to update visa status.');
     } finally {
       setIsUpdatingStage(false);
     }
@@ -128,11 +128,11 @@ export function IndianVisaDataTable() {
           fileUrl: res.data.data.url,
           fileType: file.type.includes('image') ? 'image' : 'pdf'
         });
-        toast.success(`ডকুমেন্ট "${file.name}" সফলভাবে আপলোড হয়েছে!`);
+        toast.success(`Document "${file.name}" uploaded successfully!`);
       }
     } catch (err) {
       console.error('Upload failed:', err);
-      toast.error('ফাইল আপলোড করতে ব্যর্থ হয়েছে।');
+      toast.error('File upload failed.');
     }
   };
 
@@ -141,12 +141,12 @@ export function IndianVisaDataTable() {
     try {
       setIsDeleting(true);
       await apiClient.delete(`/api/v1/client/indian-visas/${deleteTarget.id}`);
-      toast.success('ভিসা আবেদন রেকর্ড মুছে ফেলা হয়েছে।');
+      toast.success('Visa application record deleted successfully.');
       setDeleteTarget(null);
       fetchData(pagination.page, pagination.limit, search, status);
     } catch (err) {
       console.error('Failed to delete visa record:', err);
-      toast.error('ভিসা আবেদন মুছতে সমস্যা হয়েছে।');
+      toast.error('Failed to delete visa record.');
     } finally {
       setIsDeleting(false);
     }
@@ -286,7 +286,7 @@ export function IndianVisaDataTable() {
                             type="button"
                             onClick={() => handleOpenStageModal(item)}
                             className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10.5px] font-bold border transition-all hover:scale-105 cursor-pointer shadow-2xs ${stageInfo.color}`}
-                            title="ক্লিক করে স্ট্যাটাস ও ডকুমেন্ট পরিবর্তন করুন"
+                            title="Click to update status and documents"
                           >
                             <Edit3 className="w-3 h-3" />
                             <span>{t('visaStatus.' + stageInfo.id, stageInfo.label)}</span>

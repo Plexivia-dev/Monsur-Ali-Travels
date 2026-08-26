@@ -25,11 +25,11 @@ import {
   DialogDescription,
   DialogFooter
 } from '@/components/ui/dialog';
-import { BdPhoneInput } from '../../common/BdPhoneInput';
-import { DatePicker } from '../../ui/date-picker';
-import { Input, Select } from '../../ui/input';
-import { Label } from '../../ui/label';
-import { Textarea } from '../../ui/textarea';
+import { BdPhoneInput } from '@/components/common/BdPhoneInput';
+import { DatePicker } from '@/components/ui/date-picker';
+import { Input, Select } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 
 export function AgreementForm({ formData, setFormData, onSubmit, onReset, isSubmitting = false }) {
@@ -177,9 +177,10 @@ export function AgreementForm({ formData, setFormData, onSubmit, onReset, isSubm
           <div className="space-y-4 animate-in fade-in-50 duration-150">
             {/* Header Office Details */}
             <div className="bg-card border border-border p-4 rounded-xl shadow-sm space-y-3">
-              <h3 className="font-semibold text-foreground flex items-center gap-2 text-xs text-primary border-b border-border pb-2">
-                <Building2 className="w-4 h-4" /> {t('agreement.companyHeader')}
-              </h3>
+              <div className="flex items-center gap-2 bg-gradient-to-r from-sky-600 via-sky-700 to-[#0B3A60] text-white px-4 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider shadow-xs">
+                <Building2 className="w-4 h-4 text-sky-200" />
+                <span>{t('agreement.companyHeader')}</span>
+              </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div className="sm:col-span-2 space-y-1.5">
                   <Label>{t('agreement.companyName')} :</Label>
@@ -220,9 +221,10 @@ export function AgreementForm({ formData, setFormData, onSubmit, onReset, isSubm
 
             {/* Parties Details */}
             <div className="bg-card border border-border p-4 rounded-xl shadow-sm space-y-3">
-              <h3 className="font-semibold text-foreground flex items-center gap-2 text-xs text-primary border-b border-border pb-2">
-                <User className="w-4 h-4" /> {t('agreement.partiesDetails')}
-              </h3>
+              <div className="flex items-center gap-2 bg-gradient-to-r from-sky-600 via-sky-700 to-[#0B3A60] text-white px-4 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider shadow-xs">
+                <User className="w-4 h-4 text-sky-200" />
+                <span>{t('agreement.partiesDetails')}</span>
+              </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div className="space-y-1.5">
                   <Label>{t('agreement.agreementDate')} :</Label>
@@ -300,9 +302,10 @@ export function AgreementForm({ formData, setFormData, onSubmit, onReset, isSubm
 
             {/* Guardian Details */}
             <div className="bg-card border border-border p-4 rounded-xl shadow-sm space-y-3">
-              <h3 className="font-semibold text-foreground flex items-center gap-2 text-xs text-primary border-b border-border pb-2">
-                <Users className="w-4 h-4" /> {t('agreement.guardianDetails')}
-              </h3>
+              <div className="flex items-center gap-2 bg-gradient-to-r from-sky-600 via-sky-700 to-[#0B3A60] text-white px-4 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider shadow-xs">
+                <Users className="w-4 h-4 text-sky-200" />
+                <span>{t('agreement.guardianDetails')}</span>
+              </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div className="space-y-1.5">
                   <Label>{t('agreement.guardianName')} :</Label>
@@ -368,9 +371,10 @@ export function AgreementForm({ formData, setFormData, onSubmit, onReset, isSubm
         {currentStep === 2 && (
           <div className="space-y-4 animate-in fade-in-50 duration-150">
             <div className="bg-card border border-border p-4 rounded-xl shadow-sm space-y-3">
-              <h3 className="font-semibold text-foreground flex items-center gap-2 text-xs text-primary border-b border-border pb-2">
-                <Briefcase className="w-4 h-4" /> {t('agreement.positionDetails')}
-              </h3>
+              <div className="flex items-center gap-2 bg-gradient-to-r from-sky-600 via-sky-700 to-[#0B3A60] text-white px-4 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider shadow-xs">
+                <Briefcase className="w-4 h-4 text-sky-200" />
+                <span>{t('agreement.positionDetails')}</span>
+              </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div className="space-y-1.5">
                   <Label>{t('agreement.designation')} :</Label>
@@ -428,12 +432,13 @@ export function AgreementForm({ formData, setFormData, onSubmit, onReset, isSubm
           <div className="space-y-4 animate-in fade-in-50 duration-150">
             {/* Salary structure */}
             <div className="bg-card border border-border p-4 rounded-xl shadow-sm space-y-3">
-              <h3 className="font-semibold text-foreground flex items-center gap-2 text-xs text-primary border-b border-border pb-2">
-                <DollarSign className="w-4 h-4" /> {t('agreement.salaryDetails')}
-              </h3>
+              <div className="flex items-center gap-2 bg-gradient-to-r from-sky-600 via-sky-700 to-[#0B3A60] text-white px-4 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider shadow-xs">
+                <DollarSign className="w-4 h-4 text-sky-200" />
+                <span>{t('agreement.salaryDetails')}</span>
+              </div>
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                 <div className="space-y-1.5">
-                  <Label>{t('agreement.basicSalary')} ৳</Label>
+                  <Label>{t('agreement.basicSalary')} BDT </Label>
                   <Input
                     type="number"
                     value={formData.salary?.basicSalary || ''}
@@ -443,7 +448,7 @@ export function AgreementForm({ formData, setFormData, onSubmit, onReset, isSubm
                   />
                 </div>
                 <div className="space-y-1.5">
-                  <Label>{t('agreement.houseRent')} ৳</Label>
+                  <Label>{t('agreement.houseRent')} BDT </Label>
                   <Input
                     type="number"
                     value={formData.salary?.houseRent || ''}
@@ -453,7 +458,7 @@ export function AgreementForm({ formData, setFormData, onSubmit, onReset, isSubm
                   />
                 </div>
                 <div className="space-y-1.5">
-                  <Label>{t('agreement.medical')} ৳</Label>
+                  <Label>{t('agreement.medical')} BDT </Label>
                   <Input
                     type="number"
                     value={formData.salary?.medical || ''}
@@ -463,7 +468,7 @@ export function AgreementForm({ formData, setFormData, onSubmit, onReset, isSubm
                   />
                 </div>
                 <div className="space-y-1.5">
-                  <Label>{t('agreement.conveyance')} ৳</Label>
+                  <Label>{t('agreement.conveyance')} BDT </Label>
                   <Input
                     type="number"
                     value={formData.salary?.conveyance || ''}
@@ -473,7 +478,7 @@ export function AgreementForm({ formData, setFormData, onSubmit, onReset, isSubm
                   />
                 </div>
                 <div className="space-y-1.5">
-                  <Label>{t('agreement.specialAllowance')} ৳</Label>
+                  <Label>{t('agreement.specialAllowance')} BDT </Label>
                   <Input
                     type="number"
                     value={formData.salary?.specialAllowance || ''}
@@ -483,7 +488,7 @@ export function AgreementForm({ formData, setFormData, onSubmit, onReset, isSubm
                   />
                 </div>
                 <div className="space-y-1.5">
-                  <Label>{t('agreement.grossSalary')} ৳</Label>
+                  <Label>{t('agreement.grossSalary')} BDT </Label>
                   <Input
                     type="text"
                     value={formData.salary?.grossSalary || ''}
@@ -506,9 +511,10 @@ export function AgreementForm({ formData, setFormData, onSubmit, onReset, isSubm
 
             {/* Leave Policy */}
             <div className="bg-card border border-border p-4 rounded-xl shadow-sm space-y-3">
-              <h3 className="font-semibold text-foreground flex items-center gap-2 text-xs text-primary border-b border-border pb-2">
-                <Calendar className="w-4 h-4" /> {t('agreement.salaryLeave')}
-              </h3>
+              <div className="flex items-center gap-2 bg-gradient-to-r from-sky-600 via-sky-700 to-[#0B3A60] text-white px-4 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider shadow-xs">
+                <Calendar className="w-4 h-4 text-sky-200" />
+                <span>{t('agreement.salaryLeave')}</span>
+              </div>
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                 <div className="space-y-1.5">
                   <Label>{t('agreement.yearlyLeave')} :</Label>
@@ -552,9 +558,10 @@ export function AgreementForm({ formData, setFormData, onSubmit, onReset, isSubm
 
             {/* Witnesses */}
             <div className="bg-card border border-border p-4 rounded-xl shadow-sm space-y-3">
-              <h3 className="font-semibold text-foreground flex items-center gap-2 text-xs text-primary border-b border-border pb-2">
-                <Users className="w-4 h-4" /> {t('agreement.witness1')} & {t('agreement.witness2')}
-              </h3>
+              <div className="flex items-center gap-2 bg-gradient-to-r from-sky-600 via-sky-700 to-[#0B3A60] text-white px-4 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider shadow-xs">
+                <Users className="w-4 h-4 text-sky-200" />
+                <span>{t('agreement.witness1')} & {t('agreement.witness2')}</span>
+              </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 {/* Witness 1 */}
                 <div className="p-3 bg-muted/20 border border-border rounded-lg space-y-2">
@@ -617,7 +624,7 @@ export function AgreementForm({ formData, setFormData, onSubmit, onReset, isSubm
                 </div>
                 <div className="p-2.5 bg-background border border-border rounded-lg">
                   <span className="text-muted-foreground block text-[10px]">Gross Salary:</span>
-                  <span className="font-semibold text-primary font-mono">{formData.salary?.grossSalary || '0'} ৳</span>
+                  <span className="font-semibold text-primary font-mono">{formData.salary?.grossSalary || '0'} BDT </span>
                 </div>
               </div>
             </div>

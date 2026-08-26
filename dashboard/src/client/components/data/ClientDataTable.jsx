@@ -251,7 +251,7 @@ export function ClientDataTable({ activeSubmodule }) {
                 <th className="p-3">{t('clients.phone', 'Phone')}</th>
                 <th className="p-3">{t('clients.passportNid', 'Passport / NID')}</th>
                 <th className="p-3 text-center">{t('clients.services', 'Services')}</th>
-                <th className="p-3 text-right">{t('clients.due', 'Due (৳)')}</th>
+                <th className="p-3 text-right">{t('clients.due', 'Due (BDT )')}</th>
                 <th className="p-3 text-center">{t('clients.status', 'Status')}</th>
                 <th className="p-3 text-right">{t('clients.action', 'Actions')}</th>
               </tr>
@@ -357,7 +357,7 @@ export function ClientDataTable({ activeSubmodule }) {
                               })
                             }
                             className="p-1.5 rounded hover:bg-emerald-500/10 text-emerald-600 transition-colors cursor-pointer"
-                            title="টোকেন / মানি রিসিট দিন"
+                            title="Issue Money Receipt"
                           >
                             <Receipt className="w-3.5 h-3.5" />
                           </button>
@@ -405,7 +405,7 @@ export function ClientDataTable({ activeSubmodule }) {
               <div>
                 <h3 className="text-sm font-bold text-foreground flex items-center gap-2">
                   <User className="w-4 h-4 text-sky-500" />
-                  ক্লায়েন্ট প্রোফাইল — {profileItem.clientCode}
+                  Client Profile — {profileItem.clientCode}
                 </h3>
                 <p className="text-[11px] text-muted-foreground">{profileItem.fullName}</p>
               </div>
@@ -422,29 +422,29 @@ export function ClientDataTable({ activeSubmodule }) {
             <div className="flex-1 overflow-y-auto p-5 space-y-5">
               {/* Basic Info */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <InfoBlock label="পুরো নাম" value={profileItem.fullName} />
-                <InfoBlock label="ক্লায়েন্ট কোড" value={profileItem.clientCode} mono />
-                <InfoBlock label="ফোন" value={profileItem.phone} mono icon={<Phone className="w-3 h-3" />} />
-                <InfoBlock label="ইমেইল" value={profileItem.email} icon={<Mail className="w-3 h-3" />} />
-                <InfoBlock label="পাসপোর্ট নং" value={profileItem.passportNumber} mono icon={<CreditCard className="w-3 h-3" />} />
-                <InfoBlock label="NID নং" value={profileItem.nidNumber} mono />
-                <InfoBlock label="পিতার নাম" value={profileItem.fatherName} />
-                <InfoBlock label="মাতার নাম" value={profileItem.motherName} />
-                <InfoBlock label="জন্ম তারিখ" value={profileItem.birthDate} />
-                <InfoBlock label="লিঙ্গ" value={profileItem.gender} />
-                <InfoBlock label="রক্তের গ্রুপ" value={profileItem.bloodGroup} />
-                <InfoBlock label="বৈবাহিক অবস্থা" value={profileItem.maritalStatus} />
+                <InfoBlock label="Full Name" value={profileItem.fullName} />
+                <InfoBlock label="Client Code" value={profileItem.clientCode} mono />
+                <InfoBlock label="Phone" value={profileItem.phone} mono icon={<Phone className="w-3 h-3" />} />
+                <InfoBlock label="Email" value={profileItem.email} icon={<Mail className="w-3 h-3" />} />
+                <InfoBlock label="Passport No" value={profileItem.passportNumber} mono icon={<CreditCard className="w-3 h-3" />} />
+                <InfoBlock label="NID No" value={profileItem.nidNumber} mono />
+                <InfoBlock label="Father's Name" value={profileItem.fatherName} />
+                <InfoBlock label="Mother's Name" value={profileItem.motherName} />
+                <InfoBlock label="Date of Birth" value={profileItem.birthDate} />
+                <InfoBlock label="Gender" value={profileItem.gender} />
+                <InfoBlock label="Blood Group" value={profileItem.bloodGroup} />
+                <InfoBlock label="Marital Status" value={profileItem.maritalStatus} />
               </div>
 
               {/* Address */}
               {(profileItem.presentAddress || profileItem.permanentAddress) && (
                 <div className="space-y-2">
-                  <h4 className="text-xs font-bold text-foreground uppercase tracking-wider">ঠিকানা</h4>
+                  <h4 className="text-xs font-bold text-foreground uppercase tracking-wider">Address</h4>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <InfoBlock label="বর্তমান ঠিকানা" value={profileItem.presentAddress} />
-                    <InfoBlock label="স্থায়ী ঠিকানা" value={profileItem.permanentAddress} />
-                    <InfoBlock label="জেলা" value={profileItem.district} />
-                    <InfoBlock label="থানা" value={profileItem.policeStation} />
+                    <InfoBlock label="Present Address" value={profileItem.presentAddress} />
+                    <InfoBlock label="Permanent Address" value={profileItem.permanentAddress} />
+                    <InfoBlock label="District" value={profileItem.district} />
+                    <InfoBlock label="Police Station / Upazila" value={profileItem.policeStation} />
                   </div>
                 </div>
               )}
@@ -452,11 +452,11 @@ export function ClientDataTable({ activeSubmodule }) {
               {/* Guardian */}
               {profileItem.guardian?.name && (
                 <div className="space-y-2">
-                  <h4 className="text-xs font-bold text-foreground uppercase tracking-wider">অভিভাবক</h4>
+                  <h4 className="text-xs font-bold text-foreground uppercase tracking-wider">Guardian Details</h4>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <InfoBlock label="নাম" value={profileItem.guardian.name} />
-                    <InfoBlock label="সম্পর্ক" value={profileItem.guardian.relationship} />
-                    <InfoBlock label="ফোন" value={profileItem.guardian.phone} mono />
+                    <InfoBlock label="Name" value={profileItem.guardian.name} />
+                    <InfoBlock label="Relationship" value={profileItem.guardian.relationship} />
+                    <InfoBlock label="Phone" value={profileItem.guardian.phone} mono />
                     <InfoBlock label="NID" value={profileItem.guardian.nidNumber} mono />
                   </div>
                 </div>
@@ -464,24 +464,24 @@ export function ClientDataTable({ activeSubmodule }) {
 
               {/* Financial Ledger */}
               <div className="space-y-2">
-                <h4 className="text-xs font-bold text-foreground uppercase tracking-wider">আর্থিক লেজার</h4>
+                <h4 className="text-xs font-bold text-foreground uppercase tracking-wider">Financial Ledger</h4>
                 <div className="grid grid-cols-3 gap-3">
-                  <LedgerCard label="মোট বিল" value={profileItem.totalBilledAmount} color="sky" />
-                  <LedgerCard label="মোট পরিশোধ" value={profileItem.totalPaidAmount} color="emerald" />
-                  <LedgerCard label="বকেয়া" value={profileItem.totalDueAmount} color="rose" />
+                  <LedgerCard label="Total Invoiced" value={profileItem.totalBilledAmount} color="sky" />
+                  <LedgerCard label="Total Paid" value={profileItem.totalPaidAmount} color="emerald" />
+                  <LedgerCard label="Total Due" value={profileItem.totalDueAmount} color="rose" />
                 </div>
               </div>
 
               {/* Linked Services Summary */}
               <div className="space-y-2">
-                <h4 className="text-xs font-bold text-foreground uppercase tracking-wider">সার্ভিস হিস্ট্রি</h4>
+                <h4 className="text-xs font-bold text-foreground uppercase tracking-wider">Service History</h4>
                 <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-                  <ServiceBadge label="আবেদন" count={profileItem.applications?.length || 0} />
-                  <ServiceBadge label="ভিসা" count={profileItem.visaSubmissions?.length || 0} />
-                  <ServiceBadge label="পাসপোর্ট" count={profileItem.passportSubmissions?.length || 0} />
-                  <ServiceBadge label="কেস ফাইল" count={profileItem.clientCases?.length || 0} />
-                  <ServiceBadge label="চুক্তিপত্র" count={profileItem.agreements?.length || 0} />
-                  <ServiceBadge label="ইনভয়েস" count={profileItem.invoices?.length || 0} />
+                  <ServiceBadge label="Applications" count={profileItem.applications?.length || 0} />
+                  <ServiceBadge label="Visa Applications" count={profileItem.visaSubmissions?.length || 0} />
+                  <ServiceBadge label="Passports" count={profileItem.passportSubmissions?.length || 0} />
+                  <ServiceBadge label="Case Files" count={profileItem.clientCases?.length || 0} />
+                  <ServiceBadge label="Agreements" count={profileItem.agreements?.length || 0} />
+                  <ServiceBadge label="Invoices" count={profileItem.invoices?.length || 0} />
                 </div>
               </div>
 
@@ -496,7 +496,7 @@ export function ClientDataTable({ activeSubmodule }) {
                   className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-sky-600 hover:bg-sky-700 text-white text-xs font-bold shadow-2xs transition-colors cursor-pointer"
                 >
                   <FileText className="w-3.5 h-3.5" />
-                  <span>ক্লায়েন্ট কেস ফাইলস ও ডজিয়ার দেখুন</span>
+                  <span>View Client Case Files & Dossiers</span>
                 </button>
 
                 <button
@@ -513,7 +513,7 @@ export function ClientDataTable({ activeSubmodule }) {
                   className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold shadow-2xs transition-colors cursor-pointer"
                 >
                   <Receipt className="w-3.5 h-3.5" />
-                  <span>পেমেন্ট টোকেন / রিসিট তৈরি করুন</span>
+                  <span>Issue Payment Token / Receipt</span>
                 </button>
               </div>
             </div>
@@ -546,7 +546,7 @@ export function ClientDataTable({ activeSubmodule }) {
             <div className="px-5 py-3.5 border-b border-border bg-muted/30 flex items-center justify-between">
               <h3 className="text-sm font-bold text-foreground flex items-center gap-2">
                 <Users className="w-4 h-4 text-sky-500" />
-                নতুন ক্লায়েন্ট প্রোফাইল তৈরি (New Client Registration)
+                New Client Registration
               </h3>
               <button
                 type="button"
@@ -559,7 +559,7 @@ export function ClientDataTable({ activeSubmodule }) {
             <form onSubmit={handleCreateClientSubmit} className="p-5 space-y-4">
               <div>
                 <label className="block text-xs font-semibold text-foreground mb-1">
-                  ক্লায়েন্টের পুরো নাম (Full Name) <span className="text-rose-500">*</span>
+                     (Full Name) <span className="text-rose-500">*</span>
                 </label>
                 <input
                   type="text"
@@ -574,7 +574,7 @@ export function ClientDataTable({ activeSubmodule }) {
               <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="block text-xs font-semibold text-foreground mb-1">
-                    মোবাইল নম্বর (Phone) <span className="text-rose-500">*</span>
+                    Mobile Phone Number <span className="text-rose-500">*</span>
                   </label>
                   <input
                     type="text"
@@ -587,7 +587,7 @@ export function ClientDataTable({ activeSubmodule }) {
                 </div>
                 <div>
                   <label className="block text-xs font-semibold text-foreground mb-1">
-                    পাসপোর্ট নম্বর (Passport No)
+                    Passport Number (Passport No)
                   </label>
                   <input
                     type="text"
@@ -601,7 +601,7 @@ export function ClientDataTable({ activeSubmodule }) {
 
               <div>
                 <label className="block text-xs font-semibold text-foreground mb-1">
-                  ইমেইল (Email Address)
+                   (Email Address)
                 </label>
                 <input
                   type="email"
@@ -614,7 +614,7 @@ export function ClientDataTable({ activeSubmodule }) {
 
               <div>
                 <label className="block text-xs font-semibold text-foreground mb-1">
-                  ঠিকানা (Address / Location)
+                  Address (Address / Location)
                 </label>
                 <input
                   type="text"
@@ -631,14 +631,14 @@ export function ClientDataTable({ activeSubmodule }) {
                   onClick={() => setIsCreateClientOpen(false)}
                   className="px-3 py-1.5 rounded-lg border border-border text-xs font-semibold hover:bg-muted"
                 >
-                  বাতিল (Cancel)
+                  Rejected (Cancel)
                 </button>
                 <button
                   type="submit"
                   disabled={isCreatingClient}
                   className="px-4 py-1.5 rounded-lg bg-sky-600 hover:bg-sky-700 text-white text-xs font-bold transition-all cursor-pointer shadow-xs disabled:opacity-50"
                 >
-                  {isCreatingClient ? 'সংরক্ষণ হচ্ছে...' : 'প্রোফাইল সেভ করুন'}
+                  {isCreatingClient ? 'Saving...' : 'Profile  '}
                 </button>
               </div>
             </form>
@@ -688,7 +688,7 @@ function LedgerCard({ label, value = 0, color = 'sky' }) {
     <div className={`p-3 rounded-lg border text-center ${colorMap[color]}`}>
       <p className="text-[10px] font-bold uppercase tracking-wider opacity-80">{label}</p>
       <p className="text-sm font-bold font-mono mt-0.5">
-        ৳ {Number(value || 0).toLocaleString('en-IN')}
+        BDT  {Number(value || 0).toLocaleString('en-IN')}
       </p>
     </div>
   );

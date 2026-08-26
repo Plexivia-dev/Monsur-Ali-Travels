@@ -362,7 +362,7 @@ export function CouponDialog({ open, onOpenChange, couponToEdit }) {
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="percentage">Percentage (%)</SelectItem>
-                  <SelectItem value="fixed">Fixed Amount (৳)</SelectItem>
+                  <SelectItem value="fixed">Fixed Amount (BDT )</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -372,7 +372,7 @@ export function CouponDialog({ open, onOpenChange, couponToEdit }) {
             {/* Discount Value */}
             <div className="space-y-1">
               <label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                Discount Value {discountType === 'percentage' ? '(%)' : '(৳)'}
+                Discount Value {discountType === 'percentage' ? '(%)' : '(BDT )'}
               </label>
               <Input
                 type="number"
@@ -388,7 +388,7 @@ export function CouponDialog({ open, onOpenChange, couponToEdit }) {
             {/* Min Order Amount */}
             <div className="space-y-1">
               <label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                Min Order Amount (৳)
+                Min Order Amount (BDT )
               </label>
               <Input
                 type="number"

@@ -1,17 +1,19 @@
 import React, { useState } from 'react';
 import {
+  Banknote,
   User,
   DollarSign,
   Clock,
-  FileText,
   RotateCcw,
   Eye,
-  ChevronRight,
-  ChevronLeft,
+  Save,
   CheckCircle2,
   AlertTriangle,
-  Award,
-  Sparkles
+  Sparkles,
+  Layers,
+  Calendar,
+  Building,
+  Briefcase,
 } from 'lucide-react';
 import {
   Dialog,
@@ -21,8 +23,7 @@ import {
   DialogDescription,
   DialogFooter,
 } from '@/components/ui/dialog';
-import { DatePicker } from '../../ui/date-picker';
-import { Button } from '@/components/ui/button';
+import { DatePicker } from '@/components/ui/date-picker';
 
 // Number to Words converter for BDT currency
 export function numberToWords(num) {
@@ -48,21 +49,13 @@ export function numberToWords(num) {
 }
 
 export function SalarySlipForm({ formData, setFormData, onSubmit, onReset, isSubmitting = false }) {
-  const [currentStep, setCurrentStep] = useState(1);
   const [resetDialogOpen, setResetDialogOpen] = useState(false);
-
-  const steps = [
-    { id: 1, title: 'Employee Info', icon: User },
-    { id: 2, title: 'Earnings & Allowances', icon: DollarSign },
-    { id: 3, title: 'Deductions', icon: DollarSign },
-    { id: 4, title: 'Attendance & Review', icon: Clock },
-  ];
 
   const handleChange = (field, value) => {
     setFormData((prev) => {
       const updated = { ...prev, [field]: value };
       
-      // Calculate Gross Salary (Basic + House Rent + Medical + Conveyance + Other Allowance) - excluding overtime
+      // Calculate Gross Salary (Basic + House Rent + Medical + Conveyance + Other Allowance)
       const gross = 
         (Number(updated.basicSalary) || 0) +
         (Number(updated.houseRentAllowance) || 0) +
@@ -93,527 +86,391 @@ export function SalarySlipForm({ formData, setFormData, onSubmit, onReset, isSub
     });
   };
 
-  const handleNext = (e) => {
-    e.preventDefault();
-    if (currentStep === 1) {
-      if (!formData.employeeName || !formData.employeeName.trim()) {
-        alert('Please enter the employee full name.');
-        return;
-      }
-      if (!formData.employeeId || !formData.employeeId.trim()) {
-        alert('Please enter the employee ID.');
-        return;
-      }
-    }
-    if (currentStep < 4) {
-      setCurrentStep((prev) => prev + 1);
-    } else {
-      onSubmit();
-    }
-  };
-
-  const handlePrev = () => {
-    if (currentStep > 1) {
-      setCurrentStep((prev) => prev - 1);
-    }
-  };
-
   const confirmReset = () => {
     onReset();
-    setCurrentStep(1);
     setResetDialogOpen(false);
   };
 
-  const progressPercent = ((currentStep - 1) / (steps.length - 1)) * 100;
-
   return (
-    <div className="space-y-5 w-full">
+    <div className="bg-card border border-border rounded-2xl p-4 sm:p-6 shadow-xs space-y-6">
       {/* Top Header Card */}
-      <div className="bg-card border border-border p-6 rounded-[4px] shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b-2 border-border">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-border pb-4">
         <div>
-          <h2 className="text-xl sm:text-2xl font-black text-foreground flex items-center gap-2 tracking-tight">
-            <FileText className="w-6 h-6 text-emerald-600 shrink-0" />
-            Salary Slip Generator (Step {currentStep} of 4)
+          <h2 className="text-base font-bold text-foreground flex items-center gap-2">
+            <Banknote className="w-5 h-5 text-primary" />
+            Monthly Salary Slip &amp; Payroll Generator
           </h2>
+          <p className="text-xs text-muted-foreground mt-0.5">
+            Create, calculate, and print official employee salary slips with earnings, deductions, and attendance records.
+          </p>
         </div>
 
-        <Button
-          type="button"
-          variant="reset"
-          size="sm"
-          onClick={() => setResetDialogOpen(true)}
-          className="shrink-0 self-start sm:self-auto"
-        >
-          <RotateCcw className="w-3.5 h-3.5" />
-          <span>Reset</span>
-        </Button>
+        <div className="flex items-center gap-2">
+          <button
+            type="button"
+            onClick={() => setResetDialogOpen(true)}
+            className="flex items-center gap-1.5 text-xs font-medium text-muted-foreground hover:text-foreground bg-muted hover:bg-muted/80 px-3 py-1.5 rounded-xl transition-colors cursor-pointer"
+          >
+            <RotateCcw className="w-3.5 h-3.5" />
+            <span>Reset Form</span>
+          </button>
+        </div>
       </div>
 
-      {/* Corporate Clean Stepper (Max 4px Border Radius) */}
-      <div className="bg-card border border-border p-4 rounded-md shadow-xs space-y-3">
-        {/* Progress Bar */}
-        <div className="relative w-full h-1.5 bg-muted rounded-xs overflow-hidden">
-          <div
-            className="h-full bg-emerald-600 transition-all duration-300 ease-out"
-            style={{ width: `${progressPercent}%` }}
-          />
-        </div>
-
-        {/* Step Items Grid */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-          {steps.map((step) => {
-            const isPassed = currentStep > step.id;
-            const isCurrent = currentStep === step.id;
-
-            return (
+      {/* Meta Bar: Slip No, Month, Pay Date & Mode */}
+      <div className="bg-muted/30 border border-border p-4 rounded-xl space-y-3">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 text-xs">
+          <div>
+            <div className="flex items-center justify-between mb-1">
+              <label className="block font-bold text-foreground">Slip No.</label>
               <button
-                key={step.id}
                 type="button"
                 onClick={() => {
-                  if (step.id < currentStep) setCurrentStep(step.id);
+                  const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+                  const getChar = () => letters.charAt(Math.floor(Math.random() * letters.length));
+                  const getDigits = (len) => {
+                    let res = '';
+                    for (let i = 0; i < len; i++) res += Math.floor(Math.random() * 10);
+                    return res;
+                  };
+                  const code = `SLIP-${getChar()}${getChar()}${getDigits(4)}${getChar()}${getDigits(3)}`;
+                  handleChange('slipNo', code);
                 }}
-                className={`p-2.5 rounded-md text-left border transition-all flex items-center gap-2.5 ${
-                  isCurrent
-                    ? 'bg-emerald-500/10 border-emerald-600 text-foreground font-bold shadow-xs'
-                    : isPassed
-                    ? 'bg-muted/40 border-border text-foreground hover:bg-muted cursor-pointer'
-                    : 'bg-background border-border/50 text-muted-foreground opacity-60 cursor-not-allowed'
-                }`}
+                className="text-[10px] text-sky-600 dark:text-sky-400 hover:underline font-semibold cursor-pointer"
               >
-                <div
-                  className={`w-6 h-6 rounded-xs flex items-center justify-center shrink-0 text-xs font-bold ${
-                    isPassed || isCurrent ? 'bg-emerald-600 text-white' : 'bg-muted text-muted-foreground'
-                  }`}
-                >
-                  {isPassed ? <CheckCircle2 className="w-3.5 h-3.5" /> : step.id}
-                </div>
-                <div className="min-w-0">
-                  <div className="text-[11px] font-bold truncate">{step.title}</div>
-                </div>
+                Regenerate
               </button>
-            );
-          })}
+            </div>
+            <input
+              type="text"
+              value={formData.slipNo || ''}
+              onChange={(e) => handleChange('slipNo', e.target.value)}
+              className="w-full px-3 py-2 bg-background border border-border rounded-xl text-foreground font-mono font-bold text-xs focus:ring-2 focus:ring-sky-400/40 outline-none"
+            />
+          </div>
+
+          <div>
+            <label className="block font-bold text-foreground mb-1">Salary Month *</label>
+            <input
+              type="text"
+              required
+              value={formData.salaryMonth || ''}
+              placeholder="e.g. August 2026"
+              onChange={(e) => handleChange('salaryMonth', e.target.value)}
+              className="w-full px-3 py-2 bg-background border border-border rounded-xl text-foreground font-semibold text-xs focus:ring-2 focus:ring-sky-400/40 outline-none"
+            />
+          </div>
+
+          <div>
+            <label className="block font-bold text-foreground mb-1">Pay Date</label>
+            <DatePicker
+              value={formData.payDate || ''}
+              onChange={(val) => handleChange('payDate', val)}
+            />
+          </div>
+
+          <div>
+            <label className="block font-bold text-foreground mb-1">Payment Mode</label>
+            <select
+              value={formData.paymentMode || 'Cash'}
+              onChange={(e) => handleChange('paymentMode', e.target.value)}
+              className="w-full px-3 py-2 bg-background border border-border rounded-xl text-foreground font-semibold text-xs focus:ring-2 focus:ring-sky-400/40 outline-none cursor-pointer"
+            >
+              <option value="Cash">Cash</option>
+              <option value="Bank Transfer">Bank Transfer</option>
+              <option value="Cheque">Cheque</option>
+              <option value="bKash / Nagad">bKash / Nagad</option>
+              <option value="Other">Other</option>
+            </select>
+          </div>
         </div>
       </div>
 
-      {/* Main Form by Step */}
-      <form onSubmit={handleNext} className="space-y-4">
-        {/* STEP 1: Employee & Payroll Control Details */}
-        {currentStep === 1 && (
-          <div className="bg-card border border-border p-4 rounded-md shadow-xs space-y-3 animate-in fade-in-50 duration-150">
-            <h3 className="font-bold text-foreground flex items-center gap-2 text-xs text-emerald-600 border-b border-border pb-2">
-              <User className="w-4 h-4" /> 1. Employee Profile & Payroll Details
-            </h3>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
-              <div>
-                <label className="block font-semibold text-foreground mb-1">Employee Name *</label>
-                <input
-                  type="text"
-                  required
-                  value={formData.employeeName}
-                  onChange={(e) => handleChange('employeeName', e.target.value)}
-                  className="w-full px-3 py-2 bg-background border border-border rounded-md text-foreground text-xs font-bold focus:ring-1 focus:ring-primary outline-none"
-                />
-              </div>
-
-              <div>
-                <label className="block font-semibold text-foreground mb-1">Employee ID *</label>
-                <input
-                  type="text"
-                  required
-                  value={formData.employeeId}
-                  onChange={(e) => handleChange('employeeId', e.target.value)}
-                  className="w-full px-3 py-2 bg-background border border-border rounded-md text-foreground text-xs font-mono font-bold focus:ring-1 focus:ring-primary outline-none"
-                />
-              </div>
-
-              <div>
-                <label className="block font-semibold text-foreground mb-1">Designation</label>
-                <input
-                  type="text"
-                  value={formData.designation}
-                  onChange={(e) => handleChange('designation', e.target.value)}
-                  className="w-full px-3 py-2 bg-background border border-border rounded-md text-foreground text-xs focus:ring-1 focus:ring-primary outline-none"
-                />
-              </div>
-
-              <div>
-                <label className="block font-semibold text-foreground mb-1">Department</label>
-                <input
-                  type="text"
-                  value={formData.department}
-                  onChange={(e) => handleChange('department', e.target.value)}
-                  className="w-full px-3 py-2 bg-background border border-border rounded-md text-foreground text-xs focus:ring-1 focus:ring-primary outline-none"
-                />
-              </div>
-
-              <div>
-                <label className="block font-semibold text-foreground mb-1">Joining Date</label>
-                <DatePicker
-                  value={formData.joiningDate}
-                  onChange={(val) => handleChange('joiningDate', val)}
-                />
-              </div>
-
-              <div>
-                <label className="block font-semibold text-foreground mb-1">Salary Month *</label>
-                <input
-                  type="text"
-                  required
-                  value={formData.salaryMonth}
-                  onChange={(e) => handleChange('salaryMonth', e.target.value)}
-                  className="w-full px-3 py-2 bg-background border border-border rounded-md text-foreground text-xs font-bold focus:ring-1 focus:ring-primary outline-none"
-                />
-              </div>
-
-              <div>
-                <label className="block font-semibold text-foreground mb-1">Pay Date</label>
-                <DatePicker
-                  value={formData.payDate}
-                  onChange={(val) => handleChange('payDate', val)}
-                />
-              </div>
-
-              <div>
-                <div className="flex items-center justify-between mb-1">
-                  <label className="block font-semibold text-foreground">Slip No.</label>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-                      const getChar = () => letters.charAt(Math.floor(Math.random() * letters.length));
-                      const getDigits = (len) => {
-                        let res = '';
-                        for (let i = 0; i < len; i++) res += Math.floor(Math.random() * 10);
-                        return res;
-                      };
-                      const code = `SLIP-${getChar()}${getChar()}${getDigits(4)}${getChar()}${getDigits(3)}`;
-                      handleChange('slipNo', code);
-                    }}
-                    className="text-[10px] text-emerald-600 hover:underline font-semibold cursor-pointer"
-                  >
-                    Generate Random
-                  </button>
-                </div>
-                <input
-                  type="text"
-                  value={formData.slipNo}
-                  readOnly
-                  className="w-full px-3 py-2 bg-muted/60 border border-border rounded-md text-foreground/80 text-xs font-mono font-bold outline-none cursor-not-allowed select-none"
-                  placeholder="System Generated"
-                />
-              </div>
-
-              <div>
-                <label className="block font-semibold text-foreground mb-1">Payment Mode</label>
-                <select
-                  value={formData.paymentMode}
-                  onChange={(e) => handleChange('paymentMode', e.target.value)}
-                  className="w-full px-3 py-2 bg-background border border-border rounded-md text-foreground text-xs font-semibold focus:ring-1 focus:ring-primary outline-none cursor-pointer"
-                >
-                  <option value="Cash">Cash</option>
-                  <option value="Bank Transfer">Bank Transfer</option>
-                  <option value="Cheque">Cheque</option>
-                  <option value="Other">Other</option>
-                </select>
-              </div>
-
-              <div>
-                <label className="block font-semibold text-foreground mb-1">Attendance Days</label>
-                <input
-                  type="number"
-                  value={formData.attendanceDays}
-                  onChange={(e) => handleChange('attendanceDays', e.target.value)}
-                  className="w-full px-3 py-2 bg-background border border-border rounded-md text-foreground text-xs font-mono focus:ring-1 focus:ring-primary outline-none"
-                />
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* STEP 2: Earnings Section */}
-        {currentStep === 2 && (
-          <div className="bg-card border border-border p-4 rounded-md shadow-xs space-y-3 animate-in fade-in-50 duration-150">
-            <h3 className="font-bold text-foreground flex items-center gap-2 text-xs text-emerald-600 border-b border-border pb-2">
-              <DollarSign className="w-4 h-4" /> 2. Earnings (BDT)
-            </h3>
-
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
-              <div>
-                <label className="block font-semibold text-foreground mb-1">Basic Salary (BDT)</label>
-                <input
-                  type="number"
-                  value={formData.basicSalary}
-                  onChange={(e) => handleChange('basicSalary', e.target.value)}
-                  className="w-full px-3 py-2 bg-background border border-border rounded-md text-foreground text-xs font-mono focus:ring-1 focus:ring-primary outline-none"
-                />
-              </div>
-
-              <div>
-                <label className="block font-semibold text-foreground mb-1">House Rent Allowance (BDT)</label>
-                <input
-                  type="number"
-                  value={formData.houseRentAllowance}
-                  onChange={(e) => handleChange('houseRentAllowance', e.target.value)}
-                  className="w-full px-3 py-2 bg-background border border-border rounded-md text-foreground text-xs font-mono focus:ring-1 focus:ring-primary outline-none"
-                />
-              </div>
-
-              <div>
-                <label className="block font-semibold text-foreground mb-1">Medical Allowance (BDT)</label>
-                <input
-                  type="number"
-                  value={formData.medicalAllowance}
-                  onChange={(e) => handleChange('medicalAllowance', e.target.value)}
-                  className="w-full px-3 py-2 bg-background border border-border rounded-md text-foreground text-xs font-mono focus:ring-1 focus:ring-primary outline-none"
-                />
-              </div>
-
-              <div>
-                <label className="block font-semibold text-foreground mb-1">Conveyance Allowance (BDT)</label>
-                <input
-                  type="number"
-                  value={formData.conveyanceAllowance}
-                  onChange={(e) => handleChange('conveyanceAllowance', e.target.value)}
-                  className="w-full px-3 py-2 bg-background border border-border rounded-md text-foreground text-xs font-mono focus:ring-1 focus:ring-primary outline-none"
-                />
-              </div>
-
-              <div>
-                <label className="block font-semibold text-foreground mb-1">Other Special Allowance (BDT)</label>
-                <input
-                  type="number"
-                  value={formData.otherAllowance}
-                  onChange={(e) => handleChange('otherAllowance', e.target.value)}
-                  className="w-full px-3 py-2 bg-background border border-border rounded-md text-foreground text-xs font-mono focus:ring-1 focus:ring-primary outline-none"
-                />
-              </div>
-
-              <div>
-                <label className="block font-semibold text-foreground mb-1">Overtime / Extra Duty (BDT)</label>
-                <input
-                  type="number"
-                  value={formData.overtimeExtraDuty}
-                  onChange={(e) => handleChange('overtimeExtraDuty', e.target.value)}
-                  className="w-full px-3 py-2 bg-background border border-border rounded-md text-foreground text-xs font-mono focus:ring-1 focus:ring-primary outline-none"
-                />
-              </div>
-
-              <div className="sm:col-span-3 p-3 bg-emerald-500/10 border border-emerald-500/20 rounded-md flex items-center justify-between">
-                <span className="font-bold text-xs text-foreground">Gross Earnings:</span>
-                <span className="font-mono font-bold text-base text-emerald-600">
-                  {Number(formData.grossEarnings).toLocaleString('en-BD')} ৳
-                </span>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* STEP 3: Deductions Section */}
-        {currentStep === 3 && (
-          <div className="bg-card border border-border p-4 rounded-md shadow-xs space-y-3 animate-in fade-in-50 duration-150">
-            <h3 className="font-bold text-foreground flex items-center gap-2 text-xs text-rose-600 border-b border-border pb-2">
-              <DollarSign className="w-4 h-4" /> 3. Deductions & Adjustments (BDT)
-            </h3>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
-              <div>
-                <label className="block font-semibold text-foreground mb-1">Advance Salary (BDT)</label>
-                <input
-                  type="number"
-                  value={formData.advanceSalary}
-                  onChange={(e) => handleChange('advanceSalary', e.target.value)}
-                  className="w-full px-3 py-2 bg-background border border-border rounded-md text-foreground text-xs font-mono focus:ring-1 focus:ring-primary outline-none"
-                />
-              </div>
-
-              <div>
-                <label className="block font-semibold text-foreground mb-1">Unpaid Leave Absence (BDT)</label>
-                <input
-                  type="number"
-                  value={formData.unpaidLeaveAbsence}
-                  onChange={(e) => handleChange('unpaidLeaveAbsence', e.target.value)}
-                  className="w-full px-3 py-2 bg-background border border-border rounded-md text-foreground text-xs font-mono focus:ring-1 focus:ring-primary outline-none"
-                />
-              </div>
-
-              <div>
-                <label className="block font-semibold text-foreground mb-1">Loan Deduction (BDT)</label>
-                <input
-                  type="number"
-                  value={formData.loanAuthorizedDeduction}
-                  onChange={(e) => handleChange('loanAuthorizedDeduction', e.target.value)}
-                  className="w-full px-3 py-2 bg-background border border-border rounded-md text-foreground text-xs font-mono focus:ring-1 focus:ring-primary outline-none"
-                />
-              </div>
-
-              <div>
-                <label className="block font-semibold text-foreground mb-1">Tax / Statutory Deduction (BDT)</label>
-                <input
-                  type="number"
-                  value={formData.taxStatutoryDeduction}
-                  onChange={(e) => handleChange('taxStatutoryDeduction', e.target.value)}
-                  className="w-full px-3 py-2 bg-background border border-border rounded-md text-foreground text-xs font-mono focus:ring-1 focus:ring-primary outline-none"
-                />
-              </div>
-
-              <div className="sm:col-span-2">
-                <label className="block font-semibold text-foreground mb-1">Other Authorized Deduction (BDT)</label>
-                <input
-                  type="number"
-                  value={formData.otherAuthorizedDeduction}
-                  onChange={(e) => handleChange('otherAuthorizedDeduction', e.target.value)}
-                  className="w-full px-3 py-2 bg-background border border-border rounded-md text-foreground text-xs font-mono focus:ring-1 focus:ring-primary outline-none"
-                />
-              </div>
-
-              <div className="sm:col-span-2 p-3 bg-rose-500/10 border border-rose-500/20 rounded-md flex items-center justify-between">
-                <span className="font-bold text-xs text-foreground">Total Deductions:</span>
-                <span className="font-mono font-bold text-base text-rose-600">
-                  {Number(formData.totalDeduction).toLocaleString('en-BD')} ৳
-                </span>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* STEP 4: Attendance & Final Review */}
-        {currentStep === 4 && (
-          <div className="space-y-4 animate-in fade-in-50 duration-150">
-            {/* Attendance Fields */}
-            <div className="bg-card border border-border p-4 rounded-md shadow-xs space-y-3">
-              <h3 className="font-bold text-foreground flex items-center gap-2 text-xs text-sky-600 border-b border-border pb-2">
-                <Clock className="w-4 h-4" /> 4. Attendance Summary & Signatures
-              </h3>
-
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
-                <div>
-                  <label className="block font-semibold text-foreground mb-1">Total Working Days</label>
-                  <input
-                    type="number"
-                    value={formData.workingDays}
-                    onChange={(e) => handleChange('workingDays', e.target.value)}
-                    className="w-full px-3 py-2 bg-background border border-border rounded-md text-foreground text-xs font-mono focus:ring-1 focus:ring-primary outline-none"
-                  />
-                </div>
-
-                <div>
-                  <label className="block font-semibold text-foreground mb-1">Present Days</label>
-                  <input
-                    type="number"
-                    value={formData.presentDays}
-                    onChange={(e) => handleChange('presentDays', e.target.value)}
-                    className="w-full px-3 py-2 bg-background border border-border rounded-md text-foreground text-xs font-mono focus:ring-1 focus:ring-primary outline-none"
-                  />
-                </div>
-
-                <div>
-                  <label className="block font-semibold text-foreground mb-1">Paid Leave</label>
-                  <input
-                    type="number"
-                    value={formData.paidLeave}
-                    onChange={(e) => handleChange('paidLeave', e.target.value)}
-                    className="w-full px-3 py-2 bg-background border border-border rounded-md text-foreground text-xs font-mono focus:ring-1 focus:ring-primary outline-none"
-                  />
-                </div>
-
-                <div>
-                  <label className="block font-semibold text-foreground mb-1">Unpaid / Absent Days</label>
-                  <input
-                    type="number"
-                    value={formData.unpaidLeave}
-                    onChange={(e) => handleChange('unpaidLeave', e.target.value)}
-                    className="w-full px-3 py-2 bg-background border border-border rounded-md text-foreground text-xs font-mono focus:ring-1 focus:ring-primary outline-none"
-                  />
-                </div>
-              </div>
-            </div>
-
-            {/* Summary Review Card */}
-            <div className="p-4 bg-emerald-500/10 border border-emerald-500/30 rounded-md space-y-2 shadow-xs">
-              <div className="flex items-center gap-2 text-emerald-600 font-bold text-xs">
-                <Sparkles className="w-4 h-4" />
-                Final Payroll Summary
-              </div>
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 text-xs">
-                <div className="p-2.5 bg-background border border-border rounded-md">
-                  <span className="text-muted-foreground block text-[10px]">Employee Name & ID:</span>
-                  <span className="font-bold text-foreground">{formData.employeeName || 'Unnamed'} ({formData.employeeId || '-'})</span>
-                </div>
-                <div className="p-2.5 bg-background border border-border rounded-md">
-                  <span className="text-muted-foreground block text-[10px]">Total Gross Earnings:</span>
-                  <span className="font-bold text-foreground font-mono">{Number(formData.grossEarnings).toLocaleString('en-BD')} ৳</span>
-                </div>
-                <div className="p-2.5 bg-background border border-border rounded-md">
-                  <span className="text-muted-foreground block text-[10px]">Total Deductions:</span>
-                  <span className="font-bold text-rose-600 font-mono">- {Number(formData.totalDeduction).toLocaleString('en-BD')} ৳</span>
-                </div>
-              </div>
-              <div className="pt-2 border-t border-border flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-                <div>
-                  <span className="text-xs font-semibold text-muted-foreground">Net Salary Payable:</span>
-                  <div className="text-lg font-black text-emerald-600 font-mono">
-                    = {Number(formData.netSalaryPayable).toLocaleString('en-BD')} ৳
-                  </div>
-                  <div className="text-[11px] text-muted-foreground italic">({formData.netSalaryInWords})</div>
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* Step Navigation Bar */}
-        <div className="bg-card border border-border p-4 rounded-md flex items-center justify-between gap-3 shadow-xs">
-          {currentStep > 1 ? (
-            <Button
-              type="button"
-              variant="outline"
-              size="sm"
-              onClick={handlePrev}
-            >
-              <ChevronLeft className="w-4 h-4" />
-              <span>Previous Step</span>
-            </Button>
-          ) : (
-            <div />
-          )}
-
-          {currentStep < 4 ? (
-            <Button
-              type="submit"
-              variant="primary"
-              size="sm"
-            >
-              <span>Next Step</span>
-              <ChevronRight className="w-4 h-4" />
-            </Button>
-          ) : (
-            <Button
-              type="submit"
-              variant="success"
-              size="default"
-              disabled={isSubmitting}
-            >
-              {isSubmitting ? (
-                <>
-                  <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin shrink-0" />
-                  <span>Saving to Database & Generating ID...</span>
-                </>
-              ) : (
-                <>
-                  <Eye className="w-4 h-4" />
-                  <span>Generate Salary Slip & View Preview</span>
-                </>
-              )}
-            </Button>
-          )}
+      {/* Section 1: Employee Details */}
+      <div className="space-y-3">
+        <div className="flex items-center gap-2 bg-gradient-to-r from-sky-600 via-sky-700 to-[#0B3A60] text-white px-4 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider shadow-xs">
+          <User className="w-4 h-4 text-sky-200" />
+          <span>1. Employee Profile &amp; Department Details</span>
         </div>
-      </form>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 text-xs">
+          <div>
+            <label className="block font-bold text-foreground mb-1">Employee Full Name *</label>
+            <input
+              type="text"
+              required
+              value={formData.employeeName || ''}
+              placeholder="e.g. Md. Monsur Ali"
+              onChange={(e) => handleChange('employeeName', e.target.value)}
+              className="w-full px-3 py-2 bg-background border border-border rounded-xl text-foreground font-semibold text-xs focus:ring-2 focus:ring-sky-400/40 outline-none"
+            />
+          </div>
+
+          <div>
+            <label className="block font-bold text-foreground mb-1">Employee ID *</label>
+            <input
+              type="text"
+              required
+              value={formData.employeeId || ''}
+              placeholder="e.g. MAT-EMP-101"
+              onChange={(e) => handleChange('employeeId', e.target.value)}
+              className="w-full px-3 py-2 bg-background border border-border rounded-xl text-foreground font-mono font-bold text-xs focus:ring-2 focus:ring-sky-400/40 outline-none"
+            />
+          </div>
+
+          <div>
+            <label className="block font-bold text-foreground mb-1">Designation / Role</label>
+            <input
+              type="text"
+              value={formData.designation || ''}
+              placeholder="e.g. Senior Visa Consultant"
+              onChange={(e) => handleChange('designation', e.target.value)}
+              className="w-full px-3 py-2 bg-background border border-border rounded-xl text-foreground text-xs focus:ring-2 focus:ring-sky-400/40 outline-none"
+            />
+          </div>
+
+          <div>
+            <label className="block font-bold text-foreground mb-1">Department</label>
+            <input
+              type="text"
+              value={formData.department || ''}
+              placeholder="e.g. Operations & Processing"
+              onChange={(e) => handleChange('department', e.target.value)}
+              className="w-full px-3 py-2 bg-background border border-border rounded-xl text-foreground text-xs focus:ring-2 focus:ring-sky-400/40 outline-none"
+            />
+          </div>
+
+          <div>
+            <label className="block font-bold text-foreground mb-1">Joining Date</label>
+            <DatePicker
+              value={formData.joiningDate || ''}
+              onChange={(val) => handleChange('joiningDate', val)}
+            />
+          </div>
+
+          <div>
+            <label className="block font-bold text-foreground mb-1">Total Attendance Days</label>
+            <input
+              type="number"
+              value={formData.attendanceDays || ''}
+              placeholder="e.g. 30"
+              onChange={(e) => handleChange('attendanceDays', e.target.value)}
+              className="w-full px-3 py-2 bg-background border border-border rounded-xl text-foreground font-mono text-xs focus:ring-2 focus:ring-sky-400/40 outline-none"
+            />
+          </div>
+        </div>
+      </div>
+
+      {/* Section 2: Earnings & Allowances */}
+      <div className="space-y-3">
+        <div className="flex items-center justify-between bg-gradient-to-r from-sky-600 via-sky-700 to-[#0B3A60] text-white px-4 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider shadow-xs">
+          <div className="flex items-center gap-2">
+            <DollarSign className="w-4 h-4 text-sky-200" />
+            <span>2. Earnings &amp; Allowances (BDT)</span>
+          </div>
+          <span className="font-mono text-[11px] font-bold bg-white/20 px-2.5 py-0.5 rounded-lg">
+            Gross: BDT {Number(formData.grossEarnings || 0).toLocaleString('en-BD')}
+          </span>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 text-xs">
+          <div>
+            <label className="block font-bold text-foreground mb-1">Basic Salary *</label>
+            <input
+              type="number"
+              min="0"
+              value={formData.basicSalary || ''}
+              placeholder="0"
+              onChange={(e) => handleChange('basicSalary', e.target.value)}
+              className="w-full px-3 py-2 bg-background border border-border rounded-xl text-foreground font-mono font-semibold text-xs focus:ring-2 focus:ring-sky-400/40 outline-none"
+            />
+          </div>
+
+          <div>
+            <label className="block font-bold text-foreground mb-1">House Rent Allowance</label>
+            <input
+              type="number"
+              min="0"
+              value={formData.houseRentAllowance || ''}
+              placeholder="0"
+              onChange={(e) => handleChange('houseRentAllowance', e.target.value)}
+              className="w-full px-3 py-2 bg-background border border-border rounded-xl text-foreground font-mono text-xs focus:ring-2 focus:ring-sky-400/40 outline-none"
+            />
+          </div>
+
+          <div>
+            <label className="block font-bold text-foreground mb-1">Medical Allowance</label>
+            <input
+              type="number"
+              min="0"
+              value={formData.medicalAllowance || ''}
+              placeholder="0"
+              onChange={(e) => handleChange('medicalAllowance', e.target.value)}
+              className="w-full px-3 py-2 bg-background border border-border rounded-xl text-foreground font-mono text-xs focus:ring-2 focus:ring-sky-400/40 outline-none"
+            />
+          </div>
+
+          <div>
+            <label className="block font-bold text-foreground mb-1">Conveyance Allowance</label>
+            <input
+              type="number"
+              min="0"
+              value={formData.conveyanceAllowance || ''}
+              placeholder="0"
+              onChange={(e) => handleChange('conveyanceAllowance', e.target.value)}
+              className="w-full px-3 py-2 bg-background border border-border rounded-xl text-foreground font-mono text-xs focus:ring-2 focus:ring-sky-400/40 outline-none"
+            />
+          </div>
+
+          <div>
+            <label className="block font-bold text-foreground mb-1">Other Special Allowance</label>
+            <input
+              type="number"
+              min="0"
+              value={formData.otherAllowance || ''}
+              placeholder="0"
+              onChange={(e) => handleChange('otherAllowance', e.target.value)}
+              className="w-full px-3 py-2 bg-background border border-border rounded-xl text-foreground font-mono text-xs focus:ring-2 focus:ring-sky-400/40 outline-none"
+            />
+          </div>
+
+          <div>
+            <label className="block font-bold text-foreground mb-1">Overtime / Extra Duty</label>
+            <input
+              type="number"
+              min="0"
+              value={formData.overtimeExtraDuty || ''}
+              placeholder="0"
+              onChange={(e) => handleChange('overtimeExtraDuty', e.target.value)}
+              className="w-full px-3 py-2 bg-background border border-border rounded-xl text-foreground font-mono text-xs focus:ring-2 focus:ring-sky-400/40 outline-none"
+            />
+          </div>
+        </div>
+      </div>
+
+      {/* Section 3: Deductions & Adjustments */}
+      <div className="space-y-3">
+        <div className="flex items-center justify-between bg-gradient-to-r from-sky-600 via-sky-700 to-[#0B3A60] text-white px-4 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider shadow-xs">
+          <div className="flex items-center gap-2">
+            <Layers className="w-4 h-4 text-sky-200" />
+            <span>3. Deductions &amp; Attendance Adjustments</span>
+          </div>
+          <span className="font-mono text-[11px] font-bold bg-white/20 px-2.5 py-0.5 rounded-lg">
+            Total Ded: -BDT {Number(formData.totalDeduction || 0).toLocaleString('en-BD')}
+          </span>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 text-xs">
+          <div>
+            <label className="block font-bold text-foreground mb-1">Advance Salary Taken</label>
+            <input
+              type="number"
+              min="0"
+              value={formData.advanceSalary || ''}
+              placeholder="0"
+              onChange={(e) => handleChange('advanceSalary', e.target.value)}
+              className="w-full px-3 py-2 bg-background border border-border rounded-xl text-foreground font-mono text-xs focus:ring-2 focus:ring-sky-400/40 outline-none"
+            />
+          </div>
+
+          <div>
+            <label className="block font-bold text-foreground mb-1">Unpaid Leave / Absent Ded.</label>
+            <input
+              type="number"
+              min="0"
+              value={formData.unpaidLeaveAbsence || ''}
+              placeholder="0"
+              onChange={(e) => handleChange('unpaidLeaveAbsence', e.target.value)}
+              className="w-full px-3 py-2 bg-background border border-border rounded-xl text-foreground font-mono text-xs focus:ring-2 focus:ring-sky-400/40 outline-none"
+            />
+          </div>
+
+          <div>
+            <label className="block font-bold text-foreground mb-1">Loan / EMI Deduction</label>
+            <input
+              type="number"
+              min="0"
+              value={formData.loanAuthorizedDeduction || ''}
+              placeholder="0"
+              onChange={(e) => handleChange('loanAuthorizedDeduction', e.target.value)}
+              className="w-full px-3 py-2 bg-background border border-border rounded-xl text-foreground font-mono text-xs focus:ring-2 focus:ring-sky-400/40 outline-none"
+            />
+          </div>
+
+          <div>
+            <label className="block font-bold text-foreground mb-1">Tax / Statutory Deduction</label>
+            <input
+              type="number"
+              min="0"
+              value={formData.taxStatutoryDeduction || ''}
+              placeholder="0"
+              onChange={(e) => handleChange('taxStatutoryDeduction', e.target.value)}
+              className="w-full px-3 py-2 bg-background border border-border rounded-xl text-foreground font-mono text-xs focus:ring-2 focus:ring-sky-400/40 outline-none"
+            />
+          </div>
+
+          <div className="sm:col-span-2">
+            <label className="block font-bold text-foreground mb-1">Other Authorized Deduction</label>
+            <input
+              type="number"
+              min="0"
+              value={formData.otherAuthorizedDeduction || ''}
+              placeholder="0"
+              onChange={(e) => handleChange('otherAuthorizedDeduction', e.target.value)}
+              className="w-full px-3 py-2 bg-background border border-border rounded-xl text-foreground font-mono text-xs focus:ring-2 focus:ring-sky-400/40 outline-none"
+            />
+          </div>
+        </div>
+      </div>
+
+      {/* Section 4: Net Salary Payable Card */}
+      <div className="bg-gradient-to-br from-sky-50 via-white to-sky-100/50 dark:from-sky-950/30 dark:via-background dark:to-slate-900/40 border border-sky-300 dark:border-sky-800/50 p-5 rounded-2xl shadow-xs space-y-3">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div>
+            <span className="font-bold text-xs uppercase tracking-wider text-muted-foreground block">
+              Net Payable Salary
+            </span>
+            <div className="text-2xl sm:text-3xl font-black text-foreground font-mono mt-0.5">
+              BDT {Number(formData.netSalaryPayable || 0).toLocaleString('en-BD')}
+            </div>
+          </div>
+
+          <div className="text-right">
+            <span className="text-[11px] font-semibold text-muted-foreground block">
+              Gross: BDT {Number(formData.grossEarnings || 0).toLocaleString('en-BD')} | Deductions: -BDT {Number(formData.totalDeduction || 0).toLocaleString('en-BD')}
+            </span>
+            <span className="text-xs font-bold text-sky-700 dark:text-sky-300 mt-1 inline-block">
+              {formData.netSalaryInWords || 'Zero Taka Only'}
+            </span>
+          </div>
+        </div>
+      </div>
+
+      {/* Action Footer Controls */}
+      <div className="flex flex-col sm:flex-row items-center justify-end gap-3 pt-4 border-t border-border">
+        <button
+          type="button"
+          onClick={onSubmit}
+          className="w-full sm:w-auto flex items-center justify-center gap-2 bg-muted hover:bg-muted/80 text-foreground px-5 py-2.5 rounded-xl font-bold text-xs transition-all cursor-pointer shadow-xs"
+        >
+          <Eye className="w-4 h-4 text-primary" />
+          <span>Preview Salary Slip</span>
+        </button>
+
+        <button
+          type="button"
+          onClick={onSubmit}
+          disabled={isSubmitting}
+          className="w-full sm:w-auto flex items-center justify-center gap-2 bg-primary hover:bg-primary/90 text-primary-foreground px-6 py-2.5 rounded-xl font-bold text-xs transition-all cursor-pointer shadow-xs disabled:opacity-50"
+        >
+          <Save className="w-4 h-4" />
+          <span>{isSubmitting ? 'Saving...' : 'Save & Generate Salary Slip'}</span>
+        </button>
+      </div>
 
       {/* Shadcn UI Confirm Reset Dialog */}
       <Dialog open={resetDialogOpen} onOpenChange={setResetDialogOpen}>
-        <DialogContent className="sm:max-w-md rounded-md">
+        <DialogContent className="sm:max-w-md rounded-2xl">
           <DialogHeader>
             <div className="flex items-center gap-2 text-rose-500 mb-1">
               <AlertTriangle className="w-5 h-5" />
@@ -624,22 +481,20 @@ export function SalarySlipForm({ formData, setFormData, onSubmit, onReset, isSub
             </DialogDescription>
           </DialogHeader>
           <DialogFooter className="gap-2 sm:gap-0 mt-2">
-            <Button
+            <button
               type="button"
-              variant="outline"
-              size="sm"
               onClick={() => setResetDialogOpen(false)}
+              className="px-4 py-2 rounded-xl text-xs font-semibold bg-muted hover:bg-muted/80 text-foreground transition-colors cursor-pointer"
             >
               Cancel
-            </Button>
-            <Button
+            </button>
+            <button
               type="button"
-              variant="destructive"
-              size="sm"
               onClick={confirmReset}
+              className="px-4 py-2 rounded-xl text-xs font-semibold bg-rose-600 hover:bg-rose-700 text-white transition-colors cursor-pointer"
             >
               Yes, Reset Form
-            </Button>
+            </button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
@@ -648,3 +503,4 @@ export function SalarySlipForm({ formData, setFormData, onSubmit, onReset, isSub
 }
 
 export default SalarySlipForm;
+

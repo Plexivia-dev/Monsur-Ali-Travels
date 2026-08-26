@@ -59,12 +59,12 @@ export function SalarySlipDataTable() {
     try {
       setIsDeleting(true);
       await apiClient.delete(`/api/v1/client/docs/payrolls/${deleteTarget.id}`);
-      toast.success('স্যালারি স্লিপ মুছে ফেলা হয়েছে।');
+      toast.success('Salary slip deleted successfully.');
       setDeleteTarget(null);
       fetchData(pagination.page, pagination.limit, search, month);
     } catch (err) {
       console.error('Failed to delete salary slip:', err);
-      toast.error('স্যালারি স্লিপ মুছতে সমস্যা হয়েছে।');
+      toast.error('Failed to delete salary slip.');
     } finally {
       setIsDeleting(false);
     }
@@ -139,7 +139,7 @@ export function SalarySlipDataTable() {
                 <th className="p-3">{t('tables.employeeName', 'Employee Name')}</th>
                 <th className="p-3">{t('tables.idDesignation', 'ID & Designation')}</th>
                 <th className="p-3">{t('tables.salaryMonth', 'Salary Month')}</th>
-                <th className="p-3">{t('tables.netSalary', 'Net Salary (৳)')}</th>
+                <th className="p-3">{t('tables.netSalary', 'Net Salary (BDT )')}</th>
                 <th className="p-3">{t('tables.paymentMethod', 'Payment Method')}</th>
                 <th className="p-3">{t('tables.date', 'Date')}</th>
                 <th className="p-3 text-right">{t('tables.action', 'Actions')}</th>
@@ -179,7 +179,7 @@ export function SalarySlipDataTable() {
                       {item.salaryMonth || '—'}
                     </td>
                     <td className="p-3 font-mono font-bold text-emerald-700 dark:text-emerald-400">
-                      {item.netSalaryPayable?.toLocaleString('en-IN') || item.netSalaryPayable || 0} ৳
+                      {item.netSalaryPayable?.toLocaleString('en-IN') || item.netSalaryPayable || 0} BDT 
                     </td>
                     <td className="p-3 font-mono text-muted-foreground">
                       {item.paymentMode || 'Cash'}
@@ -232,10 +232,10 @@ export function SalarySlipDataTable() {
             <div className="px-5 py-3.5 border-b border-border bg-card flex items-center justify-between gap-3">
               <div>
                 <h3 className="text-sm font-bold text-foreground">
-                  স্যালারি পে-স্লিপ — {previewItem.slipNo || ''}
+                  Salary Payslip — {previewItem.slipNo || ''}
                 </h3>
                 <p className="text-[11px] text-muted-foreground">
-                  কর্মচারী: {previewItem.employeeName || '—'} | মাস: {previewItem.salaryMonth || '—'}
+                  Employee: {previewItem.employeeName || '—'} | Month: {previewItem.salaryMonth || '—'}
                 </p>
               </div>
 

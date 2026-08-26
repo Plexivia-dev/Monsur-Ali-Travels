@@ -53,7 +53,7 @@ export function numberToWords(amount) {
 }
 
 export const PAYMENT_METHODS = [
-  { id: 'Cash', label: 'Cash (নগদ)' },
+  { id: 'Cash', label: 'Cash' },
   { id: 'Bank Transfer / Cheque', label: 'Bank Transfer / Cheque' },
   { id: 'Online Payment', label: 'Online Payment' },
 ];
@@ -85,11 +85,11 @@ export function getDefaultMoneyReceiptData() {
     paymentMethod: 'Cash',
     amount: initialAmount,
     amountInWords: numberToWords(initialAmount),
-    preparedBy: 'প্রদানকারী',
-    receivedBySignature: 'গ্রহণকারী',
-    accountsSignature: 'একাউন্টেন্ট',
-    approvedBySignature: 'জিএম / প্রোপাইটার',
-    copyType: 'Original Copy (মূল কপি)',
+    preparedBy: 'Paid By',
+    receivedBySignature: 'Received By',
+    accountsSignature: 'Accountant',
+    approvedBySignature: 'General Manager / Proprietor',
+    copyType: 'Original Copy (Original Copy)',
     dualPrint: true, // Default: print 2 copies on single A4 page
     notes: '',
   };

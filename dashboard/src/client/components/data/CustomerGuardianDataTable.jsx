@@ -135,9 +135,9 @@ export function ClientGuardianDataTable({ onEditItem }) {
       `📌 *Service:* ${item.serviceType || 'Indian Visa'}\n` +
       `🆔 *NID:* ${item.client?.nidNumber || 'N/A'}\n` +
       `🛂 *Passport:* ${item.client?.passportNumber || 'N/A'}\n` +
-      `💰 *Total Fee:* ৳ ${total}\n` +
-      `✅ *Advance:* ৳ ${advance}\n` +
-      `⏳ *Due:* ৳ ${due}\n` +
+      `💰 *Total Fee:* BDT  ${total}\n` +
+      `✅ *Advance:* BDT  ${advance}\n` +
+      `⏳ *Due:* BDT  ${due}\n` +
       `-----------------------------------------\n` +
       `📅 *Date:* ${item.dateReceived || 'Today'}\n\n` +
       `🏢 *Monsur Ali Travels*\n` +
@@ -242,7 +242,7 @@ export function ClientGuardianDataTable({ onEditItem }) {
                 <th className="py-3 px-4">{t('clientApplications.applicationNo', 'Application #')}</th>
                 <th className="py-3 px-4">{t('clientApplications.clientDetails', 'Client Details')}</th>
                 <th className="py-3 px-4">{t('clientApplications.service', 'Service')}</th>
-                <th className="py-3 px-4">{t('clientApplications.payment', 'Payment (৳)')}</th>
+                <th className="py-3 px-4">{t('clientApplications.payment', 'Payment (BDT )')}</th>
                 <th className="py-3 px-4">{t('clientApplications.currentStatus', 'Current Status')}</th>
                 <th className="py-3 px-4">{t('clientApplications.date', 'Date')}</th>
                 <th className="py-3 px-4 text-right">{t('clientApplications.actions', 'Actions')}</th>
@@ -312,14 +312,14 @@ export function ClientGuardianDataTable({ onEditItem }) {
 
                       {/* Payment */}
                       <td className="py-3 px-4">
-                        <div className="font-bold text-foreground">৳ {total.toLocaleString('en-IN')}</div>
+                        <div className="font-bold text-foreground">BDT  {total.toLocaleString('en-IN')}</div>
                         <div className="text-[10.5px] flex items-center gap-2 mt-0.5">
                           <span className="text-emerald-600 dark:text-emerald-400 font-semibold">
-                            Adv: ৳{advance.toLocaleString('en-IN')}
+                            Adv: BDT {advance.toLocaleString('en-IN')}
                           </span>
                           {due > 0 && (
                             <span className="text-rose-600 dark:text-rose-400 font-semibold">
-                              Due: ৳{due.toLocaleString('en-IN')}
+                              Due: BDT {due.toLocaleString('en-IN')}
                             </span>
                           )}
                         </div>
@@ -405,7 +405,7 @@ export function ClientGuardianDataTable({ onEditItem }) {
                   Printable Application Form ({previewItem.applicationNo})
                 </h3>
                 <p className="text-xs text-muted-foreground">
-                  ক্লায়েন্ট: {previewItem.client?.fullName} | সার্ভিস: {previewItem.serviceType}
+                  Client: {previewItem.client?.fullName} | Service: {previewItem.serviceType}
                 </p>
               </div>
 

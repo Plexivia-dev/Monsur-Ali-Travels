@@ -1,12 +1,12 @@
 import React from 'react';
-import agencyInfo from '../../../lib/information.json';
-import logoImg from '../../../assets/logo.png';
+import agencyInfo from '@shared/lib/information.json';
+import logoImg from '@shared/assets/logo.png';
 import { PrintablePaper } from '../common/PrintablePaper';
 import { Globe, MapPin, Phone } from 'lucide-react';
 
 /**
  * CashVoucherPreview
- * A4 printable ক্যাশ মানি ভাউচার / Cash Money Voucher layout
+ * A4 printable Cash Money Voucher / Cash Money Voucher layout
  * Matches design from physical sample: bilingual header, QR, table, totals, 3-signature footer
  */
 export function CashVoucherPreview({ data }) {
@@ -71,14 +71,14 @@ export function CashVoucherPreview({ data }) {
               }}
             >
               <span style={{ fontSize: '18px', fontWeight: 900, letterSpacing: '0.5px' }}>
-                ক্যাশ মানি ভাউচার
+                Cash Money Voucher
               </span>
             </div>
 
             {/* Agency Name bilingual */}
             <div style={{ lineHeight: 1.25 }}>
               <div style={{ fontSize: '16px', fontWeight: 800, color: '#0b3a60', letterSpacing: '0.3px' }}>
-                মনসুর আলি ট্রাভেলস
+                MONSUR ALI TRAVELS
               </div>
               <div style={{ fontSize: '14px', fontWeight: 700, color: '#222' }}>
                 Monsur Ali Travels
@@ -89,7 +89,7 @@ export function CashVoucherPreview({ data }) {
           {/* Right: Voucher No + QR */}
           <div style={{ flexShrink: 0, textAlign: 'right', minWidth: '130px' }}>
             <div style={{ fontSize: '10px', color: '#555' }}>
-              <span>ভাউচার নং : </span>
+              <span>Voucher No: </span>
               <span style={{ fontWeight: 700, color: '#0b3a60', fontSize: '11px' }}>
                 {data.voucherNo || 'MAT-KV-000000'}
               </span>
@@ -146,16 +146,16 @@ export function CashVoucherPreview({ data }) {
           <thead>
             <tr style={{ background: '#0b3a60', color: '#fff' }}>
               <th style={{ padding: '5px 8px', textAlign: 'center', width: '60px', borderRight: '1px solid #1c527e' }}>
-                ক্রমিক নং
+                SL No
               </th>
               <th style={{ padding: '5px 8px', textAlign: 'left', borderRight: '1px solid #1c527e' }}>
-                খরচের বিবরণ
+                Expense Description
               </th>
               <th style={{ padding: '5px 8px', textAlign: 'left', borderRight: '1px solid #1c527e' }}>
                 Description of Expense
               </th>
               <th style={{ padding: '5px 8px', textAlign: 'right', width: '100px' }}>
-                পরিমাণ BDT
+                Amount (BDT)
               </th>
             </tr>
           </thead>
@@ -238,7 +238,7 @@ export function CashVoucherPreview({ data }) {
         >
           <div style={{ minWidth: '90px', fontSize: '10px', fontWeight: 700, color: '#374151', lineHeight: 1.6 }}>
             <div>Amount in Words</div>
-            <div>কথায় পরিমাণ</div>
+            <div>Amount in Words</div>
           </div>
           <div style={{ flex: 1, borderLeft: '1px solid #e5e7eb', paddingLeft: '10px', fontSize: '11px', color: '#1f2937', lineHeight: 1.7 }}>
             <div style={{ fontWeight: 600 }}>{data.grandTotalInWordsEn || '—'}</div>
@@ -270,7 +270,7 @@ export function CashVoucherPreview({ data }) {
           {/* Prepared By */}
           <div style={{ textAlign: 'center' }}>
             <div style={{ borderTop: '1.5px solid #374151', paddingTop: '6px', marginTop: '24px' }}>
-              <div style={{ fontSize: '10px', fontWeight: 700, color: '#1f2937' }}>প্রণকারীর স্বাক্ষর ও নাম</div>
+              <div style={{ fontSize: '10px', fontWeight: 700, color: '#1f2937' }}>Prepared By (Signature & Name)</div>
               <div style={{ fontSize: '10px', color: '#6b7280' }}>(Signature &amp; Name)</div>
               {data.preparedBy && (
                 <div style={{ fontSize: '10px', color: '#374151', marginTop: '2px' }}>{data.preparedBy}</div>
@@ -281,7 +281,7 @@ export function CashVoucherPreview({ data }) {
           {/* Authority */}
           <div style={{ textAlign: 'center' }}>
             <div style={{ borderTop: '1.5px solid #374151', paddingTop: '6px', marginTop: '24px' }}>
-              <div style={{ fontSize: '10px', fontWeight: 700, color: '#1f2937' }}>কর্তৃপক্ষর স্বাক্ষর ও পদবী</div>
+              <div style={{ fontSize: '10px', fontWeight: 700, color: '#1f2937' }}>Authorized Signatory & Designation</div>
               <div style={{ fontSize: '10px', color: '#6b7280' }}>(Signature &amp; Designation)</div>
               {data.accountsSignature && (
                 <div style={{ fontSize: '10px', color: '#374151', marginTop: '2px' }}>{data.accountsSignature}</div>

@@ -1,3 +1,3 @@
-export function formatCurrency(amount, currency = "৳") {
+export function formatCurrency(amount, currency = "BDT ") {
   return `${currency}${amount.toFixed(2)}`;
 }

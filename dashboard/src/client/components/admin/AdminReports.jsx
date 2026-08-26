@@ -78,7 +78,7 @@ export const AdminReports = ({ adminData, addToast }) => {
             Net Business Income ({selectedPeriod})
           </span>
           <div className="text-2xl font-black tracking-tight text-emerald-400">
-            ৳44,30,000
+            BDT 44,30,000
           </div>
           <p className="text-[11px] text-purple-200/80 pt-1 border-t border-white/10">
             45.0% Combined Operating Margin
@@ -90,7 +90,7 @@ export const AdminReports = ({ adminData, addToast }) => {
             Gross Factory Revenue
           </span>
           <div className="text-2xl font-black text-amber-500">
-            ৳61,00,000
+            BDT 61,00,000
           </div>
           <p className="text-[11px] text-muted-foreground pt-1 border-t border-border">
             1,250,000 Molded Bricks Sold
@@ -102,7 +102,7 @@ export const AdminReports = ({ adminData, addToast }) => {
             Gross Agency Revenue
           </span>
           <div className="text-2xl font-black text-sky-500">
-            ৳37,50,000
+            BDT 37,50,000
           </div>
           <p className="text-[11px] text-muted-foreground pt-1 border-t border-border">
             184 Placed Worker Contracts
@@ -114,7 +114,7 @@ export const AdminReports = ({ adminData, addToast }) => {
             Total Combined Expenses
           </span>
           <div className="text-2xl font-black text-rose-500">
-            ৳54,20,000
+            BDT 54,20,000
           </div>
           <p className="text-[11px] text-muted-foreground pt-1 border-t border-border">
             Fuel, Payroll & Vendor Disbursements

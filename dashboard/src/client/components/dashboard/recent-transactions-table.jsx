@@ -82,7 +82,7 @@ export function RecentTransactionsTable() {
                   </TableCell>
                   <TableCell>{getStatusBadge(tx.orderStatus || tx.paymentStatus)}</TableCell>
                   <TableCell className="text-right font-semibold text-xs">
-                    ৳{Number(tx.totalAmount || 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                    BDT {Number(tx.totalAmount || 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                   </TableCell>
                 </TableRow>
               ))

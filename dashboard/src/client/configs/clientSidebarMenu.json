@@ -1,19 +1,19 @@
 [
   {
     "groupLabel": "Agency",
-    "groupLabelBn": "এজেন্সি",
+    "groupLabelBn": "",
     "roles": ["admin", "owner", "superadmin", "accountant", "representative"],
     "items": [
       {
         "id": "clients-group",
         "name": "Clients & Billing",
-        "nameBn": "ক্লায়েন্ট ও বিলিং",
+        "nameBn": "",
         "icon": "Building2",
         "childItems": [
           {
             "id": "clients-all",
             "name": "All Clients",
-            "nameBn": "সকল ক্লায়েন্ট",
+            "nameBn": "",
             "portal": "agency",
             "submodule": "clients-all",
             "path": "/dashboard/agency/clients-all",
@@ -22,7 +22,7 @@
           {
             "id": "clients-add",
             "name": "Add Client",
-            "nameBn": "নতুন ক্লায়েন্ট",
+            "nameBn": "",
             "portal": "agency",
             "submodule": "clients-add",
             "path": "/dashboard/agency/clients-add",
@@ -34,20 +34,20 @@
   },
   {
     "groupLabel": "Accounts",
-    "groupLabelBn": "হিসাব ও লেজার",
+    "groupLabelBn": "",
     "roles": ["admin", "owner", "superadmin", "accountant", "accounts"],
     "excludeRoles": ["staff", "frontdesk", "visa_processor", "lawyer", "representative"],
     "items": [
       {
         "id": "accounts-group",
         "name": "Accounts",
-        "nameBn": "অ্যাকাউন্টস",
+        "nameBn": "",
         "icon": "Wallet",
         "childItems": [
           {
             "id": "acc-payments",
             "name": "Payments",
-            "nameBn": "পেমেন্টস",
+            "nameBn": "",
             "portal": "accounts",
             "submodule": "payments",
             "path": "/dashboard/accounts/payments",
@@ -56,7 +56,7 @@
           {
             "id": "acc-bills",
             "name": "Bills",
-            "nameBn": "বিলস",
+            "nameBn": "",
             "portal": "accounts",
             "submodule": "bills",
             "path": "/dashboard/accounts/bills",
@@ -65,7 +65,7 @@
           {
             "id": "acc-salaries",
             "name": "Salary Slips",
-            "nameBn": "বেতন হিসাব",
+            "nameBn": "",
             "portal": "accounts",
             "submodule": "salaries",
             "path": "/dashboard/accounts/salaries",
@@ -74,7 +74,7 @@
           {
             "id": "acc-expenses",
             "name": "Expense Tracking",
-            "nameBn": "ভাউচার খরচ",
+            "nameBn": "",
             "portal": "accounts",
             "submodule": "expenses",
             "path": "/dashboard/accounts/expenses",
@@ -83,7 +83,7 @@
           {
             "id": "acc-reports",
             "name": "Reports",
-            "nameBn": "রিপোর্টস",
+            "nameBn": "",
             "portal": "accounts",
             "submodule": "reports",
             "path": "/dashboard/accounts/reports",
@@ -95,18 +95,18 @@
   },
   {
     "groupLabel": "Document Studio",
-    "groupLabelBn": "ডকুমেন্ট স্টুডিও",
+    "groupLabelBn": "",
     "items": [
       {
         "id": "docs-group",
         "name": "Studio Generators",
-        "nameBn": "ডকুমেন্ট জেনারেটর",
+        "nameBn": "",
         "icon": "FileSpreadsheet",
         "childItems": [
           {
             "id": "doc-payroll",
             "name": "Salary Slip",
-            "nameBn": "বেতন স্লিপ",
+            "nameBn": "",
             "portal": "docs",
             "submodule": "payroll",
             "path": "/dashboard/docs/payroll",
@@ -115,7 +115,7 @@
           {
             "id": "doc-invoice",
             "name": "Invoice",
-            "nameBn": "ইনভয়েস",
+            "nameBn": "",
             "portal": "docs",
             "submodule": "invoice",
             "path": "/dashboard/docs/invoice",
@@ -124,7 +124,7 @@
           {
             "id": "doc-money-receipt",
             "name": "Money Receipt Voucher",
-            "nameBn": "মানি রিসিট ভাউচার",
+            "nameBn": "",
             "portal": "docs",
             "submodule": "money-receipt",
             "path": "/dashboard/docs/money-receipt",
@@ -133,7 +133,7 @@
           {
             "id": "doc-cash-voucher",
             "name": "Cash Money Voucher",
-            "nameBn": "ক্যাশ মানি ভাউচার",
+            "nameBn": "",
             "portal": "docs",
             "submodule": "cash-voucher",
             "path": "/dashboard/docs/cash-voucher",
@@ -142,7 +142,7 @@
           {
             "id": "doc-agreement",
             "name": "Employment Agreement",
-            "nameBn": "নিয়োগ চুক্তিপত্র",
+            "nameBn": "",
             "portal": "docs",
             "submodule": "agreement",
             "path": "/dashboard/docs/agreement",
@@ -151,7 +151,7 @@
           {
             "id": "doc-client-form",
             "name": "Client & Guardian Form",
-            "nameBn": "ক্লায়েন্ট ও অভিভাবক ফরম",
+            "nameBn": "",
             "portal": "docs",
             "submodule": "client-form",
             "path": "/dashboard/docs/client-form",
@@ -160,7 +160,7 @@
           {
             "id": "doc-indian-visa",
             "name": "Indian Visa Submission",
-            "nameBn": "ইন্ডিয়ান ভিসা ফাইল",
+            "nameBn": "",
             "portal": "docs",
             "submodule": "indian-visa",
             "path": "/dashboard/docs/indian-visa",
@@ -169,7 +169,7 @@
           {
             "id": "doc-passport-sub",
             "name": "Passport Submission Slip",
-            "nameBn": "পাসপোর্ট জমা রশিদ",
+            "nameBn": "",
             "portal": "docs",
             "submodule": "passport-sub",
             "path": "/dashboard/docs/passport-sub",
@@ -178,7 +178,7 @@
           {
             "id": "doc-exp-cert",
             "name": "Experience Certificate",
-            "nameBn": "অভিজ্ঞতা সনদপত্র",
+            "nameBn": "",
             "portal": "docs",
             "submodule": "experience-certificate",
             "path": "/dashboard/docs/experience-certificate",
@@ -187,7 +187,7 @@
           {
             "id": "doc-marr-cert",
             "name": "Marriage Certificate",
-            "nameBn": "বিবাহ সনদপত্র",
+            "nameBn": "",
             "portal": "docs",
             "submodule": "marriage-certificate",
             "path": "/dashboard/docs/marriage-certificate",
@@ -196,7 +196,7 @@
           {
             "id": "doc-char-cert",
             "name": "Character Certificate",
-            "nameBn": "চারিত্রিক সনদপত্র",
+            "nameBn": "",
             "portal": "docs",
             "submodule": "character-certificate",
             "path": "/dashboard/docs/character-certificate",
@@ -205,7 +205,7 @@
           {
             "id": "doc-job-verification",
             "name": "Job Verification Form",
-            "nameBn": "জব ভেরিফিকেশন ফরম",
+            "nameBn": "",
             "portal": "docs",
             "submodule": "job-verification",
             "path": "/dashboard/docs/job-verification",
@@ -214,7 +214,7 @@
           {
             "id": "doc-idcard",
             "name": "Employee ID Card",
-            "nameBn": "কর্মচারী আইডি কার্ড",
+            "nameBn": "",
             "portal": "docs",
             "submodule": "idcard",
             "path": "/dashboard/docs/idcard",
@@ -226,19 +226,19 @@
   },
   {
     "groupLabel": "Data Records Center",
-    "groupLabelBn": "ডাটা রেকর্ডস",
+    "groupLabelBn": "",
     "roles": ["admin", "owner", "superadmin", "frontdesk", "staff", "lawyer", "representative", "visa_processor"],
     "items": [
       {
         "id": "data-group",
         "name": "Records Management",
-        "nameBn": "সংরক্ষিত তথ্য",
+        "nameBn": "",
         "icon": "Database",
         "childItems": [
           {
             "id": "data-agreements",
             "name": "Agreement Records",
-            "nameBn": "চুক্তিপত্র রেকর্ড",
+            "nameBn": "",
             "portal": "data",
             "submodule": "agreements",
             "path": "/dashboard/data/agreements",
@@ -247,7 +247,7 @@
           {
             "id": "data-applications",
             "name": "Client Applications",
-            "nameBn": "ফরম রেকর্ড",
+            "nameBn": "",
             "portal": "data",
             "submodule": "client-applications",
             "path": "/dashboard/data/client-applications",
@@ -256,7 +256,7 @@
           {
             "id": "data-indian-visas",
             "name": "Indian Visa Records",
-            "nameBn": "ভিসা রেকর্ড",
+            "nameBn": "",
             "portal": "data",
             "submodule": "indian-visas",
             "path": "/dashboard/data/indian-visas",
@@ -265,7 +265,7 @@
           {
             "id": "data-passports",
             "name": "Passport Submissions",
-            "nameBn": "পাসপোর্ট রেকর্ড",
+            "nameBn": "",
             "portal": "data",
             "submodule": "passports",
             "path": "/dashboard/data/passports",

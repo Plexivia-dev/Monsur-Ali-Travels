@@ -33,11 +33,11 @@ import { toast } from 'sonner';
 import { useAuthStore } from '../../store/useAuthStore';
 
 const PIPELINE_STAGES = [
-  { id: 'ENTRY', title: 'New Entry (এন্ট্রি)' },
-  { id: 'PROCESSING', title: 'Processing (প্রসেসিং)' },
-  { id: 'APPROVED_OFFER_LETTER', title: 'Offer Approved (অফার লেটার)' },
-  { id: 'SUBMITTED_EMBASSY_BSF', title: 'Embassy/VFS Submitted (সাবমিটেড)' },
-  { id: 'COMPLETED_DELIVERED', title: 'Completed & Delivered (ডেলিভার্ড)' },
+  { id: 'ENTRY', title: 'New Entry' },
+  { id: 'PROCESSING', title: 'Processing' },
+  { id: 'APPROVED_OFFER_LETTER', title: 'Offer Letter Approved' },
+  { id: 'SUBMITTED_EMBASSY_BSF', title: 'Embassy / VFS Submitted' },
+  { id: 'COMPLETED_DELIVERED', title: 'Completed & Delivered' },
 ];
 
 export function CaseWorkspaceDrawer({ caseId, isOpen, onClose, onRefresh }) {
@@ -308,15 +308,15 @@ export function CaseWorkspaceDrawer({ caseId, isOpen, onClose, onRefresh }) {
           <div className="grid grid-cols-3 gap-3 p-4 bg-muted/10 border-b border-border text-center">
             <div className="p-3 rounded-xl bg-background border border-border shadow-xs">
               <span className="text-[11px] font-bold uppercase text-muted-foreground">Total Package</span>
-              <div className="text-base font-black text-foreground mt-0.5">৳{Number(totalAgreed).toLocaleString('en-IN')}</div>
+              <div className="text-base font-black text-foreground mt-0.5">BDT {Number(totalAgreed).toLocaleString('en-IN')}</div>
             </div>
             <div className="p-3 rounded-xl bg-background border border-border shadow-xs">
               <span className="text-[11px] font-bold uppercase text-emerald-600">Paid Amount</span>
-              <div className="text-base font-black text-emerald-600 mt-0.5">৳{Number(totalPaid).toLocaleString('en-IN')}</div>
+              <div className="text-base font-black text-emerald-600 mt-0.5">BDT {Number(totalPaid).toLocaleString('en-IN')}</div>
             </div>
             <div className="p-3 rounded-xl bg-background border border-border shadow-xs">
               <span className="text-[11px] font-bold uppercase text-rose-600">Due Balance</span>
-              <div className="text-base font-black text-rose-600 mt-0.5">৳{Number(totalDue).toLocaleString('en-IN')}</div>
+              <div className="text-base font-black text-rose-600 mt-0.5">BDT {Number(totalDue).toLocaleString('en-IN')}</div>
             </div>
           </div>
         )}
@@ -344,7 +344,7 @@ export function CaseWorkspaceDrawer({ caseId, isOpen, onClose, onRefresh }) {
             }`}
           >
             <Layers className="size-4" />
-            <span>Staff Tasks (কে কী কাজ করছে)</span>
+            <span>Staff Tasks & Assignments</span>
             <span className="ml-1 px-1.5 py-0.2 rounded-full text-[10px] bg-muted font-bold">
               {(caseData?.workflowTasks || []).length}
             </span>
@@ -359,7 +359,7 @@ export function CaseWorkspaceDrawer({ caseId, isOpen, onClose, onRefresh }) {
             }`}
           >
             <FileText className="size-4" />
-            <span>Uploaded Files (কে কোন ফাইল আপলোড করেছে)</span>
+            <span>Document Uploads & Scans</span>
             <span className="ml-1 px-1.5 py-0.2 rounded-full text-[10px] bg-muted font-bold">
               {(caseData?.vaultDocuments || []).length}
             </span>
@@ -374,7 +374,7 @@ export function CaseWorkspaceDrawer({ caseId, isOpen, onClose, onRefresh }) {
             }`}
           >
             <MessageSquare className="size-4" />
-            <span>Team Chat & Notes (মেসেজ)</span>
+            <span>Internal Notes & Team Chat</span>
             <span className="ml-1 px-1.5 py-0.2 rounded-full text-[10px] bg-sky-500/10 text-sky-600 font-bold">
               {(caseData?.internalMessages || []).length}
             </span>
@@ -436,19 +436,19 @@ export function CaseWorkspaceDrawer({ caseId, isOpen, onClose, onRefresh }) {
                       <div className="p-3 rounded-xl bg-background border border-border">
                         <span className="text-muted-foreground text-[10px] uppercase font-bold">1. Advance (Intake)</span>
                         <p className="text-sm font-black text-foreground mt-0.5">
-                          ৳{Number(ledger.step1_advance || caseData.initialPaidAmount || 0).toLocaleString('en-IN')}
+                          BDT {Number(ledger.step1_advance || caseData.initialPaidAmount || 0).toLocaleString('en-IN')}
                         </p>
                       </div>
                       <div className="p-3 rounded-xl bg-background border border-border">
                         <span className="text-sky-600 text-[10px] uppercase font-bold">2. Offer Letter Approval</span>
                         <p className="text-sm font-black text-foreground mt-0.5">
-                          ৳{Number(ledger.step2_offerApproval || 0).toLocaleString('en-IN')}
+                          BDT {Number(ledger.step2_offerApproval || 0).toLocaleString('en-IN')}
                         </p>
                       </div>
                       <div className="p-3 rounded-xl bg-background border border-border">
                         <span className="text-purple-600 text-[10px] uppercase font-bold">3. Visa Delivery Final</span>
                         <p className="text-sm font-black text-foreground mt-0.5">
-                          ৳{Number(ledger.step3_delivery || 0).toLocaleString('en-IN')}
+                          BDT {Number(ledger.step3_delivery || 0).toLocaleString('en-IN')}
                         </p>
                       </div>
                     </div>
@@ -491,7 +491,7 @@ export function CaseWorkspaceDrawer({ caseId, isOpen, onClose, onRefresh }) {
                 </div>
               )}
 
-              {/* TAB 2: STAFF TASKS (কে কী কাজ করছে) */}
+              {/* TAB 2: STAFF TASKS */}
               {activeTab === 'tasks' && (
                 <div className="space-y-4">
                   <div className="flex items-center justify-between">
@@ -558,7 +558,7 @@ export function CaseWorkspaceDrawer({ caseId, isOpen, onClose, onRefresh }) {
                                   ) : (
                                     <CheckCircle2 className="size-3.5" />
                                   )}
-                                  <span>Mark as Done (কাজ সম্পন্ন)</span>
+                                  <span>Mark as Completed</span>
                                 </button>
                               )}
                             </div>
@@ -570,7 +570,7 @@ export function CaseWorkspaceDrawer({ caseId, isOpen, onClose, onRefresh }) {
                 </div>
               )}
 
-              {/* TAB 3: DOCUMENTS VAULT (কে কোন ফাইল আপলোড করেছে) */}
+              {/* TAB 3: DOCUMENTS VAULT */}
               {activeTab === 'documents' && (
                 <div className="space-y-4">
                   <div className="flex items-center justify-between">
@@ -647,7 +647,7 @@ export function CaseWorkspaceDrawer({ caseId, isOpen, onClose, onRefresh }) {
                 </div>
               )}
 
-              {/* TAB 4: INTERNAL TEAM CHAT & NOTES (টিম মেসেজ ও নোটস) */}
+              {/* TAB 4: INTERNAL TEAM CHAT & NOTES */}
               {activeTab === 'communication' && (
                 <div className="space-y-4">
                   <div className="flex items-center justify-between">
@@ -752,8 +752,8 @@ export function CaseWorkspaceDrawer({ caseId, isOpen, onClose, onRefresh }) {
                   onChange={(e) => setUploadDocForm({ ...uploadDocForm, documentName: e.target.value })}
                   className="w-full px-3 py-2 bg-muted/50 border border-border rounded-xl text-foreground focus:outline-none"
                 >
-                  <option value="Passport Scan Copy">Passport Scan Copy (পাসপোর্ট স্ক্যান)</option>
-                  <option value="Photo 2x2">Photo 2x2 White BG (ছবি)</option>
+                  <option value="Passport Scan Copy">Passport Scan Copy</option>
+                  <option value="Photo 2x2">Photo 2x2 White BG</option>
                   <option value="Police Clearance Certificate (PCC)">Police Clearance (PCC)</option>
                   <option value="National ID (NID)">National ID Card (NID)</option>
                   <option value="Electricity / Utility Bill">Electricity / Utility Bill</option>

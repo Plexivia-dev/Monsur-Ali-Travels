@@ -7,7 +7,7 @@ export function getDefaultMarriageCertificateData() {
     volumeNo: "",
     pageNo: "",
     certificateTitle: "MARRIAGE CERTIFICATE",
-    certificateSubtitle: "OFFICIAL MARITAL STATUS & NIKAHNAMA EXTRACT (বিবাহ প্রত্যয়নপত্র)",
+    certificateSubtitle: "OFFICIAL MARITAL STATUS & NIKAHNAMA EXTRACT",
 
     // Issuing Authority / Registrar / Kazi Office
     registrar: {
@@ -21,7 +21,7 @@ export function getDefaultMarriageCertificateData() {
       kaziName: "",
     },
 
-    // Groom Details (বর)
+    // Groom Details
     groom: {
       name: "",
       fatherName: "",
@@ -34,7 +34,7 @@ export function getDefaultMarriageCertificateData() {
       address: "",
     },
 
-    // Bride Details (কনে)
+    // Bride Details
     bride: {
       name: "",
       fatherName: "",

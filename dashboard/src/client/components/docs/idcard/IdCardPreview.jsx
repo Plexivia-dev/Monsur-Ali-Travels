@@ -1,7 +1,7 @@
 import React from 'react';
 import { User, MapPin, Phone, Mail, Globe, Plane, ShieldCheck, Award, Calendar, Droplets } from 'lucide-react';
-import logoImg from '../../../assets/logo.png';
-import { formatToDdMmYyyy } from '../../../lib/utils';
+import logoImg from '@shared/assets/logo.png';
+import { formatToDdMmYyyy } from '@shared/lib/utils';
 
 export function IdCardPreview({ cardData, frontRef, backRef }) {
   // Generate QR code URL
@@ -15,7 +15,7 @@ export function IdCardPreview({ cardData, frontRef, backRef }) {
       <div className="flex flex-col items-center">
         <div className="flex items-center gap-2 mb-3">
           <span className="text-xs font-bold text-slate-600 uppercase tracking-wider bg-slate-100 px-3 py-1 rounded-full border border-slate-200">
-            📇 Front Side (সামনের অংশ)
+            📇 Front Side
           </span>
         </div>
 
@@ -175,7 +175,7 @@ export function IdCardPreview({ cardData, frontRef, backRef }) {
       <div className="flex flex-col items-center">
         <div className="flex items-center gap-2 mb-3">
           <span className="text-xs font-bold text-slate-600 uppercase tracking-wider bg-slate-100 px-3 py-1 rounded-full border border-slate-200">
-            💳 Back Side (পেছনের অংশ)
+            💳 Back Side
           </span>
         </div>
 

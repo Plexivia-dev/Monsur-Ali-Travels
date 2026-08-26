@@ -219,7 +219,7 @@ export function MembersTable({
                 </TableCell>
                 <TableCell className="w-[130px] text-muted-foreground whitespace-nowrap">{member.phone}</TableCell>
                 <TableCell className="text-right w-[100px]">{member.totalOrders}</TableCell>
-                <TableCell className="text-right w-[130px] font-medium whitespace-nowrap">৳{member.lifetimeSpent.toFixed(2)}</TableCell>
+                <TableCell className="text-right w-[130px] font-medium whitespace-nowrap">BDT {member.lifetimeSpent.toFixed(2)}</TableCell>
                 <TableCell className="w-[110px] whitespace-nowrap">{new Date(member.joinedDate).toLocaleDateString()}</TableCell>
                 <TableCell className="text-right w-[60px]">
                   <DropdownMenu>

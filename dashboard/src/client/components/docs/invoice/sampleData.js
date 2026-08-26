@@ -1,4 +1,4 @@
-import agencyInfo from '../../../lib/information.json';
+import agencyInfo from '@shared/lib/information.json';
 
 export function generateUniqueInvoiceNo() {
   const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';

@@ -4,7 +4,7 @@ import { InvoicePreview } from './InvoicePreview';
 import { PrintablePaper } from '../common/PrintablePaper';
 import { getDefaultInvoiceData, generateUniqueInvoiceNo } from './sampleData';
 import { Printer, Edit3, CheckCircle2 } from 'lucide-react';
-import { apiClient } from '../../../lib/api-client';
+import { apiClient } from '@shared/lib/api-client';
 import { printDocument } from '@shared/lib/utils';
 import { toast } from 'sonner';
 

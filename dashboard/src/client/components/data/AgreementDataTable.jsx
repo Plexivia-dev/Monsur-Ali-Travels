@@ -17,90 +17,90 @@ function normalizeAgreementData(item) {
     _id: item._id,
     agreementId: item.agreementId || '',
     header: {
-      companyName: item.প্রতিষ্ঠানের_তথ্য?.প্রতিষ্ঠানের_নাম || item.header?.companyName || 'মনসুর আলী ট্রাভেলস (MONSUR ALI TRAVELS)',
-      officeAddress: item.প্রতিষ্ঠানের_তথ্য?.অফিসের_ঠিকানা || item.header?.officeAddress || 'Mominpur Jagannathpur Road, Sunamganj, Post Code 3060',
-      phone: item.প্রতিষ্ঠানের_তথ্য?.মোবাইল_নম্বর || item.header?.phone || '+8801345579534',
-      email: item.প্রতিষ্ঠানের_তথ্য?.ইমেইল_অ্যাড্রেস || item.header?.email || 'contact@monsuralitravels.com',
+      companyName: item.companyInfo?.companyName || item.header?.companyName || 'MONSUR ALI TRAVELS',
+      officeAddress: item.companyInfo?.officeAddress || item.header?.officeAddress || 'Mominpur Jagannathpur Road, Sunamganj, Post Code 3060',
+      phone: item.companyInfo?.phone || item.header?.phone || '+8801345579534',
+      email: item.companyInfo?.email || item.header?.email || 'contact@monsuralitravels.com',
     },
     parties: {
-      agreementDate: item.সাধারণ_তথ্য?.চুক্তির_তারিখ || item.parties?.agreementDate || '',
-      nidPassport: item.সাধারণ_তথ্য?.জাতীয়_পরিচয়পত্র_পাসপোর্ট || item.parties?.nidPassport || '',
-      employerName: item.সাধারণ_তথ্য?.নিয়োগকর্তা_কর্তৃপক্ষ || item.parties?.employerName || '',
-      employerPhone: item.সাধারণ_তথ্য?.কর্তৃপক্ষের_মোবাইল_নম্বর || item.parties?.employerPhone || '',
-      employeeName: item.সাধারণ_তথ্য?.কর্মচারীর_পূর্ণ_নাম || item.parties?.employeeName || '',
-      employeeEmail: item.সাধারণ_তথ্য?.কর্মচারীর_ইমেইল || item.parties?.employeeEmail || '',
-      fatherHusbandName: item.সাধারণ_তথ্য?.পিতা_স্বামীর_নাম || item.parties?.fatherHusbandName || '',
-      address: item.সাধারণ_তথ্য?.বর্তমান_স্থায়ী_ঠিকানা || item.parties?.address || '',
+      agreementDate: item.parties?.agreementDate || item.parties?.agreementDate || '',
+      nidPassport: item.parties?.nidPassport || item.parties?.nidPassport || '',
+      employerName: item.parties?.employerName || item.parties?.employerName || '',
+      employerPhone: item.parties?.employerPhone || item.parties?.employerPhone || '',
+      employeeName: item.parties?.employeeName || item.parties?.employeeName || '',
+      employeeEmail: item.parties?.employeeEmail || item.parties?.employeeEmail || '',
+      fatherHusbandName: item.parties?.fatherHusbandName || item.parties?.fatherHusbandName || '',
+      address: item.parties?.address || item.parties?.address || '',
     },
     guardian: {
-      guardianName: item.অভিভাবকের_তথ্য?.অভিভাবকের_নাম || item.guardian?.guardianName || '',
-      guardianPhone: item.অভিভাবকের_তথ্য?.মোবাইল_নম্বর || item.guardian?.guardianPhone || '',
-      relationship: item.অভিভাবকের_তথ্য?.সম্পর্ক || item.guardian?.relationship || 'পিতা',
-      emergencyPhone: item.অভিভাবকের_তথ্য?.বিকল্প_জরুরি_নম্বর || item.guardian?.emergencyPhone || '',
-      guardianNid: item.অভিভাবকের_তথ্য?.জাতীয়_পরিচয়পত্র_নং || item.guardian?.guardianNid || '',
-      guardianAddress: item.অভিভাবকের_তথ্য?.ঠিকানা || item.guardian?.guardianAddress || '',
+      guardianName: item.guardian?.guardianName || item.guardian?.guardianName || '',
+      guardianPhone: item.guardian?.guardianPhone || item.guardian?.guardianPhone || '',
+      relationship: item.guardian?.relationship || item.guardian?.relationship || 'Father',
+      emergencyPhone: item.guardian?.emergencyPhone || item.guardian?.emergencyPhone || '',
+      guardianNid: item.guardian?.guardianNid || item.guardian?.guardianNid || '',
+      guardianAddress: item.guardian?.guardianAddress || item.guardian?.guardianAddress || '',
     },
     position: {
-      designation: item.পদের_বিবরণ?.পদের_নাম || item.position?.designation || '',
-      department: item.পদের_বিবরণ?.বিভাগ || item.position?.department || '',
-      joiningDate: item.পদের_বিবরণ?.যোগদানের_তারিখ || item.position?.joiningDate || '',
-      location: item.পদের_বিবরণ?.কর্মস্থল || item.position?.location || 'হেড অফিস, নাদampur',
-      jobType: item.পদের_বিবরণ?.নিয়োগের_ধরন || item.position?.jobType || 'স্থায়ী / পূর্ণকালীন (Full-Time)',
-      workSchedule: item.পদের_বিবরণ?.কাজের_সময়_ও_ছুটি || item.position?.workSchedule || 'সকাল ৯:০০ - সন্ধ্যা ৬:০০, রবিবার হতে বৃহস্পতিবার',
-      probationMonths: item.পদের_বিবরণ?.শিক্ষানবিস_সময়কাল || item.position?.probationMonths || '৩ (তিন) মাস',
+      designation: item.position?.designation || item.position?.designation || '',
+      department: item.position?.department || item.position?.department || '',
+      joiningDate: item.position?.joiningDate || item.position?.joiningDate || '',
+      location: item.position?.location || item.position?.location || 'Head Office, Nadampur',
+      jobType: item.position?.jobType || item.position?.jobType || 'Permanent (Full-Time)',
+      workSchedule: item.position?.workSchedule || item.position?.workSchedule || '9:00 AM - 6:00 PM, Sunday to Thursday',
+      probationMonths: item.position?.probationMonths || item.position?.probationMonths || '3 (Three) Months',
     },
     salary: {
-      basicSalary: item.বেতন_কাঠামো?.মূল_বেতন || item.বেতন_ও_ভাতা?.মূল_বেতন || item.salary?.basicSalary || item.compensation?.basicSalary || '15000',
-      houseRent: item.বেতন_কাঠামো?.বাড়ি_ভাড়া_ভাতা || item.বেতন_ও_ভাতা?.বাড়ি_ভাড়া || item.salary?.houseRent || item.compensation?.houseRent || '5000',
-      medical: item.বেতন_কাঠামো?.চিকিৎসা_ভাতা || item.বেতন_ও_ভাতা?.চিকিৎসা_ভাতা || item.salary?.medical || item.compensation?.medicalAllowance || '2000',
-      conveyance: item.বেতন_কাঠামো?.যাতায়াত_ভাতা || item.বেতন_ও_ভাতা?.যাতায়াত_ভাতা || item.salary?.conveyance || item.compensation?.conveyanceAllowance || '1500',
-      specialAllowance: item.বেতন_কাঠামো?.বিশেষ_ভাতা || item.বেতন_ও_ভাতা?.বিশেষ_ভাতা || item.salary?.specialAllowance || item.compensation?.specialAllowance || '1500',
-      grossSalary: item.বেতন_কাঠামো?.সর্বমোট_মাসিক_বেতন || item.salary?.grossSalary || '25,000',
-      grossSalaryInWords: item.বেতন_কাঠামো?.বেতন_কথায় || item.salary?.grossSalaryInWords || '',
+      basicSalary: item.salary?.basicSalary || item.salary?.basicSalary || item.salary?.basicSalary || item.compensation?.basicSalary || '15000',
+      houseRent: item.salary?.houseRent || item.salary?.houseRent || item.salary?.houseRent || item.compensation?.houseRent || '5000',
+      medical: item.salary?.medical || item.salary?.medical || item.salary?.medical || item.compensation?.medicalAllowance || '2000',
+      conveyance: item.salary?.conveyance || item.salary?.conveyance || item.salary?.conveyance || item.compensation?.conveyanceAllowance || '1500',
+      specialAllowance: item.salary?.specialAllowance || item.compensation?.specialAllowance || '1500',
+      grossSalary: item.salary?.grossSalary || item.salary?.grossSalary || '25,000',
+      grossSalaryInWords: item.salary?.grossSalaryInWords || '',
     },
     leave: {
-      casualDays: item.ছুটি_ও_সুবিধা?.নৈমিত্তিক_ছুটি_দিন || item.leave?.casualDays || '10',
-      sickDays: item.ছুটি_ও_সুবিধা?.অসুস্থতাজনিত_ছুটি_দিন || item.leave?.sickDays || '14',
-      earnedDays: item.ছুটি_ও_সুবিধা?.অর্জিত_ছুটি_দিন || item.leave?.earnedDays || '18',
-      lunchProvided: item.ছুটি_ও_সুবিধা?.ফ্রি_লাঞ্চ_সুবিধা ?? item.leave?.lunchProvided ?? true,
-      teaSnacks: item.ছুটি_ও_সুবিধা?.চা_নাস্তা_সুবিধা ?? item.leave?.teaSnacks ?? true,
-      lunchAllowance: item.ছুটি_ও_সুবিধা?.লাঞ্চ_ভাতা || item.leave?.lunchAllowance || '',
+      casualDays: item.leave?.casualDays || item.leave?.casualDays || '10',
+      sickDays: item.leave?.sickDays || item.leave?.sickDays || '14',
+      earnedDays: item.leave?.earnedDays || item.leave?.earnedDays || '18',
+      lunchProvided: item.leave?.lunchProvided ?? item.leave?.lunchProvided ?? true,
+      teaSnacks: item.leave?.teaSnacks ?? item.leave?.teaSnacks ?? true,
+      lunchAllowance: item.leave?.lunchAllowance || item.leave?.lunchAllowance || '',
     },
     witnesses: {
-      firstWitnessName: item.স্বাক্ষীগণের_তথ্য?.প্রথম_পক্ষের_সাক্ষী?.নাম || item.witnesses?.firstWitnessName || '',
-      firstWitnessPhone: item.স্বাক্ষীগণের_তথ্য?.প্রথম_পক্ষের_সাক্ষী?.মোবাইল || item.witnesses?.firstWitnessPhone || '',
-      firstWitnessAddress: item.স্বাক্ষীগণের_তথ্য?.প্রথম_পক্ষের_সাক্ষী?.ঠিকানা || item.witnesses?.firstWitnessAddress || '',
-      secondWitnessName: item.স্বাক্ষীগণের_তথ্য?.দ্বিতীয়_পক্ষের_সাক্ষী?.নাম || item.witnesses?.secondWitnessName || '',
-      secondWitnessPhone: item.স্বাক্ষীগণের_তথ্য?.দ্বিতীয়_পক্ষের_সাক্ষী?.মোবাইল || item.witnesses?.secondWitnessPhone || '',
-      secondWitnessAddress: item.স্বাক্ষীগণের_তথ্য?.দ্বিতীয়_পক্ষের_সাক্ষী?.ঠিকানা || item.witnesses?.secondWitnessAddress || '',
+      firstWitnessName: item.witnesses?.firstWitness?.name || item.witnesses?.firstWitnessName || '',
+      firstWitnessPhone: item.witnesses?.firstWitnessPhone || '',
+      firstWitnessAddress: item.witnesses?.firstWitness?.address || item.witnesses?.firstWitnessAddress || '',
+      secondWitnessName: item.witnesses?.secondWitness?.name || item.witnesses?.secondWitnessName || '',
+      secondWitnessPhone: item.witnesses?.secondWitnessPhone || '',
+      secondWitnessAddress: item.witnesses?.secondWitness?.address || item.witnesses?.secondWitnessAddress || '',
     },
     compensation: {
-      basicSalary: item.বেতন_ও_ভাতা?.মূল_বেতন || item.compensation?.basicSalary || 0,
-      houseRent: item.বেতন_ও_ভাতা?.বাড়ি_ভাড়া || item.compensation?.houseRent || 0,
-      medicalAllowance: item.বেতন_ও_ভাতা?.চিকিৎসা_ভাতা || item.compensation?.medicalAllowance || 0,
-      conveyanceAllowance: item.বেতন_ও_ভাতা?.যাতায়াত_ভাতা || item.compensation?.conveyanceAllowance || 0,
-      specialAllowance: item.বেতন_ও_ভাতা?.বিশেষ_ভাতা || item.compensation?.specialAllowance || 0,
-      paymentMethod: item.বেতন_ও_ভাতা?.পরিশোধের_মাধ্যম || item.compensation?.paymentMethod || 'ব্যাংক ট্রান্সফার / নগদ ক্যাশ',
-      paymentDate: item.বেতন_ও_ভাতা?.বেতন_প্রদানের_তারিখ || item.compensation?.paymentDate || 'পরবর্তী মাসের ৭ কর্মদিবসের মধ্যে',
+      basicSalary: item.salary?.basicSalary || item.compensation?.basicSalary || 0,
+      houseRent: item.salary?.houseRent || item.compensation?.houseRent || 0,
+      medicalAllowance: item.salary?.medical || item.compensation?.medicalAllowance || 0,
+      conveyanceAllowance: item.salary?.conveyance || item.compensation?.conveyanceAllowance || 0,
+      specialAllowance: item.__?.End_ || item.compensation?.specialAllowance || 0,
+      paymentMethod: item.__?._ || item.compensation?.paymentMethod || '  / Direct Cash',
+      paymentDate: item.__?.__ || item.compensation?.paymentDate || '    ',
     },
     security: {
-      guarantorName: item.নিরাপত্তা_ও_জামানত?.জামিনদারের_নাম || item.security?.guarantorName || '',
-      guarantorNid: item.নিরাপত্তা_ও_জামানত?.জামিনদারের_জাতীয়_পরিচয়পত্র_নং || item.security?.guarantorNid || '',
-      guarantorPhone: item.নিরাপত্তা_ও_জামানত?.জামিনদারের_মোবাইল_নম্বর || item.security?.guarantorPhone || '',
-      guarantorAddress: item.নিরাপত্তা_ও_জামানত?.জামিনদারের_ঠিকানা || item.security?.guarantorAddress || '',
-      depositAmount: item.নিরাপত্তা_ও_জামানত?.জামানত_বন্ডের_পরিমাণ || item.security?.depositAmount || 0,
-      securityChequeNo: item.নিরাপত্তা_ও_জামানত?.সিকিউরিটি_চেক_নম্বর || item.security?.securityChequeNo || '',
-      chequeBank: item.নিরাপত্তা_ও_জামানত?.ব্যাংকের_নাম || item.security?.chequeBank || '',
+      guarantorName: item.__?._ || item.security?.guarantorName || '',
+      guarantorNid: item.__?.___ || item.security?.guarantorNid || '',
+      guarantorPhone: item.__?.__ || item.security?.guarantorPhone || '',
+      guarantorAddress: item.__?._ || item.security?.guarantorAddress || '',
+      depositAmount: item.__?.__ || item.security?.depositAmount || 0,
+      securityChequeNo: item.__?.__ || item.security?.securityChequeNo || '',
+      chequeBank: item.__?._ || item.security?.chequeBank || '',
     },
-    status: item.স্ট্যাটাস || item.status || 'Active',
-    agreementTerms: item.চুক্তির_শর্তাবলী || item.agreementTerms || '',
+    status: item.Status || item.status || 'Active',
+    agreementTerms: item._ || item.agreementTerms || '',
     meta: {
       witness1Name: item.meta?.witness1Name || '',
       witness1Address: item.meta?.witness1Address || '',
       witness2Name: item.meta?.witness2Name || '',
       witness2Address: item.meta?.witness2Address || '',
-      firstPartySignatureName: item.meta?.firstPartySignatureName || 'মো: ইকরামুল হোসেন',
-      secondPartySignatureName: item.meta?.secondPartySignatureName || item.সাধারণ_তথ্য?.কর্মচারীর_পূর্ণ_নাম || '',
+      firstPartySignatureName: item.meta?.firstPartySignatureName || ':  ',
+      secondPartySignatureName: item.meta?.secondPartySignatureName || item.parties?.employeeName || '',
     }
   };
 }
@@ -155,11 +155,11 @@ export function AgreementDataTable() {
     try {
       setIsDeleting(true);
       await apiClient.delete(`/api/v1/client/docs/agreements/${deleteTarget.id}`);
-      toast.success(`চুক্তিপত্র "${deleteTarget.agreementId || deleteTarget.id}" সফলভাবে মুছে ফেলা হয়েছে।`);
+      toast.success(` "${deleteTarget.agreementId || deleteTarget.id}" Success   ।`);
       setDeleteTarget(null);
       fetchData(pagination.page);
     } catch (err) {
-      toast.error('চুক্তিপত্র মুছে ফেলতে ব্যর্থ হয়েছে।');
+      toast.error('   Failed ।');
     } finally {
       setIsDeleting(false);
     }
@@ -243,7 +243,7 @@ export function AgreementDataTable() {
                 <th className="p-3">{t('tables.employeeName', 'Employee Name')}</th>
                 <th className="p-3">{t('tables.designationDept', 'Designation & Dept')}</th>
                 <th className="p-3">{t('tables.agreementDate', 'Agreement Date')}</th>
-                <th className="p-3">{t('tables.monthlySalary', 'Monthly Salary (৳)')}</th>
+                <th className="p-3">{t('tables.monthlySalary', 'Monthly Salary (BDT )')}</th>
                 <th className="p-3 text-center">{t('tables.status', 'Status')}</th>
                 <th className="p-3 text-right">{t('tables.action', 'Actions')}</th>
               </tr>
@@ -253,7 +253,7 @@ export function AgreementDataTable() {
                 <tr>
                   <td colSpan={8} className="text-center py-10 text-muted-foreground">
                     <RefreshCw className="w-5 h-5 animate-spin mx-auto text-primary mb-2" />
-                    <span>ডাটা লোড হচ্ছে...</span>
+                    <span>  ...</span>
                   </td>
                 </tr>
               ) : data.length === 0 ? (
@@ -264,11 +264,11 @@ export function AgreementDataTable() {
                 </tr>
               ) : (
                 data.map((item, idx) => {
-                  const empName = item.সাধারণ_তথ্য?.কর্মচারীর_পূর্ণ_নাম || item.parties?.employeeName || '—';
-                  const designation = item.পদের_বিবরণ?.পদের_নাম || item.position?.designation || '—';
-                  const dept = item.পদের_বিবরণ?.বিভাগ || item.position?.department || '';
-                  const agreementDate = item.সাধারণ_তথ্য?.চুক্তির_তারিখ || item.parties?.agreementDate || '';
-                  const gross = item.বেতন_কাঠামো?.সর্বমোট_মাসিক_বেতন || item.salary?.grossSalary || '0';
+                  const empName = item.parties?.employeeName || item.parties?.employeeName || '—';
+                  const designation = item.position?.designation || item.position?.designation || '—';
+                  const dept = item.position?.department || item.position?.department || '';
+                  const agreementDate = item.parties?.agreementDate || item.parties?.agreementDate || '';
+                  const gross = item.salary?.grossSalary || item.salary?.grossSalary || '0';
 
                   return (
                     <tr key={item._id || idx} className="hover:bg-muted/30 transition-colors">
@@ -289,11 +289,11 @@ export function AgreementDataTable() {
                         {formatToDdMmYyyy(agreementDate) || '—'}
                       </td>
                       <td className="p-3 font-mono font-bold text-foreground">
-                        {gross} ৳
+                        {gross} BDT 
                       </td>
                       <td className="p-3 text-center">
                         <span className="inline-block px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-500/10 text-emerald-600 border border-emerald-500/20">
-                          {item.স্ট্যাটাস || item.status || 'Active'}
+                          {item.Status || item.status || 'Active'}
                         </span>
                       </td>
                       <td className="p-3 text-right">
@@ -342,10 +342,10 @@ export function AgreementDataTable() {
             <div className="px-5 py-3.5 border-b border-border bg-card flex items-center justify-between gap-3">
               <div>
                 <h3 className="text-sm font-bold text-foreground">
-                  চুক্তিপত্র প্রিভিউ ও ডাউনলোড — {previewItem.agreementId || ''}
+                      — {previewItem.agreementId || ''}
                 </h3>
                 <p className="text-[11px] text-muted-foreground">
-                  কর্মচারী: {previewItem.সাধারণ_তথ্য?.কর্মচারীর_পূর্ণ_নাম || previewItem.parties?.employeeName || '—'}
+                  Employee: {previewItem._?.__ || previewItem.parties?.employeeName || '—'}
                 </p>
               </div>
 

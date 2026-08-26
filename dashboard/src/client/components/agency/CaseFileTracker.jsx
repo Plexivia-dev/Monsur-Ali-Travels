@@ -290,18 +290,18 @@ function CaseDetailPanel({ caseDoc, users, onClose, onRefresh }) {
                 ].map(({ label, val }) => (
                   <div key={label} className="text-center bg-card border border-border rounded-lg p-2">
                     <p className="text-[10px] text-muted-foreground">{label}</p>
-                    <p className="font-bold text-foreground">৳{(val || 0).toLocaleString()}</p>
+                    <p className="font-bold text-foreground">BDT {(val || 0).toLocaleString()}</p>
                   </div>
                 ))}
               </div>
               <div className="flex items-center justify-between text-xs border-t border-border pt-2">
                 <span className="text-muted-foreground">Total Paid</span>
-                <span className="font-bold text-emerald-400">৳{(caseDoc.paymentLedger.totalPaidAmount || 0).toLocaleString()}</span>
+                <span className="font-bold text-emerald-400">BDT {(caseDoc.paymentLedger.totalPaidAmount || 0).toLocaleString()}</span>
               </div>
               {caseDoc.paymentLedger.dueAmount > 0 && (
                 <div className="flex items-center justify-between text-xs">
                   <span className="text-muted-foreground">Remaining Due</span>
-                  <span className="font-bold text-red-400">৳{(caseDoc.paymentLedger.dueAmount || 0).toLocaleString()}</span>
+                  <span className="font-bold text-red-400">BDT {(caseDoc.paymentLedger.dueAmount || 0).toLocaleString()}</span>
                 </div>
               )}
             </div>
@@ -458,13 +458,13 @@ function NewCaseModal({ onClose, onSuccess }) {
           </div>
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="block font-semibold text-muted-foreground mb-1">Total Agreed Amount (৳)</label>
+              <label className="block font-semibold text-muted-foreground mb-1">Total Agreed Amount (BDT )</label>
               <input type="number" value={form['paymentLedger.totalAgreedAmount']} onChange={e => set('paymentLedger.totalAgreedAmount', e.target.value)}
                 placeholder="0"
                 className="w-full px-3 py-2 bg-muted/50 border border-border rounded-lg text-foreground" />
             </div>
             <div>
-              <label className="block font-semibold text-muted-foreground mb-1">Advance Received (৳)</label>
+              <label className="block font-semibold text-muted-foreground mb-1">Advance Received (BDT )</label>
               <input type="number" value={form['paymentLedger.step1_advance']} onChange={e => set('paymentLedger.step1_advance', e.target.value)}
                 placeholder="0"
                 className="w-full px-3 py-2 bg-muted/50 border border-border rounded-lg text-foreground" />
@@ -653,7 +653,7 @@ export function CaseFileTracker() {
             <span>Applicant</span>
             <span>Status</span>
             <span className="hidden md:block">Case Type</span>
-            <span className="hidden md:block">Due (৳)</span>
+            <span className="hidden md:block">Due (BDT )</span>
             <span>Action</span>
           </div>
 
@@ -699,7 +699,7 @@ export function CaseFileTracker() {
                 {/* Due Amount */}
                 <div className="hidden md:block text-right">
                   {(c.paymentLedger?.dueAmount || 0) > 0 ? (
-                    <span className="text-xs font-bold text-red-400">৳{(c.paymentLedger.dueAmount).toLocaleString()}</span>
+                    <span className="text-xs font-bold text-red-400">BDT {(c.paymentLedger.dueAmount).toLocaleString()}</span>
                   ) : (
                     <span className="text-xs text-emerald-400 font-medium">Paid ✓</span>
                   )}

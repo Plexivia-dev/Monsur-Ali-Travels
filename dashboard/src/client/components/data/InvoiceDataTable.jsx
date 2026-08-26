@@ -59,12 +59,12 @@ export function InvoiceDataTable() {
     try {
       setIsDeleting(true);
       await apiClient.delete(`/api/v1/client/docs/invoices/${deleteTarget.id}`);
-      toast.success('ইনভয়েস মুছে ফেলা হয়েছে।');
+      toast.success('Invoice deleted successfully.');
       setDeleteTarget(null);
       fetchData(pagination.page, pagination.limit, search, status);
     } catch (err) {
       console.error('Failed to delete invoice:', err);
-      toast.error('ইনভয়েস মুছতে সমস্যা হয়েছে।');
+      toast.error('Failed to delete invoice.');
     } finally {
       setIsDeleting(false);
     }
@@ -172,7 +172,7 @@ export function InvoiceDataTable() {
                 <tr>
                   <td colSpan={8} className="text-center py-10 text-muted-foreground">
                     <RefreshCw className="w-5 h-5 animate-spin mx-auto text-primary mb-2" />
-                    <span>ডাটা লোড হচ্ছে...</span>
+                    <span>Loading data...</span>
                   </td>
                 </tr>
               ) : data.length === 0 ? (
@@ -205,7 +205,7 @@ export function InvoiceDataTable() {
                       {formatToDdMmYyyy(item.dueDate) || '—'}
                     </td>
                     <td className="p-3 font-mono text-foreground font-semibold">
-                      {item.items?.length || 0} টি
+                      {item.items?.length || 0} Items
                     </td>
                     <td className="p-3 text-center">
                       {getStatusBadge(item.paymentStatus)}
@@ -255,10 +255,10 @@ export function InvoiceDataTable() {
             <div className="px-5 py-3.5 border-b border-border bg-card flex items-center justify-between gap-3">
               <div>
                 <h3 className="text-sm font-bold text-foreground">
-                  ইনভয়েস প্রিভিউ ও প্রিন্ট — {previewItem.invoiceNo || ''}
+                  Invoice Preview & Print — {previewItem.invoiceNo || ''}
                 </h3>
                 <p className="text-[11px] text-muted-foreground">
-                  ক্লায়েন্ট: {previewItem.client?.name || '—'}
+                  Client: {previewItem.client?.name || '—'}
                 </p>
               </div>
 

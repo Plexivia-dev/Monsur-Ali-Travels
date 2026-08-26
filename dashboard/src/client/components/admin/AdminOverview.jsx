@@ -129,13 +129,13 @@ export const AdminOverview = ({ adminData }) => {
             </div>
           </div>
           <div className="text-2xl font-black text-foreground tracking-tight">
-            {timeframeData.totalExpenseFormatted || '৳0'}
+            {timeframeData.totalExpenseFormatted || 'BDT 0'}
           </div>
           <div className="mt-2 text-[11px] text-muted-foreground flex items-center gap-1.5 pt-2 border-t border-border">
             <span className="font-semibold text-foreground">Combined:</span>
-            <span>Factory ৳{(timeframeData.expenseBreakdown?.factory / 1000).toFixed(0)}k</span>
+            <span>Factory BDT {(timeframeData.expenseBreakdown?.factory / 1000).toFixed(0)}k</span>
             <span>•</span>
-            <span>Agency ৳{(timeframeData.expenseBreakdown?.agency / 1000).toFixed(0)}k</span>
+            <span>Agency BDT {(timeframeData.expenseBreakdown?.agency / 1000).toFixed(0)}k</span>
           </div>
         </div>
 
@@ -150,11 +150,11 @@ export const AdminOverview = ({ adminData }) => {
             </div>
           </div>
           <div className="text-2xl font-black text-foreground tracking-tight">
-            {timeframeData.totalCashInFormatted || '৳0'}
+            {timeframeData.totalCashInFormatted || 'BDT 0'}
           </div>
           <div className="mt-2 text-[11px] text-emerald-500 font-medium flex items-center gap-1.5 pt-2 border-t border-border">
             <TrendingUp className="w-3.5 h-3.5" />
-            <span>Factory ৳{(timeframeData.cashInBreakdown?.factory / 1000).toFixed(0)}k | Agency ৳{(timeframeData.cashInBreakdown?.agency / 1000).toFixed(0)}k</span>
+            <span>Factory BDT {(timeframeData.cashInBreakdown?.factory / 1000).toFixed(0)}k | Agency BDT {(timeframeData.cashInBreakdown?.agency / 1000).toFixed(0)}k</span>
           </div>
         </div>
 
@@ -195,7 +195,7 @@ export const AdminOverview = ({ adminData }) => {
             </div>
           </div>
           <div className="text-2xl font-black text-amber-500 tracking-tight">
-            {timeframeData.pendingPaymentsFormatted || '৳0'}
+            {timeframeData.pendingPaymentsFormatted || 'BDT 0'}
           </div>
           <div className="mt-2 text-[11px] text-amber-500 font-medium pt-2 border-t border-amber-500/20 flex items-center justify-between">
             <span>Receivable Funds Dues</span>
@@ -373,7 +373,7 @@ export const AdminOverview = ({ adminData }) => {
                       tick={{ fill: 'var(--muted-foreground)', fontSize: 10 }}
                       axisLine={false}
                       tickLine={false}
-                      tickFormatter={(val) => `৳${val >= 1000000 ? (val / 1000000).toFixed(1) + 'M' : val >= 1000 ? (val / 1000).toFixed(0) + 'k' : val}`}
+                      tickFormatter={(val) => `BDT ${val >= 1000000 ? (val / 1000000).toFixed(1) + 'M' : val >= 1000 ? (val / 1000).toFixed(0) + 'k' : val}`}
                     />
                     <Tooltip
                       contentStyle={{
@@ -383,7 +383,7 @@ export const AdminOverview = ({ adminData }) => {
                         color: 'var(--foreground)',
                         fontSize: '12px'
                       }}
-                      formatter={(val) => [`৳${val.toLocaleString()}`, '']}
+                      formatter={(val) => [`BDT ${val.toLocaleString()}`, '']}
                     />
                     <Area
                       type="monotone"
@@ -450,7 +450,7 @@ export const AdminOverview = ({ adminData }) => {
                       tick={{ fill: 'var(--muted-foreground)', fontSize: 10 }}
                       axisLine={false}
                       tickLine={false}
-                      tickFormatter={(val) => `৳${val >= 1000000 ? (val / 1000000).toFixed(1) + 'M' : val >= 1000 ? (val / 1000).toFixed(0) + 'k' : val}`}
+                      tickFormatter={(val) => `BDT ${val >= 1000000 ? (val / 1000000).toFixed(1) + 'M' : val >= 1000 ? (val / 1000).toFixed(0) + 'k' : val}`}
                     />
                     <Tooltip
                       contentStyle={{
@@ -460,7 +460,7 @@ export const AdminOverview = ({ adminData }) => {
                         color: 'var(--foreground)',
                         fontSize: '12px'
                       }}
-                      formatter={(val) => [`৳${val.toLocaleString()}`, '']}
+                      formatter={(val) => [`BDT ${val.toLocaleString()}`, '']}
                     />
                     <Bar dataKey="factory" name="Brick Factory" fill="#f59e0b" radius={[6, 6, 0, 0]} />
                     <Bar dataKey="agency" name="Manpower Agency" fill="#38bdf8" radius={[6, 6, 0, 0]} />
