@@ -224,36 +224,36 @@ const CreateClientModal = ({ isOpen, onClose, onSuccess }) => {
               )}
 
               {isIndianVisa && (
-                <div className="flex flex-col justify-center p-2.5 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-700 dark:text-amber-300 text-xs">
-                  <div className="flex items-center gap-1.5 font-bold">
-                    <Stamp className="size-4" />
+                <div className="flex flex-col justify-center p-3 rounded-xl bg-amber-50 border border-amber-300 dark:bg-amber-950/40 dark:border-amber-700/60 shadow-2xs">
+                  <div className="flex items-center gap-2 font-bold text-amber-950 dark:text-amber-200 text-xs">
+                    <Stamp className="size-4 text-amber-700 dark:text-amber-400 shrink-0" />
                     <span>Destination: India</span>
                   </div>
-                  <span className="text-[11px] text-muted-foreground mt-0.5">
+                  <span className="text-[11px] text-amber-900/80 dark:text-amber-300/90 font-medium mt-1">
                     Country selection is not required for Indian Visa.
                   </span>
                 </div>
               )}
 
               {isPassportService && (
-                <div className="flex flex-col justify-center p-2.5 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-700 dark:text-emerald-300 text-xs">
-                  <div className="flex items-center gap-1.5 font-bold">
-                    <BookOpen className="size-4" />
+                <div className="flex flex-col justify-center p-3 rounded-xl bg-emerald-50 border border-emerald-300 dark:bg-emerald-950/40 dark:border-emerald-700/60 shadow-2xs">
+                  <div className="flex items-center gap-2 font-bold text-emerald-950 dark:text-emerald-200 text-xs">
+                    <BookOpen className="size-4 text-emerald-700 dark:text-emerald-400 shrink-0" />
                     <span>Service: Bangladesh E-Passport</span>
                   </div>
-                  <span className="text-[11px] text-muted-foreground mt-0.5">
+                  <span className="text-[11px] text-emerald-900/80 dark:text-emerald-300/90 font-medium mt-1">
                     No prior passport number required for new applicants.
                   </span>
                 </div>
               )}
 
               {isUmrah && (
-                <div className="flex flex-col justify-center p-2.5 rounded-xl bg-indigo-500/10 border border-indigo-500/20 text-indigo-700 dark:text-indigo-300 text-xs">
-                  <div className="flex items-center gap-1.5 font-bold">
-                    <Plane className="size-4" />
+                <div className="flex flex-col justify-center p-3 rounded-xl bg-blue-50 border border-blue-300 dark:bg-blue-950/40 dark:border-blue-700/60 shadow-2xs">
+                  <div className="flex items-center gap-2 font-bold text-blue-950 dark:text-blue-200 text-xs">
+                    <Plane className="size-4 text-blue-700 dark:text-blue-400 shrink-0" />
                     <span>Destination: Saudi Arabia (সৌদি আরব)</span>
                   </div>
-                  <span className="text-[11px] text-muted-foreground mt-0.5">
+                  <span className="text-[11px] text-blue-900/80 dark:text-blue-300/90 font-medium mt-1">
                     Umrah / Hajj processing destination is Saudi Arabia.
                   </span>
                 </div>
