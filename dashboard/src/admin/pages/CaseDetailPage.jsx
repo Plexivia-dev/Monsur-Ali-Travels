@@ -33,6 +33,7 @@ import {
   Edit3,
   ChevronDown,
   Briefcase,
+  X,
 } from 'lucide-react';
 import { apiClient } from '@/lib/api-client';
 import { toast } from 'sonner';
@@ -1214,51 +1215,52 @@ export default function CaseDetailPage() {
 
       {/* Upload Document Modal */}
       {isUploadModalOpen && (
-        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-xs flex items-center justify-center p-4">
+        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4">
           <form
             onSubmit={handleUploadDocument}
-            className="bg-card border border-border rounded-2xl max-w-md w-full p-6 space-y-4 shadow-2xl"
+            className="bg-zinc-950 border border-zinc-800 text-zinc-100 rounded-2xl max-w-md w-full p-6 space-y-4 shadow-2xl overflow-hidden animate-in zoom-in-95 duration-200"
           >
-            <div className="flex items-center justify-between border-b border-border pb-3">
-              <h3 className="text-sm font-bold text-foreground flex items-center gap-2">
-                <UploadCloud className="w-4 h-4 text-primary" />
+            <div className="flex items-center justify-between border-b border-zinc-800 pb-4 -mx-6 -mt-6 p-6 bg-linear-to-r from-zinc-950 via-slate-950 to-black">
+              <h3 className="text-sm font-bold text-white flex items-center gap-2">
+                <UploadCloud className="w-4 h-4 text-sky-400" />
                 Attach File to Document Vault
               </h3>
               <button
                 type="button"
                 onClick={() => setIsUploadModalOpen(false)}
-                className="p-1 rounded text-muted-foreground hover:text-foreground cursor-pointer"
+                className="p-1.5 rounded-xl bg-rose-500/10 hover:bg-rose-500/20 text-rose-500 hover:text-rose-400 border border-rose-500/40 hover:border-rose-500/80 shadow-xs transition-all cursor-pointer"
+                aria-label="Close modal"
               >
-                ✕
+                <X className="w-4 h-4 stroke-[2.5]" />
               </button>
             </div>
 
-            <div className="space-y-3 text-xs">
+            <div className="space-y-3.5 text-xs">
               <div>
-                <label className="block font-semibold text-muted-foreground mb-1">Document Category *</label>
+                <label className="block font-semibold text-zinc-300 mb-1.5">Document Category *</label>
                 <select
                   value={uploadDocForm.documentName}
                   onChange={(e) => setUploadDocForm({ ...uploadDocForm, documentName: e.target.value })}
-                  className="w-full px-3 py-2 bg-muted/50 border border-border rounded-xl text-foreground focus:outline-none"
+                  className="w-full px-3.5 py-2.5 bg-zinc-900/80 border border-zinc-800 rounded-xl text-zinc-100 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary cursor-pointer"
                 >
-                  <option value="Passport Scan Copy">Passport Scan Copy</option>
-                  <option value="Photo (35x45mm / 2x2 White BG)">Photo (35x45mm / 2x2 White BG)</option>
-                  <option value="Police Clearance Certificate (PCC)">Police Clearance Certificate (PCC)</option>
-                  <option value="National ID Card (NID)">National ID Card (NID)</option>
-                  <option value="Medical Examination Report">Medical Examination Report</option>
-                  <option value="Work Permit / Offer Letter">Work Permit / Offer Letter</option>
-                  <option value="Visa Sticker / Approval Dossier">Visa Sticker / Approval Dossier</option>
-                  <option value="Embassy / VFS Submission Slip">Embassy / VFS Submission Slip</option>
-                  <option value="Bank Statement / Solvency">Bank Statement / Solvency</option>
-                  <option value="Other Document">Other Document</option>
+                  <option value="Passport Scan Copy" className="bg-zinc-950 text-zinc-100">Passport Scan Copy</option>
+                  <option value="Photo (35x45mm / 2x2 White BG)" className="bg-zinc-950 text-zinc-100">Photo (35x45mm / 2x2 White BG)</option>
+                  <option value="Police Clearance Certificate (PCC)" className="bg-zinc-950 text-zinc-100">Police Clearance Certificate (PCC)</option>
+                  <option value="National ID Card (NID)" className="bg-zinc-950 text-zinc-100">National ID Card (NID)</option>
+                  <option value="Medical Examination Report" className="bg-zinc-950 text-zinc-100">Medical Examination Report</option>
+                  <option value="Work Permit / Offer Letter" className="bg-zinc-950 text-zinc-100">Work Permit / Offer Letter</option>
+                  <option value="Visa Sticker / Approval Dossier" className="bg-zinc-950 text-zinc-100">Visa Sticker / Approval Dossier</option>
+                  <option value="Embassy / VFS Submission Slip" className="bg-zinc-950 text-zinc-100">Embassy / VFS Submission Slip</option>
+                  <option value="Bank Statement / Solvency" className="bg-zinc-950 text-zinc-100">Bank Statement / Solvency</option>
+                  <option value="Other Document" className="bg-zinc-950 text-zinc-100">Other Document</option>
                 </select>
               </div>
 
               <div>
-                <label className="block font-semibold text-muted-foreground mb-1 flex items-center justify-between">
+                <label className="block font-semibold text-zinc-300 mb-1.5 flex items-center justify-between">
                   <span>Choose Local File *</span>
                   {uploadingFile && (
-                    <span className="flex items-center gap-1 text-[11px] text-primary font-medium animate-pulse">
+                    <span className="flex items-center gap-1 text-[11px] text-sky-400 font-medium animate-pulse">
                       <Loader2 className="w-3 h-3 animate-spin" />
                       Uploading...
                     </span>
@@ -1269,14 +1271,14 @@ export default function CaseDetailPage() {
                   onChange={handleFileChange}
                   accept=".pdf,.png,.jpg,.jpeg,.doc,.docx"
                   disabled={uploadingFile}
-                  className="w-full px-3 py-2 bg-muted/50 border border-border rounded-xl text-foreground focus:outline-none file:mr-3 file:py-1 file:px-2.5 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-primary file:text-primary-foreground hover:file:bg-primary/90 cursor-pointer disabled:opacity-50"
+                  className="w-full px-3 py-2 bg-zinc-900/80 border border-zinc-800 rounded-xl text-zinc-100 focus:outline-none file:mr-3 file:py-1 file:px-2.5 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-primary file:text-primary-foreground hover:file:bg-primary/90 cursor-pointer disabled:opacity-50"
                 />
               </div>
 
               <div>
-                <label className="block font-semibold text-muted-foreground mb-1 flex items-center justify-between">
+                <label className="block font-semibold text-zinc-300 mb-1.5 flex items-center justify-between">
                   <span>File Name / Label</span>
-                  <span className="text-[10px] text-muted-foreground bg-muted px-1.5 py-0.5 rounded font-normal">Auto-generated</span>
+                  <span className="text-[10px] text-zinc-400 bg-zinc-900 px-2 py-0.5 rounded-md border border-zinc-800">Auto-generated</span>
                 </label>
                 <input
                   type="text"
@@ -1284,14 +1286,14 @@ export default function CaseDetailPage() {
                   value={uploadDocForm.fileName}
                   disabled
                   readOnly
-                  className="w-full px-3 py-2 bg-muted/70 border border-border rounded-xl text-muted-foreground font-medium cursor-not-allowed select-none"
+                  className="w-full px-3.5 py-2.5 bg-zinc-900/40 border border-zinc-800/80 rounded-xl text-zinc-400 font-medium cursor-not-allowed select-none"
                 />
               </div>
 
               <div>
-                <label className="block font-semibold text-muted-foreground mb-1 flex items-center justify-between">
+                <label className="block font-semibold text-zinc-300 mb-1.5 flex items-center justify-between">
                   <span>File URL / Cloud Storage Link</span>
-                  <span className="text-[10px] text-muted-foreground bg-muted px-1.5 py-0.5 rounded font-normal">Auto-generated</span>
+                  <span className="text-[10px] text-zinc-400 bg-zinc-900 px-2 py-0.5 rounded-md border border-zinc-800">Auto-generated</span>
                 </label>
                 <input
                   type="text"
@@ -1299,23 +1301,23 @@ export default function CaseDetailPage() {
                   value={uploadDocForm.fileUrl ? (uploadDocForm.fileUrl.startsWith('data:') ? `[Embedded File: ${uploadDocForm.fileName}]` : uploadDocForm.fileUrl) : ''}
                   disabled
                   readOnly
-                  className="w-full px-3 py-2 bg-muted/70 border border-border rounded-xl text-muted-foreground font-medium cursor-not-allowed select-none font-mono text-[11px] truncate"
+                  className="w-full px-3.5 py-2.5 bg-zinc-900/40 border border-zinc-800/80 rounded-xl text-zinc-400 font-medium cursor-not-allowed select-none font-mono text-[11px] truncate"
                 />
               </div>
             </div>
 
-            <div className="flex items-center justify-end gap-2 pt-3 border-t border-border text-xs">
+            <div className="flex items-center justify-end gap-2.5 pt-4 -mx-6 -mb-6 p-4 border-t border-zinc-800 bg-zinc-950 text-xs">
               <button
                 type="button"
                 onClick={() => setIsUploadModalOpen(false)}
-                className="px-3 py-1.5 rounded-xl border border-border text-muted-foreground hover:bg-muted cursor-pointer"
+                className="px-4 py-2 font-bold rounded-xl bg-rose-500/10 hover:bg-rose-500/20 text-rose-500 dark:text-rose-400 hover:text-rose-300 border border-rose-500/40 hover:border-rose-500/80 transition-all cursor-pointer"
               >
                 Cancel
               </button>
               <button
                 type="submit"
                 disabled={uploadingDoc || uploadingFile || !uploadDocForm.fileUrl}
-                className="flex items-center gap-1.5 px-4 py-1.5 bg-primary text-primary-foreground font-bold rounded-xl shadow-xs disabled:opacity-50 cursor-pointer hover:bg-primary/90 transition-all"
+                className="flex items-center gap-2 px-5 py-2 bg-primary text-primary-foreground font-bold rounded-xl shadow-xs disabled:opacity-50 cursor-pointer hover:bg-primary/90 transition-all"
               >
                 {uploadingDoc ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <UploadCloud className="w-3.5 h-3.5" />}
                 <span>{uploadingDoc ? 'Saving...' : 'Save to Vault'}</span>
@@ -1327,107 +1329,108 @@ export default function CaseDetailPage() {
 
       {/* Edit Case File Modal */}
       {isEditModalOpen && (
-        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-xs flex items-center justify-center p-4 overflow-y-auto">
+        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4 overflow-y-auto">
           <form
             onSubmit={handleSaveCaseEdit}
-            className="bg-card border border-border rounded-2xl max-w-2xl w-full p-6 space-y-4 shadow-2xl my-8"
+            className="bg-zinc-950 border border-zinc-800 text-zinc-100 rounded-2xl max-w-2xl w-full p-6 space-y-4 shadow-2xl my-8 overflow-hidden animate-in zoom-in-95 duration-200"
           >
-            <div className="flex items-center justify-between border-b border-border pb-3">
-              <h3 className="text-base font-bold text-foreground flex items-center gap-2">
-                <Edit3 className="w-4 h-4 text-primary" />
+            <div className="flex items-center justify-between border-b border-zinc-800 pb-4 -mx-6 -mt-6 p-6 bg-linear-to-r from-zinc-950 via-slate-950 to-black">
+              <h3 className="text-base font-bold text-white flex items-center gap-2">
+                <Edit3 className="w-4 h-4 text-sky-400" />
                 Edit Case File #{caseData.caseNumber || 'CASE-FILE'}
               </h3>
               <button
                 type="button"
                 onClick={() => setIsEditModalOpen(false)}
-                className="p-1 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted cursor-pointer"
+                className="p-1.5 rounded-xl bg-rose-500/10 hover:bg-rose-500/20 text-rose-500 hover:text-rose-400 border border-rose-500/40 hover:border-rose-500/80 shadow-xs transition-all cursor-pointer"
+                aria-label="Close modal"
               >
-                ✕
+                <X className="w-4 h-4 stroke-[2.5]" />
               </button>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
               <div>
-                <label className="block font-bold text-foreground mb-1">Applicant Full Name *</label>
+                <label className="block font-semibold text-zinc-300 mb-1.5">Applicant Full Name *</label>
                 <input
                   type="text"
                   required
                   value={editForm.applicantName}
                   onChange={(e) => setEditForm({ ...editForm, applicantName: e.target.value })}
-                  className="w-full px-3 py-2 bg-muted/40 border border-border rounded-xl text-foreground focus:outline-none focus:border-primary text-xs"
+                  className="w-full px-3.5 py-2.5 bg-zinc-900/80 border border-zinc-800 rounded-xl text-zinc-100 placeholder:text-zinc-500 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary text-xs"
                 />
               </div>
 
               <div>
-                <label className="block font-bold text-foreground mb-1">Phone Number</label>
+                <label className="block font-semibold text-zinc-300 mb-1.5">Phone Number</label>
                 <input
                   type="text"
                   value={editForm.phone}
                   onChange={(e) => setEditForm({ ...editForm, phone: e.target.value })}
-                  className="w-full px-3 py-2 bg-muted/40 border border-border rounded-xl text-foreground focus:outline-none focus:border-primary text-xs font-mono"
+                  className="w-full px-3.5 py-2.5 bg-zinc-900/80 border border-zinc-800 rounded-xl text-zinc-100 placeholder:text-zinc-500 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary text-xs font-mono"
                 />
               </div>
 
               <div>
-                <label className="block font-bold text-foreground mb-1">Passport Number</label>
+                <label className="block font-semibold text-zinc-300 mb-1.5">Passport Number</label>
                 <input
                   type="text"
                   value={editForm.passportNumber}
                   onChange={(e) => setEditForm({ ...editForm, passportNumber: e.target.value.toUpperCase() })}
-                  className="w-full px-3 py-2 bg-muted/40 border border-border rounded-xl text-foreground focus:outline-none focus:border-primary text-xs font-mono"
+                  className="w-full px-3.5 py-2.5 bg-zinc-900/80 border border-zinc-800 rounded-xl text-zinc-100 placeholder:text-zinc-500 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary text-xs font-mono uppercase"
                 />
               </div>
 
               <div>
-                <label className="block font-bold text-foreground mb-1">National ID (NID)</label>
+                <label className="block font-semibold text-zinc-300 mb-1.5">National ID (NID)</label>
                 <input
                   type="text"
                   value={editForm.nidNumber}
                   onChange={(e) => setEditForm({ ...editForm, nidNumber: e.target.value })}
-                  className="w-full px-3 py-2 bg-muted/40 border border-border rounded-xl text-foreground focus:outline-none focus:border-primary text-xs font-mono"
+                  className="w-full px-3.5 py-2.5 bg-zinc-900/80 border border-zinc-800 rounded-xl text-zinc-100 placeholder:text-zinc-500 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary text-xs font-mono"
                 />
               </div>
 
               <div>
-                <label className="block font-bold text-foreground mb-1">Destination Country</label>
+                <label className="block font-semibold text-zinc-300 mb-1.5">Destination Country</label>
                 <input
                   type="text"
                   value={editForm.destinationCountry}
                   onChange={(e) => setEditForm({ ...editForm, destinationCountry: e.target.value })}
-                  className="w-full px-3 py-2 bg-muted/40 border border-border rounded-xl text-foreground focus:outline-none focus:border-primary text-xs"
+                  className="w-full px-3.5 py-2.5 bg-zinc-900/80 border border-zinc-800 rounded-xl text-zinc-100 placeholder:text-zinc-500 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary text-xs"
                 />
               </div>
 
               <div>
-                <label className="block font-bold text-foreground mb-1">Trade / Skill Category</label>
+                <label className="block font-semibold text-zinc-300 mb-1.5">Trade / Skill Category</label>
                 <input
                   type="text"
                   value={editForm.tradeSkill}
                   onChange={(e) => setEditForm({ ...editForm, tradeSkill: e.target.value })}
-                  className="w-full px-3 py-2 bg-muted/40 border border-border rounded-xl text-foreground focus:outline-none focus:border-primary text-xs"
+                  className="w-full px-3.5 py-2.5 bg-zinc-900/80 border border-zinc-800 rounded-xl text-zinc-100 placeholder:text-zinc-500 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary text-xs"
                 />
               </div>
 
               <div>
-                <label className="block font-bold text-foreground mb-1">Total Agreed Package Bill (BDT)</label>
+                <label className="block font-semibold text-zinc-300 mb-1.5">Total Agreed Package Bill (BDT)</label>
                 <input
                   type="number"
                   min="0"
                   value={editForm.totalAgreedAmount}
                   onChange={(e) => setEditForm({ ...editForm, totalAgreedAmount: e.target.value })}
-                  className="w-full px-3 py-2 bg-muted/40 border border-border rounded-xl text-foreground focus:outline-none focus:border-primary text-xs font-mono"
+                  className="w-full px-3.5 py-2.5 bg-zinc-900/80 border border-zinc-800 rounded-xl text-zinc-100 placeholder:text-zinc-500 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary text-xs font-mono"
                 />
               </div>
 
               <div>
-                <label className="block font-bold text-foreground mb-1">Current Processing Stage</label>
+                <label className="block font-semibold text-zinc-300 mb-1.5">Current Processing Stage</label>
                 <select
                   value={editForm.status}
                   onChange={(e) => setEditForm({ ...editForm, status: e.target.value })}
-                  className="w-full px-3 py-2 bg-muted/40 border border-border rounded-xl text-foreground focus:outline-none focus:border-primary text-xs"
+                  className="w-full px-3.5 py-2.5 bg-zinc-900/80 border border-zinc-800 rounded-xl text-zinc-100 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary text-xs cursor-pointer"
                 >
                   {PIPELINE_STAGES.map((st) => (
-                    <option key={st.id} value={st.id}>
+                    <option key={st.id} value={st.id} className="bg-zinc-950 text-zinc-100">
                       {st.title}
                     </option>
                   ))}
@@ -1435,29 +1438,29 @@ export default function CaseDetailPage() {
               </div>
 
               <div className="sm:col-span-2">
-                <label className="block font-bold text-foreground mb-1">Remarks & Operational Notes</label>
+                <label className="block font-semibold text-zinc-300 mb-1.5">Remarks & Operational Notes</label>
                 <textarea
                   rows={3}
                   value={editForm.remarks}
                   onChange={(e) => setEditForm({ ...editForm, remarks: e.target.value })}
                   placeholder="Case notes, sponsor particulars, or timeline updates..."
-                  className="w-full px-3 py-2 bg-muted/40 border border-border rounded-xl text-foreground focus:outline-none focus:border-primary text-xs resize-none"
+                  className="w-full px-3.5 py-2.5 bg-zinc-900/80 border border-zinc-800 rounded-xl text-zinc-100 placeholder:text-zinc-500 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary text-xs resize-none"
                 />
               </div>
             </div>
 
-            <div className="flex items-center justify-end gap-2 pt-3 border-t border-border text-xs">
+            <div className="flex items-center justify-end gap-2.5 pt-4 -mx-6 -mb-6 p-4 border-t border-zinc-800 bg-zinc-950 text-xs">
               <button
                 type="button"
                 onClick={() => setIsEditModalOpen(false)}
-                className="px-4 py-2 rounded-xl border border-border text-muted-foreground hover:bg-muted font-semibold cursor-pointer"
+                className="px-4 py-2 font-bold rounded-xl bg-rose-500/10 hover:bg-rose-500/20 text-rose-500 dark:text-rose-400 hover:text-rose-300 border border-rose-500/40 hover:border-rose-500/80 transition-all cursor-pointer"
               >
                 Cancel
               </button>
               <button
                 type="submit"
                 disabled={savingEdit}
-                className="flex items-center gap-1.5 px-5 py-2 bg-primary hover:bg-primary/90 text-primary-foreground font-bold rounded-xl shadow-xs transition-all disabled:opacity-50 cursor-pointer"
+                className="flex items-center gap-2 px-5 py-2 bg-primary hover:bg-primary/90 text-primary-foreground font-bold rounded-xl shadow-xs transition-all disabled:opacity-50 cursor-pointer"
               >
                 {savingEdit ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <CheckCircle2 className="w-3.5 h-3.5" />}
                 <span>Save Changes</span>

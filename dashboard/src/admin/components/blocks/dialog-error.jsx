@@ -38,40 +38,48 @@ export default function ErrorDialog({
         {/* Backdrop overlay */}
         <div 
           onClick={handleClose}
-          className="fixed inset-0 bg-background/80 backdrop-blur-sm transition-opacity" 
+          className="fixed inset-0 bg-black/80 backdrop-blur-md transition-opacity" 
         />
 
         {/* Dialog content */}
-        <div className="relative z-50 w-full max-w-md rounded-xl border border-destructive/20 bg-card p-6 shadow-lg animate-in fade-in-0 zoom-in-95 duration-200">
+        <div className="relative z-50 w-full max-w-md rounded-2xl border border-zinc-800 bg-zinc-950 p-6 text-zinc-100 shadow-2xl animate-in fade-in-0 zoom-in-95 duration-200">
           <button 
             onClick={handleClose}
-            className="absolute right-4 top-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring"
+            className="absolute right-4 top-4 p-1.5 rounded-xl bg-rose-500/10 hover:bg-rose-500/20 text-rose-500 hover:text-rose-400 border border-rose-500/40 hover:border-rose-500/80 shadow-xs transition-all cursor-pointer"
             aria-label="Close"
           >
-            <X className="h-4 w-4" />
+            <X className="h-4 w-4 stroke-[2.5]" />
           </button>
 
           <div className="flex gap-4">
-            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-destructive/10 text-destructive">
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-rose-500/15 border border-rose-500/30 text-rose-400">
               <AlertTriangle className="h-5 w-5" />
             </div>
             <div className="space-y-2">
-              <h3 className="text-base font-semibold leading-none tracking-tight text-foreground">
+              <h3 className="text-base font-bold leading-none tracking-tight text-white">
                 {title}
               </h3>
-              <p className="text-sm text-muted-foreground">
+              <p className="text-xs text-zinc-400 leading-relaxed">
                 {description}
               </p>
             </div>
           </div>
 
-          <div className="mt-6 flex justify-end gap-2">
-            <Button variant="outline" onClick={handleClose} size="sm">
+          <div className="mt-6 flex justify-end gap-2.5 pt-4 border-t border-zinc-800">
+            <button
+              type="button"
+              onClick={handleClose}
+              className="px-4 py-2 text-xs font-bold rounded-xl bg-rose-500/10 hover:bg-rose-500/20 text-rose-500 dark:text-rose-400 hover:text-rose-300 border border-rose-500/40 hover:border-rose-500/80 transition-all cursor-pointer"
+            >
               Cancel
-            </Button>
-            <Button variant="destructive" onClick={handleClose} size="sm">
+            </button>
+            <button
+              type="button"
+              onClick={handleClose}
+              className="px-4 py-2 text-xs font-bold rounded-xl bg-rose-600 hover:bg-rose-500 text-white transition-all cursor-pointer shadow-xs"
+            >
               Delete
-            </Button>
+            </button>
           </div>
         </div>
       </div>

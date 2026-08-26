@@ -316,8 +316,8 @@ const UsersPage = () => {
 
       {/* Create User Modal */}
       {createModalOpen && (
-        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-background rounded-2xl border border-border shadow-2xl max-w-lg w-full flex flex-col overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4">
+          <div className="bg-zinc-950 rounded-2xl border border-zinc-800 text-zinc-100 shadow-2xl max-w-lg w-full flex flex-col overflow-hidden animate-in fade-in zoom-in-95 duration-200">
             {/* Unified Modal Header */}
             <UnifiedModalHeader
               icon={UserPlus}
@@ -327,11 +327,11 @@ const UsersPage = () => {
             />
 
             {/* Modal Form */}
-            <form onSubmit={handleCreateUser} className="flex flex-col flex-grow overflow-hidden">
+            <form onSubmit={handleCreateUser} className="flex flex-col flex-grow overflow-hidden text-xs">
               <div className="p-6 space-y-4 overflow-y-auto">
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
-                    <label className="text-xs font-semibold text-foreground block mb-1.5">
+                    <label className="text-xs font-semibold text-zinc-300 block mb-1.5">
                       Full Name <span className="text-rose-500">*</span>
                     </label>
                     <input
@@ -340,26 +340,26 @@ const UsersPage = () => {
                       onChange={(e) => setCreateForm((p) => ({ ...p, fullName: e.target.value }))}
                       placeholder="e.g. Md. Rafiqul Islam"
                       required
-                      className="w-full px-3.5 py-2 text-xs rounded-xl border border-input bg-background focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                      className="w-full px-3.5 py-2.5 text-xs rounded-xl border border-zinc-800 bg-zinc-900/80 text-zinc-100 placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
                     />
                   </div>
                   <div>
-                    <label className="text-xs font-semibold text-foreground block mb-1.5">
+                    <label className="text-xs font-semibold text-zinc-300 block mb-1.5">
                       Role <span className="text-rose-500">*</span>
                     </label>
                     <select
                       value={createForm.role}
                       onChange={(e) => setCreateForm((p) => ({ ...p, role: e.target.value }))}
-                      className="w-full px-3 py-2 text-xs rounded-xl border border-input bg-background focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                      className="w-full px-3.5 py-2.5 text-xs rounded-xl border border-zinc-800 bg-zinc-900/80 text-zinc-100 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary cursor-pointer"
                     >
-                      <option value="Owner">Owner</option>
-                      <option value="Admin">Admin</option>
-                      <option value="Staff">Staff</option>
-                      <option value="Accountant">Accountant</option>
+                      <option value="Owner" className="bg-zinc-950 text-zinc-100">Owner</option>
+                      <option value="Admin" className="bg-zinc-950 text-zinc-100">Admin</option>
+                      <option value="Staff" className="bg-zinc-950 text-zinc-100">Staff</option>
+                      <option value="Accountant" className="bg-zinc-950 text-zinc-100">Accountant</option>
                     </select>
                   </div>
                   <div>
-                    <label className="text-xs font-semibold text-foreground block mb-1.5">
+                    <label className="text-xs font-semibold text-zinc-300 block mb-1.5">
                       Email Address <span className="text-rose-500">*</span>
                     </label>
                     <input
@@ -368,11 +368,11 @@ const UsersPage = () => {
                       onChange={(e) => setCreateForm((p) => ({ ...p, email: e.target.value }))}
                       placeholder="e.g. user@agency.com"
                       required
-                      className="w-full px-3.5 py-2 text-xs rounded-xl border border-input bg-background focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                      className="w-full px-3.5 py-2.5 text-xs rounded-xl border border-zinc-800 bg-zinc-900/80 text-zinc-100 placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
                     />
                   </div>
                   <div>
-                    <label className="text-xs font-semibold text-foreground block mb-1.5">
+                    <label className="text-xs font-semibold text-zinc-300 block mb-1.5">
                       Phone Number
                     </label>
                     <input
@@ -380,11 +380,11 @@ const UsersPage = () => {
                       value={createForm.phone}
                       onChange={(e) => setCreateForm((p) => ({ ...p, phone: e.target.value }))}
                       placeholder="e.g. +880 1712-345678"
-                      className="w-full px-3.5 py-2 text-xs rounded-xl border border-input bg-background focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                      className="w-full px-3.5 py-2.5 text-xs rounded-xl border border-zinc-800 bg-zinc-900/80 text-zinc-100 placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
                     />
                   </div>
                   <div className="sm:col-span-2">
-                    <label className="text-xs font-semibold text-foreground block mb-1.5">
+                    <label className="text-xs font-semibold text-zinc-300 block mb-1.5">
                       Password <span className="text-rose-500">*</span>
                     </label>
                     <input
@@ -394,7 +394,7 @@ const UsersPage = () => {
                       placeholder="Minimum 6 characters"
                       required
                       minLength={6}
-                      className="w-full px-3.5 py-2 text-xs rounded-xl border border-input bg-background focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary font-mono"
+                      className="w-full px-3.5 py-2.5 text-xs rounded-xl border border-zinc-800 bg-zinc-900/80 text-zinc-100 placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary font-mono"
                     />
                   </div>
                 </div>

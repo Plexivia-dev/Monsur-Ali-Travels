@@ -20,6 +20,7 @@ import {
   XCircle,
   AlertCircle,
   FolderArchive,
+  X,
 } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -596,24 +597,26 @@ const StorageSyncPage = () => {
 
       {/* Inspect Batch File List Modal / Drawer */}
       {selectedBatch && (
-        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-background rounded-2xl border border-border shadow-2xl max-w-3xl w-full max-h-[85vh] flex flex-col overflow-hidden animate-fade-in">
+        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4">
+          <div className="bg-zinc-950 rounded-2xl border border-zinc-800 text-zinc-100 shadow-2xl max-w-3xl w-full max-h-[85vh] flex flex-col overflow-hidden animate-in zoom-in-95 duration-200">
             {/* Modal Header */}
-            <div className="p-5 border-b border-border flex items-center justify-between bg-muted/40">
+            <div className="p-5 border-b border-zinc-800 flex items-center justify-between bg-linear-to-r from-zinc-950 via-slate-950 to-black">
               <div>
-                <h3 className="text-lg font-bold text-foreground flex items-center gap-2">
+                <h3 className="text-base font-bold text-white flex items-center gap-2">
                   <span>Batch Details:</span>
-                  <span className="font-mono text-primary">{selectedBatch.batchNumber}</span>
+                  <span className="font-mono text-sky-400">{selectedBatch.batchNumber}</span>
                 </h3>
-                <p className="text-xs text-muted-foreground mt-0.5">
+                <p className="text-xs text-zinc-400 mt-0.5">
                   {selectedBatch.orphanCount} files ({formatBytes(selectedBatch.totalReclaimableBytes)}) detected at {formatDate(selectedBatch.createdAt)}
                 </p>
               </div>
               <button
+                type="button"
                 onClick={() => setSelectedBatch(null)}
-                className="p-1.5 rounded-lg border border-border hover:bg-muted text-muted-foreground cursor-pointer"
+                className="p-1.5 rounded-xl bg-rose-500/10 hover:bg-rose-500/20 text-rose-500 hover:text-rose-400 border border-rose-500/40 hover:border-rose-500/80 shadow-xs transition-all cursor-pointer"
+                aria-label="Close modal"
               >
-                ✕
+                <X className="w-4 h-4 stroke-[2.5]" />
               </button>
             </div>
 
@@ -623,15 +626,15 @@ const StorageSyncPage = () => {
                 {selectedBatch.orphanFiles?.map((file, idx) => (
                   <div
                     key={idx}
-                    className="p-3 rounded-xl bg-muted/30 border border-border flex items-center justify-between text-xs gap-3"
+                    className="p-3 rounded-xl bg-zinc-900/50 border border-zinc-800 flex items-center justify-between text-xs gap-3"
                   >
                     <div className="overflow-hidden">
-                      <div className="font-semibold text-foreground truncate">{file.fileName}</div>
-                      <div className="font-mono text-muted-foreground truncate">{file.localPath}</div>
+                      <div className="font-semibold text-zinc-100 truncate">{file.fileName}</div>
+                      <div className="font-mono text-zinc-500 text-[11px] truncate">{file.localPath}</div>
                     </div>
                     <div className="text-right shrink-0">
-                      <span className="font-bold text-foreground">{formatBytes(file.sizeBytes)}</span>
-                      <div className="text-[11px] text-amber-600 dark:text-amber-400">Unreferenced</div>
+                      <span className="font-bold text-zinc-200">{formatBytes(file.sizeBytes)}</span>
+                      <div className="text-[11px] text-amber-400">Unreferenced</div>
                     </div>
                   </div>
                 ))}
@@ -639,15 +642,16 @@ const StorageSyncPage = () => {
             </div>
 
             {/* Modal Footer */}
-            <div className="p-4 border-t border-border bg-muted/20 flex items-center justify-between">
-              <span className="text-xs font-semibold text-muted-foreground">
-                Status: <strong className="text-foreground">{selectedBatch.status}</strong>
+            <div className="p-4 border-t border-zinc-800 bg-zinc-950 flex items-center justify-between">
+              <span className="text-xs font-semibold text-zinc-400">
+                Status: <strong className="text-zinc-100">{selectedBatch.status}</strong>
               </span>
 
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2.5">
                 <button
+                  type="button"
                   onClick={() => setSelectedBatch(null)}
-                  className="px-4 py-2 text-xs font-semibold rounded-xl border border-input hover:bg-muted cursor-pointer"
+                  className="px-4 py-2 text-xs font-bold rounded-xl bg-rose-500/10 hover:bg-rose-500/20 text-rose-500 dark:text-rose-400 hover:text-rose-300 border border-rose-500/40 hover:border-rose-500/80 transition-all cursor-pointer"
                 >
                   Close
                 </button>
@@ -656,7 +660,7 @@ const StorageSyncPage = () => {
                   <button
                     onClick={() => handleApprovePurge(selectedBatch.did)}
                     disabled={purgingBatchDid === selectedBatch.did}
-                    className="flex items-center gap-1.5 px-4 py-2 text-xs font-bold rounded-xl bg-rose-600 hover:bg-rose-700 text-white cursor-pointer shadow-xs disabled:opacity-50"
+                    className="flex items-center gap-2 px-5 py-2 text-xs font-bold rounded-xl bg-rose-600 hover:bg-rose-500 text-white cursor-pointer shadow-xs disabled:opacity-50 transition-all"
                   >
                     {purgingBatchDid === selectedBatch.did ? (
                       <Loader2 className="size-3.5 animate-spin" />

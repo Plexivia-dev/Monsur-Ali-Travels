@@ -163,8 +163,8 @@ const CreateClientModal = ({ isOpen, onClose, onSuccess }) => {
   const isUmrah = formData.serviceType === 'UMRAH_HAJJ';
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
-      <div className="bg-background rounded-2xl border border-border shadow-2xl max-w-2xl w-full max-h-[92vh] flex flex-col overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+    <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4">
+      <div className="bg-zinc-950 rounded-2xl border border-zinc-800 text-zinc-100 shadow-2xl max-w-2xl w-full max-h-[92vh] flex flex-col overflow-hidden animate-in fade-in zoom-in-95 duration-200">
         {/* Unified Brand Navy-Blue Gradient Header */}
         <UnifiedModalHeader
           icon={UserPlus}
@@ -175,9 +175,9 @@ const CreateClientModal = ({ isOpen, onClose, onSuccess }) => {
 
         {/* Form Body */}
         <form onSubmit={handleSubmit} className="flex flex-col overflow-hidden flex-grow">
-          <div className="p-6 overflow-y-auto space-y-5 flex-grow">
+          <div className="p-6 overflow-y-auto space-y-5 flex-grow text-xs text-zinc-100">
           {/* ── TOP SECTION 1: SERVICE & DESTINATION (MOVED TO TOP) ────────────────── */}
-          <div className="p-4 rounded-xl bg-primary/5 border border-primary/20 space-y-4 shadow-2xs">
+          <div className="p-4 rounded-xl bg-zinc-900/50 border border-zinc-800 space-y-4 shadow-2xs">
             <div className="flex items-center gap-2 text-primary font-bold text-xs uppercase tracking-wider">
               <Briefcase className="size-4" />
               <span>1. Service & Category Selection</span>
@@ -186,74 +186,74 @@ const CreateClientModal = ({ isOpen, onClose, onSuccess }) => {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               {/* Service / Case Type */}
               <div>
-                <label className="text-xs font-semibold text-foreground block mb-1.5">
+                <label className="text-xs font-semibold text-zinc-300 block mb-1.5">
                   Service / Case Type <span className="text-rose-500">*</span>
                 </label>
                 <select
                   name="serviceType"
                   value={formData.serviceType}
                   onChange={handleChange}
-                  className="w-full px-3 py-2 text-xs font-semibold rounded-xl border border-input bg-background focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                  className="w-full px-3.5 py-2.5 text-xs font-semibold rounded-xl border border-zinc-800 bg-zinc-900/80 text-zinc-100 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary cursor-pointer"
                 >
-                  <option value="WORK_PERMIT">Work Permit Visa</option>
-                  <option value="INDIAN_VISA">Indian Visa</option>
-                  <option value="PASSPORT_SERVICE">Passport Application</option>
-                  <option value="TOURIST_VISA">Tourist / Visit Visa (Tourist Visa)</option>
-                  <option value="UMRAH_HAJJ">Umrah / Hajj Package</option>
-                  <option value="OTHER">Other Consular Service</option>
+                  <option value="WORK_PERMIT" className="bg-zinc-950 text-zinc-100">Work Permit Visa</option>
+                  <option value="INDIAN_VISA" className="bg-zinc-950 text-zinc-100">Indian Visa</option>
+                  <option value="PASSPORT_SERVICE" className="bg-zinc-950 text-zinc-100">Passport Application</option>
+                  <option value="TOURIST_VISA" className="bg-zinc-950 text-zinc-100">Tourist / Visit Visa (Tourist Visa)</option>
+                  <option value="UMRAH_HAJJ" className="bg-zinc-950 text-zinc-100">Umrah / Hajj Package</option>
+                  <option value="OTHER" className="bg-zinc-950 text-zinc-100">Other Consular Service</option>
                 </select>
               </div>
 
               {/* Destination Country Selection - Conditional */}
               {isWorkPermit && (
                 <div>
-                  <label className="text-xs font-semibold text-foreground block mb-1.5">
+                  <label className="text-xs font-semibold text-zinc-300 block mb-1.5">
                     Destination Country <span className="text-rose-500">*</span>
                   </label>
                   <select
                     name="destinationCountry"
                     value={formData.destinationCountry}
                     onChange={handleChange}
-                    className="w-full px-3 py-2 text-xs font-semibold rounded-xl border border-input bg-background focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                    className="w-full px-3.5 py-2.5 text-xs font-semibold rounded-xl border border-zinc-800 bg-zinc-900/80 text-zinc-100 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary cursor-pointer"
                   >
-                    <option value="Greece">Greece</option>
-                    <option value="North Macedonia">North Macedonia</option>
-                    <option value="Other">Other Country</option>
+                    <option value="Greece" className="bg-zinc-950 text-zinc-100">Greece</option>
+                    <option value="North Macedonia" className="bg-zinc-950 text-zinc-100">North Macedonia</option>
+                    <option value="Other" className="bg-zinc-950 text-zinc-100">Other Country</option>
                   </select>
                 </div>
               )}
 
               {isIndianVisa && (
-                <div className="flex flex-col justify-center p-3 rounded-xl bg-amber-50 border border-amber-300 dark:bg-amber-950/40 dark:border-amber-700/60 shadow-2xs">
-                  <div className="flex items-center gap-2 font-bold text-amber-950 dark:text-amber-200 text-xs">
-                    <Stamp className="size-4 text-amber-700 dark:text-amber-400 shrink-0" />
+                <div className="flex flex-col justify-center p-3 rounded-xl bg-amber-950/30 border border-amber-800/50 shadow-2xs">
+                  <div className="flex items-center gap-2 font-bold text-amber-200 text-xs">
+                    <Stamp className="size-4 text-amber-400 shrink-0" />
                     <span>Destination: India</span>
                   </div>
-                  <span className="text-[11px] text-amber-900/80 dark:text-amber-300/90 font-medium mt-1">
+                  <span className="text-[11px] text-amber-300/80 font-medium mt-1">
                     Country selection is not required for Indian Visa.
                   </span>
                 </div>
               )}
 
               {isPassportService && (
-                <div className="flex flex-col justify-center p-3 rounded-xl bg-emerald-50 border border-emerald-300 dark:bg-emerald-950/40 dark:border-emerald-700/60 shadow-2xs">
-                  <div className="flex items-center gap-2 font-bold text-emerald-950 dark:text-emerald-200 text-xs">
-                    <BookOpen className="size-4 text-emerald-700 dark:text-emerald-400 shrink-0" />
+                <div className="flex flex-col justify-center p-3 rounded-xl bg-emerald-950/30 border border-emerald-800/50 shadow-2xs">
+                  <div className="flex items-center gap-2 font-bold text-emerald-200 text-xs">
+                    <BookOpen className="size-4 text-emerald-400 shrink-0" />
                     <span>Service: Bangladesh E-Passport</span>
                   </div>
-                  <span className="text-[11px] text-emerald-900/80 dark:text-emerald-300/90 font-medium mt-1">
+                  <span className="text-[11px] text-emerald-300/80 font-medium mt-1">
                     No prior passport number required for new applicants.
                   </span>
                 </div>
               )}
 
               {isUmrah && (
-                <div className="flex flex-col justify-center p-3 rounded-xl bg-blue-50 border border-blue-300 dark:bg-blue-950/40 dark:border-blue-700/60 shadow-2xs">
-                  <div className="flex items-center gap-2 font-bold text-blue-950 dark:text-blue-200 text-xs">
-                    <Plane className="size-4 text-blue-700 dark:text-blue-400 shrink-0" />
+                <div className="flex flex-col justify-center p-3 rounded-xl bg-blue-950/30 border border-blue-800/50 shadow-2xs">
+                  <div className="flex items-center gap-2 font-bold text-blue-200 text-xs">
+                    <Plane className="size-4 text-blue-400 shrink-0" />
                     <span>Destination: Saudi Arabia</span>
                   </div>
-                  <span className="text-[11px] text-blue-900/80 dark:text-blue-300/90 font-medium mt-1">
+                  <span className="text-[11px] text-blue-300/80 font-medium mt-1">
                     Umrah / Hajj processing destination is Saudi Arabia.
                   </span>
                 </div>
@@ -261,24 +261,24 @@ const CreateClientModal = ({ isOpen, onClose, onSuccess }) => {
 
               {!isWorkPermit && !isIndianVisa && !isPassportService && !isUmrah && (
                 <div>
-                  <label className="text-xs font-semibold text-foreground block mb-1.5">
+                  <label className="text-xs font-semibold text-zinc-300 block mb-1.5">
                     Destination Country
                   </label>
                   <select
                     name="destinationCountry"
                     value={formData.destinationCountry}
                     onChange={handleChange}
-                    className="w-full px-3 py-2 text-xs rounded-xl border border-input bg-background focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                    className="w-full px-3.5 py-2.5 text-xs rounded-xl border border-zinc-800 bg-zinc-900/80 text-zinc-100 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary cursor-pointer"
                   >
-                    <option value="Saudi Arabia">Saudi Arabia</option>
-                    <option value="United Arab Emirates">Dubai / UAE</option>
-                    <option value="Qatar">Qatar</option>
-                    <option value="Oman">Oman</option>
-                    <option value="Kuwait">Kuwait</option>
-                    <option value="Singapore">Singapore</option>
-                    <option value="Malaysia">Malaysia</option>
-                    <option value="Thailand">Thailand</option>
-                    <option value="Other">Other Country</option>
+                    <option value="Saudi Arabia" className="bg-zinc-950 text-zinc-100">Saudi Arabia</option>
+                    <option value="United Arab Emirates" className="bg-zinc-950 text-zinc-100">Dubai / UAE</option>
+                    <option value="Qatar" className="bg-zinc-950 text-zinc-100">Qatar</option>
+                    <option value="Oman" className="bg-zinc-950 text-zinc-100">Oman</option>
+                    <option value="Kuwait" className="bg-zinc-950 text-zinc-100">Kuwait</option>
+                    <option value="Singapore" className="bg-zinc-950 text-zinc-100">Singapore</option>
+                    <option value="Malaysia" className="bg-zinc-950 text-zinc-100">Malaysia</option>
+                    <option value="Thailand" className="bg-zinc-950 text-zinc-100">Thailand</option>
+                    <option value="Other" className="bg-zinc-950 text-zinc-100">Other Country</option>
                   </select>
                 </div>
               )}
@@ -288,7 +288,7 @@ const CreateClientModal = ({ isOpen, onClose, onSuccess }) => {
             {(isWorkPermit || (!isIndianVisa && !isPassportService && !isUmrah)) &&
               formData.destinationCountry === 'Other' && (
                 <div className="animate-in fade-in duration-200">
-                  <label className="text-xs font-semibold text-foreground block mb-1.5">
+                  <label className="text-xs font-semibold text-zinc-300 block mb-1.5">
                     Specify Country Name <span className="text-rose-500">*</span>
                   </label>
                   <input
@@ -298,7 +298,7 @@ const CreateClientModal = ({ isOpen, onClose, onSuccess }) => {
                     value={formData.customCountry}
                     onChange={handleChange}
                     required
-                    className="w-full px-3.5 py-2 text-xs rounded-xl border border-primary/40 bg-background focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                    className="w-full px-3.5 py-2.5 text-xs rounded-xl border border-primary/40 bg-zinc-900/80 text-zinc-100 placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
                   />
                 </div>
               )}
@@ -306,12 +306,12 @@ const CreateClientModal = ({ isOpen, onClose, onSuccess }) => {
 
           {/* ── SECTION 2: CLIENT BASIC INFO ───────────────────────────────────── */}
           <div>
-            <h3 className="text-xs font-bold uppercase tracking-wider text-muted-foreground mb-3">
+            <h3 className="text-xs font-bold uppercase tracking-wider text-zinc-400 mb-3">
               2. Basic Information
             </h3>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <label className="text-xs font-semibold text-foreground block mb-1.5">
+                <label className="text-xs font-semibold text-zinc-300 block mb-1.5">
                   Full Name <span className="text-rose-500">*</span>
                 </label>
                 <input
@@ -321,12 +321,12 @@ const CreateClientModal = ({ isOpen, onClose, onSuccess }) => {
                   value={formData.fullName}
                   onChange={handleChange}
                   required
-                  className="w-full px-3.5 py-2 text-xs rounded-xl border border-input bg-background focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                  className="w-full px-3.5 py-2.5 text-xs rounded-xl border border-zinc-800 bg-zinc-900/80 text-zinc-100 placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
                 />
               </div>
 
               <div>
-                <label className="text-xs font-semibold text-foreground block mb-1.5">
+                <label className="text-xs font-semibold text-zinc-300 block mb-1.5">
                   Phone Number <span className="text-rose-500">*</span>
                 </label>
                 <input
@@ -336,12 +336,12 @@ const CreateClientModal = ({ isOpen, onClose, onSuccess }) => {
                   value={formData.phone}
                   onChange={handleChange}
                   required
-                  className="w-full px-3.5 py-2 text-xs rounded-xl border border-input bg-background focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary font-mono"
+                  className="w-full px-3.5 py-2.5 text-xs rounded-xl border border-zinc-800 bg-zinc-900/80 text-zinc-100 placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary font-mono"
                 />
               </div>
 
               <div>
-                <label className="text-xs font-semibold text-foreground block mb-1.5">
+                <label className="text-xs font-semibold text-zinc-300 block mb-1.5">
                   Email Address
                 </label>
                 <input
@@ -350,14 +350,14 @@ const CreateClientModal = ({ isOpen, onClose, onSuccess }) => {
                   placeholder="e.g. rafiq@example.com"
                   value={formData.email}
                   onChange={handleChange}
-                  className="w-full px-3.5 py-2 text-xs rounded-xl border border-input bg-background focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                  className="w-full px-3.5 py-2.5 text-xs rounded-xl border border-zinc-800 bg-zinc-900/80 text-zinc-100 placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
                 />
               </div>
 
               {/* Passport Number Input: HIDDEN if service is PASSPORT_SERVICE */}
               {!isPassportService && (
                 <div>
-                  <label className="text-xs font-semibold text-foreground block mb-1.5">
+                  <label className="text-xs font-semibold text-zinc-300 block mb-1.5">
                     Passport Number
                   </label>
                   <input
@@ -366,13 +366,13 @@ const CreateClientModal = ({ isOpen, onClose, onSuccess }) => {
                     placeholder="e.g. A01234567"
                     value={formData.passportNumber}
                     onChange={handleChange}
-                    className="w-full px-3.5 py-2 text-xs rounded-xl border border-input bg-background focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary font-mono uppercase"
+                    className="w-full px-3.5 py-2.5 text-xs rounded-xl border border-zinc-800 bg-zinc-900/80 text-zinc-100 placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary font-mono uppercase"
                   />
                 </div>
               )}
 
               <div>
-                <label className="text-xs font-semibold text-foreground block mb-1.5">
+                <label className="text-xs font-semibold text-zinc-300 block mb-1.5">
                   NID Number
                 </label>
                 <input
@@ -381,24 +381,24 @@ const CreateClientModal = ({ isOpen, onClose, onSuccess }) => {
                   placeholder="e.g. 19881234567890"
                   value={formData.nidNumber}
                   onChange={handleChange}
-                  className="w-full px-3.5 py-2 text-xs rounded-xl border border-input bg-background focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary font-mono"
+                  className="w-full px-3.5 py-2.5 text-xs rounded-xl border border-zinc-800 bg-zinc-900/80 text-zinc-100 placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary font-mono"
                 />
               </div>
 
               <div>
-                <label className="text-xs font-semibold text-foreground block mb-1.5">
+                <label className="text-xs font-semibold text-zinc-300 block mb-1.5">
                   Client Type
                 </label>
                 <select
                   name="clientType"
                   value={formData.clientType}
                   onChange={handleChange}
-                  className="w-full px-3 py-2 text-xs rounded-xl border border-input bg-background focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                  className="w-full px-3.5 py-2.5 text-xs rounded-xl border border-zinc-800 bg-zinc-900/80 text-zinc-100 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary cursor-pointer"
                 >
-                  <option value="Individual">Individual</option>
-                  <option value="Corporate">Corporate / Agency</option>
-                  <option value="VIP">VIP Client</option>
-                  <option value="Lead">Lead / Prospect</option>
+                  <option value="Individual" className="bg-zinc-950 text-zinc-100">Individual</option>
+                  <option value="Corporate" className="bg-zinc-950 text-zinc-100">Corporate / Agency</option>
+                  <option value="VIP" className="bg-zinc-950 text-zinc-100">VIP Client</option>
+                  <option value="Lead" className="bg-zinc-950 text-zinc-100">Lead / Prospect</option>
                 </select>
               </div>
             </div>
@@ -406,11 +406,11 @@ const CreateClientModal = ({ isOpen, onClose, onSuccess }) => {
 
           {/* ── SECTION 3: PACKAGE DETAILS ────────────────────────────── */}
           <div>
-            <h3 className="text-xs font-bold uppercase tracking-wider text-muted-foreground mb-3">
+            <h3 className="text-xs font-bold uppercase tracking-wider text-zinc-400 mb-3">
               3. Package Details
             </h3>
             <div>
-              <label className="text-xs font-semibold text-foreground block mb-1.5">
+              <label className="text-xs font-semibold text-zinc-300 block mb-1.5">
                 Total Agreed Package Amount (BDT)
               </label>
               <input
@@ -419,14 +419,14 @@ const CreateClientModal = ({ isOpen, onClose, onSuccess }) => {
                 placeholder="e.g. 450000"
                 value={formData.packageAmount}
                 onChange={handleChange}
-                className="w-full px-3.5 py-2 text-xs rounded-xl border border-input bg-background focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary font-mono"
+                className="w-full px-3.5 py-2.5 text-xs rounded-xl border border-zinc-800 bg-zinc-900/80 text-zinc-100 placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary font-mono"
               />
             </div>
           </div>
 
           {/* ── SECTION 4: ADDRESS & NOTES ──────────────────────────────────────── */}
           <div>
-            <label className="text-xs font-semibold text-foreground block mb-1.5">
+            <label className="text-xs font-semibold text-zinc-300 block mb-1.5">
               Present Address / Notes
             </label>
             <textarea
@@ -435,7 +435,7 @@ const CreateClientModal = ({ isOpen, onClose, onSuccess }) => {
               placeholder="e.g. Vill: Joypur, Upazila: Golapganj, Sylhet."
               value={formData.address}
               onChange={handleChange}
-              className="w-full px-3.5 py-2 text-xs rounded-xl border border-input bg-background focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary resize-none"
+              className="w-full px-3.5 py-2.5 text-xs rounded-xl border border-zinc-800 bg-zinc-900/80 text-zinc-100 placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary resize-none"
             ></textarea>
           </div>
           </div>

@@ -70,45 +70,50 @@ export function StepAssignModal({ isOpen = true, caseDoc = {}, caseDid, caseNumb
   };
 
   return (
-    <div className="fixed inset-0 z-[60] bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4 animate-in fade-in duration-150 overflow-y-auto">
-      <form onSubmit={handleSubmit} className="bg-card border border-border rounded-2xl max-w-lg w-full p-6 space-y-4 shadow-2xl my-8">
-        <div className="flex items-center justify-between border-b border-border pb-3">
+    <div className="fixed inset-0 z-[60] bg-black/80 backdrop-blur-md flex items-center justify-center p-4 animate-in fade-in duration-150 overflow-y-auto">
+      <form onSubmit={handleSubmit} className="bg-zinc-950 border border-zinc-800 text-zinc-100 rounded-2xl max-w-lg w-full p-6 space-y-4 shadow-2xl my-8 overflow-hidden">
+        <div className="flex items-center justify-between border-b border-zinc-800 pb-4 -mx-6 -mt-6 p-6 bg-linear-to-r from-zinc-950 via-slate-950 to-black">
           <div>
             <span className="text-[10px] font-mono font-bold text-sky-400">Case: {resolvedCaseNumber}</span>
-            <h3 className="text-base font-bold text-foreground flex items-center gap-2 mt-0.5">
+            <h3 className="text-base font-bold text-white flex items-center gap-2 mt-0.5">
               <Send className="w-4 h-4 text-sky-400" />
               Assign New Workflow Step
             </h3>
           </div>
-          <button type="button" onClick={onClose} className="p-1.5 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted">
-            <X className="w-4 h-4" />
+          <button
+            type="button"
+            onClick={onClose}
+            className="p-1.5 rounded-xl bg-rose-500/10 hover:bg-rose-500/20 text-rose-500 hover:text-rose-400 border border-rose-500/40 hover:border-rose-500/80 shadow-xs transition-all cursor-pointer"
+            aria-label="Close modal"
+          >
+            <X className="w-4 h-4 stroke-[2.5]" />
           </button>
         </div>
 
-        <div className="space-y-3 text-xs">
+        <div className="space-y-4 text-xs pt-1">
           <div>
-            <label className="block font-semibold text-muted-foreground mb-1">Step Title / Task Name *</label>
+            <label className="block font-semibold text-zinc-300 mb-1.5">Step Title / Task Name *</label>
             <input
               type="text"
               required
               placeholder="e.g. Online Submission at Greece Embassy Portal"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              className="w-full px-3 py-2 bg-muted/50 border border-border rounded-lg text-foreground focus:outline-none focus:border-primary"
+              className="w-full px-3.5 py-2.5 bg-zinc-900/80 border border-zinc-800 rounded-xl text-zinc-100 placeholder:text-zinc-500 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary"
             />
           </div>
 
           <div>
-            <label className="block font-semibold text-muted-foreground mb-1">Assign To Staff Member *</label>
+            <label className="block font-semibold text-zinc-300 mb-1.5">Assign To Staff Member *</label>
             <select
               required
               value={assignedToDid}
               onChange={(e) => setAssignedToDid(e.target.value)}
-              className="w-full px-3 py-2 bg-muted/50 border border-border rounded-lg text-foreground focus:outline-none"
+              className="w-full px-3.5 py-2.5 bg-zinc-900/80 border border-zinc-800 rounded-xl text-zinc-100 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary cursor-pointer"
             >
-              <option value="">— Select Staff Member —</option>
+              <option value="" className="bg-zinc-950 text-zinc-400">— Select Staff Member —</option>
               {users.map((u) => (
-                <option key={u.did || u._id} value={u.did || u._id}>
+                <option key={u.did || u._id} value={u.did || u._id} className="bg-zinc-950 text-zinc-100">
                   {u.name} ({u.role}) — {u.email}
                 </option>
               ))}
@@ -116,28 +121,28 @@ export function StepAssignModal({ isOpen = true, caseDoc = {}, caseDid, caseNumb
           </div>
 
           <div>
-            <label className="block font-semibold text-muted-foreground mb-1">Task Instructions / Description</label>
+            <label className="block font-semibold text-zinc-300 mb-1.5">Task Instructions / Description</label>
             <textarea
               rows={2}
               placeholder="Detailed instructions for the staff..."
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              className="w-full px-3 py-2 bg-muted/50 border border-border rounded-lg text-foreground focus:outline-none resize-none"
+              className="w-full px-3.5 py-2.5 bg-zinc-900/80 border border-zinc-800 rounded-xl text-zinc-100 placeholder:text-zinc-500 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary resize-none"
             />
           </div>
 
           {/* Document Access Restrictions (allowedDocumentDids) */}
-          <div className="space-y-2 pt-1 border-t border-border">
+          <div className="space-y-2.5 pt-2 border-t border-zinc-800">
             <div className="flex items-center justify-between">
-              <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider flex items-center gap-1.5">
+              <label className="text-xs font-bold text-zinc-300 uppercase tracking-wider flex items-center gap-1.5">
                 <Lock className="w-3.5 h-3.5 text-sky-400" />
                 Permitted Documents ({selectedDocDids.length} selected)
               </label>
-              <span className="text-[10px] text-muted-foreground">Select documents staff can view</span>
+              <span className="text-[10px] text-zinc-400">Select documents staff can view</span>
             </div>
 
             {vaultDocs.length === 0 ? (
-              <p className="text-[11px] text-muted-foreground italic">No document vault files uploaded for this client yet.</p>
+              <p className="text-[11px] text-zinc-500 italic">No document vault files uploaded for this client yet.</p>
             ) : (
               <div className="space-y-1.5 max-h-36 overflow-y-auto pr-1">
                 {vaultDocs.map((doc) => {
@@ -147,10 +152,10 @@ export function StepAssignModal({ isOpen = true, caseDoc = {}, caseDid, caseNumb
                     <div
                       key={docDid}
                       onClick={() => toggleDocSelect(docDid)}
-                      className={`p-2 rounded-lg border text-xs flex items-center justify-between cursor-pointer transition-all ${
+                      className={`p-2.5 rounded-xl border text-xs flex items-center justify-between cursor-pointer transition-all ${
                         isChecked
-                          ? 'bg-sky-500/10 border-sky-500/40 text-sky-300 font-semibold'
-                          : 'bg-muted/30 border-border text-muted-foreground hover:bg-muted'
+                          ? 'bg-sky-500/15 border-sky-500/40 text-sky-300 font-semibold'
+                          : 'bg-zinc-900/50 border-zinc-800 text-zinc-300 hover:bg-zinc-900 hover:border-zinc-700'
                       }`}
                     >
                       <div className="flex items-center gap-2 min-w-0">
@@ -161,7 +166,7 @@ export function StepAssignModal({ isOpen = true, caseDoc = {}, caseDid, caseNumb
                         type="checkbox"
                         checked={isChecked}
                         onChange={() => {}}
-                        className="rounded border-border text-sky-500 focus:ring-sky-400"
+                        className="rounded border-zinc-700 text-sky-500 focus:ring-sky-400 cursor-pointer"
                       />
                     </div>
                   );
@@ -171,21 +176,21 @@ export function StepAssignModal({ isOpen = true, caseDoc = {}, caseDid, caseNumb
           </div>
         </div>
 
-        <div className="border-t border-border pt-3 flex items-center justify-end gap-2 text-xs">
+        <div className="border-t border-zinc-800 pt-4 -mx-6 -mb-6 p-4 bg-zinc-950 flex items-center justify-end gap-2.5 text-xs">
           <button
             type="button"
             onClick={onClose}
-            className="px-3 py-1.5 rounded-lg border border-border text-muted-foreground hover:bg-muted"
+            className="px-4 py-2 font-bold rounded-xl bg-rose-500/10 hover:bg-rose-500/20 text-rose-500 dark:text-rose-400 hover:text-rose-300 border border-rose-500/40 hover:border-rose-500/80 transition-all cursor-pointer"
           >
             Cancel
           </button>
           <button
             type="submit"
             disabled={submitting}
-            className="flex items-center gap-1.5 px-4 py-1.5 bg-sky-500 hover:bg-sky-400 text-slate-950 font-bold rounded-lg shadow-md cursor-pointer disabled:opacity-50"
+            className="flex items-center gap-2 px-5 py-2 bg-primary hover:bg-primary/90 text-primary-foreground font-bold rounded-xl shadow-md cursor-pointer disabled:opacity-50 transition-all"
           >
             {submitting ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Send className="w-3.5 h-3.5" />}
-            Assign Task Step
+            <span>Assign Task Step</span>
           </button>
         </div>
       </form>
