@@ -347,10 +347,33 @@ export default function CaseDetailPage() {
   }
 
   const ledger = caseData.paymentLedger || {};
-  const totalAgreed = ledger.totalAgreedAmount || caseData.packageCost || 0;
-  const totalPaid = ledger.totalPaidAmount || caseData.initialPaidAmount || 0;
-  const totalDue = ledger.dueAmount !== undefined ? ledger.dueAmount : Math.max(0, totalAgreed - totalPaid);
-  const paidPercent = totalAgreed > 0 ? Math.min(100, Math.round((totalPaid / totalAgreed) * 100)) : 0;
+  const totalAgreed =
+    Number(ledger.totalAgreedAmount) ||
+    Number(caseData.totalAgreedAmount) ||
+    Number(caseData.packageCost) ||
+    Number(caseData.agreedAmount) ||
+    0;
+
+  const receiptsSum = (caseData.financialReceipts || []).reduce((acc, r) => acc + (Number(r.amount) || 0), 0);
+  const totalPaid =
+    Number(ledger.totalPaidAmount) ||
+    Number(caseData.totalPaid) ||
+    Number(caseData.paidAmount) ||
+    Number(caseData.initialPaidAmount) ||
+    receiptsSum ||
+    0;
+
+  const totalDue =
+    ledger.dueAmount !== undefined
+      ? Number(ledger.dueAmount)
+      : Math.max(0, totalAgreed - totalPaid);
+
+  const paidPercent =
+    totalAgreed > 0
+      ? Math.min(100, Math.round((totalPaid / totalAgreed) * 100))
+      : totalPaid > 0
+      ? 100
+      : 0;
 
   // Build Comprehensive Chronological Activity History
   const activityTimeline = [];
@@ -636,36 +659,111 @@ export default function CaseDetailPage() {
 
       {/* 4 Financial & Pipeline Snapshot Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className="bg-card border border-border p-4 rounded-2xl shadow-xs space-y-1">
-          <span className="text-[11px] font-bold uppercase text-muted-foreground">Total Agreed Package</span>
-          <div className="text-xl font-black text-foreground">BDT {Number(totalAgreed).toLocaleString('en-IN')}</div>
-          <span className="text-[10px] text-muted-foreground">Total agreed client contract</span>
-        </div>
-
-        <div className="bg-card border border-border p-4 rounded-2xl shadow-xs space-y-1">
+        {/* Card 1: Agreed Package */}
+        <div className="bg-card border border-border/80 hover:border-border p-4.5 rounded-2xl shadow-xs space-y-2.5 transition-all">
           <div className="flex items-center justify-between">
-            <span className="text-[11px] font-bold uppercase text-emerald-600">Total Collected Payment</span>
-            <span className="text-[11px] font-bold text-emerald-600">{paidPercent}%</span>
+            <span className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground flex items-center gap-1.5">
+              <Receipt className="w-3.5 h-3.5 text-primary" />
+              <span>Agreed Package</span>
+            </span>
+            <span className="text-[10px] font-semibold px-2 py-0.5 rounded-md bg-muted text-muted-foreground border border-border">
+              Contract
+            </span>
           </div>
-          <div className="text-xl font-black text-emerald-600">BDT {Number(totalPaid).toLocaleString('en-IN')}</div>
-          <div className="w-full h-1.5 bg-muted rounded-full overflow-hidden">
-            <div className="h-full bg-emerald-500 rounded-full" style={{ width: `${paidPercent}%` }} />
+          <div className="text-2xl font-black text-foreground tracking-tight font-mono">
+            BDT {Number(totalAgreed).toLocaleString('en-IN')}
+          </div>
+          <p className="text-[11px] text-muted-foreground">Total agreed client contract</p>
+        </div>
+
+        {/* Card 2: Collected Payment */}
+        <div className="bg-card border border-emerald-500/20 dark:border-emerald-500/30 hover:border-emerald-500/40 p-4.5 rounded-2xl shadow-xs space-y-2.5 transition-all">
+          <div className="flex items-center justify-between">
+            <span className="text-[11px] font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400 flex items-center gap-1.5">
+              <CreditCard className="w-3.5 h-3.5 text-emerald-500" />
+              <span>Total Collected</span>
+            </span>
+            <span className="text-xs font-black px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 font-mono">
+              {paidPercent}%
+            </span>
+          </div>
+          <div className="text-2xl font-black text-emerald-600 dark:text-emerald-400 tracking-tight font-mono">
+            BDT {Number(totalPaid).toLocaleString('en-IN')}
+          </div>
+          <div className="space-y-1">
+            <div className="w-full h-2 bg-muted/60 dark:bg-zinc-800 rounded-full overflow-hidden p-0.5">
+              <div
+                className="h-full bg-emerald-500 rounded-full transition-all duration-500"
+                style={{ width: `${paidPercent}%` }}
+              />
+            </div>
+            <div className="flex items-center justify-between text-[10px] text-muted-foreground font-medium">
+              <span>Collection Progress</span>
+              <span>{paidPercent}% Paid</span>
+            </div>
           </div>
         </div>
 
-        <div className="bg-card border border-border p-4 rounded-2xl shadow-xs space-y-1">
-          <span className="text-[11px] font-bold uppercase text-rose-600">Total Due Balance</span>
-          <div className="text-xl font-black text-rose-600">BDT {Number(totalDue).toLocaleString('en-IN')}</div>
-          <span className="text-[10px] text-rose-500 font-medium">Pending collection balance</span>
+        {/* Card 3: Due Balance */}
+        <div className="bg-card border border-rose-500/20 dark:border-rose-500/30 hover:border-rose-500/40 p-4.5 rounded-2xl shadow-xs space-y-2.5 transition-all">
+          <div className="flex items-center justify-between">
+            <span className="text-[11px] font-bold uppercase tracking-wider text-rose-600 dark:text-rose-400 flex items-center gap-1.5">
+              <AlertCircle className="w-3.5 h-3.5 text-rose-500" />
+              <span>Due Balance</span>
+            </span>
+            {totalDue > 0 ? (
+              <span className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-rose-500/10 text-rose-600 dark:text-rose-400 border border-rose-500/20">
+                Pending
+              </span>
+            ) : (
+              <span className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
+                Cleared ✓
+              </span>
+            )}
+          </div>
+          <div className="text-2xl font-black text-rose-600 dark:text-rose-400 tracking-tight font-mono">
+            BDT {Number(totalDue).toLocaleString('en-IN')}
+          </div>
+          <p className="text-[11px] text-muted-foreground">Pending collection balance</p>
         </div>
 
-        <div className="bg-card border border-border p-4 rounded-2xl shadow-xs space-y-1">
-          <span className="text-[11px] font-bold uppercase text-primary">Operational Tasks Progress</span>
-          <div className="text-xl font-black text-foreground">
+        {/* Card 4: Operational Tasks Progress */}
+        <div className="bg-card border border-primary/20 hover:border-primary/40 p-4.5 rounded-2xl shadow-xs space-y-2.5 transition-all">
+          <div className="flex items-center justify-between">
+            <span className="text-[11px] font-bold uppercase tracking-wider text-primary flex items-center gap-1.5">
+              <Layers className="w-3.5 h-3.5 text-primary" />
+              <span>Tasks Progress</span>
+            </span>
+            <span className="text-xs font-black px-2 py-0.5 rounded-full bg-primary/10 text-primary border border-primary/20 font-mono">
+              {Math.round(
+                (((caseData.workflowTasks || []).filter((t) => t.status === 'Approved' || t.status === 'Done').length) /
+                  ((caseData.workflowTasks || []).length || 1)) *
+                  100
+              )}%
+            </span>
+          </div>
+          <div className="text-2xl font-black text-foreground tracking-tight font-mono">
             {(caseData.workflowTasks || []).filter((t) => t.status === 'Approved' || t.status === 'Done').length} /{' '}
             {(caseData.workflowTasks || []).length || 5} Steps
           </div>
-          <span className="text-[10px] text-muted-foreground">Active step execution</span>
+          <div className="space-y-1">
+            <div className="w-full h-2 bg-muted/60 dark:bg-zinc-800 rounded-full overflow-hidden p-0.5">
+              <div
+                className="h-full bg-primary rounded-full transition-all duration-500"
+                style={{
+                  width: `${Math.round(
+                    (((caseData.workflowTasks || []).filter((t) => t.status === 'Approved' || t.status === 'Done').length) /
+                      ((caseData.workflowTasks || []).length || 1)) *
+                      100
+                  )}%`,
+                }}
+              />
+            </div>
+            <div className="flex items-center justify-between text-[10px] text-muted-foreground font-medium">
+              <span>Milestone Execution</span>
+              <span>Active Stage</span>
+            </div>
+          </div>
         </div>
       </div>
 
