@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { PassportSubmissionForm } from './PassportSubmissionForm';
 import { PassportSubmissionPreview } from './PassportSubmissionPreview';
 import { getDefaultPassportSubmissionData, generateUniquePassportTrackingNo } from './sampleData';
@@ -8,10 +8,25 @@ import { apiClient } from '@shared/lib/api-client';
 import { printDocument } from '@shared/lib/utils';
 import { HeaderTitle } from '@shared/components/common/HeaderTitle';
 
-export function PassportSubmission() {
-  const [data, setData] = useState(getDefaultPassportSubmissionData());
+export function PassportSubmission({ initialData = null, onSavedSuccess = null, isLocked = false }) {
+  const [data, setData] = useState(() => {
+    if (initialData) {
+      return { ...getDefaultPassportSubmissionData(), ...initialData, isLocked };
+    }
+    return getDefaultPassportSubmissionData();
+  });
   const [viewMode, setViewMode] = useState('split'); // 'split' | 'edit' | 'preview'
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  useEffect(() => {
+    if (initialData) {
+      setData((prev) => ({
+        ...prev,
+        ...initialData,
+        isLocked,
+      }));
+    }
+  }, [initialData, isLocked]);
 
   const handleReset = () => {
     setData(getDefaultPassportSubmissionData());
@@ -44,6 +59,7 @@ export function PassportSubmission() {
             ? `Passport submission updated! (Tracking ID: ${returnedTrackingNo})`
             : `Passport submission saved to database! (Tracking ID: ${returnedTrackingNo})`
         );
+        if (onSavedSuccess) onSavedSuccess(savedDoc);
       } else {
         throw new Error(res.data?.message || 'Failed to save passport record to database.');
       }
@@ -55,6 +71,7 @@ export function PassportSubmission() {
         trackingNo: fallbackTrackingNo,
       }));
       toast.info(`Passport file preview ready! (Tracking ID: ${fallbackTrackingNo})`);
+      if (onSavedSuccess) onSavedSuccess({ trackingNo: fallbackTrackingNo });
     } finally {
       setIsSubmitting(false);
     }

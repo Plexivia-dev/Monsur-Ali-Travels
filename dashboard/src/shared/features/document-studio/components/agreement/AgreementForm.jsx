@@ -238,9 +238,11 @@ export function AgreementForm({ formData, setFormData, onSubmit, onReset, isSubm
                   <Input
                     type="text"
                     required
+                    readOnly={formData.isLocked}
+                    disabled={formData.isLocked}
                     value={formData.parties?.nidPassport || ''}
                     onChange={(e) => updateNested('parties', 'nidPassport', e.target.value)}
-                    className="font-mono font-bold"
+                    className={`font-mono font-bold ${formData.isLocked ? 'bg-muted/70 cursor-not-allowed opacity-80' : ''}`}
                     placeholder=""
                   />
                 </div>
@@ -265,8 +267,11 @@ export function AgreementForm({ formData, setFormData, onSubmit, onReset, isSubm
                   <Input
                     type="text"
                     required
+                    readOnly={formData.isLocked}
+                    disabled={formData.isLocked}
                     value={formData.parties?.employeeName || ''}
                     onChange={(e) => updateNested('parties', 'employeeName', e.target.value)}
+                    className={formData.isLocked ? 'bg-muted/70 cursor-not-allowed font-bold opacity-80' : ''}
                     placeholder=""
                   />
                 </div>

@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { IdCardForm } from './IdCardForm';
 import { IdCardPreview } from './IdCardPreview';
 import { Download, Sparkles, RefreshCw, Contact } from 'lucide-react';
@@ -7,7 +7,7 @@ import { toPng } from 'html-to-image';
 import agencyInfo from '@shared/lib/information.json';
 import { HeaderTitle } from '@shared/components/common/HeaderTitle';
 
-export function IdCard() {
+export function IdCard({ initialData = null, onSavedSuccess = null, isLocked = false }) {
   const [isExporting, setIsExporting] = useState(false);
   const frontCardRef = useRef(null);
   const backCardRef = useRef(null);
@@ -25,10 +25,22 @@ export function IdCard() {
     signatureName: 'M. Ali',
     signatureTitle: 'Managing Director',
     photo: null,
-    qrData: 'https://www.monsuralitravels.com/verify?id=123'
+    qrData: 'https://www.monsuralitravels.com/verify?id=123',
+    ...initialData,
+    isLocked,
   };
 
   const [cardData, setCardData] = useState(defaultSampleData);
+
+  useEffect(() => {
+    if (initialData) {
+      setCardData((prev) => ({
+        ...prev,
+        ...initialData,
+        isLocked,
+      }));
+    }
+  }, [initialData, isLocked]);
 
   const isFormValid = Boolean(
     cardData.photo &&

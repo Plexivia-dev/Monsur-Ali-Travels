@@ -464,8 +464,12 @@ export function ClientGuardianForm({ data, onChange, onReset, onSave, onPreview,
               type="text"
               placeholder={t('clientForm.fullNamePlaceholder', 'Enter client full name')}
               value={data.client?.fullName || ''}
+              readOnly={data.isLocked}
+              disabled={data.isLocked}
               onChange={(e) => handleClientChange('fullName', e.target.value)}
-              className="w-full px-3 py-2 bg-muted/50 border border-border rounded-lg text-foreground focus:outline-hidden focus:ring-1 focus:ring-primary font-bold"
+              className={`w-full px-3 py-2 border border-border rounded-lg text-foreground font-bold ${
+                data.isLocked ? 'bg-muted/70 cursor-not-allowed text-muted-foreground' : 'bg-muted/50 focus:outline-hidden focus:ring-1 focus:ring-primary'
+              }`}
             />
           </div>
 
@@ -477,8 +481,12 @@ export function ClientGuardianForm({ data, onChange, onReset, onSave, onPreview,
               type="text"
               placeholder={t('clientForm.nidPlaceholder', 'National ID card number')}
               value={data.client?.nidNumber || ''}
+              readOnly={data.isLocked}
+              disabled={data.isLocked}
               onChange={(e) => handleClientChange('nidNumber', e.target.value)}
-              className="w-full px-3 py-2 bg-muted/50 border border-border rounded-lg text-foreground font-mono focus:outline-hidden focus:ring-1 focus:ring-primary"
+              className={`w-full px-3 py-2 border border-border rounded-lg text-foreground font-mono ${
+                data.isLocked ? 'bg-muted/70 cursor-not-allowed text-muted-foreground' : 'bg-muted/50 focus:outline-hidden focus:ring-1 focus:ring-primary'
+              }`}
             />
           </div>
 
@@ -488,8 +496,12 @@ export function ClientGuardianForm({ data, onChange, onReset, onSave, onPreview,
               type="text"
               placeholder={t('clientForm.passportPlaceholder', 'Passport number')}
               value={data.client?.passportNumber || ''}
+              readOnly={data.isLocked}
+              disabled={data.isLocked}
               onChange={(e) => handleClientChange('passportNumber', e.target.value)}
-              className="w-full px-3 py-2 bg-muted/50 border border-border rounded-lg text-foreground font-mono focus:outline-hidden focus:ring-1 focus:ring-primary uppercase"
+              className={`w-full px-3 py-2 border border-border rounded-lg text-foreground font-mono uppercase ${
+                data.isLocked ? 'bg-muted/70 cursor-not-allowed text-muted-foreground' : 'bg-muted/50 focus:outline-hidden focus:ring-1 focus:ring-primary'
+              }`}
             />
           </div>
 

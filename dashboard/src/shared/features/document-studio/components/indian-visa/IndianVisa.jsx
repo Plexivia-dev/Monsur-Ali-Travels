@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { IndianVisaForm } from './IndianVisaForm';
 import { IndianVisaPreview } from './IndianVisaPreview';
 import { getDefaultIndianVisaData, generateUniqueIndianVisaTrackingNo } from './sampleData';
@@ -8,10 +8,26 @@ import { apiClient } from '@shared/lib/api-client';
 import { printDocument } from '@shared/lib/utils';
 import { HeaderTitle } from '@shared/components/common/HeaderTitle';
 
-export function IndianVisa() {
-  const [data, setData] = useState(getDefaultIndianVisaData());
+export function IndianVisa({ initialData = null, onSavedSuccess = null, isLocked = false }) {
+  const [data, setData] = useState(() => {
+    if (initialData) {
+      return { ...getDefaultIndianVisaData(), ...initialData, isLocked };
+    }
+    return getDefaultIndianVisaData();
+  });
   const [viewMode, setViewMode] = useState('split'); // 'split' | 'edit' | 'preview'
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  useEffect(() => {
+    if (initialData) {
+      setData((prev) => ({
+        ...prev,
+        ...initialData,
+        applicant: { ...prev.applicant, ...initialData.applicant },
+        isLocked,
+      }));
+    }
+  }, [initialData, isLocked]);
 
   const handleReset = () => {
     setData(getDefaultIndianVisaData());
@@ -44,6 +60,7 @@ export function IndianVisa() {
             ? `Indian visa application updated successfully! (Tracking No: ${returnedTrackingNo})`
             : `Indian visa application saved successfully! (Tracking No: ${returnedTrackingNo})`
         );
+        if (onSavedSuccess) onSavedSuccess(savedDoc);
       } else {
         throw new Error(res.data?.message || 'Failed to save to database.');
       }
@@ -55,6 +72,7 @@ export function IndianVisa() {
         trackingNo: fallbackTrackingNo,
       }));
       toast.info(`Indian visa application receipt ready! (Tracking No: ${fallbackTrackingNo})`);
+      if (onSavedSuccess) onSavedSuccess({ trackingNo: fallbackTrackingNo });
     } finally {
       setIsSubmitting(false);
     }

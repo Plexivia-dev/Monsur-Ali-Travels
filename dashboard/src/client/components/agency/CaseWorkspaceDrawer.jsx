@@ -28,6 +28,7 @@ import {
   RefreshCw,
   Eye,
   Trash2,
+  Lock,
 } from 'lucide-react';
 import { apiClient } from '../../lib/api-client';
 import { toast } from 'sonner';
@@ -700,48 +701,96 @@ export function CaseWorkspaceDrawer({ caseId, isOpen, onClose, onRefresh }) {
                     </div>
                   ) : (
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                      {caseData.vaultDocuments.map((doc, idx) => (
-                        <div
-                          key={doc.did || doc._id || idx}
-                          className="p-4 rounded-xl border border-border bg-card shadow-xs space-y-2"
-                        >
-                          <div className="flex items-start justify-between gap-2">
-                            <div className="flex items-center gap-2.5 min-w-0">
-                              <div className="size-9 rounded-lg bg-sky-500/10 text-sky-600 flex items-center justify-center font-bold shrink-0">
-                                <FileText className="size-4" />
+                      {caseData.vaultDocuments.map((doc, idx) => {
+                        const isAdminOrManager = ['admin', 'owner', 'superadmin', 'manager'].includes(
+                          String(user?.role || '').toLowerCase()
+                        );
+                        const isOwnUpload = Boolean(
+                          (doc.uploadedByDid && (doc.uploadedByDid === user?.did || doc.uploadedByDid === user?.id || doc.uploadedByDid === user?._id)) ||
+                          (doc.uploadedByName && user?.name && doc.uploadedByName.trim().toLowerCase() === user?.name.trim().toLowerCase()) ||
+                          (doc.uploadedBy && user?.name && doc.uploadedBy.trim().toLowerCase() === user?.name.trim().toLowerCase())
+                        );
+                        const canViewDoc = isAdminOrManager || isOwnUpload;
+
+                        return (
+                          <div
+                            key={doc.did || doc._id || idx}
+                            className={`p-4 rounded-xl border transition-all space-y-2.5 ${
+                              canViewDoc
+                                ? 'border-border bg-card shadow-xs'
+                                : 'border-border/60 bg-muted/20 opacity-90'
+                            }`}
+                          >
+                            <div className="flex items-start justify-between gap-2">
+                              <div className="flex items-center gap-2.5 min-w-0">
+                                <div
+                                  className={`size-9 rounded-lg flex items-center justify-center font-bold shrink-0 ${
+                                    canViewDoc ? 'bg-sky-500/10 text-sky-600' : 'bg-muted text-muted-foreground'
+                                  }`}
+                                >
+                                  {canViewDoc ? (
+                                    <FileText className="size-4" />
+                                  ) : (
+                                    <Lock className="size-4 text-amber-600 dark:text-amber-400" />
+                                  )}
+                                </div>
+                                <div className="min-w-0">
+                                  <h5 className="font-bold text-xs text-foreground truncate">
+                                    {doc.documentName || doc.name || 'Document'}
+                                  </h5>
+                                  <p className="text-[10px] text-muted-foreground truncate">
+                                    {doc.fileName || 'file.pdf'} • {doc.fileSize || '1.2 MB'}
+                                  </p>
+                                </div>
                               </div>
-                              <div className="min-w-0">
-                                <h5 className="font-bold text-xs text-foreground truncate">
-                                  {doc.documentName || doc.name || 'Document'}
-                                </h5>
-                                <p className="text-[10px] text-muted-foreground truncate">
-                                  {doc.fileName || 'file.pdf'} • {doc.fileSize || '1.2 MB'}
-                                </p>
-                              </div>
+
+                              {canViewDoc ? (
+                                <span
+                                  className={`px-2 py-0.5 rounded text-[10px] font-bold shrink-0 ${
+                                    isOwnUpload
+                                      ? 'bg-sky-500/10 text-sky-600 border border-sky-500/20'
+                                      : 'bg-emerald-500/10 text-emerald-600 border border-emerald-500/20'
+                                  }`}
+                                >
+                                  {isOwnUpload ? 'My Upload ✓' : 'Verified'}
+                                </span>
+                              ) : (
+                                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-bold bg-amber-500/10 text-amber-700 dark:text-amber-400 border border-amber-500/20 shrink-0">
+                                  <Lock className="size-2.5" />
+                                  Restricted
+                                </span>
+                              )}
                             </div>
 
-                            <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-50 text-emerald-600 border border-emerald-200 shrink-0">
-                              Verified
-                            </span>
-                          </div>
+                            <div className="flex items-center justify-between text-[11px] pt-2 border-t border-border text-muted-foreground">
+                              <span>
+                                Uploaded by: <strong className="text-foreground">{doc.uploadedByName || 'Staff Member'}</strong>
+                              </span>
 
-                          <div className="flex items-center justify-between text-[11px] pt-2 border-t border-border text-muted-foreground">
-                            <span>
-                              Uploaded by: <strong className="text-foreground">{doc.uploadedByName || 'Staff Member'}</strong>
-                            </span>
-                            {doc.fileUrl && (
-                              <a
-                                href={doc.fileUrl}
-                                target="_blank"
-                                rel="noreferrer"
-                                className="text-primary hover:underline font-bold flex items-center gap-0.5"
-                              >
-                                View <ExternalLink className="size-3" />
-                              </a>
-                            )}
+                              {canViewDoc ? (
+                                doc.fileUrl ? (
+                                  <a
+                                    href={doc.fileUrl}
+                                    target="_blank"
+                                    rel="noreferrer"
+                                    className="text-primary hover:underline font-bold flex items-center gap-0.5"
+                                  >
+                                    View <ExternalLink className="size-3" />
+                                  </a>
+                                ) : null
+                              ) : (
+                                <span
+                                  className="text-[10px] text-muted-foreground/70 italic font-medium flex items-center gap-1 select-none"
+                                  title="Access Restricted: You can only view documents uploaded by yourself."
+                                >
+                                  <Lock className="size-3 text-amber-600/70 shrink-0" />
+                                  <span>Uploader Only</span>
+                                </span>
+                              )}
+                            </div>
                           </div>
-                        </div>
-                      ))}
+                        );
+                      })}
                     </div>
                   )}
                 </div>

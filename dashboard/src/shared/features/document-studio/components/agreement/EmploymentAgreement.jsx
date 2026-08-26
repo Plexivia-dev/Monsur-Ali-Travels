@@ -81,10 +81,28 @@ export function getDefaultAgreementData() {
   };
 }
 
-export function EmploymentAgreement() {
-  const [formData, setFormData] = useState(getDefaultAgreementData());
+export function EmploymentAgreement({ initialData = null, onSavedSuccess = null, isLocked = false }) {
+  const [formData, setFormData] = useState(() => {
+    if (initialData) {
+      return { ...getDefaultAgreementData(), ...initialData, isLocked };
+    }
+    return getDefaultAgreementData();
+  });
   const [viewMode, setViewMode] = useState('split'); // 'split' | 'edit' | 'preview'
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  useEffect(() => {
+    if (initialData) {
+      setFormData((prev) => ({
+        ...prev,
+        ...initialData,
+        parties: { ...prev.parties, ...initialData.parties },
+        guardian: { ...prev.guardian, ...initialData.guardian },
+        position: { ...prev.position, ...initialData.position },
+        isLocked,
+      }));
+    }
+  }, [initialData, isLocked]);
 
   const handleReset = () => {
     setFormData(getDefaultAgreementData());
@@ -121,6 +139,7 @@ export function EmploymentAgreement() {
             ? `Employment agreement updated successfully in database! (Agreement ID: ${savedDoc.agreementId || finalAgreementId})`
             : `Employment agreement saved successfully in database! (Agreement ID: ${savedDoc.agreementId || finalAgreementId})`
         );
+        if (onSavedSuccess) onSavedSuccess(savedDoc);
       } else {
         throw new Error(res.data?.message || 'Failed to save employment agreement to database.');
       }
@@ -131,6 +150,7 @@ export function EmploymentAgreement() {
         agreementId: finalAgreementId,
       }));
       toast.success(`Employment agreement generated successfully! (Agreement ID: ${finalAgreementId})`);
+      if (onSavedSuccess) onSavedSuccess({ agreementId: finalAgreementId });
     } finally {
       setIsSubmitting(false);
     }
