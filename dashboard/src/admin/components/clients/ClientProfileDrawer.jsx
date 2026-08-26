@@ -43,8 +43,13 @@ const ClientProfileDrawer = ({ clientDid, isOpen, onClose, onRefresh }) => {
     setLoading(true);
     try {
       // 1. Fetch client base details
-      const clientRes = await apiClient.get(`/api/v1/client/clients/${clientDid}`);
-      const clientData = clientRes.data?.data || null;
+      let clientRes;
+      try {
+        clientRes = await apiClient.get(`/api/v1/client/clients/${clientDid}`);
+      } catch {
+        clientRes = await apiClient.get(`/api/v1/admin/clients/${clientDid}`);
+      }
+      const clientData = clientRes.data?.data || clientRes.data?.client || null;
       setClient(clientData);
 
       // 2. Fetch linked case files

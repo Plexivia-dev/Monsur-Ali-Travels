@@ -15,6 +15,7 @@ import ActivityLogsPage from '@/pages/ActivityLogsPage'
 import TrashPage from '@/pages/system/TrashPage'
 import StorageSyncPage from '@/pages/system/StorageSyncPage'
 import ClientsPage from '@/pages/ClientsPage'
+import ClientDetailPage from '@/pages/ClientDetailPage'
 import UsersPage from '@/pages/UsersPage'
 import SettingsPage from '@/pages/SettingsPage'
 import DocumentStudioPage from '@/pages/DocumentStudioPage'
@@ -61,7 +62,9 @@ export default function App() {
               <Route path="cases" element={<CaseWorkflow />} />
               <Route path="cases/:id" element={<CaseDetailPage />} />
               <Route path="clients" element={<ClientsPage />} />
+              <Route path="clients/:id" element={<ClientDetailPage />} />
               <Route path="agency/clients" element={<ClientsPage />} />
+              <Route path="agency/clients/:id" element={<ClientDetailPage />} />
               <Route path="users" element={<UsersPage />} />
               <Route path="agency/users" element={<UsersPage />} />
               <Route path="activity-logs" element={<ActivityLogsPage />} />

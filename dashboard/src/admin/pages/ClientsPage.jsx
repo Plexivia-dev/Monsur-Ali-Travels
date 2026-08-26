@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Card, CardContent } from '@/components/ui/card';
 import { apiClient } from '@/lib/api-client';
 import {
@@ -17,13 +18,13 @@ import {
 } from 'lucide-react';
 import { toast } from 'sonner';
 import CreateClientModal from '@/components/clients/CreateClientModal';
-import ClientProfileDrawer from '@/components/clients/ClientProfileDrawer';
 import { UnifiedDataTable } from '@shared/components/tables/UnifiedDataTable';
 import { HeaderTitle } from '@shared/components/common/HeaderTitle';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 
 export function ClientsPage() {
+  const navigate = useNavigate();
   const [clients, setClients] = useState([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
@@ -32,9 +33,8 @@ export function ClientsPage() {
   const [limit, setLimit] = useState(15);
   const [meta, setMeta] = useState({ totalCount: 0, totalPages: 1 });
 
-  // Modal & Drawer State
+  // Modal State
   const [createModalOpen, setCreateModalOpen] = useState(false);
-  const [selectedClientDid, setSelectedClientDid] = useState(null);
   const [togglingId, setTogglingId] = useState(null);
   const [deletingId, setDeletingId] = useState(null);
 
@@ -45,24 +45,34 @@ export function ClientsPage() {
       const params = { page, limit };
       if (search.trim()) params.search = search.trim();
       if (activeTab !== 'all') {
-        if (['Active', 'Inactive', 'Archived'].includes(activeTab)) {
+        if (['Active', 'Inactive', 'Archived', 'Lead'].includes(activeTab)) {
           params.status = activeTab;
         } else {
           params.clientType = activeTab;
         }
       }
 
-      const res = await apiClient.get('/api/v1/client/clients', { params });
-      const responseData = res.data;
+      let res;
+      try {
+        res = await apiClient.get('/api/v1/client/clients', { params });
+      } catch (err1) {
+        // Fallback to admin-scoped route if client-scoped route fails
+        res = await apiClient.get('/api/v1/admin/clients', { params });
+      }
+
+      const responseData = res?.data;
 
       if (responseData?.status === 'success' || responseData?.success || Array.isArray(responseData?.data)) {
         const clientList = responseData.data || [];
-        const totalCount = Number(responseData.pagination?.totalCount || responseData.total || clientList.length || 0);
-        const totalPages = Number(responseData.pagination?.totalPages || Math.ceil(totalCount / limit) || 1);
+        setClients(Array.isArray(clientList) ? clientList : []);
+        const totalCount = Number(responseData.pagination?.totalCount ?? responseData.total ?? clientList.length ?? 0);
+        const totalPages = Number(responseData.pagination?.totalPages ?? Math.ceil(totalCount / limit) ?? 1);
         setMeta({ totalCount, totalPages });
       } else if (Array.isArray(responseData)) {
         setClients(responseData);
-        setMeta({ totalCount: responseData.length, totalPages: 1 });
+        setMeta({ totalCount: responseData.length, totalPages: Math.ceil(responseData.length / limit) || 1 });
+      } else {
+        setClients([]);
       }
     } catch (err) {
       console.error('Failed to load clients list:', err);
@@ -89,15 +99,21 @@ export function ClientsPage() {
 
   // Toggles a client's active/inactive status
   const handleToggleStatus = useCallback(async (client) => {
-    const clientId = client._id || client.did;
+    const clientId = client.did || client._id;
     if (!clientId) return;
     const currentStatus = client.status || 'Active';
     const newStatus = currentStatus === 'Active' ? 'Inactive' : 'Active';
     setTogglingId(clientId);
     try {
-      await apiClient.patch(`/api/v1/client/clients/${client.did || client._id}/status`, {
-        status: newStatus,
-      });
+      try {
+        await apiClient.patch(`/api/v1/client/clients/${clientId}/status`, {
+          status: newStatus,
+        });
+      } catch {
+        await apiClient.put(`/api/v1/client/clients/${clientId}`, {
+          status: newStatus,
+        });
+      }
       toast.success(`Client "${client.fullName}" marked as ${newStatus}.`);
       fetchClients();
     } catch (err) {
@@ -135,7 +151,7 @@ export function ClientsPage() {
           </div>
           <div>
             <span
-              onClick={() => setSelectedClientDid(row.did)}
+              onClick={() => navigate(`/admin/clients/${row.did || row._id || row.id}`)}
               className="font-bold text-foreground hover:text-primary transition-colors block cursor-pointer"
             >
               {row.fullName || 'Unnamed Client'}
@@ -239,7 +255,7 @@ export function ClientsPage() {
               size="sm"
               onClick={(e) => {
                 e.stopPropagation();
-                setSelectedClientDid(row.did);
+                navigate(`/admin/clients/${row.did || row._id || row.id}`);
               }}
               className="h-7 px-2.5 text-xs font-semibold cursor-pointer gap-1 shadow-xs"
               title="View 360° Profile"
@@ -445,14 +461,6 @@ export function ClientsPage() {
         onSuccess={() => {
           fetchClients();
         }}
-      />
-
-      {/* Client 360 Degree Profile Drawer */}
-      <ClientProfileDrawer
-        clientDid={selectedClientDid}
-        isOpen={Boolean(selectedClientDid)}
-        onClose={() => setSelectedClientDid(null)}
-        onRefresh={fetchClients}
       />
     </div>
   );

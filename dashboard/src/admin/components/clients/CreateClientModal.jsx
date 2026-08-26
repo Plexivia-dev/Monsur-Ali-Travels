@@ -70,8 +70,13 @@ const CreateClientModal = ({ isOpen, onClose, onSuccess }) => {
         notes: formData.notes.trim() || undefined,
       };
 
-      const res = await apiClient.post('/api/v1/client/clients', clientPayload);
-      const createdClient = res.data?.data;
+      let res;
+      try {
+        res = await apiClient.post('/api/v1/client/clients', clientPayload);
+      } catch (err1) {
+        res = await apiClient.post('/api/v1/admin/clients', clientPayload);
+      }
+      const createdClient = res.data?.data || res.data?.client || res.data;
 
       if (createdClient && createdClient.did) {
         // 2. Optionally create linked initial case file if packageAmount or serviceType is provided
