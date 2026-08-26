@@ -38,11 +38,11 @@ import { StepAssignModal } from '@/components/workflow/StepAssignModal';
 import { AddPaymentModal } from '@/components/workflow/AddPaymentModal';
 
 const PIPELINE_STAGES = [
-  { id: 'ENTRY', title: '1. New Entry (ফাইল এন্ট্রি)', color: 'bg-slate-100 text-slate-800' },
-  { id: 'PROCESSING', title: '2. Processing (ডকুমেন্ট প্রসেসিং)', color: 'bg-blue-100 text-blue-800' },
-  { id: 'APPROVED_OFFER_LETTER', title: '3. Offer Approved (অফার লেটার)', color: 'bg-indigo-100 text-indigo-800' },
-  { id: 'SUBMITTED_EMBASSY_BSF', title: '4. Embassy/VFS Submitted (সাবমিটেড)', color: 'bg-amber-100 text-amber-800' },
-  { id: 'COMPLETED_DELIVERED', title: '5. Completed & Delivered (ডেলিভার্ড)', color: 'bg-emerald-100 text-emerald-800' },
+  { id: 'ENTRY', title: '1. New Entry', color: 'bg-slate-100 text-slate-800' },
+  { id: 'PROCESSING', title: '2. Processing', color: 'bg-blue-100 text-blue-800' },
+  { id: 'APPROVED_OFFER_LETTER', title: '3. Offer Approved', color: 'bg-indigo-100 text-indigo-800' },
+  { id: 'SUBMITTED_EMBASSY_BSF', title: '4. Embassy / VFS Submitted', color: 'bg-amber-100 text-amber-800' },
+  { id: 'COMPLETED_DELIVERED', title: '5. Completed & Delivered', color: 'bg-emerald-100 text-emerald-800' },
 ];
 
 export default function CaseDetailPage() {
@@ -1063,7 +1063,7 @@ export default function CaseDetailPage() {
             <div className="flex items-center justify-between border-b border-border pb-3">
               <h3 className="text-sm font-bold text-foreground flex items-center gap-2">
                 <UploadCloud className="w-4 h-4 text-primary" />
-                ডকুমেন্ট ভল্টে ফাইল যুক্ত করুন
+                Attach File to Document Vault
               </h3>
               <button
                 type="button"
@@ -1076,14 +1076,14 @@ export default function CaseDetailPage() {
 
             <div className="space-y-3 text-xs">
               <div>
-                <label className="block font-semibold text-muted-foreground mb-1">ডকুমেন্টের ধরন *</label>
+                <label className="block font-semibold text-muted-foreground mb-1">Document Type *</label>
                 <select
                   value={uploadDocForm.documentName}
                   onChange={(e) => setUploadDocForm({ ...uploadDocForm, documentName: e.target.value })}
                   className="w-full px-3 py-2 bg-muted/50 border border-border rounded-xl text-foreground focus:outline-none"
                 >
-                  <option value="Passport Scan Copy">Passport Scan Copy (পাসপোর্ট স্ক্যান)</option>
-                  <option value="Photo 2x2">Photo 2x2 White BG (ছবি)</option>
+                  <option value="Passport Scan Copy">Passport Scan Copy</option>
+                  <option value="Photo 2x2">Photo 2x2 White Background</option>
                   <option value="Police Clearance Certificate (PCC)">Police Clearance (PCC)</option>
                   <option value="National ID (NID)">National ID Card (NID)</option>
                   <option value="Electricity / Utility Bill">Electricity / Utility Bill</option>
@@ -1095,10 +1095,10 @@ export default function CaseDetailPage() {
               </div>
 
               <div>
-                <label className="block font-semibold text-muted-foreground mb-1">ফাইলের নাম / লেবেল</label>
+                <label className="block font-semibold text-muted-foreground mb-1">File Name / Label</label>
                 <input
                   type="text"
-                  placeholder="e.g. passport_scan_chanda.pdf"
+                  placeholder="e.g. passport_scan_client.pdf"
                   value={uploadDocForm.fileName}
                   onChange={(e) => setUploadDocForm({ ...uploadDocForm, fileName: e.target.value })}
                   className="w-full px-3 py-2 bg-muted/50 border border-border rounded-xl text-foreground focus:outline-none"
@@ -1106,7 +1106,7 @@ export default function CaseDetailPage() {
               </div>
 
               <div>
-                <label className="block font-semibold text-muted-foreground mb-1">ফাইলের লিঙ্ক / ক্লাউড স্টোরেজ URL *</label>
+                <label className="block font-semibold text-muted-foreground mb-1">File URL / Cloud Storage Link *</label>
                 <input
                   type="text"
                   required
