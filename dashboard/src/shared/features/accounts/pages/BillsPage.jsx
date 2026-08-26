@@ -94,7 +94,7 @@ export function BillsPage() {
         const total = row.grandTotal || row.totalAmount || 0;
         return (
           <span className="font-bold text-xs text-foreground font-mono">
-            ৳{Number(total).toLocaleString('en-BD')}
+            BDT {Number(total).toLocaleString('en-BD')}
           </span>
         );
       },
@@ -104,7 +104,7 @@ export function BillsPage() {
       header: 'Paid (BDT)',
       cell: ({ row }) => (
         <span className="font-semibold text-xs text-emerald-600 dark:text-emerald-400 font-mono">
-          ৳{Number(row.paidAmount || 0).toLocaleString('en-BD')}
+          BDT {Number(row.paidAmount || 0).toLocaleString('en-BD')}
         </span>
       ),
     },
@@ -119,7 +119,7 @@ export function BillsPage() {
               due > 0 ? 'text-rose-600 dark:text-rose-400 font-bold' : 'text-muted-foreground'
             }`}
           >
-            ৳{Number(due).toLocaleString('en-BD')}
+            BDT {Number(due).toLocaleString('en-BD')}
           </span>
         );
       },
@@ -173,7 +173,7 @@ export function BillsPage() {
             <Receipt className="w-4 h-4 text-primary" />
           </div>
           <p className="text-2xl font-black text-foreground font-mono">
-            ৳{Number(meta.totalAmount || 0).toLocaleString('en-BD')}
+            BDT {Number(meta.totalAmount || 0).toLocaleString('en-BD')}
           </p>
           <p className="text-[11px] text-muted-foreground">Grand total billed</p>
         </div>
@@ -184,7 +184,7 @@ export function BillsPage() {
             <CheckCircle2 className="w-4 h-4 text-emerald-500" />
           </div>
           <p className="text-2xl font-black text-emerald-600 dark:text-emerald-400 font-mono">
-            ৳{Number(meta.totalPaid || 0).toLocaleString('en-BD')}
+            BDT {Number(meta.totalPaid || 0).toLocaleString('en-BD')}
           </p>
           <p className="text-[11px] text-muted-foreground">Settled payments</p>
         </div>
@@ -195,7 +195,7 @@ export function BillsPage() {
             <AlertTriangle className="w-4 h-4 text-rose-500" />
           </div>
           <p className="text-2xl font-black text-rose-600 dark:text-rose-400 font-mono">
-            ৳{Number(meta.totalDue || 0).toLocaleString('en-BD')}
+            BDT {Number(meta.totalDue || 0).toLocaleString('en-BD')}
           </p>
           <p className="text-[11px] text-muted-foreground">Pending receivables</p>
         </div>

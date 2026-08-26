@@ -123,7 +123,7 @@ export function BankLedgerPage() {
             <TrendingUp className="w-4 h-4 text-sky-500" />
           </div>
           <p className="text-2xl font-black text-sky-600 dark:text-sky-400 font-mono">
-            ৳{Number(summary.totalBankIn || 0).toLocaleString('en-BD')}
+            BDT {Number(summary.totalBankIn || 0).toLocaleString('en-BD')}
           </p>
           <p className="text-[11px] text-muted-foreground">{summary.totalTransactions || 0} Electronic Deposits</p>
         </div>
@@ -144,7 +144,7 @@ export function BankLedgerPage() {
                   className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-lg bg-muted/60 text-foreground border border-border text-[11px] font-semibold"
                 >
                   <span>{c.channel}:</span>
-                  <span className="font-mono font-bold text-primary">৳{Number(c.amount || 0).toLocaleString('en-BD')}</span>
+                  <span className="font-mono font-bold text-primary">BDT {Number(c.amount || 0).toLocaleString('en-BD')}</span>
                 </span>
               ))
             )}
@@ -239,7 +239,7 @@ export function BankLedgerPage() {
                       )}
                     </td>
                     <td className="py-2.5 px-3 text-right font-mono font-bold text-sky-600 dark:text-sky-400">
-                      ৳{Number(t.amount || 0).toLocaleString('en-BD')}
+                      BDT {Number(t.amount || 0).toLocaleString('en-BD')}
                     </td>
                     <td className="py-2.5 px-3 text-center">
                       <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 capitalize">

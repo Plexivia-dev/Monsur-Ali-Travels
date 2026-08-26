@@ -2,16 +2,15 @@ import React, { useState } from 'react';
 import { CashVoucherForm } from './CashVoucherForm';
 import { CashVoucherPreview } from './CashVoucherPreview';
 import { getDefaultCashVoucherData, generateVoucherNo } from './sampleData';
-import { Printer, Share2, ArrowLeft } from 'lucide-react';
+import { Download, RefreshCw, Eye, Edit3, Columns, Share2, Printer, Receipt } from 'lucide-react';
 import { toast } from 'sonner';
 import { apiClient } from '@shared/lib/api-client';
 import { printDocument } from '@shared/lib/utils';
-import { Button } from '@/components/ui/button';
 import { HeaderTitle } from '@shared/components/common/HeaderTitle';
 
 export function CashVoucher() {
   const [data, setData] = useState(getDefaultCashVoucherData());
-  const [viewMode, setViewMode] = useState('form'); // 'form' | 'preview'
+  const [viewMode, setViewMode] = useState('split'); // 'split' | 'edit' | 'preview'
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleReset = () => {
@@ -59,14 +58,12 @@ export function CashVoucher() {
             ? `Cash voucher #${returnedNo} updated successfully!`
             : `Cash voucher #${returnedNo} saved to database!`
         );
-        setViewMode('preview');
       } else {
         throw new Error(res.data?.message || 'Failed to save cash voucher.');
       }
     } catch (err) {
       console.warn('Cash voucher save warning (preview mode ready):', err);
       toast.info(`Cash voucher preview ready! (#${data.voucherNo})`);
-      setViewMode('preview');
     } finally {
       setIsSubmitting(false);
     }
@@ -85,8 +82,10 @@ export function CashVoucher() {
     const msg =
       `*📄 MONSUR ALI TRAVELS*\n` +
       `*OFFICIAL CASH MONEY VOUCHER*\n` +
-      `*Voucher No: ${data.voucherNo || 'MAT-KV-000000'}*\n` +
+      `*Voucher No:* ${data.voucherNo || 'MAT-KV'}\n` +
       `-----------------------------------------\n` +
+      `👤 *Paid To:* ${data.paidTo || 'N/A'}\n` +
+      `📌 *Category:* ${data.category || 'Office Expense'}\n` +
       `📅 *Date:* ${data.voucherDate || 'N/A'}\n` +
       `💰 *Grand Total:* BDT  ${total}\n` +
       `📝 *In Words:* ${data.grandTotalInWordsEn || 'N/A'}\n` +
@@ -100,64 +99,108 @@ export function CashVoucher() {
   };
 
   return (
-    <div className="space-y-6">
-      {/* Form Mode */}
-      {viewMode === 'form' && (
-        <CashVoucherForm
-          data={data}
-          onChange={setData}
-          onReset={handleReset}
-          onSave={handleFormSubmit}
-          onPreview={() => setViewMode('preview')}
-          isSubmitting={isSubmitting}
-        />
+    <div className="space-y-4">
+      {/* Universal Top Header Banner */}
+      <HeaderTitle
+        variant="printables"
+        icon={Receipt}
+        title={`Cash Money Voucher (${data.voucherNo || 'MAT-KV'})`}
+        subtitle="Official agency expense voucher, payment memo, and petty cash verification voucher generator."
+        actions={
+          <div className="flex items-center gap-2 flex-wrap">
+            {/* View Mode Segmented Controls */}
+            <div className="flex items-center space-x-1 bg-muted p-1 rounded-xl border border-border">
+              {[
+                { id: 'split', label: 'Split View', icon: Columns },
+                { id: 'edit', label: 'Edit Form', icon: Edit3 },
+                { id: 'preview', label: 'Live Preview', icon: Eye },
+              ].map((btn) => {
+                const Icon = btn.icon;
+                const isActive = viewMode === btn.id;
+                return (
+                  <button
+                    key={btn.id}
+                    onClick={() => setViewMode(btn.id)}
+                    className={`flex items-center space-x-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
+                      isActive
+                        ? 'bg-card text-foreground shadow-xs font-bold'
+                        : 'text-muted-foreground hover:text-foreground'
+                    }`}
+                  >
+                    <Icon className="w-3.5 h-3.5" />
+                    <span>{btn.label}</span>
+                  </button>
+                );
+              })}
+            </div>
+
+            <button
+              onClick={handleReset}
+              className="flex items-center space-x-1.5 bg-muted hover:bg-muted/80 text-foreground text-xs font-semibold px-3 py-1.5 rounded-xl border border-border transition-colors cursor-pointer"
+              title="Reset Form"
+            >
+              <RefreshCw className="w-3.5 h-3.5 text-muted-foreground" />
+              <span>Reset</span>
+            </button>
+
+            <button
+              onClick={handleWhatsAppShare}
+              className="flex items-center space-x-1.5 bg-[#25D366] hover:bg-[#20bd5a] text-white text-xs font-bold px-3 py-1.5 rounded-xl shadow-xs transition-colors cursor-pointer"
+              title="Share Summary on WhatsApp"
+            >
+              <Share2 className="w-3.5 h-3.5" />
+              <span>WhatsApp</span>
+            </button>
+
+            <button
+              onClick={handlePrint}
+              className="flex items-center space-x-1.5 bg-primary hover:bg-primary/90 text-primary-foreground text-xs font-bold px-3.5 py-1.5 rounded-xl shadow-xs transition-colors cursor-pointer"
+              title="Export Printable A4 PDF"
+            >
+              <Printer className="w-3.5 h-3.5" />
+              <span>Export & Print</span>
+            </button>
+          </div>
+        }
+      />
+
+      {/* Main Studio Views */}
+      {viewMode === 'edit' && (
+        <div className="max-w-4xl mx-auto">
+          <CashVoucherForm
+            data={data}
+            onChange={setData}
+            onReset={handleReset}
+            onSave={handleFormSubmit}
+            onPreview={() => setViewMode('preview')}
+            isSubmitting={isSubmitting}
+          />
+        </div>
       )}
 
-      {/* Preview & Print Mode */}
       {viewMode === 'preview' && (
-        <div className="space-y-4">
-          {/* Action Toolbar */}
-          <HeaderTitle
-            variant="printables"
-            title={`Cash Money Voucher (${data.voucherNo || 'MAT-KV'})`}
-            subtitle="Cash voucher preview ready. Review details, print document, or return to edit form."
-            actions={
-              <>
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setViewMode('form')}
-                >
-                  <ArrowLeft className="w-4 h-4 mr-1" />
-                  <span>Edit Form</span>
-                </Button>
-
-                <Button
-                  type="button"
-                  variant="success"
-                  size="sm"
-                  onClick={handleWhatsAppShare}
-                >
-                  <Share2 className="w-3.5 h-3.5 mr-1" />
-                  <span>WhatsApp</span>
-                </Button>
-
-                <Button
-                  type="button"
-                  variant="primary"
-                  size="sm"
-                  onClick={handlePrint}
-                >
-                  <Printer className="w-4 h-4 mr-1" />
-                  <span>Print Voucher (A4)</span>
-                </Button>
-              </>
-            }
-          />
-
-          {/* Printable Preview */}
+        <div className="w-full flex justify-center py-2 no-print-padding">
           <CashVoucherPreview data={data} />
+        </div>
+      )}
+
+      {viewMode === 'split' && (
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+          <div className="lg:col-span-5 max-h-[calc(100vh-140px)] overflow-y-auto pr-1">
+            <CashVoucherForm
+              data={data}
+              onChange={setData}
+              onReset={handleReset}
+              onSave={handleFormSubmit}
+              onPreview={() => setViewMode('preview')}
+              isSubmitting={isSubmitting}
+            />
+          </div>
+          <div className="lg:col-span-7 bg-muted/30 border border-border rounded-xl p-3 overflow-y-auto max-h-[calc(100vh-140px)] flex justify-center">
+            <div className="scale-[0.88] origin-top">
+              <CashVoucherPreview data={data} />
+            </div>
+          </div>
         </div>
       )}
     </div>

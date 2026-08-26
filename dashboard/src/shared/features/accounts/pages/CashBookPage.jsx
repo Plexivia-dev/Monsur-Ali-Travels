@@ -123,7 +123,7 @@ export function CashBookPage() {
             <ArrowDownLeft className="w-4 h-4 text-emerald-500" />
           </div>
           <p className="text-2xl font-black text-emerald-600 dark:text-emerald-400 font-mono">
-            ৳{Number(summary.totalCashIn || 0).toLocaleString('en-BD')}
+            BDT {Number(summary.totalCashIn || 0).toLocaleString('en-BD')}
           </p>
           <p className="text-[11px] text-muted-foreground">{summary.receiptsCount || 0} Cash Receipts</p>
         </div>
@@ -135,7 +135,7 @@ export function CashBookPage() {
             <ArrowUpRight className="w-4 h-4 text-rose-500" />
           </div>
           <p className="text-2xl font-black text-rose-600 dark:text-rose-400 font-mono">
-            ৳{Number(summary.totalCashOut || 0).toLocaleString('en-BD')}
+            BDT {Number(summary.totalCashOut || 0).toLocaleString('en-BD')}
           </p>
           <p className="text-[11px] text-muted-foreground">{summary.vouchersCount || 0} Cash Vouchers</p>
         </div>
@@ -147,7 +147,7 @@ export function CashBookPage() {
             <Wallet className="w-4 h-4 text-sky-500" />
           </div>
           <p className={`text-2xl font-black font-mono ${Number(summary.netCashBalance || 0) >= 0 ? 'text-sky-600 dark:text-sky-400' : 'text-rose-600'}`}>
-            ৳{Number(summary.netCashBalance || 0).toLocaleString('en-BD')}
+            BDT {Number(summary.netCashBalance || 0).toLocaleString('en-BD')}
           </p>
           <p className="text-[11px] text-muted-foreground">Period liquidity balance</p>
         </div>
@@ -239,10 +239,10 @@ export function CashBookPage() {
                       {t.description}
                     </td>
                     <td className="py-2.5 px-3 text-right font-mono font-bold text-emerald-600 dark:text-emerald-400">
-                      {t.amountIn > 0 ? `৳${t.amountIn.toLocaleString('en-BD')}` : '—'}
+                      {t.amountIn > 0 ? `BDT ${t.amountIn.toLocaleString('en-BD')}` : '—'}
                     </td>
                     <td className="py-2.5 px-3 text-right font-mono font-bold text-rose-600 dark:text-rose-400">
-                      {t.amountOut > 0 ? `৳${t.amountOut.toLocaleString('en-BD')}` : '—'}
+                      {t.amountOut > 0 ? `BDT ${t.amountOut.toLocaleString('en-BD')}` : '—'}
                     </td>
                     <td className="py-2.5 px-3 text-center">
                       <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-muted text-foreground border border-border capitalize">

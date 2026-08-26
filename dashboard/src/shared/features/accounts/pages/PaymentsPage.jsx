@@ -112,7 +112,7 @@ export function PaymentsPage() {
       header: 'Amount (BDT)',
       cell: ({ row }) => (
         <span className="font-bold text-xs text-foreground font-mono">
-          ৳{Number(row.amount || 0).toLocaleString('en-BD')}
+          BDT {Number(row.amount || 0).toLocaleString('en-BD')}
         </span>
       ),
     },
@@ -161,7 +161,7 @@ export function PaymentsPage() {
             <Wallet className="w-4 h-4 text-emerald-500" />
           </div>
           <p className="text-2xl font-black text-foreground font-mono">
-            ৳{Number(meta.totalAmount || 0).toLocaleString('en-BD')}
+            BDT {Number(meta.totalAmount || 0).toLocaleString('en-BD')}
           </p>
           <p className="text-[11px] text-muted-foreground">Across {meta.total || 0} payment receipts</p>
         </div>

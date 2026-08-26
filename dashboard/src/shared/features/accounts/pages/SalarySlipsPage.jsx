@@ -110,7 +110,7 @@ export function SalarySlipsPage() {
       header: 'Gross (BDT)',
       cell: ({ row }) => (
         <span className="font-semibold text-xs text-foreground font-mono">
-          ৳{Number(row.grossEarnings || 0).toLocaleString('en-BD')}
+          BDT {Number(row.grossEarnings || 0).toLocaleString('en-BD')}
         </span>
       ),
     },
@@ -121,7 +121,7 @@ export function SalarySlipsPage() {
         const ded = Number(row.totalDeduction || 0);
         return (
           <span className={`font-semibold text-xs font-mono ${ded > 0 ? 'text-rose-500' : 'text-muted-foreground'}`}>
-            ৳{ded.toLocaleString('en-BD')}
+            BDT {ded.toLocaleString('en-BD')}
           </span>
         );
       },
@@ -131,7 +131,7 @@ export function SalarySlipsPage() {
       header: 'Net Payable (BDT)',
       cell: ({ row }) => (
         <span className="font-bold text-xs text-emerald-600 dark:text-emerald-400 font-mono">
-          ৳{Number(row.netSalaryPayable || 0).toLocaleString('en-BD')}
+          BDT {Number(row.netSalaryPayable || 0).toLocaleString('en-BD')}
         </span>
       ),
     },
@@ -160,7 +160,7 @@ export function SalarySlipsPage() {
             <Banknote className="w-4 h-4 text-emerald-500" />
           </div>
           <p className="text-2xl font-black text-emerald-600 dark:text-emerald-400 font-mono">
-            ৳{Number(meta.totalNetPayable || 0).toLocaleString('en-BD')}
+            BDT {Number(meta.totalNetPayable || 0).toLocaleString('en-BD')}
           </p>
           <p className="text-[11px] text-muted-foreground">Disbursed salary total</p>
         </div>
@@ -171,7 +171,7 @@ export function SalarySlipsPage() {
             <TrendingUp className="w-4 h-4 text-sky-500" />
           </div>
           <p className="text-2xl font-black text-foreground font-mono">
-            ৳{Number(meta.totalGross || 0).toLocaleString('en-BD')}
+            BDT {Number(meta.totalGross || 0).toLocaleString('en-BD')}
           </p>
           <p className="text-[11px] text-muted-foreground">Before deductions</p>
         </div>
@@ -182,7 +182,7 @@ export function SalarySlipsPage() {
             <TrendingDown className="w-4 h-4 text-rose-500" />
           </div>
           <p className="text-2xl font-black text-rose-600 dark:text-rose-400 font-mono">
-            ৳{Number(meta.totalDeductions || 0).toLocaleString('en-BD')}
+            BDT {Number(meta.totalDeductions || 0).toLocaleString('en-BD')}
           </p>
           <p className="text-[11px] text-muted-foreground">Advances & statutory cuts</p>
         </div>

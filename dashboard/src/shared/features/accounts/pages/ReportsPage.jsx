@@ -198,7 +198,7 @@ export function ReportsPage() {
             <Wallet className="w-4 h-4 text-emerald-500" />
           </div>
           <p className="text-2xl font-black text-emerald-600 dark:text-emerald-400 font-mono">
-            ৳{Number(financials.totalIncome || 0).toLocaleString('en-BD')}
+            BDT {Number(financials.totalIncome || 0).toLocaleString('en-BD')}
           </p>
           <p className="text-[11px] text-muted-foreground">
             From {financials.receiptsCount || 0} Money Receipts
@@ -212,7 +212,7 @@ export function ReportsPage() {
             <Receipt className="w-4 h-4 text-primary" />
           </div>
           <p className="text-2xl font-black text-foreground font-mono">
-            ৳{Number(financials.totalBilled || 0).toLocaleString('en-BD')}
+            BDT {Number(financials.totalBilled || 0).toLocaleString('en-BD')}
           </p>
           <p className="text-[11px] text-muted-foreground">
             From {financials.invoicesCount || 0} Invoices / Bills
@@ -226,7 +226,7 @@ export function ReportsPage() {
             <AlertTriangle className="w-4 h-4 text-rose-500" />
           </div>
           <p className="text-2xl font-black text-rose-600 dark:text-rose-400 font-mono">
-            ৳{Number(financials.totalDueOnBills || 0).toLocaleString('en-BD')}
+            BDT {Number(financials.totalDueOnBills || 0).toLocaleString('en-BD')}
           </p>
           <p className="text-[11px] text-muted-foreground">Uncollected bill balances</p>
         </div>
@@ -238,7 +238,7 @@ export function ReportsPage() {
             <CheckCircle2 className="w-4 h-4 text-sky-500" />
           </div>
           <p className="text-2xl font-black text-sky-600 dark:text-sky-400 font-mono">
-            ৳{Number(financials.totalPaidOnBills || 0).toLocaleString('en-BD')}
+            BDT {Number(financials.totalPaidOnBills || 0).toLocaleString('en-BD')}
           </p>
           <p className="text-[11px] text-muted-foreground">Directly settled payments</p>
         </div>
@@ -339,7 +339,7 @@ export function ReportsPage() {
                     <span className="text-[11px] text-muted-foreground">({m.count} txns)</span>
                   </div>
                   <span className="font-mono font-bold text-foreground">
-                    ৳{Number(m.amount || 0).toLocaleString('en-BD')}
+                    BDT {Number(m.amount || 0).toLocaleString('en-BD')}
                   </span>
                 </div>
               ))
@@ -374,7 +374,7 @@ export function ReportsPage() {
                     <span className="text-[11px] text-muted-foreground">({s.count} bills)</span>
                   </div>
                   <span className="font-mono font-bold text-foreground">
-                    ৳{Number(s.amount || 0).toLocaleString('en-BD')}
+                    BDT {Number(s.amount || 0).toLocaleString('en-BD')}
                   </span>
                 </div>
               ))
