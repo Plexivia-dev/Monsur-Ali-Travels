@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import {
   ArrowLeft,
   FolderOpen,
@@ -34,6 +34,8 @@ import {
   X,
   Trash2,
   UserCheck,
+  MapPin,
+  ArrowUpRight,
 } from 'lucide-react';
 import { apiClient } from '@/lib/api-client';
 import { toast } from 'sonner';
@@ -41,6 +43,97 @@ import { useAuth } from '@/store/useAuthStore';
 import { StepAssignModal } from '@/components/workflow/StepAssignModal';
 import { AddPaymentModal } from '@/components/workflow/AddPaymentModal';
 import { PageTitle } from '@shared/components/layout/PageTitle';
+
+const DOCUMENT_STUDIO_TEMPLATES = [
+  {
+    id: 'agreement',
+    title: 'Employment & Service Agreement',
+    subtitle: 'Official 4-page job contract & appointment agreement with terms',
+    category: 'Legal & Contract',
+    badge: 'Contract',
+    icon: FileText,
+  },
+  {
+    id: 'client-form',
+    title: 'Customer & Guardian Application Form',
+    subtitle: 'Master bio, emergency guardian particulars & fee schedule',
+    category: 'Intake & Bio',
+    badge: 'Master Intake',
+    icon: User,
+  },
+  {
+    id: 'indian-visa',
+    title: 'Indian Visa & BSF Application',
+    subtitle: 'High Commission submission application & port particulars',
+    category: 'Visa & Immigration',
+    badge: 'Visa Form',
+    icon: Globe2,
+  },
+  {
+    id: 'passport-sub',
+    title: 'Passport Intake & Submission Memo',
+    subtitle: 'Physical passport receipt, tracking ID & custody memo',
+    category: 'Passport & Custody',
+    badge: 'Custody Memo',
+    icon: FileCheck,
+  },
+  {
+    id: 'job-verification',
+    title: 'Job Verification & Work Permit Letter',
+    subtitle: 'Ministry & employer verification letter and deployment terms',
+    category: 'Employment',
+    badge: 'Verification',
+    icon: Building2,
+  },
+  {
+    id: 'idcard',
+    title: 'Client / Trainee Identity Card',
+    subtitle: 'Dual-sided PVC plastic identity badge with photo & QR code',
+    category: 'Identity & Cards',
+    badge: 'PVC ID Card',
+    icon: UserCheck,
+  },
+  {
+    id: 'money-receipt',
+    title: 'Official Money Receipt',
+    subtitle: 'Formal 3-copy accounts payment receipt with verification stamp',
+    category: 'Financials',
+    badge: 'Receipt',
+    icon: Receipt,
+  },
+  {
+    id: 'cash-voucher',
+    title: 'Office Debit & Cash Voucher',
+    subtitle: 'Internal cash disbursement and expense voucher',
+    category: 'Financials',
+    badge: 'Voucher',
+    icon: CreditCard,
+  },
+  {
+    id: 'experience-certificate',
+    title: 'Trade Experience Certificate',
+    subtitle: 'Official certified proof of trade & employment experience',
+    category: 'Certifications',
+    badge: 'Certificate',
+    icon: ShieldCheck,
+  },
+  {
+    id: 'character-certificate',
+    title: 'Character Clearance Certificate',
+    subtitle: 'Local administration & municipal character verification letter',
+    category: 'Certifications',
+    badge: 'Clearance',
+    icon: CheckCircle2,
+  },
+  {
+    id: 'marriage-certificate',
+    title: 'Marriage Affidavit Certificate',
+    subtitle: 'Official spousal affidavit for overseas dependency processing',
+    category: 'Legal & Affidavit',
+    badge: 'Affidavit',
+    icon: FileText,
+  },
+];
 
 const PIPELINE_STAGES = [
   { id: 'ENTRY', title: '1. File Intake', color: 'bg-slate-100 text-slate-800' },
@@ -90,16 +183,28 @@ export const getTaskStatusConfig = (status) => {
 export default function CaseDetailPage() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const user = useAuth((state) => state.user);
 
+  const initialTab = searchParams.get('tab') || 'overview';
   const [caseData, setCaseData] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState('overview'); // 'overview' | 'activity' | 'tasks' | 'payments' | 'documents' | 'communication'
+  const [activeTab, setActiveTab] = useState(initialTab); // 'overview' | 'activity' | 'tasks' | 'payments' | 'documents' | 'communication'
+
+  // Synchronize tab from URL if present
+  useEffect(() => {
+    const tabFromUrl = searchParams.get('tab');
+    if (tabFromUrl) {
+      setActiveTab(tabFromUrl);
+    }
+  }, [searchParams]);
 
   // Modals
   const [isAssignModalOpen, setIsAssignModalOpen] = useState(false);
   const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
   const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
+  const [isCreateDocModalOpen, setIsCreateDocModalOpen] = useState(false);
+  const [selectedTemplateId, setSelectedTemplateId] = useState('agreement');
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [savingEdit, setSavingEdit] = useState(false);
 
@@ -491,6 +596,28 @@ export default function CaseDetailPage() {
   const activeHandlerName = activeTask?.assignedToName || activeTask?.assignedTo?.name || caseData.assignedToName || caseData.assignedTo?.name || caseData.assignedOfficer || null;
   const activeTaskStatusCfg = activeTask ? getTaskStatusConfig(activeTask.status) : null;
 
+  const client = caseData.clientInfo || caseData.clientId || {};
+  const clientDid = client.did || caseData.clientDid;
+  const clientCode = client.clientCode || (clientDid ? `CLNT-${clientDid.slice(0, 8)}` : '—');
+  const clientName = client.fullName || caseData.applicantName || 'Unnamed Client';
+  const clientPhone = client.phone || caseData.phone || '—';
+  const clientAltPhone = client.altPhone || '';
+  const clientEmail = client.email || '';
+  const passportNo = caseData.passportNumber || client.passportNumber || '—';
+  const passportExpiry = client.passportExpiryDate || caseData.passportExpiryDate || '';
+  const nidNo = client.nidNumber || caseData.nidNumber || '—';
+  const birthDate = client.birthDate || '';
+  const gender = client.gender || 'Male';
+  const bloodGroup = client.bloodGroup || '';
+  const maritalStatus = client.maritalStatus || '';
+  const presentAddress = client.presentAddress || client.address || '';
+  const permanentAddress = client.permanentAddress || '';
+  const district = client.district || '';
+  const policeStation = client.policeStation || '';
+  const fatherName = client.fatherName || '';
+  const motherName = client.motherName || '';
+  const guardian = client.guardian || {};
+
   return (
     <div className="space-y-6 pb-12 animate-in fade-in duration-200">
       {/* Dynamic PageTitle Header */}
@@ -775,37 +902,132 @@ export default function CaseDetailPage() {
         {/* TAB 1: FILE & CLIENT OVERVIEW */}
         {activeTab === 'overview' && (
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {/* Bio Details */}
+            {/* Client Particulars & Master Bio Dossier */}
             <div className="bg-card border border-border rounded-2xl p-6 space-y-4 shadow-xs">
-              <h3 className="text-sm font-bold text-foreground uppercase tracking-wider flex items-center gap-2">
-                <User className="w-4 h-4 text-primary" />
-                Client & Passport Particulars
-              </h3>
-              <div className="grid grid-cols-2 gap-4 text-xs">
-                <div className="p-3 rounded-xl bg-muted/30 border border-border">
-                  <span className="text-muted-foreground block text-[10px]">Applicant Full Name</span>
-                  <p className="font-bold text-foreground mt-0.5">{caseData.applicantName || '—'}</p>
+              <div className="flex items-center justify-between border-b border-border pb-3">
+                <div className="flex items-center gap-2">
+                  <User className="w-4 h-4 text-primary" />
+                  <h3 className="text-sm font-bold text-foreground uppercase tracking-wider">
+                    Client & Passport Particulars
+                  </h3>
                 </div>
+                {clientDid && (
+                  <button
+                    onClick={() => navigate(`/admin/clients/${clientDid}`)}
+                    className="inline-flex items-center gap-1 text-xs font-bold text-primary hover:underline cursor-pointer"
+                  >
+                    <span>View 360° Profile</span>
+                    <ArrowUpRight className="size-3.5" />
+                  </button>
+                )}
+              </div>
+
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 text-xs">
+                {/* 1. Client Full Name */}
                 <div className="p-3 rounded-xl bg-muted/30 border border-border">
-                  <span className="text-muted-foreground block text-[10px]">Phone Number</span>
-                  <p className="font-bold text-foreground mt-0.5">{caseData.phone || '—'}</p>
+                  <span className="text-muted-foreground block text-[10px] uppercase font-semibold">Client / Applicant Name</span>
+                  <p className="font-bold text-foreground mt-0.5 truncate">{clientName}</p>
                 </div>
+
+                {/* 2. Client Code */}
                 <div className="p-3 rounded-xl bg-muted/30 border border-border">
-                  <span className="text-muted-foreground block text-[10px]">Passport Number</span>
-                  <p className="font-mono font-bold text-sky-600 mt-0.5">{caseData.passportNumber || '—'}</p>
+                  <span className="text-muted-foreground block text-[10px] uppercase font-semibold">Client Code / ID</span>
+                  <p className="font-mono font-bold text-primary mt-0.5">{clientCode}</p>
                 </div>
+
+                {/* 3. Primary Phone */}
                 <div className="p-3 rounded-xl bg-muted/30 border border-border">
-                  <span className="text-muted-foreground block text-[10px]">National ID (NID)</span>
-                  <p className="font-mono font-bold text-foreground mt-0.5">{caseData.nidNumber || caseData.clientInfo?.nidNumber || '—'}</p>
+                  <span className="text-muted-foreground block text-[10px] uppercase font-semibold">Primary Phone</span>
+                  <p className="font-bold text-foreground mt-0.5 flex items-center gap-1">
+                    <Phone className="size-3 text-primary shrink-0" />
+                    <span>{clientPhone}</span>
+                  </p>
                 </div>
+
+                {/* 4. Passport Number */}
                 <div className="p-3 rounded-xl bg-muted/30 border border-border">
-                  <span className="text-muted-foreground block text-[10px]">Destination Country</span>
-                  <p className="font-bold text-foreground mt-0.5">{caseData.destinationCountry || caseData.caseType?.toUpperCase()}</p>
+                  <span className="text-muted-foreground block text-[10px] uppercase font-semibold">Passport Number</span>
+                  <p className="font-mono font-bold text-sky-600 dark:text-sky-400 mt-0.5">{passportNo}</p>
+                  {passportExpiry && (
+                    <span className="text-[10px] text-muted-foreground block mt-0.5">Exp: {passportExpiry}</span>
+                  )}
                 </div>
+
+                {/* 5. National ID (NID) */}
                 <div className="p-3 rounded-xl bg-muted/30 border border-border">
-                  <span className="text-muted-foreground block text-[10px]">Trade / Skill Category</span>
+                  <span className="text-muted-foreground block text-[10px] uppercase font-semibold">National ID (NID)</span>
+                  <p className="font-mono font-bold text-foreground mt-0.5">{nidNo}</p>
+                </div>
+
+                {/* 6. Email Address */}
+                <div className="p-3 rounded-xl bg-muted/30 border border-border">
+                  <span className="text-muted-foreground block text-[10px] uppercase font-semibold">Email Address</span>
+                  <p className="font-medium text-foreground mt-0.5 truncate">{clientEmail || '—'}</p>
+                </div>
+
+                {/* 7. Destination Country */}
+                <div className="p-3 rounded-xl bg-muted/30 border border-border">
+                  <span className="text-muted-foreground block text-[10px] uppercase font-semibold">Destination Country</span>
+                  <p className="font-bold text-foreground mt-0.5">{caseData.destinationCountry || caseData.caseType?.toUpperCase() || '—'}</p>
+                </div>
+
+                {/* 8. Trade / Skill */}
+                <div className="p-3 rounded-xl bg-muted/30 border border-border">
+                  <span className="text-muted-foreground block text-[10px] uppercase font-semibold">Trade / Skill Category</span>
                   <p className="font-bold text-foreground mt-0.5">{caseData.tradeSkill || 'General Worker'}</p>
                 </div>
+
+                {/* 9. Case Number */}
+                <div className="p-3 rounded-xl bg-muted/30 border border-border">
+                  <span className="text-muted-foreground block text-[10px] uppercase font-semibold">Case File Number</span>
+                  <p className="font-mono font-bold text-primary mt-0.5">{caseData.caseNumber || '—'}</p>
+                </div>
+
+                {/* 10. Date of Birth & Gender */}
+                {(birthDate || gender) && (
+                  <div className="p-3 rounded-xl bg-muted/30 border border-border">
+                    <span className="text-muted-foreground block text-[10px] uppercase font-semibold">Birth Date & Gender</span>
+                    <p className="font-medium text-foreground mt-0.5">
+                      {birthDate ? birthDate : '—'} • {gender}{bloodGroup ? ` (${bloodGroup})` : ''}
+                    </p>
+                  </div>
+                )}
+
+                {/* 11. Parents Info */}
+                {(fatherName || motherName) && (
+                  <div className="p-3 rounded-xl bg-muted/30 border border-border">
+                    <span className="text-muted-foreground block text-[10px] uppercase font-semibold">Parents Information</span>
+                    <p className="font-medium text-foreground mt-0.5 truncate">
+                      {fatherName ? `F: ${fatherName}` : ''}{motherName ? ` • M: ${motherName}` : ''}
+                    </p>
+                  </div>
+                )}
+
+                {/* 12. Address */}
+                {(presentAddress || permanentAddress || district) && (
+                  <div className="p-3 rounded-xl bg-muted/30 border border-border sm:col-span-2">
+                    <span className="text-muted-foreground block text-[10px] uppercase font-semibold">Address / Location</span>
+                    <p className="font-medium text-foreground mt-0.5 flex items-center gap-1 truncate">
+                      <MapPin className="size-3 text-primary shrink-0" />
+                      <span>
+                        {presentAddress || permanentAddress || ''} {district ? `(${policeStation ? policeStation + ', ' : ''}${district})` : ''}
+                      </span>
+                    </p>
+                  </div>
+                )}
+
+                {/* 13. Guardian Info */}
+                {guardian?.name && (
+                  <div className="p-3 rounded-xl bg-muted/30 border border-border sm:col-span-2">
+                    <span className="text-muted-foreground block text-[10px] uppercase font-semibold">Primary Guardian</span>
+                    <p className="font-medium text-foreground mt-0.5 flex items-center gap-1.5 truncate">
+                      <ShieldCheck className="size-3 text-emerald-600 shrink-0" />
+                      <span>
+                        <strong>{guardian.name}</strong> ({guardian.relationship || 'Guardian'}) {guardian.phone ? `• 📞 ${guardian.phone}` : ''}
+                      </span>
+                    </p>
+                  </div>
+                )}
               </div>
             </div>
 
@@ -1117,32 +1339,58 @@ export default function CaseDetailPage() {
         {/* TAB 5: DOCUMENT VAULT & UPLOADER AUDIT */}
         {activeTab === 'documents' && (
           <div className="bg-card border border-border rounded-2xl p-6 shadow-xs space-y-6">
-            <div className="flex items-center justify-between border-b border-border pb-4">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-border pb-4">
               <div>
                 <h3 className="text-base font-bold text-foreground">Verified Document Vault & Uploader Audit</h3>
                 <p className="text-xs text-muted-foreground">
                   Verified repository of case scans and attachments with audit trail of staff uploaders.
                 </p>
               </div>
-              <button
-                onClick={() => setIsUploadModalOpen(true)}
-                className="flex items-center gap-1.5 px-3.5 py-2 bg-primary text-primary-foreground font-bold text-xs rounded-xl shadow-xs hover:bg-primary/90 transition cursor-pointer"
-              >
-                <UploadCloud className="w-3.5 h-3.5" />
-                <span>+ Upload New File</span>
-              </button>
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => setIsCreateDocModalOpen(true)}
+                  className="flex items-center gap-1.5 px-3.5 py-2 bg-sky-500/10 hover:bg-sky-500/20 text-sky-700 dark:text-sky-300 border border-sky-500/30 font-bold text-xs rounded-xl shadow-xs transition cursor-pointer"
+                >
+                  <Plus className="w-3.5 h-3.5 text-sky-500" />
+                  <span>+ Add New Document</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setIsUploadModalOpen(true)}
+                  className="flex items-center gap-1.5 px-3.5 py-2 bg-primary text-primary-foreground font-bold text-xs rounded-xl shadow-xs hover:bg-primary/90 transition cursor-pointer"
+                >
+                  <UploadCloud className="w-3.5 h-3.5" />
+                  <span>+ Upload New File</span>
+                </button>
+              </div>
             </div>
 
             {(caseData.vaultDocuments || []).length === 0 ? (
-              <div className="py-12 text-center text-muted-foreground text-xs space-y-2 border border-dashed border-border rounded-2xl">
+              <div className="py-12 text-center text-muted-foreground text-xs space-y-3 border border-dashed border-border rounded-2xl">
                 <FileText className="w-8 h-8 mx-auto opacity-40" />
-                <p className="font-semibold">No documents uploaded to this vault yet.</p>
-                <button
-                  onClick={() => setIsUploadModalOpen(true)}
-                  className="text-primary font-bold hover:underline cursor-pointer"
-                >
-                  + Upload First Document
-                </button>
+                <p className="font-semibold text-foreground">No documents in this vault yet.</p>
+                <p className="text-muted-foreground max-w-sm mx-auto">
+                  Generate official documents in Document Studio with auto-filled client data or upload scanned attachments.
+                </p>
+                <div className="flex items-center justify-center gap-3 pt-2">
+                  <button
+                    type="button"
+                    onClick={() => setIsCreateDocModalOpen(true)}
+                    className="flex items-center gap-1.5 px-4 py-2 bg-sky-500/10 hover:bg-sky-500/20 text-sky-700 dark:text-sky-300 border border-sky-500/30 font-bold text-xs rounded-xl cursor-pointer"
+                  >
+                    <Plus className="w-3.5 h-3.5" />
+                    <span>+ Generate Official Document</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setIsUploadModalOpen(true)}
+                    className="flex items-center gap-1.5 px-4 py-2 bg-primary text-primary-foreground font-bold text-xs rounded-xl cursor-pointer"
+                  >
+                    <UploadCloud className="w-3.5 h-3.5" />
+                    <span>+ Upload File Scan</span>
+                  </button>
+                </div>
               </div>
             ) : (
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
@@ -1547,6 +1795,145 @@ export default function CaseDetailPage() {
               </button>
             </div>
           </form>
+        </div>
+      )}
+
+      {/* MODAL: CREATE DOCUMENT STUDIO TEMPLATE SELECTOR */}
+      {isCreateDocModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4 animate-in fade-in duration-150">
+          <div className="bg-card border border-border rounded-2xl w-full max-w-2xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
+            {/* Header */}
+            <div className="flex items-center justify-between p-5 border-b border-border bg-muted/20">
+              <div className="flex items-center gap-2.5">
+                <div className="size-9 rounded-xl bg-sky-500/10 text-sky-600 dark:text-sky-400 flex items-center justify-center font-bold">
+                  <FileText className="size-4" />
+                </div>
+                <div>
+                  <h3 className="text-sm font-black text-foreground">Create Official Case Document</h3>
+                  <p className="text-[11px] text-muted-foreground">
+                    Select a document template to generate. Client particulars will be automatically pre-filled and locked.
+                  </p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setIsCreateDocModalOpen(false)}
+                className="p-1.5 rounded-lg text-muted-foreground hover:bg-muted hover:text-foreground cursor-pointer"
+              >
+                <X className="size-4" />
+              </button>
+            </div>
+
+            {/* Body */}
+            <div className="p-5 overflow-y-auto space-y-4 text-xs">
+              {/* Autofill Preview & Lock Notice */}
+              <div className="p-3.5 rounded-xl bg-sky-500/10 border border-sky-500/30 space-y-2">
+                <div className="flex items-center justify-between">
+                  <span className="font-bold text-sky-700 dark:text-sky-300 uppercase tracking-wider text-[10px] flex items-center gap-1.5">
+                    <ShieldCheck className="size-3.5" />
+                    Auto-Filling From Case Dossier
+                  </span>
+                  <span className="px-2 py-0.2 rounded-full text-[9px] font-bold bg-amber-500/20 text-amber-800 dark:text-amber-300 border border-amber-500/30">
+                    🔒 Client Bio Locked
+                  </span>
+                </div>
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-[11px]">
+                  <div className="bg-background/80 p-2 rounded-lg border border-border/60">
+                    <span className="text-muted-foreground block text-[9px] uppercase font-semibold">Client Name</span>
+                    <strong className="text-foreground truncate block">{clientName}</strong>
+                  </div>
+                  <div className="bg-background/80 p-2 rounded-lg border border-border/60">
+                    <span className="text-muted-foreground block text-[9px] uppercase font-semibold">Phone</span>
+                    <strong className="text-foreground truncate block">{clientPhone}</strong>
+                  </div>
+                  <div className="bg-background/80 p-2 rounded-lg border border-border/60">
+                    <span className="text-muted-foreground block text-[9px] uppercase font-semibold">Passport</span>
+                    <strong className="text-sky-600 truncate block font-mono">{passportNo}</strong>
+                  </div>
+                  <div className="bg-background/80 p-2 rounded-lg border border-border/60">
+                    <span className="text-muted-foreground block text-[9px] uppercase font-semibold">Destination</span>
+                    <strong className="text-foreground truncate block">{caseData?.destinationCountry || caseData?.caseType?.toUpperCase() || 'Overseas'}</strong>
+                  </div>
+                </div>
+              </div>
+
+              {/* Template Dropdown Selector */}
+              <div className="space-y-1.5">
+                <label className="block font-bold text-foreground">Select Document Template:</label>
+                <select
+                  value={selectedTemplateId}
+                  onChange={(e) => setSelectedTemplateId(e.target.value)}
+                  className="w-full px-3.5 py-2.5 bg-background border border-input rounded-xl text-foreground font-semibold text-xs focus:outline-none focus:ring-2 focus:ring-primary cursor-pointer shadow-xs"
+                >
+                  {DOCUMENT_STUDIO_TEMPLATES.map((tmpl) => (
+                    <option key={tmpl.id} value={tmpl.id}>
+                      {tmpl.title} ({tmpl.category})
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              {/* Visual Template Cards Selection Grid */}
+              <div className="space-y-1.5">
+                <label className="block font-bold text-muted-foreground text-[11px] uppercase tracking-wider">Available Studio Templates:</label>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 max-h-56 overflow-y-auto pr-1">
+                  {DOCUMENT_STUDIO_TEMPLATES.map((tmpl) => {
+                    const Icon = tmpl.icon;
+                    const isSelected = selectedTemplateId === tmpl.id;
+                    return (
+                      <button
+                        key={tmpl.id}
+                        type="button"
+                        onClick={() => setSelectedTemplateId(tmpl.id)}
+                        className={`p-3 rounded-xl border text-left transition-all flex items-start gap-2.5 cursor-pointer ${
+                          isSelected
+                            ? 'bg-primary/10 border-primary shadow-xs ring-1 ring-primary'
+                            : 'bg-background hover:bg-muted/40 border-border'
+                        }`}
+                      >
+                        <div className={`p-2 rounded-lg shrink-0 ${isSelected ? 'bg-primary text-primary-foreground' : 'bg-muted text-muted-foreground'}`}>
+                          <Icon className="size-4" />
+                        </div>
+                        <div className="min-w-0 flex-1">
+                          <div className="flex items-center justify-between gap-1">
+                            <h4 className="font-bold text-xs text-foreground truncate">{tmpl.title}</h4>
+                            <span className="text-[9px] font-bold px-1.5 py-0.2 rounded bg-muted text-muted-foreground shrink-0">{tmpl.badge}</span>
+                          </div>
+                          <p className="text-[10px] text-muted-foreground mt-0.5 line-clamp-2">{tmpl.subtitle}</p>
+                        </div>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            </div>
+
+            {/* Footer */}
+            <div className="flex items-center justify-between p-4 border-t border-border bg-muted/20">
+              <button
+                type="button"
+                onClick={() => setIsCreateDocModalOpen(false)}
+                className="px-4 py-2 text-xs font-bold text-muted-foreground hover:bg-muted rounded-xl transition cursor-pointer"
+              >
+                Cancel
+              </button>
+
+              <button
+                type="button"
+                onClick={() => {
+                  setIsCreateDocModalOpen(false);
+                  const returnUrl = `/admin/cases/${caseData?.did || caseData?.caseNumber || id}?tab=documents`;
+                  navigate(
+                    `/admin/docs/${selectedTemplateId}?clientDid=${clientDid || ''}&caseDid=${caseData?.did || caseData?._id || id}&caseNumber=${encodeURIComponent(caseData?.caseNumber || '')}&returnUrl=${encodeURIComponent(returnUrl)}`
+                  );
+                }}
+                className="flex items-center gap-1.5 px-5 py-2.5 bg-primary text-primary-foreground font-bold text-xs rounded-xl shadow-xs hover:bg-primary/90 transition cursor-pointer"
+              >
+                <span>Proceed to Document Studio</span>
+                <ArrowUpRight className="size-4" />
+              </button>
+            </div>
+          </div>
         </div>
       )}
     </div>
