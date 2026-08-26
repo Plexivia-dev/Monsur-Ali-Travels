@@ -13,14 +13,6 @@ export default function DocumentData() {
   const activeSubmodule = usePortalStore((state) => state.activeSubmodule);
 
   switch (activeSubmodule) {
-    // ── Client Profiles ──────────────────────────────────────
-    case 'client-profiles':
-    case 'client-add':
-    case 'client-profiles':
-    case 'client-add':
-    case 'clients-all':
-      return <ClientDataTable />;
-
     // ── Agreement Records ──────────────────────────────────────
     case 'agreements':
     case 'agreement':

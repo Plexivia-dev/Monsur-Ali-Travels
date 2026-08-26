@@ -44,7 +44,6 @@ export const GlobalSearchModal = () => {
     { portal: 'docs', submodule: 'client-form', title: t('nav.clientGuardianForm', 'Client & Guardian Form'), desc: 'Generate printable client profile form', icon: FileSpreadsheet },
     { portal: 'docs', submodule: 'payroll', title: t('nav.salarySlip', 'Salary Slip Generator'), desc: 'Printable worker salary slip', icon: FileSpreadsheet },
     { portal: 'docs', submodule: 'invoice', title: t('nav.invoice', 'Invoice Generator'), desc: 'Generate official client invoice', icon: FileSpreadsheet },
-    { portal: 'data', submodule: 'client-profiles', title: t('nav.clientProfiles', 'Client Profiles Database'), desc: 'View and manage all client records', icon: Database },
     { portal: 'data', submodule: 'agreements', title: t('nav.agreementRecords', 'Agreement Records'), desc: 'Historical client employment agreements', icon: Database },
     { portal: 'admin', submodule: 'users', title: t('nav.systemUsers', 'User Management & Permissions'), desc: 'Role assignments & portal access', icon: Shield },
     { portal: 'admin', submodule: 'system-logs', title: t('nav.auditLogs', 'System Audit Logs'), desc: 'Database operations and activity trail', icon: Shield },

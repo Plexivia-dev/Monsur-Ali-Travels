@@ -164,14 +164,6 @@ export const navGroups = [
     portal: 'data',
     items: [
       {
-        icon: 'Users',
-        label: 'Client Profiles',
-        key: 'nav.clientProfiles',
-        portal: 'data',
-        submodule: 'client-profiles',
-        href: '/dashboard/data/client-profiles',
-      },
-      {
         icon: 'FileSignature',
         label: 'Agreement Records',
         key: 'nav.agreementRecords',

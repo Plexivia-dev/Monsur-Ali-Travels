@@ -15,7 +15,7 @@ import { Button } from '@/components/ui/button';
 
 const PORTAL_LABELS = {
   docs: { label: 'Document Studio', icon: FileSpreadsheet, homeSub: 'agreement', hasParentPage: false },
-  data: { label: 'Data Records Center', icon: Database, homeSub: 'client-profiles', hasParentPage: false },
+  data: { label: 'Data Records Center', icon: Database, homeSub: 'client-applications', hasParentPage: false },
   agency: { label: 'Manpower Agency', icon: Users2, homeSub: 'dashboard', hasParentPage: true },
   factory: { label: 'Brick Factory', icon: Factory, homeSub: 'dashboard', hasParentPage: true },
   admin: { label: 'System Admin', icon: Shield, homeSub: 'users', hasParentPage: false },
@@ -42,7 +42,6 @@ const SUBMODULE_LABELS = {
   'certificate-exp': 'Experience Certificate',
   'certificate-char': 'Character Certificate',
   'certificate-marr': 'Marriage Certificate',
-  'client-profiles': 'Client Profiles',
 
   dashboard: 'Dashboard Overview',
   'clients-all': 'All Clients',
