@@ -132,13 +132,25 @@ const UsersPage = () => {
         cell: ({ row }) => {
           const u = row.original;
           const name = u.fullName || u.name || 'User';
+          const avatarUrl =
+            u.avatar ||
+            u.profilePicture ||
+            `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=0284c7&color=ffffff&bold=true&rounded=true`;
           return (
             <div className="flex items-center gap-3">
-              <div className="size-9 rounded-xl bg-primary/10 border border-primary/20 text-primary flex items-center justify-center font-bold text-xs shrink-0">
-                {name.charAt(0).toUpperCase()}
+              <div className="size-9.5 rounded-xl overflow-hidden bg-primary/10 border border-primary/20 shrink-0 flex items-center justify-center shadow-xs">
+                <img
+                  src={avatarUrl}
+                  alt={name}
+                  className="w-full h-full object-cover"
+                  onError={(e) => {
+                    e.currentTarget.onerror = null;
+                    e.currentTarget.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=0284c7&color=ffffff&bold=true`;
+                  }}
+                />
               </div>
               <div>
-                <span className="font-bold text-foreground block">{name}</span>
+                <span className="font-bold text-foreground block text-xs">{name}</span>
                 <div className="font-mono text-[10px] text-muted-foreground">
                   {u.did ? `DID: ${u.did.slice(0, 14)}...` : u._id ? `ID: ${u._id.slice(0, 14)}...` : '\u2014'}
                 </div>
@@ -171,15 +183,24 @@ const UsersPage = () => {
         header: ({ column }) => <DataTableColumnHeader column={column} title="Role" />,
         cell: ({ row }) => {
           const u = row.original;
+          const role = u.role || 'Staff';
+          const roleBadgeColor =
+            role === 'Owner'
+              ? 'bg-purple-600 text-white'
+              : role === 'Admin'
+              ? 'bg-sky-600 text-white'
+              : role === 'Accountant'
+              ? 'bg-indigo-600 text-white'
+              : 'bg-emerald-600 text-white';
           return (
             <div className="flex items-center gap-1.5">
-              <Badge variant="outline" className="font-bold text-xs bg-primary/10 text-primary border-primary/20">
-                {u.role || 'Staff'}
-              </Badge>
+              <span className={`font-bold text-[11px] px-2 py-0.5 rounded-md uppercase tracking-wider shadow-2xs ${roleBadgeColor}`}>
+                {role}
+              </span>
               {u.subRole && (
-                <Badge variant="secondary" className="text-[10px] font-bold bg-amber-100 dark:bg-amber-950/40 text-amber-700 dark:text-amber-300">
+                <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-amber-500/15 text-amber-700 dark:text-amber-300 border border-amber-500/30">
                   {u.subRole}
-                </Badge>
+                </span>
               )}
             </div>
           );
