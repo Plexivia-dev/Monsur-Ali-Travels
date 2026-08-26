@@ -72,7 +72,7 @@ export default function VisaWorkflowsPage() {
               workflowItems.map((item) => (
                 <div
                   key={item.did || item._id}
-                  onClick={() => setSelectedCaseDid(item.did || item._id)}
+                  onClick={() => navigate(`/admin/visa-workflows/${item.did || item._id}`)}
                   className="flex items-center justify-between px-6 py-4 hover:bg-muted/40 transition-colors cursor-pointer group"
                 >
                   <div className="flex items-center gap-3 min-w-0">
@@ -98,12 +98,13 @@ export default function VisaWorkflowsPage() {
                     </span>
                     <button
                       onClick={(e) => {
-                        e.stopPropagation()
-                        navigate(`/admin/cases/${item.did || item._id}`)
+                        e.stopPropagation();
+                        navigate(`/admin/visa-workflows/${item.did || item._id}`);
                       }}
-                      className="text-xs font-bold text-primary hover:underline flex items-center gap-1 ml-2 cursor-pointer"
+                      className="p-1.5 rounded-lg border border-border bg-background hover:bg-muted text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
+                      title="View Workflow"
                     >
-                      <Eye className="size-3.5" /> ওপেন ফাইল
+                      <Eye className="size-4 text-primary" />
                     </button>
                   </div>
                 </div>

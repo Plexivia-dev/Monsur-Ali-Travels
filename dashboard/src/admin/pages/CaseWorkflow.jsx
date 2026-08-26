@@ -537,7 +537,7 @@ export default function CaseWorkflow() {
             return (
               <div
                 key={caseId}
-                onClick={() => setSelectedCaseDidForFullscreen(caseId)}
+                onClick={() => navigate(`/admin/cases/${caseId}`)}
                 className="bg-card border border-border rounded-2xl p-4 shadow-xs hover:shadow-md hover:border-primary/60 transition-all duration-200 cursor-pointer flex flex-col justify-between group hover:-translate-y-0.5 select-none relative overflow-hidden"
               >
                 {/* Top Accent bar */}
@@ -638,7 +638,7 @@ export default function CaseWorkflow() {
                   return (
                     <tr
                       key={caseId}
-                      onClick={() => setSelectedCaseDidForFullscreen(caseId)}
+                      onClick={() => navigate(`/admin/cases/${caseId}`)}
                       className="hover:bg-muted/30 transition-colors group cursor-pointer"
                     >
                       {/* Destination / Chip */}
@@ -709,12 +709,12 @@ export default function CaseWorkflow() {
                           variant="outline"
                           onClick={(e) => {
                             e.stopPropagation();
-                            setSelectedCaseDidForFullscreen(caseId);
+                            navigate(`/admin/cases/${caseId}`);
                           }}
                           className="h-7 px-2.5 text-xs font-semibold cursor-pointer gap-1"
                         >
-                          <Maximize2 className="size-3 text-primary" />
-                          <span>Fullscreen File</span>
+                          <Eye className="size-3 text-primary" />
+                          <span>View File</span>
                         </Button>
                       </td>
                     </tr>
