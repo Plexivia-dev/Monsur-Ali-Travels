@@ -9,7 +9,7 @@ import { StudioFloatingViewSwitcher } from '../common/StudioFloatingViewSwitcher
 
 export function ExperienceCertificate() {
   const [data, setData] = useState(SAMPLE_EXPERIENCE_CERTIFICATE);
-  const [viewMode, setViewMode] = useState('split');
+  const [viewMode, setViewMode] = useState('edit');
 
   const handleResetSample = () => {
     setData(SAMPLE_EXPERIENCE_CERTIFICATE);

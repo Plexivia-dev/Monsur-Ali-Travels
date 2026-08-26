@@ -84,7 +84,7 @@ export function getDefaultAgreementData() {
 
 export function EmploymentAgreement() {
   const [formData, setFormData] = useState(getDefaultAgreementData());
-  const [viewMode, setViewMode] = useState('split'); // 'split' | 'edit' | 'preview'
+  const [viewMode, setViewMode] = useState('edit'); // 'edit' | 'split' | 'preview'
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleReset = () => {

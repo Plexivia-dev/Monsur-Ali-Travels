@@ -13,7 +13,7 @@ import { StudioFloatingViewSwitcher } from '../common/StudioFloatingViewSwitcher
 export function CustomerGuardian({ initialData = null, onSavedSuccess = null }) {
   const { t } = useTranslation();
   const [data, setData] = useState(initialData || getDefaultClientGuardianData());
-  const [viewMode, setViewMode] = useState('split'); // 'split' | 'edit' | 'preview'
+  const [viewMode, setViewMode] = useState('edit'); // 'edit' | 'split' | 'preview'
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
@@ -24,17 +24,21 @@ export function CustomerGuardian({ initialData = null, onSavedSuccess = null }) 
 
   const handleReset = () => {
     setData(getDefaultClientGuardianData());
-    toast.info('Form has been reset to default.');
+    toast.info(t('clientForm.clearReset', 'Form data reset'));
   };
 
   const handleSaveToDatabase = async () => {
-    const payload = {
-      ...data,
-      applicationNo: data.applicationNo?.trim() || generateApplicationNo()
-    };
+    if (!data.client?.fullName?.trim()) {
+      toast.error(t('clientForm.fullNamePlaceholder', 'Client full name is required'));
+      return;
+    }
 
+    const payload = { ...data };
     if (!payload._id) {
       delete payload._id;
+    }
+    if (!payload.applicationNo) {
+      payload.applicationNo = generateApplicationNo();
     }
 
     try {
@@ -44,27 +48,21 @@ export function CustomerGuardian({ initialData = null, onSavedSuccess = null }) 
         ? await apiClient.put(`/api/v1/client/docs/client-guardians/${data._id}`, payload)
         : await apiClient.post('/api/v1/client/docs/client-guardians', payload);
 
-      const savedDoc = res.data?.data;
+      const savedDoc = res.data?.data || res.data;
       if ((res.data?.status === 'success' || res.data?.success) && savedDoc) {
-        setData(prev => ({
-          ...prev,
-          _id: savedDoc._id,
-          applicationNo: savedDoc.applicationNo || payload.applicationNo
-        }));
+        setData(savedDoc);
         toast.success(
           isEdit
-            ? `Client & Guardian record updated successfully! (App No: ${savedDoc.applicationNo || payload.applicationNo})`
-            : `Client & Guardian record saved successfully! (App No: ${savedDoc.applicationNo || payload.applicationNo})`
+            ? `${t('clientForm.updateDb', 'Updated')} (App No: ${savedDoc.applicationNo})`
+            : `${t('clientForm.saveDb', 'Saved')} (App No: ${savedDoc.applicationNo})`
         );
         if (onSavedSuccess) onSavedSuccess(savedDoc);
       } else {
-        throw new Error(res.data?.message || 'Failed to save to database.');
+        throw new Error(res.data?.message || 'Failed to save');
       }
     } catch (err) {
-      console.warn('Backend API save warning (preview mode ready):', err);
-      const fallbackAppNo = data.applicationNo || generateApplicationNo();
-      setData(prev => ({ ...prev, applicationNo: fallbackAppNo }));
-      toast.info(`Client & Guardian dossier ready! (App No: ${fallbackAppNo})`);
+      console.error('Save client file error:', err);
+      toast.error(err.response?.data?.message || err.message || 'Failed to save client file.');
     } finally {
       setIsSubmitting(false);
     }
@@ -72,32 +70,33 @@ export function CustomerGuardian({ initialData = null, onSavedSuccess = null }) 
 
   const handlePrint = () => {
     printDocument({
-      docId: data.applicationNo,
+      docId: data.applicationNo || data.receiptNo,
       docType: 'Client_Guardian_Form',
-      clientName: data.clientInfo?.fullName
+      clientName: data.client?.fullName,
     });
   };
 
   const handleWhatsAppShare = () => {
-    const clientName = data.clientInfo?.fullName || 'Valued Client';
-    const guardianName = data.guardianInfo?.guardianName || 'N/A';
-    const phone = data.clientInfo?.phone || 'N/A';
-    const totalAgreed = data.financials?.totalPackagePrice || 0;
-    const paid = data.financials?.advancePaid || 0;
-    const due = data.financials?.dueBalance || (totalAgreed - paid);
+    const clientName = data.client?.fullName || 'Client';
+    const total = Number(data.payment?.totalAmount || 0).toLocaleString('en-IN');
+    const advance = Number(data.payment?.advancePaid || 0).toLocaleString('en-IN');
+    const due = Number(data.payment?.dueAmount || 0).toLocaleString('en-IN');
 
     const msg =
       `*📄 MONSUR ALI TRAVELS*\n` +
-      `*Client & Guardian Application Summary (${data.applicationNo || 'MAT-APP'})*\n` +
+      `*CUSTOMER & GUARDIAN APPLICATION FORM (${data.applicationNo || 'APP-0000'})*\n` +
       `-----------------------------------------\n` +
-      `👤 *Applicant Name:* ${clientName}\n` +
-      `🛡️ *Guardian Name:* ${guardianName}\n` +
-      `📞 *Phone Number:* ${phone}\n` +
-      `🛂 *Passport Number:* ${data.clientInfo?.passportNumber || 'N/A'}\n` +
-      `💰 *Agreed Package Amount:* BDT  ${totalAgreed}\n` +
-      `💵 *Advance Paid:* BDT  ${paid}\n` +
-      `🔻 *Due Balance:* BDT  ${due}\n` +
-      `✅ *Processing Stage:* ${data.financials?.currentStage || 'Intake / Initial Registration'}\n\n` +
+      `👤 *Name:* ${clientName}\n` +
+      `📌 *Service:* ${data.serviceType || 'Indian Visa'}\n` +
+      `🆔 *NID:* ${data.client?.nidNumber || 'N/A'}\n` +
+      `🛂 *Passport:* ${data.client?.passportNumber || 'N/A'}\n` +
+      `👥 *Guardian:* ${data.guardian?.fullName || 'N/A'} (${data.guardian?.relationship || 'Guardian'})\n` +
+      `-----------------------------------------\n` +
+      `💰 *Total Fee:* BDT  ${total}\n` +
+      `✅ *Advance Paid:* BDT  ${advance}\n` +
+      `⏳ *Due Amount:* BDT  ${due}\n` +
+      `-----------------------------------------\n` +
+      `📅 *Date:* ${data.dateReceived || 'Today'}\n\n` +
       `🏢 *MONSUR ALI TRAVELS*\n` +
       `📍 Address: Mominpur Jagannathpur Road, Sunamganj, Post Code 3060\n` +
       `📞 Phone: +8801345579534`;
@@ -107,6 +106,7 @@ export function CustomerGuardian({ initialData = null, onSavedSuccess = null }) 
 
   return (
     <div className="space-y-4">
+      {/* Signature Dark Blue Gradient Top Header */}
       <HeaderTitle
         icon={UserCheck}
         title={t('clientForm.title', 'Client & Guardian Application Dossier')}
@@ -119,7 +119,6 @@ export function CustomerGuardian({ initialData = null, onSavedSuccess = null }) 
               title="Reset Form"
             >
               <RefreshCw className="w-3.5 h-3.5 text-sky-300" />
-
               <span>Reset</span>
             </button>
 

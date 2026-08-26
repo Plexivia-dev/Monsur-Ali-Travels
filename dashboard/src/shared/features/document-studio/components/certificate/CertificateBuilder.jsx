@@ -9,7 +9,7 @@ import { StudioFloatingViewSwitcher } from '../common/StudioFloatingViewSwitcher
 
 export function CertificateBuilder() {
   const [data, setData] = useState(SAMPLE_CERTIFICATE);
-  const [viewMode, setViewMode] = useState('split');
+  const [viewMode, setViewMode] = useState('edit');
   const [isExportOpen, setIsExportOpen] = useState(false);
 
   const handleResetSample = () => {

@@ -66,7 +66,7 @@ export function getDefaultSalarySlipData() {
 
 export function SalarySlip() {
   const [formData, setFormData] = useState(getDefaultSalarySlipData());
-  const [viewMode, setViewMode] = useState('split'); // 'split' | 'edit' | 'preview'
+  const [viewMode, setViewMode] = useState('edit'); // 'edit' | 'split' | 'preview'
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleReset = () => {

@@ -9,7 +9,7 @@ import { StudioFloatingViewSwitcher } from '../common/StudioFloatingViewSwitcher
 
 export function ResumeBuilder() {
   const [data, setData] = useState(getDefaultResumeData());
-  const [viewMode, setViewMode] = useState('split'); // 'split' | 'edit' | 'preview'
+  const [viewMode, setViewMode] = useState('edit'); // 'edit' | 'split' | 'preview'
   const [isExportOpen, setIsExportOpen] = useState(false);
 
   const handleResetSample = () => {

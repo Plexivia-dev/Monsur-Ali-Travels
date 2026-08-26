@@ -9,7 +9,7 @@ import { StudioFloatingViewSwitcher } from '../common/StudioFloatingViewSwitcher
 
 export function MarriageCertificate() {
   const [data, setData] = useState(SAMPLE_MARRIAGE_CERTIFICATE);
-  const [viewMode, setViewMode] = useState('split');
+  const [viewMode, setViewMode] = useState('edit');
 
   const handleResetSample = () => {
     setData(SAMPLE_MARRIAGE_CERTIFICATE);

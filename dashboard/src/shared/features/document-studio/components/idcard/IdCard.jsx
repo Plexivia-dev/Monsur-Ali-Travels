@@ -6,8 +6,10 @@ import { toast } from 'sonner';
 import { toPng } from 'html-to-image';
 import agencyInfo from '@shared/lib/information.json';
 import { HeaderTitle } from '@shared/components/common/HeaderTitle';
+import { StudioFloatingViewSwitcher } from '../common/StudioFloatingViewSwitcher';
 
 export function IdCard() {
+  const [viewMode, setViewMode] = useState('edit'); // 'edit' | 'split' | 'preview'
   const [isExporting, setIsExporting] = useState(false);
   const frontCardRef = useRef(null);
   const backCardRef = useRef(null);
@@ -115,26 +117,48 @@ export function IdCard() {
         }
       />
 
-      {/* Main Grid: Left Form, Right Live Dual Card Preview */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
-        {/* Left Side: Input Form */}
-        <div className="w-full max-h-[calc(100vh-140px)] overflow-y-auto pr-1">
+      {/* Main Studio Views */}
+      {viewMode === 'edit' && (
+        <div className="max-w-3xl mx-auto pb-16">
           <IdCardForm
             cardData={cardData}
             setCardData={setCardData}
             onResetSample={handleResetSample}
           />
         </div>
+      )}
 
-        {/* Right Side: Dual-Sided Visual Preview */}
-        <div className="w-full bg-muted/20 border border-border p-6 rounded-2xl flex flex-col items-center justify-center min-h-[550px] overflow-x-auto shadow-xs">
+      {viewMode === 'preview' && (
+        <div className="w-full bg-muted/20 border border-border p-6 rounded-2xl flex flex-col items-center justify-center min-h-[550px] overflow-x-auto shadow-xs pb-16">
           <IdCardPreview
             cardData={cardData}
             frontRef={frontCardRef}
             backRef={backCardRef}
           />
         </div>
-      </div>
+      )}
+
+      {viewMode === 'split' && (
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start pb-16">
+          <div className="w-full max-h-[calc(100vh-140px)] overflow-y-auto pr-1">
+            <IdCardForm
+              cardData={cardData}
+              setCardData={setCardData}
+              onResetSample={handleResetSample}
+            />
+          </div>
+          <div className="w-full bg-muted/20 border border-border p-6 rounded-2xl flex flex-col items-center justify-center min-h-[550px] overflow-x-auto shadow-xs">
+            <IdCardPreview
+              cardData={cardData}
+              frontRef={frontCardRef}
+              backRef={backCardRef}
+            />
+          </div>
+        </div>
+      )}
+
+      {/* Floating Sticky View Mode Switcher */}
+      <StudioFloatingViewSwitcher viewMode={viewMode} setViewMode={setViewMode} />
     </div>
   );
 }

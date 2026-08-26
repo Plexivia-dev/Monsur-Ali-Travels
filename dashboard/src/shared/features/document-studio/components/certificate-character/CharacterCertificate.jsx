@@ -9,7 +9,7 @@ import { StudioFloatingViewSwitcher } from '../common/StudioFloatingViewSwitcher
 
 export function CharacterCertificate() {
   const [data, setData] = useState(SAMPLE_CHARACTER_CERTIFICATE);
-  const [viewMode, setViewMode] = useState('split');
+  const [viewMode, setViewMode] = useState('edit');
 
   const handleResetSample = () => {
     setData(SAMPLE_CHARACTER_CERTIFICATE);
