@@ -28,7 +28,8 @@ import {
   Camera,
   ExternalLink,
   X,
-  UserCheck
+  UserCheck,
+  Loader2
 } from 'lucide-react';
 import { BdPhoneInput } from '@/components/common/BdPhoneInput';
 import { DatePicker } from '@/components/ui/date-picker';
@@ -233,12 +234,105 @@ export function ClientGuardianForm({ data, onChange, onReset, onSave, onPreview,
     }));
   };
 
+  const [uploadingDocIndex, setUploadingDocIndex] = useState(null);
+
   const handleDocChange = (index, field, value) => {
     onChange(prev => {
       const updated = [...(prev.requirementDocuments || [])];
       updated[index] = { ...updated[index], [field]: value };
       return { ...prev, requirementDocuments: updated };
     });
+  };
+
+  const handleRowFileUpload = async (index, e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (file.size > 20 * 1024 * 1024) {
+      toast.error(t('clientForm.fileTooLarge', 'ফাইলের সাইজ ২০ MB এর কম হতে হবে!'));
+      return;
+    }
+
+    setUploadingDocIndex(index);
+
+    const reader = new FileReader();
+    reader.onloadend = async () => {
+      const dataUrl = reader.result;
+
+      try {
+        const clientId = data.clientUniqueId || data.clientId || data.client_id || data._id || detectedClient?._id || detectedClient?.clientUniqueId;
+        const queryParams = new URLSearchParams();
+        if (clientId) {
+          queryParams.append('clientId', clientId);
+        } else {
+          queryParams.append('documentType', 'clientForm');
+        }
+
+        const formData = new FormData();
+        formData.append('file', file);
+
+        const res = await apiClient.post(`/api/v1/upload/single?${queryParams.toString()}`, formData, {
+          headers: { 'Content-Type': 'multipart/form-data' }
+        });
+
+        const uploadedUrl = res.data?.data?.url || res.data?.data?.fullUrl || dataUrl;
+        const r2Key = res.data?.data?.r2Key || null;
+
+        onChange(prev => {
+          const list = [...(prev.requirementDocuments || [])];
+          list[index] = {
+            ...list[index],
+            fileName: file.name,
+            fileType: file.type || 'document',
+            fileUrl: uploadedUrl,
+            fileData: dataUrl,
+            r2Key: r2Key,
+            uploadedAt: new Date().toISOString(),
+            submitted: 'Yes'
+          };
+          return { ...prev, requirementDocuments: list };
+        });
+
+        toast.success(`"${file.name}" ${t('clientForm.uploadedSuccess', 'সফলভাবে আপলোড হয়েছে!')}`);
+      } catch (err) {
+        console.warn('API Upload fallback to local data URL:', err);
+        onChange(prev => {
+          const list = [...(prev.requirementDocuments || [])];
+          list[index] = {
+            ...list[index],
+            fileName: file.name,
+            fileType: file.type || 'document',
+            fileUrl: dataUrl,
+            fileData: dataUrl,
+            uploadedAt: new Date().toISOString(),
+            submitted: 'Yes'
+          };
+          return { ...prev, requirementDocuments: list };
+        });
+        toast.info(`"${file.name}" যুক্ত হয়েছে।`);
+      } finally {
+        setUploadingDocIndex(null);
+        e.target.value = '';
+      }
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const handleRemoveRowFile = (index) => {
+    onChange(prev => {
+      const list = [...(prev.requirementDocuments || [])];
+      list[index] = {
+        ...list[index],
+        fileName: '',
+        fileType: '',
+        fileUrl: '',
+        fileData: '',
+        r2Key: null,
+        uploadedAt: null
+      };
+      return { ...prev, requirementDocuments: list };
+    });
+    toast.info(t('clientForm.fileRemoved', 'ডকুমেন্ট ফাইল মুছে ফেলা হয়েছে।'));
   };
 
   const handleAddDoc = () => {
@@ -248,7 +342,13 @@ export function ClientGuardianForm({ data, onChange, onReset, onSave, onPreview,
         id: list.length + 1,
         name: 'New Required Document',
         submitted: 'Yes',
-        remarks: ''
+        remarks: '',
+        fileName: '',
+        fileType: '',
+        fileUrl: '',
+        fileData: '',
+        r2Key: null,
+        uploadedAt: null
       };
       return { ...prev, requirementDocuments: [...list, newDoc] };
     });
@@ -546,31 +646,21 @@ export function ClientGuardianForm({ data, onChange, onReset, onSave, onPreview,
 
       {/* 3. CUSTOMER REQUIREMENT DOCUMENTS */}
       <div className="space-y-3">
-        <div className="flex items-center justify-between bg-gradient-to-r from-sky-600 via-sky-700 to-[#0B3A60] text-white px-4 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider shadow-xs">
-          <div className="flex items-center gap-2">
-            <FileText className="w-4 h-4 text-sky-200" />
-            <span>{t('clientForm.requirementDocs', '3. Client Requirement Documents')}</span>
-          </div>
-          <Button
-            type="button"
-            variant="secondary"
-            size="xs"
-            onClick={handleAddDoc}
-          >
-            <Plus className="w-3 h-3" />
-            <span>{t('clientForm.addDocument', 'Add Document')}</span>
-          </Button>
+        <div className="flex items-center gap-2 bg-gradient-to-r from-sky-600 via-sky-700 to-[#0B3A60] text-white px-4 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider shadow-xs">
+          <FileText className="w-4 h-4 text-sky-200" />
+          <span>{t('clientForm.requirementDocs', '3. Client Requirement Documents')}</span>
         </div>
 
-        <div className="border border-border rounded-xl overflow-hidden text-xs">
+        <div className="border border-border rounded-xl overflow-hidden text-xs bg-card shadow-xs">
           <table className="w-full text-left">
             <thead className="bg-muted/60 text-muted-foreground border-b border-border text-[11px] uppercase font-bold">
               <tr>
-                <th className="py-2 px-3 w-12 text-center">{t('clientForm.no', 'No.')}</th>
-                <th className="py-2 px-3">{t('clientForm.requiredDocument', 'Required Document')}</th>
-                <th className="py-2 px-3 w-36">{t('clientForm.submittedStatus', 'Submitted Status')}</th>
-                <th className="py-2 px-3 w-48">{t('clientForm.remarks', 'Remarks')}</th>
-                <th className="py-2 px-3 w-10 text-center"></th>
+                <th className="py-2.5 px-3 w-10 text-center">{t('clientForm.no', 'No.')}</th>
+                <th className="py-2.5 px-3">{t('clientForm.requiredDocument', 'Required Document')}</th>
+                <th className="py-2.5 px-3 w-36">{t('clientForm.submittedStatus', 'Submitted Status')}</th>
+                <th className="py-2.5 px-3 w-48">{t('clientForm.documentFile', 'Document File')}</th>
+                <th className="py-2.5 px-3 w-44">{t('clientForm.remarks', 'Remarks')}</th>
+                <th className="py-2.5 px-3 w-10 text-center"></th>
               </tr>
             </thead>
             <tbody className="divide-y divide-border">
@@ -598,6 +688,54 @@ export function ClientGuardianForm({ data, onChange, onReset, onSave, onPreview,
                     </select>
                   </td>
                   <td className="py-2 px-3">
+                    {uploadingDocIndex === idx ? (
+                      <div className="flex items-center gap-1.5 text-xs text-sky-600 font-semibold px-2.5 py-1 bg-sky-50 dark:bg-sky-950/40 rounded-lg border border-sky-200 dark:border-sky-800">
+                        <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                        <span>{t('clientForm.uploading', 'Uploading...')}</span>
+                      </div>
+                    ) : (doc.fileUrl || doc.fileData || doc.fileName) ? (
+                      <div className="flex items-center justify-between gap-1.5 bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-800/60 px-2 py-1 rounded-lg text-xs">
+                        <div
+                          onClick={() => setSelectedPreviewDoc({ title: doc.name || doc.fileName, url: doc.fileUrl || doc.fileData })}
+                          className="flex items-center gap-1.5 min-w-0 max-w-[125px] cursor-pointer hover:underline text-emerald-700 dark:text-emerald-400 font-medium truncate"
+                          title={doc.fileName || doc.name}
+                        >
+                          <FileCheck className="w-3.5 h-3.5 shrink-0 text-emerald-600" />
+                          <span className="truncate text-[11px]">{doc.fileName || 'Attached Doc'}</span>
+                        </div>
+                        <div className="flex items-center gap-1 shrink-0">
+                          <button
+                            type="button"
+                            onClick={() => setSelectedPreviewDoc({ title: doc.name || doc.fileName, url: doc.fileUrl || doc.fileData })}
+                            className="p-0.5 text-emerald-600 hover:text-emerald-800 rounded hover:bg-emerald-100 dark:hover:bg-emerald-900/50 cursor-pointer"
+                            title="Preview Document"
+                          >
+                            <Eye className="w-3.5 h-3.5" />
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => handleRemoveRowFile(idx)}
+                            className="p-0.5 text-muted-foreground hover:text-rose-600 rounded hover:bg-rose-50 dark:hover:bg-rose-950/50 cursor-pointer"
+                            title="Remove file"
+                          >
+                            <X className="w-3.5 h-3.5" />
+                          </button>
+                        </div>
+                      </div>
+                    ) : (
+                      <label className="inline-flex items-center justify-center gap-1.5 px-3 py-1 bg-sky-50 hover:bg-sky-100 dark:bg-sky-950/40 dark:hover:bg-sky-900/50 text-sky-600 dark:text-sky-400 border border-sky-200 dark:border-sky-800/80 rounded-lg text-xs font-semibold cursor-pointer transition-all shadow-2xs">
+                        <Upload className="w-3.5 h-3.5" />
+                        <span>{t('clientForm.uploadFile', 'Upload')}</span>
+                        <input
+                          type="file"
+                          accept="image/*,application/pdf,.doc,.docx"
+                          onChange={(e) => handleRowFileUpload(idx, e)}
+                          className="hidden"
+                        />
+                      </label>
+                    )}
+                  </td>
+                  <td className="py-2 px-3">
                     <input
                       type="text"
                       placeholder={t('clientForm.remarksPlaceholder', 'Remarks...')}
@@ -620,6 +758,20 @@ export function ClientGuardianForm({ data, onChange, onReset, onSave, onPreview,
               ))}
             </tbody>
           </table>
+
+          {/* Add New Row Button at bottom of table */}
+          <div className="p-2.5 bg-muted/20 border-t border-border flex justify-center">
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={handleAddDoc}
+              className="w-full sm:w-auto border-dashed border-sky-400 dark:border-sky-600 text-sky-600 dark:text-sky-400 hover:bg-sky-50 dark:hover:bg-sky-950/40 px-6 py-1.5 rounded-xl text-xs font-bold gap-1.5 shadow-2xs cursor-pointer transition-all"
+            >
+              <Plus className="w-4 h-4" />
+              <span>{t('clientForm.addNew', 'Add New')}</span>
+            </Button>
+          </div>
         </div>
       </div>
 

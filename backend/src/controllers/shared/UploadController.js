@@ -37,10 +37,8 @@ class UploadController {
       if (isR2Configured() && req.file.path && fs.existsSync(req.file.path)) {
         try {
           const fileBuffer = await fs.promises.readFile(req.file.path);
-          const cleanFolder = (req.query.folder || 'documents').replace(/[^a-zA-Z0-9_-]/g, '');
-          const now = new Date();
-          const yearMonth = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
-          const r2Key = `${cleanFolder}/${yearMonth}/${req.file.filename}`;
+          const subPath = req.uploadSubPath || (req.uploadRelativePath || '').replace(/^\/+uploads\/+/, '').replace(/^\/+documents\/+/, '');
+          const r2Key = `${subPath}/${req.file.filename}`;
 
           r2Data = await uploadToR2({
             fileBuffer,
@@ -116,7 +114,8 @@ class UploadController {
           if (isR2Configured() && file.path && fs.existsSync(file.path)) {
             try {
               const fileBuffer = await fs.promises.readFile(file.path);
-              const r2Key = `${cleanFolder}/${yearMonth}/${file.filename}`;
+              const subPath = req.uploadSubPath || (req.uploadRelativePath || '').replace(/^\/+uploads\/+/, '').replace(/^\/+documents\/+/, '');
+              const r2Key = `${subPath}/${file.filename}`;
               r2Data = await uploadToR2({
                 fileBuffer,
                 key: r2Key,
@@ -166,7 +165,7 @@ class UploadController {
    */
   async uploadBase64(req, res) {
     try {
-      const { base64Data, filename, folder = 'documents' } = req.body;
+      const { base64Data, filename, clientId, documentType, folder } = req.body;
 
       if (!base64Data) {
         return res.status(400).json({
@@ -195,10 +194,30 @@ class UploadController {
       else if (mimeType.includes('pdf')) ext = '.pdf';
       else if (filename && path.extname(filename)) ext = path.extname(filename);
 
-      const cleanFolder = folder.replace(/[^a-zA-Z0-9_-]/g, '');
       const now = new Date();
-      const yearMonth = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
-      const targetDir = path.join(process.cwd(), 'uploads', cleanFolder, yearMonth);
+      const yy = String(now.getFullYear()).slice(-2);
+      const mm = String(now.getMonth() + 1).padStart(2, '0');
+      const dd = String(now.getDate()).padStart(2, '0');
+      const dateFolder = `${yy}${mm}${dd}`;
+
+      let subPathParts = [];
+      if (clientId) {
+        const cleanClientId = String(clientId).replace(/[^a-zA-Z0-9_-]/g, '');
+        subPathParts = ['clients', cleanClientId, dateFolder];
+      } else if (documentType) {
+        const cleanDocType = String(documentType).replace(/[^a-zA-Z0-9_-]/g, '');
+        subPathParts = ['other', cleanDocType, dateFolder];
+      } else if (folder) {
+        const cleanFolder = String(folder).replace(/[^a-zA-Z0-9_/-]/g, '');
+        subPathParts = cleanFolder.split('/').filter(Boolean);
+        if (!subPathParts.includes(dateFolder)) {
+          subPathParts.push(dateFolder);
+        }
+      } else {
+        subPathParts = ['other', 'general', dateFolder];
+      }
+
+      const targetDir = path.join(process.cwd(), 'uploads', ...subPathParts);
 
       if (!fs.existsSync(targetDir)) {
         fs.mkdirSync(targetDir, { recursive: true });
@@ -212,14 +231,15 @@ class UploadController {
 
       await fs.promises.writeFile(filePath, buffer);
 
-      const relativeUrl = `/uploads/${cleanFolder}/${yearMonth}/${finalFilename}`;
+      const subPath = subPathParts.join('/');
+      const relativeUrl = `/uploads/${subPath}/${finalFilename}`;
       const host = req.get('host');
       const protocol = req.protocol || 'http';
 
       let r2Data = null;
       if (isR2Configured()) {
         try {
-          const r2Key = `${cleanFolder}/${yearMonth}/${finalFilename}`;
+          const r2Key = `${subPath}/${finalFilename}`;
           r2Data = await uploadToR2({
             fileBuffer: buffer,
             key: r2Key,
@@ -271,7 +291,7 @@ class UploadController {
         });
       }
 
-      const { folder = 'documents', filename, contentType = 'application/octet-stream', expiresIn = 300 } = req.body;
+      const { clientId, documentType, folder, filename, contentType = 'application/octet-stream', expiresIn = 300 } = req.body;
 
       if (!filename) {
         return res.status(400).json({
@@ -281,13 +301,33 @@ class UploadController {
         });
       }
 
-      const cleanFolder = folder.replace(/[^a-zA-Z0-9_-]/g, '');
       const now = new Date();
-      const yearMonth = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+      const yy = String(now.getFullYear()).slice(-2);
+      const mm = String(now.getMonth() + 1).padStart(2, '0');
+      const dd = String(now.getDate()).padStart(2, '0');
+      const dateFolder = `${yy}${mm}${dd}`;
+
+      let subPathParts = [];
+      if (clientId) {
+        const cleanClientId = String(clientId).replace(/[^a-zA-Z0-9_-]/g, '');
+        subPathParts = ['clients', cleanClientId, dateFolder];
+      } else if (documentType) {
+        const cleanDocType = String(documentType).replace(/[^a-zA-Z0-9_-]/g, '');
+        subPathParts = ['other', cleanDocType, dateFolder];
+      } else if (folder) {
+        const cleanFolder = String(folder).replace(/[^a-zA-Z0-9_/-]/g, '');
+        subPathParts = cleanFolder.split('/').filter(Boolean);
+        if (!subPathParts.includes(dateFolder)) {
+          subPathParts.push(dateFolder);
+        }
+      } else {
+        subPathParts = ['other', 'general', dateFolder];
+      }
+
       const ext = path.extname(filename);
       const baseName = path.basename(filename, ext).replace(/[^a-zA-Z0-9_-]/g, '-').substring(0, 50);
       const finalFilename = `${baseName}-${Date.now()}-${Math.round(Math.random() * 1e5)}${ext}`;
-      const key = `${cleanFolder}/${yearMonth}/${finalFilename}`;
+      const key = `${subPathParts.join('/')}/${finalFilename}`;
 
       const presigned = await getPresignedUploadUrl({
         key,
