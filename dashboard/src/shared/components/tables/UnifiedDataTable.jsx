@@ -272,14 +272,15 @@ export function UnifiedDataTable({
 
             <tbody className="divide-y divide-border">
               {loading ? (
-                <tr>
-                  <td colSpan={columns.length} className="px-4 py-16 text-center text-muted-foreground">
-                    <div className="flex flex-col items-center justify-center gap-2">
-                      <RefreshCw className="w-6 h-6 animate-spin text-primary" />
-                      <span className="text-xs font-medium">Loading records...</span>
-                    </div>
-                  </td>
-                </tr>
+                Array.from({ length: 6 }).map((_, rIdx) => (
+                  <tr key={`skeleton-row-${rIdx}`} className="animate-pulse">
+                    {columns.map((col, cIdx) => (
+                      <td key={`skeleton-cell-${cIdx}`} className="px-4 py-3.5">
+                        <div className="h-4 bg-muted/60 rounded-md w-full max-w-[85%]" />
+                      </td>
+                    ))}
+                  </tr>
+                ))
               ) : displayData.length === 0 ? (
                 <tr>
                   <td colSpan={columns.length} className="px-4 py-16 text-center text-muted-foreground">

@@ -58,22 +58,6 @@ export const MASTER_ITEMS = {
     submodule: 'clients-add',
     href: '/dashboard/agency/clients-add',
   },
-  clientBills: {
-    icon: 'Receipt',
-    label: 'Client Invoices & Bills',
-    key: 'nav.clientBills',
-    portal: 'agency',
-    submodule: 'bills',
-    href: '/dashboard/agency/bills',
-  },
-  clientPayments: {
-    icon: 'CreditCard',
-    label: 'Client Payments',
-    key: 'nav.clientPayments',
-    portal: 'agency',
-    submodule: 'payments',
-    href: '/dashboard/agency/payments',
-  },
 
   // Accounts Hub Items
   accPayments: {
@@ -494,8 +478,6 @@ export const ROLE_NAVIGATION_PRESETS = {
             childItems: [
               MASTER_ITEMS.clientsAll,
               MASTER_ITEMS.clientsAdd,
-              MASTER_ITEMS.clientBills,
-              MASTER_ITEMS.clientPayments,
             ],
           },
           {

@@ -42,22 +42,6 @@ export const navGroups = [
             submodule: 'clients-add',
             href: '/dashboard/agency/clients-add',
           },
-          {
-            icon: 'Receipt',
-            label: 'Client Invoices & Bills',
-            key: 'nav.clientBills',
-            portal: 'agency',
-            submodule: 'bills',
-            href: '/dashboard/agency/bills',
-          },
-          {
-            icon: 'CreditCard',
-            label: 'Client Payments',
-            key: 'nav.clientPayments',
-            portal: 'agency',
-            submodule: 'payments',
-            href: '/dashboard/agency/payments',
-          },
         ],
       },
       {

@@ -27,24 +27,6 @@
             "submodule": "clients-add",
             "path": "/dashboard/agency/clients-add",
             "icon": "UserPlus"
-          },
-          {
-            "id": "bills",
-            "name": "Client Bills",
-            "nameBn": "ইনভয়েস ও বিল",
-            "portal": "agency",
-            "submodule": "bills",
-            "path": "/dashboard/agency/bills",
-            "icon": "Receipt"
-          },
-          {
-            "id": "payments",
-            "name": "Client Payments",
-            "nameBn": "পেমেন্ট রেকর্ড",
-            "portal": "agency",
-            "submodule": "payments",
-            "path": "/dashboard/agency/payments",
-            "icon": "CreditCard"
           }
         ]
       }
