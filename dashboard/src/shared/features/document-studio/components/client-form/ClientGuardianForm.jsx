@@ -364,31 +364,6 @@ export function ClientGuardianForm({ data, onChange, onReset, onSave, onPreview,
 
   return (
     <div className="bg-card border border-border rounded-2xl p-4 sm:p-6 shadow-xs space-y-6">
-      {/* Header Actions */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-border pb-4">
-        <div>
-          <h2 className="text-base font-bold text-foreground flex items-center gap-2">
-            <FileText className="w-5 h-5 text-primary" />
-            {t('clientForm.title', 'Client & Guardian Information Application Form')}
-          </h2>
-          <p className="text-xs text-muted-foreground mt-0.5">
-            {t('clientForm.subtitle', 'Create and print official client & guardian profile details, file tracking status, and advance payment ledger.')}
-          </p>
-        </div>
-
-        <div className="flex items-center gap-2">
-          <Button
-            type="button"
-            variant="reset"
-            size="sm"
-            onClick={onReset}
-          >
-            <RefreshCw className="w-3.5 h-3.5" />
-            <span>{t('clientForm.clearReset', 'Clear / Reset Form')}</span>
-          </Button>
-        </div>
-      </div>
-
       {/* SERVICE & STATUS CONTROL BAR */}
       <div className="bg-muted/30 border border-border p-4 rounded-xl space-y-3">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 text-xs">

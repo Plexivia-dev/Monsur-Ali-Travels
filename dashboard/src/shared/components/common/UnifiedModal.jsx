@@ -35,19 +35,19 @@ export function UnifiedModalHeader({
   return (
     <div
       className={cn(
-        'bg-linear-to-r from-sky-950 via-indigo-950 to-slate-950 text-white p-5 border-b border-sky-800/40 relative overflow-hidden select-none',
+        'bg-linear-to-r from-zinc-950 via-slate-950 to-black text-white p-5 border-b border-zinc-800 relative overflow-hidden select-none',
         className
       )}
     >
       {/* Decorative ambient background glows */}
-      <div className="absolute -top-20 -right-20 w-64 h-64 bg-sky-500/15 rounded-full blur-3xl pointer-events-none" />
-      <div className="absolute -bottom-20 -left-20 w-64 h-64 bg-indigo-500/15 rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute -top-20 -right-20 w-64 h-64 bg-sky-500/10 rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute -bottom-20 -left-20 w-64 h-64 bg-indigo-500/10 rounded-full blur-3xl pointer-events-none" />
 
       <div className="relative z-10 flex items-center justify-between gap-4">
         {/* Left: Icon & Title/Subtitle */}
         <div className="flex items-center gap-3 min-w-0">
           {Icon && (
-            <div className="size-10 rounded-xl bg-sky-500/20 text-sky-400 border border-sky-500/30 flex items-center justify-center shrink-0 shadow-xs">
+            <div className="size-10 rounded-xl bg-sky-500/15 text-sky-400 border border-sky-500/30 flex items-center justify-center shrink-0 shadow-xs">
               {renderIcon('size-5 text-sky-400')}
             </div>
           )}
@@ -62,7 +62,7 @@ export function UnifiedModalHeader({
                 {title}
               </h2>
               {badge && (
-                <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-sky-500/25 text-sky-300 border border-sky-400/30">
+                <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-sky-500/20 text-sky-300 border border-sky-400/30">
                   {badge}
                 </span>
               )}
@@ -70,7 +70,7 @@ export function UnifiedModalHeader({
             {resolvedSubtitle && (
               <p
                 className={cn(
-                  'text-xs text-sky-100/70 mt-0.5 leading-normal truncate max-w-xl',
+                  'text-xs text-zinc-400 mt-0.5 leading-normal truncate max-w-xl',
                   subtitleClassName
                 )}
               >
@@ -80,15 +80,15 @@ export function UnifiedModalHeader({
           </div>
         </div>
 
-        {/* Right: Close Button */}
+        {/* Right: Close Button with red border and red text */}
         {onClose && (
           <button
             type="button"
             onClick={onClose}
-            className="p-1.5 rounded-xl bg-white hover:bg-rose-50 text-rose-600 hover:text-rose-700 border border-white shadow-xs transition-all cursor-pointer shrink-0 flex items-center justify-center"
+            className="p-1.5 rounded-xl bg-rose-500/10 hover:bg-rose-500/20 text-rose-500 hover:text-rose-400 border border-rose-500/40 hover:border-rose-500/80 shadow-xs transition-all cursor-pointer shrink-0 flex items-center justify-center"
             aria-label="Close modal"
           >
-            <X className="size-4 text-rose-600 stroke-[2.5]" />
+            <X className="size-4 text-rose-500 stroke-[2.5]" />
           </button>
         )}
       </div>
@@ -120,7 +120,7 @@ export function UnifiedModalFooter({
   return (
     <div
       className={cn(
-        'p-4 sm:px-6 sm:py-4 border-t border-border flex items-center justify-end gap-2.5 bg-muted/20',
+        'p-4 sm:px-6 sm:py-4 border-t border-zinc-800 flex items-center justify-end gap-2.5 bg-zinc-950',
         className
       )}
     >
@@ -134,7 +134,7 @@ export function UnifiedModalFooter({
                 type="button"
                 onClick={onCancel}
                 disabled={loading}
-                className="px-4 py-2 text-xs font-semibold rounded-xl bg-rose-500/10 hover:bg-rose-500/20 text-rose-600 dark:text-rose-400 border border-rose-500/25 hover:border-rose-500/40 transition-all cursor-pointer disabled:opacity-50"
+                className="px-4 py-2 text-xs font-bold rounded-xl bg-rose-500/10 hover:bg-rose-500/20 text-rose-500 dark:text-rose-400 hover:text-rose-300 border border-rose-500/40 hover:border-rose-500/80 transition-all cursor-pointer disabled:opacity-50"
               >
                 {cancelText}
               </button>
@@ -216,10 +216,10 @@ export function UnifiedModal({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
+    <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4">
       <div
         className={cn(
-          'bg-background rounded-2xl border border-border shadow-2xl w-full flex flex-col overflow-hidden animate-in fade-in zoom-in-95 duration-200',
+          'bg-zinc-950 rounded-2xl border border-zinc-800 text-zinc-100 shadow-2xl w-full flex flex-col overflow-hidden animate-in fade-in zoom-in-95 duration-200',
           maxWidth,
           maxHeight,
           className

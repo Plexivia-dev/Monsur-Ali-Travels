@@ -42,12 +42,8 @@ export function CashVoucherForm({ data, onChange, onReset, onSave, onPreview, is
   // ─── Render ───────────────────────────────────────────────────────────────
   return (
     <div className="space-y-6">
-      {/* Header */}
+      {/* Voucher Meta */}
       <div className="bg-card border border-border rounded-2xl p-5 shadow-xs">
-        <h2 className="text-base font-bold text-foreground mb-4">
-          {t('cashVoucherForm.title', 'Cash Money Voucher')}
-        </h2>
-
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           {/* Voucher No */}
           <div>

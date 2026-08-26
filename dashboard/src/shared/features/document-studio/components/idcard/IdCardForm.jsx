@@ -21,20 +21,6 @@ export function IdCardForm({ cardData, setCardData, onResetSample }) {
 
   return (
     <div className="bg-card border border-border p-5 rounded-2xl shadow-xs space-y-4">
-      <div className="flex items-center justify-between border-b border-border pb-3">
-        <h2 className="text-sm font-bold text-foreground tracking-tight flex items-center gap-2">
-          <IdCard className="w-4 h-4 text-primary" />
-          ID Card Details & Photo Input
-        </h2>
-        <button
-          onClick={onResetSample}
-          className="flex items-center gap-1 text-[11px] font-semibold text-primary hover:text-primary/80 bg-primary/10 px-2.5 py-1 rounded-lg transition-all cursor-pointer"
-        >
-          <RefreshCw className="w-3 h-3" />
-          Reset Demo
-        </button>
-      </div>
-
       <div className="space-y-3 text-xs">
         {/* Photo Upload Box */}
         <div className={`p-3 rounded-xl border transition-all ${!cardData.photo ? 'bg-rose-500/5 border-rose-500/30' : 'bg-muted/30 border-border'}`}>

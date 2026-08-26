@@ -132,13 +132,25 @@ const UsersPage = () => {
         cell: ({ row }) => {
           const u = row.original;
           const name = u.fullName || u.name || 'User';
+          const avatarUrl =
+            u.avatar ||
+            u.profilePicture ||
+            `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=0284c7&color=ffffff&bold=true&rounded=true`;
           return (
             <div className="flex items-center gap-3">
-              <div className="size-9 rounded-xl bg-primary/10 border border-primary/20 text-primary flex items-center justify-center font-bold text-xs shrink-0">
-                {name.charAt(0).toUpperCase()}
+              <div className="size-9.5 rounded-xl overflow-hidden bg-primary/10 border border-primary/20 shrink-0 flex items-center justify-center shadow-xs">
+                <img
+                  src={avatarUrl}
+                  alt={name}
+                  className="w-full h-full object-cover"
+                  onError={(e) => {
+                    e.currentTarget.onerror = null;
+                    e.currentTarget.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=0284c7&color=ffffff&bold=true`;
+                  }}
+                />
               </div>
               <div>
-                <span className="font-bold text-foreground block">{name}</span>
+                <span className="font-bold text-foreground block text-xs">{name}</span>
                 <div className="font-mono text-[10px] text-muted-foreground">
                   {u.did ? `DID: ${u.did.slice(0, 14)}...` : u._id ? `ID: ${u._id.slice(0, 14)}...` : '\u2014'}
                 </div>
@@ -171,15 +183,24 @@ const UsersPage = () => {
         header: ({ column }) => <DataTableColumnHeader column={column} title="Role" />,
         cell: ({ row }) => {
           const u = row.original;
+          const role = u.role || 'Staff';
+          const roleBadgeColor =
+            role === 'Owner'
+              ? 'bg-primary text-primary-foreground'
+              : role === 'Admin'
+              ? 'bg-primary/80 text-primary-foreground'
+              : role === 'Accountant'
+              ? 'bg-primary/60 text-primary-foreground'
+              : 'bg-primary/50 text-primary-foreground';
           return (
             <div className="flex items-center gap-1.5">
-              <Badge variant="outline" className="font-bold text-xs bg-primary/10 text-primary border-primary/20">
-                {u.role || 'Staff'}
-              </Badge>
+              <span className={`font-bold text-[11px] px-2 py-0.5 rounded-md uppercase tracking-wider shadow-2xs ${roleBadgeColor}`}>
+                {role}
+              </span>
               {u.subRole && (
-                <Badge variant="secondary" className="text-[10px] font-bold bg-amber-100 dark:bg-amber-950/40 text-amber-700 dark:text-amber-300">
+                <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-accent text-accent-foreground border border-border">
                   {u.subRole}
-                </Badge>
+                </span>
               )}
             </div>
           );
@@ -195,8 +216,8 @@ const UsersPage = () => {
             <Badge
               className={
                 active
-                  ? 'bg-emerald-100 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 border-emerald-200'
-                  : 'bg-rose-100 text-rose-700'
+                  ? 'bg-primary/10 text-primary border-primary/20'
+                  : 'bg-destructive/10 text-destructive border-destructive/20'
               }
             >
               {active ? 'Active' : 'Suspended'}
@@ -232,8 +253,8 @@ const UsersPage = () => {
               }}
               className={`h-7 px-2.5 text-xs font-semibold cursor-pointer gap-1 shadow-xs ${
                 isActive
-                  ? 'text-rose-600 border-rose-200 hover:bg-rose-50'
-                  : 'text-emerald-600 border-emerald-200 hover:bg-emerald-50'
+                  ? 'text-destructive border-destructive/30 hover:bg-destructive/5'
+                  : 'text-primary border-primary/30 hover:bg-primary/5'
               }`}
             >
               {isToggling ? (
@@ -316,8 +337,8 @@ const UsersPage = () => {
 
       {/* Create User Modal */}
       {createModalOpen && (
-        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-background rounded-2xl border border-border shadow-2xl max-w-lg w-full flex flex-col overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4">
+          <div className="bg-card rounded-2xl border border-border text-card-foreground shadow-2xl max-w-lg w-full flex flex-col overflow-hidden animate-in fade-in zoom-in-95 duration-200">
             {/* Unified Modal Header */}
             <UnifiedModalHeader
               icon={UserPlus}
@@ -327,12 +348,12 @@ const UsersPage = () => {
             />
 
             {/* Modal Form */}
-            <form onSubmit={handleCreateUser} className="flex flex-col flex-grow overflow-hidden">
+            <form onSubmit={handleCreateUser} className="flex flex-col flex-grow overflow-hidden text-xs">
               <div className="p-6 space-y-4 overflow-y-auto">
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
-                    <label className="text-xs font-semibold text-foreground block mb-1.5">
-                      Full Name <span className="text-rose-500">*</span>
+                    <label className="text-xs font-semibold text-muted-foreground block mb-1.5">
+                      Full Name <span className="text-destructive">*</span>
                     </label>
                     <input
                       type="text"
@@ -340,27 +361,27 @@ const UsersPage = () => {
                       onChange={(e) => setCreateForm((p) => ({ ...p, fullName: e.target.value }))}
                       placeholder="e.g. Md. Rafiqul Islam"
                       required
-                      className="w-full px-3.5 py-2 text-xs rounded-xl border border-input bg-background focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                      className="w-full px-3.5 py-2.5 text-xs rounded-xl border border-input bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring/20 focus:border-ring"
                     />
                   </div>
                   <div>
-                    <label className="text-xs font-semibold text-foreground block mb-1.5">
-                      Role <span className="text-rose-500">*</span>
+                    <label className="text-xs font-semibold text-muted-foreground block mb-1.5">
+                      Role <span className="text-destructive">*</span>
                     </label>
                     <select
                       value={createForm.role}
                       onChange={(e) => setCreateForm((p) => ({ ...p, role: e.target.value }))}
-                      className="w-full px-3 py-2 text-xs rounded-xl border border-input bg-background focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                      className="w-full px-3.5 py-2.5 text-xs rounded-xl border border-input bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-ring/20 focus:border-ring cursor-pointer"
                     >
-                      <option value="Owner">Owner</option>
-                      <option value="Admin">Admin</option>
-                      <option value="Staff">Staff</option>
-                      <option value="Accountant">Accountant</option>
+                      <option value="Owner" className="bg-popover text-popover-foreground">Owner</option>
+                      <option value="Admin" className="bg-popover text-popover-foreground">Admin</option>
+                      <option value="Staff" className="bg-popover text-popover-foreground">Staff</option>
+                      <option value="Accountant" className="bg-popover text-popover-foreground">Accountant</option>
                     </select>
                   </div>
                   <div>
-                    <label className="text-xs font-semibold text-foreground block mb-1.5">
-                      Email Address <span className="text-rose-500">*</span>
+                    <label className="text-xs font-semibold text-muted-foreground block mb-1.5">
+                      Email Address <span className="text-destructive">*</span>
                     </label>
                     <input
                       type="email"
@@ -368,11 +389,11 @@ const UsersPage = () => {
                       onChange={(e) => setCreateForm((p) => ({ ...p, email: e.target.value }))}
                       placeholder="e.g. user@agency.com"
                       required
-                      className="w-full px-3.5 py-2 text-xs rounded-xl border border-input bg-background focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                      className="w-full px-3.5 py-2.5 text-xs rounded-xl border border-input bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring/20 focus:border-ring"
                     />
                   </div>
                   <div>
-                    <label className="text-xs font-semibold text-foreground block mb-1.5">
+                    <label className="text-xs font-semibold text-muted-foreground block mb-1.5">
                       Phone Number
                     </label>
                     <input
@@ -380,12 +401,12 @@ const UsersPage = () => {
                       value={createForm.phone}
                       onChange={(e) => setCreateForm((p) => ({ ...p, phone: e.target.value }))}
                       placeholder="e.g. +880 1712-345678"
-                      className="w-full px-3.5 py-2 text-xs rounded-xl border border-input bg-background focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                      className="w-full px-3.5 py-2.5 text-xs rounded-xl border border-input bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring/20 focus:border-ring"
                     />
                   </div>
                   <div className="sm:col-span-2">
-                    <label className="text-xs font-semibold text-foreground block mb-1.5">
-                      Password <span className="text-rose-500">*</span>
+                    <label className="text-xs font-semibold text-muted-foreground block mb-1.5">
+                      Password <span className="text-destructive">*</span>
                     </label>
                     <input
                       type="password"
@@ -394,7 +415,7 @@ const UsersPage = () => {
                       placeholder="Minimum 6 characters"
                       required
                       minLength={6}
-                      className="w-full px-3.5 py-2 text-xs rounded-xl border border-input bg-background focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary font-mono"
+                      className="w-full px-3.5 py-2.5 text-xs rounded-xl border border-input bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring/20 focus:border-ring font-mono"
                     />
                   </div>
                 </div>

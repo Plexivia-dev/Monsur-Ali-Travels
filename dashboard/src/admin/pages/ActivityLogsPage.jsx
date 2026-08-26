@@ -24,10 +24,11 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 
 const ROLE_BADGE_COLORS = {
-  Owner: 'bg-purple-100 dark:bg-purple-950/40 text-purple-800 dark:text-purple-300 border-purple-300',
-  Admin: 'bg-blue-100 dark:bg-blue-950/40 text-blue-800 dark:text-blue-300 border-blue-300',
-  Manager: 'bg-amber-100 dark:bg-amber-950/40 text-amber-800 dark:text-amber-300 border-amber-300',
-  Staff: 'bg-emerald-100 dark:bg-emerald-950/40 text-emerald-800 dark:text-emerald-300 border-emerald-300',
+  Owner: 'bg-purple-600 text-white font-bold shadow-2xs',
+  Admin: 'bg-sky-600 text-white font-bold shadow-2xs',
+  Manager: 'bg-amber-600 text-white font-bold shadow-2xs',
+  Staff: 'bg-emerald-600 text-white font-bold shadow-2xs',
+  Accountant: 'bg-indigo-600 text-white font-bold shadow-2xs',
 };
 
 const TARGET_LABELS = {
@@ -126,18 +127,31 @@ export default function ActivityLogsPage() {
         header: ({ column }) => <DataTableColumnHeader column={column} title="User & Role" />,
         cell: ({ row }) => {
           const log = row.original;
-          const role = log.actionDetails?.role || 'Staff';
-          const userName = log.actionDetails?.name || 'User';
-          const badgeClass = ROLE_BADGE_COLORS[role] || 'bg-muted text-muted-foreground';
+          const role = log.actionDetails?.role || log.role || 'Staff';
+          const userName = log.actionDetails?.name || log.userName || log.user || 'User';
+          const avatarUrl =
+            log.actionDetails?.avatar ||
+            log.userAvatar ||
+            log.avatar ||
+            `https://ui-avatars.com/api/?name=${encodeURIComponent(userName)}&background=0284c7&color=ffffff&bold=true&rounded=true`;
+          const badgeClass = ROLE_BADGE_COLORS[role] || 'bg-zinc-700 text-white font-bold';
 
           return (
-            <div className="flex items-center gap-2.5">
-              <div className="size-8 rounded-lg bg-primary/10 border border-primary/20 text-primary flex items-center justify-center font-bold text-xs shrink-0">
-                {userName.charAt(0).toUpperCase()}
+            <div className="flex items-center gap-3 py-0.5">
+              <div className="size-9.5 rounded-xl overflow-hidden bg-primary/10 border border-primary/20 shrink-0 flex items-center justify-center shadow-xs">
+                <img
+                  src={avatarUrl}
+                  alt={userName}
+                  className="w-full h-full object-cover"
+                  onError={(e) => {
+                    e.currentTarget.onerror = null;
+                    e.currentTarget.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(userName)}&background=0284c7&color=ffffff&bold=true`;
+                  }}
+                />
               </div>
-              <div>
-                <span className="font-bold text-foreground block text-xs">{userName}</span>
-                <span className={`inline-block px-1.5 py-0.2 rounded text-[10px] font-bold border ${badgeClass}`}>
+              <div className="space-y-1">
+                <span className="font-black text-foreground block text-xs leading-tight tracking-tight">{userName}</span>
+                <span className={`inline-block px-2 py-0.5 rounded-md text-[10px] tracking-wide uppercase ${badgeClass}`}>
                   {role}
                 </span>
               </div>

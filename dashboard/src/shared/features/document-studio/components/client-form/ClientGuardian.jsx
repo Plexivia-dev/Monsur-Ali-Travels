@@ -3,16 +3,17 @@ import { useTranslation } from 'react-i18next';
 import { ClientGuardianForm } from './ClientGuardianForm';
 import { ClientGuardianPreview } from './ClientGuardianPreview';
 import { getDefaultClientGuardianData, generateApplicationNo } from './sampleData';
-import { Download, RefreshCw, Eye, Edit3, Columns, Share2, Printer, UserCheck } from 'lucide-react';
+import { Download, RefreshCw, Share2, Printer, UserCheck } from 'lucide-react';
 import { toast } from 'sonner';
 import { apiClient } from '@shared/lib/api-client';
 import { printDocument } from '@shared/lib/utils';
 import { HeaderTitle } from '@shared/components/common/HeaderTitle';
+import { StudioFloatingViewSwitcher } from '../common/StudioFloatingViewSwitcher';
 
 export function ClientGuardian({ initialData = null, onSavedSuccess = null }) {
   const { t } = useTranslation();
   const [data, setData] = useState(initialData || getDefaultClientGuardianData());
-  const [viewMode, setViewMode] = useState('split'); // 'split' | 'edit' | 'preview'
+  const [viewMode, setViewMode] = useState('edit'); // 'edit' | 'split' | 'preview'
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
@@ -112,32 +113,6 @@ export function ClientGuardian({ initialData = null, onSavedSuccess = null }) {
         subtitle={t('clientForm.subtitle', 'Create and print official client & guardian profile details, file tracking status, and advance payment ledger.')}
         actions={
           <div className="flex items-center gap-2 flex-wrap">
-            {/* View Mode Segmented Controls */}
-            <div className="flex items-center space-x-1 bg-white/10 backdrop-blur-md p-1 rounded-xl border border-white/15">
-              {[
-                { id: 'split', label: 'Split View', icon: Columns },
-                { id: 'edit', label: 'Edit Form', icon: Edit3 },
-                { id: 'preview', label: 'Live Preview', icon: Eye },
-              ].map((btn) => {
-                const Icon = btn.icon;
-                const isActive = viewMode === btn.id;
-                return (
-                  <button
-                    key={btn.id}
-                    onClick={() => setViewMode(btn.id)}
-                    className={`flex items-center space-x-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
-                      isActive
-                        ? 'bg-white text-slate-900 shadow-md font-black'
-                        : 'text-sky-100/80 hover:text-white hover:bg-white/10'
-                    }`}
-                  >
-                    <Icon className="w-3.5 h-3.5" />
-                    <span>{btn.label}</span>
-                  </button>
-                );
-              })}
-            </div>
-
             <button
               onClick={handleReset}
               className="flex items-center space-x-1.5 bg-white/10 hover:bg-white/20 text-white text-xs font-semibold px-3 py-1.5 rounded-xl border border-white/15 transition-colors cursor-pointer"
@@ -170,7 +145,7 @@ export function ClientGuardian({ initialData = null, onSavedSuccess = null }) {
 
       {/* Main Studio Views */}
       {viewMode === 'edit' && (
-        <div className="max-w-4xl mx-auto">
+        <div className="max-w-4xl mx-auto pb-16">
           <ClientGuardianForm
             data={data}
             onChange={setData}
@@ -183,14 +158,14 @@ export function ClientGuardian({ initialData = null, onSavedSuccess = null }) {
       )}
 
       {viewMode === 'preview' && (
-        <div className="w-full flex justify-center py-2 no-print-padding">
+        <div className="w-full flex justify-center py-2 no-print-padding pb-16">
           <ClientGuardianPreview data={data} />
         </div>
       )}
 
       {viewMode === 'split' && (
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-          <div className="lg:col-span-5 max-h-[calc(100vh-140px)] overflow-y-auto pr-1">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start pb-16">
+          <div className="w-full max-h-[calc(100vh-140px)] overflow-y-auto pr-1">
             <ClientGuardianForm
               data={data}
               onChange={setData}
@@ -200,13 +175,16 @@ export function ClientGuardian({ initialData = null, onSavedSuccess = null }) {
               isSubmitting={isSubmitting}
             />
           </div>
-          <div className="lg:col-span-7 bg-muted/30 border border-border rounded-xl p-3 overflow-y-auto max-h-[calc(100vh-140px)] flex justify-center">
+          <div className="w-full bg-muted/30 border border-border rounded-xl p-3 overflow-y-auto max-h-[calc(100vh-140px)] flex justify-center">
             <div className="scale-[0.88] origin-top">
               <ClientGuardianPreview data={data} />
             </div>
           </div>
         </div>
       )}
+
+      {/* Floating Sticky View Mode Switcher */}
+      <StudioFloatingViewSwitcher viewMode={viewMode} setViewMode={setViewMode} />
     </div>
   );
 }

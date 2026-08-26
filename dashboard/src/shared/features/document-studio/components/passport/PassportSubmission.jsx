@@ -2,11 +2,12 @@ import React, { useState, useEffect } from 'react';
 import { PassportSubmissionForm } from './PassportSubmissionForm';
 import { PassportSubmissionPreview } from './PassportSubmissionPreview';
 import { getDefaultPassportSubmissionData, generateUniquePassportTrackingNo } from './sampleData';
-import { Download, RefreshCw, Eye, Edit3, Columns, Share2, Printer, BookOpen } from 'lucide-react';
+import { Download, RefreshCw, Share2, Printer, BookOpen } from 'lucide-react';
 import { toast } from 'sonner';
 import { apiClient } from '@shared/lib/api-client';
 import { printDocument } from '@shared/lib/utils';
 import { HeaderTitle } from '@shared/components/common/HeaderTitle';
+import { StudioFloatingViewSwitcher } from '../common/StudioFloatingViewSwitcher';
 
 export function PassportSubmission({ initialData = null, onSavedSuccess = null, isLocked = false }) {
   const [data, setData] = useState(() => {
@@ -15,7 +16,7 @@ export function PassportSubmission({ initialData = null, onSavedSuccess = null, 
     }
     return getDefaultPassportSubmissionData();
   });
-  const [viewMode, setViewMode] = useState('split'); // 'split' | 'edit' | 'preview'
+  const [viewMode, setViewMode] = useState('edit'); // 'edit' | 'split' | 'preview'
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
@@ -110,36 +111,10 @@ export function PassportSubmission({ initialData = null, onSavedSuccess = null, 
       {/* Signature Dark Blue Gradient Top Header */}
       <HeaderTitle
         icon={BookOpen}
-        title={`Passport Submission & Intake Receipt (${data.trackingNo || 'PASS-OFFICIAL'})`}
-        subtitle="Passport submission slip, intake token, and delivery acknowledgment slip generator."
+        title={`Passport Submission Receipt & Intake Token (${data.trackingNo || 'PASS-OFFICIAL'})`}
+        subtitle="Official agency passport submission acknowledgement token, original document receipt, and verification slip generator."
         actions={
           <div className="flex items-center gap-2 flex-wrap">
-            {/* View Mode Segmented Controls */}
-            <div className="flex items-center space-x-1 bg-white/10 backdrop-blur-md p-1 rounded-xl border border-white/15">
-              {[
-                { id: 'split', label: 'Split View', icon: Columns },
-                { id: 'edit', label: 'Edit Form', icon: Edit3 },
-                { id: 'preview', label: 'Live Preview', icon: Eye },
-              ].map((btn) => {
-                const Icon = btn.icon;
-                const isActive = viewMode === btn.id;
-                return (
-                  <button
-                    key={btn.id}
-                    onClick={() => setViewMode(btn.id)}
-                    className={`flex items-center space-x-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
-                      isActive
-                        ? 'bg-white text-slate-900 shadow-md font-black'
-                        : 'text-sky-100/80 hover:text-white hover:bg-white/10'
-                    }`}
-                  >
-                    <Icon className="w-3.5 h-3.5" />
-                    <span>{btn.label}</span>
-                  </button>
-                );
-              })}
-            </div>
-
             <button
               onClick={handleReset}
               className="flex items-center space-x-1.5 bg-white/10 hover:bg-white/20 text-white text-xs font-semibold px-3 py-1.5 rounded-xl border border-white/15 transition-colors cursor-pointer"
@@ -172,8 +147,9 @@ export function PassportSubmission({ initialData = null, onSavedSuccess = null, 
 
       {/* Main Studio Views */}
       {viewMode === 'edit' && (
-        <div className="max-w-4xl mx-auto">
+        <div className="max-w-4xl mx-auto pb-16">
           <PassportSubmissionForm
+
             data={data}
             onChange={setData}
             onSubmit={handleFormSubmit}
@@ -184,14 +160,14 @@ export function PassportSubmission({ initialData = null, onSavedSuccess = null, 
       )}
 
       {viewMode === 'preview' && (
-        <div className="w-full flex justify-center py-2 no-print-padding">
+        <div className="w-full flex justify-center py-2 no-print-padding pb-16">
           <PassportSubmissionPreview data={data} />
         </div>
       )}
 
       {viewMode === 'split' && (
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-          <div className="lg:col-span-5 max-h-[calc(100vh-140px)] overflow-y-auto pr-1">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start pb-16">
+          <div className="w-full max-h-[calc(100vh-140px)] overflow-y-auto pr-1">
             <PassportSubmissionForm
               data={data}
               onChange={setData}
@@ -200,13 +176,16 @@ export function PassportSubmission({ initialData = null, onSavedSuccess = null, 
               isSubmitting={isSubmitting}
             />
           </div>
-          <div className="lg:col-span-7 bg-muted/30 border border-border rounded-xl p-3 overflow-y-auto max-h-[calc(100vh-140px)] flex justify-center">
+          <div className="w-full bg-muted/30 border border-border rounded-xl p-3 overflow-y-auto max-h-[calc(100vh-140px)] flex justify-center">
             <div className="scale-[0.88] origin-top">
               <PassportSubmissionPreview data={data} />
             </div>
           </div>
         </div>
       )}
+
+      {/* Floating Sticky View Mode Switcher */}
+      <StudioFloatingViewSwitcher viewMode={viewMode} setViewMode={setViewMode} />
     </div>
   );
 }

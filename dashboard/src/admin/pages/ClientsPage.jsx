@@ -11,8 +11,6 @@ import {
   CheckCircle2,
   TrendingUp,
   Eye,
-  ToggleLeft,
-  ToggleRight,
   Loader2,
   Trash2,
 } from 'lucide-react';
@@ -35,7 +33,6 @@ export function ClientsPage() {
 
   // Modal State
   const [createModalOpen, setCreateModalOpen] = useState(false);
-  const [togglingId, setTogglingId] = useState(null);
   const [deletingId, setDeletingId] = useState(null);
 
   // Fetches paginated client records with filters
@@ -97,31 +94,7 @@ export function ClientsPage() {
     });
   };
 
-  // Toggles a client's active/inactive status
-  const handleToggleStatus = useCallback(async (client) => {
-    const clientId = client.did || client._id;
-    if (!clientId) return;
-    const currentStatus = client.status || 'Active';
-    const newStatus = currentStatus === 'Active' ? 'Inactive' : 'Active';
-    setTogglingId(clientId);
-    try {
-      try {
-        await apiClient.patch(`/api/v1/client/clients/${clientId}/status`, {
-          status: newStatus,
-        });
-      } catch {
-        await apiClient.put(`/api/v1/client/clients/${clientId}`, {
-          status: newStatus,
-        });
-      }
-      toast.success(`Client "${client.fullName}" marked as ${newStatus}.`);
-      fetchClients();
-    } catch (err) {
-      toast.error(err.response?.data?.message || 'Failed to update client status.');
-    } finally {
-      setTogglingId(null);
-    }
-  }, [fetchClients]);
+
 
   // Deletes a client record after confirmation
   const handleDeleteClient = useCallback(async (client) => {
@@ -242,9 +215,6 @@ export function ClientsPage() {
       id: 'actions',
       header: 'Actions',
       cell: ({ row }) => {
-        const clientId = row._id || row.did;
-        const isActive = (row.status || 'Active') === 'Active';
-        const isToggling = togglingId === clientId;
         const isDeleting = deletingId === (row.did || row._id);
 
         return (
@@ -262,31 +232,6 @@ export function ClientsPage() {
             >
               <Eye className="size-3.5 text-primary" />
               <span className="hidden lg:inline">Profile</span>
-            </Button>
-
-            {/* Toggle Active/Inactive */}
-            <Button
-              variant="outline"
-              size="sm"
-              disabled={isToggling}
-              onClick={(e) => {
-                e.stopPropagation();
-                handleToggleStatus(row);
-              }}
-              className={`h-7 px-2 text-xs cursor-pointer gap-1 shadow-xs ${
-                isActive
-                  ? 'text-amber-600 border-amber-200 hover:bg-amber-50'
-                  : 'text-emerald-600 border-emerald-200 hover:bg-emerald-50'
-              }`}
-              title={isActive ? 'Mark Inactive' : 'Mark Active'}
-            >
-              {isToggling ? (
-                <Loader2 className="size-3.5 animate-spin" />
-              ) : isActive ? (
-                <ToggleRight className="size-3.5" />
-              ) : (
-                <ToggleLeft className="size-3.5" />
-              )}
             </Button>
 
             {/* Delete */}
