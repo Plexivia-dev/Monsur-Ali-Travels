@@ -299,10 +299,10 @@ export function PassportSubmissionDataTable() {
                             })
                           }
                           className="p-1.5 rounded hover:bg-emerald-500/10 text-emerald-600 transition-colors cursor-pointer flex items-center gap-1 text-[11px] font-bold"
-                          title="টোকেন / মানি রিসিট দিন"
+                          title={t('common.createToken', 'Create Token / Money Receipt')}
                         >
                           <Receipt className="w-3.5 h-3.5" />
-                          <span>টোকেন</span>
+                          <span>{t('common.token', 'Token')}</span>
                         </button>
                         <button
                           type="button"

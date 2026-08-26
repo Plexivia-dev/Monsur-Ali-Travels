@@ -238,7 +238,7 @@ export function IndianVisaDataTable() {
                 <tr>
                   <td colSpan={8} className="text-center py-10 text-muted-foreground">
                     <RefreshCw className="w-5 h-5 animate-spin mx-auto text-primary mb-2" />
-                    <span>ডাটা লোড হচ্ছে...</span>
+                    <span>{t('common.loadingData', 'Loading data...')}</span>
                   </td>
                 </tr>
               ) : data.length === 0 ? (
@@ -290,17 +290,17 @@ export function IndianVisaDataTable() {
                         );
                       })()}
                     </td>
-                    <td className="p-3 text-right">
-                      <div className="flex items-center justify-end gap-1.5">
-                        <button
-                          type="button"
-                          onClick={() => handleOpenStageModal(item)}
-                          className="p-1.5 rounded hover:bg-primary/10 text-primary transition-colors cursor-pointer flex items-center gap-1 text-[11px] font-bold"
-                          title="Update Status / Add Stage Document"
-                        >
-                          <Edit3 className="w-3.5 h-3.5" />
-                          <span>আপডেট</span>
-                        </button>
+                      <td className="p-3 text-right">
+                        <div className="flex items-center justify-end gap-1.5">
+                          <button
+                            type="button"
+                            onClick={() => handleOpenStageModal(item)}
+                            className="p-1.5 rounded hover:bg-primary/10 text-primary transition-colors cursor-pointer flex items-center gap-1 text-[11px] font-bold"
+                            title={t('common.updateStatus', 'Update Status / Add Stage Document')}
+                          >
+                            <Edit3 className="w-3.5 h-3.5" />
+                            <span>{t('common.update', 'Update')}</span>
+                          </button>
                           <button
                             type="button"
                             onClick={() =>
@@ -308,37 +308,37 @@ export function IndianVisaDataTable() {
                                 clientName: item.applicantName,
                                 clientPhone: item.contactNo || item.phone,
                                 passportNumber: item.passportNo,
-                                serviceType: 'ইন্ডিয়ান ভিসা প্রসেসিং (Indian Visa)',
-                                purpose: `ভিসা আবেদন ফি - ট্র্যাকিং #${item.trackingNo}`,
+                                serviceType: 'Indian Visa Processing',
+                                purpose: `Visa Fee - Tracking #${item.trackingNo}`,
                                 amount: item.fee || item.totalFee || '',
                                 serviceRef: { modelName: 'IndianVisaSubmission', docId: item._id, trackingId: item.trackingNo },
                               })
                             }
                             className="p-1.5 rounded hover:bg-emerald-500/10 text-emerald-600 transition-colors cursor-pointer flex items-center gap-1 text-[11px] font-bold"
-                            title="টোকেন / মানি রিসিট তৈরি করুন"
+                            title={t('common.createToken', 'Create Token / Money Receipt')}
                           >
                             <Receipt className="w-3.5 h-3.5" />
-                            <span>টোকেন</span>
+                            <span>{t('common.token', 'Token')}</span>
                           </button>
                           <button
                             type="button"
                             onClick={() => setPreviewItem(item)}
                             className="p-1.5 rounded hover:bg-emerald-500/10 text-emerald-600 transition-colors cursor-pointer flex items-center gap-1 text-[11px] font-bold"
-                            title="View & Download/Print Visa Receipt"
+                            title={t('common.downloadPrint', 'View & Download/Print Visa Receipt')}
                           >
                             <Download className="w-3.5 h-3.5" />
-                            <span>Download / Print</span>
+                            <span>{t('common.downloadPrint', 'Download / Print')}</span>
                           </button>
                           <button
                             type="button"
                             onClick={() => setDeleteTarget({ id: item._id, trackingNo: item.trackingNo })}
                             className="p-1.5 rounded hover:bg-rose-500/10 text-rose-500 transition-colors cursor-pointer"
-                            title="Delete Record"
+                            title={t('common.delete', 'Delete Record')}
                           >
                             <Trash2 className="w-3.5 h-3.5" />
                           </button>
-                      </div>
-                    </td>
+                        </div>
+                      </td>
                   </tr>
                 ))
               )}
@@ -363,10 +363,10 @@ export function IndianVisaDataTable() {
             <div className="px-5 py-3.5 border-b border-border bg-card flex items-center justify-between gap-3">
               <div>
                 <h3 className="text-sm font-bold text-foreground">
-                  ইন্ডিয়ান ভিসা আবেদন রশিদ — {previewItem.trackingNo || ''}
+                  {t('indianVisas.receiptTitle', 'Indian Visa Application Receipt')} — {previewItem.trackingNo || ''}
                 </h3>
                 <p className="text-[11px] text-muted-foreground">
-                  আবেদনকারী: {previewItem.applicantName || '—'} | পাসপোর্ট: {previewItem.passportNo || '—'}
+                  {t('common.applicant', 'Applicant')}: {previewItem.applicantName || '—'} | {t('common.passport', 'Passport')}: {previewItem.passportNo || '—'}
                 </p>
               </div>
 
@@ -407,9 +407,9 @@ export function IndianVisaDataTable() {
                   <Edit3 className="w-5 h-5" />
                 </div>
                 <div>
-                  <h3 className="text-sm font-bold text-foreground">ভিসা প্রসেসিং স্টেজ আপডেট</h3>
+                  <h3 className="text-sm font-bold text-foreground">{t('visa.stageUpdateTitle', 'Visa Processing Stage Update')}</h3>
                   <p className="text-xs text-muted-foreground">
-                    ট্র্যাকিং: <span className="font-mono font-bold text-emerald-600">{stageModalItem.trackingNo}</span> | {stageModalItem.applicantName}
+                    Tracking: <span className="font-mono font-bold text-emerald-600">{stageModalItem.trackingNo}</span> | {stageModalItem.applicantName}
                   </p>
                 </div>
               </div>
@@ -425,7 +425,7 @@ export function IndianVisaDataTable() {
             {/* Stage Dropdown Selector */}
             <div className="space-y-1.5">
               <label className="block text-xs font-bold text-foreground">
-                নতুন স্ট্যাটাস / স্টেজ নির্বাচন করুন:
+                {t('visa.selectNewStatus', 'Select New Status / Stage:')}
               </label>
               <select
                 value={newStage}
@@ -444,13 +444,13 @@ export function IndianVisaDataTable() {
             <div className="space-y-1.5 bg-muted/40 p-3.5 rounded-xl border border-border text-xs">
               <label className="block font-bold text-foreground flex items-center gap-1.5">
                 <Paperclip className="w-4 h-4 text-primary" />
-                <span>স্টেজের ডকুমেন্ট / ভিসা কপি সংযুক্ত করুন (ঐচ্ছিক):</span>
+                <span>{t('visa.attachStageDoc', 'Attach Stage Document / Visa Copy (Optional):')}</span>
               </label>
               
               <div className="flex items-center gap-2 pt-1">
                 <label className="flex items-center gap-2 bg-background border border-border hover:bg-muted/80 text-foreground px-3 py-2 rounded-lg text-xs font-semibold cursor-pointer transition-colors shrink-0">
                   <Upload className="w-4 h-4 text-primary" />
-                  <span>ফাইল সিলেক্ট করুন</span>
+                  <span>{t('common.selectFile', 'Select File')}</span>
                   <input
                     type="file"
                     className="hidden"
@@ -473,12 +473,12 @@ export function IndianVisaDataTable() {
             {/* Note / Remarks */}
             <div className="space-y-1.5">
               <label className="block text-xs font-bold text-foreground">
-                মন্তব্য / রিমার্কস (ঐচ্ছিক):
+                {t('common.remarks', 'Note / Remarks (Optional):')}
               </label>
               <textarea
                 value={stageNote}
                 onChange={(e) => setStageNote(e.target.value)}
-                placeholder="যেমন: এম্বাসিতে ফাইল জমা হয়েছে / ভিসা অনুমোদন হয়েছে"
+                placeholder="e.g. File submitted to embassy / Visa approved"
                 rows={2}
                 className="w-full px-3 py-2 bg-background border border-border rounded-xl text-xs text-foreground focus:ring-1 focus:ring-primary outline-hidden"
               />
@@ -491,7 +491,7 @@ export function IndianVisaDataTable() {
                 onClick={() => setStageModalItem(null)}
                 className="px-4 py-2 rounded-xl text-xs font-semibold text-muted-foreground hover:bg-muted cursor-pointer"
               >
-                বাতিল
+                {t('common.cancel', 'Cancel')}
               </button>
               <button
                 type="button"
@@ -500,7 +500,7 @@ export function IndianVisaDataTable() {
                 className="flex items-center gap-1.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-5 py-2 rounded-xl shadow-xs transition-all cursor-pointer disabled:opacity-50"
               >
                 <Check className="w-4 h-4" />
-                <span>{isUpdatingStage ? 'আপডেট হচ্ছে...' : 'স্টেজ পরিবর্তন করুন'}</span>
+                <span>{isUpdatingStage ? t('common.updating', 'Updating...') : t('visa.updateStage', 'Update Stage')}</span>
               </button>
             </div>
           </div>
