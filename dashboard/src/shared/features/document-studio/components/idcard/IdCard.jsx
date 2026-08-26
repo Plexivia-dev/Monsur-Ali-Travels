@@ -1,7 +1,7 @@
 import React, { useState, useRef } from 'react';
 import { IdCardForm } from './IdCardForm';
 import { IdCardPreview } from './IdCardPreview';
-import { Download, Sparkles, RefreshCw, FileText, Contact } from 'lucide-react';
+import { Download, Sparkles, RefreshCw, Contact } from 'lucide-react';
 import { toast } from 'sonner';
 import { toPng } from 'html-to-image';
 import agencyInfo from '@shared/lib/information.json';
@@ -74,9 +74,8 @@ export function IdCard() {
 
   return (
     <div className="space-y-4">
-      {/* Universal Top Header Banner */}
+      {/* Signature Dark Blue Gradient Top Header */}
       <HeaderTitle
-        variant="printables"
         icon={Contact}
         title="Employee Identity Card Generator"
         subtitle="Generate and export official high-resolution dual-sided employee identity cards with photo and verifiable QR code."
@@ -84,10 +83,10 @@ export function IdCard() {
           <div className="flex items-center gap-2 flex-wrap">
             <button
               onClick={handleResetSample}
-              className="flex items-center space-x-1.5 bg-muted hover:bg-muted/80 text-foreground text-xs font-semibold px-3 py-1.5 rounded-xl border border-border transition-colors cursor-pointer"
+              className="flex items-center space-x-1.5 bg-white/10 hover:bg-white/20 text-white text-xs font-semibold px-3 py-1.5 rounded-xl border border-white/15 transition-colors cursor-pointer"
               title="Reset Form"
             >
-              <RefreshCw className="w-3.5 h-3.5 text-muted-foreground" />
+              <RefreshCw className="w-3.5 h-3.5 text-sky-300" />
               <span>Reset</span>
             </button>
 
@@ -95,7 +94,7 @@ export function IdCard() {
               type="button"
               onClick={() => handleExportPNG('front')}
               disabled={!isFormValid || isExporting}
-              className="flex items-center space-x-1.5 bg-primary hover:bg-primary/90 text-primary-foreground text-xs font-bold px-3.5 py-1.5 rounded-xl shadow-xs transition-colors cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
+              className="flex items-center space-x-1.5 bg-sky-500 hover:bg-sky-400 text-white text-xs font-bold px-3.5 py-1.5 rounded-xl shadow-md transition-colors cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
               title={!isFormValid ? 'All fields and photo required' : 'Download Front PNG'}
             >
               <Download className="w-3.5 h-3.5" />
@@ -106,7 +105,7 @@ export function IdCard() {
               type="button"
               onClick={() => handleExportPNG('back')}
               disabled={!isFormValid || isExporting}
-              className="flex items-center space-x-1.5 bg-primary hover:bg-primary/90 text-primary-foreground text-xs font-bold px-3.5 py-1.5 rounded-xl shadow-xs transition-colors cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
+              className="flex items-center space-x-1.5 bg-sky-500 hover:bg-sky-400 text-white text-xs font-bold px-3.5 py-1.5 rounded-xl shadow-md transition-colors cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
               title={!isFormValid ? 'All fields and photo required' : 'Download Back PNG'}
             >
               <Download className="w-3.5 h-3.5" />

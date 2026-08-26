@@ -4,7 +4,7 @@ import { UserModel } from '../models/user.model.js';
 import { logSystemAction } from '../helper/auditLogger.js';
 
 /**
- * Infers target collection from request URL path.
+ * Infers target collection and domain category from request URL path.
  */
 function inferCollectionAndType(url, method) {
   const cleanUrl = (url || '').split('?')[0].toLowerCase();
@@ -27,11 +27,34 @@ function inferCollectionAndType(url, method) {
   if (cleanUrl.includes('/invoices')) {
     return { targetCollection: 'invoices', type: 'PAYMENT' };
   }
-  if (cleanUrl.includes('/payrolls') || cleanUrl.includes('/salary-slips')) {
+  if (cleanUrl.includes('/salary-slips') || cleanUrl.includes('/payrolls') || cleanUrl.includes('/salaries')) {
     return { targetCollection: 'salarySlips', type: 'PAYMENT' };
   }
 
-  // 3. Workflow & Tasks
+  // 3. Document Studio
+  if (cleanUrl.includes('/job-verification') || cleanUrl.includes('/job-verifications')) {
+    return { targetCollection: 'jobVerifications', type: 'DOC_STUDIO' };
+  }
+  if (cleanUrl.includes('/experience-certificate') || cleanUrl.includes('/experience-certificates')) {
+    return { targetCollection: 'experienceCertificates', type: 'DOC_STUDIO' };
+  }
+  if (cleanUrl.includes('/marriage-certificate') || cleanUrl.includes('/marriage-certificates')) {
+    return { targetCollection: 'marriageCertificates', type: 'DOC_STUDIO' };
+  }
+  if (cleanUrl.includes('/character-certificate') || cleanUrl.includes('/character-certificates')) {
+    return { targetCollection: 'characterCertificates', type: 'DOC_STUDIO' };
+  }
+  if (cleanUrl.includes('/agreements') || cleanUrl.includes('/employment-agreements')) {
+    return { targetCollection: 'agreements', type: 'DOC_STUDIO' };
+  }
+  if (cleanUrl.includes('/id-card') || cleanUrl.includes('/idcards') || cleanUrl.includes('/id-cards')) {
+    return { targetCollection: 'idCards', type: 'DOC_STUDIO' };
+  }
+  if (cleanUrl.includes('/client-guardians') || cleanUrl.includes('/customer-guardians')) {
+    return { targetCollection: 'clientGuardians', type: 'DATA_ENTRY' };
+  }
+
+  // 4. Workflow & Tasks
   if (cleanUrl.includes('/tasks') && (cleanUrl.includes('/done') || cleanUrl.includes('/approve') || cleanUrl.includes('/assign'))) {
     return { targetCollection: 'tasks', type: 'TASK_EXECUTION', action: 'STATUS_TRANSITION' };
   }
@@ -45,21 +68,15 @@ function inferCollectionAndType(url, method) {
     return { targetCollection: 'caseFiles', type: 'STATUS_CHANGE' };
   }
 
-  // 4. Data Entry & Document Records
-  if (cleanUrl.includes('/clients')) {
-    return { targetCollection: 'clients', type: 'DATA_ENTRY' };
-  }
-  if (cleanUrl.includes('/clients') || cleanUrl.includes('/clients')) {
-    return { targetCollection: 'clients', type: 'DATA_ENTRY' };
-  }
-  if (cleanUrl.includes('/agreements')) {
-    return { targetCollection: 'agreements', type: 'DOC_STUDIO' };
-  }
-  if (cleanUrl.includes('/indian-visas')) {
+  // 5. Data Entry & Registry
+  if (cleanUrl.includes('/indian-visas') || cleanUrl.includes('/indian-visa')) {
     return { targetCollection: 'indianVisas', type: 'DATA_ENTRY' };
   }
-  if (cleanUrl.includes('/passports')) {
+  if (cleanUrl.includes('/passports') || cleanUrl.includes('/passport-submissions')) {
     return { targetCollection: 'passports', type: 'DATA_ENTRY' };
+  }
+  if (cleanUrl.includes('/clients')) {
+    return { targetCollection: 'clients', type: 'DATA_ENTRY' };
   }
   if (cleanUrl.includes('/users')) {
     return { targetCollection: 'users', type: 'SYSTEM' };
@@ -94,62 +111,79 @@ function generateUserActionSummary(user, targetCollection, action, body = {}) {
   const role = user.role || 'Staff';
 
   const identifier =
-    body.name ||
+    body.verificationId ||
+    body.slipNo ||
+    body.invoiceNo ||
+    body.receiptNo ||
+    body.voucherNo ||
+    body.agreementId ||
+    body.applicationNo ||
+    body.trackingNo ||
+    body.certificateNo ||
+    body.idNumber ||
+    body.caseNumber ||
+    body.clientInfo?.clientName ||
+    body.parties?.employeeName ||
+    body.employeeName ||
+    body.client?.fullName ||
     body.clientName ||
     body.applicantName ||
-    body.clientName ||
-    body.holderName ||
+    body.candidateName ||
+    body.groomName ||
+    body.fullName ||
+    body.paidTo ||
+    body.name ||
     body.title ||
-    body.passportNumber ||
-    body.receiptNumber ||
-    body.voucherNumber ||
-    body.invoiceNumber ||
-    body.caseNumber ||
-    body.fileNumber ||
     '';
 
-  const amount = body.amount || body.paidAmount || body.netSalary || body.totalAmount || body.total;
+  const amount = body.amount || body.paidAmount || body.netSalaryPayable || body.grossSalary || body.grandTotal || body.totalAmount || body.total;
   const status = body.workflowStatus || body.status || body.stage || body.workflowStage;
 
   const targetNames = {
-    clients: 'Client',
-    caseFiles: 'Case File',
+    jobVerifications: 'Job Verification',
+    experienceCertificates: 'Experience Certificate',
+    marriageCertificates: 'Marriage Certificate',
+    characterCertificates: 'Character Certificate',
+    agreements: 'Employment Agreement',
+    salarySlips: 'Salary Slip',
+    invoices: 'Invoice',
     moneyReceipts: 'Money Receipt',
     cashVouchers: 'Cash Voucher',
-    invoices: 'Invoice',
-    salarySlips: 'Salary Slip',
-    clients: 'Client',
-    passports: 'Passport Record',
+    clientGuardians: 'Client & Guardian Application',
     indianVisas: 'Indian Visa Application',
-    agreements: 'Agreement',
-    tasks: 'Task',
+    passports: 'Passport Submission',
+    idCards: 'Employee ID Card',
+    clients: 'Client Profile',
+    caseFiles: 'Case File',
+    tasks: 'Workflow Task',
+    users: 'User Account',
   };
 
   const targetLabel = targetNames[targetCollection] || targetCollection;
 
   if (action === 'STATUS_TRANSITION' || (status && (action === 'UPDATE' || targetCollection === 'caseFiles'))) {
-    return `${userName} (${role}) updated status of ${targetLabel} to "${status || 'Updated'}"${identifier ? ` for ${identifier}` : ''}`;
+    return `${userName} (${role}) updated ${targetLabel} status to "${status || 'Updated'}"${identifier ? ` for ${identifier}` : ''}`;
   }
 
   if (action === 'CREATE') {
     if (amount) {
-      return `${userName} (${role}) entered new ${targetLabel} of BDT ${Number(amount).toLocaleString('en-IN')}${identifier ? ` (#${identifier})` : ''}`;
+      return `${userName} (${role}) created ${targetLabel} of BDT ${Number(amount).toLocaleString('en-IN')}${identifier ? ` (${identifier})` : ''}`;
     }
-    return `${userName} (${role}) created new ${targetLabel}${identifier ? `: ${identifier}` : ''}`;
+    return `${userName} (${role}) created ${targetLabel}${identifier ? `: ${identifier}` : ''}`;
   }
 
   if (action === 'UPDATE') {
     if (amount) {
-      return `${userName} (${role}) edited ${targetLabel} (BDT ${Number(amount).toLocaleString('en-IN')})${identifier ? ` (#${identifier})` : ''}`;
+      return `${userName} (${role}) edited ${targetLabel} (BDT ${Number(amount).toLocaleString('en-IN')})${identifier ? ` (${identifier})` : ''}`;
     }
-    return `${userName} (${role}) edited ${targetLabel}${identifier ? `: ${identifier}` : ''}`;
+    return `${userName} (${role}) updated ${targetLabel}${identifier ? `: ${identifier}` : ''}`;
   }
 
   if (action === 'SOFT_DELETE' || action === 'DELETE') {
-    return `${userName} (${role}) deleted ${targetLabel}${identifier ? ` (${identifier})` : ''}`;
+    return `${userName} (${role}) removed ${targetLabel}${identifier ? ` (${identifier})` : ''}`;
   }
 
-  return `${userName} (${role}) performed ${action} on ${targetLabel}`;
+  return `${userName} (${role}) updated ${targetLabel}`;
 }
 
 /**
@@ -185,22 +219,19 @@ export const auditLog = async (req, res, next) => {
                 }
               }
             }
-          } catch (_) {}
+          } catch (_) {
+            // Ignore token decode errors for logging middleware
+          }
         }
 
-        // STRICT FILTER: If there is no real authenticated human user, NEVER log anything!
-        if (!user || !user.name || user.name === 'System Process' || user.role === 'System') {
+        // STRICT FILTER: Never log automated system processes or unauthenticated hits
+        if (!user || (!user.name && !user.email) || user.role === 'System' || user.name === 'System Process') {
           return;
         }
 
-        const xRealIp = req.headers['x-real-ip'];
-        const xForwardedFor = req.headers['x-forwarded-for'];
-        const ipAddress = (xRealIp || (xForwardedFor ? xForwardedFor.split(',')[0].trim() : null) || req.ip || req.socket?.remoteAddress || '').replace(/^::ffff:/, '');
-        const userAgent = req.headers['user-agent'] || '';
-
-        const { targetCollection, type, action: inferredAction } = inferCollectionAndType(req.originalUrl, req.method);
-        const action = mapMethodToAction(req.method, inferredAction);
-        const summary = generateUserActionSummary(user, targetCollection, action, req.body || {});
+        const { targetCollection, type, action: explicitAction } = inferCollectionAndType(req.originalUrl || req.url, req.method);
+        const action = mapMethodToAction(req.method, explicitAction);
+        const summary = generateUserActionSummary(user, targetCollection, action, req.body);
 
         await logSystemAction({
           type,
@@ -208,19 +239,14 @@ export const auditLog = async (req, res, next) => {
           action,
           summary,
           user,
-          payload: {
-            method: req.method,
-            endpoint: req.originalUrl,
-            params: req.params,
-            query: req.query,
-            body: req.body,
-          },
-          ipAddress,
-          userAgent,
+          payload: req.body,
+          ipAddress: req.ip || req.connection?.remoteAddress || '',
+          userAgent: req.get('user-agent') || '',
         });
       }
     });
   }
+
   next();
 };
 

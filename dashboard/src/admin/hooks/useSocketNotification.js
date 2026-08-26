@@ -41,6 +41,15 @@ export function useSocketNotification() {
     socket.on('new_notification', (data) => {
       if (!data) return;
 
+      // Avoid showing duplicate socket popup to the exact user who just triggered the action
+      const isSelfAction =
+        (user?.name && data.createdBy === user.name) ||
+        (user?.email && data.createdBy === user.email);
+
+      if (isSelfAction && data.module !== 'system_alert') {
+        return;
+      }
+
       const notifType = data.type === 'danger' ? 'error' : data.type || 'info';
 
       toast.add({
@@ -48,7 +57,7 @@ export function useSocketNotification() {
         description: data.message || '',
         type: notifType,
         actionProps: {
-          children: 'View Logs',
+          children: 'View Details',
           onClick: () => navigate('/admin/activity-logs'),
         },
       });
@@ -60,7 +69,7 @@ export function useSocketNotification() {
         socket.disconnect();
       }
     };
-  }, [user?.did, navigate]);
+  }, [user?.did, user?.name, user?.email, navigate]);
 
   return socketRef.current;
 }

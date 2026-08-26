@@ -2,14 +2,15 @@ import React, { useState } from 'react';
 import { MoneyReceiptForm } from './MoneyReceiptForm';
 import { MoneyReceiptPreview } from './MoneyReceiptPreview';
 import { getDefaultMoneyReceiptData, generateReceiptNo } from './sampleData';
-import { Printer, Edit3, Share2, ArrowLeft, CheckCircle2 } from 'lucide-react';
+import { Download, RefreshCw, Eye, Edit3, Columns, Share2, Printer, Receipt } from 'lucide-react';
 import { toast } from 'sonner';
 import { apiClient } from '@shared/lib/api-client';
 import { printDocument } from '@shared/lib/utils';
+import { HeaderTitle } from '@shared/components/common/HeaderTitle';
 
 export function MoneyReceipt() {
   const [data, setData] = useState(getDefaultMoneyReceiptData());
-  const [viewMode, setViewMode] = useState('form'); // 'form' | 'preview'
+  const [viewMode, setViewMode] = useState('split'); // 'split' | 'edit' | 'preview'
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleReset = () => {
@@ -55,14 +56,12 @@ export function MoneyReceipt() {
             ? `Money receipt #${returnedNo} updated successfully!`
             : `Money receipt #${returnedNo} saved to database!`
         );
-        setViewMode('preview');
       } else {
         throw new Error(res.data?.message || 'Failed to save receipt.');
       }
     } catch (err) {
       console.warn('Receipt save warning (preview mode ready):', err);
       toast.info(`Money receipt voucher preview ready! (#${data.receiptNo})`);
-      setViewMode('preview');
     } finally {
       setIsSubmitting(false);
     }
@@ -100,56 +99,107 @@ export function MoneyReceipt() {
   };
 
   return (
-    <div className="space-y-6">
-      {/* Form Mode */}
-      {viewMode === 'form' && (
-        <MoneyReceiptForm
-          data={data}
-          onChange={setData}
-          onReset={handleReset}
-          onSave={handleFormSubmit}
-          onPreview={() => setViewMode('preview')}
-          isSubmitting={isSubmitting}
-        />
-      )}
+    <div className="space-y-4">
+      {/* Signature Dark Blue Gradient Top Header */}
+      <HeaderTitle
+        icon={Receipt}
+        title={`Money Receipt Voucher (${data.receiptNo || 'MR-OFFICIAL'})`}
+        subtitle="Generate and print official passenger money receipts, payment confirmations, and accounts ledger tokens."
+        actions={
+          <div className="flex items-center gap-2 flex-wrap">
+            {/* View Mode Segmented Controls */}
+            <div className="flex items-center space-x-1 bg-white/10 backdrop-blur-md p-1 rounded-xl border border-white/15">
+              {[
+                { id: 'split', label: 'Split View', icon: Columns },
+                { id: 'edit', label: 'Edit Form', icon: Edit3 },
+                { id: 'preview', label: 'Live Preview', icon: Eye },
+              ].map((btn) => {
+                const Icon = btn.icon;
+                const isActive = viewMode === btn.id;
+                return (
+                  <button
+                    key={btn.id}
+                    onClick={() => setViewMode(btn.id)}
+                    className={`flex items-center space-x-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                      isActive
+                        ? 'bg-white text-slate-900 shadow-md font-black'
+                        : 'text-sky-100/80 hover:text-white hover:bg-white/10'
+                    }`}
+                  >
+                    <Icon className="w-3.5 h-3.5" />
+                    <span>{btn.label}</span>
+                  </button>
+                );
+              })}
+            </div>
 
-      {/* Preview & Print Mode */}
-      {viewMode === 'preview' && (
-        <div className="space-y-4">
-          {/* Action Toolbar */}
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-3 bg-card border border-border p-4 rounded-2xl shadow-xs no-print">
             <button
-              type="button"
-              onClick={() => setViewMode('form')}
-              className="flex items-center gap-2 bg-muted hover:bg-muted/80 text-foreground px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer"
+              onClick={handleReset}
+              className="flex items-center space-x-1.5 bg-white/10 hover:bg-white/20 text-white text-xs font-semibold px-3 py-1.5 rounded-xl border border-white/15 transition-colors cursor-pointer"
+              title="Reset Form"
             >
-              <ArrowLeft className="w-4 h-4" />
-              <span>Back to Edit Form</span>
+              <RefreshCw className="w-3.5 h-3.5 text-sky-300" />
+              <span>Reset</span>
             </button>
 
-            <div className="flex items-center gap-2 w-full sm:w-auto flex-wrap justify-end">
-              <button
-                type="button"
-                onClick={handleWhatsAppShare}
-                className="flex items-center gap-1.5 bg-emerald-600 hover:bg-emerald-700 text-white px-3.5 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer shadow-xs"
-              >
-                <Share2 className="w-3.5 h-3.5" />
-                <span>WhatsApp</span>
-              </button>
+            <button
+              onClick={handleWhatsAppShare}
+              className="flex items-center space-x-1.5 bg-[#25D366] hover:bg-[#20bd5a] text-white text-xs font-bold px-3.5 py-1.5 rounded-xl shadow-xs transition-colors cursor-pointer"
+              title="Share Summary on WhatsApp"
+            >
+              <Share2 className="w-3.5 h-3.5" />
+              <span>WhatsApp</span>
+            </button>
 
-              <button
-                type="button"
-                onClick={handlePrint}
-                className="flex items-center gap-2 bg-primary hover:bg-primary/90 text-primary-foreground px-5 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer shadow-xs"
-              >
-                <Printer className="w-4 h-4" />
-                <span>Print Voucher (A4)</span>
-              </button>
+            <button
+              onClick={handlePrint}
+              className="flex items-center space-x-1.5 bg-sky-500 hover:bg-sky-400 text-white text-xs font-bold px-4 py-1.5 rounded-xl shadow-md transition-colors cursor-pointer"
+              title="Export Printable A4 PDF"
+            >
+              <Printer className="w-3.5 h-3.5" />
+              <span>Export & Print</span>
+            </button>
+          </div>
+        }
+      />
+
+      {/* Main Studio Views */}
+      {viewMode === 'edit' && (
+        <div className="max-w-4xl mx-auto">
+          <MoneyReceiptForm
+            data={data}
+            onChange={setData}
+            onReset={handleReset}
+            onSave={handleFormSubmit}
+            onPreview={() => setViewMode('preview')}
+            isSubmitting={isSubmitting}
+          />
+        </div>
+      )}
+
+      {viewMode === 'preview' && (
+        <div className="w-full flex justify-center py-2 no-print-padding">
+          <MoneyReceiptPreview data={data} />
+        </div>
+      )}
+
+      {viewMode === 'split' && (
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+          <div className="lg:col-span-5 max-h-[calc(100vh-140px)] overflow-y-auto pr-1">
+            <MoneyReceiptForm
+              data={data}
+              onChange={setData}
+              onReset={handleReset}
+              onSave={handleFormSubmit}
+              onPreview={() => setViewMode('preview')}
+              isSubmitting={isSubmitting}
+            />
+          </div>
+          <div className="lg:col-span-7 bg-muted/30 border border-border rounded-xl p-3 overflow-y-auto max-h-[calc(100vh-140px)] flex justify-center">
+            <div className="scale-[0.88] origin-top">
+              <MoneyReceiptPreview data={data} />
             </div>
           </div>
-
-          {/* Printable Voucher Paper Canvas */}
-          <MoneyReceiptPreview data={data} />
         </div>
       )}
     </div>

@@ -1,7 +1,8 @@
-import React, { useState, useRef } from 'react';
+import React, { useState } from 'react';
 import { X, CreditCard, Plus, Loader2, Printer, CheckCircle } from 'lucide-react';
 import { apiClient } from '@/lib/api-client';
 import { formatToDdMmYyyy, printDocument } from '@/lib/utils';
+import { toast } from 'sonner';
 import agencyInfo from '@/lib/information.json';
 
 // A4 Printable Wrapper specific to the admin flow
@@ -51,15 +52,16 @@ export const AddPaymentModal = ({
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!formData.amount || Number(formData.amount) <= 0) {
-      return toast.error('Enter a valid amount');
+      return toast.error('Enter a valid payment amount');
     }
 
     setLoading(true);
     try {
       const res = await apiClient.post(`/api/v1/admin/cases/${resolvedCaseDid}/payments`, formData);
       toast.success('Payment added successfully! Generating invoice...');
-      
+
       // Update receipt data to show in invoice view
+      const generatedInvoiceNo = res.data?.data?.receiptNo || `INV-${new Date().getTime().toString().slice(-6)}`;
       setReceiptData({
         amountPaid: Number(formData.amount),
         paymentType: formData.paymentType,
@@ -69,7 +71,7 @@ export const AddPaymentModal = ({
         newDue: res.data?.data?.dueAmount ?? Math.max(0, due - Number(formData.amount)),
         totalBilled: res.data?.data?.totalAgreedAmount ?? totalAgreed,
         date: new Date(),
-        invoiceNo: `INV-${new Date().getTime().toString().slice(-6)}`
+        invoiceNo: generatedInvoiceNo,
       });
 
       setPaymentSuccess(true);
@@ -83,36 +85,52 @@ export const AddPaymentModal = ({
 
   const handlePrint = () => {
     printDocument({
-      docId: createdPayment?.invoiceNo || `PAY-${new Date().getTime().toString().slice(-6)}`,
+      docId: receiptData?.invoiceNo || `PAY-${new Date().getTime().toString().slice(-6)}`,
       docType: 'Payment_Receipt',
-      clientName: client?.name,
+      clientName: resolvedApplicantName,
     });
+  };
+
+  const handleCloseAndFinish = () => {
+    if (onSuccess) onSuccess();
+    onClose();
   };
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 overflow-y-auto print:p-0 print:bg-white print:static">
-      
       {/* If Payment is Success -> Show Invoice Format */}
       {paymentSuccess && receiptData ? (
         <div className="bg-white rounded-xl shadow-2xl w-full max-w-[900px] flex flex-col print:shadow-none print:w-full print:rounded-none">
           <div className="flex items-center justify-between p-4 border-b border-gray-100 bg-gray-50 no-print">
             <h2 className="font-bold text-gray-800 flex items-center gap-2">
               <CheckCircle className="w-5 h-5 text-emerald-600" />
-              Invoice Generated
+              Invoice Generated ({receiptData.invoiceNo})
             </h2>
-            <div className="flex gap-2">
-              <button onClick={handlePrint} className="flex items-center gap-2 px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 text-sm font-bold">
+            <div className="flex items-center gap-2">
+              <button
+                onClick={handlePrint}
+                className="flex items-center gap-2 px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-sm font-bold shadow-xs cursor-pointer transition-all"
+              >
                 <Printer className="w-4 h-4" /> Print Invoice
               </button>
-              <button onClick={onClose} className="p-2 text-gray-400 hover:text-gray-600 rounded-lg hover:bg-gray-200">
+              <button
+                onClick={handleCloseAndFinish}
+                className="px-4 py-2 bg-slate-900 hover:bg-slate-800 text-white rounded-lg text-sm font-bold shadow-xs cursor-pointer transition-all"
+              >
+                Done
+              </button>
+              <button
+                onClick={handleCloseAndFinish}
+                className="p-2 text-gray-400 hover:text-gray-600 rounded-lg hover:bg-gray-200 cursor-pointer"
+                title="Close"
+              >
                 <X className="w-5 h-5" />
               </button>
             </div>
           </div>
-          
+
           <div className="p-4 print:p-0 overflow-y-auto max-h-[85vh] print:max-h-none print:overflow-visible bg-gray-100">
             <PrintablePaper id="payment-invoice">
-              
               {/* INVOICE CONTENT A4 */}
               <div className="flex flex-col h-full text-slate-900">
                 {/* Header */}
@@ -138,156 +156,151 @@ export const AddPaymentModal = ({
 
                 {/* Client Info */}
                 <div className="bg-slate-50 p-4 rounded border border-slate-300 flex justify-between items-center mb-6">
-                  <div className="text-sm space-y-1">
-                    <span className="text-xs font-extrabold uppercase tracking-wider text-slate-500 block">RECEIVED FROM:</span>
-                    <div className="font-bold text-lg text-slate-900">{resolvedApplicantName}</div>
-                    <div className="text-slate-700">Phone: {resolvedPhone}</div>
-                    <div className="text-slate-700">Case ID: {resolvedCaseNumber}</div>
+                  <div>
+                    <div className="text-xs text-slate-500 font-bold uppercase">Billed To</div>
+                    <div className="text-lg font-bold text-slate-900">{resolvedApplicantName}</div>
+                    <div className="text-sm text-slate-600">Phone: {resolvedPhone}</div>
                   </div>
                   <div className="text-right">
-                     <span className="inline-flex items-center gap-1 bg-emerald-100 text-emerald-900 border border-emerald-400 text-sm font-black px-3 py-1 rounded">
-                       <CheckCircle className="w-4 h-4 text-emerald-600" /> AMOUNT RECEIVED
-                     </span>
+                    <div className="text-xs text-slate-500 font-bold uppercase">Case Reference</div>
+                    <div className="text-lg font-bold text-slate-900">{resolvedCaseNumber}</div>
+                    <div className="text-sm text-slate-600">Type: {formData.paymentType}</div>
                   </div>
                 </div>
 
-                {/* Payment Details Table */}
-                <div className="border border-slate-900 rounded overflow-hidden text-sm mb-6">
-                  <table className="w-full text-left border-collapse border border-slate-900">
-                    <thead>
-                      <tr className="bg-slate-900 text-white uppercase text-xs font-bold">
-                        <th className="p-3 border border-slate-900">Description</th>
-                        <th className="p-3 border border-slate-900 text-center">Payment Method</th>
-                        <th className="p-3 border border-slate-900 text-right">Amount (BDT)</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      <tr className="h-12 font-medium">
-                        <td className="p-3 border border-slate-300 font-bold text-slate-900">
-                          {receiptData.paymentType} 
-                          {receiptData.notes && <span className="block text-xs font-normal text-slate-500 mt-1">{receiptData.notes}</span>}
-                        </td>
-                        <td className="p-3 border border-slate-300 text-center text-slate-800">{receiptData.paymentMethod}</td>
-                        <td className="p-3 border border-slate-300 text-right font-mono font-bold text-emerald-700 text-lg">
-                          {receiptData.amountPaid.toLocaleString('en-IN')}
-                        </td>
-                      </tr>
-                    </tbody>
-                  </table>
-                </div>
+                {/* Ledger Summary */}
+                <table className="w-full text-left border-collapse mb-6">
+                  <thead>
+                    <tr className="border-b-2 border-slate-900 text-xs font-bold uppercase text-slate-700">
+                      <th className="py-2">Description</th>
+                      <th className="py-2">Payment Method</th>
+                      <th className="py-2 text-right">Amount (BDT)</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-200 text-sm">
+                    <tr>
+                      <td className="py-4">
+                        <div className="font-bold text-slate-900">{formData.paymentType}</div>
+                        {formData.notes && <div className="text-xs text-slate-500 mt-1">{formData.notes}</div>}
+                      </td>
+                      <td className="py-4 font-mono font-medium">{formData.paymentMethod}</td>
+                      <td className="py-4 text-right font-mono font-bold text-base text-slate-900">
+                        {receiptData.amountPaid.toLocaleString('en-IN')}
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
 
-                {/* Account Summary */}
-                <div className="flex justify-between items-start mt-4 pt-4 border-t border-slate-300">
-                  <div className="w-1/2">
-                    <p className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Notice:</p>
-                    <p className="text-xs text-slate-600 italic">This is a system-generated payment receipt. Keep this copy for your records and future references.</p>
-                  </div>
-                  <div className="w-64 space-y-2 text-sm font-mono border border-slate-300 p-4 rounded bg-slate-50 shadow-sm">
-                    <div className="flex justify-between text-slate-700">
-                      <span>Total Agreed:</span>
-                      <span>{receiptData.totalBilled.toLocaleString('en-IN')}</span>
+                {/* Totals */}
+                <div className="flex justify-end mb-8">
+                  <div className="w-64 space-y-2 border-t border-slate-300 pt-3">
+                    <div className="flex justify-between text-sm">
+                      <span className="text-slate-600">Total Agreed Bill:</span>
+                      <span className="font-mono font-semibold">BDT {receiptData.totalBilled.toLocaleString('en-IN')}</span>
                     </div>
-                    <div className="flex justify-between text-slate-700">
-                      <span>Total Paid:</span>
-                      <span>{receiptData.newPaidTotal.toLocaleString('en-IN')}</span>
+                    <div className="flex justify-between text-sm">
+                      <span className="text-slate-600">Total Paid to Date:</span>
+                      <span className="font-mono font-bold text-emerald-700">BDT {receiptData.newPaidTotal.toLocaleString('en-IN')}</span>
                     </div>
-                    <div className="flex justify-between text-sm font-bold text-rose-700 border-t border-slate-400 pt-2">
-                      <span>Remaining Due:</span>
-                      <span>{receiptData.newDue.toLocaleString('en-IN')}</span>
+                    <div className="flex justify-between text-base font-bold border-t border-slate-900 pt-2">
+                      <span>Remaining Balance:</span>
+                      <span className="font-mono text-rose-700">BDT {receiptData.newDue.toLocaleString('en-IN')}</span>
                     </div>
                   </div>
                 </div>
 
-                {/* Signature Block (Pushed to bottom) */}
-                <div className="mt-auto pt-10 flex justify-between items-end">
+                {/* Footer Signatures */}
+                <div className="mt-auto border-t border-slate-300 pt-8 flex justify-between items-end">
                   <div className="text-center">
-                    <div className="border-b border-slate-400 w-48 mb-2"></div>
-                    <div className="text-sm text-slate-600">Client Signature</div>
+                    <div className="w-40 border-b border-slate-400 mb-1"></div>
+                    <div className="text-xs font-bold text-slate-600 uppercase">Customer Signature</div>
                   </div>
                   <div className="text-center">
-                    <div className="border-b-2 border-slate-900 w-56 mb-2"></div>
-                    <div className="font-bold text-slate-900">{agencyInfo.agencyName || 'MONSUR ALI TOURS & TRAVELS'}</div>
-                    <div className="text-sm text-slate-600">Authorized Accountant Sign & Seal</div>
+                    <div className="w-40 border-b border-slate-400 mb-1"></div>
+                    <div className="text-xs font-bold text-slate-600 uppercase">Authorized Signature</div>
                   </div>
                 </div>
-
               </div>
             </PrintablePaper>
           </div>
         </div>
       ) : (
-        /* Original Payment Entry Form (No-print wrapper) */
-        <div className="bg-white rounded-2xl shadow-xl w-full max-w-md overflow-hidden no-print">
-          <div className="flex items-center justify-between p-4 border-b border-gray-100 bg-gray-50/50">
-            <h2 className="font-bold text-gray-800 flex items-center gap-2">
+        /* Default Entry Form */
+        <div className="bg-white rounded-2xl shadow-2xl w-full max-w-[500px] overflow-hidden border border-slate-100">
+          <div className="flex items-center justify-between p-5 border-b border-slate-100 bg-slate-50/50">
+            <h2 className="font-bold text-slate-800 text-lg flex items-center gap-2">
               <CreditCard className="w-5 h-5 text-emerald-600" />
               Add Payment
             </h2>
-            <button onClick={onClose} className="p-1 text-gray-400 hover:text-gray-600 rounded-lg hover:bg-gray-100">
+            <button
+              onClick={onClose}
+              className="p-1 text-slate-400 hover:text-slate-600 rounded-lg hover:bg-slate-100 transition-colors cursor-pointer"
+            >
               <X className="w-5 h-5" />
             </button>
           </div>
 
-          <div className="p-4 bg-emerald-50/50 border-b border-emerald-100 flex justify-between items-center text-sm">
+          <div className="p-4 bg-emerald-50/60 border-b border-emerald-100/80 flex justify-between items-center text-sm px-6">
             <div>
-              <p className="text-gray-500 text-xs">Total Bill</p>
-              <p className="font-bold text-gray-800">BDT {totalAgreed.toLocaleString('en-IN')}</p>
+              <span className="text-slate-500 block text-xs">Total Bill</span>
+              <span className="font-mono font-bold text-slate-800 text-base">BDT {totalAgreed.toLocaleString('en-IN')}</span>
             </div>
             <div className="text-right">
-              <p className="text-gray-500 text-xs">Current Due</p>
-              <p className="font-bold text-rose-600">BDT {due.toLocaleString('en-IN')}</p>
+              <span className="text-slate-500 block text-xs">Current Due</span>
+              <span className="font-mono font-bold text-rose-600 text-base">BDT {due.toLocaleString('en-IN')}</span>
             </div>
           </div>
 
-          <form onSubmit={handleSubmit} className="p-5 space-y-4">
-            <div className="space-y-1.5">
-              <label className="text-xs font-semibold text-gray-700">Payment Type</label>
+          <form onSubmit={handleSubmit} className="p-6 space-y-4">
+            <div>
+              <label className="block text-xs font-bold text-slate-700 mb-1">Payment Type</label>
               <select
                 value={formData.paymentType}
                 onChange={(e) => setFormData({ ...formData, paymentType: e.target.value })}
-                className="w-full p-2.5 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none"
+                className="w-full px-3 py-2 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-emerald-500 outline-none"
               >
                 <option value="Advance Payment">Advance Payment</option>
-                <option value="Installment">Installment</option>
-                <option value="Final Settlement">Final Settlement</option>
-                <option value="Other">Other</option>
+                <option value="Offer Letter Approval">Offer Letter Approval</option>
+                <option value="Final Delivery Payment">Final Delivery Payment</option>
+                <option value="Additional Fee / Service">Additional Fee / Service</option>
               </select>
             </div>
 
-            <div className="space-y-1.5">
-              <label className="text-xs font-semibold text-gray-700">Amount (BDT) *</label>
+            <div>
+              <label className="block text-xs font-bold text-slate-700 mb-1">Amount (BDT) *</label>
               <input
                 type="number"
                 required
                 min="1"
+                placeholder="e.g. 50000"
                 value={formData.amount}
                 onChange={(e) => setFormData({ ...formData, amount: e.target.value })}
-                placeholder="e.g. 50000"
-                className="w-full p-2.5 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none"
+                className="w-full px-3 py-2 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-emerald-500 outline-none font-mono"
               />
             </div>
 
-            <div className="space-y-1.5">
-              <label className="text-xs font-semibold text-gray-700">Payment Method</label>
+            <div>
+              <label className="block text-xs font-bold text-slate-700 mb-1">Payment Method</label>
               <select
                 value={formData.paymentMethod}
                 onChange={(e) => setFormData({ ...formData, paymentMethod: e.target.value })}
-                className="w-full p-2.5 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none"
+                className="w-full px-3 py-2 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-emerald-500 outline-none"
               >
                 <option value="Cash">Cash</option>
                 <option value="Bank Transfer">Bank Transfer</option>
-                <option value="Mobile Banking (bKash/Nagad)">Mobile Banking (bKash/Nagad)</option>
-                <option value="Card">Card</option>
+                <option value="bKash / Nagad">bKash / Nagad (Mobile Banking)</option>
+                <option value="Cheque">Cheque</option>
               </select>
             </div>
 
-            <div className="space-y-1.5">
-              <label className="text-xs font-semibold text-gray-700">Notes (Optional)</label>
+            <div>
+              <label className="block text-xs font-bold text-slate-700 mb-1">Notes (Optional)</label>
               <textarea
+                rows={2}
+                placeholder="Additional notes or payment reference..."
                 value={formData.notes}
                 onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
-                placeholder="Any reference or remarks..."
-                className="w-full p-2.5 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none min-h-[80px]"
+                className="w-full px-3 py-2 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-emerald-500 outline-none resize-none"
               />
             </div>
 
@@ -295,10 +308,10 @@ export const AddPaymentModal = ({
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full flex items-center justify-center gap-2 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl transition-all shadow-md disabled:opacity-70"
+                className="w-full py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl text-sm transition-all shadow-md hover:shadow-lg disabled:opacity-50 flex items-center justify-center gap-2 cursor-pointer"
               >
                 {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Plus className="w-4 h-4" />}
-                {loading ? 'Processing...' : 'Confirm & Generate Invoice'}
+                Confirm & Generate Invoice
               </button>
             </div>
           </form>
@@ -307,3 +320,5 @@ export const AddPaymentModal = ({
     </div>
   );
 };
+
+export default AddPaymentModal;

@@ -1,18 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ClientGuardianForm } from './ClientGuardianForm';
-import { ClientGuardianPreview } from './ClientGuardianPreview';
+import { CustomerGuardianForm } from './CustomerGuardianForm';
+import { CustomerGuardianPreview } from './CustomerGuardianPreview';
 import { getDefaultClientGuardianData, generateApplicationNo } from './sampleData';
-import { Printer, Edit3, CheckCircle2, FileText, Download, Share2, Sparkles, Save, Database } from 'lucide-react';
+import { Download, RefreshCw, Eye, Edit3, Columns, Share2, Printer, UserCheck } from 'lucide-react';
 import { toast } from 'sonner';
 import { apiClient } from '@shared/lib/api-client';
-import { Button } from '@/components/ui/button';
-import { HeaderTitle, HeaderModeSwitcher } from '@shared/components/common/HeaderTitle';
+import { printDocument } from '@shared/lib/utils';
+import { HeaderTitle } from '@shared/components/common/HeaderTitle';
 
 export function CustomerGuardian({ initialData = null, onSavedSuccess = null }) {
   const { t } = useTranslation();
   const [data, setData] = useState(initialData || getDefaultClientGuardianData());
-  const [viewMode, setViewMode] = useState('form'); // 'form' | 'preview'
+  const [viewMode, setViewMode] = useState('split'); // 'split' | 'edit' | 'preview'
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
@@ -33,6 +33,9 @@ export function CustomerGuardian({ initialData = null, onSavedSuccess = null }) 
     }
 
     const payload = { ...data };
+    if (!payload._id) {
+      delete payload._id;
+    }
     if (!payload.applicationNo) {
       payload.applicationNo = generateApplicationNo();
     }
@@ -44,7 +47,7 @@ export function CustomerGuardian({ initialData = null, onSavedSuccess = null }) 
         ? await apiClient.put(`/api/v1/client/docs/client-guardians/${data._id}`, payload)
         : await apiClient.post('/api/v1/client/docs/client-guardians', payload);
 
-      const savedDoc = res.data?.data;
+      const savedDoc = res.data?.data || res.data;
       if ((res.data?.status === 'success' || res.data?.success) && savedDoc) {
         setData(savedDoc);
         toast.success(
@@ -53,23 +56,23 @@ export function CustomerGuardian({ initialData = null, onSavedSuccess = null }) 
             : `${t('clientForm.saveDb', 'Saved')} (App No: ${savedDoc.applicationNo})`
         );
         if (onSavedSuccess) onSavedSuccess(savedDoc);
-        setViewMode('preview');
       } else {
         throw new Error(res.data?.message || 'Failed to save');
       }
     } catch (err) {
-      console.warn('Backend API save warning (offline preview mode):', err);
-      const fallbackAppNo = data.applicationNo || generateApplicationNo();
-      setData(prev => ({ ...prev, applicationNo: fallbackAppNo }));
-      toast.info(`Preview ready (App No: ${fallbackAppNo})`);
-      setViewMode('preview');
+      console.error('Save client file error:', err);
+      toast.error(err.response?.data?.message || err.message || 'Failed to save client file.');
     } finally {
       setIsSubmitting(false);
     }
   };
 
   const handlePrint = () => {
-    window.print();
+    printDocument({
+      docId: data.applicationNo || data.receiptNo,
+      docType: 'Client_Guardian_Form',
+      clientName: data.client?.fullName,
+    });
   };
 
   const handleWhatsAppShare = () => {
@@ -101,62 +104,111 @@ export function CustomerGuardian({ initialData = null, onSavedSuccess = null }) 
   };
 
   return (
-    <div className="space-y-6">
-      {/* Top Controls Bar */}
+    <div className="space-y-4">
+      {/* Signature Dark Blue Gradient Top Header */}
       <HeaderTitle
-        variant="printables"
-        icon={FileText}
-        title={t('clientForm.title', 'Client & Guardian Information Application Form')}
+        icon={UserCheck}
+        title={t('clientForm.title', 'Client & Guardian Application Dossier')}
         subtitle={t('clientForm.subtitle', 'Create and print official client & guardian profile details, file tracking status, and advance payment ledger.')}
         actions={
-          <>
-            <HeaderModeSwitcher
-              viewMode={viewMode}
-              onModeChange={setViewMode}
-              editLabel={t('clientForm.editForm', 'Edit Form')}
-              previewLabel={t('clientForm.printPreview', 'Print Preview')}
-            />
+          <div className="flex items-center gap-2 flex-wrap">
+            {/* View Mode Segmented Controls */}
+            <div className="flex items-center space-x-1 bg-white/10 backdrop-blur-md p-1 rounded-xl border border-white/15">
+              {[
+                { id: 'split', label: 'Split View', icon: Columns },
+                { id: 'edit', label: 'Edit Form', icon: Edit3 },
+                { id: 'preview', label: 'Live Preview', icon: Eye },
+              ].map((btn) => {
+                const Icon = btn.icon;
+                const isActive = viewMode === btn.id;
+                return (
+                  <button
+                    key={btn.id}
+                    onClick={() => setViewMode(btn.id)}
+                    className={`flex items-center space-x-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                      isActive
+                        ? 'bg-white text-slate-900 shadow-md font-black'
+                        : 'text-sky-100/80 hover:text-white hover:bg-white/10'
+                    }`}
+                  >
+                    <Icon className="w-3.5 h-3.5" />
+                    <span>{btn.label}</span>
+                  </button>
+                );
+              })}
+            </div>
 
-            <Button
-              type="button"
-              variant="outline"
-              size="sm"
+            <button
+              onClick={handleReset}
+              className="flex items-center space-x-1.5 bg-white/10 hover:bg-white/20 text-white text-xs font-semibold px-3 py-1.5 rounded-xl border border-white/15 transition-colors cursor-pointer"
+              title="Reset Form"
+            >
+              <RefreshCw className="w-3.5 h-3.5 text-sky-300" />
+              <span>Reset</span>
+            </button>
+
+            <button
               onClick={handleWhatsAppShare}
-              className="bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 border-emerald-500/20"
-              title="WhatsApp Share"
+              className="flex items-center space-x-1.5 bg-[#25D366] hover:bg-[#20bd5a] text-white text-xs font-bold px-3.5 py-1.5 rounded-xl shadow-xs transition-colors cursor-pointer"
+              title="Share Summary on WhatsApp"
             >
               <Share2 className="w-3.5 h-3.5" />
-              <span className="hidden md:inline">WhatsApp</span>
-            </Button>
+              <span>WhatsApp</span>
+            </button>
 
-            <Button
-              type="button"
-              variant="success"
-              size="sm"
+            <button
               onClick={handlePrint}
+              className="flex items-center space-x-1.5 bg-sky-500 hover:bg-sky-400 text-white text-xs font-bold px-4 py-1.5 rounded-xl shadow-md transition-colors cursor-pointer"
+              title="Export Printable A4 PDF"
             >
-              <Printer className="w-4 h-4" />
-              <span>{t('clientForm.downloadPrint', 'Download PDF / Print')}</span>
-            </Button>
-          </>
+              <Printer className="w-3.5 h-3.5" />
+              <span>Export & Print</span>
+            </button>
+          </div>
         }
       />
 
-      {/* Main Content Area */}
-      {viewMode === 'form' ? (
-        <ClientGuardianForm
-          data={data}
-          onChange={setData}
-          onReset={handleReset}
-          onSave={handleSaveToDatabase}
-          onPreview={() => setViewMode('preview')}
-          isSubmitting={isSubmitting}
-        />
-      ) : (
-        <div className="bg-muted/20 border border-border p-4 sm:p-6 rounded-2xl flex flex-col items-center">
-          <ClientGuardianPreview data={data} />
+      {/* Main Studio Views */}
+      {viewMode === 'edit' && (
+        <div className="max-w-4xl mx-auto">
+          <CustomerGuardianForm
+            data={data}
+            onChange={setData}
+            onReset={handleReset}
+            onSave={handleSaveToDatabase}
+            onPreview={() => setViewMode('preview')}
+            isSubmitting={isSubmitting}
+          />
+        </div>
+      )}
+
+      {viewMode === 'preview' && (
+        <div className="w-full flex justify-center py-2 no-print-padding">
+          <CustomerGuardianPreview data={data} />
+        </div>
+      )}
+
+      {viewMode === 'split' && (
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+          <div className="lg:col-span-5 max-h-[calc(100vh-140px)] overflow-y-auto pr-1">
+            <CustomerGuardianForm
+              data={data}
+              onChange={setData}
+              onReset={handleReset}
+              onSave={handleSaveToDatabase}
+              onPreview={() => setViewMode('preview')}
+              isSubmitting={isSubmitting}
+            />
+          </div>
+          <div className="lg:col-span-7 bg-muted/30 border border-border rounded-xl p-3 overflow-y-auto max-h-[calc(100vh-140px)] flex justify-center">
+            <div className="scale-[0.88] origin-top">
+              <CustomerGuardianPreview data={data} />
+            </div>
+          </div>
         </div>
       )}
     </div>
   );
 }
+
+export default CustomerGuardian;

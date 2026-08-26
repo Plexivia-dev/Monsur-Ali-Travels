@@ -1,13 +1,13 @@
 import React, { useState, useRef } from 'react';
 import { IdCardForm } from './IdCardForm';
 import { IdCardPreview } from './IdCardPreview';
-import { Download, Sparkles, RefreshCw, FileText } from 'lucide-react';
+import { Download, Sparkles, RefreshCw, Contact } from 'lucide-react';
 import { toast } from 'sonner';
 import { toPng } from 'html-to-image';
 import agencyInfo from '@shared/lib/information.json';
+import { HeaderTitle } from '@shared/components/common/HeaderTitle';
 
 export function IdCard() {
-  const [activeTab, setActiveTab] = useState('editor'); // 'editor' | 'preview'
   const [isExporting, setIsExporting] = useState(false);
   const frontCardRef = useRef(null);
   const backCardRef = useRef(null);
@@ -40,7 +40,6 @@ export function IdCard() {
     cardData.contactPhone?.trim() &&
     cardData.email?.trim() &&
     cardData.address?.trim() &&
-    cardData.website?.trim() &&
     cardData.signatureName?.trim()
   );
 
@@ -74,58 +73,52 @@ export function IdCard() {
   };
 
   return (
-    <div className="space-y-6">
-      {/* Top Controls Bar */}
-      <div className="no-print bg-card border border-border p-4 rounded-xl shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div>
-          <h2 className="text-base font-bold text-foreground tracking-tight flex items-center gap-2">
-            <Sparkles className="w-5 h-5 text-emerald-500" />
-            Official Employee ID Card
-          </h2>
-          <p className="text-xs text-muted-foreground mt-0.5">
-            Generate and export official employee identity cards with photo and verifiable credentials.
-          </p>
-        </div>
+    <div className="space-y-4">
+      {/* Signature Dark Blue Gradient Top Header */}
+      <HeaderTitle
+        icon={Contact}
+        title="Employee Identity Card Generator"
+        subtitle="Generate and export official high-resolution dual-sided employee identity cards with photo and verifiable QR code."
+        actions={
+          <div className="flex items-center gap-2 flex-wrap">
+            <button
+              onClick={handleResetSample}
+              className="flex items-center space-x-1.5 bg-white/10 hover:bg-white/20 text-white text-xs font-semibold px-3 py-1.5 rounded-xl border border-white/15 transition-colors cursor-pointer"
+              title="Reset Form"
+            >
+              <RefreshCw className="w-3.5 h-3.5 text-sky-300" />
+              <span>Reset</span>
+            </button>
 
-        <div className="flex items-center gap-2 shrink-0 flex-wrap">
-          {!isFormValid ? (
-            <span className="text-[11px] font-medium text-amber-600 dark:text-amber-400 bg-amber-500/10 border border-amber-500/20 px-2.5 py-1 rounded-md">
-              ⚠️ All fields and photo required
-            </span>
-          ) : (
-            <span className="text-[11px] font-medium text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2.5 py-1 rounded-md">
-              ✓ Ready to Download & Print
-            </span>
-          )}
+            <button
+              type="button"
+              onClick={() => handleExportPNG('front')}
+              disabled={!isFormValid || isExporting}
+              className="flex items-center space-x-1.5 bg-sky-500 hover:bg-sky-400 text-white text-xs font-bold px-3.5 py-1.5 rounded-xl shadow-md transition-colors cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
+              title={!isFormValid ? 'All fields and photo required' : 'Download Front PNG'}
+            >
+              <Download className="w-3.5 h-3.5" />
+              <span>Front PNG</span>
+            </button>
 
-          <button
-            type="button"
-            onClick={() => handleExportPNG('front')}
-            disabled={!isFormValid || isExporting}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold border border-border bg-muted/40 hover:bg-muted text-foreground transition-all cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
-            title={!isFormValid ? 'All fields and photo required' : 'Download Front PNG'}
-          >
-            <Download className="w-3.5 h-3.5" />
-            <span>Front PNG</span>
-          </button>
-
-          <button
-            type="button"
-            onClick={() => handleExportPNG('back')}
-            disabled={!isFormValid || isExporting}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold border border-border bg-muted/40 hover:bg-muted text-foreground transition-all cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
-            title={!isFormValid ? 'All fields and photo required' : 'Download Back PNG'}
-          >
-            <Download className="w-3.5 h-3.5" />
-            <span>Back PNG</span>
-          </button>
-        </div>
-      </div>
+            <button
+              type="button"
+              onClick={() => handleExportPNG('back')}
+              disabled={!isFormValid || isExporting}
+              className="flex items-center space-x-1.5 bg-sky-500 hover:bg-sky-400 text-white text-xs font-bold px-3.5 py-1.5 rounded-xl shadow-md transition-colors cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
+              title={!isFormValid ? 'All fields and photo required' : 'Download Back PNG'}
+            >
+              <Download className="w-3.5 h-3.5" />
+              <span>Back PNG</span>
+            </button>
+          </div>
+        }
+      />
 
       {/* Main Grid: Left Form, Right Live Dual Card Preview */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
         {/* Left Side: Input Form */}
-        <div className="lg:col-span-5">
+        <div className="lg:col-span-5 max-h-[calc(100vh-140px)] overflow-y-auto pr-1">
           <IdCardForm
             cardData={cardData}
             setCardData={setCardData}
@@ -134,7 +127,7 @@ export function IdCard() {
         </div>
 
         {/* Right Side: Dual-Sided Visual Preview */}
-        <div className="lg:col-span-7 bg-muted/20 border border-border p-6 rounded-2xl flex flex-col items-center justify-center min-h-[600px] overflow-x-auto shadow-xs">
+        <div className="lg:col-span-7 bg-muted/20 border border-border p-6 rounded-2xl flex flex-col items-center justify-center min-h-[550px] overflow-x-auto shadow-xs">
           <IdCardPreview
             cardData={cardData}
             frontRef={frontCardRef}
@@ -145,3 +138,5 @@ export function IdCard() {
     </div>
   );
 }
+
+export default IdCard;

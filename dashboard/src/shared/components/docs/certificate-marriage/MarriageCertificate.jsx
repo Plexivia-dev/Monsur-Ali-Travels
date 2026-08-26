@@ -2,12 +2,9 @@ import React, { useState } from 'react';
 import { MarriageCertificateForm } from './MarriageCertificateForm';
 import { MarriageCertificatePreview } from './MarriageCertificatePreview';
 import { SAMPLE_MARRIAGE_CERTIFICATE } from './sampleData';
-import { Download, RefreshCw, Eye, Edit3, Columns } from 'lucide-react';
-
+import { Download, RefreshCw, Eye, Edit3, Columns, Heart, Printer } from 'lucide-react';
 import { printDocument } from '@shared/lib/utils';
-
 import { HeaderTitle } from '@shared/components/common/HeaderTitle';
-import { Heart } from 'lucide-react';
 
 export function MarriageCertificate() {
   const [data, setData] = useState(SAMPLE_MARRIAGE_CERTIFICATE);
@@ -27,16 +24,15 @@ export function MarriageCertificate() {
 
   return (
     <div className="space-y-4">
-      {/* Top Header Banner */}
+      {/* Signature Dark Blue Gradient Top Header */}
       <HeaderTitle
-        variant="printables"
         icon={Heart}
         title="Marriage Certificate Generator"
         subtitle="Generate official Muslim / Civil marriage certificate and Nikahnama translation dossiers for spouse visa and immigration."
         actions={
           <div className="flex items-center gap-2 flex-wrap">
-            {/* View Mode Tabs */}
-            <div className="flex items-center space-x-1 bg-muted p-1 rounded-xl border border-border">
+            {/* View Mode Segmented Controls */}
+            <div className="flex items-center space-x-1 bg-white/10 backdrop-blur-md p-1 rounded-xl border border-white/15">
               {[
                 { id: 'split', label: 'Split View', icon: Columns },
                 { id: 'edit', label: 'Edit Form', icon: Edit3 },
@@ -48,10 +44,10 @@ export function MarriageCertificate() {
                   <button
                     key={btn.id}
                     onClick={() => setViewMode(btn.id)}
-                    className={`flex items-center space-x-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
+                    className={`flex items-center space-x-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
                       isActive
-                        ? 'bg-card text-foreground shadow-xs font-bold'
-                        : 'text-muted-foreground hover:text-foreground'
+                        ? 'bg-white text-slate-900 shadow-md font-black'
+                        : 'text-sky-100/80 hover:text-white hover:bg-white/10'
                     }`}
                   >
                     <Icon className="w-3.5 h-3.5" />
@@ -63,25 +59,25 @@ export function MarriageCertificate() {
 
             <button
               onClick={handleResetSample}
-              className="flex items-center space-x-1.5 bg-muted hover:bg-muted/80 text-foreground text-xs font-semibold px-3 py-1.5 rounded-xl border border-border transition-colors cursor-pointer"
+              className="flex items-center space-x-1.5 bg-white/10 hover:bg-white/20 text-white text-xs font-semibold px-3 py-1.5 rounded-xl border border-white/15 transition-colors cursor-pointer"
               title="Reset Sample Data"
             >
-              <RefreshCw className="w-3.5 h-3.5 text-muted-foreground" />
+              <RefreshCw className="w-3.5 h-3.5 text-sky-300" />
               <span>Reset</span>
             </button>
 
             <button
               onClick={handlePrint}
-              className="flex items-center space-x-1.5 bg-primary hover:bg-primary/90 text-primary-foreground text-xs font-bold px-3.5 py-1.5 rounded-xl shadow-xs transition-colors cursor-pointer"
+              className="flex items-center space-x-1.5 bg-sky-500 hover:bg-sky-400 text-white text-xs font-bold px-4 py-1.5 rounded-xl shadow-md transition-colors cursor-pointer"
             >
-              <Download className="w-3.5 h-3.5" />
+              <Printer className="w-3.5 h-3.5" />
               <span>Export & Print</span>
             </button>
           </div>
         }
       />
 
-      {/* Main Content */}
+      {/* Main Studio Views */}
       {viewMode === 'edit' && (
         <div className="max-w-3xl mx-auto">
           <MarriageCertificateForm data={data} onChange={setData} />
@@ -104,7 +100,8 @@ export function MarriageCertificate() {
           </div>
         </div>
       )}
-
     </div>
   );
 }
+
+export default MarriageCertificate;

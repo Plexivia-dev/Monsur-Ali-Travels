@@ -3,7 +3,8 @@ import { ResumeForm } from './ResumeForm';
 import { ResumePreview } from './ResumePreview';
 import { ExportModal } from '../common/ExportModal';
 import { SAMPLE_RESUME } from './sampleData';
-import { Download, RefreshCw, Eye, Edit3, Columns } from 'lucide-react';
+import { Download, RefreshCw, Eye, Edit3, Columns, FileText } from 'lucide-react';
+import { HeaderTitle } from '@shared/components/common/HeaderTitle';
 
 export function ResumeBuilder() {
   const [data, setData] = useState(SAMPLE_RESUME);
@@ -16,54 +17,60 @@ export function ResumeBuilder() {
 
   return (
     <div className="space-y-4">
-      {/* Top Action Bar */}
-      <div className="flex flex-wrap items-center justify-between gap-3 bg-card border border-border p-3 rounded-xl shadow-xs">
-        <div className="flex items-center space-x-1.5 bg-muted p-1 rounded-lg">
-          {[
-            { id: 'split', label: 'Split View', icon: Columns },
-            { id: 'edit', label: 'Edit Form', icon: Edit3 },
-            { id: 'preview', label: 'Live Preview', icon: Eye }
-          ].map(btn => {
-            const Icon = btn.icon;
-            const isActive = viewMode === btn.id;
-            return (
-              <button
-                key={btn.id}
-                onClick={() => setViewMode(btn.id)}
-                className={`flex items-center space-x-1.5 px-3 py-1.5 rounded-md text-xs font-semibold transition-all cursor-pointer ${
-                  isActive
-                    ? 'bg-background text-foreground shadow-2xs'
-                    : 'text-muted-foreground hover:text-foreground'
-                }`}
-              >
-                <Icon className="w-3.5 h-3.5" />
-                <span>{btn.label}</span>
-              </button>
-            );
-          })}
-        </div>
+      {/* Signature Dark Blue Gradient Top Header */}
+      <HeaderTitle
+        icon={FileText}
+        title="Curriculum Vitae & Resume Builder"
+        subtitle="Generate and print official standardized overseas employment biodata and professional resumes."
+        actions={
+          <div className="flex items-center gap-2 flex-wrap">
+            {/* View Mode Segmented Controls */}
+            <div className="flex items-center space-x-1 bg-white/10 backdrop-blur-md p-1 rounded-xl border border-white/15">
+              {[
+                { id: 'split', label: 'Split View', icon: Columns },
+                { id: 'edit', label: 'Edit Form', icon: Edit3 },
+                { id: 'preview', label: 'Live Preview', icon: Eye }
+              ].map(btn => {
+                const Icon = btn.icon;
+                const isActive = viewMode === btn.id;
+                return (
+                  <button
+                    key={btn.id}
+                    onClick={() => setViewMode(btn.id)}
+                    className={`flex items-center space-x-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                      isActive
+                        ? 'bg-white text-slate-900 shadow-md font-black'
+                        : 'text-sky-100/80 hover:text-white hover:bg-white/10'
+                    }`}
+                  >
+                    <Icon className="w-3.5 h-3.5" />
+                    <span>{btn.label}</span>
+                  </button>
+                );
+              })}
+            </div>
 
-        <div className="flex items-center space-x-2">
-          <button
-            onClick={handleResetSample}
-            className="flex items-center space-x-1.5 bg-muted/60 hover:bg-muted text-foreground text-xs font-medium px-3 py-1.5 rounded-lg border border-border transition-colors cursor-pointer"
-            title="Load Sample Client Profile"
-          >
-            <RefreshCw className="w-3.5 h-3.5 text-muted-foreground" />
-            <span>Reset Sample</span>
-          </button>
+            <button
+              onClick={handleResetSample}
+              className="flex items-center space-x-1.5 bg-white/10 hover:bg-white/20 text-white text-xs font-semibold px-3 py-1.5 rounded-xl border border-white/15 transition-colors cursor-pointer"
+              title="Load Sample Client Profile"
+            >
+              <RefreshCw className="w-3.5 h-3.5 text-sky-300" />
+              <span>Reset Sample</span>
+            </button>
 
-          <button
-            onClick={() => setIsExportOpen(true)}
-            className="flex items-center space-x-1.5 bg-primary hover:bg-primary/90 text-primary-foreground text-xs font-semibold px-3.5 py-1.5 rounded-lg shadow-xs transition-colors cursor-pointer"
-          >
-            <Download className="w-3.5 h-3.5" />
-            <span>Export & Print</span>
-          </button>
-        </div>
-      </div>
+            <button
+              onClick={() => setIsExportOpen(true)}
+              className="flex items-center space-x-1.5 bg-sky-500 hover:bg-sky-400 text-white text-xs font-bold px-4 py-1.5 rounded-xl shadow-md transition-colors cursor-pointer"
+            >
+              <Download className="w-3.5 h-3.5" />
+              <span>Export & Print</span>
+            </button>
+          </div>
+        }
+      />
 
-      {/* Main Content Area */}
+      {/* Main Content */}
       {viewMode === 'edit' && (
         <div className="max-w-3xl mx-auto">
           <ResumeForm data={data} onChange={setData} />
@@ -81,7 +88,7 @@ export function ResumeBuilder() {
           <div className="lg:col-span-5">
             <ResumeForm data={data} onChange={setData} />
           </div>
-          <div className="lg:col-span-7 bg-muted/30 border border-border rounded-xl p-3 overflow-y-auto max-h-[calc(100vh-140px)]">
+          <div className="lg:col-span-7 bg-muted/30 border border-border rounded-xl p-3 overflow-y-auto max-h-[calc(100vh-140px)] flex justify-center">
             <ResumePreview data={data} onPrint={() => setIsExportOpen(true)} />
           </div>
         </div>
@@ -98,3 +105,5 @@ export function ResumeBuilder() {
     </div>
   );
 }
+
+export default ResumeBuilder;

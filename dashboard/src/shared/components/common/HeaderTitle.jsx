@@ -5,9 +5,8 @@ import { cn } from '@/lib/utils';
 /**
  * Universal Header Title component for Monsur Ali Travels ERP.
  * 
- * Supports two distinct variations:
- * 1. "general": Rich dark blue gradient banner for dashboards, pipelines, and agency tables (Image 1 style)
- * 2. "printables": Clean light/card container with toolbar for document studio, printable papers, and forms (Image 2 style)
+ * Renders the signature Dark Blue / Sky Indigo gradient banner with glowing ambient lighting,
+ * high-contrast typography, and flexible action toolbars across all app pages and Document Studio.
  * 
  * @param {Object} props
  * @param {string} props.title - Main header title
@@ -51,59 +50,10 @@ export function HeaderTitle({
     return <IconComponent className={cn(iconClass, 'shrink-0')} />;
   };
 
-  // VARIATION 2: Printables / Document Studio Header Banner
-  if (variant === 'printables' || variant === 'printable') {
-    return (
-      <div
-        className={cn(
-          'no-print bg-card border border-border/80 p-4 sm:p-5 rounded-2xl shadow-xs flex flex-col lg:flex-row lg:items-center justify-between gap-4 text-card-foreground transition-all',
-          className
-        )}
-      >
-        <div className="space-y-1 min-w-0 flex-1">
-          <div className="flex items-center gap-2 flex-wrap">
-            <h2
-              className={cn(
-                'text-base sm:text-lg font-bold text-foreground tracking-tight flex items-center gap-2',
-                titleClassName
-              )}
-            >
-              {renderIcon('size-5 text-primary')}
-              <span className="truncate">{title}</span>
-            </h2>
-            {badge && (
-              <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-primary/10 text-primary border border-primary/20">
-                {badge}
-              </span>
-            )}
-          </div>
-
-          {resolvedSubtitle && (
-            <p
-              className={cn(
-                'text-xs text-muted-foreground max-w-2xl leading-normal',
-                subtitleClassName
-              )}
-            >
-              {resolvedSubtitle}
-            </p>
-          )}
-        </div>
-
-        {actionElements && (
-          <div className="flex items-center gap-2 shrink-0 flex-wrap">
-            {actionElements}
-          </div>
-        )}
-      </div>
-    );
-  }
-
-  // VARIATION 1: General Dashboard & Agency Banner (Default)
   return (
     <div
       className={cn(
-        'bg-linear-to-r from-sky-950 via-indigo-950 to-slate-950 rounded-2xl sm:rounded-3xl p-5 sm:p-6 text-white shadow-xl border border-sky-800/40 relative overflow-hidden transition-all select-none',
+        'no-print bg-linear-to-r from-sky-950 via-indigo-950 to-slate-950 rounded-2xl sm:rounded-3xl p-5 sm:p-6 text-white shadow-xl border border-sky-800/40 relative overflow-hidden transition-all select-none',
         className
       )}
     >
@@ -165,14 +115,14 @@ export function HeaderModeSwitcher({
   className = '',
 }) {
   return (
-    <div className={cn('bg-muted p-1 rounded-xl flex items-center gap-1 border border-border', className)}>
+    <div className={cn('bg-white/10 backdrop-blur-md p-1 rounded-xl flex items-center gap-1 border border-white/15', className)}>
       <button
         type="button"
         onClick={() => onModeChange('form')}
-        className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
+        className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
           viewMode === 'form'
-            ? 'bg-card text-foreground shadow-xs'
-            : 'text-muted-foreground hover:text-foreground'
+            ? 'bg-white text-slate-900 shadow-md font-bold'
+            : 'text-sky-100/80 hover:text-white hover:bg-white/10'
         }`}
       >
         <LucideIcons.Edit3 className="size-3.5" />
@@ -181,13 +131,13 @@ export function HeaderModeSwitcher({
       <button
         type="button"
         onClick={() => onModeChange('preview')}
-        className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
+        className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
           viewMode === 'preview'
-            ? 'bg-card text-foreground shadow-xs'
-            : 'text-muted-foreground hover:text-foreground'
+            ? 'bg-white text-slate-900 shadow-md font-bold'
+            : 'text-sky-100/80 hover:text-white hover:bg-white/10'
         }`}
       >
-        <LucideIcons.CheckCircle2 className="size-3.5 text-emerald-500" />
+        <LucideIcons.CheckCircle2 className="size-3.5 text-emerald-600" />
         <span>{previewLabel}</span>
       </button>
     </div>

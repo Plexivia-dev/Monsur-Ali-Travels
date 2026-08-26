@@ -59,6 +59,22 @@ export default function CaseDetailPage() {
   const [isAssignModalOpen, setIsAssignModalOpen] = useState(false);
   const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
   const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [savingEdit, setSavingEdit] = useState(false);
+
+  const [editForm, setEditForm] = useState({
+    applicantName: '',
+    phone: '',
+    passportNumber: '',
+    nidNumber: '',
+    caseType: 'general',
+    destinationCountry: '',
+    tradeSkill: '',
+    totalAgreedAmount: 0,
+    status: 'ENTRY',
+    remarks: '',
+  });
+
   const [uploadDocForm, setUploadDocForm] = useState({
     documentName: 'Passport Scan Copy',
     fileName: '',
@@ -159,10 +175,79 @@ export default function CaseDetailPage() {
     }
   };
 
+  const handleFileChange = (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const sizeInMb = (file.size / (1024 * 1024)).toFixed(2) + ' MB';
+    
+    // Auto populate file details
+    setUploadDocForm((prev) => ({
+      ...prev,
+      fileName: file.name,
+      fileSize: sizeInMb,
+    }));
+
+    // Read as Data URL / link
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      setUploadDocForm((prev) => ({
+        ...prev,
+        fileUrl: event.target?.result || '',
+      }));
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const handleOpenEditModal = () => {
+    if (!caseData) return;
+    setEditForm({
+      applicantName: caseData.applicantName || caseData.clientInfo?.fullName || '',
+      phone: caseData.phone || caseData.clientInfo?.phone || '',
+      passportNumber: caseData.passportNumber || caseData.clientInfo?.passportNumber || '',
+      nidNumber: caseData.nidNumber || caseData.clientInfo?.nidNumber || '',
+      caseType: caseData.caseType || 'general',
+      destinationCountry: caseData.destinationCountry || '',
+      tradeSkill: caseData.tradeSkill || '',
+      totalAgreedAmount: caseData.paymentLedger?.totalAgreedAmount || caseData.packageCost || 0,
+      status: caseData.status || 'ENTRY',
+      remarks: caseData.remarks || '',
+    });
+    setIsEditModalOpen(true);
+  };
+
+  const handleSaveCaseEdit = async (e) => {
+    e.preventDefault();
+    if (!editForm.applicantName.trim()) {
+      return toast.error('Applicant full name is required');
+    }
+    setSavingEdit(true);
+    try {
+      const payload = {
+        ...editForm,
+        paymentLedger: {
+          ...caseData?.paymentLedger,
+          totalAgreedAmount: Number(editForm.totalAgreedAmount) || 0,
+        },
+      };
+      const res = await apiClient.put(`/api/v1/client/cases/${caseData.did || caseData._id}`, payload);
+      if (res.data?.success || res.data?.status === 'success') {
+        toast.success('Case file details updated successfully!');
+        setIsEditModalOpen(false);
+        fetchCaseDetails();
+      } else {
+        throw new Error(res.data?.message || 'Failed to update case file');
+      }
+    } catch (err) {
+      toast.error(err.response?.data?.message || err.message || 'Failed to update case file');
+    } finally {
+      setSavingEdit(false);
+    }
+  };
+
   const handleUploadDocument = async (e) => {
     e.preventDefault();
     if (!uploadDocForm.documentName || !uploadDocForm.fileUrl) {
-      toast.error('Document title and file URL are required.');
+      toast.error('Please select a file or provide a document URL.');
       return;
     }
     setUploadingDoc(true);
@@ -174,7 +259,7 @@ export default function CaseDetailPage() {
         fileSize: uploadDocForm.fileSize || '1.2 MB',
         accessLevel: 'Restricted',
       });
-      if (res.data?.success) {
+      if (res.data?.success || res.data?.status === 'success') {
         toast.success('Document uploaded to case vault!');
         setIsUploadModalOpen(false);
         setUploadDocForm({
@@ -184,9 +269,11 @@ export default function CaseDetailPage() {
           fileSize: '1.5 MB',
         });
         fetchCaseDetails();
+      } else {
+        throw new Error(res.data?.message || 'Failed to upload document');
       }
     } catch (err) {
-      toast.error('Failed to upload document.');
+      toast.error(err.response?.data?.message || err.message || 'Failed to upload document.');
     } finally {
       setUploadingDoc(false);
     }
@@ -329,6 +416,22 @@ export default function CaseDetailPage() {
               title="Refresh Case File"
             >
               <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
+            </button>
+
+            <button
+              onClick={handleOpenEditModal}
+              className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-white/10 hover:bg-white/20 text-white text-xs font-bold border border-white/20 shadow-xs transition cursor-pointer"
+            >
+              <Edit3 className="w-3.5 h-3.5" />
+              <span>Edit Case File</span>
+            </button>
+
+            <button
+              onClick={() => setIsUploadModalOpen(true)}
+              className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-purple-600 hover:bg-purple-500 text-white text-xs font-bold shadow-xs transition cursor-pointer"
+            >
+              <UploadCloud className="w-3.5 h-3.5" />
+              <span>Upload Document</span>
             </button>
 
             <button
@@ -1062,22 +1165,32 @@ export default function CaseDetailPage() {
 
             <div className="space-y-3 text-xs">
               <div>
-                <label className="block font-semibold text-muted-foreground mb-1">Document Type *</label>
+                <label className="block font-semibold text-muted-foreground mb-1">Document Category *</label>
                 <select
                   value={uploadDocForm.documentName}
                   onChange={(e) => setUploadDocForm({ ...uploadDocForm, documentName: e.target.value })}
                   className="w-full px-3 py-2 bg-muted/50 border border-border rounded-xl text-foreground focus:outline-none"
                 >
                   <option value="Passport Scan Copy">Passport Scan Copy</option>
-                  <option value="Photo 2x2">Photo 2x2 White Background</option>
-                  <option value="Police Clearance Certificate (PCC)">Police Clearance (PCC)</option>
-                  <option value="National ID (NID)">National ID Card (NID)</option>
-                  <option value="Electricity / Utility Bill">Electricity / Utility Bill</option>
+                  <option value="Photo (35x45mm / 2x2 White BG)">Photo (35x45mm / 2x2 White BG)</option>
+                  <option value="Police Clearance Certificate (PCC)">Police Clearance Certificate (PCC)</option>
+                  <option value="National ID Card (NID)">National ID Card (NID)</option>
+                  <option value="Medical Examination Report">Medical Examination Report</option>
                   <option value="Work Permit / Offer Letter">Work Permit / Offer Letter</option>
-                  <option value="Indian Visa Stamp Copy">Indian Visa Stamp Copy</option>
-                  <option value="Medical Certificate">Medical Fitness Report</option>
+                  <option value="Visa Sticker / Approval Dossier">Visa Sticker / Approval Dossier</option>
+                  <option value="Embassy / VFS Submission Slip">Embassy / VFS Submission Slip</option>
+                  <option value="Bank Statement / Solvency">Bank Statement / Solvency</option>
                   <option value="Other Document">Other Document</option>
                 </select>
+              </div>
+
+              <div>
+                <label className="block font-semibold text-muted-foreground mb-1">Choose Local File</label>
+                <input
+                  type="file"
+                  onChange={handleFileChange}
+                  className="w-full px-3 py-2 bg-muted/50 border border-border rounded-xl text-foreground focus:outline-none file:mr-3 file:py-1 file:px-2.5 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-primary file:text-primary-foreground hover:file:bg-primary/90 cursor-pointer"
+                />
               </div>
 
               <div>
@@ -1092,11 +1205,10 @@ export default function CaseDetailPage() {
               </div>
 
               <div>
-                <label className="block font-semibold text-muted-foreground mb-1">File URL / Cloud Storage Link *</label>
+                <label className="block font-semibold text-muted-foreground mb-1">File URL / Cloud Storage Link</label>
                 <input
                   type="text"
-                  required
-                  placeholder="https://... or /uploads/docs/..."
+                  placeholder="https://... or auto-generated from file"
                   value={uploadDocForm.fileUrl}
                   onChange={(e) => setUploadDocForm({ ...uploadDocForm, fileUrl: e.target.value })}
                   className="w-full px-3 py-2 bg-muted/50 border border-border rounded-xl text-foreground focus:outline-none font-mono text-[11px]"
@@ -1119,6 +1231,148 @@ export default function CaseDetailPage() {
               >
                 {uploadingDoc ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <UploadCloud className="w-3.5 h-3.5" />}
                 <span>Save to Vault</span>
+              </button>
+            </div>
+          </form>
+        </div>
+      )}
+
+      {/* Edit Case File Modal */}
+      {isEditModalOpen && (
+        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-xs flex items-center justify-center p-4 overflow-y-auto">
+          <form
+            onSubmit={handleSaveCaseEdit}
+            className="bg-card border border-border rounded-2xl max-w-2xl w-full p-6 space-y-4 shadow-2xl my-8"
+          >
+            <div className="flex items-center justify-between border-b border-border pb-3">
+              <h3 className="text-base font-bold text-foreground flex items-center gap-2">
+                <Edit3 className="w-4 h-4 text-primary" />
+                Edit Case File #{caseData.caseNumber || 'CASE-FILE'}
+              </h3>
+              <button
+                type="button"
+                onClick={() => setIsEditModalOpen(false)}
+                className="p-1 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted cursor-pointer"
+              >
+                ✕
+              </button>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
+              <div>
+                <label className="block font-bold text-foreground mb-1">Applicant Full Name *</label>
+                <input
+                  type="text"
+                  required
+                  value={editForm.applicantName}
+                  onChange={(e) => setEditForm({ ...editForm, applicantName: e.target.value })}
+                  className="w-full px-3 py-2 bg-muted/40 border border-border rounded-xl text-foreground focus:outline-none focus:border-primary text-xs"
+                />
+              </div>
+
+              <div>
+                <label className="block font-bold text-foreground mb-1">Phone Number</label>
+                <input
+                  type="text"
+                  value={editForm.phone}
+                  onChange={(e) => setEditForm({ ...editForm, phone: e.target.value })}
+                  className="w-full px-3 py-2 bg-muted/40 border border-border rounded-xl text-foreground focus:outline-none focus:border-primary text-xs font-mono"
+                />
+              </div>
+
+              <div>
+                <label className="block font-bold text-foreground mb-1">Passport Number</label>
+                <input
+                  type="text"
+                  value={editForm.passportNumber}
+                  onChange={(e) => setEditForm({ ...editForm, passportNumber: e.target.value.toUpperCase() })}
+                  className="w-full px-3 py-2 bg-muted/40 border border-border rounded-xl text-foreground focus:outline-none focus:border-primary text-xs font-mono"
+                />
+              </div>
+
+              <div>
+                <label className="block font-bold text-foreground mb-1">National ID (NID)</label>
+                <input
+                  type="text"
+                  value={editForm.nidNumber}
+                  onChange={(e) => setEditForm({ ...editForm, nidNumber: e.target.value })}
+                  className="w-full px-3 py-2 bg-muted/40 border border-border rounded-xl text-foreground focus:outline-none focus:border-primary text-xs font-mono"
+                />
+              </div>
+
+              <div>
+                <label className="block font-bold text-foreground mb-1">Destination Country</label>
+                <input
+                  type="text"
+                  value={editForm.destinationCountry}
+                  onChange={(e) => setEditForm({ ...editForm, destinationCountry: e.target.value })}
+                  className="w-full px-3 py-2 bg-muted/40 border border-border rounded-xl text-foreground focus:outline-none focus:border-primary text-xs"
+                />
+              </div>
+
+              <div>
+                <label className="block font-bold text-foreground mb-1">Trade / Skill Category</label>
+                <input
+                  type="text"
+                  value={editForm.tradeSkill}
+                  onChange={(e) => setEditForm({ ...editForm, tradeSkill: e.target.value })}
+                  className="w-full px-3 py-2 bg-muted/40 border border-border rounded-xl text-foreground focus:outline-none focus:border-primary text-xs"
+                />
+              </div>
+
+              <div>
+                <label className="block font-bold text-foreground mb-1">Total Agreed Package Bill (BDT)</label>
+                <input
+                  type="number"
+                  min="0"
+                  value={editForm.totalAgreedAmount}
+                  onChange={(e) => setEditForm({ ...editForm, totalAgreedAmount: e.target.value })}
+                  className="w-full px-3 py-2 bg-muted/40 border border-border rounded-xl text-foreground focus:outline-none focus:border-primary text-xs font-mono"
+                />
+              </div>
+
+              <div>
+                <label className="block font-bold text-foreground mb-1">Current Processing Stage</label>
+                <select
+                  value={editForm.status}
+                  onChange={(e) => setEditForm({ ...editForm, status: e.target.value })}
+                  className="w-full px-3 py-2 bg-muted/40 border border-border rounded-xl text-foreground focus:outline-none focus:border-primary text-xs"
+                >
+                  {PIPELINE_STAGES.map((st) => (
+                    <option key={st.id} value={st.id}>
+                      {st.title}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="sm:col-span-2">
+                <label className="block font-bold text-foreground mb-1">Remarks & Operational Notes</label>
+                <textarea
+                  rows={3}
+                  value={editForm.remarks}
+                  onChange={(e) => setEditForm({ ...editForm, remarks: e.target.value })}
+                  placeholder="Case notes, sponsor particulars, or timeline updates..."
+                  className="w-full px-3 py-2 bg-muted/40 border border-border rounded-xl text-foreground focus:outline-none focus:border-primary text-xs resize-none"
+                />
+              </div>
+            </div>
+
+            <div className="flex items-center justify-end gap-2 pt-3 border-t border-border text-xs">
+              <button
+                type="button"
+                onClick={() => setIsEditModalOpen(false)}
+                className="px-4 py-2 rounded-xl border border-border text-muted-foreground hover:bg-muted font-semibold cursor-pointer"
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                disabled={savingEdit}
+                className="flex items-center gap-1.5 px-5 py-2 bg-primary hover:bg-primary/90 text-primary-foreground font-bold rounded-xl shadow-xs transition-all disabled:opacity-50 cursor-pointer"
+              >
+                {savingEdit ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <CheckCircle2 className="w-3.5 h-3.5" />}
+                <span>Save Changes</span>
               </button>
             </div>
           </form>

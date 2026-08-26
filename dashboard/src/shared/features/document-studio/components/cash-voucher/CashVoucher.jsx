@@ -100,16 +100,15 @@ export function CashVoucher() {
 
   return (
     <div className="space-y-4">
-      {/* Universal Top Header Banner */}
+      {/* Signature Dark Blue Gradient Top Header */}
       <HeaderTitle
-        variant="printables"
         icon={Receipt}
         title={`Cash Money Voucher (${data.voucherNo || 'MAT-KV'})`}
         subtitle="Official agency expense voucher, payment memo, and petty cash verification voucher generator."
         actions={
           <div className="flex items-center gap-2 flex-wrap">
             {/* View Mode Segmented Controls */}
-            <div className="flex items-center space-x-1 bg-muted p-1 rounded-xl border border-border">
+            <div className="flex items-center space-x-1 bg-white/10 backdrop-blur-md p-1 rounded-xl border border-white/15">
               {[
                 { id: 'split', label: 'Split View', icon: Columns },
                 { id: 'edit', label: 'Edit Form', icon: Edit3 },
@@ -121,10 +120,10 @@ export function CashVoucher() {
                   <button
                     key={btn.id}
                     onClick={() => setViewMode(btn.id)}
-                    className={`flex items-center space-x-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
+                    className={`flex items-center space-x-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
                       isActive
-                        ? 'bg-card text-foreground shadow-xs font-bold'
-                        : 'text-muted-foreground hover:text-foreground'
+                        ? 'bg-white text-slate-900 shadow-md font-black'
+                        : 'text-sky-100/80 hover:text-white hover:bg-white/10'
                     }`}
                   >
                     <Icon className="w-3.5 h-3.5" />
@@ -136,16 +135,16 @@ export function CashVoucher() {
 
             <button
               onClick={handleReset}
-              className="flex items-center space-x-1.5 bg-muted hover:bg-muted/80 text-foreground text-xs font-semibold px-3 py-1.5 rounded-xl border border-border transition-colors cursor-pointer"
+              className="flex items-center space-x-1.5 bg-white/10 hover:bg-white/20 text-white text-xs font-semibold px-3 py-1.5 rounded-xl border border-white/15 transition-colors cursor-pointer"
               title="Reset Form"
             >
-              <RefreshCw className="w-3.5 h-3.5 text-muted-foreground" />
+              <RefreshCw className="w-3.5 h-3.5 text-sky-300" />
               <span>Reset</span>
             </button>
 
             <button
               onClick={handleWhatsAppShare}
-              className="flex items-center space-x-1.5 bg-[#25D366] hover:bg-[#20bd5a] text-white text-xs font-bold px-3 py-1.5 rounded-xl shadow-xs transition-colors cursor-pointer"
+              className="flex items-center space-x-1.5 bg-[#25D366] hover:bg-[#20bd5a] text-white text-xs font-bold px-3.5 py-1.5 rounded-xl shadow-xs transition-colors cursor-pointer"
               title="Share Summary on WhatsApp"
             >
               <Share2 className="w-3.5 h-3.5" />
@@ -154,7 +153,7 @@ export function CashVoucher() {
 
             <button
               onClick={handlePrint}
-              className="flex items-center space-x-1.5 bg-primary hover:bg-primary/90 text-primary-foreground text-xs font-bold px-3.5 py-1.5 rounded-xl shadow-xs transition-colors cursor-pointer"
+              className="flex items-center space-x-1.5 bg-sky-500 hover:bg-sky-400 text-white text-xs font-bold px-4 py-1.5 rounded-xl shadow-md transition-colors cursor-pointer"
               title="Export Printable A4 PDF"
             >
               <Printer className="w-3.5 h-3.5" />

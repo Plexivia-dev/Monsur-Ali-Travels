@@ -31,7 +31,7 @@ const ROLE_BADGE_COLORS = {
 };
 
 const TARGET_LABELS = {
-  clients: 'Client',
+  clients: 'Client Profile',
   caseFiles: 'Case File',
   tasks: 'Task',
   moneyReceipts: 'Money Receipt',
@@ -39,8 +39,14 @@ const TARGET_LABELS = {
   invoices: 'Invoice',
   salarySlips: 'Salary / Payroll',
   passports: 'Passport Record',
-  indianVisas: 'Indian Visa',
-  agreements: 'Agreement Document',
+  indianVisas: 'Indian Visa Application',
+  agreements: 'Employment Agreement',
+  jobVerifications: 'Job Verification',
+  experienceCertificates: 'Experience Certificate',
+  marriageCertificates: 'Marriage Certificate',
+  characterCertificates: 'Character Certificate',
+  idCards: 'Employee ID Card',
+  clientGuardians: 'Client Application',
   users: 'User Profile',
   general: 'Record',
 };
