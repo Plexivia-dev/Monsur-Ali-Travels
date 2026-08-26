@@ -1,6 +1,16 @@
 import mongoose, { Schema, model } from "mongoose";
 import { generateDid } from "../utils/generateDid.js";
 
+// Ensure all referenced models are registered in Mongoose for virtual populate
+import "./clientGuardianApplication.model.js";
+import "./indianVisaSubmission.model.js";
+import "./passportSubmission.model.js";
+import "./clientCaseFile.model.js";
+import "./employmentAgreement.model.js";
+import "./invoice.model.js";
+import "./caseFile.model.js";
+import "./user.model.js";
+
 const { models } = mongoose;
 
 // Unique Client Reference Number Generator: MAT-CLNT- + 6 digits
