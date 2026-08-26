@@ -1,6 +1,6 @@
 import React from 'react';
 import { PrintablePaper } from '../common/PrintablePaper';
-import { Printer, ShieldCheck } from 'lucide-react';
+import { Printer } from 'lucide-react';
 import { formatToDdMmYyyy } from '@shared/lib/utils';
 
 export function ExperienceCertificatePreview({ data = {}, onPrint }) {
@@ -42,9 +42,10 @@ export function ExperienceCertificatePreview({ data = {}, onPrint }) {
       <PrintablePaper id="printable-experience-certificate" className="font-serif">
         
         {/* Single Clean Certificate Border Frame */}
-        <div className="border-2 border-slate-900 p-6 sm:p-8 flex flex-col justify-between space-y-5 bg-white text-slate-900 flex-1 min-h-[960px] print:min-h-0 print:p-5">
+        <div className="border-2 border-slate-900 p-6 sm:p-8 flex flex-col justify-between bg-white text-slate-900 flex-1 min-h-[960px] print:min-h-0 print:p-5">
           
-          <div>
+          {/* Main Top and Body Content Section */}
+          <div className="space-y-4 flex-1">
             
             {/* Top Company Header (Customizable) */}
             <div className="text-center space-y-1.5 border-b-2 border-slate-900 pb-4">
@@ -147,7 +148,7 @@ export function ExperienceCertificatePreview({ data = {}, onPrint }) {
               {/* Responsibilities */}
               {content.dutiesResponsibilities && (
                 <p>
-                  <strong>Core Duties & Competencies:</strong> {content.dutiesResponsibilities}
+                  <strong>Core Duties &amp; Competencies:</strong> {content.dutiesResponsibilities}
                 </p>
               )}
 
@@ -158,45 +159,39 @@ export function ExperienceCertificatePreview({ data = {}, onPrint }) {
 
             </div>
 
-            {/* Bottom Signatures & Seal Section */}
-            <div className="pt-6 border-t-2 border-slate-900 mt-6 font-sans">
-              <div className="grid grid-cols-2 items-end">
-                
-                {/* Official Seal Box */}
-                <div className="flex items-center gap-3">
-                  <div className="w-24 h-24 border-2 border-dashed border-slate-600 rounded-full flex flex-col items-center justify-center p-2 text-center text-slate-500">
-                    <ShieldCheck className="w-6 h-6 text-slate-400 mb-0.5" />
-                    <span className="text-[8px] font-bold uppercase tracking-tight leading-none">
-                      {signatory.sealText || 'OFFICIAL COMPANY SEAL'}
-                    </span>
-                  </div>
-                  <div className="text-[10px] text-slate-500 italic">
-                    (Official Stamp & Verification Seal)
-                  </div>
-                </div>
-
-                {/* Authorized Signatory */}
-                <div className="text-right space-y-1">
-                  <div className="h-10 flex items-end justify-end">
-                    <span className="text-xs text-slate-400 font-serif italic mr-4">Authorized Signature</span>
-                  </div>
-                  <div className="border-t border-slate-800 pt-1">
-                    <p className="text-xs font-black uppercase text-slate-900 tracking-wide">
-                      {signatory.name || 'AUTHORIZED SIGNATORY'}
-                    </p>
-                    <p className="text-[11px] font-semibold text-slate-700">
-                      {signatory.designation || 'Head of Human Resources'}
-                    </p>
-                    <p className="text-[10px] text-slate-600">
-                      {company.name}
-                    </p>
-                  </div>
-                </div>
-
-              </div>
-            </div>
-
           </div>
+
+          {/* Bottom Signatures Section - Pinned strictly to bottom via mt-auto */}
+          <div className="mt-auto pt-6 border-t-2 border-slate-900 font-sans print:break-inside-avoid page-break-inside-avoid">
+            <div className="grid grid-cols-2 items-end">
+              
+              <div>
+                <p className="text-[10px] text-slate-500 italic">
+                  This official certificate of experience is issued without any prejudice or liability to the organization.
+                </p>
+              </div>
+
+              {/* Authorized Signatory */}
+              <div className="text-right space-y-1">
+                <div className="h-12 flex items-end justify-end">
+                  <span className="text-xs text-slate-400 font-serif italic mr-4">Authorized Signature &amp; Stamp</span>
+                </div>
+                <div className="border-t-2 border-slate-900 pt-1 ml-auto w-64">
+                  <p className="text-xs font-black uppercase text-slate-900 tracking-wide">
+                    {signatory.name || 'AUTHORIZED SIGNATORY'}
+                  </p>
+                  <p className="text-[11px] font-semibold text-slate-700">
+                    {signatory.designation || 'Head of Human Resources'}
+                  </p>
+                  <p className="text-[10px] text-slate-600">
+                    {company.name}
+                  </p>
+                </div>
+              </div>
+
+            </div>
+          </div>
+
         </div>
 
       </PrintablePaper>

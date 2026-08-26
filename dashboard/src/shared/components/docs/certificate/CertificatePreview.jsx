@@ -108,15 +108,13 @@ export function CertificatePreview({ data, onPrint }) {
               )}
             </div>
 
-            {/* Seal & Signature Section */}
+            {/* Signature Section */}
             <div className="pt-12 grid grid-cols-2 gap-8 items-end text-xs font-semibold text-slate-900">
               
-              {/* Seal Placeholder */}
-              <div className="text-center space-y-2">
-                <div className="w-24 h-24 rounded-full border-2 border-dashed border-slate-400 mx-auto flex items-center justify-center text-[10px] text-slate-400 font-mono">
-                  [ অফিশিয়াল সিল ]
-                </div>
-                <div className="text-[11px] text-slate-600">অফিসিয়াল সিল / Office Seal</div>
+              <div>
+                <p className="text-[10px] text-slate-500 italic">
+                  This certificate is issued upon proper verification and holds official validity.
+                </p>
               </div>
 
               {/* Signature Line */}

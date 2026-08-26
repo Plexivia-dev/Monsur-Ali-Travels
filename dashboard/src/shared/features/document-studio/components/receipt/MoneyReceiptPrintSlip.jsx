@@ -139,8 +139,8 @@ function SingleReceiptSlip({ data = {}, copyType = 'গ্রাহক কপি
         </div>
       </div>
 
-      {/* Signatures & Seal Grid */}
-      <div className="grid grid-cols-3 gap-2 pt-1.5 border-t border-slate-300 items-end text-center">
+      {/* Signatures Grid */}
+      <div className="grid grid-cols-2 gap-6 pt-1.5 border-t border-slate-300 items-end text-center">
         
         {/* Token Creator (Manager) */}
         <div>
@@ -151,22 +151,6 @@ function SingleReceiptSlip({ data = {}, copyType = 'গ্রাহক কপি
             {createdByName || 'ম্যানেজার'}
           </div>
           <div className="text-[8.5px] text-slate-500">টোকেন প্রস্তুতকারী</div>
-        </div>
-
-        {/* Official Seal Stamp Area - Ash / Subtle Gray */}
-        <div className="border border-dashed border-slate-300 rounded p-1 bg-slate-50/50 min-h-[40px] flex flex-col items-center justify-center">
-          {isConfirmed ? (
-            <div className="text-slate-400 flex flex-col items-center">
-              <ShieldCheck className="w-3.5 h-3.5 text-slate-400" />
-              <span className="text-[8px] font-bold uppercase tracking-wider text-slate-500">OFFICIAL CASH SEAL</span>
-              <span className="text-[7.5px] font-mono text-slate-400">{formatToDdMmYyyy(confirmedAt || createdAt)}</span>
-            </div>
-          ) : (
-            <div className="text-slate-400 flex flex-col items-center">
-              <span className="text-[8px] font-medium text-slate-400 uppercase">একাউন্টেন্ট সিল ও সিলমোহর</span>
-              <span className="text-[7px] italic text-slate-400/80">(ক্যাশ জমার পর সিল দিন)</span>
-            </div>
-          )}
         </div>
 
         {/* Accountant / Cashier Receiver */}

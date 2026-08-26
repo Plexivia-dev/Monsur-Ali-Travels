@@ -297,14 +297,13 @@ export function SalarySlipPreview({ data }) {
           </div>
         </div>
 
-        {/* Company Seal Box & Footer Statement (Perfectly Centered Horizontal Row Alignment) */}
+        {/* Footer Statement */}
         <div className="mt-4 border-t border-slate-200 pt-3 flex items-center justify-between">
           <div className="text-[9px] text-slate-500 font-medium tracking-tight">
-            Monsur Ali Tours & Travels • Confidential Payroll Document • One Employee
+            Monsur Ali Tours &amp; Travels • Confidential Payroll Document • Official Salary Statement
           </div>
-
-          <div className="w-32 h-10 border-2 border-dashed border-slate-400 rounded-md flex items-center justify-center text-[8px] text-slate-400 font-mono text-center leading-tight tracking-wider uppercase font-bold">
-            COMPANY SEAL / STAMP
+          <div className="text-[9px] text-slate-400 font-mono">
+            System Generated &amp; Verified
           </div>
         </div>
       </div>
