@@ -99,7 +99,10 @@ export function UnifiedSidebar({
     }
   };
 
-  const handleNavClick = (item) => {
+  const handleNavClick = (e, item) => {
+    if (e && e.preventDefault) {
+      e.preventDefault();
+    }
     if (isCollapsed) {
       setOpen(true);
     }
@@ -142,7 +145,7 @@ export function UnifiedSidebar({
         ) : (
           <div className="flex items-center justify-between w-full px-1">
             <div
-              onClick={() => handleNavClick({ path: '/' })}
+              onClick={(e) => handleNavClick(e, { path: '/' })}
               className="flex items-center justify-start gap-2.5 cursor-pointer group/brand overflow-hidden text-left"
             >
               <div className="size-10 rounded-full bg-white p-[3px] flex items-center justify-center shrink-0 overflow-hidden shadow-xs border border-white/30">
@@ -279,7 +282,7 @@ export function UnifiedSidebar({
                                     <SidebarMenuSubItem key={subIdx}>
                                       <SidebarMenuSubButton
                                         isActive={isSubActive}
-                                        onClick={() => handleNavClick(subItem)}
+                                        onClick={(e) => handleNavClick(e, subItem)}
                                         className={cn(
                                           'group cursor-pointer text-[13px] rounded-lg py-2 px-2.5 flex items-center gap-2 transition-all duration-200',
                                           isSubActive
@@ -325,7 +328,7 @@ export function UnifiedSidebar({
                         <SidebarMenuButton
                           isActive={isActive}
                           tooltip={itemLabel}
-                          onClick={() => handleNavClick(item)}
+                          onClick={(e) => handleNavClick(e, item)}
                           className={cn(
                             'group cursor-pointer text-sm font-medium py-2 px-3 rounded-xl transition-all duration-200',
                             isActive
