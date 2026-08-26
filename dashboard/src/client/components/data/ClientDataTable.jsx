@@ -26,7 +26,7 @@ import { Button } from '@/components/ui/button';
 import { useTranslation } from 'react-i18next';
 import { CaseWorkspaceDrawer } from '../agency/CaseWorkspaceDrawer';
 
-export function ClientDataTable() {
+export function ClientDataTable({ activeSubmodule }) {
   const { t } = useTranslation();
   const { switchPortal } = usePortal();
   const [data, setData] = useState([]);
@@ -44,7 +44,9 @@ export function ClientDataTable() {
   const [profileItem, setProfileItem] = useState(null);
   const [selectedCaseIdForWorkspace, setSelectedCaseIdForWorkspace] = useState(null);
   const [receiptModalData, setReceiptModalData] = useState(null);
-  const [isCreateClientOpen, setIsCreateClientOpen] = useState(false);
+  const [isCreateClientOpen, setIsCreateClientOpen] = useState(
+    activeSubmodule === 'clients-add' || activeSubmodule === 'add-client'
+  );
   const [newClientForm, setNewClientForm] = useState({
     fullName: '',
     phone: '',
@@ -56,6 +58,14 @@ export function ClientDataTable() {
   const [isCreatingClient, setIsCreatingClient] = useState(false);
   const [deleteTarget, setDeleteTarget] = useState(null);
   const [isDeleting, setIsDeleting] = useState(false);
+
+  useEffect(() => {
+    if (activeSubmodule === 'clients-add' || activeSubmodule === 'add-client') {
+      setIsCreateClientOpen(true);
+    } else {
+      setIsCreateClientOpen(false);
+    }
+  }, [activeSubmodule]);
 
   const fetchData = async (
     page = 1,

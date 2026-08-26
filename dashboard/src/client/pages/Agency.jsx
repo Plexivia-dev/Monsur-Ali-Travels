@@ -26,6 +26,6 @@ export default function Agency() {
     case 'payments':
     case 'clients-payments':
     default:
-      return <ClientDataTable />;
+      return <ClientDataTable activeSubmodule={activeSubmodule} />;
   }
 }
