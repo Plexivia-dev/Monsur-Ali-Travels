@@ -5,6 +5,7 @@ import { PrintablePaper } from '../common/PrintablePaper';
 import { getDefaultInvoiceData, generateUniqueInvoiceNo } from './sampleData';
 import { Printer, Edit3, CheckCircle2 } from 'lucide-react';
 import { apiClient } from '../../../lib/api-client';
+import { printDocument } from '@shared/lib/utils';
 import { toast } from 'sonner';
 
 export function InvoiceBuilder() {
@@ -80,7 +81,11 @@ export function InvoiceBuilder() {
   };
 
   const handlePrint = () => {
-    window.print();
+    printDocument({
+      docId: data.invoiceNo,
+      docType: 'Invoice',
+      clientName: data.client?.name,
+    });
   };
 
   const handleWhatsAppShare = () => {

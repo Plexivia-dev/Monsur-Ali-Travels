@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { X, Printer, FileCode, FileText, Check, Copy, Download, ExternalLink } from 'lucide-react';
+import { printDocument, getDocumentId } from '@shared/lib/utils';
 
 export function ExportModal({ isOpen, onClose, documentTitle = 'Document', data = {}, elementId = 'printable-document-canvas' }) {
   const [copiedText, setCopiedText] = useState(false);
@@ -11,9 +12,15 @@ export function ExportModal({ isOpen, onClose, documentTitle = 'Document', data 
   const handlePrint = () => {
     onClose();
     setTimeout(() => {
-      window.print();
+      printDocument({
+        data,
+        docType: documentTitle,
+      });
     }, 150);
   };
+
+  const docId = getDocumentId(data);
+  const filePrefix = docId ? `${docId}_` : '';
 
   // 2. Download JSON
   const handleDownloadJson = () => {
@@ -22,7 +29,7 @@ export function ExportModal({ isOpen, onClose, documentTitle = 'Document', data 
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
     link.href = url;
-    link.download = `${documentTitle.toLowerCase().replace(/\s+/g, '-')}-data.json`;
+    link.download = `${filePrefix}${documentTitle.toLowerCase().replace(/\s+/g, '-')}-data.json`;
     link.click();
     URL.revokeObjectURL(url);
   };
@@ -36,7 +43,7 @@ export function ExportModal({ isOpen, onClose, documentTitle = 'Document', data 
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>${documentTitle} - Smart ERP Document</title>
+  <title>${filePrefix}${documentTitle} - Smart ERP Document</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
     @media print {
@@ -56,7 +63,7 @@ export function ExportModal({ isOpen, onClose, documentTitle = 'Document', data 
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
     link.href = url;
-    link.download = `${documentTitle.toLowerCase().replace(/\s+/g, '-')}-printable.html`;
+    link.download = `${filePrefix}${documentTitle.toLowerCase().replace(/\s+/g, '-')}-printable.html`;
     link.click();
     URL.revokeObjectURL(url);
   };

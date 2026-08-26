@@ -4,6 +4,8 @@ import { CharacterCertificatePreview } from './CharacterCertificatePreview';
 import { SAMPLE_CHARACTER_CERTIFICATE } from './sampleData';
 import { Download, RefreshCw, Eye, Edit3, Columns } from 'lucide-react';
 
+import { printDocument } from '@shared/lib/utils';
+
 export function CharacterCertificate() {
   const [data, setData] = useState(SAMPLE_CHARACTER_CERTIFICATE);
   const [viewMode, setViewMode] = useState('split');
@@ -13,7 +15,11 @@ export function CharacterCertificate() {
   };
 
   const handlePrint = () => {
-    window.print();
+    printDocument({
+      docId: data.certificateNo,
+      docType: 'Character_Certificate',
+      clientName: data.candidateName,
+    });
   };
 
   return (

@@ -3,7 +3,7 @@ import { Search, RefreshCw, FileSpreadsheet, Trash2, Printer, Download, X } from
 import { apiClient } from '../../lib/api-client';
 import { DataTablePagination } from './DataTablePagination';
 import { toast } from 'sonner';
-import { formatToDdMmYyyy } from '../../lib/utils';
+import { formatToDdMmYyyy, printDocument } from '../../lib/utils';
 import { usePortal } from '../../context/PortalContext';
 import { InvoicePreview } from '@/shared/features/document-studio';
 import { ConfirmDeleteDialog } from '@/components/ui/confirm-delete-dialog';
@@ -71,7 +71,11 @@ export function InvoiceDataTable() {
   };
 
   const handlePrint = () => {
-    window.print();
+    printDocument({
+      docId: previewItem?.invoiceNo,
+      docType: 'Invoice',
+      clientName: previewItem?.client?.name,
+    });
   };
 
   const getStatusBadge = (status) => {

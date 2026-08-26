@@ -3,7 +3,7 @@ import { Search, RefreshCw, DollarSign, Trash2, Printer, Download, X } from 'luc
 import { apiClient } from '../../lib/api-client';
 import { DataTablePagination } from './DataTablePagination';
 import { toast } from 'sonner';
-import { formatToDdMmYyyy } from '../../lib/utils';
+import { formatToDdMmYyyy, printDocument } from '../../lib/utils';
 import { usePortal } from '../../context/PortalContext';
 import { SalarySlipPreview } from '@/shared/features/document-studio';
 import { ConfirmDeleteDialog } from '@/components/ui/confirm-delete-dialog';
@@ -71,7 +71,11 @@ export function SalarySlipDataTable() {
   };
 
   const handlePrint = () => {
-    window.print();
+    printDocument({
+      docId: previewItem?.slipNo,
+      docType: 'Salary_Slip',
+      clientName: previewItem?.employeeName,
+    });
   };
 
   return (

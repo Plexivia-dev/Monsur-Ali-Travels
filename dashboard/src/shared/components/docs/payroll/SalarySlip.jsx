@@ -3,7 +3,8 @@ import { PrintablePaper } from '../common/PrintablePaper';
 import { SalarySlipForm } from './SalarySlipForm';
 import { SalarySlipPreview } from './SalarySlipPreview';
 import { Printer, Edit3, CheckCircle2 } from 'lucide-react';
-import { apiClient } from '../../../lib/api-client';
+import { apiClient } from '@shared/lib/api-client';
+import { printDocument } from '@shared/lib/utils';
 import { toast } from 'sonner';
 import agencyInfo from '../../../lib/information.json';
 
@@ -124,7 +125,11 @@ export function SalarySlip() {
   };
 
   const handlePrint = () => {
-    window.print();
+    printDocument({
+      docId: formData.slipNo,
+      docType: 'Salary_Slip',
+      clientName: formData.employeeName,
+    });
   };
 
   const handleWhatsAppShare = () => {

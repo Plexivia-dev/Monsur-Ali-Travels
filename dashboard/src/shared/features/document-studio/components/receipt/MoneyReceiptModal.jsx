@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { X, Receipt, Check, Printer, ArrowLeft, Loader2, Sparkles, User, Phone, ShieldCheck, DollarSign, FileText } from 'lucide-react';
 import { apiClient } from '@shared/lib/api-client';
+import { printDocument } from '@shared/lib/utils';
 import { toast } from 'sonner';
 import { MoneyReceiptPrintSlip } from './MoneyReceiptPrintSlip';
 import { useAuth } from '@shared/lib/auth-context';
@@ -107,7 +108,11 @@ export function MoneyReceiptModal({
   };
 
   const handlePrint = () => {
-    window.print();
+    printDocument({
+      docId: createdReceipt?.receiptNo || formData.receiptNo,
+      docType: 'Money_Receipt',
+      clientName: createdReceipt?.clientName || formData.clientName,
+    });
   };
 
   return (

@@ -3,7 +3,7 @@ import { Search, RefreshCw, ShieldCheck, Trash2, Printer, Download, X, Receipt, 
 import { apiClient } from '../../lib/api-client';
 import { DataTablePagination } from './DataTablePagination';
 import { toast } from 'sonner';
-import { formatToDdMmYyyy } from '../../lib/utils';
+import { formatToDdMmYyyy, printDocument } from '../../lib/utils';
 import { usePortal } from '../../context/PortalContext';
 import { PassportSubmissionPreview, MoneyReceiptModal } from '@/shared/features/document-studio';
 import { ConfirmDeleteDialog } from '@/components/ui/confirm-delete-dialog';
@@ -152,7 +152,11 @@ export function PassportSubmissionDataTable() {
   };
 
   const handlePrint = () => {
-    window.print();
+    printDocument({
+      docId: previewItem?.submissionNo || previewItem?.trackingNo || previewItem?.barcode,
+      docType: 'Passport_Submission',
+      clientName: previewItem?.applicantName,
+    });
   };
 
   return (

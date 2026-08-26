@@ -4,6 +4,8 @@ import { ExperienceCertificatePreview } from './ExperienceCertificatePreview';
 import { SAMPLE_EXPERIENCE_CERTIFICATE } from './sampleData';
 import { Download, RefreshCw, Eye, Edit3, Columns, Award } from 'lucide-react';
 
+import { printDocument } from '@shared/lib/utils';
+
 export function ExperienceCertificate() {
   const [data, setData] = useState(SAMPLE_EXPERIENCE_CERTIFICATE);
   const [viewMode, setViewMode] = useState('split');
@@ -13,7 +15,11 @@ export function ExperienceCertificate() {
   };
 
   const handlePrint = () => {
-    window.print();
+    printDocument({
+      docId: data.certificateNo,
+      docType: 'Experience_Certificate',
+      clientName: data.employeeName,
+    });
   };
 
   return (

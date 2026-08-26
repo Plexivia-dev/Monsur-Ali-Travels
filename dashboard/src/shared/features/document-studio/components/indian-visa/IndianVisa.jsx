@@ -5,6 +5,7 @@ import { getDefaultIndianVisaData, generateUniqueIndianVisaTrackingNo } from './
 import { Printer, Edit3, CheckCircle2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { apiClient } from '@shared/lib/api-client';
+import { printDocument } from '@shared/lib/utils';
 
 export function IndianVisa() {
   const [data, setData] = useState(getDefaultIndianVisaData());
@@ -61,7 +62,11 @@ export function IndianVisa() {
   };
 
   const handlePrint = () => {
-    window.print();
+    printDocument({
+      docId: data.trackingNo || data.submissionNo || data.webFileNo,
+      docType: 'Indian_Visa',
+      clientName: data.applicantName,
+    });
   };
 
   const handleWhatsAppShare = () => {

@@ -4,7 +4,7 @@ import { Printer, CheckCircle2, Clock, ShieldCheck, QrCode } from 'lucide-react'
 import { Button } from '@/components/ui/button';
 import agencyInfo from '@shared/lib/information.json';
 import logoImg from '@shared/assets/logo.png';
-import { formatToDdMmYyyy } from '@shared/lib/utils';
+import { formatToDdMmYyyy, printDocument } from '@shared/lib/utils';
 
 // Helper component for single half-page receipt slip
 function SingleReceiptSlip({ data = {}, copyType = 'গ্রাহক কপি (Client Copy)' }) {
@@ -201,7 +201,13 @@ function SingleReceiptSlip({ data = {}, copyType = 'গ্রাহক কপি
  * Formatted as an A4 page with 2 slips (Client Copy & Office Copy)
  */
 export function MoneyReceiptPrintSlip({ data = {}, onPrint }) {
-  const handlePrint = onPrint || (() => window.print());
+  const handlePrint = onPrint || (() => {
+    printDocument({
+      docId: data.receiptNo,
+      docType: 'Money_Receipt',
+      clientName: data.clientName,
+    });
+  });
 
   return (
     <div className="w-full flex flex-col items-center">

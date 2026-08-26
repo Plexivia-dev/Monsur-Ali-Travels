@@ -18,7 +18,7 @@ import {
 import { apiClient } from '../../lib/api-client';
 import { DataTablePagination } from './DataTablePagination';
 import { toast } from 'sonner';
-import { formatToDdMmYyyy } from '../../lib/utils';
+import { formatToDdMmYyyy, printDocument } from '../../lib/utils';
 import { usePortal } from '../../context/PortalContext';
 import { ClientGuardianPreview, STATUS_OPTIONS, SERVICE_TYPES } from '@/shared/features/document-studio';
 import { ConfirmDeleteDialog } from '@/components/ui/confirm-delete-dialog';
@@ -412,7 +412,13 @@ export function ClientGuardianDataTable({ onEditItem }) {
               <div className="flex items-center gap-2">
                 <button
                   type="button"
-                  onClick={() => window.print()}
+                  onClick={() =>
+                    printDocument({
+                      docId: previewItem?.applicationNo || previewItem?.receiptNo,
+                      docType: 'Customer_Guardian_Form',
+                      clientName: previewItem?.client?.fullName,
+                    })
+                  }
                   className="flex items-center gap-1.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-4 py-2 rounded-xl shadow-xs cursor-pointer"
                 >
                   <Printer className="w-4 h-4" />

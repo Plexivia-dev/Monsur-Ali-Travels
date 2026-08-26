@@ -22,7 +22,7 @@ import {
 import { apiClient } from '../../lib/api-client';
 import { DataTablePagination } from './DataTablePagination';
 import { toast } from 'sonner';
-import { formatToDdMmYyyy } from '../../lib/utils';
+import { formatToDdMmYyyy, printDocument } from '../../lib/utils';
 import { MoneyReceiptModal, ReceiptConfirmModal, MoneyReceiptPrintSlip } from '@/shared/features/document-studio';
 import { ConfirmDeleteDialog } from '@/components/ui/confirm-delete-dialog';
 import { Button } from '@/components/ui/button';
@@ -542,7 +542,16 @@ export function MoneyReceiptDataTable() {
               </button>
             </div>
             <div className="flex-1 overflow-y-auto p-4 sm:p-6">
-              <MoneyReceiptPrintSlip data={previewItem} onPrint={() => window.print()} />
+              <MoneyReceiptPrintSlip
+                data={previewItem}
+                onPrint={() =>
+                  printDocument({
+                    docId: previewItem?.receiptNo,
+                    docType: 'Money_Receipt',
+                    clientName: previewItem?.clientName,
+                  })
+                }
+              />
             </div>
           </div>
         </div>

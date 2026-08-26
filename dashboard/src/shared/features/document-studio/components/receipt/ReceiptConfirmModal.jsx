@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { X, ShieldCheck, CheckCircle2, Loader2, Printer, AlertTriangle, User, DollarSign } from 'lucide-react';
 import { apiClient } from '@shared/lib/api-client';
+import { printDocument } from '@shared/lib/utils';
 import { toast } from 'sonner';
 import { useAuth } from '@shared/lib/auth-context';
 import { formatToDdMmYyyy } from '@shared/lib/utils';
@@ -50,7 +51,11 @@ export function ReceiptConfirmModal({
   };
 
   const handlePrint = () => {
-    window.print();
+    printDocument({
+      docId: confirmedData?.receiptNo || receipt?.receiptNo,
+      docType: 'Money_Receipt',
+      clientName: confirmedData?.clientName || receipt?.clientName,
+    });
   };
 
   return (

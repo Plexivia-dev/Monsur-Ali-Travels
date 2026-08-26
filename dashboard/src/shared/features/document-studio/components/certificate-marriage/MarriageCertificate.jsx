@@ -4,6 +4,8 @@ import { MarriageCertificatePreview } from './MarriageCertificatePreview';
 import { SAMPLE_MARRIAGE_CERTIFICATE } from './sampleData';
 import { Download, RefreshCw, Eye, Edit3, Columns } from 'lucide-react';
 
+import { printDocument } from '@shared/lib/utils';
+
 export function MarriageCertificate() {
   const [data, setData] = useState(SAMPLE_MARRIAGE_CERTIFICATE);
   const [viewMode, setViewMode] = useState('split');
@@ -13,7 +15,11 @@ export function MarriageCertificate() {
   };
 
   const handlePrint = () => {
-    window.print();
+    printDocument({
+      docId: data.certificateNo,
+      docType: 'Marriage_Certificate',
+      clientName: data.groomName ? `${data.groomName}_and_${data.brideName || ''}` : 'Marriage',
+    });
   };
 
   return (

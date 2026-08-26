@@ -4,6 +4,7 @@ import { AgreementPreview } from './AgreementPreview';
 import { PrintablePaper } from '../common/PrintablePaper';
 import { Printer, Edit3, CheckCircle2, Share2 } from 'lucide-react';
 import { apiClient } from '@shared/lib/api-client';
+import { printDocument } from '@shared/lib/utils';
 import { HeaderTitle } from '@shared/components/common/HeaderTitle';
 import { toast } from 'sonner';
 import agencyInfoJson from '@shared/lib/information.json';
@@ -140,7 +141,11 @@ export function EmploymentAgreement() {
   };
 
   const handlePrint = () => {
-    window.print();
+    printDocument({
+      docId: formData.agreementId,
+      docType: 'Employment_Agreement',
+      clientName: formData.parties?.employeeName,
+    });
   };
 
   const handleWhatsAppShare = () => {

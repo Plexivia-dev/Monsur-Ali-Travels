@@ -5,6 +5,7 @@ import { getDefaultCashVoucherData, generateVoucherNo } from './sampleData';
 import { Printer, Share2, ArrowLeft } from 'lucide-react';
 import { toast } from 'sonner';
 import { apiClient } from '@shared/lib/api-client';
+import { printDocument } from '@shared/lib/utils';
 import { Button } from '@/components/ui/button';
 import { HeaderTitle } from '@shared/components/common/HeaderTitle';
 
@@ -71,7 +72,13 @@ export function CashVoucher() {
     }
   };
 
-  const handlePrint = () => window.print();
+  const handlePrint = () => {
+    printDocument({
+      docId: data.voucherNo,
+      docType: 'Cash_Voucher',
+      clientName: data.paidTo || data.receivedBy,
+    });
+  };
 
   const handleWhatsAppShare = () => {
     const total = Number(data.grandTotal || 0).toLocaleString('en-IN');

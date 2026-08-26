@@ -3,7 +3,7 @@ import { Search, RefreshCw, FileCheck, Trash2, Printer, Download, X, Edit3, Uplo
 import { apiClient } from '../../lib/api-client';
 import { DataTablePagination } from './DataTablePagination';
 import { toast } from 'sonner';
-import { formatToDdMmYyyy } from '../../lib/utils';
+import { formatToDdMmYyyy, printDocument } from '../../lib/utils';
 import { usePortal } from '../../context/PortalContext';
 import { IndianVisaPreview, MoneyReceiptModal } from '@/shared/features/document-studio';
 import { ConfirmDeleteDialog } from '@/components/ui/confirm-delete-dialog';
@@ -153,7 +153,11 @@ export function IndianVisaDataTable() {
   };
 
   const handlePrint = () => {
-    window.print();
+    printDocument({
+      docId: previewItem?.trackingNo || previewItem?.submissionNo || previewItem?.webFileNo,
+      docType: 'Indian_Visa',
+      clientName: previewItem?.applicantName,
+    });
   };
 
   return (

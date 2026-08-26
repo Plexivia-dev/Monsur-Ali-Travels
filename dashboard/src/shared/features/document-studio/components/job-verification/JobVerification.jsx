@@ -6,6 +6,8 @@ import { Printer, Edit3, CheckCircle2, Share2, Briefcase } from 'lucide-react';
 import { apiClient } from '@shared/lib/api-client';
 import { toast } from 'sonner';
 
+import { printDocument } from '@shared/lib/utils';
+
 export function JobVerification() {
   const [viewMode, setViewMode] = useState('form'); // 'form' | 'preview'
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -66,7 +68,11 @@ export function JobVerification() {
   };
 
   const handlePrint = () => {
-    window.print();
+    printDocument({
+      docId: data.verificationId,
+      docType: 'Job_Verification_Form',
+      clientName: data.clientInfo?.clientName,
+    });
   };
 
   const handleWhatsAppShare = () => {

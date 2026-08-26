@@ -5,6 +5,7 @@ import { getDefaultPassportSubmissionData, generateUniquePassportTrackingNo } fr
 import { Printer, Edit3, CheckCircle2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { apiClient } from '@shared/lib/api-client';
+import { printDocument } from '@shared/lib/utils';
 
 export function PassportSubmission() {
   const [data, setData] = useState(getDefaultPassportSubmissionData());
@@ -61,7 +62,11 @@ export function PassportSubmission() {
   };
 
   const handlePrint = () => {
-    window.print();
+    printDocument({
+      docId: data.trackingNo || data.submissionNo || data.barcode,
+      docType: 'Passport_Submission',
+      clientName: data.applicantName,
+    });
   };
 
   const handleWhatsAppShare = () => {

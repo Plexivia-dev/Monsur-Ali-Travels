@@ -1,7 +1,7 @@
 import React, { useState, useRef } from 'react';
 import { X, CreditCard, Plus, Loader2, Printer, CheckCircle } from 'lucide-react';
 import { apiClient } from '@/lib/api-client';
-import { formatToDdMmYyyy } from '@/lib/utils';
+import { formatToDdMmYyyy, printDocument } from '@/lib/utils';
 import agencyInfo from '@/lib/information.json';
 
 // A4 Printable Wrapper specific to the admin flow
@@ -66,7 +66,11 @@ export const AddPaymentModal = ({ caseDoc, onClose, onSuccess }) => {
   };
 
   const handlePrint = () => {
-    window.print();
+    printDocument({
+      docId: createdPayment?.invoiceNo || `PAY-${new Date().getTime().toString().slice(-6)}`,
+      docType: 'Payment_Receipt',
+      clientName: client?.name,
+    });
   };
 
   return (

@@ -5,6 +5,7 @@ import { getDefaultMoneyReceiptData, generateReceiptNo } from './sampleData';
 import { Printer, Edit3, Share2, ArrowLeft, CheckCircle2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { apiClient } from '@shared/lib/api-client';
+import { printDocument } from '@shared/lib/utils';
 
 export function MoneyReceipt() {
   const [data, setData] = useState(getDefaultMoneyReceiptData());
@@ -68,7 +69,11 @@ export function MoneyReceipt() {
   };
 
   const handlePrint = () => {
-    window.print();
+    printDocument({
+      docId: data.receiptNo,
+      docType: 'Money_Receipt',
+      clientName: data.clientName,
+    });
   };
 
   const handleWhatsAppShare = () => {

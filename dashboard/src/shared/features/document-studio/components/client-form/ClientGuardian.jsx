@@ -6,6 +6,7 @@ import { getDefaultClientGuardianData, generateApplicationNo } from './sampleDat
 import { Printer, Edit3, CheckCircle2, FileText, Download, Share2, Sparkles, Save, Database } from 'lucide-react';
 import { toast } from 'sonner';
 import { apiClient } from '@shared/lib/api-client';
+import { printDocument } from '@shared/lib/utils';
 import { Button } from '@/components/ui/button';
 
 import { HeaderTitle, HeaderModeSwitcher } from '@shared/components/common/HeaderTitle';
@@ -70,7 +71,11 @@ export function ClientGuardian({ initialData = null, onSavedSuccess = null }) {
   };
 
   const handlePrint = () => {
-    window.print();
+    printDocument({
+      docId: data.applicationNo || data.receiptNo,
+      docType: 'Client_Guardian_Form',
+      clientName: data.client?.fullName,
+    });
   };
 
   const handleWhatsAppShare = () => {

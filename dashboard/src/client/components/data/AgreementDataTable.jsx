@@ -3,7 +3,7 @@ import { Search, RefreshCw, FileText, Trash2, Printer, Eye, X, Download } from '
 import { apiClient } from '../../lib/api-client';
 import { DataTablePagination } from './DataTablePagination';
 import { toast } from 'sonner';
-import { formatToDdMmYyyy } from '../../lib/utils';
+import { formatToDdMmYyyy, printDocument } from '../../lib/utils';
 import { usePortal } from '../../context/PortalContext';
 import { AgreementPreview, PrintablePaper } from '@/shared/features/document-studio';
 import { ConfirmDeleteDialog } from '@/components/ui/confirm-delete-dialog';
@@ -166,7 +166,11 @@ export function AgreementDataTable() {
   };
 
   const handlePrint = () => {
-    window.print();
+    printDocument({
+      docId: previewItem?.agreementId,
+      docType: 'Employment_Agreement',
+      clientName: previewItem?.parties?.employeeName,
+    });
   };
 
   return (
