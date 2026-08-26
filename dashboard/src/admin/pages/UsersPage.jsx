@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react';
+import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { apiClient } from '@/lib/api-client';
 import {
   User,
@@ -19,6 +19,7 @@ import {
   DataTableColumnHeader,
 } from '@/components/ui/unified-table';
 import { HeaderTitle } from '@shared/components/common/HeaderTitle';
+import { UnifiedModalHeader, UnifiedModalFooter } from '@shared/components/common/UnifiedModal';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 
@@ -316,117 +317,98 @@ const UsersPage = () => {
       {/* Create User Modal */}
       {createModalOpen && (
         <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-background rounded-2xl border border-border shadow-2xl max-w-lg w-full flex flex-col overflow-hidden">
-            {/* Modal Header */}
-            <div className="p-5 border-b border-border flex items-center justify-between bg-muted/40">
-              <div className="flex items-center gap-3">
-                <div className="p-2.5 rounded-xl bg-primary/10 text-primary">
-                  <UserPlus className="size-5" />
-                </div>
-                <div>
-                  <h2 className="text-lg font-bold text-foreground">Add System User</h2>
-                  <p className="text-xs text-muted-foreground mt-0.5">
-                    Create a new agency staff or admin account.
-                  </p>
-                </div>
-              </div>
-              <button
-                onClick={() => setCreateModalOpen(false)}
-                className="p-1.5 rounded-lg border border-border hover:bg-muted text-muted-foreground cursor-pointer"
-              >
-                <X className="size-4" />
-              </button>
-            </div>
+          <div className="bg-background rounded-2xl border border-border shadow-2xl max-w-lg w-full flex flex-col overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+            {/* Unified Modal Header */}
+            <UnifiedModalHeader
+              icon={UserPlus}
+              title="Add System User"
+              subtitle="Create a new agency staff or admin account."
+              onClose={() => setCreateModalOpen(false)}
+            />
 
             {/* Modal Form */}
-            <form onSubmit={handleCreateUser} className="p-6 space-y-4">
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div>
-                  <label className="text-xs font-semibold text-foreground block mb-1.5">
-                    Full Name <span className="text-rose-500">*</span>
-                  </label>
-                  <input
-                    type="text"
-                    value={createForm.fullName}
-                    onChange={(e) => setCreateForm((p) => ({ ...p, fullName: e.target.value }))}
-                    placeholder="e.g. Md. Rafiqul Islam"
-                    required
-                    className="w-full px-3.5 py-2 text-xs rounded-xl border border-input bg-background focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
-                  />
-                </div>
-                <div>
-                  <label className="text-xs font-semibold text-foreground block mb-1.5">
-                    Role <span className="text-rose-500">*</span>
-                  </label>
-                  <select
-                    value={createForm.role}
-                    onChange={(e) => setCreateForm((p) => ({ ...p, role: e.target.value }))}
-                    className="w-full px-3 py-2 text-xs rounded-xl border border-input bg-background focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
-                  >
-                    <option value="Owner">Owner</option>
-                    <option value="Admin">Admin</option>
-                    <option value="Staff">Staff</option>
-                    <option value="Accountant">Accountant</option>
-                  </select>
-                </div>
-                <div>
-                  <label className="text-xs font-semibold text-foreground block mb-1.5">
-                    Email Address <span className="text-rose-500">*</span>
-                  </label>
-                  <input
-                    type="email"
-                    value={createForm.email}
-                    onChange={(e) => setCreateForm((p) => ({ ...p, email: e.target.value }))}
-                    placeholder="e.g. user@agency.com"
-                    required
-                    className="w-full px-3.5 py-2 text-xs rounded-xl border border-input bg-background focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
-                  />
-                </div>
-                <div>
-                  <label className="text-xs font-semibold text-foreground block mb-1.5">
-                    Phone Number
-                  </label>
-                  <input
-                    type="tel"
-                    value={createForm.phone}
-                    onChange={(e) => setCreateForm((p) => ({ ...p, phone: e.target.value }))}
-                    placeholder="e.g. +880 1712-345678"
-                    className="w-full px-3.5 py-2 text-xs rounded-xl border border-input bg-background focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
-                  />
-                </div>
-                <div className="sm:col-span-2">
-                  <label className="text-xs font-semibold text-foreground block mb-1.5">
-                    Password <span className="text-rose-500">*</span>
-                  </label>
-                  <input
-                    type="password"
-                    value={createForm.password}
-                    onChange={(e) => setCreateForm((p) => ({ ...p, password: e.target.value }))}
-                    placeholder="Minimum 6 characters"
-                    required
-                    minLength={6}
-                    className="w-full px-3.5 py-2 text-xs rounded-xl border border-input bg-background focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary font-mono"
-                  />
+            <form onSubmit={handleCreateUser} className="flex flex-col flex-grow overflow-hidden">
+              <div className="p-6 space-y-4 overflow-y-auto">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <label className="text-xs font-semibold text-foreground block mb-1.5">
+                      Full Name <span className="text-rose-500">*</span>
+                    </label>
+                    <input
+                      type="text"
+                      value={createForm.fullName}
+                      onChange={(e) => setCreateForm((p) => ({ ...p, fullName: e.target.value }))}
+                      placeholder="e.g. Md. Rafiqul Islam"
+                      required
+                      className="w-full px-3.5 py-2 text-xs rounded-xl border border-input bg-background focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-xs font-semibold text-foreground block mb-1.5">
+                      Role <span className="text-rose-500">*</span>
+                    </label>
+                    <select
+                      value={createForm.role}
+                      onChange={(e) => setCreateForm((p) => ({ ...p, role: e.target.value }))}
+                      className="w-full px-3 py-2 text-xs rounded-xl border border-input bg-background focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                    >
+                      <option value="Owner">Owner</option>
+                      <option value="Admin">Admin</option>
+                      <option value="Staff">Staff</option>
+                      <option value="Accountant">Accountant</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="text-xs font-semibold text-foreground block mb-1.5">
+                      Email Address <span className="text-rose-500">*</span>
+                    </label>
+                    <input
+                      type="email"
+                      value={createForm.email}
+                      onChange={(e) => setCreateForm((p) => ({ ...p, email: e.target.value }))}
+                      placeholder="e.g. user@agency.com"
+                      required
+                      className="w-full px-3.5 py-2 text-xs rounded-xl border border-input bg-background focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-xs font-semibold text-foreground block mb-1.5">
+                      Phone Number
+                    </label>
+                    <input
+                      type="tel"
+                      value={createForm.phone}
+                      onChange={(e) => setCreateForm((p) => ({ ...p, phone: e.target.value }))}
+                      placeholder="e.g. +880 1712-345678"
+                      className="w-full px-3.5 py-2 text-xs rounded-xl border border-input bg-background focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                    />
+                  </div>
+                  <div className="sm:col-span-2">
+                    <label className="text-xs font-semibold text-foreground block mb-1.5">
+                      Password <span className="text-rose-500">*</span>
+                    </label>
+                    <input
+                      type="password"
+                      value={createForm.password}
+                      onChange={(e) => setCreateForm((p) => ({ ...p, password: e.target.value }))}
+                      placeholder="Minimum 6 characters"
+                      required
+                      minLength={6}
+                      className="w-full px-3.5 py-2 text-xs rounded-xl border border-input bg-background focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary font-mono"
+                    />
+                  </div>
                 </div>
               </div>
 
-              <div className="pt-3 border-t border-border flex items-center justify-end gap-2.5">
-                <button
-                  type="button"
-                  onClick={() => setCreateModalOpen(false)}
-                  className="px-4 py-2 text-xs font-semibold rounded-xl border border-input hover:bg-muted text-foreground transition-all cursor-pointer"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  disabled={createLoading}
-                  className="flex items-center gap-2 px-5 py-2 text-xs font-bold rounded-xl bg-primary text-primary-foreground hover:bg-primary/90 transition-all cursor-pointer shadow-md disabled:opacity-50"
-                >
-                  {createLoading ? <Loader2 className="size-4 animate-spin" /> : <CheckCircle2 className="size-4" />}
-                  <span>{createLoading ? 'Creating...' : 'Create User'}</span>
-                </button>
-              </div>
+              {/* Unified Modal Footer */}
+              <UnifiedModalFooter
+                onCancel={() => setCreateModalOpen(false)}
+                cancelText="Cancel"
+                submitText="Create User"
+                loadingText="Creating..."
+                submitIcon={CheckCircle2}
+                loading={createLoading}
+              />
             </form>
           </div>
         </div>
