@@ -46,7 +46,7 @@ export function InvoiceForm({ data, onChange, onSubmit, onReset, isSubmitting = 
   };
 
   return (
-    <form onSubmit={(e) => { e.preventDefault(); onSubmit(); }} className="w-full max-w-[850px] mx-auto space-y-5">
+    <form onSubmit={(e) => { e.preventDefault(); onSubmit(); }} className="w-full space-y-5">
       <div className="bg-card border border-border rounded-[4px] p-6 sm:p-7 space-y-5 text-sm shadow-xs">
         
         {/* Form Title & Header Bar */}

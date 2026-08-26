@@ -26,6 +26,14 @@ clientRouter.put('/:id', (req, res) => {
   ClientController.update(req, res);
 });
 
+clientRouter.patch('/:id/status', (req, res) => {
+  ClientController.updateStatus(req, res);
+});
+
+clientRouter.patch('/:id', (req, res) => {
+  ClientController.update(req, res);
+});
+
 clientRouter.delete('/:id', (req, res) => {
   ClientController.delete(req, res);
 });
