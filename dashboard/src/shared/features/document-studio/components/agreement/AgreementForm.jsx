@@ -102,27 +102,6 @@ export function AgreementForm({ formData, setFormData, onSubmit, onReset, isSubm
 
   return (
     <div className="space-y-5 w-full mx-auto">
-      {/* Top Header Card */}
-      <div className="bg-card border border-border p-6 rounded-xl shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b-2 border-border">
-        <div>
-          <h2 className="text-xl sm:text-2xl font-bold text-foreground flex items-center gap-2 tracking-tight">
-            <FileText className="w-6 h-6 text-primary shrink-0" />
-            {t('agreement.formTitle', { step: currentStep })}
-          </h2>
-        </div>
-
-        <Button
-          type="button"
-          variant="reset"
-          size="sm"
-          onClick={() => setResetDialogOpen(true)}
-          className="shrink-0 self-start sm:self-auto"
-        >
-          <RotateCcw className="w-3.5 h-3.5" />
-          <span>{t('agreement.reset', 'Reset')}</span>
-        </Button>
-      </div>
-
       {/* Corporate Stepper Header */}
       <div className="bg-card border border-border p-4 rounded-xl shadow-sm space-y-3">
         {/* Progress Bar */}

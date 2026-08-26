@@ -18,36 +18,8 @@ export function PassportSubmissionForm({ data, onChange, onSubmit, onReset, isSu
   return (
     <form onSubmit={(e) => { e.preventDefault(); onSubmit(); }} className="w-full space-y-5">
       <div className="bg-card border border-border rounded-2xl p-6 sm:p-7 space-y-6 text-sm shadow-xs">
-        
-        {/* Form Title & Header Bar */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-border pb-4 gap-3">
-          <div>
-            <h2 className="font-black text-foreground text-xl sm:text-2xl tracking-tight flex items-center gap-2">
-              <ShieldCheck className="w-6 h-6 text-emerald-600 shrink-0" />
-              Passport Submission &amp; Intake Form
-            </h2>
-            <p className="text-xs text-muted-foreground mt-0.5">
-              Enter applicant passport specifications, personal details, document checklist, and generate official intake slip.
-            </p>
-          </div>
-
-          <div className="flex items-center space-x-2 shrink-0">
-            <label className="text-foreground font-bold text-xs">Status:</label>
-            <select
-              value={data.status || 'pending'}
-              onChange={(e) => onChange({ ...data, status: e.target.value })}
-              className="bg-background border border-border rounded-xl px-3 py-1.5 text-xs font-bold text-foreground outline-none cursor-pointer"
-            >
-              <option value="pending">Pending</option>
-              <option value="processing">In Processing</option>
-              <option value="submitted">Submitted to Passport Office</option>
-              <option value="delivered">Completed / Delivered</option>
-            </select>
-          </div>
-        </div>
-
         {/* METADATA */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 bg-muted/20 p-4 rounded-xl border border-border">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 bg-muted/20 p-4 rounded-xl border border-border">
           <div>
             <label className="block font-bold text-foreground text-xs mb-1.5">Submission Date</label>
             <DatePicker
@@ -65,6 +37,20 @@ export function PassportSubmissionForm({ data, onChange, onSubmit, onReset, isSu
             >
               <option value="E-Passport (Electronic Passport)">E-Passport (Electronic Passport)</option>
               <option value="MRP (Machine Readable Passport)">MRP (Machine Readable Passport)</option>
+            </select>
+          </div>
+
+          <div>
+            <label className="block font-bold text-foreground text-xs mb-1.5">Status</label>
+            <select
+              value={data.status || 'pending'}
+              onChange={(e) => onChange({ ...data, status: e.target.value })}
+              className="w-full bg-background border border-border rounded-xl px-3 py-2 text-foreground font-semibold text-xs outline-none focus:ring-1 focus:ring-primary cursor-pointer"
+            >
+              <option value="pending">Pending</option>
+              <option value="processing">In Processing</option>
+              <option value="submitted">Submitted to Passport Office</option>
+              <option value="delivered">Completed / Delivered</option>
             </select>
           </div>
         </div>

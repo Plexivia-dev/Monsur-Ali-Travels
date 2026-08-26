@@ -24,17 +24,16 @@ export function CertificateForm({ data, onChange }) {
 
   return (
     <div className="bg-card border border-border rounded-xl p-4 sm:p-5 space-y-4 text-xs">
-      <div className="flex items-center justify-between border-b border-border pb-3">
-        <h3 className="font-bold text-foreground text-sm">Character Certificate & Testimonial Form</h3>
+      <div className="flex items-center justify-end border-b border-border pb-3">
         <div className="flex items-center space-x-2">
-          <span className="text-muted-foreground">Language:</span>
+          <span className="text-muted-foreground font-semibold">Language:</span>
           <button
             onClick={() => onChange({ ...data, language: 'bn' })}
             className={`px-2.5 py-1 rounded-md font-bold transition-all cursor-pointer ${
               data.language === 'bn' ? 'bg-primary text-primary-foreground' : 'bg-muted text-muted-foreground'
             }`}
           >
-            English
+            বাংলা
           </button>
           <button
             onClick={() => onChange({ ...data, language: 'en' })}

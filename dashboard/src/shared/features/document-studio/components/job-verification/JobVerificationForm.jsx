@@ -96,30 +96,6 @@ export function JobVerificationForm({
 
   return (
     <div className="space-y-5 w-full mx-auto">
-      {/* Top Header Card */}
-      <div className="bg-card border border-border p-6 rounded-xl shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b-2 border-border">
-        <div>
-          <h2 className="text-xl sm:text-2xl font-bold text-foreground flex items-center gap-2 tracking-tight">
-            <FileCheck2 className="w-6 h-6 text-primary shrink-0" />
-            Job Verification Details Form (Step {currentStep} of 4)
-          </h2>
-          <p className="text-xs text-muted-foreground mt-0.5">
-            Company, Client &amp; Overseas Employment Verification Protocol
-          </p>
-        </div>
-
-        <Button
-          type="button"
-          variant="reset"
-          size="sm"
-          onClick={() => setResetDialogOpen(true)}
-          className="shrink-0 self-start sm:self-auto"
-        >
-          <RotateCcw className="w-3.5 h-3.5" />
-          <span>Reset</span>
-        </Button>
-      </div>
-
       {/* Stepper Header */}
       <div className="bg-card border border-border p-4 rounded-xl shadow-xs space-y-3">
         <div className="relative w-full h-1.5 bg-muted rounded-full overflow-hidden">

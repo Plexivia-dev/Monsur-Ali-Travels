@@ -23,33 +23,8 @@ export function IndianVisaForm({ data, onChange, onSubmit, onReset, isSubmitting
   return (
     <form onSubmit={(e) => { e.preventDefault(); onSubmit(); }} className="w-full mx-auto space-y-5">
       <div className="bg-card border border-border rounded-xl p-6 sm:p-7 space-y-5 text-sm shadow-sm">
-        
-        {/* Header Title & Status */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-border pb-4 gap-3">
-          <div>
-            <h2 className="font-bold text-foreground text-xl tracking-tight flex items-center gap-2">
-              <FileCheck className="w-5 h-5 text-primary shrink-0" />
-              {t('visa.title', 'Indian Visa Application Form')}
-            </h2>
-          </div>
-
-          <div className="flex items-center space-x-2 shrink-0">
-            <Label className="text-foreground text-xs font-semibold">{t('visa.status', 'Status')}:</Label>
-            <select
-              value={data.status || 'pending'}
-              onChange={e => onChange({ ...data, status: e.target.value })}
-              className="flex h-9 rounded-lg border border-input bg-background/60 px-3 py-1 text-sm text-foreground transition-all outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 cursor-pointer"
-            >
-              <option value="pending">{t('common.pending', 'Pending')}</option>
-              <option value="processing">Processing</option>
-              <option value="submitted">Submitted</option>
-              <option value="delivered">Delivered</option>
-            </select>
-          </div>
-        </div>
-
         {/* METADATA */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 bg-muted/20 p-4.5 rounded-lg border border-border">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 bg-muted/20 p-4.5 rounded-lg border border-border">
           <div className="space-y-1.5">
             <Label className="block text-xs font-semibold text-foreground">{t('visa.submissionDate', 'Submission Date')}</Label>
             <DatePicker
@@ -70,6 +45,20 @@ export function IndianVisaForm({ data, onChange, onSubmit, onReset, isSubmitting
               <option value="Business Visa">Business Visa</option>
               <option value="Entry Visa">Entry Visa</option>
               <option value="Student Visa">Student Visa</option>
+            </select>
+          </div>
+
+          <div className="space-y-1.5">
+            <Label className="block text-xs font-semibold text-foreground">{t('visa.status', 'Status')}</Label>
+            <select
+              value={data.status || 'pending'}
+              onChange={e => onChange({ ...data, status: e.target.value })}
+              className="flex h-9 w-full rounded-lg border border-input bg-background/60 px-3 py-1 text-sm text-foreground transition-all outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 cursor-pointer"
+            >
+              <option value="pending">{t('common.pending', 'Pending')}</option>
+              <option value="processing">Processing</option>
+              <option value="submitted">Submitted</option>
+              <option value="delivered">Delivered</option>
             </select>
           </div>
         </div>

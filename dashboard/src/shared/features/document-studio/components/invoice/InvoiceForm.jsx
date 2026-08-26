@@ -118,30 +118,6 @@ export function InvoiceForm({ data, onChange, onSubmit, onReset, isSubmitting = 
 
   return (
     <div className="bg-card border border-border rounded-2xl p-4 sm:p-6 shadow-xs space-y-6">
-      {/* Header Actions */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-border pb-4">
-        <div>
-          <h2 className="text-base font-bold text-foreground flex items-center gap-2">
-            <ReceiptText className="w-5 h-5 text-primary" />
-            Invoice &amp; Client Billing Generator
-          </h2>
-          <p className="text-xs text-muted-foreground mt-0.5">
-            Generate and print official client invoices with itemized charges, VAT calculation, and payment status tracking.
-          </p>
-        </div>
-
-        <div className="flex items-center gap-2">
-          <button
-            type="button"
-            onClick={onReset}
-            className="flex items-center gap-1.5 text-xs font-medium text-muted-foreground hover:text-foreground bg-muted hover:bg-muted/80 px-3 py-1.5 rounded-xl transition-colors cursor-pointer"
-          >
-            <RefreshCw className="w-3.5 h-3.5" />
-            <span>Reset Form</span>
-          </button>
-        </div>
-      </div>
-
       {/* Existing Client Auto-Fill Notification */}
       {detectedClient && (
         <div className="bg-sky-500/10 border border-sky-500/30 p-3 rounded-xl flex items-center justify-between gap-3 text-xs animate-in fade-in duration-200">

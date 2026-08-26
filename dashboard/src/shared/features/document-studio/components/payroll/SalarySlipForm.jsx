@@ -93,30 +93,6 @@ export function SalarySlipForm({ formData, setFormData, onSubmit, onReset, isSub
 
   return (
     <div className="bg-card border border-border rounded-2xl p-4 sm:p-6 shadow-xs space-y-6">
-      {/* Top Header Card */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-border pb-4">
-        <div>
-          <h2 className="text-base font-bold text-foreground flex items-center gap-2">
-            <Banknote className="w-5 h-5 text-primary" />
-            Monthly Salary Slip &amp; Payroll Generator
-          </h2>
-          <p className="text-xs text-muted-foreground mt-0.5">
-            Create, calculate, and print official employee salary slips with earnings, deductions, and attendance records.
-          </p>
-        </div>
-
-        <div className="flex items-center gap-2">
-          <button
-            type="button"
-            onClick={() => setResetDialogOpen(true)}
-            className="flex items-center gap-1.5 text-xs font-medium text-muted-foreground hover:text-foreground bg-muted hover:bg-muted/80 px-3 py-1.5 rounded-xl transition-colors cursor-pointer"
-          >
-            <RotateCcw className="w-3.5 h-3.5" />
-            <span>Reset Form</span>
-          </button>
-        </div>
-      </div>
-
       {/* Meta Bar: Slip No, Month, Pay Date & Mode */}
       <div className="bg-muted/30 border border-border p-4 rounded-xl space-y-3">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 text-xs">
