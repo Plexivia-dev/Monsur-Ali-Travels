@@ -41,6 +41,43 @@ const PIPELINE_STAGES = [
   { id: 'COMPLETED_DELIVERED', title: 'Completed & Delivered' },
 ];
 
+const getTaskStatusConfig = (status) => {
+  switch (status) {
+    case 'Approved':
+      return {
+        label: 'Approved ✓',
+        badgeClass: 'bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 border-emerald-500/30',
+        dotClass: 'bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]',
+      };
+    case 'Done':
+      return {
+        label: 'Done',
+        badgeClass: 'bg-blue-500/15 text-blue-700 dark:text-blue-300 border-blue-500/30',
+        dotClass: 'bg-blue-500 shadow-[0_0_8px_rgba(59,130,246,0.5)]',
+      };
+    case 'In Progress':
+    case 'Processing':
+      return {
+        label: 'In Progress',
+        badgeClass: 'bg-sky-500/15 text-sky-700 dark:text-sky-300 border-sky-500/30',
+        dotClass: 'bg-sky-500 animate-pulse shadow-[0_0_8px_rgba(14,165,233,0.5)]',
+      };
+    case 'Rejected':
+      return {
+        label: 'Rejected ✗',
+        badgeClass: 'bg-rose-500/15 text-rose-700 dark:text-rose-300 border-rose-500/30',
+        dotClass: 'bg-rose-500 shadow-[0_0_8px_rgba(244,63,94,0.5)]',
+      };
+    case 'Pending':
+    default:
+      return {
+        label: 'Pending',
+        badgeClass: 'bg-slate-500/10 text-slate-700 dark:text-slate-300 border-slate-300 dark:border-slate-700',
+        dotClass: 'bg-slate-400 shadow-[0_0_8px_rgba(148,163,184,0.5)]',
+      };
+  }
+};
+
 export function CaseWorkspaceDrawer({ caseId, isOpen, onClose, onRefresh }) {
   const user = useAuthStore((state) => state.user);
   const [caseData, setCaseData] = useState(null);
@@ -589,17 +626,15 @@ export function CaseWorkspaceDrawer({ caseId, isOpen, onClose, onRefresh }) {
                                 </span>
                                 <h4 className="text-sm font-bold text-foreground mt-0.5">{t.title}</h4>
                               </div>
-                              <span
-                                className={`px-2.5 py-0.5 rounded-full text-xs font-bold ${
-                                  isApproved
-                                    ? 'bg-emerald-100 text-emerald-700'
-                                    : isDone
-                                    ? 'bg-blue-100 text-blue-700'
-                                    : 'bg-amber-100 text-amber-700'
-                                }`}
-                              >
-                                {t.status}
-                              </span>
+                              {(() => {
+                                const statusCfg = getTaskStatusConfig(t.status);
+                                return (
+                                  <span className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-bold border ${statusCfg.badgeClass}`}>
+                                    <span className={`w-1.5 h-1.5 rounded-full ${statusCfg.dotClass}`} />
+                                    {statusCfg.label}
+                                  </span>
+                                );
+                              })()}
                             </div>
 
                             {t.description && (
@@ -609,7 +644,7 @@ export function CaseWorkspaceDrawer({ caseId, isOpen, onClose, onRefresh }) {
                             <div className="flex flex-wrap items-center justify-between gap-2 pt-2 border-t border-border text-xs">
                               <div className="text-muted-foreground">
                                 <span>Assigned Staff: </span>
-                                <strong className="text-foreground">{t.assignedToName || t.assignedToDid || 'Staff Member'}</strong>
+                                <strong className="text-foreground">{t.assignedToName || t.assignedTo?.name || t.assignedToDid || 'Staff Member'}</strong>
                               </div>
 
                               {!isDone && !isApproved && (

@@ -4,11 +4,17 @@ import { AgencyEmployees } from '../components/agency/AgencyEmployees';
 import { ClientDataTable } from '../components/data/ClientDataTable';
 import { InvoiceDataTable } from '../components/data/InvoiceDataTable';
 import { CaseFileTracker } from '../components/agency/CaseFileTracker';
+import { MyTasks } from '../components/agency/MyTasks';
 
 export default function Agency() {
   const activeSubmodule = usePortalStore((state) => state.activeSubmodule);
 
   switch (activeSubmodule) {
+    // ── Staff Tasks (My Tasks Workspace) ────
+    case 'tasks':
+    case 'my-tasks':
+      return <MyTasks />;
+
     // ── Case Files / Client Files (Master Workflow Tracker) ────
     case 'cases':
     case 'client-files':

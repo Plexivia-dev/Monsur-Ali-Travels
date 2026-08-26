@@ -50,6 +50,43 @@ const PIPELINE_STAGES = [
   { id: 'COMPLETED_DELIVERED', title: '5. Completed & Delivered', color: 'bg-emerald-100 text-emerald-800' },
 ];
 
+export const getTaskStatusConfig = (status) => {
+  switch (status) {
+    case 'Approved':
+      return {
+        label: 'Approved ✓',
+        badgeClass: 'bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 border-emerald-500/30',
+        dotClass: 'bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]',
+      };
+    case 'Done':
+      return {
+        label: 'Done',
+        badgeClass: 'bg-blue-500/15 text-blue-700 dark:text-blue-300 border-blue-500/30',
+        dotClass: 'bg-blue-500 shadow-[0_0_8px_rgba(59,130,246,0.5)]',
+      };
+    case 'In Progress':
+    case 'Processing':
+      return {
+        label: 'In Progress',
+        badgeClass: 'bg-sky-500/15 text-sky-700 dark:text-sky-300 border-sky-500/30',
+        dotClass: 'bg-sky-500 animate-pulse shadow-[0_0_8px_rgba(14,165,233,0.5)]',
+      };
+    case 'Rejected':
+      return {
+        label: 'Rejected ✗',
+        badgeClass: 'bg-rose-500/15 text-rose-700 dark:text-rose-300 border-rose-500/30',
+        dotClass: 'bg-rose-500 shadow-[0_0_8px_rgba(244,63,94,0.5)]',
+      };
+    case 'Pending':
+    default:
+      return {
+        label: 'Pending',
+        badgeClass: 'bg-slate-500/10 text-slate-700 dark:text-slate-300 border-slate-300 dark:border-slate-700',
+        dotClass: 'bg-slate-400 shadow-[0_0_8px_rgba(148,163,184,0.5)]',
+      };
+  }
+};
+
 export default function CaseDetailPage() {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -448,6 +485,12 @@ export default function CaseDetailPage() {
   // Sort timeline descending
   activityTimeline.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
 
+  const workflowTasks = caseData.workflowTasks || [];
+  // Find active task: first task that is Pending, In Progress, or Done; fallback to the latest step
+  const activeTask = workflowTasks.find((t) => t.status === 'Pending' || t.status === 'In Progress' || t.status === 'Processing' || t.status === 'Done') || workflowTasks[workflowTasks.length - 1];
+  const activeHandlerName = activeTask?.assignedToName || activeTask?.assignedTo?.name || caseData.assignedToName || caseData.assignedTo?.name || caseData.assignedOfficer || null;
+  const activeTaskStatusCfg = activeTask ? getTaskStatusConfig(activeTask.status) : null;
+
   return (
     <div className="space-y-6 pb-12 animate-in fade-in duration-200">
       {/* Dynamic PageTitle Header */}
@@ -504,17 +547,63 @@ export default function CaseDetailPage() {
       {/* Case Identity & Creator Banner */}
       <div className="bg-card border border-border rounded-2xl p-6 shadow-xs space-y-4">
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 border-b border-border pb-4">
-          <div className="space-y-1">
+          <div className="space-y-2">
             <div className="flex flex-wrap items-center gap-3">
               <span className="text-xl font-black text-foreground">
                 {caseData.applicantName || caseData.clientInfo?.fullName}
               </span>
-              <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-sky-50 text-sky-700 border border-sky-200">
+              <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-sky-500/10 text-sky-600 dark:text-sky-400 border border-sky-500/20">
                 Destination: {caseData.destinationCountry || caseData.caseType?.toUpperCase()}
               </span>
-              <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-purple-50 text-purple-700 border border-purple-200">
+              <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-purple-500/10 text-purple-600 dark:text-purple-400 border border-purple-500/20">
                 Trade: {caseData.tradeSkill || 'General Worker'}
               </span>
+            </div>
+
+            {/* Active Handler & Current Task Status Pill Bar */}
+            <div className="flex flex-wrap items-center gap-2 pt-0.5">
+              {/* Handler Pill */}
+              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-muted/40 border border-border">
+                <UserCheck className="w-3.5 h-3.5 text-sky-500 shrink-0" />
+                <span className="text-muted-foreground font-medium">Currently Handling:</span>
+                {activeHandlerName ? (
+                  <strong className="text-foreground font-bold">{activeHandlerName}</strong>
+                ) : (
+                  <button
+                    onClick={() => setIsAssignModalOpen(true)}
+                    className="text-primary font-bold hover:underline cursor-pointer flex items-center gap-1"
+                  >
+                    Unassigned (+ Assign Staff)
+                  </button>
+                )}
+              </div>
+
+              {/* Task Status Pill */}
+              {activeTask ? (
+                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-muted/40 border border-border">
+                  <Layers className="w-3.5 h-3.5 text-primary shrink-0" />
+                  <span className="text-muted-foreground font-medium">Status:</span>
+                  <span className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-bold border ${activeTaskStatusCfg.badgeClass}`}>
+                    <span className={`w-1.5 h-1.5 rounded-full ${activeTaskStatusCfg.dotClass}`} />
+                    {activeTask.status || 'Pending'}
+                  </span>
+                </div>
+              ) : (
+                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-muted/40 border border-border text-muted-foreground">
+                  <Layers className="w-3.5 h-3.5 text-muted-foreground/60 shrink-0" />
+                  <span className="text-muted-foreground font-medium">Status:</span>
+                  <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold border bg-slate-500/10 text-slate-600 dark:text-slate-400 border-slate-500/20">
+                    <span className="w-1.5 h-1.5 rounded-full bg-slate-400" />
+                    Unassigned
+                  </span>
+                  <button
+                    onClick={() => setIsAssignModalOpen(true)}
+                    className="text-primary font-bold hover:underline cursor-pointer ml-1"
+                  >
+                    (+ Assign Step)
+                  </button>
+                </div>
+              )}
             </div>
 
             <div className="flex flex-wrap items-center gap-x-5 gap-y-1 text-xs text-muted-foreground pt-1">
@@ -522,7 +611,7 @@ export default function CaseDetailPage() {
                 <Phone className="w-3.5 h-3.5 text-primary" />
                 {caseData.phone || caseData.clientInfo?.phone || '—'}
               </span>
-              <span className="flex items-center gap-1.5 font-mono text-sky-600 font-semibold">
+              <span className="flex items-center gap-1.5 font-mono text-sky-600 dark:text-sky-400 font-semibold">
                 <FileText className="w-3.5 h-3.5" />
                 Passport: {caseData.passportNumber || caseData.clientInfo?.passportNumber || '—'}
               </span>
@@ -571,7 +660,7 @@ export default function CaseDetailPage() {
             <span>
               Assigned Staff:{' '}
               <strong className="text-foreground font-bold">
-                {caseData.assignedToName || caseData.assignedTo?.name || caseData.assignedOfficer || caseData.workflowTasks?.[caseData.workflowTasks.length - 1]?.assignedToName || caseData.workflowTasks?.[caseData.workflowTasks.length - 1]?.assignedTo?.name || 'Unassigned'}
+                {activeHandlerName || 'Unassigned'}
               </strong>
             </span>
           </div>
@@ -913,17 +1002,15 @@ export default function CaseDetailPage() {
                         </span>
                         <h4 className="font-bold text-sm text-foreground">{t.title}</h4>
                       </div>
-                      <span
-                        className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold ${
-                          t.status === 'Approved'
-                            ? 'bg-emerald-100 text-emerald-800'
-                            : t.status === 'Done'
-                            ? 'bg-blue-100 text-blue-800'
-                            : 'bg-amber-100 text-amber-800'
-                        }`}
-                      >
-                        {t.status}
-                      </span>
+                      {(() => {
+                        const statusCfg = getTaskStatusConfig(t.status);
+                        return (
+                          <span className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-bold border ${statusCfg.badgeClass}`}>
+                            <span className={`w-1.5 h-1.5 rounded-full ${statusCfg.dotClass}`} />
+                            {statusCfg.label}
+                          </span>
+                        );
+                      })()}
                     </div>
 
                     {t.description && (
