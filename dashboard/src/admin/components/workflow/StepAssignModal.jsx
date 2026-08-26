@@ -3,7 +3,7 @@ import { X, Send, User, Lock, FileText, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { apiClient } from '../../lib/api-client';
 
-export function StepAssignModal({ caseDoc, onClose, onSuccess }) {
+export function StepAssignModal({ isOpen = true, caseDoc = {}, caseDid, caseNumber, onClose, onSuccess }) {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [assignedToDid, setAssignedToDid] = useState('');
@@ -12,7 +12,12 @@ export function StepAssignModal({ caseDoc, onClose, onSuccess }) {
   const [vaultDocs, setVaultDocs] = useState([]);
   const [submitting, setSubmitting] = useState(false);
 
+  const resolvedCaseDid = caseDoc?.did || caseDoc?._id || caseDid;
+  const resolvedCaseNumber = caseDoc?.caseNumber || caseDoc?.fileNumber || caseNumber || 'CASE-FILE';
+
   useEffect(() => {
+    if (!isOpen) return;
+
     // Fetch users for assignment
     apiClient.get('/api/v1/admin/users?limit=100').then((res) => {
       const data = res.data?.data || res.data?.users || res.data || [];
@@ -26,7 +31,9 @@ export function StepAssignModal({ caseDoc, onClose, onSuccess }) {
         setVaultDocs(Array.isArray(docs) ? docs : []);
       }).catch(() => setVaultDocs([]));
     }
-  }, [caseDoc]);
+  }, [isOpen, caseDoc]);
+
+  if (!isOpen) return null;
 
   const toggleDocSelect = (docDid) => {
     setSelectedDocDids((prev) =>
@@ -44,17 +51,17 @@ export function StepAssignModal({ caseDoc, onClose, onSuccess }) {
     setSubmitting(true);
     try {
       await apiClient.post('/api/v1/admin/cases/assign-step', {
-        caseDid: caseDoc.did || caseDoc._id,
+        caseDid: resolvedCaseDid,
         title,
         description,
         assignedToDid,
         allowedDocumentDids: selectedDocDids,
-        stepNumber: (caseDoc.workflowTasks || []).length + 1,
+        stepNumber: (caseDoc?.workflowTasks || []).length + 1,
       });
 
       toast.success(`Task step "${title}" assigned to staff!`);
-      onSuccess();
-      onClose();
+      if (onSuccess) onSuccess();
+      if (onClose) onClose();
     } catch (err) {
       toast.error(err.response?.data?.message || 'Failed to assign step.');
     } finally {
@@ -67,7 +74,7 @@ export function StepAssignModal({ caseDoc, onClose, onSuccess }) {
       <form onSubmit={handleSubmit} className="bg-card border border-border rounded-2xl max-w-lg w-full p-6 space-y-4 shadow-2xl my-8">
         <div className="flex items-center justify-between border-b border-border pb-3">
           <div>
-            <span className="text-[10px] font-mono font-bold text-sky-400">Case: {caseDoc.caseNumber}</span>
+            <span className="text-[10px] font-mono font-bold text-sky-400">Case: {resolvedCaseNumber}</span>
             <h3 className="text-base font-bold text-foreground flex items-center gap-2 mt-0.5">
               <Send className="w-4 h-4 text-sky-400" />
               Assign New Workflow Step

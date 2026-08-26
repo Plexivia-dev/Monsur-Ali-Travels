@@ -16,7 +16,16 @@ const PrintablePaper = ({ children, id = 'printable-document-canvas' }) => (
   </div>
 );
 
-export const AddPaymentModal = ({ caseDoc, onClose, onSuccess }) => {
+export const AddPaymentModal = ({
+  isOpen = true,
+  caseDoc = {},
+  caseDid,
+  caseNumber,
+  applicantName,
+  dueAmount,
+  onClose,
+  onSuccess
+}) => {
   const [loading, setLoading] = useState(false);
   const [paymentSuccess, setPaymentSuccess] = useState(false);
   const [receiptData, setReceiptData] = useState(null);
@@ -28,9 +37,16 @@ export const AddPaymentModal = ({ caseDoc, onClose, onSuccess }) => {
     notes: '',
   });
 
-  const totalAgreed = caseDoc.paymentLedger?.totalAgreedAmount || 0;
-  const currentPaid = caseDoc.paymentLedger?.totalPaidAmount || 0;
-  const due = Math.max(0, totalAgreed - currentPaid);
+  const resolvedCaseDid = caseDoc?.did || caseDoc?._id || caseDid;
+  const resolvedCaseNumber = caseDoc?.caseNumber || caseDoc?.fileNumber || caseNumber || 'CASE-FILE';
+  const resolvedApplicantName = caseDoc?.applicantName || caseDoc?.clientInfo?.name || caseDoc?.clientInfo?.fullName || applicantName || 'Valued Client';
+  const resolvedPhone = caseDoc?.phone || caseDoc?.clientInfo?.phone || 'N/A';
+
+  const totalAgreed = caseDoc?.paymentLedger?.totalAgreedAmount || 0;
+  const currentPaid = caseDoc?.paymentLedger?.totalPaidAmount || 0;
+  const due = dueAmount !== undefined ? dueAmount : Math.max(0, totalAgreed - currentPaid);
+
+  if (!isOpen) return null;
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -40,7 +56,7 @@ export const AddPaymentModal = ({ caseDoc, onClose, onSuccess }) => {
 
     setLoading(true);
     try {
-      const res = await apiClient.post(`/api/v1/admin/cases/${caseDoc.did || caseDoc._id}/payments`, formData);
+      const res = await apiClient.post(`/api/v1/admin/cases/${resolvedCaseDid}/payments`, formData);
       toast.success('Payment added successfully! Generating invoice...');
       
       // Update receipt data to show in invoice view
@@ -49,9 +65,9 @@ export const AddPaymentModal = ({ caseDoc, onClose, onSuccess }) => {
         paymentType: formData.paymentType,
         paymentMethod: formData.paymentMethod,
         notes: formData.notes,
-        newPaidTotal: res.data.data.totalPaidAmount,
-        newDue: res.data.data.dueAmount,
-        totalBilled: res.data.data.totalAgreedAmount,
+        newPaidTotal: res.data?.data?.totalPaidAmount ?? (currentPaid + Number(formData.amount)),
+        newDue: res.data?.data?.dueAmount ?? Math.max(0, due - Number(formData.amount)),
+        totalBilled: res.data?.data?.totalAgreedAmount ?? totalAgreed,
         date: new Date(),
         invoiceNo: `INV-${new Date().getTime().toString().slice(-6)}`
       });
@@ -124,9 +140,9 @@ export const AddPaymentModal = ({ caseDoc, onClose, onSuccess }) => {
                 <div className="bg-slate-50 p-4 rounded border border-slate-300 flex justify-between items-center mb-6">
                   <div className="text-sm space-y-1">
                     <span className="text-xs font-extrabold uppercase tracking-wider text-slate-500 block">RECEIVED FROM:</span>
-                    <div className="font-bold text-lg text-slate-900">{caseDoc.clientInfo?.name || 'Valued Client'}</div>
-                    <div className="text-slate-700">Phone: {caseDoc.clientInfo?.phone || 'N/A'}</div>
-                    <div className="text-slate-700">Case ID: {caseDoc.caseNumber || caseDoc._id}</div>
+                    <div className="font-bold text-lg text-slate-900">{resolvedApplicantName}</div>
+                    <div className="text-slate-700">Phone: {resolvedPhone}</div>
+                    <div className="text-slate-700">Case ID: {resolvedCaseNumber}</div>
                   </div>
                   <div className="text-right">
                      <span className="inline-flex items-center gap-1 bg-emerald-100 text-emerald-900 border border-emerald-400 text-sm font-black px-3 py-1 rounded">

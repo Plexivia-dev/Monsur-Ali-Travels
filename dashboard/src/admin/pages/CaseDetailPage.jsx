@@ -1028,23 +1028,30 @@ export default function CaseDetailPage() {
       </div>
 
       {/* Step Assign Modal */}
-      <StepAssignModal
-        isOpen={isAssignModalOpen}
-        onClose={() => setIsAssignModalOpen(false)}
-        caseDid={caseData.did || caseData._id}
-        onSuccess={fetchCaseDetails}
-      />
+      {isAssignModalOpen && (
+        <StepAssignModal
+          isOpen={isAssignModalOpen}
+          caseDoc={caseData}
+          onClose={() => setIsAssignModalOpen(false)}
+          caseDid={caseData?.did || caseData?._id}
+          caseNumber={caseData?.caseNumber}
+          onSuccess={fetchCaseDetails}
+        />
+      )}
 
       {/* Payment Receive Modal */}
-      <AddPaymentModal
-        isOpen={isPaymentModalOpen}
-        onClose={() => setIsPaymentModalOpen(false)}
-        caseDid={caseData.did || caseData._id}
-        caseNumber={caseData.caseNumber}
-        applicantName={caseData.applicantName}
-        dueAmount={totalDue}
-        onSuccess={fetchCaseDetails}
-      />
+      {isPaymentModalOpen && (
+        <AddPaymentModal
+          isOpen={isPaymentModalOpen}
+          caseDoc={caseData}
+          onClose={() => setIsPaymentModalOpen(false)}
+          caseDid={caseData?.did || caseData?._id}
+          caseNumber={caseData?.caseNumber}
+          applicantName={caseData?.applicantName}
+          dueAmount={totalDue}
+          onSuccess={fetchCaseDetails}
+        />
+      )}
 
       {/* Upload Document Modal */}
       {isUploadModalOpen && (
