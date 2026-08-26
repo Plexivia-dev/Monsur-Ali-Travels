@@ -83,4 +83,5 @@ export { MarriageCertificatePreview } from './components/certificate-marriage/Ma
 export { PrintablePaper } from './components/common/PrintablePaper';
 export { ExportModal } from './components/common/ExportModal';
 export { ExistingClientAlertModal } from './components/common/ExistingClientAlertModal';
+export { StudioFloatingViewSwitcher } from './components/common/StudioFloatingViewSwitcher';
 

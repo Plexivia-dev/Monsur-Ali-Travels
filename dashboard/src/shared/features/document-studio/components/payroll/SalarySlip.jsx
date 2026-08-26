@@ -1,12 +1,13 @@
 import React, { useState } from 'react';
 import { SalarySlipForm } from './SalarySlipForm';
 import { SalarySlipPreview } from './SalarySlipPreview';
-import { Download, RefreshCw, Eye, Edit3, Columns, Share2, Printer, DollarSign } from 'lucide-react';
+import { Download, RefreshCw, Share2, Printer, DollarSign } from 'lucide-react';
 import { apiClient } from '@shared/lib/api-client';
 import { printDocument } from '@shared/lib/utils';
 import { toast } from 'sonner';
 import agencyInfo from '@shared/lib/information.json';
 import { HeaderTitle } from '@shared/components/common/HeaderTitle';
+import { StudioFloatingViewSwitcher } from '../common/StudioFloatingViewSwitcher';
 
 export function generateUniqueSlipNumber() {
   const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
@@ -160,32 +161,6 @@ export function SalarySlip() {
         subtitle="Generate official employee monthly payslips, earnings breakdowns, deductions, and payment vouchers."
         actions={
           <div className="flex items-center gap-2 flex-wrap">
-            {/* View Mode Segmented Controls */}
-            <div className="flex items-center space-x-1 bg-white/10 backdrop-blur-md p-1 rounded-xl border border-white/15">
-              {[
-                { id: 'split', label: 'Split View', icon: Columns },
-                { id: 'edit', label: 'Edit Form', icon: Edit3 },
-                { id: 'preview', label: 'Live Preview', icon: Eye },
-              ].map((btn) => {
-                const Icon = btn.icon;
-                const isActive = viewMode === btn.id;
-                return (
-                  <button
-                    key={btn.id}
-                    onClick={() => setViewMode(btn.id)}
-                    className={`flex items-center space-x-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
-                      isActive
-                        ? 'bg-white text-slate-900 shadow-md font-black'
-                        : 'text-sky-100/80 hover:text-white hover:bg-white/10'
-                    }`}
-                  >
-                    <Icon className="w-3.5 h-3.5" />
-                    <span>{btn.label}</span>
-                  </button>
-                );
-              })}
-            </div>
-
             <button
               onClick={handleReset}
               className="flex items-center space-x-1.5 bg-white/10 hover:bg-white/20 text-white text-xs font-semibold px-3 py-1.5 rounded-xl border border-white/15 transition-colors cursor-pointer"
@@ -218,7 +193,7 @@ export function SalarySlip() {
 
       {/* Main Studio Views */}
       {viewMode === 'edit' && (
-        <div className="max-w-4xl mx-auto">
+        <div className="max-w-4xl mx-auto pb-16">
           <SalarySlipForm
             formData={formData}
             setFormData={setFormData}
@@ -230,13 +205,13 @@ export function SalarySlip() {
       )}
 
       {viewMode === 'preview' && (
-        <div className="w-full flex justify-center py-2 no-print-padding">
+        <div className="w-full flex justify-center py-2 no-print-padding pb-16">
           <SalarySlipPreview data={formData} formData={formData} />
         </div>
       )}
 
       {viewMode === 'split' && (
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start pb-16">
           <div className="lg:col-span-5 max-h-[calc(100vh-140px)] overflow-y-auto pr-1">
             <SalarySlipForm
               formData={formData}
@@ -253,6 +228,9 @@ export function SalarySlip() {
           </div>
         </div>
       )}
+
+      {/* Floating Sticky View Mode Switcher */}
+      <StudioFloatingViewSwitcher viewMode={viewMode} setViewMode={setViewMode} />
     </div>
   );
 }

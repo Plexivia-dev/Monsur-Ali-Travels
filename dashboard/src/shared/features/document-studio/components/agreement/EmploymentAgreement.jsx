@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
 import { AgreementForm } from './AgreementForm';
 import { AgreementPreview } from './AgreementPreview';
-import { Download, RefreshCw, Eye, Edit3, Columns, Share2, Printer, FileCheck } from 'lucide-react';
+import { Download, RefreshCw, Share2, Printer, FileCheck, Edit3, Columns, Eye } from 'lucide-react';
 import { apiClient } from '@shared/lib/api-client';
 import { printDocument } from '@shared/lib/utils';
 import { HeaderTitle } from '@shared/components/common/HeaderTitle';
+import { StudioFloatingViewSwitcher } from '../common/StudioFloatingViewSwitcher';
 import { toast } from 'sonner';
 import agencyInfoJson from '@shared/lib/information.json';
 
@@ -174,32 +175,6 @@ export function EmploymentAgreement() {
         subtitle="Generate and print official employment agreements and appointment contracts with legal terms."
         actions={
           <div className="flex items-center gap-2 flex-wrap">
-            {/* View Mode Segmented Controls */}
-            <div className="flex items-center space-x-1 bg-white/10 backdrop-blur-md p-1 rounded-xl border border-white/15">
-              {[
-                { id: 'split', label: 'Split View', icon: Columns },
-                { id: 'edit', label: 'Edit Form', icon: Edit3 },
-                { id: 'preview', label: 'Live Preview', icon: Eye },
-              ].map((btn) => {
-                const Icon = btn.icon;
-                const isActive = viewMode === btn.id;
-                return (
-                  <button
-                    key={btn.id}
-                    onClick={() => setViewMode(btn.id)}
-                    className={`flex items-center space-x-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
-                      isActive
-                        ? 'bg-white text-slate-900 shadow-md font-black'
-                        : 'text-sky-100/80 hover:text-white hover:bg-white/10'
-                    }`}
-                  >
-                    <Icon className="w-3.5 h-3.5" />
-                    <span>{btn.label}</span>
-                  </button>
-                );
-              })}
-            </div>
-
             <button
               onClick={handleReset}
               className="flex items-center space-x-1.5 bg-white/10 hover:bg-white/20 text-white text-xs font-semibold px-3 py-1.5 rounded-xl border border-white/15 transition-colors cursor-pointer"
@@ -232,7 +207,7 @@ export function EmploymentAgreement() {
 
       {/* Main Studio Views */}
       {viewMode === 'edit' && (
-        <div className="max-w-4xl mx-auto">
+        <div className="max-w-4xl mx-auto pb-16">
           <AgreementForm
             formData={formData}
             setFormData={setFormData}
@@ -244,13 +219,13 @@ export function EmploymentAgreement() {
       )}
 
       {viewMode === 'preview' && (
-        <div className="w-full flex justify-center py-2 no-print-padding">
+        <div className="w-full flex justify-center py-2 no-print-padding pb-16">
           <AgreementPreview data={formData} />
         </div>
       )}
 
       {viewMode === 'split' && (
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start pb-16">
           <div className="lg:col-span-5 max-h-[calc(100vh-140px)] overflow-y-auto pr-1">
             <AgreementForm
               formData={formData}
@@ -267,6 +242,9 @@ export function EmploymentAgreement() {
           </div>
         </div>
       )}
+
+      {/* Floating Sticky View Mode Switcher */}
+      <StudioFloatingViewSwitcher viewMode={viewMode} setViewMode={setViewMode} />
     </div>
   );
 }

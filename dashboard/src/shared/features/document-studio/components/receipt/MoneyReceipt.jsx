@@ -2,11 +2,12 @@ import React, { useState } from 'react';
 import { MoneyReceiptForm } from './MoneyReceiptForm';
 import { MoneyReceiptPreview } from './MoneyReceiptPreview';
 import { getDefaultMoneyReceiptData, generateReceiptNo } from './sampleData';
-import { Download, RefreshCw, Eye, Edit3, Columns, Share2, Printer, Receipt } from 'lucide-react';
+import { Download, RefreshCw, Share2, Printer, Receipt } from 'lucide-react';
 import { toast } from 'sonner';
 import { apiClient } from '@shared/lib/api-client';
 import { printDocument } from '@shared/lib/utils';
 import { HeaderTitle } from '@shared/components/common/HeaderTitle';
+import { StudioFloatingViewSwitcher } from '../common/StudioFloatingViewSwitcher';
 
 export function MoneyReceipt() {
   const [data, setData] = useState(getDefaultMoneyReceiptData());
@@ -178,32 +179,7 @@ export function MoneyReceipt() {
       )}
 
       {/* Floating Bottom View Switcher (Desktop & Mobile) */}
-      <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-40 print:hidden">
-        <div className="flex items-center space-x-1 bg-slate-900/90 dark:bg-slate-950/90 backdrop-blur-xl p-1.5 rounded-full border border-slate-700/60 shadow-2xl shadow-slate-950/50">
-          {[
-            { id: 'edit', label: 'Edit Form', icon: Edit3 },
-            { id: 'split', label: 'Split View', icon: Columns },
-            { id: 'preview', label: 'Live Preview', icon: Eye },
-          ].map((btn) => {
-            const Icon = btn.icon;
-            const isActive = viewMode === btn.id;
-            return (
-              <button
-                key={btn.id}
-                onClick={() => setViewMode(btn.id)}
-                className={`flex items-center space-x-2 px-4 py-2 rounded-full text-xs font-bold transition-all duration-200 cursor-pointer ${
-                  isActive
-                    ? 'bg-gradient-to-r from-sky-500 to-blue-600 text-white shadow-lg shadow-sky-500/30 font-extrabold scale-105'
-                    : 'text-slate-300 hover:text-white hover:bg-white/10'
-                }`}
-              >
-                <Icon className="w-3.5 h-3.5" />
-                <span>{btn.label}</span>
-              </button>
-            );
-          })}
-        </div>
-      </div>
+      <StudioFloatingViewSwitcher viewMode={viewMode} setViewMode={setViewMode} />
     </div>
   );
 }
