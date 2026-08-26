@@ -43,6 +43,7 @@ import { useAuth } from '@/store/useAuthStore';
 import { StepAssignModal } from '@/components/workflow/StepAssignModal';
 import { AddPaymentModal } from '@/components/workflow/AddPaymentModal';
 import { PageTitle } from '@shared/components/layout/PageTitle';
+import { FileViewerModal } from '@shared/components/common/FileViewerModal';
 
 const DOCUMENT_STUDIO_TEMPLATES = [
   {
@@ -205,6 +206,7 @@ export default function CaseDetailPage() {
   const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
   const [isCreateDocModalOpen, setIsCreateDocModalOpen] = useState(false);
   const [selectedTemplateId, setSelectedTemplateId] = useState('agreement');
+  const [previewFile, setPreviewFile] = useState(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [savingEdit, setSavingEdit] = useState(false);
 

@@ -3,3 +3,5 @@ export { HeaderTitle, HeaderModeSwitcher } from './HeaderTitle';
 export { TopBreadcrumbBar } from './TopBreadcrumbBar';
 export { BdPhoneInput } from './BdPhoneInput';
 export { GlobalErrorBoundary } from './GlobalErrorBoundary';
+export { FileViewerModal, FileViewer } from './FileViewerModal';
+

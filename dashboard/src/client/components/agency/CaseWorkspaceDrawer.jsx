@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
   X,
   FolderOpen,
@@ -29,10 +30,14 @@ import {
   Eye,
   Trash2,
   Lock,
+  FilePlus2,
+  ChevronRight,
+  Sparkles,
 } from 'lucide-react';
 import { apiClient } from '../../lib/api-client';
 import { toast } from 'sonner';
 import { useAuthStore } from '../../store/useAuthStore';
+import { usePortalStore } from '../../store/usePortalStore';
 
 const PIPELINE_STAGES = [
   { id: 'ENTRY', title: 'New Entry' },
@@ -40,6 +45,100 @@ const PIPELINE_STAGES = [
   { id: 'APPROVED_OFFER_LETTER', title: 'Offer Letter Approved' },
   { id: 'SUBMITTED_EMBASSY_BSF', title: 'Embassy / VFS Submitted' },
   { id: 'COMPLETED_DELIVERED', title: 'Completed & Delivered' },
+];
+
+const ALL_STUDIO_GENERATORS = [
+  {
+    id: 'money-receipt',
+    label: 'Money Receipt Voucher',
+    category: 'Billing & Accounts',
+    roles: ['admin', 'owner', 'superadmin', 'manager', 'accountant', 'frontdesk', 'clientmanager'],
+    description: 'Official client payment receipt voucher with dual-copy cut line.',
+  },
+  {
+    id: 'cash-voucher',
+    label: 'Cash Money Voucher',
+    category: 'Billing & Accounts',
+    roles: ['admin', 'owner', 'superadmin', 'manager', 'accountant'],
+    description: 'Internal cash expense and debit payment voucher.',
+  },
+  {
+    id: 'invoice',
+    label: 'Client Invoice',
+    category: 'Billing & Accounts',
+    roles: ['admin', 'owner', 'superadmin', 'manager', 'accountant'],
+    description: 'Itemized client billing statement and tax invoice.',
+  },
+  {
+    id: 'payroll',
+    label: 'Salary Slip',
+    category: 'Billing & Accounts',
+    roles: ['admin', 'owner', 'superadmin', 'manager', 'accountant'],
+    description: 'Monthly employee payroll payment voucher.',
+  },
+  {
+    id: 'agreement',
+    label: 'Employment Agreement',
+    category: 'Contracts & Legal',
+    roles: ['admin', 'owner', 'superadmin', 'manager', 'lawyer', 'clientmanager'],
+    description: 'Official overseas employment agreement contract with guarantor.',
+  },
+  {
+    id: 'client-form',
+    label: 'Client & Guardian Form',
+    category: 'Client Forms',
+    roles: ['admin', 'owner', 'superadmin', 'manager', 'frontdesk', 'representative', 'clientmanager'],
+    description: 'Complete client bio-data & guardian guarantor declaration form.',
+  },
+  {
+    id: 'indian-visa',
+    label: 'Indian Visa Submission Slip',
+    category: 'Embassy & Visa',
+    roles: ['admin', 'owner', 'superadmin', 'manager', 'visa_processor', 'frontdesk'],
+    description: 'IVAC / Indian visa application docket and appointment slip.',
+  },
+  {
+    id: 'passport-sub',
+    label: 'Passport Submission Slip',
+    category: 'Embassy & Visa',
+    roles: ['admin', 'owner', 'superadmin', 'manager', 'visa_processor', 'frontdesk'],
+    description: 'Official passport intake receipt slip with barcode.',
+  },
+  {
+    id: 'experience-certificate',
+    label: 'Experience Certificate',
+    category: 'Certificates',
+    roles: ['admin', 'owner', 'superadmin', 'manager', 'lawyer', 'clientmanager'],
+    description: 'Work experience & trade skill authentication certificate.',
+  },
+  {
+    id: 'marriage-certificate',
+    label: 'Marriage Certificate',
+    category: 'Certificates',
+    roles: ['admin', 'owner', 'superadmin', 'manager', 'lawyer', 'clientmanager'],
+    description: 'Official English translation & affidavit certificate of marriage.',
+  },
+  {
+    id: 'character-certificate',
+    label: 'Character Certificate',
+    category: 'Certificates',
+    roles: ['admin', 'owner', 'superadmin', 'manager', 'lawyer', 'clientmanager'],
+    description: 'Character testimonial and police verification certificate.',
+  },
+  {
+    id: 'job-verification',
+    label: 'Job Verification Form',
+    category: 'Embassy & Visa',
+    roles: ['admin', 'owner', 'superadmin', 'manager', 'visa_processor', 'clientmanager'],
+    description: 'Foreign employer and embassy job verification questionnaire.',
+  },
+  {
+    id: 'idcard',
+    label: 'Employee ID Card',
+    category: 'Identity',
+    roles: ['admin', 'owner', 'superadmin', 'manager', 'frontdesk'],
+    description: 'Standard agency staff and worker identification card.',
+  },
 ];
 
 const getTaskStatusConfig = (status) => {
@@ -61,7 +160,7 @@ const getTaskStatusConfig = (status) => {
       return {
         label: 'In Progress',
         badgeClass: 'bg-sky-500/15 text-sky-700 dark:text-sky-300 border-sky-500/30',
-        dotClass: 'bg-sky-500 animate-pulse shadow-[0_0_8px_rgba(14,165,233,0.5)]',
+        dotClass: 'bg-sky-500 animate-pulse shadow-[0_0_8px_rgba(148,165,233,0.5)]',
       };
     case 'Rejected':
       return {
@@ -80,6 +179,8 @@ const getTaskStatusConfig = (status) => {
 };
 
 export function CaseWorkspaceDrawer({ caseId, isOpen, onClose, onRefresh }) {
+  const navigate = useNavigate();
+  const switchPortal = usePortalStore((state) => state.switchPortal);
   const user = useAuthStore((state) => state.user);
   const [caseData, setCaseData] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -88,6 +189,10 @@ export function CaseWorkspaceDrawer({ caseId, isOpen, onClose, onRefresh }) {
   // Internal message form
   const [newMessage, setNewMessage] = useState('');
   const [sendingMsg, setSendingMsg] = useState(false);
+
+  // Document Generator Modal state
+  const [showCreateDocModal, setShowCreateDocModal] = useState(false);
+  const [selectedDocId, setSelectedDocId] = useState('');
 
   // Document upload form
   const [showUploadModal, setShowUploadModal] = useState(false);
@@ -102,6 +207,36 @@ export function CaseWorkspaceDrawer({ caseId, isOpen, onClose, onRefresh }) {
 
   // Task execution
   const [completingTaskId, setCompletingTaskId] = useState(null);
+
+  // Filter permitted studio generators for currently logged-in staff role
+  const userRole = String(user?.role || '').toLowerCase();
+  const userSubRole = String(user?.subRole || user?.sub_role || user?.designation || '').toLowerCase();
+
+  const permittedStudioGenerators = ALL_STUDIO_GENERATORS.filter((gen) => {
+    if (['admin', 'owner', 'superadmin', 'manager'].includes(userRole)) return true;
+    return gen.roles.includes(userRole) || gen.roles.includes(userSubRole);
+  });
+
+  const handleProceedToStudio = (generatorId) => {
+    if (!generatorId || !caseData) return;
+    setShowCreateDocModal(false);
+    if (onClose) onClose();
+
+    const currentPath = window.location.pathname + window.location.search;
+    const returnUrl = encodeURIComponent(currentPath);
+    const clientDid = caseData.clientDid || caseData.clientId || '';
+    const caseDid = caseData.did || caseData._id || '';
+    const caseNumber = encodeURIComponent(caseData.caseNumber || '');
+    const applicantName = encodeURIComponent(caseData.applicantName || '');
+    const passportNumber = encodeURIComponent(caseData.passportNumber || '');
+    const phone = encodeURIComponent(caseData.phone || '');
+    const nidNumber = encodeURIComponent(caseData.nidNumber || '');
+
+    switchPortal('docs', generatorId);
+    navigate(
+      `/dashboard/docs/${generatorId}?caseDid=${caseDid}&clientDid=${clientDid}&caseNumber=${caseNumber}&applicantName=${applicantName}&passportNumber=${passportNumber}&phone=${phone}&nidNumber=${nidNumber}&returnUrl=${returnUrl}`
+    );
+  };
 
   const fetchCaseDetails = useCallback(async () => {
     if (!caseId) return;
@@ -674,18 +809,32 @@ export function CaseWorkspaceDrawer({ caseId, isOpen, onClose, onRefresh }) {
               {/* TAB 3: DOCUMENTS VAULT */}
               {activeTab === 'documents' && (
                 <div className="space-y-4">
-                  <div className="flex items-center justify-between">
+                  <div className="flex flex-wrap items-center justify-between gap-3">
                     <div>
                       <h3 className="text-sm font-bold text-foreground">Verified Document Vault</h3>
-                      <p className="text-xs text-muted-foreground">See all uploaded files and who uploaded them.</p>
+                      <p className="text-xs text-muted-foreground">See all uploaded files and generate case documents in Studio.</p>
                     </div>
-                    <button
-                      onClick={() => setShowUploadModal(true)}
-                      className="flex items-center gap-1 px-3 py-1.5 bg-primary text-primary-foreground font-bold text-xs rounded-xl shadow-xs hover:bg-primary/90 transition-all cursor-pointer"
-                    >
-                      <Plus className="size-3.5" />
-                      <span>+ Upload Document</span>
-                    </button>
+                    <div className="flex items-center gap-2">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setSelectedDocId(permittedStudioGenerators[0]?.id || 'agreement');
+                          setShowCreateDocModal(true);
+                        }}
+                        className="flex items-center gap-1.5 px-3 py-1.5 bg-sky-500/10 hover:bg-sky-500/20 text-sky-700 dark:text-sky-300 border border-sky-500/30 font-bold text-xs rounded-xl shadow-2xs transition-all cursor-pointer"
+                      >
+                        <FilePlus2 className="size-3.5 text-sky-600 dark:text-sky-400" />
+                        <span>+ Generate Document</span>
+                      </button>
+
+                      <button
+                        onClick={() => setShowUploadModal(true)}
+                        className="flex items-center gap-1 px-3 py-1.5 bg-primary text-primary-foreground font-bold text-xs rounded-xl shadow-xs hover:bg-primary/90 transition-all cursor-pointer"
+                      >
+                        <Plus className="size-3.5" />
+                        <span>+ Upload Document</span>
+                      </button>
+                    </div>
                   </div>
 
                   {(caseData.vaultDocuments || []).length === 0 ? (
@@ -990,6 +1139,101 @@ export function CaseWorkspaceDrawer({ caseId, isOpen, onClose, onRefresh }) {
               </button>
             </div>
           </form>
+        </div>
+      )}
+
+      {/* Generate Case Document Modal */}
+      {showCreateDocModal && (
+        <div className="fixed inset-0 z-60 bg-black/80 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="bg-card border border-border rounded-2xl max-w-lg w-full p-6 space-y-4 shadow-2xl animate-in fade-in zoom-in-95 duration-200">
+            <div className="flex items-center justify-between border-b border-border pb-3">
+              <div className="flex items-center gap-2.5">
+                <div className="size-9 rounded-xl bg-primary/10 text-primary flex items-center justify-center font-bold">
+                  <FilePlus2 className="size-5" />
+                </div>
+                <div>
+                  <h3 className="text-sm font-bold text-foreground">Generate Case Document in Studio</h3>
+                  <p className="text-[11px] text-muted-foreground">
+                    Select a document to generate for <strong>{caseData?.applicantName}</strong> ({caseData?.caseNumber})
+                  </p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setShowCreateDocModal(false)}
+                className="p-1 rounded text-muted-foreground hover:text-foreground cursor-pointer"
+              >
+                <X className="size-4" />
+              </button>
+            </div>
+
+            <div className="space-y-4 text-xs">
+              <div>
+                <label className="block font-semibold text-muted-foreground mb-1.5">
+                  Select Document Template *
+                </label>
+                <select
+                  value={selectedDocId || permittedStudioGenerators[0]?.id}
+                  onChange={(e) => setSelectedDocId(e.target.value)}
+                  className="w-full px-3 py-2.5 bg-muted/40 border border-border rounded-xl text-foreground font-semibold text-xs focus:outline-none focus:ring-1 focus:ring-primary cursor-pointer"
+                >
+                  {permittedStudioGenerators.map((gen) => (
+                    <option key={gen.id} value={gen.id}>
+                      {gen.label} — ({gen.category})
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              {/* Selected Document Info Card */}
+              {(() => {
+                const activeDoc =
+                  permittedStudioGenerators.find((g) => g.id === (selectedDocId || permittedStudioGenerators[0]?.id)) ||
+                  permittedStudioGenerators[0];
+                if (!activeDoc) return null;
+                return (
+                  <div className="p-3.5 bg-muted/20 border border-border rounded-xl space-y-1.5">
+                    <div className="flex items-center justify-between">
+                      <span className="font-bold text-foreground text-xs">{activeDoc.label}</span>
+                      <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-primary/10 text-primary border border-primary/20">
+                        {activeDoc.category}
+                      </span>
+                    </div>
+                    <p className="text-[11px] text-muted-foreground leading-relaxed">{activeDoc.description}</p>
+                  </div>
+                );
+              })()}
+
+              {/* Autofill Audit Notice */}
+              <div className="p-3 bg-sky-500/10 border border-sky-500/25 rounded-xl flex items-start gap-2.5">
+                <ShieldCheck className="size-4 text-sky-600 dark:text-sky-400 shrink-0 mt-0.5" />
+                <div className="text-[11px] text-muted-foreground leading-relaxed">
+                  Client particulars (<strong className="text-foreground">{caseData?.applicantName}</strong>, Passport:{' '}
+                  <strong className="text-foreground font-mono">{caseData?.passportNumber || 'N/A'}</strong>, Phone:{' '}
+                  <strong className="text-foreground">{caseData?.phone || 'N/A'}</strong>) will be <strong>auto-filled and locked</strong>.
+                  After saving in Document Studio, you will automatically return to this Case File.
+                </div>
+              </div>
+            </div>
+
+            <div className="flex items-center justify-end gap-2 pt-3 border-t border-border text-xs">
+              <button
+                type="button"
+                onClick={() => setShowCreateDocModal(false)}
+                className="px-4 py-2 rounded-xl border border-border text-muted-foreground hover:bg-muted font-medium cursor-pointer"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={() => handleProceedToStudio(selectedDocId || permittedStudioGenerators[0]?.id)}
+                className="flex items-center gap-1.5 px-5 py-2 bg-primary text-primary-foreground font-bold rounded-xl shadow-xs hover:bg-primary/90 transition-all cursor-pointer"
+              >
+                <span>Open in Document Studio</span>
+                <ChevronRight className="size-3.5" />
+              </button>
+            </div>
+          </div>
         </div>
       )}
     </div>
