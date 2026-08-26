@@ -159,7 +159,7 @@ export function MoneyReceipt() {
       )}
 
       {viewMode === 'split' && (
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start pb-16">
           <div className="w-full max-h-[calc(100vh-140px)] overflow-y-auto pr-1">
             <MoneyReceiptForm
               data={data}

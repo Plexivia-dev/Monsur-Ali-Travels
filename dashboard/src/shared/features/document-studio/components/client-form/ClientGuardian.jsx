@@ -164,8 +164,8 @@ export function ClientGuardian({ initialData = null, onSavedSuccess = null }) {
       )}
 
       {viewMode === 'split' && (
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start pb-16">
-          <div className="lg:col-span-5 max-h-[calc(100vh-140px)] overflow-y-auto pr-1">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start pb-16">
+          <div className="w-full max-h-[calc(100vh-140px)] overflow-y-auto pr-1">
             <ClientGuardianForm
               data={data}
               onChange={setData}
@@ -175,7 +175,7 @@ export function ClientGuardian({ initialData = null, onSavedSuccess = null }) {
               isSubmitting={isSubmitting}
             />
           </div>
-          <div className="lg:col-span-7 bg-muted/30 border border-border rounded-xl p-3 overflow-y-auto max-h-[calc(100vh-140px)] flex justify-center">
+          <div className="w-full bg-muted/30 border border-border rounded-xl p-3 overflow-y-auto max-h-[calc(100vh-140px)] flex justify-center">
             <div className="scale-[0.88] origin-top">
               <ClientGuardianPreview data={data} />
             </div>

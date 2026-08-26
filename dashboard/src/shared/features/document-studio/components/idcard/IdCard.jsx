@@ -116,9 +116,9 @@ export function IdCard() {
       />
 
       {/* Main Grid: Left Form, Right Live Dual Card Preview */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
         {/* Left Side: Input Form */}
-        <div className="lg:col-span-5 max-h-[calc(100vh-140px)] overflow-y-auto pr-1">
+        <div className="w-full max-h-[calc(100vh-140px)] overflow-y-auto pr-1">
           <IdCardForm
             cardData={cardData}
             setCardData={setCardData}
@@ -127,7 +127,7 @@ export function IdCard() {
         </div>
 
         {/* Right Side: Dual-Sided Visual Preview */}
-        <div className="lg:col-span-7 bg-muted/20 border border-border p-6 rounded-2xl flex flex-col items-center justify-center min-h-[550px] overflow-x-auto shadow-xs">
+        <div className="w-full bg-muted/20 border border-border p-6 rounded-2xl flex flex-col items-center justify-center min-h-[550px] overflow-x-auto shadow-xs">
           <IdCardPreview
             cardData={cardData}
             frontRef={frontCardRef}
