@@ -231,7 +231,7 @@ export function SalarySlip() {
 
       {viewMode === 'preview' && (
         <div className="w-full flex justify-center py-2 no-print-padding">
-          <SalarySlipPreview formData={formData} />
+          <SalarySlipPreview data={formData} formData={formData} />
         </div>
       )}
 
@@ -248,7 +248,7 @@ export function SalarySlip() {
           </div>
           <div className="lg:col-span-7 bg-muted/30 border border-border rounded-xl p-3 overflow-y-auto max-h-[calc(100vh-140px)] flex justify-center">
             <div className="scale-[0.88] origin-top">
-              <SalarySlipPreview formData={formData} />
+              <SalarySlipPreview data={formData} formData={formData} />
             </div>
           </div>
         </div>

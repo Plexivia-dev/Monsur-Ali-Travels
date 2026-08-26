@@ -3,23 +3,25 @@ import logoImg from '@shared/assets/logo.png';
 import infoData from '@shared/lib/information.json';
 import { formatToDdMmYyyy } from '@shared/lib/utils';
 
-export function SalarySlipPreview({ data }) {
+export function SalarySlipPreview({ data, formData }) {
+  const activeData = data || formData || {};
+
   const currentDate = new Date().toLocaleDateString('en-GB', {
     day: '2-digit',
     month: 'short',
     year: 'numeric',
   });
 
-  const basic = Number(data?.basicSalary) || 0;
-  const houseRent = Number(data?.houseRentAllowance) || 0;
-  const medical = Number(data?.medicalAllowance) || 0;
-  const conveyance = Number(data?.conveyanceAllowance) || 0;
-  const other = Number(data?.otherAllowance) || 0;
-  const overtime = Number(data?.overtimeExtraDuty) || 0;
+  const basic = Number(activeData?.basicSalary) || 0;
+  const houseRent = Number(activeData?.houseRentAllowance) || 0;
+  const medical = Number(activeData?.medicalAllowance) || 0;
+  const conveyance = Number(activeData?.conveyanceAllowance) || 0;
+  const other = Number(activeData?.otherAllowance) || 0;
+  const overtime = Number(activeData?.overtimeExtraDuty) || 0;
 
-  const grossEarnings = Number(data?.grossEarnings) || (basic + houseRent + medical + conveyance + other);
-  const totalDeduction = Number(data?.totalDeduction) || 0;
-  const netPayable = Number(data?.netSalaryPayable) || (grossEarnings + overtime - totalDeduction);
+  const grossEarnings = Number(activeData?.grossEarnings) || (basic + houseRent + medical + conveyance + other);
+  const totalDeduction = Number(activeData?.totalDeduction) || 0;
+  const netPayable = Number(activeData?.netSalaryPayable) || (grossEarnings + overtime - totalDeduction);
 
   return (
     <div 
@@ -48,8 +50,8 @@ export function SalarySlipPreview({ data }) {
           </div>
 
           <div className="text-right font-mono text-[10px]">
-            <div className="font-bold text-slate-900">Slip No: {data.slipNo || 'SLIP-2026-001'}</div>
-            <div className="text-slate-600">Date: {formatToDdMmYyyy(data.payDate) || currentDate}</div>
+            <div className="font-bold text-slate-900">Slip No: {activeData?.slipNo || 'SLIP-2026-001'}</div>
+            <div className="text-slate-600">Date: {formatToDdMmYyyy(activeData?.payDate) || currentDate}</div>
           </div>
         </div>
 
@@ -73,22 +75,22 @@ export function SalarySlipPreview({ data }) {
             
             <div className="flex justify-between">
               <span className="text-slate-600 font-semibold">Employee Name:</span>
-              <span className="font-bold text-slate-900">{data.employeeName || 'MD Hakimul Islam'}</span>
+              <span className="font-bold text-slate-900">{activeData?.employeeName || 'MD Hakimul Islam'}</span>
             </div>
 
             <div className="flex justify-between">
               <span className="text-slate-600 font-semibold">Employee ID:</span>
-              <span className="font-bold text-slate-900 font-mono">{data.employeeId || '123'}</span>
+              <span className="font-bold text-slate-900 font-mono">{activeData?.employeeId || '123'}</span>
             </div>
 
             <div className="flex justify-between">
               <span className="text-slate-600 font-semibold">Designation:</span>
-              <span className="font-bold text-slate-900">{data.designation || 'Managing Director'}</span>
+              <span className="font-bold text-slate-900">{activeData?.designation || 'Managing Director'}</span>
             </div>
 
             <div className="flex justify-between">
               <span className="text-slate-600 font-semibold">Joining Date:</span>
-              <span className="font-bold text-slate-900 font-mono">{formatToDdMmYyyy(data.joiningDate) || '01-10-2025'}</span>
+              <span className="font-bold text-slate-900 font-mono">{formatToDdMmYyyy(activeData?.joiningDate) || '01-10-2025'}</span>
             </div>
           </div>
 
@@ -100,22 +102,22 @@ export function SalarySlipPreview({ data }) {
 
             <div className="flex justify-between">
               <span className="text-slate-600 font-semibold">Salary Month:</span>
-              <span className="font-bold text-slate-900">{data.salaryMonth || 'October 2025'}</span>
+              <span className="font-bold text-slate-900">{activeData?.salaryMonth || 'October 2025'}</span>
             </div>
 
             <div className="flex justify-between">
               <span className="text-slate-600 font-semibold">Pay Date:</span>
-              <span className="font-bold text-slate-900 font-mono">{formatToDdMmYyyy(data.payDate) || currentDate}</span>
+              <span className="font-bold text-slate-900 font-mono">{formatToDdMmYyyy(activeData?.payDate) || currentDate}</span>
             </div>
 
             <div className="flex justify-between">
               <span className="text-slate-600 font-semibold">Department:</span>
-              <span className="font-bold text-slate-900">{data.department || 'Management'}</span>
+              <span className="font-bold text-slate-900">{activeData?.department || 'Management'}</span>
             </div>
 
             <div className="flex justify-between">
               <span className="text-slate-600 font-semibold">Payment Mode:</span>
-              <span className="font-bold text-slate-900">{data.paymentMode || 'Cash'}</span>
+              <span className="font-bold text-slate-900">{activeData?.paymentMode || 'Cash'}</span>
             </div>
           </div>
         </div>
@@ -135,42 +137,42 @@ export function SalarySlipPreview({ data }) {
               {/* Row 1 */}
               <tr>
                 <td className="p-1.5 border-r border-slate-300 text-slate-800">Basic Salary</td>
-                <td className="p-1.5 border-r border-slate-300 text-right font-mono font-bold">{Number(data.basicSalary || 0).toLocaleString('en-BD')}</td>
+                <td className="p-1.5 border-r border-slate-300 text-right font-mono font-bold">{Number(activeData?.basicSalary || 0).toLocaleString('en-BD')}</td>
                 <td className="p-1.5 border-r border-slate-300 text-slate-800 bg-slate-50/50">Advance Salary</td>
-                <td className="p-1.5 text-right font-mono font-bold bg-slate-50/50">{Number(data.advanceSalary || 0).toLocaleString('en-BD')}</td>
+                <td className="p-1.5 text-right font-mono font-bold bg-slate-50/50">{Number(activeData?.advanceSalary || 0).toLocaleString('en-BD')}</td>
               </tr>
               {/* Row 2 */}
               <tr>
                 <td className="p-1.5 border-r border-slate-300 text-slate-800">House Rent Allowance</td>
-                <td className="p-1.5 border-r border-slate-300 text-right font-mono font-bold">{Number(data.houseRentAllowance || 0).toLocaleString('en-BD')}</td>
+                <td className="p-1.5 border-r border-slate-300 text-right font-mono font-bold">{Number(activeData?.houseRentAllowance || 0).toLocaleString('en-BD')}</td>
                 <td className="p-1.5 border-r border-slate-300 text-slate-800 bg-slate-50/50">Unpaid Leave / Absence</td>
-                <td className="p-1.5 text-right font-mono font-bold bg-slate-50/50">{Number(data.unpaidLeaveAbsence || 0).toLocaleString('en-BD')}</td>
+                <td className="p-1.5 text-right font-mono font-bold bg-slate-50/50">{Number(activeData?.unpaidLeaveAbsence || 0).toLocaleString('en-BD')}</td>
               </tr>
               {/* Row 3 */}
               <tr>
                 <td className="p-1.5 border-r border-slate-300 text-slate-800">Medical Allowance</td>
-                <td className="p-1.5 border-r border-slate-300 text-right font-mono font-bold">{Number(data.medicalAllowance || 0).toLocaleString('en-BD')}</td>
+                <td className="p-1.5 border-r border-slate-300 text-right font-mono font-bold">{Number(activeData?.medicalAllowance || 0).toLocaleString('en-BD')}</td>
                 <td className="p-1.5 border-r border-slate-300 text-slate-800 bg-slate-50/50">Loan / Authorized Deduction</td>
-                <td className="p-1.5 text-right font-mono font-bold bg-slate-50/50">{Number(data.loanAuthorizedDeduction || 0).toLocaleString('en-BD')}</td>
+                <td className="p-1.5 text-right font-mono font-bold bg-slate-50/50">{Number(activeData?.loanAuthorizedDeduction || 0).toLocaleString('en-BD')}</td>
               </tr>
               {/* Row 4 */}
               <tr>
                 <td className="p-1.5 border-r border-slate-300 text-slate-800">Conveyance Allowance</td>
-                <td className="p-1.5 border-r border-slate-300 text-right font-mono font-bold">{Number(data.conveyanceAllowance || 0).toLocaleString('en-BD')}</td>
+                <td className="p-1.5 border-r border-slate-300 text-right font-mono font-bold">{Number(activeData?.conveyanceAllowance || 0).toLocaleString('en-BD')}</td>
                 <td className="p-1.5 border-r border-slate-300 text-slate-800 bg-slate-50/50">Tax / Statutory Deduction</td>
-                <td className="p-1.5 text-right font-mono font-bold bg-slate-50/50">{Number(data.taxStatutoryDeduction || 0).toLocaleString('en-BD')}</td>
+                <td className="p-1.5 text-right font-mono font-bold bg-slate-50/50">{Number(activeData?.taxStatutoryDeduction || 0).toLocaleString('en-BD')}</td>
               </tr>
               {/* Row 5 */}
               <tr>
                 <td className="p-1.5 border-r border-slate-300 text-slate-800">Other Allowance</td>
-                <td className="p-1.5 border-r border-slate-300 text-right font-mono font-bold">{Number(data.otherAllowance || 0).toLocaleString('en-BD')}</td>
+                <td className="p-1.5 border-r border-slate-300 text-right font-mono font-bold">{Number(activeData?.otherAllowance || 0).toLocaleString('en-BD')}</td>
                 <td className="p-1.5 border-r border-slate-300 text-slate-800 bg-slate-50/50">Other Authorized Deduction</td>
-                <td className="p-1.5 text-right font-mono font-bold bg-slate-50/50">{Number(data.otherAuthorizedDeduction || 0).toLocaleString('en-BD')}</td>
+                <td className="p-1.5 text-right font-mono font-bold bg-slate-50/50">{Number(activeData?.otherAuthorizedDeduction || 0).toLocaleString('en-BD')}</td>
               </tr>
               {/* Row 6 */}
               <tr>
                 <td className="p-1.5 border-r border-slate-300 text-slate-800">Overtime / Extra Duty</td>
-                <td className="p-1.5 border-r border-slate-300 text-right font-mono font-bold">{Number(data.overtimeExtraDuty || 0).toLocaleString('en-BD')}</td>
+                <td className="p-1.5 border-r border-slate-300 text-right font-mono font-bold">{Number(activeData?.overtimeExtraDuty || 0).toLocaleString('en-BD')}</td>
                 <td className="p-1.5 border-r border-slate-300 text-slate-400 bg-slate-50/50 italic">-</td>
                 <td className="p-1.5 text-right font-mono font-bold bg-slate-50/50">-</td>
               </tr>
@@ -193,7 +195,7 @@ export function SalarySlipPreview({ data }) {
               NET SALARY PAYABLE
             </span>
             <span className="text-[10px] italic text-emerald-100 font-medium block">
-              In Words: <span className="font-bold text-white uppercase">{data.netSalaryInWords || 'Zero Taka Only'}</span>
+              In Words: <span className="font-bold text-white uppercase">{activeData?.netSalaryInWords || 'Zero Taka Only'}</span>
             </span>
           </div>
           <div className="text-right">
@@ -211,10 +213,10 @@ export function SalarySlipPreview({ data }) {
               ATTENDANCE & LEAVE VALUE
             </h4>
             <div className="grid grid-cols-2 gap-1 font-semibold">
-              <span>Working Days: <strong className="font-mono">{data.workingDays || 30}</strong></span>
-              <span>Present Days: <strong className="font-mono">{data.presentDays || 30}</strong></span>
-              <span>Paid Leave: <strong className="font-mono">{data.paidLeave || 0}</strong></span>
-              <span>Unpaid Leave: <strong className="font-mono">{data.unpaidLeave || 0}</strong></span>
+              <span>Working Days: <strong className="font-mono">{activeData?.workingDays || 30}</strong></span>
+              <span>Present Days: <strong className="font-mono">{activeData?.presentDays || 30}</strong></span>
+              <span>Paid Leave: <strong className="font-mono">{activeData?.paidLeave || 0}</strong></span>
+              <span>Unpaid Leave: <strong className="font-mono">{activeData?.unpaidLeave || 0}</strong></span>
             </div>
           </div>
 
@@ -270,7 +272,7 @@ export function SalarySlipPreview({ data }) {
               PREPARED BY
             </div>
             <div className="text-slate-600 text-[9px] font-medium leading-none mt-0.5">
-              {data.preparedBy || 'HR Department'}
+              {activeData?.preparedBy || 'HR Department'}
             </div>
           </div>
 
@@ -281,7 +283,7 @@ export function SalarySlipPreview({ data }) {
               CHECKED BY
             </div>
             <div className="text-slate-600 text-[9px] font-medium leading-none mt-0.5">
-              {data.checkedBy || 'Accounts Department'}
+              {activeData?.checkedBy || 'Accounts Department'}
             </div>
           </div>
 
@@ -292,7 +294,7 @@ export function SalarySlipPreview({ data }) {
               AUTHORIZED SIGNATORY
             </div>
             <div className="text-slate-600 text-[9px] font-medium leading-none mt-0.5">
-              {data.authorizedSignatory || 'Managing Director'}
+              {activeData?.authorizedSignatory || 'Managing Director'}
             </div>
           </div>
         </div>

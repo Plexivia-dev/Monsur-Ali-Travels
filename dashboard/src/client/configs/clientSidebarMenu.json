@@ -11,6 +11,15 @@
         "icon": "Building2",
         "childItems": [
           {
+            "id": "cases",
+            "name": "Client Files",
+            "nameBn": "",
+            "portal": "agency",
+            "submodule": "cases",
+            "path": "/dashboard/agency/cases",
+            "icon": "FolderOpen"
+          },
+          {
             "id": "clients-all",
             "name": "All Clients",
             "nameBn": "",
@@ -18,15 +27,6 @@
             "submodule": "clients-all",
             "path": "/dashboard/agency/clients-all",
             "icon": "Users"
-          },
-          {
-            "id": "clients-add",
-            "name": "Add Client",
-            "nameBn": "",
-            "portal": "agency",
-            "submodule": "clients-add",
-            "path": "/dashboard/agency/clients-add",
-            "icon": "UserPlus"
           }
         ]
       }
