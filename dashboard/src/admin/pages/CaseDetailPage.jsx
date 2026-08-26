@@ -36,10 +36,11 @@ import { toast } from 'sonner';
 import { useAuth } from '@/store/useAuthStore';
 import { StepAssignModal } from '@/components/workflow/StepAssignModal';
 import { AddPaymentModal } from '@/components/workflow/AddPaymentModal';
+import { PageTitle } from '@shared/components/layout/PageTitle';
 
 const PIPELINE_STAGES = [
-  { id: 'ENTRY', title: '1. New Entry', color: 'bg-slate-100 text-slate-800' },
-  { id: 'PROCESSING', title: '2. Processing', color: 'bg-blue-100 text-blue-800' },
+  { id: 'ENTRY', title: '1. File Intake', color: 'bg-slate-100 text-slate-800' },
+  { id: 'PROCESSING', title: '2. Document Processing', color: 'bg-blue-100 text-blue-800' },
   { id: 'APPROVED_OFFER_LETTER', title: '3. Offer Approved', color: 'bg-indigo-100 text-indigo-800' },
   { id: 'SUBMITTED_EMBASSY_BSF', title: '4. Embassy / VFS Submitted', color: 'bg-amber-100 text-amber-800' },
   { id: 'COMPLETED_DELIVERED', title: '5. Completed & Delivered', color: 'bg-emerald-100 text-emerald-800' },
@@ -271,7 +272,7 @@ export default function CaseDetailPage() {
   (caseData.financialReceipts || []).forEach((r) => {
     activityTimeline.push({
       type: 'PAYMENT',
-      title: `Money Receipt Issued: ৳${Number(r.amount || 0).toLocaleString('en-IN')}`,
+      title: `Money Receipt Issued: BDT ${Number(r.amount || 0).toLocaleString('en-IN')}`,
       description: `Receipt #${r.receiptNumber || 'MR-001'} (${r.paymentMethod || 'Cash'}) received from ${r.clientName || caseData.applicantName}`,
       user: r.receivedByName || r.createdBy || 'Accountant',
       role: 'Accounts',
@@ -314,56 +315,40 @@ export default function CaseDetailPage() {
 
   return (
     <div className="space-y-6 pb-12 animate-in fade-in duration-200">
-      {/* Top Breadcrumb & Navigation Bar */}
-      <div className="flex flex-wrap items-center justify-between gap-4 bg-card border border-border p-4 rounded-2xl shadow-xs">
-        <div className="flex items-center gap-3">
-          <button
-            onClick={() => navigate('/admin/cases')}
-            className="p-2 rounded-xl border border-border hover:bg-muted text-muted-foreground hover:text-foreground transition cursor-pointer flex items-center gap-1.5 text-xs font-bold"
-          >
-            <ArrowLeft className="w-4 h-4" />
-            <span>Back to Cases</span>
-          </button>
+      {/* Dynamic PageTitle Header */}
+      <PageTitle
+        title={caseData.applicantName || caseData.clientInfo?.fullName || 'Applicant File'}
+        subtitle={`Case File #${caseData.caseNumber || 'CASE-FILE'} • Destination: ${caseData.destinationCountry || caseData.caseType?.toUpperCase() || 'Overseas'} • Trade: ${caseData.tradeSkill || 'General Worker'}`}
+        icon={FolderOpen}
+        badge={caseData.workflowStatus || caseData.status || 'ACTIVE'}
+        actions={
+          <>
+            <button
+              onClick={fetchCaseDetails}
+              className="p-2 rounded-xl border border-sky-400/30 bg-sky-500/10 hover:bg-sky-500/20 text-white transition cursor-pointer"
+              title="Refresh Case File"
+            >
+              <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
+            </button>
 
-          <div className="h-5 w-px bg-border hidden sm:block" />
+            <button
+              onClick={() => setIsPaymentModalOpen(true)}
+              className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold shadow-xs transition cursor-pointer"
+            >
+              <Receipt className="w-3.5 h-3.5" />
+              <span>Receive Payment</span>
+            </button>
 
-          <div className="flex items-center gap-2">
-            <span className="font-mono text-xs font-black text-primary bg-primary/10 px-2.5 py-1 rounded-lg border border-primary/20">
-              {caseData.caseNumber || 'CASE-FILE'}
-            </span>
-            <h1 className="text-lg font-black text-foreground tracking-tight">
-              {caseData.applicantName || caseData.clientInfo?.fullName || 'Applicant File'}
-            </h1>
-          </div>
-        </div>
-
-        {/* Top Header Direct Action CTAs */}
-        <div className="flex flex-wrap items-center gap-2">
-          <button
-            onClick={fetchCaseDetails}
-            className="p-2 rounded-xl border border-border hover:bg-muted text-muted-foreground transition cursor-pointer"
-            title="Refresh"
-          >
-            <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
-          </button>
-
-          <button
-            onClick={() => setIsPaymentModalOpen(true)}
-            className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold shadow-xs transition cursor-pointer"
-          >
-            <Receipt className="w-3.5 h-3.5" />
-            <span>পেমেন্ট গ্রহণ / রিসিট</span>
-          </button>
-
-          <button
-            onClick={() => setIsAssignModalOpen(true)}
-            className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground text-xs font-bold shadow-xs transition cursor-pointer"
-          >
-            <Layers className="w-3.5 h-3.5" />
-            <span>টাস্ক স্টেপ অ্যাসাইন</span>
-          </button>
-        </div>
-      </div>
+            <button
+              onClick={() => setIsAssignModalOpen(true)}
+              className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-sky-600 hover:bg-sky-500 text-white text-xs font-bold shadow-xs transition cursor-pointer"
+            >
+              <Layers className="w-3.5 h-3.5" />
+              <span>Assign Step Task</span>
+            </button>
+          </>
+        }
+      />
 
       {/* Case Identity & Creator Banner */}
       <div className="bg-card border border-border rounded-2xl p-6 shadow-xs space-y-4">
@@ -402,7 +387,7 @@ export default function CaseDetailPage() {
           {/* Current Processing Stage Dropdown */}
           <div className="flex items-center gap-3 bg-muted/40 p-2.5 rounded-xl border border-border shrink-0">
             <div className="text-right">
-              <span className="text-[10px] font-bold uppercase text-muted-foreground block">বর্তমান স্টেজ (Stage)</span>
+              <span className="text-[10px] font-bold uppercase text-muted-foreground block">Processing Stage</span>
               <span className="text-xs font-black text-primary block">{caseData.workflowStatus || caseData.status}</span>
             </div>
             <select
@@ -424,7 +409,7 @@ export default function CaseDetailPage() {
           <div className="flex items-center gap-2 text-muted-foreground">
             <User className="w-4 h-4 text-primary" />
             <span>
-              ফাইল ক্রিয়েটর (Created by):{' '}
+              Created By:{' '}
               <strong className="text-foreground font-bold">
                 {caseData.createdByName || caseData.createdBy?.name || 'Staff Member'}
               </strong>
@@ -433,7 +418,7 @@ export default function CaseDetailPage() {
           <div className="flex items-center gap-2 text-muted-foreground">
             <Calendar className="w-4 h-4 text-primary" />
             <span>
-              রেজিস্ট্রেশন তারিখ:{' '}
+              Registered Date:{' '}
               <strong className="text-foreground font-bold">
                 {new Date(caseData.createdAt || Date.now()).toLocaleString('en-GB', {
                   day: '2-digit',
@@ -448,11 +433,12 @@ export default function CaseDetailPage() {
           <div className="flex items-center gap-2 text-muted-foreground">
             <Clock className="w-4 h-4 text-primary" />
             <span>
-              সর্বশেষ আপডেট:{' '}
+              Last Updated:{' '}
               <strong className="text-foreground font-bold">
                 {new Date(caseData.updatedAt || Date.now()).toLocaleString('en-GB', {
                   day: '2-digit',
                   month: 'short',
+                  year: 'numeric',
                   hour: '2-digit',
                   minute: '2-digit',
                 })}
@@ -462,33 +448,33 @@ export default function CaseDetailPage() {
         </div>
       </div>
 
-      {/* 4 Financial & Pipeline Snapshot Cards (No "লেজার" jargon!) */}
+      {/* 4 Financial & Pipeline Snapshot Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <div className="bg-card border border-border p-4 rounded-2xl shadow-xs space-y-1">
-          <span className="text-[11px] font-bold uppercase text-muted-foreground">চুক্তিকৃত মোট প্যাকেজ</span>
-          <div className="text-xl font-black text-foreground">৳{Number(totalAgreed).toLocaleString('en-IN')}</div>
+          <span className="text-[11px] font-bold uppercase text-muted-foreground">Total Agreed Package</span>
+          <div className="text-xl font-black text-foreground">BDT {Number(totalAgreed).toLocaleString('en-IN')}</div>
           <span className="text-[10px] text-muted-foreground">Total agreed client contract</span>
         </div>
 
         <div className="bg-card border border-border p-4 rounded-2xl shadow-xs space-y-1">
           <div className="flex items-center justify-between">
-            <span className="text-[11px] font-bold uppercase text-emerald-600">মোট সংগৃহীত পেমেন্ট</span>
+            <span className="text-[11px] font-bold uppercase text-emerald-600">Total Collected Payment</span>
             <span className="text-[11px] font-bold text-emerald-600">{paidPercent}%</span>
           </div>
-          <div className="text-xl font-black text-emerald-600">৳{Number(totalPaid).toLocaleString('en-IN')}</div>
+          <div className="text-xl font-black text-emerald-600">BDT {Number(totalPaid).toLocaleString('en-IN')}</div>
           <div className="w-full h-1.5 bg-muted rounded-full overflow-hidden">
             <div className="h-full bg-emerald-500 rounded-full" style={{ width: `${paidPercent}%` }} />
           </div>
         </div>
 
         <div className="bg-card border border-border p-4 rounded-2xl shadow-xs space-y-1">
-          <span className="text-[11px] font-bold uppercase text-rose-600">কোম্পানির মোট বকেয়া পাওনা</span>
-          <div className="text-xl font-black text-rose-600">৳{Number(totalDue).toLocaleString('en-IN')}</div>
+          <span className="text-[11px] font-bold uppercase text-rose-600">Total Due Balance</span>
+          <div className="text-xl font-black text-rose-600">BDT {Number(totalDue).toLocaleString('en-IN')}</div>
           <span className="text-[10px] text-rose-500 font-medium">Pending collection balance</span>
         </div>
 
         <div className="bg-card border border-border p-4 rounded-2xl shadow-xs space-y-1">
-          <span className="text-[11px] font-bold uppercase text-primary">অপারেশনাল টাস্ক অগ্রগতি</span>
+          <span className="text-[11px] font-bold uppercase text-primary">Operational Tasks Progress</span>
           <div className="text-xl font-black text-foreground">
             {(caseData.workflowTasks || []).filter((t) => t.status === 'Approved' || t.status === 'Done').length} /{' '}
             {(caseData.workflowTasks || []).length || 5} Steps
@@ -500,12 +486,12 @@ export default function CaseDetailPage() {
       {/* Navigation Tab Bar */}
       <div className="bg-card border border-border rounded-2xl p-1 shadow-xs flex items-center gap-1 overflow-x-auto no-scrollbar">
         {[
-          { id: 'overview', label: 'ফাইল ও ক্লায়েন্ট বিবরণী (Overview)', icon: FolderOpen },
-          { id: 'activity', label: 'সম্পূর্ণ অ্যাক্টিভিটি হিস্ট্রি ও লগ (Activity Log)', icon: History, count: activityTimeline.length },
-          { id: 'tasks', label: 'ওয়ার্কফ্লো ও স্টাফ টাস্ক (Tasks)', icon: Layers, count: (caseData.workflowTasks || []).length },
-          { id: 'payments', label: 'পেমেন্ট ও মানি রিসিট স্টেটমেন্ট (Payments)', icon: CreditCard, count: (caseData.financialReceipts || []).length },
-          { id: 'documents', label: 'ডকুমেন্ট ভল্ট ও আপলোডকারী অডিট (Docs)', icon: FileText, count: (caseData.vaultDocuments || []).length },
-          { id: 'communication', label: 'টিম কোলাবোরেশন ও মেসেজ (Chat & Notes)', icon: MessageSquare, count: (caseData.internalMessages || []).length },
+          { id: 'overview', label: 'File Overview', icon: FolderOpen },
+          { id: 'activity', label: 'Activity History', icon: History, count: activityTimeline.length },
+          { id: 'tasks', label: 'Workflow Tasks', icon: Layers, count: (caseData.workflowTasks || []).length },
+          { id: 'payments', label: 'Payments & Receipts', icon: CreditCard, count: (caseData.financialReceipts || []).length },
+          { id: 'documents', label: 'Document Vault', icon: FileText, count: (caseData.vaultDocuments || []).length },
+          { id: 'communication', label: 'Team Collaboration & Notes', icon: MessageSquare, count: (caseData.internalMessages || []).length },
         ].map((tab) => {
           const Icon = tab.icon;
           const isActive = activeTab === tab.id;
@@ -544,31 +530,31 @@ export default function CaseDetailPage() {
             <div className="bg-card border border-border rounded-2xl p-6 space-y-4 shadow-xs">
               <h3 className="text-sm font-bold text-foreground uppercase tracking-wider flex items-center gap-2">
                 <User className="w-4 h-4 text-primary" />
-                ক্লায়েন্ট ও পাসপোর্ট পরিচিতি
+                Client & Passport Particulars
               </h3>
               <div className="grid grid-cols-2 gap-4 text-xs">
                 <div className="p-3 rounded-xl bg-muted/30 border border-border">
-                  <span className="text-muted-foreground block text-[10px]">আবেদনকারীর পুরো নাম</span>
+                  <span className="text-muted-foreground block text-[10px]">Applicant Full Name</span>
                   <p className="font-bold text-foreground mt-0.5">{caseData.applicantName || '—'}</p>
                 </div>
                 <div className="p-3 rounded-xl bg-muted/30 border border-border">
-                  <span className="text-muted-foreground block text-[10px]">মোবাইল নম্বর</span>
+                  <span className="text-muted-foreground block text-[10px]">Phone Number</span>
                   <p className="font-bold text-foreground mt-0.5">{caseData.phone || '—'}</p>
                 </div>
                 <div className="p-3 rounded-xl bg-muted/30 border border-border">
-                  <span className="text-muted-foreground block text-[10px]">পাসপোর্ট নম্বর</span>
+                  <span className="text-muted-foreground block text-[10px]">Passport Number</span>
                   <p className="font-mono font-bold text-sky-600 mt-0.5">{caseData.passportNumber || '—'}</p>
                 </div>
                 <div className="p-3 rounded-xl bg-muted/30 border border-border">
-                  <span className="text-muted-foreground block text-[10px]">এনআইডি নম্বর (NID)</span>
+                  <span className="text-muted-foreground block text-[10px]">National ID (NID)</span>
                   <p className="font-mono font-bold text-foreground mt-0.5">{caseData.nidNumber || caseData.clientInfo?.nidNumber || '—'}</p>
                 </div>
                 <div className="p-3 rounded-xl bg-muted/30 border border-border">
-                  <span className="text-muted-foreground block text-[10px]">গন্তব্য দেশ</span>
+                  <span className="text-muted-foreground block text-[10px]">Destination Country</span>
                   <p className="font-bold text-foreground mt-0.5">{caseData.destinationCountry || caseData.caseType?.toUpperCase()}</p>
                 </div>
                 <div className="p-3 rounded-xl bg-muted/30 border border-border">
-                  <span className="text-muted-foreground block text-[10px]">কাজের ধরন (Skill)</span>
+                  <span className="text-muted-foreground block text-[10px]">Trade / Skill Category</span>
                   <p className="font-bold text-foreground mt-0.5">{caseData.tradeSkill || 'General Worker'}</p>
                 </div>
               </div>
@@ -578,45 +564,45 @@ export default function CaseDetailPage() {
             <div className="bg-card border border-border rounded-2xl p-6 space-y-4 shadow-xs">
               <h3 className="text-sm font-bold text-foreground uppercase tracking-wider flex items-center gap-2">
                 <CreditCard className="w-4 h-4 text-emerald-600" />
-                ৩-ধাপের পেমেন্ট সময়সূচী ও অবস্থা
+                3-Step Milestone Payment Schedule & Settlement
               </h3>
               <div className="space-y-3 text-xs">
                 <div className="p-3.5 rounded-xl border border-border bg-muted/20 flex items-center justify-between">
                   <div>
-                    <span className="font-bold text-foreground block">১. ফাইল এন্ট্রি ও সাবমিশন অ্যাডভান্স</span>
+                    <span className="font-bold text-foreground block">1. File Entry & Submission Advance</span>
                     <span className="text-[11px] text-muted-foreground">Initial file processing intake</span>
                   </div>
                   <div className="text-right">
                     <span className="text-sm font-black text-foreground block">
-                      ৳{Number(ledger.step1_advance || caseData.initialPaidAmount || 0).toLocaleString('en-IN')}
+                      BDT {Number(ledger.step1_advance || caseData.initialPaidAmount || 0).toLocaleString('en-IN')}
                     </span>
-                    <span className="text-[10px] font-bold text-emerald-600">পরিশোধিত ✓</span>
+                    <span className="text-[10px] font-bold text-emerald-600">Paid ✓</span>
                   </div>
                 </div>
 
                 <div className="p-3.5 rounded-xl border border-border bg-muted/20 flex items-center justify-between">
                   <div>
-                    <span className="font-bold text-foreground block">২. অফার লেটার / পারমিট অ্যাপ্রুভাল পেমেন্ট</span>
+                    <span className="font-bold text-foreground block">2. Offer Letter / Work Permit Approval Milestone</span>
                     <span className="text-[11px] text-muted-foreground">Due upon official work permit approval</span>
                   </div>
                   <div className="text-right">
                     <span className="text-sm font-black text-foreground block">
-                      ৳{Number(ledger.step2_offerApproval || 0).toLocaleString('en-IN')}
+                      BDT {Number(ledger.step2_offerApproval || 0).toLocaleString('en-IN')}
                     </span>
-                    <span className="text-[10px] font-bold text-amber-600">অ্যাপ্রুভালে প্রদেয়</span>
+                    <span className="text-[10px] font-bold text-amber-600">Due on Approval</span>
                   </div>
                 </div>
 
                 <div className="p-3.5 rounded-xl border border-border bg-muted/20 flex items-center justify-between">
                   <div>
-                    <span className="font-bold text-foreground block">৩. ভিসা ও পাসপোর্ট ডেলিভারি ফাইনাল পেমেন্ট</span>
+                    <span className="font-bold text-foreground block">3. Visa & Passport Final Settlement upon Delivery</span>
                     <span className="text-[11px] text-muted-foreground">Final settlement before flight delivery</span>
                   </div>
                   <div className="text-right">
                     <span className="text-sm font-black text-foreground block">
-                      ৳{Number(ledger.step3_delivery || 0).toLocaleString('en-IN')}
+                      BDT {Number(ledger.step3_delivery || 0).toLocaleString('en-IN')}
                     </span>
-                    <span className="text-[10px] font-bold text-purple-600">ডেলিভারির সময়</span>
+                    <span className="text-[10px] font-bold text-purple-600">Upon Delivery</span>
                   </div>
                 </div>
               </div>
@@ -626,15 +612,15 @@ export default function CaseDetailPage() {
             <div className="lg:col-span-2 bg-card border border-border rounded-2xl p-6 space-y-4 shadow-xs">
               <h3 className="text-sm font-bold text-foreground uppercase tracking-wider flex items-center gap-2">
                 <FileCheck className="w-4 h-4 text-sky-600" />
-                ফিজিক্যাল ডকুমেন্ট চেকলিস্ট (Physical Document Intake)
+                Physical Document Intake Checklist
               </h3>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 text-xs">
                 {[
-                  { key: 'photo2x2', label: 'ছবি ২x২ সাইজ (সাদা ব্যাকগ্রাউন্ড)' },
-                  { key: 'electricityBill', label: 'কারেন্ট / বিদ্যুৎ বিলের কপি' },
-                  { key: 'nidCopy', label: 'জাতীয় পরিচয়পত্র (NID) কপি' },
-                  { key: 'landDocuments', label: 'জমির দলিল / সম্পদ প্রমাণপত্র' },
-                  { key: 'followUpCallRequired', label: 'পেন্ডিং পেপারের ফলো-আপ রিমাইন্ডার' },
+                  { key: 'photo2x2', label: '2x2 Size Photo (White Background)' },
+                  { key: 'electricityBill', label: 'Utility / Electricity Bill Copy' },
+                  { key: 'nidCopy', label: 'National ID (NID) Copy' },
+                  { key: 'landDocuments', label: 'Land Property Documents' },
+                  { key: 'followUpCallRequired', label: 'Pending Document Follow-up Reminder' },
                 ].map((item) => {
                   const isChecked = caseData.checklist?.[item.key];
                   return (
@@ -652,7 +638,7 @@ export default function CaseDetailPage() {
                           isChecked ? 'bg-emerald-500/20 text-emerald-600' : 'bg-muted text-muted-foreground'
                         }`}
                       >
-                        {isChecked ? 'জমা পাওয়া গেছে ✓' : 'পেন্ডিং'}
+                        {isChecked ? 'Received ✓' : 'Pending'}
                       </span>
                     </div>
                   );
@@ -662,14 +648,14 @@ export default function CaseDetailPage() {
           </div>
         )}
 
-        {/* TAB 2: COMPREHENSIVE ACTIVITY & AUDIT TIMELINE (কে কী করেছে) */}
+        {/* TAB 2: COMPREHENSIVE ACTIVITY & AUDIT TIMELINE */}
         {activeTab === 'activity' && (
           <div className="bg-card border border-border rounded-2xl p-6 shadow-xs space-y-6">
             <div className="flex items-center justify-between border-b border-border pb-4">
               <div>
-                <h3 className="text-base font-bold text-foreground">সম্পূর্ণ অ্যাক্টিভিটি হিস্ট্রি ও অডিট ট্রেইল</h3>
+                <h3 className="text-base font-bold text-foreground">Comprehensive Activity History & Audit Trail</h3>
                 <p className="text-xs text-muted-foreground">
-                  কে কখন এই ফাইলে কি কাজ করেছে, স্ট্যাটাস পরিবর্তন করেছে, পেমেন্ট নিয়েছে বা ফাইল আপলোড করেছে।
+                  Timestamped audit trail of all staff actions, stage updates, payments, and document uploads.
                 </p>
               </div>
               <span className="px-3 py-1 rounded-full text-xs font-bold bg-primary/10 text-primary border border-primary/20">
@@ -708,7 +694,7 @@ export default function CaseDetailPage() {
                         </div>
                         <p className="text-xs text-muted-foreground leading-relaxed">{item.description}</p>
                         <div className="pt-1 text-[10px] text-muted-foreground flex items-center gap-2">
-                          <span>সম্পাদনকারী:</span>
+                          <span>Performed By:</span>
                           <strong className="text-foreground">{item.user}</strong>
                           <span className="px-1.5 py-0.2 rounded bg-muted text-muted-foreground uppercase font-semibold">
                             {item.role}
@@ -728,9 +714,9 @@ export default function CaseDetailPage() {
           <div className="bg-card border border-border rounded-2xl p-6 shadow-xs space-y-6">
             <div className="flex items-center justify-between border-b border-border pb-4">
               <div>
-                <h3 className="text-base font-bold text-foreground">ওয়ার্কফ্লো স্টেপ ও অপারেশনাল টাস্ক</h3>
+                <h3 className="text-base font-bold text-foreground">Workflow Steps & Operational Tasks</h3>
                 <p className="text-xs text-muted-foreground">
-                  কোন স্টাফ মেম্বারকে কোন স্টেপ অ্যাসাইন করা হয়েছে এবং বর্তমান অগ্রগতি।
+                  Task allocation, assigned staff members, and live milestone progress.
                 </p>
               </div>
               <button
@@ -738,19 +724,19 @@ export default function CaseDetailPage() {
                 className="flex items-center gap-1.5 px-3.5 py-2 bg-primary text-primary-foreground font-bold text-xs rounded-xl shadow-xs hover:bg-primary/90 transition cursor-pointer"
               >
                 <Plus className="w-3.5 h-3.5" />
-                <span>নতুন স্টেপ অ্যাসাইন করুন</span>
+                <span>Assign New Step</span>
               </button>
             </div>
 
             {(caseData.workflowTasks || []).length === 0 ? (
               <div className="py-12 text-center text-muted-foreground text-xs space-y-2 border border-dashed border-border rounded-2xl">
                 <Layers className="w-8 h-8 mx-auto opacity-40" />
-                <p className="font-semibold">এখনো কোনো ওয়ার্কফ্লো টাস্ক অ্যাসাইন করা হয়নি।</p>
+                <p className="font-semibold">No workflow tasks assigned yet.</p>
                 <button
                   onClick={() => setIsAssignModalOpen(true)}
                   className="text-primary font-bold hover:underline cursor-pointer"
                 >
-                  + প্রথম টাস্ক স্টেপ তৈরি করুন
+                  + Create First Task Step
                 </button>
               </div>
             ) : (
@@ -786,7 +772,7 @@ export default function CaseDetailPage() {
 
                     <div className="flex items-center justify-between text-xs pt-2 border-t border-border text-muted-foreground">
                       <span>
-                        অ্যাসাইন করা স্টাফ:{' '}
+                        Assigned Staff:{' '}
                         <strong className="text-foreground">{t.assignedToName || t.assignedToDid || 'Staff'}</strong>
                       </span>
                       {t.status === 'Done' && (
@@ -810,9 +796,9 @@ export default function CaseDetailPage() {
           <div className="bg-card border border-border rounded-2xl p-6 shadow-xs space-y-6">
             <div className="flex items-center justify-between border-b border-border pb-4">
               <div>
-                <h3 className="text-base font-bold text-foreground">পেমেন্ট স্টেটমেন্ট ও মানি রিসিট তালিকা</h3>
+                <h3 className="text-base font-bold text-foreground">Payment Statements & Money Receipts</h3>
                 <p className="text-xs text-muted-foreground">
-                  এই কেস ফাইলের সকল ইস্যুকৃত মানি রিসিট ও পেমেন্ট রেকর্ড।
+                  All issued payment receipts, transaction tokens, and ledger entries for this case file.
                 </p>
               </div>
               <button
@@ -820,19 +806,19 @@ export default function CaseDetailPage() {
                 className="flex items-center gap-1.5 px-3.5 py-2 bg-emerald-600 text-white font-bold text-xs rounded-xl shadow-xs hover:bg-emerald-700 transition cursor-pointer"
               >
                 <Plus className="w-3.5 h-3.5" />
-                <span>নতুন মানি রিসিট ইস্যু করুন</span>
+                <span>Issue Money Receipt</span>
               </button>
             </div>
 
             {(caseData.financialReceipts || []).length === 0 ? (
               <div className="py-12 text-center text-muted-foreground text-xs space-y-2 border border-dashed border-border rounded-2xl">
                 <Receipt className="w-8 h-8 mx-auto opacity-40" />
-                <p className="font-semibold">এখনো কোনো মানি রিসিট ইস্যু করা হয়নি।</p>
+                <p className="font-semibold">No money receipts issued yet for this case.</p>
                 <button
                   onClick={() => setIsPaymentModalOpen(true)}
                   className="text-emerald-600 font-bold hover:underline cursor-pointer"
                 >
-                  + মানি রিসিট তৈরি করুন
+                  + Create Money Receipt
                 </button>
               </div>
             ) : (
@@ -840,12 +826,12 @@ export default function CaseDetailPage() {
                 <table className="w-full text-xs text-left">
                   <thead className="bg-muted/40 uppercase text-muted-foreground border-b border-border">
                     <tr>
-                      <th className="px-4 py-3 font-semibold">রিসিট নং</th>
-                      <th className="px-4 py-3 font-semibold">তারিখ</th>
-                      <th className="px-4 py-3 font-semibold">পেমেন্ট মেথড</th>
-                      <th className="px-4 py-3 font-semibold">টাকার পরিমাণ</th>
-                      <th className="px-4 py-3 font-semibold">ইস্যুকারী স্টাফ</th>
-                      <th className="px-4 py-3 font-semibold text-right">অ্যাকশন</th>
+                      <th className="px-4 py-3 font-semibold">Receipt No</th>
+                      <th className="px-4 py-3 font-semibold">Date</th>
+                      <th className="px-4 py-3 font-semibold">Payment Method</th>
+                      <th className="px-4 py-3 font-semibold">Amount (BDT)</th>
+                      <th className="px-4 py-3 font-semibold">Issuing Staff</th>
+                      <th className="px-4 py-3 font-semibold text-right">Action</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-border">
@@ -859,7 +845,7 @@ export default function CaseDetailPage() {
                         </td>
                         <td className="px-4 py-3 font-semibold">{r.paymentMethod || 'Cash'}</td>
                         <td className="px-4 py-3 font-black text-emerald-600">
-                          ৳{Number(r.amount || 0).toLocaleString('en-IN')}
+                          BDT {Number(r.amount || 0).toLocaleString('en-IN')}
                         </td>
                         <td className="px-4 py-3 text-muted-foreground">
                           {r.receivedByName || r.createdBy || 'Accountant'}
@@ -886,9 +872,9 @@ export default function CaseDetailPage() {
           <div className="bg-card border border-border rounded-2xl p-6 shadow-xs space-y-6">
             <div className="flex items-center justify-between border-b border-border pb-4">
               <div>
-                <h3 className="text-base font-bold text-foreground">ভেরিফাইড ডকুমেন্ট ভল্ট ও আপলোডকারী অডিট</h3>
+                <h3 className="text-base font-bold text-foreground">Verified Document Vault & Uploader Audit</h3>
                 <p className="text-xs text-muted-foreground">
-                  কে কোন ফাইল আপলোড করেছে তা আপলোডকারীর নাম ও তারিখসহ সংরক্ষিত।
+                  Verified repository of case scans and attachments with audit trail of staff uploaders.
                 </p>
               </div>
               <button
@@ -896,19 +882,19 @@ export default function CaseDetailPage() {
                 className="flex items-center gap-1.5 px-3.5 py-2 bg-primary text-primary-foreground font-bold text-xs rounded-xl shadow-xs hover:bg-primary/90 transition cursor-pointer"
               >
                 <UploadCloud className="w-3.5 h-3.5" />
-                <span>+ নতুন ফাইল আপলোড</span>
+                <span>+ Upload New File</span>
               </button>
             </div>
 
             {(caseData.vaultDocuments || []).length === 0 ? (
               <div className="py-12 text-center text-muted-foreground text-xs space-y-2 border border-dashed border-border rounded-2xl">
                 <FileText className="w-8 h-8 mx-auto opacity-40" />
-                <p className="font-semibold">ভল্টে এখনো কোনো ডকুমেন্ট আপলোড করা হয়নি।</p>
+                <p className="font-semibold">No documents uploaded to this vault yet.</p>
                 <button
                   onClick={() => setIsUploadModalOpen(true)}
                   className="text-primary font-bold hover:underline cursor-pointer"
                 >
-                  + প্রথম ডকুমেন্ট আপলোড করুন
+                  + Upload First Document
                 </button>
               </div>
             ) : (
@@ -937,7 +923,7 @@ export default function CaseDetailPage() {
 
                     <div className="flex items-center justify-between text-[11px] pt-2 border-t border-border text-muted-foreground">
                       <span>
-                        আপলোডকারী: <strong className="text-foreground">{doc.uploadedByName || 'Staff Member'}</strong>
+                        Uploaded By: <strong className="text-foreground">{doc.uploadedByName || 'Staff Member'}</strong>
                       </span>
                       {doc.fileUrl && (
                         <a
@@ -961,9 +947,9 @@ export default function CaseDetailPage() {
         {activeTab === 'communication' && (
           <div className="bg-card border border-border rounded-2xl p-6 shadow-xs space-y-6">
             <div className="border-b border-border pb-4">
-              <h3 className="text-base font-bold text-foreground">টিম কোলাবোরেশন ও ইন-ফাইল মেসেজ</h3>
+              <h3 className="text-base font-bold text-foreground">Team Collaboration & Internal Notes</h3>
               <p className="text-xs text-muted-foreground">
-                এই কেস ফাইল নিয়ে স্টাফ ও ম্যানেজমেন্টের সরাসরি মেসেজ ও কাজের নোট।
+                Internal team discussions, staff notes, and operational logs for this case file.
               </p>
             </div>
 
@@ -972,7 +958,7 @@ export default function CaseDetailPage() {
               {(caseData.internalMessages || []).length === 0 ? (
                 <div className="py-12 text-center text-muted-foreground text-xs space-y-2 border border-dashed border-border rounded-2xl">
                   <MessageSquare className="w-8 h-8 mx-auto opacity-40" />
-                  <p className="font-semibold">এখনো কোনো ইন-ফাইল মেসেজ বা নোট দেওয়া হয়নি।</p>
+                  <p className="font-semibold">No internal notes posted yet.</p>
                 </div>
               ) : (
                 caseData.internalMessages.map((msg, idx) => (
@@ -1009,7 +995,7 @@ export default function CaseDetailPage() {
             <form onSubmit={handleSendMessage} className="pt-3 border-t border-border flex gap-2">
               <input
                 type="text"
-                placeholder="এই ফাইলের জন্য কাজের নোট বা মেসেজ লিখুন..."
+                placeholder="Write an internal operational note or message for this case file..."
                 value={newMessage}
                 onChange={(e) => setNewMessage(e.target.value)}
                 className="flex-1 px-4 py-2.5 bg-muted/40 border border-border rounded-xl text-xs text-foreground focus:outline-none focus:border-primary"

@@ -99,7 +99,7 @@ export function CharacterCertificateForm({ data = {}, onChange }) {
       <div className="bg-primary/5 border border-primary/20 rounded-xl p-3.5 space-y-2">
         <div className="flex items-center gap-1.5 text-xs font-bold text-primary">
           <Sparkles className="w-4 h-4" />
-          <span>১-ক্লিক ইস্যুকারী কর্তৃপক্ষ প্রিসেট (Authority Presets)</span>
+          <span>Quick Authority Presets</span>
         </div>
         <div className="flex flex-wrap gap-1.5">
           {AUTHORITY_PRESETS.map((p) => (
@@ -119,13 +119,13 @@ export function CharacterCertificateForm({ data = {}, onChange }) {
       <div className="bg-card border border-border rounded-xl p-4 space-y-4">
         <div className="flex items-center gap-1.5 bg-gradient-to-r from-sky-600 via-sky-700 to-[#0B3A60] text-white px-4 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider shadow-xs">
           <Building2 className="w-4 h-4 text-sky-200" />
-          <span>১. ইস্যুকারী প্রতিষ্ঠান বা কর্তৃপক্ষের তথ্য (Issuing Authority)</span>
+          <span>1. Issuing Authority Information</span>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div className="sm:col-span-2">
             <label className="block text-xs font-semibold mb-1">
-              কর্তৃপক্ষের নিজস্ব লোগো আপলোড (Custom Organization Logo - ঐচ্ছিক / Optional)
+              Organization Logo Upload (Optional)
             </label>
             <div className="flex items-center gap-3">
               {data.authority?.logoUrl ? (
@@ -149,7 +149,7 @@ export function CharacterCertificateForm({ data = {}, onChange }) {
               <div className="flex-1 space-y-1">
                 <label className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-border bg-background hover:bg-muted text-xs font-medium text-foreground cursor-pointer transition-colors shadow-2xs">
                   <Upload className="w-3.5 h-3.5 text-primary" />
-                  <span>{data.authority?.logoUrl ? 'লোগো পরিবর্তন করুন (Change Logo)' : 'লোগো আপলোড করুন (Upload Logo)'}</span>
+                  <span>{data.authority?.logoUrl ? 'Change Logo' : 'Upload Logo'}</span>
                   <input
                     type="file"
                     accept="image/*"
@@ -158,14 +158,14 @@ export function CharacterCertificateForm({ data = {}, onChange }) {
                   />
                 </label>
                 <p className="text-[11px] text-muted-foreground">
-                  (লোগো না দিলে সার্টিফিকেট শুধুমাত্র টেক্সট হেডারে প্রিন্ট হবে, কোনো ডিফল্ট লোগো বসবে না)
+                  (If no logo is provided, certificate will print with a clean typographic header)
                 </p>
               </div>
             </div>
           </div>
 
           <div className="sm:col-span-2">
-            <label className="block text-xs font-semibold mb-1">কর্তৃপক্ষের নাম (Organization Name)</label>
+            <label className="block text-xs font-semibold mb-1">Organization / Authority Name</label>
             <input
               type="text"
               value={data.authority?.organizationName || ''}
@@ -175,7 +175,7 @@ export function CharacterCertificateForm({ data = {}, onChange }) {
           </div>
 
           <div>
-            <label className="block text-xs font-semibold mb-1">সাবটাইটেল / পদবী বিবরণ</label>
+            <label className="block text-xs font-semibold mb-1">Subtitle / Jurisdiction Details</label>
             <input
               type="text"
               value={data.authority?.organizationSubtitle || ''}
@@ -185,7 +185,7 @@ export function CharacterCertificateForm({ data = {}, onChange }) {
           </div>
 
           <div>
-            <label className="block text-xs font-semibold mb-1">অফিসের ঠিকানা (Office Address)</label>
+            <label className="block text-xs font-semibold mb-1">Office Address</label>
             <input
               type="text"
               value={data.authority?.officeAddress || ''}
@@ -195,7 +195,7 @@ export function CharacterCertificateForm({ data = {}, onChange }) {
           </div>
 
           <div>
-            <label className="block text-xs font-semibold mb-1">ফোন / মোবাইল (Phone)</label>
+            <label className="block text-xs font-semibold mb-1">Phone Number</label>
             <input
               type="text"
               value={data.authority?.phone || ''}
@@ -205,7 +205,7 @@ export function CharacterCertificateForm({ data = {}, onChange }) {
           </div>
 
           <div>
-            <label className="block text-xs font-semibold mb-1">ইমেইল (Email)</label>
+            <label className="block text-xs font-semibold mb-1">Email Address</label>
             <input
               type="text"
               value={data.authority?.email || ''}
@@ -220,12 +220,12 @@ export function CharacterCertificateForm({ data = {}, onChange }) {
       <div className="bg-card border border-border rounded-xl p-4 space-y-4">
         <div className="flex items-center gap-1.5 bg-gradient-to-r from-sky-600 via-sky-700 to-[#0B3A60] text-white px-4 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider shadow-xs">
           <FileText className="w-4 h-4 text-sky-200" />
-          <span>২. সার্টিফিকেটের শিরোনাম ও রেফারেন্স (Title & Date)</span>
+          <span>2. Certificate Title & Reference</span>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
           <div>
-            <label className="block text-xs font-semibold mb-1">সার্টিফিকেট শিরোনাম (Title)</label>
+            <label className="block text-xs font-semibold mb-1">Certificate Title</label>
             <input
               type="text"
               value={data.certificateTitle || ''}
@@ -235,7 +235,7 @@ export function CharacterCertificateForm({ data = {}, onChange }) {
           </div>
 
           <div>
-            <label className="block text-xs font-semibold mb-1">স্মারক / রেফারেন্স নং (Memo No)</label>
+            <label className="block text-xs font-semibold mb-1">Memo / Reference No</label>
             <input
               type="text"
               value={data.memoNo || ''}
@@ -245,7 +245,7 @@ export function CharacterCertificateForm({ data = {}, onChange }) {
           </div>
 
           <div>
-            <label className="block text-xs font-semibold mb-1">ইস্যুর তারিখ (Issue Date)</label>
+            <label className="block text-xs font-semibold mb-1">Issue Date</label>
             <input
               type="date"
               value={data.issueDate || ''}
@@ -260,12 +260,12 @@ export function CharacterCertificateForm({ data = {}, onChange }) {
       <div className="bg-card border border-border rounded-xl p-4 space-y-4">
         <div className="flex items-center gap-1.5 bg-gradient-to-r from-sky-600 via-sky-700 to-[#0B3A60] text-white px-4 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider shadow-xs">
           <User className="w-4 h-4 text-sky-200" />
-          <span>৩. প্রার্থীর ব্যক্তিগত তথ্য (Client Information)</span>
+          <span>3. Candidate / Applicant Details</span>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div>
-            <label className="block text-xs font-semibold mb-1">প্রার্থীর নাম (Full Name)</label>
+            <label className="block text-xs font-semibold mb-1">Candidate Full Name</label>
             <input
               type="text"
               value={data.client?.fullName || ''}
@@ -275,7 +275,7 @@ export function CharacterCertificateForm({ data = {}, onChange }) {
           </div>
 
           <div>
-            <label className="block text-xs font-semibold mb-1">পিতার নাম (Father's Name)</label>
+            <label className="block text-xs font-semibold mb-1">Father's Name</label>
             <input
               type="text"
               value={data.client?.fatherName || ''}
@@ -285,7 +285,7 @@ export function CharacterCertificateForm({ data = {}, onChange }) {
           </div>
 
           <div>
-            <label className="block text-xs font-semibold mb-1">মাতার নাম (Mother's Name)</label>
+            <label className="block text-xs font-semibold mb-1">Mother's Name</label>
             <input
               type="text"
               value={data.client?.motherName || ''}
@@ -295,7 +295,7 @@ export function CharacterCertificateForm({ data = {}, onChange }) {
           </div>
 
           <div>
-            <label className="block text-xs font-semibold mb-1">পাসপোর্ট নম্বর (Passport No)</label>
+            <label className="block text-xs font-semibold mb-1">Passport Number</label>
             <input
               type="text"
               value={data.client?.passportNo || ''}
@@ -305,7 +305,7 @@ export function CharacterCertificateForm({ data = {}, onChange }) {
           </div>
 
           <div className="sm:col-span-2">
-            <label className="block text-xs font-semibold mb-1">স্থায়ী ঠিকানা (Permanent Address)</label>
+            <label className="block text-xs font-semibold mb-1">Permanent Address</label>
             <input
               type="text"
               value={data.client?.permanentAddress || ''}
@@ -320,12 +320,12 @@ export function CharacterCertificateForm({ data = {}, onChange }) {
       <div className="bg-card border border-border rounded-xl p-4 space-y-4">
         <div className="flex items-center gap-1.5 bg-gradient-to-r from-sky-600 via-sky-700 to-[#0B3A60] text-white px-4 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider shadow-xs">
           <FileText className="w-4 h-4 text-sky-200" />
-          <span>৪. চারিত্রিক প্রত্যয়ন ও সুপারিশ (Statement & Recommendation)</span>
+          <span>4. Character & Conduct Statement</span>
         </div>
 
         <div className="space-y-3">
           <div>
-            <label className="block text-xs font-semibold mb-1">মূল প্রত্যয়ন (Statement)</label>
+            <label className="block text-xs font-semibold mb-1">Main Certification Statement</label>
             <textarea
               rows={3}
               value={data.conduct?.statement || ''}
@@ -335,7 +335,7 @@ export function CharacterCertificateForm({ data = {}, onChange }) {
           </div>
 
           <div>
-            <label className="block text-xs font-semibold mb-1">চরিত্র ও সুনাম প্রশংসা (Character Praise)</label>
+            <label className="block text-xs font-semibold mb-1">Character Assessment & Praise</label>
             <textarea
               rows={2}
               value={data.conduct?.characterPraise || ''}
@@ -350,12 +350,12 @@ export function CharacterCertificateForm({ data = {}, onChange }) {
       <div className="bg-card border border-border rounded-xl p-4 space-y-4">
         <div className="flex items-center gap-1.5 bg-gradient-to-r from-sky-600 via-sky-700 to-[#0B3A60] text-white px-4 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider shadow-xs">
           <ShieldCheck className="w-4 h-4 text-sky-200" />
-          <span>৫. স্বাক্ষরকারী কর্মকর্তা (Authorized Signatory)</span>
+          <span>5. Authorized Signatory & Official Seal</span>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div>
-            <label className="block text-xs font-semibold mb-1">কর্মকর্তার নাম (Name)</label>
+            <label className="block text-xs font-semibold mb-1">Signatory Full Name</label>
             <input
               type="text"
               value={data.signatory?.name || ''}
@@ -365,7 +365,7 @@ export function CharacterCertificateForm({ data = {}, onChange }) {
           </div>
 
           <div>
-            <label className="block text-xs font-semibold mb-1">পদবী (Designation)</label>
+            <label className="block text-xs font-semibold mb-1">Signatory Designation</label>
             <input
               type="text"
               value={data.signatory?.designation || ''}

@@ -42,12 +42,13 @@ import { useAuth } from '../store/useAuthStore';
 import CreateClientModal from '@/components/clients/CreateClientModal';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { PageTitle } from '@shared/components/layout/PageTitle';
 
 const STAGES = [
   {
     id: 'ENTRY',
     title: '1. File Intake',
-    titleBn: 'ফাইল এন্ট্রি ও যাচাই',
+    titleBn: '',
     stageName: 'File Intake',
     badgeColor: 'bg-slate-500/10 text-slate-700 dark:text-slate-300 border-slate-300 dark:border-slate-700',
     headerBg: 'bg-slate-50 dark:bg-slate-900/60 border-slate-200 dark:border-slate-800',
@@ -58,7 +59,7 @@ const STAGES = [
   {
     id: 'PROCESSING',
     title: '2. Document Processing',
-    titleBn: 'ডকুমেন্ট প্রসেসিং ও পোর্টাল',
+    titleBn: '',
     stageName: 'Processing',
     badgeColor: 'bg-sky-500/10 text-sky-700 dark:text-sky-300 border-sky-300 dark:border-sky-800',
     headerBg: 'bg-sky-50/50 dark:bg-sky-950/30 border-sky-200 dark:border-sky-800/60',
@@ -69,7 +70,7 @@ const STAGES = [
   {
     id: 'APPROVED_OFFER_LETTER',
     title: '3. Offer Approved',
-    titleBn: 'অফার লেটার প্রাপ্ত',
+    titleBn: '',
     stageName: 'Offer Approved',
     badgeColor: 'bg-indigo-500/10 text-indigo-700 dark:text-indigo-300 border-indigo-300 dark:border-indigo-800',
     headerBg: 'bg-indigo-50/50 dark:bg-indigo-950/30 border-indigo-200 dark:border-indigo-800/60',
@@ -80,7 +81,7 @@ const STAGES = [
   {
     id: 'SUBMITTED_EMBASSY_BSF',
     title: '4. Embassy / VFS',
-    titleBn: 'এমব্যাসি ও বায়োমেট্রিক',
+    titleBn: '',
     stageName: 'Embassy / VFS',
     badgeColor: 'bg-amber-500/10 text-amber-700 dark:text-amber-300 border-amber-300 dark:border-amber-800',
     headerBg: 'bg-amber-50/50 dark:bg-amber-950/30 border-amber-200 dark:border-amber-800/60',
@@ -91,7 +92,7 @@ const STAGES = [
   {
     id: 'COMPLETED_DELIVERED',
     title: '5. Visa Delivered',
-    titleBn: 'ভিসা ডেলিভার্ড ও ফ্লাইট',
+    titleBn: '',
     stageName: 'Delivered',
     badgeColor: 'bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 border-emerald-300 dark:border-emerald-800',
     headerBg: 'bg-emerald-50/50 dark:bg-emerald-950/30 border-emerald-200 dark:border-emerald-800/60',
@@ -329,25 +330,13 @@ export default function CaseWorkflow() {
   return (
     <div className="space-y-6 pb-16 animate-in fade-in duration-200">
       {/* Top Banner Control Center */}
-      <div className="bg-gradient-to-r from-slate-950 via-slate-900 to-indigo-950 rounded-3xl p-6 sm:p-8 text-white shadow-2xl border border-sky-500/20 relative overflow-hidden">
-        <div className="absolute right-0 top-0 w-96 h-96 bg-sky-500/10 rounded-full blur-3xl pointer-events-none" />
-
-        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 relative z-10">
-          <div className="space-y-2">
-            <div className="flex items-center gap-2.5">
-              <div className="size-10 rounded-2xl bg-sky-500/20 border border-sky-400/30 flex items-center justify-center text-sky-400 font-black shadow-inner">
-                <FolderOpen className="size-5" />
-              </div>
-              <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-white">
-                Case Files & Overseas Pipeline
-              </h1>
-            </div>
-            <p className="text-xs sm:text-sm text-sky-100/70 max-w-2xl leading-relaxed">
-              5-Column card grid and column views. Track client stages, passport files, assigned officers, and open full 360° dossiers instantly.
-            </p>
-          </div>
-
-          <div className="flex flex-wrap items-center gap-3">
+      <PageTitle
+        title="Case Files & Overseas Pipeline"
+        subtitle="5-Column card grid and column views. Track client stages, passport files, assigned officers, and open full 360° dossiers instantly."
+        icon={FolderOpen}
+        badge={`${totalCases} Active Files`}
+        actions={
+          <>
             <Button
               onClick={() => setCreateModalOpen(true)}
               className="h-10 px-4 bg-sky-500 hover:bg-sky-400 text-slate-950 rounded-xl font-bold text-xs transition shadow-lg cursor-pointer gap-2"
@@ -359,7 +348,7 @@ export default function CaseWorkflow() {
             <Button
               variant="outline"
               onClick={handleExportCsv}
-              className="h-10 px-3 bg-white/10 hover:bg-white/20 border border-white/20 text-white rounded-xl text-xs font-semibold gap-1.5 cursor-pointer"
+              className="h-10 px-3 bg-white/10 hover:bg-white/20 border-white/20 text-white rounded-xl text-xs font-semibold gap-1.5 cursor-pointer"
             >
               <Download className="size-4" />
               <span>Export CSV</span>
@@ -369,32 +358,32 @@ export default function CaseWorkflow() {
               variant="outline"
               size="icon"
               onClick={fetchCases}
-              className="h-10 w-10 bg-white/10 hover:bg-white/20 border border-white/20 text-white rounded-xl cursor-pointer"
+              className="h-10 w-10 bg-white/10 hover:bg-white/20 border-white/20 text-white rounded-xl cursor-pointer"
               title="Refresh Pipeline"
             >
               <RefreshCw className={`size-4 ${loading ? 'animate-spin' : ''}`} />
             </Button>
-          </div>
-        </div>
+          </>
+        }
+      />
 
-        {/* 4 Pipeline Stat Pills */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-6 pt-6 border-t border-white/10 text-xs">
-          <div className="bg-white/5 border border-white/10 rounded-2xl p-3.5 backdrop-blur-xs">
-            <span className="text-[10px] text-sky-200/70 uppercase font-bold block">Total Active Cases</span>
-            <span className="text-lg font-black text-white mt-0.5 block">{totalCases} Files</span>
-          </div>
-          <div className="bg-white/5 border border-white/10 rounded-2xl p-3.5 backdrop-blur-xs">
-            <span className="text-[10px] text-sky-200/70 uppercase font-bold block">In Document Processing</span>
-            <span className="text-lg font-black text-sky-400 mt-0.5 block">{inProcessing} Files</span>
-          </div>
-          <div className="bg-white/5 border border-white/10 rounded-2xl p-3.5 backdrop-blur-xs">
-            <span className="text-[10px] text-sky-200/70 uppercase font-bold block">Embassy & VFS Stage</span>
-            <span className="text-lg font-black text-amber-400 mt-0.5 block">{inEmbassy} Files</span>
-          </div>
-          <div className="bg-white/5 border border-white/10 rounded-2xl p-3.5 backdrop-blur-xs">
-            <span className="text-[10px] text-sky-200/70 uppercase font-bold block">Delivered & Closed</span>
-            <span className="text-lg font-black text-emerald-400 mt-0.5 block">{delivered} Files</span>
-          </div>
+      {/* 4 Pipeline Stat Pills */}
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
+        <div className="bg-card border border-border rounded-2xl p-4 shadow-xs">
+          <span className="text-[10px] text-muted-foreground uppercase font-bold block">Total Active Cases</span>
+          <span className="text-xl font-black text-foreground mt-0.5 block">{totalCases} Files</span>
+        </div>
+        <div className="bg-card border border-border rounded-2xl p-4 shadow-xs">
+          <span className="text-[10px] text-sky-600 dark:text-sky-400 uppercase font-bold block">In Document Processing</span>
+          <span className="text-xl font-black text-sky-600 dark:text-sky-400 mt-0.5 block">{inProcessing} Files</span>
+        </div>
+        <div className="bg-card border border-border rounded-2xl p-4 shadow-xs">
+          <span className="text-[10px] text-amber-600 dark:text-amber-400 uppercase font-bold block">Embassy & VFS Stage</span>
+          <span className="text-xl font-black text-amber-600 dark:text-amber-400 mt-0.5 block">{inEmbassy} Files</span>
+        </div>
+        <div className="bg-card border border-border rounded-2xl p-4 shadow-xs">
+          <span className="text-[10px] text-emerald-600 dark:text-emerald-400 uppercase font-bold block">Delivered & Closed</span>
+          <span className="text-xl font-black text-emerald-600 dark:text-emerald-400 mt-0.5 block">{delivered} Files</span>
         </div>
       </div>
 
@@ -420,14 +409,14 @@ export default function CaseWorkflow() {
               onChange={(e) => setDestinationFilter(e.target.value)}
               className="px-3 py-2 text-xs bg-muted/40 border border-border rounded-xl text-foreground focus:outline-none cursor-pointer"
             >
-              <option value="all">All Destinations (সকল দেশ ও ভিসা)</option>
-              <option value="greece">Greece (গ্রীস)</option>
-              <option value="indian_visa">Indian Visa (শুধুমাত্র ইন্ডিয়ান ভিসা)</option>
-              <option value="saudi">Saudi Arabia (সৌদি আরব)</option>
-              <option value="macedonia">N. Macedonia (ম্যাসিডোনিয়া)</option>
-              <option value="croatia">Croatia (ক্রোয়েশিয়া)</option>
-              <option value="qatar">Qatar (কাতার)</option>
-              <option value="dubai">Dubai / UAE (দুবাই)</option>
+              <option value="all">All Destinations</option>
+              <option value="greece">Greece</option>
+              <option value="indian_visa">Indian Visa Only</option>
+              <option value="saudi">Saudi Arabia</option>
+              <option value="macedonia">North Macedonia</option>
+              <option value="croatia">Croatia</option>
+              <option value="qatar">Qatar</option>
+              <option value="dubai">Dubai / UAE</option>
             </select>
           </div>
 

@@ -84,11 +84,11 @@ export function CashVoucher() {
     const total = Number(data.grandTotal || 0).toLocaleString('en-IN');
     const msg =
       `*📄 MONSUR ALI TRAVELS*\n` +
-      `*ক্যাশ মানি ভাউচার / CASH MONEY VOUCHER*\n` +
+      `*OFFICIAL CASH MONEY VOUCHER*\n` +
       `*Voucher No: ${data.voucherNo || 'MAT-KV-000000'}*\n` +
       `-----------------------------------------\n` +
       `📅 *Date:* ${data.voucherDate || 'N/A'}\n` +
-      `💰 *Grand Total:* ৳ ${total}\n` +
+      `💰 *Grand Total:* BDT  ${total}\n` +
       `📝 *In Words:* ${data.grandTotalInWordsEn || 'N/A'}\n` +
       (data.receivedBy ? `✍️ *Received By:* ${data.receivedBy}\n` : '') +
       `-----------------------------------------\n\n` +
@@ -119,8 +119,8 @@ export function CashVoucher() {
           {/* Action Toolbar */}
           <HeaderTitle
             variant="printables"
-            title={`ক্যাশ মানি ভাউচার (Voucher: ${data.voucherNo || 'MAT-KV'})`}
-            subtitle="ক্যাশ ভাউচার প্রস্তুত সম্পন্ন। সরাসরি প্রিন্ট করুন অথবা তথ্যে পরিবর্তন আনতে এডিট করুন।"
+            title={`Cash Money Voucher (${data.voucherNo || 'MAT-KV'})`}
+            subtitle="Cash voucher preview ready. Review details, print document, or return to edit form."
             actions={
               <>
                 <Button

@@ -108,7 +108,7 @@ export function ExperienceCertificateForm({ data = {}, onChange }) {
       <div className="bg-primary/5 border border-primary/20 rounded-xl p-3.5 space-y-2">
         <div className="flex items-center gap-1.5 text-xs font-bold text-primary">
           <Sparkles className="w-4 h-4" />
-          <span>১-ক্লিক অভিজ্ঞতা ও পেশা প্রিসেট (Quick Job Role Presets)</span>
+          <span>Quick Job Role Presets</span>
         </div>
         <div className="flex flex-wrap gap-1.5">
           {PRESETS.map((p) => (
@@ -124,21 +124,21 @@ export function ExperienceCertificateForm({ data = {}, onChange }) {
         </div>
       </div>
 
-      {/* Issuing Company / Organization Section (Fully Customizable) */}
+      {/* Issuing Company / Organization Section */}
       <div className="bg-card border border-border rounded-xl p-4 space-y-4">
         <div className="flex items-center justify-between bg-gradient-to-r from-sky-600 via-sky-700 to-[#0B3A60] text-white px-4 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider shadow-xs">
           <div className="flex items-center gap-1.5">
             <Building2 className="w-4 h-4 text-sky-200" />
-            <span>১. ইস্যুকারী কোম্পানির তথ্য (Issuing Company Header)</span>
+            <span>1. Issuing Company Information</span>
           </div>
-          <span className="text-[10px] text-sky-100 italic opacity-90">
-            *যেকোনো কোম্পানির নাম ও ঠিকানা দিতে পারবেন
+          <span className="text-[10px] text-sky-100 opacity-90">
+            * Fully customizable company credentials
           </span>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div className="sm:col-span-2">
-            <label className="block text-xs font-semibold mb-1">কোম্পানির নাম (Company Name)</label>
+            <label className="block text-xs font-semibold mb-1">Company Name</label>
             <input
               type="text"
               value={data.company?.name || ''}
@@ -149,7 +149,7 @@ export function ExperienceCertificateForm({ data = {}, onChange }) {
           </div>
 
           <div>
-            <label className="block text-xs font-semibold mb-1">ট্যাগলাইন / সাবটাইটেল (Subtitle)</label>
+            <label className="block text-xs font-semibold mb-1">Tagline / Subtitle</label>
             <input
               type="text"
               value={data.company?.subtitle || ''}
@@ -160,7 +160,7 @@ export function ExperienceCertificateForm({ data = {}, onChange }) {
           </div>
 
           <div>
-            <label className="block text-xs font-semibold mb-1">ট্রেড লাইসেন্স / গভঃ রেজিঃ নং (Reg No)</label>
+            <label className="block text-xs font-semibold mb-1">Registration / Trade License No</label>
             <input
               type="text"
               value={data.company?.registrationNo || ''}
@@ -171,7 +171,7 @@ export function ExperienceCertificateForm({ data = {}, onChange }) {
           </div>
 
           <div className="sm:col-span-2">
-            <label className="block text-xs font-semibold mb-1">কোম্পানির সম্পূর্ণ ঠিকানা (Address)</label>
+            <label className="block text-xs font-semibold mb-1">Complete Company Address</label>
             <input
               type="text"
               value={data.company?.address || ''}
@@ -182,7 +182,7 @@ export function ExperienceCertificateForm({ data = {}, onChange }) {
           </div>
 
           <div>
-            <label className="block text-xs font-semibold mb-1">ফোন / মোবাইল (Phone)</label>
+            <label className="block text-xs font-semibold mb-1">Phone Number</label>
             <input
               type="text"
               value={data.company?.phone || ''}
@@ -193,7 +193,7 @@ export function ExperienceCertificateForm({ data = {}, onChange }) {
           </div>
 
           <div>
-            <label className="block text-xs font-semibold mb-1">ইমেইল (Email)</label>
+            <label className="block text-xs font-semibold mb-1">Email Address</label>
             <input
               type="text"
               value={data.company?.email || ''}
@@ -209,12 +209,12 @@ export function ExperienceCertificateForm({ data = {}, onChange }) {
       <div className="bg-card border border-border rounded-xl p-4 space-y-4">
         <div className="flex items-center gap-1.5 bg-gradient-to-r from-sky-600 via-sky-700 to-[#0B3A60] text-white px-4 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider shadow-xs">
           <FileText className="w-4 h-4 text-sky-200" />
-          <span>২. সার্টিফিকেটের শিরোনাম ও তারিখ (Title & Date)</span>
+          <span>2. Certificate Title & Reference</span>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
           <div>
-            <label className="block text-xs font-semibold mb-1">সার্টিফিকেট শিরোনাম (Title)</label>
+            <label className="block text-xs font-semibold mb-1">Certificate Title</label>
             <input
               type="text"
               value={data.certificateTitle || ''}
@@ -225,7 +225,7 @@ export function ExperienceCertificateForm({ data = {}, onChange }) {
           </div>
 
           <div>
-            <label className="block text-xs font-semibold mb-1">স্মারক / রেফারেন্স নং (Ref No)</label>
+            <label className="block text-xs font-semibold mb-1">Memo / Reference No</label>
             <input
               type="text"
               value={data.memoNo || ''}
@@ -236,7 +236,7 @@ export function ExperienceCertificateForm({ data = {}, onChange }) {
           </div>
 
           <div>
-            <label className="block text-xs font-semibold mb-1">ইস্যুর তারিখ (Issue Date)</label>
+            <label className="block text-xs font-semibold mb-1">Issue Date</label>
             <input
               type="date"
               value={data.issueDate || ''}
@@ -251,12 +251,12 @@ export function ExperienceCertificateForm({ data = {}, onChange }) {
       <div className="bg-card border border-border rounded-xl p-4 space-y-4">
         <div className="flex items-center gap-1.5 bg-gradient-to-r from-sky-600 via-sky-700 to-[#0B3A60] text-white px-4 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider shadow-xs">
           <User className="w-4 h-4 text-sky-200" />
-          <span>৩. কর্মচারীর তথ্য (Employee Information)</span>
+          <span>3. Employee Details</span>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div>
-            <label className="block text-xs font-semibold mb-1">কর্মচারীর পূর্ণ নাম (Full Name)</label>
+            <label className="block text-xs font-semibold mb-1">Employee Full Name</label>
             <input
               type="text"
               value={data.employee?.fullName || ''}
@@ -267,7 +267,7 @@ export function ExperienceCertificateForm({ data = {}, onChange }) {
           </div>
 
           <div>
-            <label className="block text-xs font-semibold mb-1">পিতার নাম (Father's Name)</label>
+            <label className="block text-xs font-semibold mb-1">Father's Name</label>
             <input
               type="text"
               value={data.employee?.fatherName || ''}
@@ -278,7 +278,7 @@ export function ExperienceCertificateForm({ data = {}, onChange }) {
           </div>
 
           <div>
-            <label className="block text-xs font-semibold mb-1">পাসপোর্ট নম্বর (Passport No)</label>
+            <label className="block text-xs font-semibold mb-1">Passport Number</label>
             <input
               type="text"
               value={data.employee?.passportNo || ''}
@@ -289,7 +289,7 @@ export function ExperienceCertificateForm({ data = {}, onChange }) {
           </div>
 
           <div>
-            <label className="block text-xs font-semibold mb-1">পদবী / ডেজিগনেশন (Designation)</label>
+            <label className="block text-xs font-semibold mb-1">Designation / Trade</label>
             <input
               type="text"
               value={data.employee?.designation || ''}
@@ -300,7 +300,7 @@ export function ExperienceCertificateForm({ data = {}, onChange }) {
           </div>
 
           <div>
-            <label className="block text-xs font-semibold mb-1">কাজের শুরু তারিখ (Start Date)</label>
+            <label className="block text-xs font-semibold mb-1">Employment Start Date</label>
             <input
               type="date"
               value={data.employee?.startDate || ''}
@@ -310,7 +310,7 @@ export function ExperienceCertificateForm({ data = {}, onChange }) {
           </div>
 
           <div>
-            <label className="block text-xs font-semibold mb-1">কাজের শেষ তারিখ (End Date)</label>
+            <label className="block text-xs font-semibold mb-1">Employment End Date</label>
             <input
               type="date"
               value={data.employee?.endDate || ''}
@@ -320,7 +320,7 @@ export function ExperienceCertificateForm({ data = {}, onChange }) {
           </div>
 
           <div>
-            <label className="block text-xs font-semibold mb-1">মোট অভিজ্ঞতার সময়কাল (Total Duration)</label>
+            <label className="block text-xs font-semibold mb-1">Total Service Duration</label>
             <input
               type="text"
               value={data.employee?.totalDuration || ''}
@@ -331,7 +331,7 @@ export function ExperienceCertificateForm({ data = {}, onChange }) {
           </div>
 
           <div>
-            <label className="block text-xs font-semibold mb-1">ডিপার্টমেন্ট / বিভাগ (Department)</label>
+            <label className="block text-xs font-semibold mb-1">Department / Division</label>
             <input
               type="text"
               value={data.employee?.department || ''}
@@ -347,12 +347,12 @@ export function ExperienceCertificateForm({ data = {}, onChange }) {
       <div className="bg-card border border-border rounded-xl p-4 space-y-4">
         <div className="flex items-center gap-1.5 bg-gradient-to-r from-sky-600 via-sky-700 to-[#0B3A60] text-white px-4 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider shadow-xs">
           <Briefcase className="w-4 h-4 text-sky-200" />
-          <span>৪. সার্টিফিকেটের বিবরণ ও দায়িত্বাবলী (Certificate Statement)</span>
+          <span>4. Certificate Statement & Responsibilities</span>
         </div>
 
         <div className="space-y-3">
           <div>
-            <label className="block text-xs font-semibold mb-1">মূল প্রত্যয়ন বাক্য (Statement)</label>
+            <label className="block text-xs font-semibold mb-1">Certification Statement</label>
             <textarea
               rows={3}
               value={data.content?.statement || ''}
@@ -362,7 +362,7 @@ export function ExperienceCertificateForm({ data = {}, onChange }) {
           </div>
 
           <div>
-            <label className="block text-xs font-semibold mb-1">দায়িত্ব ও কাজের অভিজ্ঞতা (Core Duties)</label>
+            <label className="block text-xs font-semibold mb-1">Core Duties & Responsibilities</label>
             <textarea
               rows={2}
               value={data.content?.dutiesResponsibilities || ''}
@@ -372,7 +372,7 @@ export function ExperienceCertificateForm({ data = {}, onChange }) {
           </div>
 
           <div>
-            <label className="block text-xs font-semibold mb-1">আচরণ ও প্রশংসাপত্র (Conduct & Good Wishes)</label>
+            <label className="block text-xs font-semibold mb-1">Conduct & Character Review</label>
             <textarea
               rows={2}
               value={data.content?.conductReview || ''}
@@ -387,12 +387,12 @@ export function ExperienceCertificateForm({ data = {}, onChange }) {
       <div className="bg-card border border-border rounded-xl p-4 space-y-4">
         <div className="flex items-center gap-1.5 bg-gradient-to-r from-sky-600 via-sky-700 to-[#0B3A60] text-white px-4 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider shadow-xs">
           <ShieldCheck className="w-4 h-4 text-sky-200" />
-          <span>৫. স্বাক্ষরকারী ও সিলমোহর (Authorized Signatory)</span>
+          <span>5. Authorized Signatory & Official Seal</span>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div>
-            <label className="block text-xs font-semibold mb-1">স্বাক্ষরকারীর নাম (Signatory Name)</label>
+            <label className="block text-xs font-semibold mb-1">Signatory Full Name</label>
             <input
               type="text"
               value={data.signatory?.name || ''}
@@ -403,7 +403,7 @@ export function ExperienceCertificateForm({ data = {}, onChange }) {
           </div>
 
           <div>
-            <label className="block text-xs font-semibold mb-1">স্বাক্ষরকারীর পদবী (Designation)</label>
+            <label className="block text-xs font-semibold mb-1">Signatory Designation</label>
             <input
               type="text"
               value={data.signatory?.designation || ''}

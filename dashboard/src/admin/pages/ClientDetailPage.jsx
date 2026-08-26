@@ -143,29 +143,6 @@ export default function ClientDetailPage() {
 
   return (
     <div className="space-y-6 pb-16">
-      {/* Top Breadcrumb Navigation */}
-      <div className="flex items-center justify-between gap-4">
-        <button
-          onClick={() => navigate('/admin/clients')}
-          className="flex items-center gap-2 text-xs font-semibold text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
-        >
-          <ArrowLeft className="size-4" />
-          <span>Back to Clients Directory</span>
-        </button>
-
-        <div className="flex items-center gap-2">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={fetchClientProfile}
-            className="h-8 px-3 text-xs gap-1.5 cursor-pointer shadow-xs"
-          >
-            <RefreshCw className="size-3.5" />
-            <span>Refresh</span>
-          </Button>
-        </div>
-      </div>
-
       {/* Main Profile Header Banner */}
       <HeaderTitle
         variant="general"
@@ -185,6 +162,16 @@ export default function ClientDetailPage() {
               <CheckCircle2 className="w-3.5 h-3.5 mr-1 text-emerald-400" />
               {client.status || 'Active'}
             </span>
+
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={fetchClientProfile}
+              className="h-8 px-3 text-xs gap-1.5 cursor-pointer bg-white/10 hover:bg-white/20 border-white/20 text-white shadow-xs"
+            >
+              <RefreshCw className="size-3.5" />
+              <span>Refresh</span>
+            </Button>
           </div>
         }
       />

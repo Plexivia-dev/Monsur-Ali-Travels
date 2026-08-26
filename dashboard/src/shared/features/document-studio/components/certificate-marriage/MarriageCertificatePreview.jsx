@@ -112,7 +112,7 @@ export function MarriageCertificatePreview({ data = {}, onPrint }) {
               {/* Groom Box */}
               <div className="border border-slate-300 bg-slate-50 p-2.5 rounded-xs space-y-1 text-xs">
                 <div className="border-b border-slate-300 pb-1 font-bold uppercase text-[10px] tracking-wide text-slate-900">
-                  Groom's Particulars (বরের তথ্য)
+                  Groom's Particulars
                 </div>
                 <div><span className="text-[10px] text-slate-500 block uppercase">Full Name:</span><strong className="text-slate-900 text-xs uppercase">{groom.name}</strong></div>
                 <div><span className="text-[10px] text-slate-500 block uppercase">Father's Name:</span><span className="text-slate-800">{groom.fatherName}</span></div>
@@ -127,7 +127,7 @@ export function MarriageCertificatePreview({ data = {}, onPrint }) {
               {/* Bride Box */}
               <div className="border border-slate-300 bg-slate-50 p-2.5 rounded-xs space-y-1 text-xs">
                 <div className="border-b border-slate-300 pb-1 font-bold uppercase text-[10px] tracking-wide text-slate-900">
-                  Bride's Particulars (কনের তথ্য)
+                  Bride's Particulars
                 </div>
                 <div><span className="text-[10px] text-slate-500 block uppercase">Full Name:</span><strong className="text-slate-900 text-xs uppercase">{bride.name}</strong></div>
                 <div><span className="text-[10px] text-slate-500 block uppercase">Father's Name:</span><span className="text-slate-800">{bride.fatherName}</span></div>
@@ -145,15 +145,15 @@ export function MarriageCertificatePreview({ data = {}, onPrint }) {
             <div className="border border-slate-300 bg-slate-50 p-2 rounded-xs text-xs font-sans">
               <div className="grid grid-cols-3 gap-2 text-center">
                 <div>
-                  <span className="text-[9px] text-slate-500 block uppercase">Total Dower ( দেনমোহর ):</span>
+                  <span className="text-[9px] text-slate-500 block uppercase">Total Dower (Mahr):</span>
                   <strong className="font-mono text-slate-900">{marriageTerms.dowerTotal || 'BDT 5,00,000/-'}</strong>
                 </div>
                 <div>
-                  <span className="text-[9px] text-slate-500 block uppercase">Prompt / Paid ( উসুল ):</span>
+                  <span className="text-[9px] text-slate-500 block uppercase">Prompt / Paid Mahr:</span>
                   <strong className="font-mono text-emerald-700">{marriageTerms.dowerPaid || 'BDT 2,00,000/-'}</strong>
                 </div>
                 <div>
-                  <span className="text-[9px] text-slate-500 block uppercase">Deferred / Due ( বাকি ):</span>
+                  <span className="text-[9px] text-slate-500 block uppercase">Deferred / Due Mahr:</span>
                   <strong className="font-mono text-slate-800">{marriageTerms.dowerDeferred || 'BDT 3,00,000/-'}</strong>
                 </div>
               </div>
@@ -178,10 +178,10 @@ export function MarriageCertificatePreview({ data = {}, onPrint }) {
               {/* Groom & Bride Signatures */}
               <div className="text-left space-y-4">
                 <div className="border-t border-slate-700 pt-1 w-48">
-                  <p className="text-[10px] font-bold uppercase text-slate-900">Signature of Groom (বর)</p>
+                  <p className="text-[10px] font-bold uppercase text-slate-900">Signature of Groom</p>
                 </div>
                 <div className="border-t border-slate-700 pt-1 w-48">
-                  <p className="text-[10px] font-bold uppercase text-slate-900">Signature of Bride (কনে)</p>
+                  <p className="text-[10px] font-bold uppercase text-slate-900">Signature of Bride</p>
                 </div>
               </div>
 
