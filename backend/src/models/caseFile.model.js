@@ -64,11 +64,11 @@ const caseFileSchema = new Schema(
     status: {
       type: String,
       enum: [
-        "ENTRY",                  // ১. রিসিভ / এন্ট্রি
-        "PROCESSING",             // ২. প্রসেসিং / কাজ চলমান
-        "APPROVED_OFFER_LETTER",  // ৩. অ্যাপ্রুভড / অফার লেটার
-        "SUBMITTED_EMBASSY_BSF",  // ৪. সাবমিটেড (এমবাসি / বিএসএফ)
-        "COMPLETED_DELIVERED",    // ৫. কমপ্লিট / ডেলিভার্ড
+        "ENTRY",                  // 1. Received / Entry
+        "PROCESSING",             // 2. Processing / In Progress
+        "APPROVED_OFFER_LETTER",  // 3. Approved / Offer Letter
+        "SUBMITTED_EMBASSY_BSF",  // 4. Submitted (Embassy / BSF)
+        "COMPLETED_DELIVERED",    // 5. Completed / Delivered
         "REJECTED",
         "ON_HOLD",
       ],
@@ -102,21 +102,21 @@ const caseFileSchema = new Schema(
     // Document Checklist & Follow-up Reminders
     checklist: {
       photo2x2: { type: Boolean, default: false },
-      electricityBill: { type: Boolean, default: false }, // কারেন্ট বিল
+      electricityBill: { type: Boolean, default: false }, // Electricity Bill
       nidCopy: { type: Boolean, default: false },
-      landDocuments: { type: Boolean, default: false }, // জমির কাগজ
-      followUpCallRequired: { type: Boolean, default: false }, // পেন্ডিং পেপারের জন্য কল রিমাইন্ডার
+      landDocuments: { type: Boolean, default: false }, // Land Documents
+      followUpCallRequired: { type: Boolean, default: false }, // Pending paper call reminder
       notes: { type: String, default: "" },
     },
 
     // 3-Stage Payment Milestones & Company Due Tracking
     paymentLedger: {
       totalAgreedAmount: { type: Number, default: 0 },
-      step1_advance: { type: Number, default: 0 },        // ফাইল সাবমিশনের সময় অ্যাডভান্স
-      step2_offerApproval: { type: Number, default: 0 },   // অফার লেটার অ্যাপ্রুভ হলে
-      step3_delivery: { type: Number, default: 0 },        // ভিসা ও পাসপোর্ট ডেলিভারির সময়
+      step1_advance: { type: Number, default: 0 },        // Advance upon file submission
+      step2_offerApproval: { type: Number, default: 0 },   // Upon offer letter approval
+      step3_delivery: { type: Number, default: 0 },        // Upon visa & passport delivery
       totalPaidAmount: { type: Number, default: 0 },
-      dueAmount: { type: Number, default: 0, index: true }, // কোম্পানির বকেয়া ট্র্যাকিং
+      dueAmount: { type: Number, default: 0, index: true }, // Outstanding due balance tracking
       isFullyPaid: { type: Boolean, default: false },
     },
 

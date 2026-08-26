@@ -207,7 +207,7 @@ export const createReceipt = async (req, res, next) => {
     // Set creator user if present
     if (req.user?.did) {
       body.createdByDid = req.user.did;
-      body.createdByName = req.user.name || body.createdByName || "ম্যানেজার (Manager)";
+      body.createdByName = req.user.name || body.createdByName || "Manager";
     }
 
     // Auto-link to client if phone or passport matches and clientDid/clientId not provided
@@ -308,7 +308,7 @@ export const confirmReceipt = async (req, res, next) => {
     receipt.status = "confirmed";
     receipt.confirmedAt = new Date();
     receipt.confirmedByDid = req.user?.did || null;
-    receipt.confirmedByName = confirmedByName || req.user?.name || "একাউন্টেন্ট (Accountant)";
+    receipt.confirmedByName = confirmedByName || req.user?.name || "Accountant";
     if (paymentMethod) receipt.paymentMethod = paymentMethod;
     if (notes) {
       receipt.notes = receipt.notes ? `${receipt.notes} | ${notes}` : notes;
@@ -362,7 +362,7 @@ export const cancelReceipt = async (req, res, next) => {
 
     receipt.status = "cancelled";
     if (reason) {
-      receipt.notes = receipt.notes ? `${receipt.notes} | বাতিল কারণ: ${reason}` : `বাতিল কারণ: ${reason}`;
+      receipt.notes = receipt.notes ? `${receipt.notes} | Cancellation Reason: ${reason}` : `Cancellation Reason: ${reason}`;
     }
 
     await receipt.save();

@@ -29,7 +29,7 @@ const clientGuardianSchema = new mongoose.Schema(
     // Service Category
     serviceType: {
       type: String,
-      default: "ইন্ডিয়ান ভিসা (Indian Visa)",
+      default: "Indian Visa",
     },
 
     clientDid: {
@@ -63,7 +63,7 @@ const clientGuardianSchema = new mongoose.Schema(
       mobileNumber: { type: String, default: "", trim: true },
       email: { type: String, default: "", trim: true },
       address: { type: String, default: "" },
-      relationship: { type: String, default: "Father (পিতা)" },
+      relationship: { type: String, default: "Father" },
     },
 
     // 3. Requirement Documents Checklist
@@ -112,13 +112,13 @@ const clientGuardianSchema = new mongoose.Schema(
     status: {
       type: String,
       enum: [
-        "received", // ফাইল গ্রহণ করা হয়েছে
-        "under_review", // কাগজপত্র যাচাই হচ্ছে
-        "processing", // প্রসেসিং চলছে
-        "embassy_submitted", // এম্বাসি / ভিএফএস-এ জমা
-        "approved", // অনুমোদিত / ভিসা রেডি
-        "delivered", // ক্লায়েন্টকে বুঝিয়ে দেওয়া হয়েছে
-        "rejected", // বাতিল / রিজেক্টেড
+        "received", // File Received
+        "under_review", // Under Review
+        "processing", // Processing
+        "embassy_submitted", // Embassy / VFS Submitted
+        "approved", // Approved / Visa Ready
+        "delivered", // Delivered to client
+        "rejected", // Rejected
       ],
       default: "received",
     },

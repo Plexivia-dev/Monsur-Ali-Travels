@@ -88,7 +88,7 @@ const clientSchema = new Schema(
     // Primary Guardian Info
     guardian: {
       name: { type: String, default: "", trim: true },
-      relationship: { type: String, default: "Father (পিতা)" },
+      relationship: { type: String, default: "Father" },
       phone: { type: String, default: "", trim: true },
       nidNumber: { type: String, default: "", trim: true },
       fatherName: { type: String, default: "" },

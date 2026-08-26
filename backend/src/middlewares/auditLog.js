@@ -112,17 +112,17 @@ function generateUserActionSummary(user, targetCollection, action, body = {}) {
   const status = body.workflowStatus || body.status || body.stage || body.workflowStage;
 
   const targetNames = {
-    clients: 'Client (ক্লায়েন্ট)',
-    caseFiles: 'Case File (ফাইল)',
-    moneyReceipts: 'Money Receipt (টাকা জমার রশিদ)',
-    cashVouchers: 'Cash Voucher (খরচের ভাউচার)',
-    invoices: 'Invoice (ইনভয়েস)',
-    salarySlips: 'Salary Slip (বেতন শিট)',
-    clients: 'Client (ক্লায়েন্ট)',
-    passports: 'Passport Record (পাসপোর্ট)',
-    indianVisas: 'Indian Visa (ভিসা আবেদন)',
-    agreements: 'Agreement (চুক্তিপত্র)',
-    tasks: 'Task (টাস্ক)',
+    clients: 'Client',
+    caseFiles: 'Case File',
+    moneyReceipts: 'Money Receipt',
+    cashVouchers: 'Cash Voucher',
+    invoices: 'Invoice',
+    salarySlips: 'Salary Slip',
+    clients: 'Client',
+    passports: 'Passport Record',
+    indianVisas: 'Indian Visa Application',
+    agreements: 'Agreement',
+    tasks: 'Task',
   };
 
   const targetLabel = targetNames[targetCollection] || targetCollection;
@@ -133,14 +133,14 @@ function generateUserActionSummary(user, targetCollection, action, body = {}) {
 
   if (action === 'CREATE') {
     if (amount) {
-      return `${userName} (${role}) entered new ${targetLabel} of ৳${Number(amount).toLocaleString('en-IN')}${identifier ? ` (#${identifier})` : ''}`;
+      return `${userName} (${role}) entered new ${targetLabel} of BDT ${Number(amount).toLocaleString('en-IN')}${identifier ? ` (#${identifier})` : ''}`;
     }
     return `${userName} (${role}) created new ${targetLabel}${identifier ? `: ${identifier}` : ''}`;
   }
 
   if (action === 'UPDATE') {
     if (amount) {
-      return `${userName} (${role}) edited ${targetLabel} (৳${Number(amount).toLocaleString('en-IN')})${identifier ? ` (#${identifier})` : ''}`;
+      return `${userName} (${role}) edited ${targetLabel} (BDT ${Number(amount).toLocaleString('en-IN')})${identifier ? ` (#${identifier})` : ''}`;
     }
     return `${userName} (${role}) edited ${targetLabel}${identifier ? `: ${identifier}` : ''}`;
   }

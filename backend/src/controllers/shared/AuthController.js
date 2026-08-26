@@ -111,7 +111,7 @@ export const login = async (req, res, next) => {
   }
 };
 
-// POST /auth/refresh - refresh token দিয়ে নতুন access token দেয়
+// POST /auth/refresh - Refresh access token
 export const refreshToken = async (req, res, next) => {
   try {
     const { refreshToken } = req.body ?? {};
@@ -153,7 +153,7 @@ export const refreshToken = async (req, res, next) => {
   }
 };
 
-// POST /auth/logout - refresh token সরিয়ে লগআউট করে
+// POST /auth/logout - Revoke refresh token and logout
 export const logout = async (req, res, next) => {
   try {
     const { refreshToken } = req.body ?? {};
@@ -174,7 +174,7 @@ export const logout = async (req, res, next) => {
   }
 };
 
-// POST /auth/create-super-admin - সুপার অ্যাডমিন তৈরি বা আপডেট করে
+// POST /auth/create-super-admin - Create or update super admin
 export const createSuperAdmin = async (req, res, next) => {
   try {
     if (!env.ALLOW_SUPER_ADMIN_CREATION) {
@@ -225,7 +225,7 @@ export const createSuperAdmin = async (req, res, next) => {
   }
 };
 
-// POST /auth/google - Google OAuth দিয়ে লগইন করে
+// POST /auth/google - Google OAuth login
 export const googleAuth = async (req, res, next) => {
   try {
     const { code, redirectUri } = req.body ?? {};

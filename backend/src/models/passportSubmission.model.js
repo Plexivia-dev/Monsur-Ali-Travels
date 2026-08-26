@@ -64,28 +64,28 @@ const passportSubmissionSchema = new mongoose.Schema(
     guardianName: { type: String, default: "" },
     guardianPhone: { type: String, default: "" },
     guardianEmail: { type: String, default: "" },
-    relationship: { type: String, default: "পিতা" },
+    relationship: { type: String, default: "Father" },
 
     // Application Specifications
     passportType: {
       type: String,
-      default: "ই-পাসপোর্ট (E-Passport)",
+      default: "E-Passport",
     },
     applicationCategory: {
       type: String,
-      default: "নতুন আবেদন (New Passport)",
+      default: "New Passport Application",
     },
     pageCount: {
       type: String,
-      default: "৪৮ পৃষ্ঠা (48 Pages)",
+      default: "48 Pages",
     },
     validityYears: {
       type: String,
-      default: "১০ বছর (10 Years)",
+      default: "10 Years",
     },
     deliverySpeed: {
       type: String,
-      default: "সাধারণ (Regular)",
+      default: "Regular",
     },
 
     // Documents Checklist

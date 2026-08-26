@@ -67,19 +67,19 @@ const indianVisaSubmissionSchema = new mongoose.Schema(
     // Visa Specifications
     visaType: {
       type: String,
-      default: "ট্যুরিস্ট ভিসা (Tourist Visa)",
+      default: "Tourist Visa",
     },
     entryPort: {
       type: String,
-      default: "হরিদাসপুর / গেদে (Haridaspur / Gede)",
+      default: "Haridaspur / Gede",
     },
     durationMonths: {
       type: String,
-      default: "১ বছর (1 Year Multiple)",
+      default: "1 Year Multiple",
     },
     entryType: {
       type: String,
-      default: "মাল্টিপল এন্ট্রি (Multiple Entry)",
+      default: "Multiple Entry",
     },
 
     // Documents Provided Checklist

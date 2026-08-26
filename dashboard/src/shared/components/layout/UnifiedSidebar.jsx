@@ -137,7 +137,7 @@ export function UnifiedSidebar({
             type="button"
             onClick={() => setOpen(true)}
             className="size-9 rounded-full border border-sky-400/50 hover:border-sky-300 bg-sidebar-accent hover:bg-sidebar-accent/80 text-sky-300 hover:text-white flex items-center justify-center shrink-0 shadow-xs transition-all duration-200 cursor-pointer"
-            title={lang === 'BN' ? 'সাইডবার খুলুন' : 'Open Sidebar'}
+            title={'Open Sidebar'}
             aria-label="Open Sidebar"
           >
             <Menu className="w-4 h-4 text-sky-300 hover:text-white" />
@@ -172,7 +172,7 @@ export function UnifiedSidebar({
                 if (isMobile) setOpenMobile(false);
               }}
               className="size-7 rounded-full bg-sidebar-accent hover:bg-sidebar-accent/80 border border-sidebar-border text-sky-300 hover:text-white flex items-center justify-center shrink-0 transition-all cursor-pointer shadow-xs"
-              title={lang === 'BN' ? 'সাইডবার বন্ধ করুন' : 'Close Sidebar'}
+              title={'Close Sidebar'}
             >
               <X className="w-3.5 h-3.5" />
             </button>
@@ -421,7 +421,7 @@ export function UnifiedSidebar({
               type="button"
               onClick={onLogout}
               className="size-8 rounded-lg bg-rose-600 hover:bg-rose-700 text-white border border-rose-500 shadow-xs transition-all duration-200 cursor-pointer flex items-center justify-center shrink-0"
-              title={lang === 'BN' ? 'লগআউট' : 'Sign Out'}
+              title={lang === 'BN' ? 'Logout' : 'Sign Out'}
               aria-label="Logout"
             >
               <LogOut className="w-4 h-4 text-white" />

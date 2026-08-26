@@ -76,7 +76,7 @@ export const buildOrderInvoiceEmailHtml = ({
         ×${item.quantity}
       </td>
       <td style="padding: 12px 15px; font-size: 13px; color: #C5A059; font-weight: 600; text-align: right; vertical-align: middle; font-family: 'Geist Mono';">
-        ৳ ${(item.subtotal || (item.price * item.quantity) || 0).toFixed(2)}
+        BDT  ${(item.subtotal || (item.price * item.quantity) || 0).toFixed(2)}
       </td>
     </tr>
   `).join('');
@@ -422,15 +422,15 @@ export const buildOrderInvoiceEmailHtml = ({
         <table class="summary-table" cellpadding="0" cellspacing="0">
           <tr>
             <td class="summary-label">Subtotal:</td>
-            <td class="summary-val">৳ ${subtotal.toFixed(2)}</td>
+            <td class="summary-val">BDT  ${subtotal.toFixed(2)}</td>
           </tr>
           <tr>
             <td class="summary-label">Shipping: Flat rate</td>
-            <td class="summary-val">৳ ${shippingFee.toFixed(2)}</td>
+            <td class="summary-val">BDT  ${shippingFee.toFixed(2)}</td>
           </tr>
           <tr class="total-row">
             <td class="summary-label">Total:</td>
-            <td class="summary-val">৳ ${totalAmount.toFixed(2)}</td>
+            <td class="summary-val">BDT  ${totalAmount.toFixed(2)}</td>
           </tr>
           <tr>
             <td class="summary-label">Payment method:</td>

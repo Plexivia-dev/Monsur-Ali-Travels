@@ -150,19 +150,19 @@ const moneyReceiptSchema = new Schema(
     },
     preparedBy: {
       type: String,
-      default: "প্রদানকারী",
+      default: "Paid By",
     },
     receivedBySignature: {
       type: String,
-      default: "গ্রহণকারী",
+      default: "Received By",
     },
     accountsSignature: {
       type: String,
-      default: "একাউন্টেন্ট",
+      default: "Accountant",
     },
     approvedBySignature: {
       type: String,
-      default: "জিএম / প্রোপাইটার",
+      default: "General Manager / Proprietor",
     },
 
     // Layout configuration
@@ -186,7 +186,7 @@ const moneyReceiptSchema = new Schema(
     },
     createdByName: {
       type: String,
-      default: "ম্যানেজার (Manager)",
+      default: "Manager",
     },
 
     // Cashier / Accountant (Seal/Confirmation)
