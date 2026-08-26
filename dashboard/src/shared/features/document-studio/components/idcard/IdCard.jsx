@@ -22,10 +22,10 @@ export function IdCard() {
     email: agencyInfo.email || 'contact@monsuralitravels.com',
     address: agencyInfo.address?.full || 'Mominpur Jagannathpur Road, Sunamganj, Post Code 3060',
     website: agencyInfo.website || 'www.monsuralitravels.com',
-    signatureName: 'M. Ali',
+    signatureName: agencyInfo.proprietor?.name || '',
     signatureTitle: 'Managing Director',
     photo: null,
-    qrData: 'https://www.monsuralitravels.com/verify?id=123'
+    qrData: ''
   };
 
   const [cardData, setCardData] = useState(defaultSampleData);

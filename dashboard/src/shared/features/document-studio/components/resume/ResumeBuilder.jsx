@@ -2,18 +2,18 @@ import React, { useState } from 'react';
 import { ResumeForm } from './ResumeForm';
 import { ResumePreview } from './ResumePreview';
 import { ExportModal } from '../common/ExportModal';
-import { SAMPLE_RESUME } from './sampleData';
+import { getDefaultResumeData } from './sampleData';
 import { Download, RefreshCw, FileText } from 'lucide-react';
 import { HeaderTitle } from '@shared/components/common/HeaderTitle';
 import { StudioFloatingViewSwitcher } from '../common/StudioFloatingViewSwitcher';
 
 export function ResumeBuilder() {
-  const [data, setData] = useState(SAMPLE_RESUME);
+  const [data, setData] = useState(getDefaultResumeData());
   const [viewMode, setViewMode] = useState('split'); // 'split' | 'edit' | 'preview'
   const [isExportOpen, setIsExportOpen] = useState(false);
 
   const handleResetSample = () => {
-    setData(SAMPLE_RESUME);
+    setData(getDefaultResumeData());
   };
 
   return (
@@ -28,10 +28,10 @@ export function ResumeBuilder() {
             <button
               onClick={handleResetSample}
               className="flex items-center space-x-1.5 bg-white/10 hover:bg-white/20 text-white text-xs font-semibold px-3 py-1.5 rounded-xl border border-white/15 transition-colors cursor-pointer"
-              title="Load Sample Client Profile"
+              title="Reset Form"
             >
               <RefreshCw className="w-3.5 h-3.5 text-sky-300" />
-              <span>Reset Sample</span>
+              <span>Reset</span>
             </button>
 
             <button

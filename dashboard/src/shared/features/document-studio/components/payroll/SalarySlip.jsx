@@ -49,12 +49,12 @@ export function getDefaultSalarySlipData() {
     grossEarnings: "",
 
     // Deductions
-    advanceSalary: 0,
-    unpaidLeaveDeduction: 0,
-    loanDeduction: 0,
-    taxStatutoryDeduction: 0,
-    otherAuthorizedDeduction: 0,
-    totalDeduction: 0,
+    advanceSalary: "",
+    unpaidLeaveDeduction: "",
+    loanDeduction: "",
+    taxStatutoryDeduction: "",
+    otherAuthorizedDeduction: "",
+    totalDeduction: "",
 
     // Summary
     netSalaryPayable: "",

@@ -70,21 +70,20 @@ export const SERVICE_PURPOSES = [
 ];
 
 export function getDefaultMoneyReceiptData() {
-  const initialAmount = 50000;
   return {
     _id: null,
     receiptNo: generateReceiptNo(),
     date: new Date().toISOString().split('T')[0],
     time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-    clientName: 'Md. Abdul Karim',
-    passportNumber: 'A08492014',
-    phone: '+8801712345678',
-    purpose: 'Visa Processing & Flight Ticket Booking (Saudi Arabia)',
-    receivedBy: 'Md. Tanvir Hossain',
+    clientName: '',
+    passportNumber: '',
+    phone: '',
+    purpose: '',
+    receivedBy: '',
     receivedByRole: 'Accounts Officer',
     paymentMethod: 'Cash',
-    amount: initialAmount,
-    amountInWords: numberToWords(initialAmount),
+    amount: '',
+    amountInWords: '',
     preparedBy: 'Paid By',
     receivedBySignature: 'Received By',
     accountsSignature: 'Accountant',

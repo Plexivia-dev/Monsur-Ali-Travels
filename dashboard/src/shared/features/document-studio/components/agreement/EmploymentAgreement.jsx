@@ -46,28 +46,28 @@ export function getDefaultAgreementData() {
       guardianAddress: ''
     },
     position: {
-      designation: 'Office Executive / Processing Officer',
-      department: 'Passport & Visa Processing Wing',
+      designation: '',
+      department: '',
       joiningDate: new Date().toISOString().split('T')[0],
-      location: 'Head Office, Nadampur',
+      location: '',
       jobType: 'Permanent (Full-Time)',
-      workSchedule: '9:00 AM - 6:00 PM, Sunday to Thursday'
+      workSchedule: ''
     },
     salary: {
-      basicSalary: '15000',
-      houseRent: '5000',
-      medical: '2000',
-      conveyance: '1500',
-      specialAllowance: '1500',
-      grossSalary: '25000',
-      grossSalaryInWords: 'Twenty Five Thousand BDT Only'
+      basicSalary: '',
+      houseRent: '',
+      medical: '',
+      conveyance: '',
+      specialAllowance: '',
+      grossSalary: '',
+      grossSalaryInWords: ''
     },
     leave: {
-      casualDays: '10',
-      sickDays: '14',
-      earnedDays: '18',
-      lunchProvided: true,
-      teaSnacks: true,
+      casualDays: '',
+      sickDays: '',
+      earnedDays: '',
+      lunchProvided: false,
+      teaSnacks: false,
       lunchAllowance: ''
     },
     witnesses: {

@@ -50,7 +50,7 @@ export function getDefaultInvoiceData() {
         title: "",
         description: "",
         quantity: "",
-        unitPrice: 0
+        unitPrice: ""
       }
     ],
 
