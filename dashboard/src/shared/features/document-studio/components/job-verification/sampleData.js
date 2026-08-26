@@ -56,7 +56,7 @@ export function getDefaultJobVerificationData() {
     // 4. Work Permit & Helper Info
     helperInfo: {
       helperName: '',
-      helperRelationship: 'Uncle (চাচা / মামা)',
+      helperRelationship: 'Uncle',
       helperDurationOfStay: '5 Years',
       helperImmigrationStatus: 'Legal Resident & Work Permit Holder',
       knowsHelper: 'Yes',

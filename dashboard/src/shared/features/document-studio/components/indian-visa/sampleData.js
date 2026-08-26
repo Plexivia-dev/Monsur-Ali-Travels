@@ -24,7 +24,7 @@ export function getDefaultIndianVisaData() {
     submissionDate: new Date().toISOString().split('T')[0],
 
     agencyInfo: {
-      name: agencyInfo.agencyName || 'মনসুর আলী ট্রাভেলস (MONSUR ALI TRAVELS)',
+      name: agencyInfo.agencyName || 'MONSUR ALI TRAVELS',
       address: agencyInfo.address?.full || 'Mominpur Jagannathpur Road, Sunamganj, Post Code 3060',
       phone: agencyInfo.phone || '+8801345579534',
       email: agencyInfo.email || 'contact@monsuralitravels.com'

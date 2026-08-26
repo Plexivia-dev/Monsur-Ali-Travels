@@ -24,14 +24,14 @@ export function MarriageCertificateForm({ data = {}, onChange }) {
       
       {/* 1. Registrar / Kazi Office Information */}
       <div className="bg-card border border-border rounded-xl p-4 space-y-4">
-        <h3 className="text-xs font-bold uppercase tracking-wider text-primary flex items-center gap-1.5 border-b border-border pb-2">
-          <Building2 className="w-4 h-4" />
-          ১. কাজী অফিস বা রেজিস্ট্রি তথ্য (Registrar / Kazi Office)
-        </h3>
+        <div className="flex items-center gap-1.5 bg-gradient-to-r from-sky-600 via-sky-700 to-[#0B3A60] text-white px-4 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider shadow-xs">
+          <Building2 className="w-4 h-4 text-sky-200" />
+          <span>1. Registrar / Marriage Registry Information</span>
+        </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div className="sm:col-span-2">
-            <label className="block text-xs font-semibold mb-1">কাজী অফিসের নাম (Office Name)</label>
+            <label className="block text-xs font-semibold mb-1">Registrar Office Name</label>
             <input
               type="text"
               value={data.registrar?.officeName || ''}
@@ -41,7 +41,7 @@ export function MarriageCertificateForm({ data = {}, onChange }) {
           </div>
 
           <div>
-            <label className="block text-xs font-semibold mb-1">রেজিস্ট্রার / কাজীর নাম (Kazi Name)</label>
+            <label className="block text-xs font-semibold mb-1">Registrar / Kazi Full Name</label>
             <input
               type="text"
               value={data.registrar?.kaziName || ''}
@@ -51,7 +51,7 @@ export function MarriageCertificateForm({ data = {}, onChange }) {
           </div>
 
           <div>
-            <label className="block text-xs font-semibold mb-1">গভঃ লাইসেন্স নং (Govt License No)</label>
+            <label className="block text-xs font-semibold mb-1">Govt. License / Registration No</label>
             <input
               type="text"
               value={data.registrar?.govLicenseNo || ''}
@@ -61,7 +61,7 @@ export function MarriageCertificateForm({ data = {}, onChange }) {
           </div>
 
           <div className="sm:col-span-2">
-            <label className="block text-xs font-semibold mb-1">অফিসের ঠিকানা (Address)</label>
+            <label className="block text-xs font-semibold mb-1">Office Address</label>
             <input
               type="text"
               value={data.registrar?.officeAddress || ''}
@@ -74,14 +74,14 @@ export function MarriageCertificateForm({ data = {}, onChange }) {
 
       {/* 2. Certificate Meta & Marriage Dates */}
       <div className="bg-card border border-border rounded-xl p-4 space-y-4">
-        <h3 className="text-xs font-bold uppercase tracking-wider text-primary flex items-center gap-1.5 border-b border-border pb-2">
-          <Calendar className="w-4 h-4" />
-          ২. রেজিস্ট্রেশন ও বিবাহের তারিখ (Registration Details)
-        </h3>
+        <div className="flex items-center gap-1.5 bg-gradient-to-r from-sky-600 via-sky-700 to-[#0B3A60] text-white px-4 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider shadow-xs">
+          <Calendar className="w-4 h-4 text-sky-200" />
+          <span>2. Registration & Marriage Dates</span>
+        </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
           <div>
-            <label className="block text-xs font-semibold mb-1">রেফারেন্স / স্মারক নং (Ref No)</label>
+            <label className="block text-xs font-semibold mb-1">Reference / Memo No</label>
             <input
               type="text"
               value={data.memoNo || ''}
@@ -91,7 +91,7 @@ export function MarriageCertificateForm({ data = {}, onChange }) {
           </div>
 
           <div>
-            <label className="block text-xs font-semibold mb-1">ভলিউম ও পৃষ্ঠা নং (Vol & Page)</label>
+            <label className="block text-xs font-semibold mb-1">Volume & Page No</label>
             <input
               type="text"
               value={data.volumeNo || ''}
@@ -102,7 +102,7 @@ export function MarriageCertificateForm({ data = {}, onChange }) {
           </div>
 
           <div>
-            <label className="block text-xs font-semibold mb-1">ইস্যুর তারিখ (Issue Date)</label>
+            <label className="block text-xs font-semibold mb-1">Issue Date</label>
             <input
               type="date"
               value={data.issueDate || ''}
@@ -112,7 +112,7 @@ export function MarriageCertificateForm({ data = {}, onChange }) {
           </div>
 
           <div>
-            <label className="block text-xs font-semibold mb-1">বিবাহের তারিখ (Marriage Date)</label>
+            <label className="block text-xs font-semibold mb-1">Date of Marriage</label>
             <input
               type="date"
               value={data.marriageDate || ''}
@@ -122,7 +122,7 @@ export function MarriageCertificateForm({ data = {}, onChange }) {
           </div>
 
           <div className="sm:col-span-2">
-            <label className="block text-xs font-semibold mb-1">বিবাহের স্থান (Marriage Place)</label>
+            <label className="block text-xs font-semibold mb-1">Place of Marriage</label>
             <input
               type="text"
               value={data.marriagePlace || ''}
@@ -134,16 +134,16 @@ export function MarriageCertificateForm({ data = {}, onChange }) {
         </div>
       </div>
 
-      {/* 3. Groom Details (বর) */}
+      {/* 3. Groom Details */}
       <div className="bg-card border border-border rounded-xl p-4 space-y-4">
-        <h3 className="text-xs font-bold uppercase tracking-wider text-primary flex items-center gap-1.5 border-b border-border pb-2">
-          <User className="w-4 h-4" />
-          ৩. বরের বিবরণ (Groom Information)
-        </h3>
+        <div className="flex items-center gap-1.5 bg-gradient-to-r from-sky-600 via-sky-700 to-[#0B3A60] text-white px-4 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider shadow-xs">
+          <User className="w-4 h-4 text-sky-200" />
+          <span>3. Groom Information</span>
+        </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div>
-            <label className="block text-xs font-semibold mb-1">বরের পূর্ণ নাম (Groom Name)</label>
+            <label className="block text-xs font-semibold mb-1">Groom Full Name</label>
             <input
               type="text"
               value={data.groom?.name || ''}
@@ -153,7 +153,7 @@ export function MarriageCertificateForm({ data = {}, onChange }) {
           </div>
 
           <div>
-            <label className="block text-xs font-semibold mb-1">পিতার নাম (Father's Name)</label>
+            <label className="block text-xs font-semibold mb-1">Father's Name</label>
             <input
               type="text"
               value={data.groom?.fatherName || ''}
@@ -163,7 +163,7 @@ export function MarriageCertificateForm({ data = {}, onChange }) {
           </div>
 
           <div>
-            <label className="block text-xs font-semibold mb-1">মাতার নাম (Mother's Name)</label>
+            <label className="block text-xs font-semibold mb-1">Mother's Name</label>
             <input
               type="text"
               value={data.groom?.motherName || ''}
@@ -173,7 +173,7 @@ export function MarriageCertificateForm({ data = {}, onChange }) {
           </div>
 
           <div>
-            <label className="block text-xs font-semibold mb-1">পাসপোর্ট নম্বর (Passport No)</label>
+            <label className="block text-xs font-semibold mb-1">Passport Number</label>
             <input
               type="text"
               value={data.groom?.passportNo || ''}
@@ -183,7 +183,7 @@ export function MarriageCertificateForm({ data = {}, onChange }) {
           </div>
 
           <div>
-            <label className="block text-xs font-semibold mb-1">জন্ম তারিখ (Birth Date)</label>
+            <label className="block text-xs font-semibold mb-1">Date of Birth</label>
             <input
               type="date"
               value={data.groom?.birthDate || ''}
@@ -193,7 +193,7 @@ export function MarriageCertificateForm({ data = {}, onChange }) {
           </div>
 
           <div>
-            <label className="block text-xs font-semibold mb-1">ঠিকানা (Address)</label>
+            <label className="block text-xs font-semibold mb-1">Address</label>
             <input
               type="text"
               value={data.groom?.address || ''}
@@ -204,16 +204,16 @@ export function MarriageCertificateForm({ data = {}, onChange }) {
         </div>
       </div>
 
-      {/* 4. Bride Details (কনে) */}
+      {/* 4. Bride Details */}
       <div className="bg-card border border-border rounded-xl p-4 space-y-4">
-        <h3 className="text-xs font-bold uppercase tracking-wider text-primary flex items-center gap-1.5 border-b border-border pb-2">
-          <Heart className="w-4 h-4" />
-          ৪. কনের বিবরণ (Bride Information)
-        </h3>
+        <div className="flex items-center gap-1.5 bg-gradient-to-r from-sky-600 via-sky-700 to-[#0B3A60] text-white px-4 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider shadow-xs">
+          <Heart className="w-4 h-4 text-sky-200" />
+          <span>4. Bride Information</span>
+        </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div>
-            <label className="block text-xs font-semibold mb-1">কনের পূর্ণ নাম (Bride Name)</label>
+            <label className="block text-xs font-semibold mb-1">Bride Full Name</label>
             <input
               type="text"
               value={data.bride?.name || ''}
@@ -223,7 +223,7 @@ export function MarriageCertificateForm({ data = {}, onChange }) {
           </div>
 
           <div>
-            <label className="block text-xs font-semibold mb-1">পিতার নাম (Father's Name)</label>
+            <label className="block text-xs font-semibold mb-1">Father's Name</label>
             <input
               type="text"
               value={data.bride?.fatherName || ''}
@@ -233,7 +233,7 @@ export function MarriageCertificateForm({ data = {}, onChange }) {
           </div>
 
           <div>
-            <label className="block text-xs font-semibold mb-1">মাতার নাম (Mother's Name)</label>
+            <label className="block text-xs font-semibold mb-1">Mother's Name</label>
             <input
               type="text"
               value={data.bride?.motherName || ''}
@@ -243,7 +243,7 @@ export function MarriageCertificateForm({ data = {}, onChange }) {
           </div>
 
           <div>
-            <label className="block text-xs font-semibold mb-1">পাসপোর্ট নম্বর (Passport No)</label>
+            <label className="block text-xs font-semibold mb-1">Passport Number</label>
             <input
               type="text"
               value={data.bride?.passportNo || ''}
@@ -253,7 +253,7 @@ export function MarriageCertificateForm({ data = {}, onChange }) {
           </div>
 
           <div>
-            <label className="block text-xs font-semibold mb-1">জন্ম তারিখ (Birth Date)</label>
+            <label className="block text-xs font-semibold mb-1">Date of Birth</label>
             <input
               type="date"
               value={data.bride?.birthDate || ''}
@@ -263,7 +263,7 @@ export function MarriageCertificateForm({ data = {}, onChange }) {
           </div>
 
           <div>
-            <label className="block text-xs font-semibold mb-1">ঠিকানা (Address)</label>
+            <label className="block text-xs font-semibold mb-1">Address</label>
             <input
               type="text"
               value={data.bride?.address || ''}
@@ -276,14 +276,14 @@ export function MarriageCertificateForm({ data = {}, onChange }) {
 
       {/* 5. Dower & Terms */}
       <div className="bg-card border border-border rounded-xl p-4 space-y-4">
-        <h3 className="text-xs font-bold uppercase tracking-wider text-primary flex items-center gap-1.5 border-b border-border pb-2">
-          <DollarSign className="w-4 h-4" />
-          ৫. দেনমোহর ও সাক্ষীদের বিবরণ (Dower & Witnesses)
-        </h3>
+        <div className="flex items-center gap-1.5 bg-gradient-to-r from-sky-600 via-sky-700 to-[#0B3A60] text-white px-4 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider shadow-xs">
+          <DollarSign className="w-4 h-4 text-sky-200" />
+          <span>5. Dower & Witnesses Information</span>
+        </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div>
-            <label className="block text-xs font-semibold mb-1">মোট দেনমোহর (৳)</label>
+            <label className="block text-xs font-semibold mb-1">Total Dower Amount (BDT)</label>
             <input
               type="text"
               value={data.marriageTerms?.dowerAmount || ''}
@@ -294,7 +294,7 @@ export function MarriageCertificateForm({ data = {}, onChange }) {
           </div>
 
           <div>
-            <label className="block text-xs font-semibold mb-1">উসিল / উকিল (Wakil Name)</label>
+            <label className="block text-xs font-semibold mb-1">Wakil / Representative Name</label>
             <input
               type="text"
               value={data.marriageTerms?.wakilName || ''}
@@ -305,7 +305,7 @@ export function MarriageCertificateForm({ data = {}, onChange }) {
           </div>
 
           <div>
-            <label className="block text-xs font-semibold mb-1">১ম সাক্ষী (Witness 1)</label>
+            <label className="block text-xs font-semibold mb-1">Witness 1 (Name & Details)</label>
             <input
               type="text"
               value={data.marriageTerms?.witness1 || ''}
@@ -316,7 +316,7 @@ export function MarriageCertificateForm({ data = {}, onChange }) {
           </div>
 
           <div>
-            <label className="block text-xs font-semibold mb-1">২য় সাক্ষী (Witness 2)</label>
+            <label className="block text-xs font-semibold mb-1">Witness 2 (Name & Details)</label>
             <input
               type="text"
               value={data.marriageTerms?.witness2 || ''}

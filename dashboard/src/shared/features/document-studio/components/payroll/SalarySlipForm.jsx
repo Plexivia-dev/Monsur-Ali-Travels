@@ -269,7 +269,7 @@ export function SalarySlipForm({ formData, setFormData, onSubmit, onReset, isSub
             <span>2. Earnings &amp; Allowances (BDT)</span>
           </div>
           <span className="font-mono text-[11px] font-bold bg-white/20 px-2.5 py-0.5 rounded-lg">
-            Gross: ৳{Number(formData.grossEarnings || 0).toLocaleString('en-BD')}
+            Gross: BDT {Number(formData.grossEarnings || 0).toLocaleString('en-BD')}
           </span>
         </div>
 
@@ -356,7 +356,7 @@ export function SalarySlipForm({ formData, setFormData, onSubmit, onReset, isSub
             <span>3. Deductions &amp; Attendance Adjustments</span>
           </div>
           <span className="font-mono text-[11px] font-bold bg-white/20 px-2.5 py-0.5 rounded-lg">
-            Total Ded: -৳{Number(formData.totalDeduction || 0).toLocaleString('en-BD')}
+            Total Ded: -BDT {Number(formData.totalDeduction || 0).toLocaleString('en-BD')}
           </span>
         </div>
 
@@ -431,13 +431,13 @@ export function SalarySlipForm({ formData, setFormData, onSubmit, onReset, isSub
               Net Payable Salary
             </span>
             <div className="text-2xl sm:text-3xl font-black text-foreground font-mono mt-0.5">
-              ৳{Number(formData.netSalaryPayable || 0).toLocaleString('en-BD')}
+              BDT {Number(formData.netSalaryPayable || 0).toLocaleString('en-BD')}
             </div>
           </div>
 
           <div className="text-right">
             <span className="text-[11px] font-semibold text-muted-foreground block">
-              Gross: ৳{Number(formData.grossEarnings || 0).toLocaleString('en-BD')} | Deductions: -৳{Number(formData.totalDeduction || 0).toLocaleString('en-BD')}
+              Gross: BDT {Number(formData.grossEarnings || 0).toLocaleString('en-BD')} | Deductions: -BDT {Number(formData.totalDeduction || 0).toLocaleString('en-BD')}
             </span>
             <span className="text-xs font-bold text-sky-700 dark:text-sky-300 mt-1 inline-block">
               {formData.netSalaryInWords || 'Zero Taka Only'}

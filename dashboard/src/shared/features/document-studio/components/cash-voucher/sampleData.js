@@ -57,13 +57,13 @@ export function numberToWordsBn(amount) {
   if (!amount || isNaN(amount) || Number(amount) <= 0) return '';
   const num = Math.floor(Number(amount));
 
-  const units = ['', 'এক', 'দুই', 'তিন', 'চার', 'পাঁচ', 'ছয়', 'সাত', 'আট', 'নয়', 'দশ',
-    'এগারো', 'বারো', 'তেরো', 'চোদ্দ', 'পনেরো', 'ষোলো', 'সতেরো', 'আঠারো', 'উনিশ'];
-  const tens = ['', '', 'বিশ', 'ত্রিশ', 'চল্লিশ', 'পঞ্চাশ', 'ষাট', 'সত্তর', 'আশি', 'নব্বই'];
+  const units = ['', 'One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight', 'Nine', 'Ten',
+    'Eleven', 'Twelve', 'Thirteen', 'Fourteen', 'Fifteen', 'Sixteen', 'Seventeen', 'Eighteen', 'Nineteen'];
+  const tens = ['', '', 'Twenty', 'Thirty', 'Forty', 'Fifty', 'Sixty', 'Seventy', 'Eighty', 'Ninety'];
 
   function convertHundreds(n) {
     let str = '';
-    if (n >= 100) { str += units[Math.floor(n / 100)] + ' শত '; n %= 100; }
+    if (n >= 100) { str += units[Math.floor(n / 100)] + ' Hundred '; n %= 100; }
     if (n >= 20)  { str += tens[Math.floor(n / 10)] + ' '; n %= 10; }
     if (n > 0)    { str += units[n] + ' '; }
     return str.trim();
@@ -74,13 +74,13 @@ export function numberToWordsBn(amount) {
   const lakh     = Math.floor(rem / 100000);       rem = rem % 100000;
   const thousand = Math.floor(rem / 1000);          rem = rem % 1000;
 
-  if (crore   > 0) result += convertHundreds(crore)    + ' কোটি ';
-  if (lakh    > 0) result += convertHundreds(lakh)     + ' লক্ষ ';
-  if (thousand > 0) result += convertHundreds(thousand) + ' হাজার ';
+  if (crore   > 0) result += convertHundreds(crore)    + ' Crore ';
+  if (lakh    > 0) result += convertHundreds(lakh)     + ' Lakh ';
+  if (thousand > 0) result += convertHundreds(thousand) + ' Thousand ';
   if (rem     > 0) result += convertHundreds(rem);
 
   result = result.trim();
-  return result ? `${result} টাকা মাত্র` : '';
+  return result ? `${result} BDT Only` : '';
 }
 
 // ─── Default Data ─────────────────────────────────────────────────────────────

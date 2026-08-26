@@ -7,19 +7,19 @@ import logoImg from '@shared/assets/logo.png';
 import { formatToDdMmYyyy, printDocument } from '@shared/lib/utils';
 
 // Helper component for single half-page receipt slip
-function SingleReceiptSlip({ data = {}, copyType = 'গ্রাহক কপি (Client Copy)' }) {
+function SingleReceiptSlip({ data = {}, copyType = 'Client Copy' }) {
   const {
     receiptNo = 'MR-000000-0000',
     clientName = '',
     clientPhone = '',
     passportNumber = '',
-    serviceType = 'ইন্ডিয়ান ভিসা প্রসেসিং',
+    serviceType = 'Indian Visa Processing',
     purpose = '',
     amount = 0,
     amountInWords = '',
     paymentMethod = 'Cash',
     status = 'pending',
-    createdByName = 'ম্যানেজার (Manager)',
+    createdByName = 'Manager',
     confirmedByName = '',
     confirmedAt = null,
     createdAt = new Date().toISOString(),
@@ -57,7 +57,7 @@ function SingleReceiptSlip({ data = {}, copyType = 'গ্রাহক কপি
                 {agencyInfo.address?.full || 'Mominpur Jagannathpur Road, Sunamganj, Post Code 3060'}
               </p>
               <p className="text-[9.5px] text-slate-700 font-mono">
-                হেল্পলাইন: {agencyInfo.phone || '+8801345579534'} | {agencyInfo.email || 'contact@monsuralitravels.com'}
+                Helpline: {agencyInfo.phone || '+8801345579534'} | {agencyInfo.email || 'contact@monsuralitravels.com'}
               </p>
             </div>
           </div>
@@ -68,10 +68,10 @@ function SingleReceiptSlip({ data = {}, copyType = 'গ্রাহক কপি
               {copyType}
             </span>
             <div className="text-[10.5px] font-mono font-bold text-slate-800">
-              টোকেন নং: <span className="text-primary font-black text-xs">{receiptNo}</span>
+              Token No: <span className="text-primary font-black text-xs">{receiptNo}</span>
             </div>
             <div className="text-[9.5px] text-slate-600 font-mono">
-              তারিখ: {formatToDdMmYyyy(createdAt)} {new Date(createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+              Date: {formatToDdMmYyyy(createdAt)} {new Date(createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
             </div>
           </div>
         </div>
@@ -80,7 +80,7 @@ function SingleReceiptSlip({ data = {}, copyType = 'গ্রাহক কপি
       {/* Title Bar */}
       <div className="flex items-center justify-between bg-slate-100 border border-slate-300 px-2.5 py-0.5 my-1.5 rounded">
         <span className="text-[11px] font-bold text-slate-800 tracking-wide uppercase">
-          মানি রিসিট ও পেমেন্ট টোকেন
+          Money Receipt & Payment Token
         </span>
         <span className={`text-[9.5px] font-bold px-1.5 py-0.5 rounded border uppercase flex items-center gap-1 ${
           isConfirmed 
@@ -88,31 +88,31 @@ function SingleReceiptSlip({ data = {}, copyType = 'গ্রাহক কপি
             : 'bg-amber-50 text-amber-800 border-amber-200'
         }`}>
           {isConfirmed ? <CheckCircle2 className="w-3 h-3 text-slate-500" /> : <Clock className="w-3 h-3 text-amber-600" />}
-          {isConfirmed ? 'ক্যাশ গ্রহণ ও সিল নিশ্চিত' : 'ক্যাশিয়ার পেমেন্ট পেন্ডিং'}
+          {isConfirmed ? 'Cash Received & Seal Verified' : 'Cashier Payment Pending'}
         </span>
       </div>
 
       {/* Client & Service Info Grid */}
       <div className="grid grid-cols-2 gap-x-3 gap-y-1 text-xs border border-slate-200 rounded p-2 bg-slate-50/50 mb-1.5">
         <div>
-          <span className="text-slate-500 text-[9.5px] uppercase font-bold block">গ্রাহকের নাম:</span>
+          <span className="text-slate-500 text-[9.5px] uppercase font-bold block">Client Name:</span>
           <span className="font-bold text-slate-900 text-xs">{clientName || 'N/A'}</span>
         </div>
         <div>
-          <span className="text-slate-500 text-[9.5px] uppercase font-bold block">মোবাইল নম্বর:</span>
+          <span className="text-slate-500 text-[9.5px] uppercase font-bold block">Phone Number:</span>
           <span className="font-mono font-semibold text-slate-800 text-[11px]">{clientPhone || 'N/A'}</span>
         </div>
         <div>
-          <span className="text-slate-500 text-[9.5px] uppercase font-bold block">পাসপোর্ট নম্বর:</span>
+          <span className="text-slate-500 text-[9.5px] uppercase font-bold block">Passport Number:</span>
           <span className="font-mono font-bold text-slate-900 uppercase text-[11px]">{passportNumber || 'N/A'}</span>
         </div>
         <div>
-          <span className="text-slate-500 text-[9.5px] uppercase font-bold block">সেবার ধরন:</span>
+          <span className="text-slate-500 text-[9.5px] uppercase font-bold block">Service Category:</span>
           <span className="font-semibold text-slate-900 text-[11px]">{serviceType}</span>
         </div>
         {purpose && (
           <div className="col-span-2 border-t border-slate-200 pt-0.5 mt-0.5">
-            <span className="text-slate-500 text-[9.5px] uppercase font-bold block">বিবরণ ও উদ্দেশ্য:</span>
+            <span className="text-slate-500 text-[9.5px] uppercase font-bold block">Description & Purpose:</span>
             <span className="text-slate-800 text-[10.5px]">{purpose}</span>
           </div>
         )}
@@ -121,18 +121,18 @@ function SingleReceiptSlip({ data = {}, copyType = 'গ্রাহক কপি
       {/* Amount & Payment Method Highlight Box */}
       <div className="flex items-center justify-between border border-slate-900 bg-slate-900 text-white rounded p-2 mb-1.5">
         <div>
-          <div className="text-[9.5px] uppercase font-medium text-slate-300">টাকার পরিমাণ</div>
+          <div className="text-[9.5px] uppercase font-medium text-slate-300">Received Amount (BDT)</div>
           <div className="text-base sm:text-lg font-black tracking-tight text-emerald-400">
-            ৳ {Number(amount || 0).toLocaleString('en-IN')} BDT
+            BDT  {Number(amount || 0).toLocaleString('en-IN')} BDT
           </div>
           {amountInWords && (
             <div className="text-[9.5px] text-slate-300 italic">
-              কথায়: {amountInWords}
+              In Words: {amountInWords}
             </div>
           )}
         </div>
         <div className="text-right">
-          <div className="text-[9.5px] text-slate-300 uppercase">পেমেন্ট মাধ্যম</div>
+          <div className="text-[9.5px] text-slate-300 uppercase">Payment Method</div>
           <div className="text-[11px] font-bold text-white bg-slate-800 px-2 py-0.5 rounded border border-slate-700 inline-block mt-0.5">
             {paymentMethod}
           </div>
@@ -148,9 +148,9 @@ function SingleReceiptSlip({ data = {}, copyType = 'গ্রাহক কপি
             <span className="text-[9.5px] text-slate-400 italic">Signed</span>
           </div>
           <div className="border-t border-slate-700 pt-0.5 text-[9.5px] font-bold text-slate-800">
-            {createdByName || 'ম্যানেজার'}
+            {createdByName || 'Manager'}
           </div>
-          <div className="text-[8.5px] text-slate-500">টোকেন প্রস্তুতকারী</div>
+          <div className="text-[8.5px] text-slate-500">Token Prepared By</div>
         </div>
 
         {/* Accountant / Cashier Receiver */}
@@ -163,16 +163,16 @@ function SingleReceiptSlip({ data = {}, copyType = 'গ্রাহক কপি
             )}
           </div>
           <div className="border-t border-slate-700 pt-0.5 text-[9.5px] font-bold text-slate-800">
-            {confirmedByName || 'ক্যাশিয়ার / একাউন্টস'}
+            {confirmedByName || 'Cashier / Accounts'}
           </div>
-          <div className="text-[8.5px] text-slate-500">অর্থ ও সিল গ্রহীতা</div>
+          <div className="text-[8.5px] text-slate-500">Payment & Seal Receiver</div>
         </div>
 
       </div>
 
       {/* Bottom Micro Footer */}
       <div className="flex justify-between items-center text-[8.5px] text-slate-500 border-t border-slate-200 mt-1 pt-0.5 font-mono">
-        <span>* এই টোকেনটি অভ্যন্তরীণ একাউন্টিং ও ডকুমেন্ট হস্তান্তরের জন্য প্রযোজ্য।</span>
+        <span>* This token is valid for official accounting and document release.</span>
         <span className="font-bold">{receiptNo}</span>
       </div>
 
@@ -201,7 +201,7 @@ export function MoneyReceiptPrintSlip({ data = {}, onPrint }) {
           <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
           <span className="font-semibold text-foreground">Money Receipt & Token Canvas (A4 Dual Slip)</span>
           <span>•</span>
-          <span className="text-[11px]">১ পৃষ্ঠায় ২টি কপি (গ্রাহক ও অফিস)</span>
+          <span className="text-[11px]">2 Copies per A4 Page (Client & Office)</span>
         </div>
 
         <Button
@@ -210,25 +210,25 @@ export function MoneyReceiptPrintSlip({ data = {}, onPrint }) {
           onClick={handlePrint}
         >
           <Printer className="w-3.5 h-3.5" />
-          <span>প্রিন্ট রিসিট / PDF</span>
+          <span>Print Receipt / PDF</span>
         </Button>
       </div>
 
       {/* A4 Paper Canvas - Clean Compact Padding */}
       <PrintablePaper id="printable-receipt-canvas" className="p-4 sm:p-5 space-y-2.5 min-h-0 flex-col justify-start">
         {/* Top Half: Client Copy */}
-        <SingleReceiptSlip data={data} copyType="গ্রাহক কপি (Client Copy)" />
+        <SingleReceiptSlip data={data} copyType="Client Copy" />
 
         {/* Perforated Divider Line */}
         <div className="relative py-0.5 text-center select-none">
           <div className="border-t-2 border-dashed border-slate-400 w-full" />
           <span className="absolute left-1/2 -top-2 -translate-x-1/2 bg-white px-3 text-[9.5px] font-mono text-slate-500 flex items-center gap-1">
-            ✂️ ------------------ কেটে আলাদা করুন (Tear Along Line) ------------------ ✂️
+            ✂️ ------------------ Tear Along Line ------------------ ✂️
           </span>
         </div>
 
         {/* Bottom Half: Office Copy */}
-        <SingleReceiptSlip data={data} copyType="অফিস ও একাউন্টস কপি (Office & Accounts Copy)" />
+        <SingleReceiptSlip data={data} copyType="Office & Accounts Copy" />
       </PrintablePaper>
     </div>
   );

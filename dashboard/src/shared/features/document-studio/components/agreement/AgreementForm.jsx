@@ -438,7 +438,7 @@ export function AgreementForm({ formData, setFormData, onSubmit, onReset, isSubm
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                 <div className="space-y-1.5">
-                  <Label>{t('agreement.basicSalary')} ৳</Label>
+                  <Label>{t('agreement.basicSalary')} BDT </Label>
                   <Input
                     type="number"
                     value={formData.salary?.basicSalary || ''}
@@ -448,7 +448,7 @@ export function AgreementForm({ formData, setFormData, onSubmit, onReset, isSubm
                   />
                 </div>
                 <div className="space-y-1.5">
-                  <Label>{t('agreement.houseRent')} ৳</Label>
+                  <Label>{t('agreement.houseRent')} BDT </Label>
                   <Input
                     type="number"
                     value={formData.salary?.houseRent || ''}
@@ -458,7 +458,7 @@ export function AgreementForm({ formData, setFormData, onSubmit, onReset, isSubm
                   />
                 </div>
                 <div className="space-y-1.5">
-                  <Label>{t('agreement.medical')} ৳</Label>
+                  <Label>{t('agreement.medical')} BDT </Label>
                   <Input
                     type="number"
                     value={formData.salary?.medical || ''}
@@ -468,7 +468,7 @@ export function AgreementForm({ formData, setFormData, onSubmit, onReset, isSubm
                   />
                 </div>
                 <div className="space-y-1.5">
-                  <Label>{t('agreement.conveyance')} ৳</Label>
+                  <Label>{t('agreement.conveyance')} BDT </Label>
                   <Input
                     type="number"
                     value={formData.salary?.conveyance || ''}
@@ -478,7 +478,7 @@ export function AgreementForm({ formData, setFormData, onSubmit, onReset, isSubm
                   />
                 </div>
                 <div className="space-y-1.5">
-                  <Label>{t('agreement.specialAllowance')} ৳</Label>
+                  <Label>{t('agreement.specialAllowance')} BDT </Label>
                   <Input
                     type="number"
                     value={formData.salary?.specialAllowance || ''}
@@ -488,7 +488,7 @@ export function AgreementForm({ formData, setFormData, onSubmit, onReset, isSubm
                   />
                 </div>
                 <div className="space-y-1.5">
-                  <Label>{t('agreement.grossSalary')} ৳</Label>
+                  <Label>{t('agreement.grossSalary')} BDT </Label>
                   <Input
                     type="text"
                     value={formData.salary?.grossSalary || ''}
@@ -624,7 +624,7 @@ export function AgreementForm({ formData, setFormData, onSubmit, onReset, isSubm
                 </div>
                 <div className="p-2.5 bg-background border border-border rounded-lg">
                   <span className="text-muted-foreground block text-[10px]">Gross Salary:</span>
-                  <span className="font-semibold text-primary font-mono">{formData.salary?.grossSalary || '0'} ৳</span>
+                  <span className="font-semibold text-primary font-mono">{formData.salary?.grossSalary || '0'} BDT </span>
                 </div>
               </div>
             </div>

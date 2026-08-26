@@ -21,7 +21,7 @@ export function EmploymentAgreement() {
   const [viewMode, setViewMode] = useState('form'); // 'form' | 'preview'
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [agencyInfo, setAgencyInfo] = useState({
-    name: agencyInfoJson.agencyName ? `${agencyInfoJson.agencyName} (MONSUR ALI TRAVELS)` : 'মনসুর আলী ট্রাভেলস (MONSUR ALI TRAVELS)',
+    name: agencyInfoJson.agencyName ? `${agencyInfoJson.agencyName} (MONSUR ALI TRAVELS)` : 'MONSUR ALI TRAVELS',
     address: agencyInfoJson.address?.full || 'Mominpur Jagannathpur Road, Sunamganj, Post Code 3060',
     phone: agencyInfoJson.phone || '+8801345579534',
     email: agencyInfoJson.email || 'contact@monsuralitravels.com'
@@ -31,7 +31,7 @@ export function EmploymentAgreement() {
     _id: null,
     agreementId: generateUniqueAgreementId(),
     header: {
-      companyName: agencyInfo.name || 'মনসুর আলী ট্রাভেলস (MONSUR ALI TRAVELS)',
+      companyName: agencyInfo.name || 'MONSUR ALI TRAVELS',
       officeAddress: agencyInfo.address || 'Mominpur Jagannathpur Road, Sunamganj, Post Code 3060',
       phone: agencyInfo.phone || '+8801345579534',
       email: agencyInfo.email || 'contact@monsuralitravels.com'
@@ -49,18 +49,18 @@ export function EmploymentAgreement() {
     guardian: {
       guardianName: '',
       guardianPhone: '',
-      relationship: 'পিতা',
+      relationship: 'Father',
       emergencyPhone: '',
       guardianNid: '',
       guardianAddress: ''
     },
     position: {
-      designation: 'অফিস এক্সিকিউটিভ / প্রসেসিং অফিসার',
-      department: 'পাসপোর্ট ও ভিসা প্রসেসিং উইং',
+      designation: 'Office Executive / Processing Officer',
+      department: 'Passport & Visa Processing Wing',
       joiningDate: new Date().toISOString().split('T')[0],
-      location: 'হেড অফিস, নাদampur',
-      jobType: 'স্থায়ী / পূর্ণকালীন (Full-Time)',
-      workSchedule: 'সকাল ৯:০০ - সন্ধ্যা ৬:০০, রবিবার হতে বৃহস্পতিবার'
+      location: 'Head Office, Nadampur',
+      jobType: 'Permanent (Full-Time)',
+      workSchedule: '9:00 AM - 6:00 PM, Sunday to Thursday'
     },
     salary: {
       basicSalary: '15000',
@@ -69,7 +69,7 @@ export function EmploymentAgreement() {
       conveyance: '1500',
       specialAllowance: '1500',
       grossSalary: '25,000',
-      grossSalaryInWords: 'পঁচিশ হাজার টাকা মাত্র'
+      grossSalaryInWords: 'Twenty Five Thousand BDT Only'
     },
     leave: {
       casualDays: '10',
@@ -97,7 +97,7 @@ export function EmploymentAgreement() {
       _id: null,
       agreementId: generateUniqueAgreementId()
     });
-    toast.info('চুক্তিপত্রের ফর্ম রিসেট করা হয়েছে।');
+    toast.info('Agreement form has been reset.');
   };
 
   const handleFormSubmit = async () => {
@@ -123,17 +123,17 @@ export function EmploymentAgreement() {
         }));
         toast.success(
           isEdit
-            ? `চুক্তিপত্র সফলভাবে ডাটাবেজে আপডেট করা হয়েছে! (আইডি: ${savedDoc.agreementId || finalAgreementId})`
-            : `চুক্তিপত্র সফলভাবে ডাটাবেজে সংরক্ষণ করা হয়েছে! (আইডি: ${savedDoc.agreementId || finalAgreementId})`
+            ? `Employment agreement updated successfully in database! (Agreement ID: ${savedDoc.agreementId || finalAgreementId})`
+            : `Employment agreement saved successfully in database! (Agreement ID: ${savedDoc.agreementId || finalAgreementId})`
         );
       } else {
         setFormData(payload);
-        toast.success(`চুক্তিপত্র সফলভাবে তৈরি হয়েছে! (আইডি: ${finalAgreementId})`);
+        toast.success(`Employment agreement created successfully! (Agreement ID: ${finalAgreementId})`);
       }
     } catch (err) {
       console.warn('Agreement save notice (offline preview fallback):', err);
       setFormData(payload);
-      toast.success(`চুক্তিপত্র প্রস্তুত হয়েছে! (আইডি: ${finalAgreementId})`);
+      toast.success(`Employment agreement generated successfully! (Agreement ID: ${finalAgreementId})`);
     } finally {
       setIsSubmitting(false);
       setViewMode('preview');
@@ -149,22 +149,22 @@ export function EmploymentAgreement() {
   };
 
   const handleWhatsAppShare = () => {
-    const employee = formData.parties?.employeeName || 'কর্মচারী';
-    const post = formData.position?.designation || 'কর্মকর্তা';
+    const employee = formData.parties?.employeeName || 'Employee';
+    const post = formData.position?.designation || 'Official';
     const gross = formData.salary?.grossSalary || '0';
 
     const msg =
-      `*📄 মনসুর আলী ট্রাভেলস (MONSUR ALI TRAVELS)*\n` +
-      `*নিয়োগ ও চাকরির চুক্তিপত্র (${formData.agreementId || 'Legal Doc'})*\n` +
+      `*📄 MONSUR ALI TRAVELS*\n` +
+      `*Employment & Service Agreement (${formData.agreementId || 'Legal Doc'})*\n` +
       `-----------------------------------------\n` +
-      `👤 *কর্মচারীর নাম:* ${employee}\n` +
-      `💼 *পদবী:* ${post} (${formData.position?.department || 'অফিস'})\n` +
-      `📅 *চুক্তির তারিখ:* ${formData.parties?.agreementDate || 'আজ'}\n` +
-      `💰 *সর্বমোট মাসিক বেতন:* ${gross} ৳\n` +
-      `📌 *চুক্তির ন্যূনতম মেয়াদ:* ২ (দুই) বছর বাধ্যতামূলক\n\n` +
-      `🏢 *মনসুর আলী ট্রাভেলস*\n` +
-      `📍 ঠিকানা: ${formData.header?.officeAddress || 'Mominpur Jagannathpur Road, Sunamganj, Post Code 3060'}\n` +
-      `📞 যোগাযোগ: ${formData.header?.phone || '+8801345579534'}`;
+      `👤 *Employee Name:* ${employee}\n` +
+      `💼 *Designation:* ${post} (${formData.position?.department || 'Office'})\n` +
+      `📅 *Agreement Date:* ${formData.parties?.agreementDate || 'Today'}\n` +
+      `💰 *Gross Monthly Salary:* ${gross} BDT \n` +
+      `📌 *Minimum Contract Duration:* 2 (Two) Years\n\n` +
+      `🏢 *MONSUR ALI TRAVELS*\n` +
+      `📍 Address: ${formData.header?.officeAddress || 'Mominpur Jagannathpur Road, Sunamganj, Post Code 3060'}\n` +
+      `📞 Helpline Contact: ${formData.header?.phone || '+8801345579534'}`;
 
     window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(msg)}`, '_blank');
   };
@@ -189,8 +189,8 @@ export function EmploymentAgreement() {
           <HeaderTitle
             variant="printables"
             icon={CheckCircle2}
-            title={`চুক্তিপত্র প্রস্তুত সম্পন্ন (আইডি: ${formData.agreementId})`}
-            subtitle="চুক্তিপত্রটি প্রস্তুত হয়েছে। সরাসরি A4 প্রিন্ট / পিডিএফ ডাউনলোড করুন অথবা তথ্যে পরিবর্তন আনতে এডিট করুন।"
+            title={`Employment Agreement Ready (Agreement ID: ${formData.agreementId})`}
+            subtitle="Employment agreement dossier is ready. Export to printable A4 PDF or edit terms."
             actions={
               <>
                 <button
@@ -199,7 +199,7 @@ export function EmploymentAgreement() {
                   className="flex items-center gap-1.5 px-4 py-2 rounded-lg text-xs font-semibold border border-border bg-muted/40 hover:bg-muted text-foreground transition-all cursor-pointer"
                 >
                   <Edit3 className="size-3.5 text-primary" />
-                  <span>তথ্য পরিবর্তন (Edit Form)</span>
+                  <span>Edit Form</span>
                 </button>
 
                 <button

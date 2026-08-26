@@ -25,16 +25,16 @@ export function CertificateForm({ data, onChange }) {
   return (
     <div className="bg-card border border-border rounded-xl p-4 sm:p-5 space-y-4 text-xs">
       <div className="flex items-center justify-between border-b border-border pb-3">
-        <h3 className="font-bold text-foreground text-sm">চারিত্রিক সনদপত্র ইনপুট ফর্ম</h3>
+        <h3 className="font-bold text-foreground text-sm">Character Certificate & Testimonial Form</h3>
         <div className="flex items-center space-x-2">
-          <span className="text-muted-foreground">ভাষা:</span>
+          <span className="text-muted-foreground">Language:</span>
           <button
             onClick={() => onChange({ ...data, language: 'bn' })}
             className={`px-2.5 py-1 rounded-md font-bold transition-all cursor-pointer ${
               data.language === 'bn' ? 'bg-primary text-primary-foreground' : 'bg-muted text-muted-foreground'
             }`}
           >
-            বাংলা
+            English
           </button>
           <button
             onClick={() => onChange({ ...data, language: 'en' })}
@@ -50,7 +50,7 @@ export function CertificateForm({ data, onChange }) {
       {/* METADATA */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
         <div>
-          <label className="block text-muted-foreground mb-1">স্মারক নম্বর / Memo No</label>
+          <label className="block text-muted-foreground mb-1">Memo / Reference No</label>
           <input
             type="text"
             value={data.memoNo}
@@ -60,7 +60,7 @@ export function CertificateForm({ data, onChange }) {
         </div>
 
         <div>
-          <label className="block text-muted-foreground mb-1">ইস্যুর তারিখ / Issue Date</label>
+          <label className="block text-muted-foreground mb-1">Issue Date / Issue Date</label>
           <input
             type="date"
             value={data.issueDate}
@@ -72,11 +72,11 @@ export function CertificateForm({ data, onChange }) {
 
       {/* CANDIDATE DETAILS */}
       <div className="border-t border-border pt-3 space-y-3">
-        <h4 className="font-semibold text-foreground text-xs uppercase tracking-wider">আবেদনকারীর বিবরণ (Client Information)</h4>
+        <h4 className="font-semibold text-foreground text-xs uppercase tracking-wider">Applicant Details</h4>
         
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div>
-            <label className="block text-muted-foreground mb-1">পূর্ণ নাম (বাংলা)</label>
+            <label className="block text-muted-foreground mb-1">Full Name</label>
             <input
               type="text"
               value={data.client.fullName}
@@ -96,7 +96,7 @@ export function CertificateForm({ data, onChange }) {
           </div>
 
           <div>
-            <label className="block text-muted-foreground mb-1">পিতার নাম / Father's Name</label>
+            <label className="block text-muted-foreground mb-1">Father's Name</label>
             <input
               type="text"
               value={data.client.fatherName}
@@ -106,7 +106,7 @@ export function CertificateForm({ data, onChange }) {
           </div>
 
           <div>
-            <label className="block text-muted-foreground mb-1">মাতার নাম / Mother's Name</label>
+            <label className="block text-muted-foreground mb-1">Mother's Name</label>
             <input
               type="text"
               value={data.client.motherName}
@@ -116,7 +116,7 @@ export function CertificateForm({ data, onChange }) {
           </div>
 
           <div>
-            <label className="block text-muted-foreground mb-1">পাসপোর্ট নম্বর / Passport No</label>
+            <label className="block text-muted-foreground mb-1">Passport Number / Passport No</label>
             <input
               type="text"
               value={data.client.passportNo}
@@ -126,7 +126,7 @@ export function CertificateForm({ data, onChange }) {
           </div>
 
           <div>
-            <label className="block text-muted-foreground mb-1">জাতীয় পরিচয়পত্র / NID No</label>
+            <label className="block text-muted-foreground mb-1">National ID (NID) No</label>
             <input
               type="text"
               value={data.client.nidNo}
@@ -139,7 +139,7 @@ export function CertificateForm({ data, onChange }) {
         {/* ADDRESS */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 pt-1">
           <div>
-            <label className="block text-muted-foreground mb-1">গ্রাম/মহল্লা</label>
+            <label className="block text-muted-foreground mb-1">Village / Area</label>
             <input
               type="text"
               value={data.client.village}
@@ -149,7 +149,7 @@ export function CertificateForm({ data, onChange }) {
           </div>
 
           <div>
-            <label className="block text-muted-foreground mb-1">ডাকঘর</label>
+            <label className="block text-muted-foreground mb-1">Post Office</label>
             <input
               type="text"
               value={data.client.postOffice}
@@ -159,7 +159,7 @@ export function CertificateForm({ data, onChange }) {
           </div>
 
           <div>
-            <label className="block text-muted-foreground mb-1">উপজেলা/থানা</label>
+            <label className="block text-muted-foreground mb-1">Upazila / Police Station</label>
             <input
               type="text"
               value={data.client.upazila}
@@ -169,7 +169,7 @@ export function CertificateForm({ data, onChange }) {
           </div>
 
           <div>
-            <label className="block text-muted-foreground mb-1">জেলা</label>
+            <label className="block text-muted-foreground mb-1">District</label>
             <input
               type="text"
               value={data.client.district}
@@ -182,10 +182,10 @@ export function CertificateForm({ data, onChange }) {
 
       {/* CONDUCT STATEMENT */}
       <div className="border-t border-border pt-3 space-y-2">
-        <h4 className="font-semibold text-foreground text-xs uppercase tracking-wider">চারিত্রিক প্রত্যয়ন বক্তব্য (Conduct Statement)</h4>
+        <h4 className="font-semibold text-foreground text-xs uppercase tracking-wider">Character Assessment Statement</h4>
         
         <div>
-          <label className="block text-muted-foreground mb-1">পরিচিতির সময়কাল (বছরে)</label>
+          <label className="block text-muted-foreground mb-1">Acquaintance Duration (Years)</label>
           <input
             type="text"
             value={data.conduct.durationYears}
@@ -195,7 +195,7 @@ export function CertificateForm({ data, onChange }) {
         </div>
 
         <div>
-          <label className="block text-muted-foreground mb-1">প্রত্যয়ন বক্তব্য (বাংলা)</label>
+          <label className="block text-muted-foreground mb-1">Testimonial Statement</label>
           <textarea
             rows={3}
             value={data.conduct.statementBn}
@@ -207,11 +207,11 @@ export function CertificateForm({ data, onChange }) {
 
       {/* ISSUING AUTHORITY */}
       <div className="border-t border-border pt-3 space-y-2">
-        <h4 className="font-semibold text-foreground text-xs uppercase tracking-wider">ইস্যুকারী কর্তৃপক্ষের তথ্য (Authority Info)</h4>
+        <h4 className="font-semibold text-foreground text-xs uppercase tracking-wider">Issuing Authority Information</h4>
         
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div>
-            <label className="block text-muted-foreground mb-1">প্রতিষ্ঠানের নাম</label>
+            <label className="block text-muted-foreground mb-1">Organization Name</label>
             <input
               type="text"
               value={data.authority.organizationName}
@@ -221,7 +221,7 @@ export function CertificateForm({ data, onChange }) {
           </div>
 
           <div>
-            <label className="block text-muted-foreground mb-1">দায়িত্বপ্রাপ্ত কর্মকর্তার নাম</label>
+            <label className="block text-muted-foreground mb-1">Authorized Official Full Name</label>
             <input
               type="text"
               value={data.authority.issuingPersonName}
@@ -231,7 +231,7 @@ export function CertificateForm({ data, onChange }) {
           </div>
 
           <div>
-            <label className="block text-muted-foreground mb-1">পদবী / Designation</label>
+            <label className="block text-muted-foreground mb-1">Designation</label>
             <input
               type="text"
               value={data.authority.designation}
@@ -241,7 +241,7 @@ export function CertificateForm({ data, onChange }) {
           </div>
 
           <div>
-            <label className="block text-muted-foreground mb-1">অফিসের ঠিকানা</label>
+            <label className="block text-muted-foreground mb-1">Office Address</label>
             <input
               type="text"
               value={data.authority.officeAddress}

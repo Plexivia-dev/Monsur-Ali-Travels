@@ -228,7 +228,7 @@ export function JobVerificationPreview({ data }) {
             <div className="flex justify-between border-b border-slate-200 pb-1">
               <span className="font-semibold text-slate-600">Personally Known?:</span>
               <span className="font-bold text-slate-900">
-                {helper.knowsHelper === 'Yes' ? '[ ✔ ] Yes (হ্যাঁ)    [  ] No' : '[  ] Yes    [ ✔ ] No (না)'}
+                {helper.knowsHelper === 'Yes' ? '[ ✔ ] Yes    [  ] No' : '[  ] Yes    [ ✔ ] No'}
               </span>
             </div>
             <div className="flex justify-between border-b border-slate-200 pb-1">

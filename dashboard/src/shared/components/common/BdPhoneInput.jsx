@@ -146,12 +146,12 @@ export function BdPhoneInput({
       {/* Operator Validation Error message */}
       {hasError && (
         <p className="text-[11px] text-rose-500 font-medium">
-          অবৈধ অপারেটর কোড! শুধুমাত্র ১৩, ১৪, ১৫, ১৬, ১৭, ১৮, ১৯ (013-019) গ্রহণযোগ্য।
+          Invalid operator code! Only 013-019 are allowed.
         </p>
       )}
       {inputVal.startsWith('0') && !hasError && (
         <p className="text-[10px] text-muted-foreground animate-pulse">
-          শুরুর ০ স্বয়ংক্রিয়ভাবে ১ সেকেন্ড পর রিমুভ হবে...
+          Leading 0 will be automatically adjusted...
         </p>
       )}
     </div>

@@ -28,23 +28,23 @@ export function ReceiptConfirmModal({
       const payload = {
         paymentMethod,
         notes: notes.trim(),
-        confirmedByName: user?.name || 'একাউন্টেন্ট (Accountant)',
+        confirmedByName: user?.name || 'Accountant',
       };
 
       const res = await apiClient.patch(`/api/v1/client/receipts/${receipt._id || receipt.id}/confirm`, payload);
       if (res.data?.success || res.data?.status === 'success') {
         const updated = res.data.data;
         setConfirmedData(updated);
-        toast.success(`টোকেন #${receipt.receiptNo} সফলভাবে ক্যাশ গ্রহণ ও সিল নিশ্চিত করা হয়েছে!`);
+        toast.success(`Token #${receipt.receiptNo} successfully confirmed cash receipt and official seal!`);
         if (onConfirmed) {
           onConfirmed(updated);
         }
       } else {
-        toast.error(res.data?.message || 'সিল নিশ্চিত করতে সমস্যা হয়েছে।');
+        toast.error(res.data?.message || 'Failed to confirm seal.');
       }
     } catch (err) {
       console.error('Failed to confirm receipt:', err);
-      toast.error(err.response?.data?.message || 'সার্ভার ত্রুটি।');
+      toast.error(err.response?.data?.message || 'Server error.');
     } finally {
       setIsSubmitting(false);
     }
@@ -70,13 +70,13 @@ export function ReceiptConfirmModal({
             </div>
             <div>
               <h2 className="text-base sm:text-lg font-bold text-foreground flex items-center gap-2">
-                ক্যাশ রিসিভ ও সিল মোহর নিশ্চিতকরণ
+                Confirm Cash Receipt & Official Seal
                 <span className="text-xs font-mono bg-emerald-500/10 text-emerald-700 px-2 py-0.5 rounded-full">
-                  একাউন্টস ডেস্ক
+                  Accounts Desk
                 </span>
               </h2>
               <p className="text-xs text-muted-foreground font-mono">
-                টোকেন নং: <strong className="text-primary">{receipt.receiptNo}</strong>
+                Token No: <strong className="text-primary">{receipt.receiptNo}</strong>
               </p>
             </div>
           </div>
@@ -98,9 +98,9 @@ export function ReceiptConfirmModal({
                 <div className="flex justify-center">
                   <CheckCircle2 className="w-10 h-10 text-emerald-600" />
                 </div>
-                <h3 className="text-base font-bold">ক্যাশ জমা ও সিল সম্পন্ন হয়েছে!</h3>
+                <h3 className="text-base font-bold">Cash Deposit & Official Seal Completed!</h3>
                 <p className="text-xs">
-                  টোকেন #{confirmedData.receiptNo} — সিল গ্রহীতা: {confirmedData.confirmedByName}
+                  Token #{confirmedData.receiptNo} — Seal Verified By: {confirmedData.confirmedByName}
                 </p>
               </div>
 
@@ -109,14 +109,14 @@ export function ReceiptConfirmModal({
                   onClick={onClose}
                   className="px-4 py-2 text-xs font-semibold rounded-lg border border-border text-foreground hover:bg-muted cursor-pointer"
                 >
-                  বন্ধ করুন
+                  Close
                 </button>
                 <button
                   onClick={handlePrint}
                   className="flex items-center gap-1.5 px-5 py-2 text-xs font-bold rounded-lg bg-primary hover:bg-primary/90 text-primary-foreground shadow-xs cursor-pointer"
                 >
                   <Printer className="w-4 h-4" />
-                  <span>সিলযুক্ত রিসিট প্রিন্ট করুন</span>
+                  <span>Print Sealed Money Receipt</span>
                 </button>
               </div>
 
@@ -132,41 +132,41 @@ export function ReceiptConfirmModal({
               {/* Receipt Summary Card */}
               <div className="bg-muted/30 border border-border rounded-xl p-4 space-y-3">
                 <div className="flex items-center justify-between border-b border-border pb-2">
-                  <span className="text-xs text-muted-foreground uppercase font-semibold">টোকেন প্রস্তুতকারক (ম্যানেজার):</span>
-                  <span className="text-xs font-bold text-foreground">{receipt.createdByName || 'ম্যানেজার'}</span>
+                  <span className="text-xs text-muted-foreground uppercase font-semibold">Token Issued By (Manager):</span>
+                  <span className="text-xs font-bold text-foreground">{receipt.createdByName || 'Manager'}</span>
                 </div>
 
                 <div className="grid grid-cols-2 gap-3 text-xs">
                   <div>
-                    <span className="text-muted-foreground block text-[11px]">গ্রাহকের নাম:</span>
+                    <span className="text-muted-foreground block text-[11px]">Client Name:</span>
                     <strong className="text-foreground text-sm">{receipt.clientName}</strong>
                   </div>
                   <div>
-                    <span className="text-muted-foreground block text-[11px]">মোবাইল:</span>
+                    <span className="text-muted-foreground block text-[11px]">Phone:</span>
                     <strong className="text-foreground font-mono">{receipt.clientPhone || 'N/A'}</strong>
                   </div>
                   <div>
-                    <span className="text-muted-foreground block text-[11px]">পাসপোর্ট নম্বর:</span>
+                    <span className="text-muted-foreground block text-[11px]">Passport Number:</span>
                     <strong className="text-foreground font-mono uppercase">{receipt.passportNumber || 'N/A'}</strong>
                   </div>
                   <div>
-                    <span className="text-muted-foreground block text-[11px]">সেবার ধরন:</span>
+                    <span className="text-muted-foreground block text-[11px]">Service Category:</span>
                     <strong className="text-foreground">{receipt.serviceType}</strong>
                   </div>
                 </div>
 
                 {receipt.purpose && (
                   <div className="border-t border-border pt-2 text-xs">
-                    <span className="text-muted-foreground block text-[11px]">বিবরণ / পারপাস:</span>
+                    <span className="text-muted-foreground block text-[11px]">Description / Purpose:</span>
                     <span className="text-foreground">{receipt.purpose}</span>
                   </div>
                 )}
 
                 {/* Amount Callout */}
                 <div className="flex items-center justify-between p-3 rounded-lg bg-slate-900 text-white mt-2">
-                  <span className="text-xs uppercase font-semibold text-slate-300">গ্রহণযোগ্য টাকার পরিমাণ:</span>
+                  <span className="text-xs uppercase font-semibold text-slate-300">Total Amount to Collect (BDT):</span>
                   <span className="text-xl font-black text-emerald-400 font-mono">
-                    ৳ {Number(receipt.amount || 0).toLocaleString('en-IN')} BDT
+                    BDT  {Number(receipt.amount || 0).toLocaleString('en-IN')} BDT
                   </span>
                 </div>
               </div>
@@ -175,41 +175,41 @@ export function ReceiptConfirmModal({
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-xs font-semibold text-foreground mb-1">
-                    ক্যাশ পেমেন্ট মাধ্যম
+                    Cash Payment Method
                   </label>
                   <select
                     value={paymentMethod}
                     onChange={(e) => setPaymentMethod(e.target.value)}
                     className="w-full px-3 py-2 text-xs rounded-lg border border-input bg-background focus:ring-2 focus:ring-primary/20 focus:border-primary outline-hidden"
                   >
-                    <option value="Cash">নগদ ক্যাশ</option>
-                    <option value="Bank Transfer">ব্যাংক ট্রান্সফার</option>
-                    <option value="bKash/Nagad">বিকাশ / নগদ</option>
-                    <option value="Cheque">চেক</option>
+                    <option value="Cash">Direct Cash</option>
+                    <option value="Bank Transfer">Bank Transfer</option>
+                    <option value="bKash/Nagad">bKash / Nagad</option>
+                    <option value="Cheque">Cheque</option>
                   </select>
                 </div>
 
                 <div>
                   <label className="block text-xs font-semibold text-foreground mb-1">
-                    সিল প্রদানকারী একাউন্টেন্ট
+                    Seal Verified By Accountant
                   </label>
                   <input
                     type="text"
                     disabled
-                    value={user?.name || 'একাউন্টেন্ট'}
+                    value={user?.name || 'Accountant'}
                     className="w-full px-3 py-2 text-xs rounded-lg border border-input bg-muted text-foreground outline-hidden opacity-80"
                   />
                 </div>
 
                 <div className="sm:col-span-2">
                   <label className="block text-xs font-semibold text-foreground mb-1">
-                    একাউন্টস নোট (ঐচ্ছিক)
+                    Accounts Notes (Optional)
                   </label>
                   <input
                     type="text"
                     value={notes}
                     onChange={(e) => setNotes(e.target.value)}
-                    placeholder="e.g. ৫০০ টাকার নোট গ্রহণ / ব্যাংক ক্যাশ ভাউচার #৮৮৯"
+                    placeholder="e.g. Received via cash desk / Voucher #889"
                     className="w-full px-3 py-2 text-xs rounded-lg border border-input bg-background focus:ring-2 focus:ring-primary/20 focus:border-primary outline-hidden"
                   />
                 </div>
@@ -222,7 +222,7 @@ export function ReceiptConfirmModal({
                   onClick={onClose}
                   className="px-4 py-2 text-xs font-semibold rounded-lg border border-border text-foreground hover:bg-muted cursor-pointer"
                 >
-                  বাতিল
+                  Rejected
                 </button>
                 <button
                   type="button"
@@ -233,12 +233,12 @@ export function ReceiptConfirmModal({
                   {isSubmitting ? (
                     <>
                       <Loader2 className="w-4 h-4 animate-spin" />
-                      <span>সিল নিশ্চিত করা হচ্ছে...</span>
+                      <span>Confirming Cash & Seal...</span>
                     </>
                   ) : (
                     <>
                       <ShieldCheck className="w-4 h-4" />
-                      <span>✅ ক্যাশ গ্রহণ ও সিল নিশ্চিত করুন</span>
+                      <span>✅ Confirm Cash Receipt & Apply Official Seal</span>
                     </>
                   )}
                 </button>

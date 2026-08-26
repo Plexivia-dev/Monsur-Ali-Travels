@@ -427,7 +427,7 @@ export function InvoiceForm({ data, onChange, onSubmit, onReset, isSubmitting = 
               <div className="flex items-center justify-between text-muted-foreground">
                 <span>Subtotal ({items.length} items):</span>
                 <span className="font-mono font-semibold text-foreground">
-                  ৳{subtotal.toLocaleString('en-BD')}
+                  BDT {subtotal.toLocaleString('en-BD')}
                 </span>
               </div>
 
@@ -435,7 +435,7 @@ export function InvoiceForm({ data, onChange, onSubmit, onReset, isSubmitting = 
                 <div className="flex items-center justify-between text-muted-foreground">
                   <span>VAT ({taxRate}%):</span>
                   <span className="font-mono font-semibold text-foreground">
-                    ৳{taxAmount.toLocaleString('en-BD')}
+                    BDT {taxAmount.toLocaleString('en-BD')}
                   </span>
                 </div>
               )}
@@ -447,7 +447,7 @@ export function InvoiceForm({ data, onChange, onSubmit, onReset, isSubmitting = 
                   Grand Total (BDT)
                 </span>
                 <span className="text-xl font-black text-foreground font-mono">
-                  ৳{grandTotal.toLocaleString('en-BD')}
+                  BDT {grandTotal.toLocaleString('en-BD')}
                 </span>
               </div>
               <span className={`px-2.5 py-1 rounded-full text-xs font-bold ${

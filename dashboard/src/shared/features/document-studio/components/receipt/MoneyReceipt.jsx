@@ -87,7 +87,7 @@ export function MoneyReceipt() {
       `👤 *Client / Passenger:* ${clientName}\n` +
       `🛂 *Passport:* ${data.passportNumber || 'N/A'}\n` +
       `📌 *Purpose:* ${data.purpose || 'Visa / Ticket Booking'}\n` +
-      `💰 *Total Amount:* ৳ ${amountStr}\n` +
+      `💰 *Total Amount:* BDT  ${amountStr}\n` +
       `💳 *Payment Method:* ${data.paymentMethod || 'Cash'}\n` +
       `📅 *Date:* ${data.date || 'Today'} (${data.time || '11:30 AM'})\n` +
       `✍️ *Received By:* ${data.receivedBy || 'Accounts Officer'}\n` +

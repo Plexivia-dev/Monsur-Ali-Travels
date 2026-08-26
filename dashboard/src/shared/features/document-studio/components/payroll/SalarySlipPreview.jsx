@@ -59,7 +59,7 @@ export function SalarySlipPreview({ data }) {
             INDIVIDUAL MONTHLY SALARY SHEET / SALARY SLIP
           </h2>
           <p className="text-[9px] font-semibold text-amber-400">
-            ব্যক্তিগত মাসিক বেতন শিট / পে-স্লিপ
+            Employee Monthly Payslip / Salary Statement
           </p>
         </div>
 

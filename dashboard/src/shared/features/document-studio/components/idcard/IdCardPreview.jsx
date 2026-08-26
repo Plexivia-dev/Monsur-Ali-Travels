@@ -15,7 +15,7 @@ export function IdCardPreview({ cardData, frontRef, backRef }) {
       <div className="flex flex-col items-center">
         <div className="flex items-center gap-2 mb-3">
           <span className="text-xs font-bold text-slate-600 uppercase tracking-wider bg-slate-100 px-3 py-1 rounded-full border border-slate-200">
-            📇 Front Side (সামনের অংশ)
+            📇 Front Side
           </span>
         </div>
 
@@ -175,7 +175,7 @@ export function IdCardPreview({ cardData, frontRef, backRef }) {
       <div className="flex flex-col items-center">
         <div className="flex items-center gap-2 mb-3">
           <span className="text-xs font-bold text-slate-600 uppercase tracking-wider bg-slate-100 px-3 py-1 rounded-full border border-slate-200">
-            💳 Back Side (পেছনের অংশ)
+            💳 Back Side
           </span>
         </div>
 

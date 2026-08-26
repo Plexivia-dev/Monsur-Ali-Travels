@@ -39,17 +39,17 @@ export function ExistingClientAlertModal({
             </div>
             <div>
               <h3 className="text-base font-bold text-foreground">
-                ক্লায়েন্ট ম্যাচ পাওয়া গেছে! (Client Found)
+                Client Match Found!
               </h3>
               <p className="text-xs text-muted-foreground mt-0.5">
-                এই মোবাইল নম্বর বা পাসপোর্টে ডাটাবেজে ইতিমধ্যে একজন ক্লায়েন্ট রেজিস্টার করা আছে।
+                An existing client record matching this phone number or passport was found in the database.
               </p>
             </div>
           </div>
 
           <span className="flex items-center gap-1 text-[11px] font-bold bg-amber-500/15 text-amber-600 px-2.5 py-1 rounded-full shrink-0">
             <Lock className="w-3.5 h-3.5" />
-            <span>সতর্কতা</span>
+            <span>Warning</span>
           </span>
         </div>
 
@@ -60,25 +60,25 @@ export function ExistingClientAlertModal({
               {client.clientCode || 'CUST-RECORD'}
             </span>
             <span className="font-semibold text-foreground">
-              {client.applications?.length || 0} টি সার্ভিস রেকর্ড লিংকড
+              {client.applications?.length || 0}  Linked Service Records
             </span>
           </div>
 
           <div className="grid grid-cols-2 gap-2 text-foreground font-medium pt-1">
             <div>
-              <span className="text-muted-foreground block text-[10.5px]">পূর্ণ নাম:</span>
+              <span className="text-muted-foreground block text-[10.5px]">Full Name:</span>
               <span className="font-bold text-sm">{client.fullName}</span>
             </div>
             <div>
-              <span className="text-muted-foreground block text-[10.5px]">মোবাইল নম্বর:</span>
+              <span className="text-muted-foreground block text-[10.5px]">Phone Number:</span>
               <span className="font-mono font-bold">{client.phone}</span>
             </div>
             <div>
-              <span className="text-muted-foreground block text-[10.5px]">পাসপোর্ট নম্বর:</span>
+              <span className="text-muted-foreground block text-[10.5px]">Passport Number:</span>
               <span className="font-mono font-bold">{client.passportNumber || 'N/A'}</span>
             </div>
             <div>
-              <span className="text-muted-foreground block text-[10.5px]">জাতীয় পরিচয়পত্র (NID):</span>
+              <span className="text-muted-foreground block text-[10.5px]">National ID (NID):</span>
               <span className="font-mono font-bold">{client.nidNumber || 'N/A'}</span>
             </div>
           </div>
@@ -87,7 +87,7 @@ export function ExistingClientAlertModal({
         {/* Action Choices Required */}
         <div className="space-y-2.5 pt-1">
           <p className="text-xs font-bold text-foreground">
-            আপনি কীভাবে অগ্রসর হতে চান? নিচের যেকোনো একটি অপশন নির্বাচন করুন:
+            How would you like to proceed? Select an option below:
           </p>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
@@ -100,8 +100,8 @@ export function ExistingClientAlertModal({
               <div className="flex items-center gap-2 text-left">
                 <CopyCheck className="w-4 h-4 shrink-0" />
                 <div>
-                  <p>অটো ফিল করুন</p>
-                  <p className="text-[10px] font-normal opacity-80">ক্লায়েন্টের সেভ করা ডাটা ফর্মে বসান</p>
+                  <p>Auto-Fill Form</p>
+                  <p className="text-[10px] font-normal opacity-80">Populate form fields with saved client profile</p>
                 </div>
               </div>
               <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
@@ -116,8 +116,8 @@ export function ExistingClientAlertModal({
               <div className="flex items-center gap-2 text-left">
                 <RefreshCw className="w-4 h-4 shrink-0" />
                 <div>
-                  <p>তথ্য আপডেট করুন</p>
-                  <p className="text-[10px] font-normal opacity-80">বর্তমান তথ্য দিয়ে প্রোফাইল আপডেট হবে</p>
+                  <p>Update Profile Record</p>
+                  <p className="text-[10px] font-normal opacity-80">Update client database record with current form data</p>
                 </div>
               </div>
               <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
@@ -131,7 +131,7 @@ export function ExistingClientAlertModal({
               onClick={onProceedAsNew}
               className="text-[11.5px] text-muted-foreground hover:text-foreground underline transition-colors cursor-pointer"
             >
-              লিংক না করে সাধারণ নতুন ডকুমেন্ট হিসেবে সংরক্ষণ করুন
+              Save as a standalone document without linking to database record
             </button>
           </div>
         </div>

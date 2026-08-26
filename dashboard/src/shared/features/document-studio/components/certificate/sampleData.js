@@ -17,14 +17,14 @@ export function getDefaultCertificateData() {
     },
     conduct: {
       durationYears: "",
-      statementBn: "এই মর্মে প্রত্যয়ন করা যাইতেছে যে, তিনি আমাদের জানা মতে একজন সৎ, চরিত্রবান ও সুনাগরিক। তাঁহার বিরুদ্ধে সমাজ বা রাষ্ট্রবিরোধী কোনো কর্মকাণ্ডের তথ্য বা অভিযোগ পাওয়া যায় নাই। আমরা তাঁহার সর্বাঙ্গীন সাফল্য ও উজ্জ্বল ভবিষ্যৎ কামনা করি।",
+      statementBn: "This is to certify that the candidate bears a good moral character and has not been involved in any unlawful activity.",
       statementEn: "This is to certify that to the best of our knowledge and belief, he/she bears good moral character and is a law-abiding citizen. He/she has not been involved in any activity subverting state or public discipline."
     },
     authority: {
-      organizationName: "মেসার্স মনসুর আলী ট্রাভেলস",
-      organizationSubtitle: "গভঃ অনুমোদিত রিক্রুটিং এজেন্সী ও এয়ার টিকেটিং সার্ভিস",
+      organizationName: "M/S MONSUR ALI TRAVELS",
+      organizationSubtitle: "Govt. Approved Recruiting Agency & Air Ticketing Services",
       issuingPersonName: "",
-      designation: "ব্যবস্থাপনা পরিচালক / প্রোপ্রাইটর",
+      designation: "Managing Director / Proprietor",
       officeAddress: ""
     }
   };

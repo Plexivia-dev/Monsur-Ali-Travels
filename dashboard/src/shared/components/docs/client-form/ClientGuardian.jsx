@@ -9,6 +9,8 @@ import { apiClient } from '@shared/lib/api-client';
 import { printDocument } from '@shared/lib/utils';
 import { Button } from '@/components/ui/button';
 
+import { HeaderTitle, HeaderModeSwitcher } from '@shared/components/common/HeaderTitle';
+
 export function ClientGuardian({ initialData = null, onSavedSuccess = null }) {
   const { t } = useTranslation();
   const [data, setData] = useState(initialData || getDefaultClientGuardianData());
@@ -92,9 +94,9 @@ export function ClientGuardian({ initialData = null, onSavedSuccess = null }) {
       `🛂 *Passport:* ${data.client?.passportNumber || 'N/A'}\n` +
       `👥 *Guardian:* ${data.guardian?.fullName || 'N/A'} (${data.guardian?.relationship || 'Guardian'})\n` +
       `-----------------------------------------\n` +
-      `💰 *Total Fee:* ৳ ${total}\n` +
-      `✅ *Advance Paid:* ৳ ${advance}\n` +
-      `⏳ *Due Amount:* ৳ ${due}\n` +
+      `💰 *Total Fee:* BDT  ${total}\n` +
+      `✅ *Advance Paid:* BDT  ${advance}\n` +
+      `⏳ *Due Amount:* BDT  ${due}\n` +
       `-----------------------------------------\n` +
       `📅 *Date:* ${data.dateReceived || 'Today'}\n\n` +
       `🏢 *MONSUR ALI TRAVELS*\n` +
@@ -107,71 +109,44 @@ export function ClientGuardian({ initialData = null, onSavedSuccess = null }) {
   return (
     <div className="space-y-6">
       {/* Top Controls Bar */}
-      <div className="no-print bg-card border border-border p-4 rounded-2xl shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div>
-          <h2 className="text-base font-bold text-foreground tracking-tight flex items-center gap-2">
-            <FileText className="w-5 h-5 text-primary" />
-            {t('clientForm.title', 'Client & Guardian Information Application Form')}
-          </h2>
-          <p className="text-xs text-muted-foreground mt-0.5">
-            {t('clientForm.subtitle', 'Create and print official client & guardian profile details, file tracking status, and advance payment ledger.')}
-          </p>
-        </div>
+      <HeaderTitle
+        variant="printables"
+        icon={FileText}
+        title={t('clientForm.title', 'Client & Guardian Information Application Form')}
+        subtitle={t('clientForm.subtitle', 'Create and print official client & guardian profile details, file tracking status, and advance payment ledger.')}
+        actions={
+          <>
+            <HeaderModeSwitcher
+              viewMode={viewMode}
+              onModeChange={setViewMode}
+              editLabel={t('clientForm.editForm', 'Edit Form')}
+              previewLabel={t('clientForm.printPreview', 'Print Preview')}
+            />
 
-        <div className="flex items-center gap-2 shrink-0 flex-wrap">
-          {/* Mode Switcher */}
-          <div className="bg-muted p-1 rounded-xl flex items-center gap-1 border border-border">
-            <button
+            <Button
               type="button"
-              onClick={() => setViewMode('form')}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
-                viewMode === 'form'
-                  ? 'bg-card text-foreground shadow-xs'
-                  : 'text-muted-foreground hover:text-foreground'
-              }`}
+              variant="outline"
+              size="sm"
+              onClick={handleWhatsAppShare}
+              className="bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 border-emerald-500/20"
+              title="WhatsApp Share"
             >
-              <Edit3 className="w-3.5 h-3.5" />
-              <span>{t('clientForm.editForm', 'Edit Form')}</span>
-            </button>
-            <button
+              <Share2 className="w-3.5 h-3.5" />
+              <span className="hidden md:inline">WhatsApp</span>
+            </Button>
+
+            <Button
               type="button"
-              onClick={() => setViewMode('preview')}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
-                viewMode === 'preview'
-                  ? 'bg-card text-foreground shadow-xs'
-                  : 'text-muted-foreground hover:text-foreground'
-              }`}
+              variant="success"
+              size="sm"
+              onClick={handlePrint}
             >
-              <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500" />
-              <span>{t('clientForm.printPreview', 'Print Preview')}</span>
-            </button>
-          </div>
-
-          {/* WhatsApp Share */}
-          <Button
-            type="button"
-            variant="outline"
-            size="sm"
-            onClick={handleWhatsAppShare}
-            className="bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 border-emerald-500/20"
-            title="WhatsApp Share"
-          >
-            <Share2 className="w-3.5 h-3.5" />
-            <span className="hidden md:inline">WhatsApp</span>
-          </Button>
-
-          {/* Print / Download Button */}
-          <Button
-            type="button"
-            variant="success"
-            size="sm"
-            onClick={handlePrint}
-          >
-            <Printer className="w-4 h-4" />
-            <span>{t('clientForm.downloadPrint', 'Download PDF / Print')}</span>
-          </Button>
-        </div>
-      </div>
+              <Printer className="w-4 h-4" />
+              <span>{t('clientForm.downloadPrint', 'Download PDF / Print')}</span>
+            </Button>
+          </>
+        }
+      />
 
       {/* Main Content Area */}
       {viewMode === 'form' ? (

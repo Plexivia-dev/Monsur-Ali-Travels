@@ -1,8 +1,8 @@
 import React from 'react';
 import { Scissors, CheckSquare, Square } from 'lucide-react';
-import agencyInfo from '../../../lib/information.json';
-import logoImg from '../../../assets/logo.png';
-import { formatToDdMmYyyy } from '../../../lib/utils';
+import agencyInfo from '@shared/lib/information.json';
+import logoImg from '@shared/assets/logo.png';
+import { formatToDdMmYyyy } from '@shared/lib/utils';
 
 // Helper Barcode Component
 function BarcodeSVG({ value = 'MR2026084001' }) {
@@ -168,7 +168,7 @@ export function VoucherSlipCard({ data = {}, copyTitle = 'Original Copy', idSuff
                 <Square className="w-3.5 h-3.5 text-slate-400" />
               )}
               <span className={`text-[11.5px] ${paymentMethod === 'Cash' ? 'font-bold text-slate-900' : 'text-slate-600'}`}>
-                Cash (নগদ)
+                Cash
               </span>
             </label>
 
@@ -215,7 +215,7 @@ export function VoucherSlipCard({ data = {}, copyTitle = 'Original Copy', idSuff
             TOTAL AMOUNT
           </span>
           <span className="text-lg sm:text-xl font-black font-mono tracking-tight text-white mt-0.5">
-            ৳ {formattedAmount}/-
+            BDT  {formattedAmount}/-
           </span>
         </div>
       </div>
@@ -226,28 +226,28 @@ export function VoucherSlipCard({ data = {}, copyTitle = 'Original Copy', idSuff
           <div className="border-t border-slate-400 pt-1 font-bold text-slate-800">
             Prepared / Paid By
           </div>
-          <div className="text-[10px] text-slate-500 font-medium">({preparedBy || 'প্রদানকারী'})</div>
+          <div className="text-[10px] text-slate-500 font-medium">({preparedBy || 'Paid By'})</div>
         </div>
 
         <div>
           <div className="border-t border-slate-400 pt-1 font-bold text-slate-800">
             Received By
           </div>
-          <div className="text-[10px] text-slate-500 font-medium">({receivedBySignature || 'গ্রহণকারী'})</div>
+          <div className="text-[10px] text-slate-500 font-medium">({receivedBySignature || 'Received By'})</div>
         </div>
 
         <div>
           <div className="border-t border-slate-400 pt-1 font-bold text-slate-800">
             Accounts
           </div>
-          <div className="text-[10px] text-slate-500 font-medium">({accountsSignature || 'একাউন্টেন্ট'})</div>
+          <div className="text-[10px] text-slate-500 font-medium">({accountsSignature || 'Accountant'})</div>
         </div>
 
         <div>
           <div className="border-t border-slate-400 pt-1 font-bold text-slate-800">
             Approved By
           </div>
-          <div className="text-[10px] text-slate-500 font-medium">({approvedBySignature || 'জিএম / প্রোপাইটার'})</div>
+          <div className="text-[10px] text-slate-500 font-medium">({approvedBySignature || 'General Manager / Proprietor'})</div>
         </div>
       </div>
     </div>

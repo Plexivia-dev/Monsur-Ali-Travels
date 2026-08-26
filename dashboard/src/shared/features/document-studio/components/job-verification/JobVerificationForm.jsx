@@ -557,7 +557,7 @@ export function JobVerificationForm({
                       onChange={() => updateNested('helperInfo', 'knowsHelper', 'Yes')}
                       className="accent-primary"
                     />
-                    <span>Yes (হ্যাঁ)</span>
+                    <span>Yes</span>
                   </label>
                   <label className="flex items-center gap-2 text-xs cursor-pointer">
                     <input
@@ -567,7 +567,7 @@ export function JobVerificationForm({
                       onChange={() => updateNested('helperInfo', 'knowsHelper', 'No')}
                       className="accent-primary"
                     />
-                    <span>No (না)</span>
+                    <span>No</span>
                   </label>
                 </div>
               </div>

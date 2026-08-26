@@ -307,9 +307,9 @@ export function MoneyReceiptForm({ data, onChange, onReset, onSave, onPreview, i
 
           <div className="sm:col-span-2 space-y-3">
             <div>
-              <label className="block font-bold text-foreground mb-1">Total Amount (টাকার পরিমাণ) *</label>
+              <label className="block font-bold text-foreground mb-1">Total Amount (BDT) *</label>
               <div className="relative">
-                <span className="absolute left-3 top-2.5 font-bold text-muted-foreground">৳</span>
+                <span className="absolute left-3 top-2.5 font-bold text-muted-foreground">BDT </span>
                 <input
                   type="number"
                   value={data.amount || ''}
@@ -321,7 +321,7 @@ export function MoneyReceiptForm({ data, onChange, onReset, onSave, onPreview, i
             </div>
 
             <div>
-              <label className="block font-bold text-foreground mb-1">Amount in Words (কথায়)</label>
+              <label className="block font-bold text-foreground mb-1">Amount in Words (In Words)</label>
               <input
                 type="text"
                 value={data.amountInWords || ''}
@@ -347,7 +347,7 @@ export function MoneyReceiptForm({ data, onChange, onReset, onSave, onPreview, i
             <input
               type="text"
               value={data.preparedBy || ''}
-              placeholder="প্রদানকারী"
+              placeholder="Paid By"
               onChange={(e) => handleFieldChange('preparedBy', e.target.value)}
               className="w-full px-3 py-1.5 bg-background border border-border rounded-lg text-foreground text-xs"
             />
@@ -358,7 +358,7 @@ export function MoneyReceiptForm({ data, onChange, onReset, onSave, onPreview, i
             <input
               type="text"
               value={data.receivedBySignature || ''}
-              placeholder="গ্রহণকারী"
+              placeholder="Received By"
               onChange={(e) => handleFieldChange('receivedBySignature', e.target.value)}
               className="w-full px-3 py-1.5 bg-background border border-border rounded-lg text-foreground text-xs"
             />
@@ -369,7 +369,7 @@ export function MoneyReceiptForm({ data, onChange, onReset, onSave, onPreview, i
             <input
               type="text"
               value={data.accountsSignature || ''}
-              placeholder="একাউন্টেন্ট"
+              placeholder="Accountant"
               onChange={(e) => handleFieldChange('accountsSignature', e.target.value)}
               className="w-full px-3 py-1.5 bg-background border border-border rounded-lg text-foreground text-xs"
             />
@@ -380,7 +380,7 @@ export function MoneyReceiptForm({ data, onChange, onReset, onSave, onPreview, i
             <input
               type="text"
               value={data.approvedBySignature || ''}
-              placeholder="জিএম / প্রোপাইটার"
+              placeholder="General Manager / Proprietor"
               onChange={(e) => handleFieldChange('approvedBySignature', e.target.value)}
               className="w-full px-3 py-1.5 bg-background border border-border rounded-lg text-foreground text-xs"
             />

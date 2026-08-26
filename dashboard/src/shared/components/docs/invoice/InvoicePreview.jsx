@@ -2,10 +2,10 @@ import React from 'react';
 import { PrintablePaper } from '../common/PrintablePaper';
 import { Printer, CheckCircle, Clock, AlertTriangle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import logoImg from '../../../assets/logo.png';
-import { formatToDdMmYyyy } from '../../../lib/utils';
-import agencyInfo from '../../../lib/information.json';
-import { API_BASE_URL } from '../../../lib/api-client';
+import logoImg from '@shared/assets/logo.png';
+import { formatToDdMmYyyy } from '@shared/lib/utils';
+import agencyInfo from '@shared/lib/information.json';
+import { API_BASE_URL } from '@shared/lib/api-client';
 
 export function InvoicePreview({ data = {}, onPrint }) {
   const {

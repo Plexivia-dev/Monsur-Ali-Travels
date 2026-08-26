@@ -269,22 +269,22 @@ export function ClientGuardianPreview({ data }) {
                     Total Agreed Fee:
                   </div>
                   <div className="col-span-3 px-2.5 py-1 flex items-center border-r border-slate-300 font-bold font-mono text-[11.5px] text-slate-900">
-                    ৳ {Number(payment.totalAmount || 0).toLocaleString('en-IN')}
+                    BDT  {Number(payment.totalAmount || 0).toLocaleString('en-IN')}
                   </div>
                   <div className="col-span-3 bg-emerald-50/80 font-semibold px-2.5 py-1 flex items-center border-r border-slate-300 text-[11px] text-emerald-900">
-                    Advance Paid (অগ্রিম):
+                    Advance Paid:
                   </div>
                   <div className="col-span-3 px-2.5 py-1 flex items-center font-mono font-black text-[12px] text-emerald-700">
-                    ৳ {Number(payment.advancePaid || 0).toLocaleString('en-IN')}
+                    BDT  {Number(payment.advancePaid || 0).toLocaleString('en-IN')}
                   </div>
                 </div>
 
                 <div className="grid grid-cols-12 min-h-[28px] items-stretch">
                   <div className="col-span-3 bg-rose-50/80 font-semibold px-2.5 py-1 flex items-center border-r border-slate-300 text-[11px] text-rose-900">
-                    Due Amount (বকেয়া):
+                    Due Amount Balance:
                   </div>
                   <div className="col-span-3 px-2.5 py-1 flex items-center border-r border-slate-300 font-mono font-black text-[12px] text-rose-600">
-                    ৳ {Number(payment.dueAmount || 0).toLocaleString('en-IN')}
+                    BDT  {Number(payment.dueAmount || 0).toLocaleString('en-IN')}
                   </div>
                   <div className="col-span-3 bg-slate-50/70 font-semibold px-2.5 py-1 flex items-center border-r border-slate-300 text-[11px] text-slate-800">
                     Payment Method:
@@ -364,12 +364,12 @@ export function ClientGuardianPreview({ data }) {
         <div className="flex items-center justify-between border-b border-border pb-3">
           <h3 className="font-bold text-sm text-foreground flex items-center gap-2">
             <Paperclip className="w-4 h-4 text-primary" />
-            <span>Attached Documents &amp; Scans (সংযুক্ত ফাইলসমূহ)</span>
+            <span>Attached Documents & Scans</span>
           </h3>
           <span className="text-xs text-muted-foreground">
             {attachments?.passportPhoto || attachments?.passportScan || attachments?.nidScan || (attachments?.otherFiles || []).length > 0
-              ? 'ডকুমেন্ট দেখতে বা ডাউনলোড করতে ক্লিক করুন'
-              : 'কোনো ফাইল সংযুক্ত নেই'}
+              ? 'Click to view or download document'
+              : 'No files attached'}
           </span>
         </div>
 
@@ -531,7 +531,7 @@ export function ClientGuardianPreview({ data }) {
                     className="inline-flex items-center gap-2 bg-primary text-primary-foreground text-xs font-bold px-4 py-2 rounded-xl shadow-xs"
                   >
                     <Download className="w-4 h-4" />
-                    <span>ডাউনলোড করে ফাইলটি দেখুন</span>
+                    <span>Download & View Attachment</span>
                   </a>
                 </div>
               )}

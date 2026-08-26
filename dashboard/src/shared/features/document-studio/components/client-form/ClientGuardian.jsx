@@ -94,9 +94,9 @@ export function ClientGuardian({ initialData = null, onSavedSuccess = null }) {
       `🛂 *Passport:* ${data.client?.passportNumber || 'N/A'}\n` +
       `👥 *Guardian:* ${data.guardian?.fullName || 'N/A'} (${data.guardian?.relationship || 'Guardian'})\n` +
       `-----------------------------------------\n` +
-      `💰 *Total Fee:* ৳ ${total}\n` +
-      `✅ *Advance Paid:* ৳ ${advance}\n` +
-      `⏳ *Due Amount:* ৳ ${due}\n` +
+      `💰 *Total Fee:* BDT  ${total}\n` +
+      `✅ *Advance Paid:* BDT  ${advance}\n` +
+      `⏳ *Due Amount:* BDT  ${due}\n` +
       `-----------------------------------------\n` +
       `📅 *Date:* ${data.dateReceived || 'Today'}\n\n` +
       `🏢 *MONSUR ALI TRAVELS*\n` +
