@@ -85,10 +85,10 @@ export function UnifiedModalHeader({
           <button
             type="button"
             onClick={onClose}
-            className="p-1.5 rounded-xl bg-white/10 hover:bg-white/20 text-sky-200 hover:text-white border border-white/10 transition-all cursor-pointer shrink-0 shadow-xs"
+            className="p-1.5 rounded-xl bg-white hover:bg-rose-50 text-rose-600 hover:text-rose-700 border border-white shadow-xs transition-all cursor-pointer shrink-0 flex items-center justify-center"
             aria-label="Close modal"
           >
-            <X className="size-4" />
+            <X className="size-4 text-rose-600 stroke-[2.5]" />
           </button>
         )}
       </div>
