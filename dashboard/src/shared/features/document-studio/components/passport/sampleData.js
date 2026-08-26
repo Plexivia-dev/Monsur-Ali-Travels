@@ -24,10 +24,11 @@ export function getDefaultPassportData() {
     submissionDate: new Date().toISOString().split('T')[0],
 
     agencyInfo: {
-      name: agencyInfo.agencyName || 'মনসুর আলী ট্রাভেলস (MONSUR ALI TRAVELS)',
+      name: agencyInfo.agencyName || 'MONSUR ALI TOURS & TRAVELS',
       address: agencyInfo.address?.full || 'Mominpur Jagannathpur Road, Sunamganj, Post Code 3060',
       phone: agencyInfo.phone || '+8801345579534',
-      email: agencyInfo.email || 'contact@monsuralitravels.com'
+      email: agencyInfo.email || 'contact@monsuralitravels.com',
+      tagline: agencyInfo.tagline || 'Govt. Approved Overseas Employment & Immigration Consultancy',
     },
 
     applicantName: '',
@@ -40,13 +41,13 @@ export function getDefaultPassportData() {
     guardianName: '',
     guardianPhone: '',
     guardianEmail: '',
-    relationship: 'পিতা',
+    relationship: 'Father',
 
-    passportType: 'ই-পাসপোর্ট (E-Passport)',
-    applicationCategory: ')',
-    pageCount: '',
-    validityYears: '',
-    deliverySpeed: '',
+    passportType: 'E-Passport (Electronic Passport)',
+    applicationCategory: 'New Application',
+    pageCount: '48 Pages',
+    validityYears: '5 Years',
+    deliverySpeed: 'Regular',
 
     documentsProvided: {
       nidCopy: false,
@@ -54,11 +55,11 @@ export function getDefaultPassportData() {
       oldPassportOriginal: false,
       photoLabPrint: false,
       guardianNidCopy: false,
-      utilityBillCopy: false
+      utilityBillCopy: false,
     },
 
     remarks: '',
-    status: 'pending'
+    status: 'pending',
   };
 }
 
