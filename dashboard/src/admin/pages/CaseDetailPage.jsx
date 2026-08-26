@@ -1422,16 +1422,27 @@ export default function CaseDetailPage() {
                       <span>
                         Uploaded By: <strong className="text-foreground">{doc.uploadedByName || 'Staff Member'}</strong>
                       </span>
-                      {doc.fileUrl && (
-                        <a
-                          href={doc.fileUrl}
-                          target="_blank"
-                          rel="noreferrer"
-                          className="text-primary hover:underline font-bold flex items-center gap-0.5"
+                      <div className="flex items-center gap-2">
+                        <button
+                          type="button"
+                          onClick={() => setPreviewFile(doc)}
+                          className="text-primary hover:underline font-bold flex items-center gap-1 cursor-pointer"
                         >
-                          View <ExternalLink className="w-3 h-3" />
-                        </a>
-                      )}
+                          <Eye className="w-3 h-3" />
+                          View
+                        </button>
+                        {doc.fileUrl && (
+                          <a
+                            href={doc.fileUrl}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="text-muted-foreground hover:text-foreground font-bold flex items-center gap-0.5"
+                            title="Open in new tab"
+                          >
+                            <ExternalLink className="w-3 h-3" />
+                          </a>
+                        )}
+                      </div>
                     </div>
                   </div>
                 ))}
@@ -1938,6 +1949,13 @@ export default function CaseDetailPage() {
           </div>
         </div>
       )}
+
+      {/* FILE VIEWER MODAL */}
+      <FileViewerModal
+        isOpen={Boolean(previewFile)}
+        file={previewFile}
+        onClose={() => setPreviewFile(null)}
+      />
     </div>
   );
 }

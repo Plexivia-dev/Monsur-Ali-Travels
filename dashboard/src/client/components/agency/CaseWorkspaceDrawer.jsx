@@ -38,6 +38,7 @@ import { apiClient } from '../../lib/api-client';
 import { toast } from 'sonner';
 import { useAuthStore } from '../../store/useAuthStore';
 import { usePortalStore } from '../../store/usePortalStore';
+import { FileViewerModal } from '@shared/components/common/FileViewerModal';
 
 const PIPELINE_STAGES = [
   { id: 'ENTRY', title: 'New Entry' },
@@ -193,6 +194,9 @@ export function CaseWorkspaceDrawer({ caseId, isOpen, onClose, onRefresh }) {
   // Document Generator Modal state
   const [showCreateDocModal, setShowCreateDocModal] = useState(false);
   const [selectedDocId, setSelectedDocId] = useState('');
+
+  // File Preview Modal state
+  const [previewFile, setPreviewFile] = useState(null);
 
   // Document upload form
   const [showUploadModal, setShowUploadModal] = useState(false);
@@ -917,16 +921,27 @@ export function CaseWorkspaceDrawer({ caseId, isOpen, onClose, onRefresh }) {
                               </span>
 
                               {canViewDoc ? (
-                                doc.fileUrl ? (
-                                  <a
-                                    href={doc.fileUrl}
-                                    target="_blank"
-                                    rel="noreferrer"
-                                    className="text-primary hover:underline font-bold flex items-center gap-0.5"
+                                <div className="flex items-center gap-2">
+                                  <button
+                                    type="button"
+                                    onClick={() => setPreviewFile(doc)}
+                                    className="text-primary hover:underline font-bold flex items-center gap-1 cursor-pointer"
                                   >
-                                    View <ExternalLink className="size-3" />
-                                  </a>
-                                ) : null
+                                    <Eye className="size-3" />
+                                    <span>View</span>
+                                  </button>
+                                  {doc.fileUrl && (
+                                    <a
+                                      href={doc.fileUrl}
+                                      target="_blank"
+                                      rel="noreferrer"
+                                      className="text-muted-foreground hover:text-foreground font-bold flex items-center gap-0.5"
+                                      title="Open in new tab"
+                                    >
+                                      <ExternalLink className="size-3" />
+                                    </a>
+                                  )}
+                                </div>
                               ) : (
                                 <span
                                   className="text-[10px] text-muted-foreground/70 italic font-medium flex items-center gap-1 select-none"
@@ -1236,6 +1251,13 @@ export function CaseWorkspaceDrawer({ caseId, isOpen, onClose, onRefresh }) {
           </div>
         </div>
       )}
+
+      {/* FILE VIEWER MODAL */}
+      <FileViewerModal
+        isOpen={Boolean(previewFile)}
+        file={previewFile}
+        onClose={() => setPreviewFile(null)}
+      />
     </div>
   );
 }
