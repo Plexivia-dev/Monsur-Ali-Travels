@@ -1,8 +1,29 @@
+import mongoose from "mongoose";
 import CaseFile from "../../models/caseFile.model.js";
 import Client from "../../models/client.model.js";
 import TaskModel from "../../models/task.model.js";
 import DocumentVaultModel from "../../models/documentVault.model.js";
 import { generateDid } from "../../utils/generateDid.js";
+
+export const buildCaseIdentifierQuery = (identifier) => {
+  if (!identifier) return { _id: null };
+  const idStr = String(identifier).trim();
+  const conditions = [{ did: idStr }, { caseNumber: idStr }];
+  if (mongoose.Types.ObjectId.isValid(idStr) && idStr.length === 24) {
+    conditions.push({ _id: new mongoose.Types.ObjectId(idStr) });
+  }
+  return { $or: conditions };
+};
+
+export const buildTaskIdentifierQuery = (identifier) => {
+  if (!identifier) return { _id: null };
+  const idStr = String(identifier).trim();
+  const conditions = [{ did: idStr }];
+  if (mongoose.Types.ObjectId.isValid(idStr) && idStr.length === 24) {
+    conditions.push({ _id: new mongoose.Types.ObjectId(idStr) });
+  }
+  return { $or: conditions };
+};
 
 /**
  * Generic Query Builder Helper (like .NET IQueryable filter builder)
@@ -190,7 +211,7 @@ export const lookupCase = async (req, res) => {
 export const getCaseById = async (req, res) => {
   try {
     const { id } = req.params;
-    const caseDoc = await CaseFile.findOne({ $or: [{ did: id }, { _id: id }] })
+    const caseDoc = await CaseFile.findOne(buildCaseIdentifierQuery(id))
       .populate("clientInfo")
       .populate("clientId")
       .populate({
@@ -376,7 +397,7 @@ export const updateCase = async (req, res) => {
     const { id } = req.params;
     const updates = req.body;
 
-    const caseDoc = await CaseFile.findOne({ did: id });
+    const caseDoc = await CaseFile.findOne(buildCaseIdentifierQuery(id));
     if (!caseDoc) {
       return res.status(404).json({
         success: false,
@@ -442,7 +463,7 @@ export const updateCase = async (req, res) => {
 export const deleteCase = async (req, res) => {
   try {
     const { id } = req.params;
-    const deleted = await CaseFile.findOneAndDelete({ did: id });
+    const deleted = await CaseFile.findOneAndDelete(buildCaseIdentifierQuery(id));
 
     if (!deleted) {
       return res.status(404).json({
@@ -602,7 +623,7 @@ export const updateWorkflowStatus = async (req, res) => {
       });
     }
 
-    const caseDoc = await CaseFile.findOne({ did: id });
+    const caseDoc = await CaseFile.findOne(buildCaseIdentifierQuery(id));
     if (!caseDoc) {
       return res.status(404).json({ success: false, message: "Case file not found" });
     }
@@ -678,7 +699,7 @@ export const addCaseInternalMessage = async (req, res) => {
       });
     }
 
-    const caseDoc = await CaseFile.findOne({ $or: [{ did: id }, { _id: id }] });
+    const caseDoc = await CaseFile.findOne(buildCaseIdentifierQuery(id));
     if (!caseDoc) {
       return res.status(404).json({
         success: false,
@@ -731,7 +752,7 @@ export const uploadCaseDocument = async (req, res) => {
       });
     }
 
-    const caseDoc = await CaseFile.findOne({ $or: [{ did: id }, { _id: id }] });
+    const caseDoc = await CaseFile.findOne(buildCaseIdentifierQuery(id));
     if (!caseDoc) {
       return res.status(404).json({
         success: false,
@@ -773,7 +794,7 @@ export const completeTaskStep = async (req, res) => {
     const { taskDid } = req.params;
     const { remarks } = req.body;
 
-    const task = await TaskModel.findOne({ $or: [{ did: taskDid }, { _id: taskDid }] });
+    const task = await TaskModel.findOne(buildTaskIdentifierQuery(taskDid));
     if (!task) {
       return res.status(404).json({
         success: false,

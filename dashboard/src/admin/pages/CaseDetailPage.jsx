@@ -74,18 +74,38 @@ export default function CaseDetailPage() {
     if (!id) return;
     setLoading(true);
     try {
-      const res = await apiClient.get(`/api/v1/admin/cases/${id}/full-details`);
-      if (res.data?.status === 'success' && res.data.data) {
-        setCaseData(res.data.data);
-      } else {
-        // Fallback to client endpoint
-        const altRes = await apiClient.get(`/api/v1/client/cases/${id}`);
-        if (altRes.data?.data) {
-          setCaseData(altRes.data.data);
+      // 1. Try admin full-details endpoint
+      let loadedData = null;
+      try {
+        const res = await apiClient.get(`/api/v1/admin/cases/${id}/full-details`);
+        if ((res.data?.status === 'success' || res.data?.success) && res.data.data) {
+          loadedData = res.data.data;
         }
+      } catch (adminErr) {
+        // Fallback to client endpoint
+      }
+
+      // 2. Try client cases endpoint if not yet loaded
+      if (!loadedData) {
+        try {
+          const altRes = await apiClient.get(`/api/v1/client/cases/${id}`);
+          if ((altRes.data?.status === 'success' || altRes.data?.success) && altRes.data.data) {
+            loadedData = altRes.data.data;
+          }
+        } catch (clientErr) {
+          // Continue
+        }
+      }
+
+      if (loadedData) {
+        setCaseData(loadedData);
+      } else {
+        toast.error('Failed to load case file details.');
+        setCaseData(null);
       }
     } catch (err) {
       toast.error('Failed to load case file details.');
+      setCaseData(null);
     } finally {
       setLoading(false);
     }

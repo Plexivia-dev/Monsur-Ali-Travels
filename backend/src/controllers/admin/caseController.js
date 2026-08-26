@@ -1,7 +1,28 @@
+import mongoose from "mongoose";
 import CaseFile from "../../models/caseFile.model.js";
 import TaskModel from "../../models/task.model.js";
 import DocumentVaultModel from "../../models/documentVault.model.js";
 import { NotificationModel } from "../../models/notification.model.js";
+
+export const buildCaseIdentifierQuery = (identifier) => {
+  if (!identifier) return { _id: null };
+  const idStr = String(identifier).trim();
+  const conditions = [{ did: idStr }, { caseNumber: idStr }];
+  if (mongoose.Types.ObjectId.isValid(idStr) && idStr.length === 24) {
+    conditions.push({ _id: new mongoose.Types.ObjectId(idStr) });
+  }
+  return { $or: conditions };
+};
+
+export const buildTaskIdentifierQuery = (identifier) => {
+  if (!identifier) return { _id: null };
+  const idStr = String(identifier).trim();
+  const conditions = [{ did: idStr }];
+  if (mongoose.Types.ObjectId.isValid(idStr) && idStr.length === 24) {
+    conditions.push({ _id: new mongoose.Types.ObjectId(idStr) });
+  }
+  return { $or: conditions };
+};
 
 /**
  * 1. Get Case Full Details (360-Degree Admin View)
@@ -11,7 +32,7 @@ export const getCaseFullDetails = async (req, res) => {
   try {
     const { caseDid } = req.params;
 
-    const caseDoc = await CaseFile.findOne({ $or: [{ did: caseDid }, { _id: caseDid }] })
+    const caseDoc = await CaseFile.findOne(buildCaseIdentifierQuery(caseDid))
       .populate("clientInfo")
       .populate("clientId")
       .populate({
@@ -71,7 +92,7 @@ export const assignTaskStep = async (req, res) => {
       return res.status(400).json({ status: "error", message: "caseDid, title, and assignedToDid are required" });
     }
 
-    const caseDoc = await CaseFile.findOne({ $or: [{ did: caseDid }, { _id: caseDid }] });
+    const caseDoc = await CaseFile.findOne(buildCaseIdentifierQuery(caseDid));
     if (!caseDoc) {
       return res.status(404).json({ status: "error", message: "Associated Case File not found" });
     }
@@ -138,7 +159,7 @@ export const approveTaskStep = async (req, res) => {
     const { approvalNotes, nextStatus } = req.body;
     const adminDid = req.user?.did;
 
-    const task = await TaskModel.findOne({ $or: [{ did: taskDid }, { _id: taskDid }] });
+    const task = await TaskModel.findOne(buildTaskIdentifierQuery(taskDid));
     if (!task) {
       return res.status(404).json({ status: "error", message: "Task step not found" });
     }
@@ -189,7 +210,7 @@ export const addPayment = async (req, res) => {
       return res.status(400).json({ status: "error", message: "Valid amount is required" });
     }
 
-    const caseDoc = await CaseFile.findOne({ $or: [{ did: caseDid }, { _id: caseDid }] });
+    const caseDoc = await CaseFile.findOne(buildCaseIdentifierQuery(caseDid));
     if (!caseDoc) {
       return res.status(404).json({ status: "error", message: "Associated Case File not found" });
     }
