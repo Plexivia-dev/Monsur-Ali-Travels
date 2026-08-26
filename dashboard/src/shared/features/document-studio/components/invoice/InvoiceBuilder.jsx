@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 import { InvoiceForm } from './InvoiceForm';
 import { InvoicePreview } from './InvoicePreview';
 import { getDefaultInvoiceData, generateUniqueInvoiceNo } from './sampleData';
@@ -9,9 +10,40 @@ import { toast } from 'sonner';
 import { HeaderTitle } from '@shared/components/common/HeaderTitle';
 
 export function InvoiceBuilder() {
-  const [data, setData] = useState(getDefaultInvoiceData());
+  const location = useLocation();
+  const incomingInvoiceData = location.state?.invoiceData || location.state?.initialData || null;
+
+  const [data, setData] = useState(() => {
+    const defaultData = getDefaultInvoiceData();
+    if (!incomingInvoiceData) return defaultData;
+    return {
+      ...defaultData,
+      ...incomingInvoiceData,
+      client: {
+        ...defaultData.client,
+        ...(incomingInvoiceData.client || {}),
+      },
+      biller: {
+        ...defaultData.biller,
+        ...(incomingInvoiceData.biller || {}),
+      },
+      items:
+        incomingInvoiceData.items && incomingInvoiceData.items.length > 0
+          ? incomingInvoiceData.items
+          : defaultData.items,
+    };
+  });
+
   const [viewMode, setViewMode] = useState('split'); // 'split' | 'edit' | 'preview'
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  useEffect(() => {
+    if (incomingInvoiceData) {
+      toast.success(
+        `Invoice autofilled for ${incomingInvoiceData.client?.name || incomingInvoiceData.clientName || 'Client'}`
+      );
+    }
+  }, []);
 
   const handleReset = () => {
     setData(getDefaultInvoiceData());

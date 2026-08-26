@@ -612,11 +612,11 @@ export const bulkImportCases = async (req, res) => {
 export const updateWorkflowStatus = async (req, res) => {
   try {
     const { id } = req.params;
-    const { workflowStatus, assignedTo, remarks } = req.body;
+    const { workflowStatus, status, assignedTo, remarks } = req.body;
     const updatedBy = req.user?.did;
     
     const userRole = req.user?.role?.toLowerCase() || '';
-    if (!['admin', 'manager', 'superadmin'].includes(userRole)) {
+    if (!['admin', 'manager', 'superadmin', 'owner'].includes(userRole)) {
       return res.status(403).json({
         success: false,
         message: "Forbidden: Only Admin or Manager can update case workflow status or reassign staff."
@@ -629,15 +629,20 @@ export const updateWorkflowStatus = async (req, res) => {
     }
 
     const previousAssignedToDid = caseDoc.assignedToDid;
+    const targetStatus = workflowStatus || status;
 
     // Update fields
-    if (workflowStatus) caseDoc.workflowStatus = workflowStatus;
+    if (targetStatus) {
+      caseDoc.workflowStatus = targetStatus;
+      caseDoc.status = targetStatus;
+    }
     if (assignedTo) caseDoc.assignedToDid = assignedTo;
 
     // Push to history
+    if (!caseDoc.statusHistory) caseDoc.statusHistory = [];
     caseDoc.statusHistory.push({
-      status: workflowStatus || caseDoc.workflowStatus,
-      remarks: remarks || "",
+      status: targetStatus || caseDoc.workflowStatus || caseDoc.status || "ENTRY",
+      remarks: remarks || `Stage updated to ${targetStatus || 'Updated'}`,
       updatedByDid: updatedBy,
       assignedToDid: assignedTo || caseDoc.assignedToDid,
       date: new Date()

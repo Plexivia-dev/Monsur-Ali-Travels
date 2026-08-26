@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { X, CreditCard, Plus, Loader2, Printer, CheckCircle } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { X, CreditCard, Plus, Loader2, Printer, CheckCircle, ExternalLink, Sparkles } from 'lucide-react';
 import { apiClient } from '@/lib/api-client';
 import { formatToDdMmYyyy, printDocument } from '@/lib/utils';
 import { toast } from 'sonner';
@@ -27,9 +28,11 @@ export const AddPaymentModal = ({
   onClose,
   onSuccess
 }) => {
+  const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [paymentSuccess, setPaymentSuccess] = useState(false);
   const [receiptData, setReceiptData] = useState(null);
+  const [studioInvoicePayload, setStudioInvoicePayload] = useState(null);
 
   const [formData, setFormData] = useState({
     amount: '',
@@ -62,6 +65,37 @@ export const AddPaymentModal = ({
 
       // Update receipt data to show in invoice view
       const generatedInvoiceNo = res.data?.data?.receiptNo || `INV-${new Date().getTime().toString().slice(-6)}`;
+      
+      const payload = {
+        invoiceNo: generatedInvoiceNo,
+        issueDate: new Date().toISOString().split('T')[0],
+        dueDate: new Date(Date.now() + 15 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+        paymentStatus: 'Paid',
+        currency: 'BDT',
+        client: {
+          name: resolvedApplicantName,
+          contactPerson: resolvedApplicantName,
+          phone: resolvedPhone,
+          address: caseDoc?.destinationCountry ? `Destination: ${caseDoc.destinationCountry}` : (caseDoc?.clientInfo?.address || ''),
+          email: caseDoc?.email || caseDoc?.clientInfo?.email || '',
+          passportNumber: caseDoc?.passportNumber || caseDoc?.clientInfo?.passportNumber || '',
+          nidNumber: caseDoc?.nidNumber || caseDoc?.clientInfo?.nidNumber || '',
+        },
+        items: [
+          {
+            id: 'item-1',
+            title: formData.paymentType || 'Visa Processing & Case Handling Service',
+            description: formData.notes || `Payment received for Case #${resolvedCaseNumber} (${resolvedApplicantName})`,
+            quantity: '1',
+            unitPrice: Number(formData.amount),
+          },
+        ],
+        subtotal: Number(formData.amount),
+        grandTotal: Number(formData.amount),
+        paymentTerms: `Paid via ${formData.paymentMethod}. Case File #${resolvedCaseNumber}.`,
+      };
+
+      setStudioInvoicePayload(payload);
       setReceiptData({
         amountPaid: Number(formData.amount),
         paymentType: formData.paymentType,
@@ -81,6 +115,20 @@ export const AddPaymentModal = ({
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleOpenInStudio = () => {
+    if (onSuccess) onSuccess();
+    onClose();
+    navigate('/admin/docs/invoice', {
+      state: {
+        invoiceData: studioInvoicePayload || {
+          invoiceNo: receiptData?.invoiceNo,
+          client: { name: resolvedApplicantName, phone: resolvedPhone },
+          items: [{ id: 'item-1', title: formData.paymentType, unitPrice: Number(formData.amount) }],
+        },
+      },
+    });
   };
 
   const handlePrint = () => {
@@ -107,6 +155,14 @@ export const AddPaymentModal = ({
               Invoice Generated ({receiptData.invoiceNo})
             </h2>
             <div className="flex items-center gap-2">
+              <button
+                onClick={handleOpenInStudio}
+                className="flex items-center gap-1.5 px-3.5 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-xs font-bold shadow-xs cursor-pointer transition-all"
+                title="Open and edit in Document Studio"
+              >
+                <Sparkles className="w-3.5 h-3.5" />
+                <span>Open in Studio</span>
+              </button>
               <button
                 onClick={handlePrint}
                 className="flex items-center gap-2 px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs font-bold shadow-xs cursor-pointer transition-all"

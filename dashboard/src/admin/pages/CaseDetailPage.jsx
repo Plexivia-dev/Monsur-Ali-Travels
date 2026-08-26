@@ -147,15 +147,28 @@ export default function CaseDetailPage() {
   }, [fetchCaseDetails]);
 
   const handleStageChange = async (newStatus) => {
+    if (!newStatus || !caseData) return;
+    const caseId = caseData.did || caseData._id;
     try {
-      await apiClient.patch(`/api/v1/client/cases/${caseData.did || caseData._id}/workflow`, {
-        status: newStatus,
-        remarks: `Stage updated to ${newStatus} by ${user?.name || 'Admin'}`,
-      });
-      toast.success(`Case stage updated to ${newStatus.replace(/_/g, ' ')}`);
-      fetchCaseDetails();
+      try {
+        await apiClient.patch(`/api/v1/admin/cases/${caseId}/workflow`, {
+          status: newStatus,
+          workflowStatus: newStatus,
+          remarks: `Stage updated to ${newStatus} by ${user?.name || 'Admin'}`,
+        });
+      } catch (adminErr) {
+        await apiClient.put(`/api/v1/admin/cases/${caseId}`, {
+          status: newStatus,
+          workflowStatus: newStatus,
+          remarks: `Stage updated to ${newStatus} by ${user?.name || 'Admin'}`,
+        });
+      }
+
+      toast.success(`Case stage updated to ${formatCleanLabel(newStatus)}`);
+      await fetchCaseDetails();
     } catch (err) {
-      toast.error('Failed to update stage.');
+      console.error('Failed to update stage:', err);
+      toast.error(err.response?.data?.message || 'Failed to update stage.');
     }
   };
 
