@@ -33,6 +33,7 @@ import {
   Edit3,
   ChevronDown,
   Briefcase,
+  UserCheck,
   X,
 } from 'lucide-react';
 import { apiClient } from '@/lib/api-client';
@@ -441,6 +442,21 @@ export default function CaseDetailPage() {
   // Sort timeline descending
   activityTimeline.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
 
+  // Resolve active task & assigned staff
+  const activeTask =
+    (caseData?.workflowTasks || []).find((t) => t.status !== 'Approved') ||
+    caseData?.workflowTasks?.[(caseData?.workflowTasks || []).length - 1] ||
+    null;
+
+  const currentAssignee =
+    activeTask?.assignedToName ||
+    caseData?.assignedToName ||
+    caseData?.assignedStaff?.name ||
+    caseData?.assignedTo?.name ||
+    'Unassigned';
+
+  const currentTaskStatus = activeTask?.status || caseData?.workflowStatus || caseData?.status || 'In Progress';
+
   return (
     <div className="space-y-6 pb-12 animate-in fade-in duration-200">
       {/* Dynamic PageTitle Header */}
@@ -497,10 +513,43 @@ export default function CaseDetailPage() {
       {/* Case Identity & Creator Banner */}
       <div className="bg-card border border-border/80 rounded-2xl p-5 sm:p-6 shadow-xs space-y-4">
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 border-b border-border/60 pb-4">
-          <div className="flex items-center gap-3">
+          <div className="space-y-2">
             <h2 className="text-2xl font-black tracking-tight text-foreground">
               {caseData.applicantName || caseData.clientInfo?.fullName}
             </h2>
+
+            <div className="flex flex-wrap items-center gap-2.5 text-xs">
+              {/* Assigned Staff */}
+              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl bg-muted/40 border border-border/60 text-muted-foreground">
+                <UserCheck className="w-3.5 h-3.5 text-primary" />
+                <span>Assigned To:</span>
+                <strong className="text-foreground font-bold">
+                  {currentAssignee}
+                </strong>
+              </div>
+
+              {/* Task Status */}
+              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl bg-muted/40 border border-border/60 text-muted-foreground">
+                <Layers className="w-3.5 h-3.5 text-amber-500" />
+                <span>Task Status:</span>
+                <span
+                  className={`px-2 py-0.5 rounded-md text-[11px] font-bold ${
+                    currentTaskStatus === 'Approved' || currentTaskStatus === 'COMPLETED_DELIVERED'
+                      ? 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30'
+                      : currentTaskStatus === 'Done'
+                      ? 'bg-blue-500/15 text-blue-600 dark:text-blue-400 border border-blue-500/30'
+                      : 'bg-amber-500/15 text-amber-600 dark:text-amber-400 border border-amber-500/30'
+                  }`}
+                >
+                  {formatCleanLabel(currentTaskStatus)}
+                </span>
+                {activeTask?.title && (
+                  <span className="text-muted-foreground font-medium hidden sm:inline truncate max-w-[220px]">
+                    ({activeTask.title})
+                  </span>
+                )}
+              </div>
+            </div>
           </div>
 
           {/* Interactive Case Stage / Status Switcher */}
