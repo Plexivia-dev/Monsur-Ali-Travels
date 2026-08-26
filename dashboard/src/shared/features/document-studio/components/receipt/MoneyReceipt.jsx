@@ -10,7 +10,7 @@ import { HeaderTitle } from '@shared/components/common/HeaderTitle';
 
 export function MoneyReceipt() {
   const [data, setData] = useState(getDefaultMoneyReceiptData());
-  const [viewMode, setViewMode] = useState('split'); // 'split' | 'edit' | 'preview'
+  const [viewMode, setViewMode] = useState('edit'); // 'edit' | 'split' | 'preview'
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleReset = () => {
@@ -99,7 +99,7 @@ export function MoneyReceipt() {
   };
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 pb-24 relative">
       {/* Signature Dark Blue Gradient Top Header */}
       <HeaderTitle
         icon={Receipt}
@@ -107,38 +107,12 @@ export function MoneyReceipt() {
         subtitle="Generate and print official passenger money receipts, payment confirmations, and accounts ledger tokens."
         actions={
           <div className="flex items-center gap-2 flex-wrap">
-            {/* View Mode Segmented Controls */}
-            <div className="flex items-center space-x-1 bg-white/10 backdrop-blur-md p-1 rounded-xl border border-white/15">
-              {[
-                { id: 'split', label: 'Split View', icon: Columns },
-                { id: 'edit', label: 'Edit Form', icon: Edit3 },
-                { id: 'preview', label: 'Live Preview', icon: Eye },
-              ].map((btn) => {
-                const Icon = btn.icon;
-                const isActive = viewMode === btn.id;
-                return (
-                  <button
-                    key={btn.id}
-                    onClick={() => setViewMode(btn.id)}
-                    className={`flex items-center space-x-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
-                      isActive
-                        ? 'bg-white text-slate-900 shadow-md font-black'
-                        : 'text-sky-100/80 hover:text-white hover:bg-white/10'
-                    }`}
-                  >
-                    <Icon className="w-3.5 h-3.5" />
-                    <span>{btn.label}</span>
-                  </button>
-                );
-              })}
-            </div>
-
             <button
               onClick={handleReset}
-              className="flex items-center space-x-1.5 bg-white/10 hover:bg-white/20 text-white text-xs font-semibold px-3 py-1.5 rounded-xl border border-white/15 transition-colors cursor-pointer"
+              className="flex items-center space-x-1.5 bg-rose-600/20 hover:bg-rose-600/40 text-rose-100 hover:text-white text-xs font-semibold px-3 py-1.5 rounded-xl border border-rose-400/40 transition-colors cursor-pointer shadow-2xs"
               title="Reset Form"
             >
-              <RefreshCw className="w-3.5 h-3.5 text-sky-300" />
+              <RefreshCw className="w-3.5 h-3.5 text-rose-300" />
               <span>Reset</span>
             </button>
 
@@ -165,7 +139,7 @@ export function MoneyReceipt() {
 
       {/* Main Studio Views */}
       {viewMode === 'edit' && (
-        <div className="max-w-4xl mx-auto">
+        <div className="w-full">
           <MoneyReceiptForm
             data={data}
             onChange={setData}
@@ -184,8 +158,8 @@ export function MoneyReceipt() {
       )}
 
       {viewMode === 'split' && (
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-          <div className="lg:col-span-5 max-h-[calc(100vh-140px)] overflow-y-auto pr-1">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
+          <div className="w-full max-h-[calc(100vh-140px)] overflow-y-auto pr-1">
             <MoneyReceiptForm
               data={data}
               onChange={setData}
@@ -195,13 +169,41 @@ export function MoneyReceipt() {
               isSubmitting={isSubmitting}
             />
           </div>
-          <div className="lg:col-span-7 bg-muted/30 border border-border rounded-xl p-3 overflow-y-auto max-h-[calc(100vh-140px)] flex justify-center">
+          <div className="w-full bg-muted/30 border border-border rounded-xl p-3 overflow-y-auto max-h-[calc(100vh-140px)] flex justify-center">
             <div className="scale-[0.88] origin-top">
               <MoneyReceiptPreview data={data} />
             </div>
           </div>
         </div>
       )}
+
+      {/* Floating Bottom View Switcher (Desktop & Mobile) */}
+      <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-40 print:hidden">
+        <div className="flex items-center space-x-1 bg-slate-900/90 dark:bg-slate-950/90 backdrop-blur-xl p-1.5 rounded-full border border-slate-700/60 shadow-2xl shadow-slate-950/50">
+          {[
+            { id: 'edit', label: 'Edit Form', icon: Edit3 },
+            { id: 'split', label: 'Split View', icon: Columns },
+            { id: 'preview', label: 'Live Preview', icon: Eye },
+          ].map((btn) => {
+            const Icon = btn.icon;
+            const isActive = viewMode === btn.id;
+            return (
+              <button
+                key={btn.id}
+                onClick={() => setViewMode(btn.id)}
+                className={`flex items-center space-x-2 px-4 py-2 rounded-full text-xs font-bold transition-all duration-200 cursor-pointer ${
+                  isActive
+                    ? 'bg-gradient-to-r from-sky-500 to-blue-600 text-white shadow-lg shadow-sky-500/30 font-extrabold scale-105'
+                    : 'text-slate-300 hover:text-white hover:bg-white/10'
+                }`}
+              >
+                <Icon className="w-3.5 h-3.5" />
+                <span>{btn.label}</span>
+              </button>
+            );
+          })}
+        </div>
+      </div>
     </div>
   );
 }

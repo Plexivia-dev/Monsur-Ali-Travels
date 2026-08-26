@@ -24,9 +24,10 @@ export function useSocketNotification() {
     }
 
     const socket = io(serverUrl, {
-      transports: ['websocket', 'polling'],
+      transports: ['polling', 'websocket'],
       reconnectionAttempts: 5,
       reconnectionDelay: 2000,
+      timeout: 10000,
     });
 
     socketRef.current = socket;
@@ -35,6 +36,10 @@ export function useSocketNotification() {
       if (user?.did) {
         socket.emit('join_room', user.did);
       }
+    });
+
+    socket.on('connect_error', (err) => {
+      // Graceful fallback without crashing UI
     });
 
     // Listen for real-time notification events
