@@ -34,6 +34,9 @@ export function ClientGuardian({ initialData = null, onSavedSuccess = null }) {
     }
 
     const payload = { ...data };
+    if (!payload._id) {
+      delete payload._id;
+    }
     if (!payload.applicationNo) {
       payload.applicationNo = generateApplicationNo();
     }
@@ -45,7 +48,7 @@ export function ClientGuardian({ initialData = null, onSavedSuccess = null }) {
         ? await apiClient.put(`/api/v1/client/docs/client-guardians/${data._id}`, payload)
         : await apiClient.post('/api/v1/client/docs/client-guardians', payload);
 
-      const savedDoc = res.data?.data;
+      const savedDoc = res.data?.data || res.data;
       if ((res.data?.status === 'success' || res.data?.success) && savedDoc) {
         setData(savedDoc);
         toast.success(
@@ -59,11 +62,8 @@ export function ClientGuardian({ initialData = null, onSavedSuccess = null }) {
         throw new Error(res.data?.message || 'Failed to save');
       }
     } catch (err) {
-      console.warn('Backend API save warning (offline preview mode):', err);
-      const fallbackAppNo = data.applicationNo || generateApplicationNo();
-      setData(prev => ({ ...prev, applicationNo: fallbackAppNo }));
-      toast.info(`Preview ready (App No: ${fallbackAppNo})`);
-      setViewMode('preview');
+      console.error('Save client file error:', err);
+      toast.error(err.response?.data?.message || err.message || 'Failed to save client file.');
     } finally {
       setIsSubmitting(false);
     }

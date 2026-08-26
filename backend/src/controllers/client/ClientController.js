@@ -122,6 +122,13 @@ class ClientController {
         createdByDid: req.user?.did || null,
       };
 
+      delete clientData._id;
+      delete clientData.id;
+
+      if (!clientData.email || !String(clientData.email).trim()) delete clientData.email;
+      if (!clientData.passportNumber || !String(clientData.passportNumber).trim()) delete clientData.passportNumber;
+      if (!clientData.nidNumber || !String(clientData.nidNumber).trim()) delete clientData.nidNumber;
+
       const client = await Client.create(clientData);
 
       return res.status(201).json({

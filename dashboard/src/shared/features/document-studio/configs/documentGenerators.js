@@ -11,6 +11,7 @@ import {
   Award,
   ShieldCheck,
   Heart,
+  FileCheck2,
 } from 'lucide-react';
 
 export const DOCUMENT_GENERATORS = [
@@ -65,6 +66,19 @@ export const DOCUMENT_GENERATORS = [
     color: 'from-emerald-600 to-teal-600',
     badge: 'Custody Slip',
     badgeStyle: 'bg-emerald-50 text-emerald-700 dark:bg-emerald-950/50 dark:text-emerald-300 border-emerald-200 dark:border-emerald-800',
+  },
+  {
+    id: 'job-verification',
+    title: 'Job Verification Form',
+    bnTitle: 'জব ভেরিফিকেশন ফরম',
+    category: 'contracts',
+    categoryLabel: 'Verification & Jobs',
+    description: 'Company, Client & Job Verification Details Form for overseas employment and stay.',
+    bnDescription: 'কোম্পানি, ক্লায়েন্ট ও কাজের বিস্তারিত তথ্য যাচাই ফরম ও সত্যায়নপত্র।',
+    icon: FileCheck2,
+    color: 'from-blue-600 to-cyan-600',
+    badge: 'Verification Form',
+    badgeStyle: 'bg-cyan-50 text-cyan-700 dark:bg-cyan-950/50 dark:text-cyan-300 border-cyan-200 dark:border-cyan-800',
   },
   {
     id: 'idcard',

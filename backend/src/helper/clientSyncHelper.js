@@ -24,15 +24,19 @@ export async function syncClientProfile({
       return null;
     }
 
+    const cleanPassport = passportNumber ? String(passportNumber).trim().toUpperCase() : "";
+    const cleanPhone = phone ? String(phone).trim() : "";
+    const cleanNid = nidNumber ? String(nidNumber).trim() : "";
+
     const searchConditions = [];
-    if (passportNumber && passportNumber.trim()) {
-      searchConditions.push({ passportNumber: passportNumber.trim().toUpperCase() });
+    if (cleanPassport) {
+      searchConditions.push({ passportNumber: cleanPassport });
     }
-    if (nidNumber && nidNumber.trim()) {
-      searchConditions.push({ nidNumber: nidNumber.trim() });
+    if (cleanNid) {
+      searchConditions.push({ nidNumber: cleanNid });
     }
-    if (phone && phone.trim()) {
-      searchConditions.push({ phone: phone.trim() });
+    if (cleanPhone) {
+      searchConditions.push({ phone: cleanPhone });
     }
 
     let client = null;
@@ -41,42 +45,42 @@ export async function syncClientProfile({
     }
 
     // Prepare attachment updates if provided
-    const photo = attachments.passportPhoto || attachments.photo || "";
-    const passportScan = attachments.passportScan || "";
-    const nidScan = attachments.nidScan || "";
+    const photo = attachments?.passportPhoto || attachments?.photo || "";
+    const passportScan = attachments?.passportScan || "";
+    const nidScan = attachments?.nidScan || "";
 
     if (!client) {
       // Create new client profile
       client = new Client({
-        fullName,
-        phone: phone || "N/A",
-        nidNumber,
-        passportNumber: passportNumber.toUpperCase(),
-        fatherName,
-        motherName,
-        email,
-        presentAddress,
+        fullName: String(fullName).trim(),
+        phone: cleanPhone || "N/A",
+        nidNumber: cleanNid,
+        passportNumber: cleanPassport,
+        fatherName: fatherName || "",
+        motherName: motherName || "",
+        email: email ? String(email).trim().toLowerCase() : "",
+        presentAddress: presentAddress || "",
         guardian: {
-          name: guardian.fullName || guardian.name || "",
-          phone: guardian.mobileNumber || guardian.phone || "",
-          nidNumber: guardian.nidNumber || "",
-          relationship: guardian.relationship || "Father",
-          address: guardian.address || "",
+          name: guardian?.fullName || guardian?.name || "",
+          phone: guardian?.mobileNumber || guardian?.phone || "",
+          nidNumber: guardian?.nidNumber || "",
+          relationship: guardian?.relationship || "Father",
+          address: guardian?.address || "",
         },
         attachments: {
           photo,
           passportScan,
           nidScan,
-          otherDocuments: attachments.otherFiles || [],
+          otherDocuments: attachments?.otherFiles || [],
         },
       });
     } else {
       // Update missing fields
-      if (!client.nidNumber && nidNumber) client.nidNumber = nidNumber;
-      if (!client.passportNumber && passportNumber) client.passportNumber = passportNumber.toUpperCase();
+      if (!client.nidNumber && cleanNid) client.nidNumber = cleanNid;
+      if (!client.passportNumber && cleanPassport) client.passportNumber = cleanPassport;
       if (!client.fatherName && fatherName) client.fatherName = fatherName;
       if (!client.motherName && motherName) client.motherName = motherName;
-      if (!client.email && email) client.email = email;
+      if (!client.email && email) client.email = String(email).trim().toLowerCase();
       if (!client.presentAddress && presentAddress) client.presentAddress = presentAddress;
       
       // Update attachments if newer ones provided
@@ -93,6 +97,14 @@ export async function syncClientProfile({
         client.attachments.nidScan = nidScan;
       }
     }
+
+    // Ensure array properties exist
+    client.applicationDids = client.applicationDids || [];
+    client.visaSubmissionDids = client.visaSubmissionDids || [];
+    client.passportSubmissionDids = client.passportSubmissionDids || [];
+    client.clientCaseDids = client.clientCaseDids || [];
+    client.agreementDids = client.agreementDids || [];
+    client.invoiceDids = client.invoiceDids || [];
 
     // Attach relational link DID
     if (relationId) {
@@ -113,10 +125,10 @@ export async function syncClientProfile({
 
     // Update billing summary if payment provided
     if (payment) {
-      const total = Number(payment.totalAmount || 0);
-      const paid = Number(payment.advancePaid || payment.paidAmount || 0);
-      client.totalBilledAmount = (client.totalBilledAmount || 0) + total;
-      client.totalPaidAmount = (client.totalPaidAmount || 0) + paid;
+      const total = Number(payment.totalAmount || 0) || 0;
+      const paid = Number(payment.advancePaid || payment.paidAmount || 0) || 0;
+      client.totalBilledAmount = (Number(client.totalBilledAmount) || 0) + total;
+      client.totalPaidAmount = (Number(client.totalPaidAmount) || 0) + paid;
       client.totalDueAmount = Math.max(0, client.totalBilledAmount - client.totalPaidAmount);
     }
 

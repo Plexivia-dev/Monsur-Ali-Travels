@@ -36,6 +36,12 @@ export { IdCard } from './components/idcard/IdCard';
 export { IdCardForm } from './components/idcard/IdCardForm';
 export { IdCardPreview } from './components/idcard/IdCardPreview';
 
+// Job Verification
+export { JobVerification } from './components/job-verification/JobVerification';
+export { JobVerificationForm } from './components/job-verification/JobVerificationForm';
+export { JobVerificationPreview } from './components/job-verification/JobVerificationPreview';
+export { getDefaultJobVerificationData, generateUniqueJobVerificationId } from './components/job-verification/sampleData';
+
 // Payroll
 export { SalarySlip } from './components/payroll/SalarySlip';
 export { SalarySlipForm } from './components/payroll/SalarySlipForm';

@@ -53,6 +53,7 @@
     "groupLabel": "Accounts & Ledger",
     "groupLabelBn": "হিসাব ও লেজার",
     "roles": ["owner", "superadmin", "admin", "accountant", "accounts"],
+    "excludeRoles": ["staff", "frontdesk", "visa_processor", "lawyer", "representative"],
     "items": [
       {
         "id": "accounts-group",
@@ -128,96 +129,91 @@
             "name": "Salary Slip",
             "nameBn": "বেতন স্লিপ",
             "path": "/admin/docs/payroll",
-            "icon": "Banknote",
-            "roles": ["owner", "superadmin", "admin", "accountant", "accounts"]
+            "icon": "Banknote"
           },
           {
             "id": "doc-invoice",
             "name": "Invoice",
             "nameBn": "ইনভয়েস",
             "path": "/admin/docs/invoice",
-            "icon": "ReceiptText",
-            "roles": ["owner", "superadmin", "admin", "accountant", "accounts"]
+            "icon": "ReceiptText"
           },
           {
             "id": "doc-money-receipt",
             "name": "Money Receipt Voucher",
             "nameBn": "মানি রিসিট ভাউচার",
             "path": "/admin/docs/money-receipt",
-            "icon": "Receipt",
-            "roles": ["owner", "superadmin", "admin", "accountant", "accounts"]
+            "icon": "Receipt"
           },
           {
             "id": "doc-cash-voucher",
             "name": "Cash Money Voucher",
             "nameBn": "ক্যাশ মানি ভাউচার",
             "path": "/admin/docs/cash-voucher",
-            "icon": "Wallet",
-            "roles": ["owner", "superadmin", "admin", "accountant", "accounts"]
+            "icon": "Wallet"
           },
           {
             "id": "doc-agreement",
             "name": "Employment Agreement",
             "nameBn": "নিয়োগ চুক্তিপত্র",
             "path": "/admin/docs/agreement",
-            "icon": "FileSignature",
-            "roles": ["owner", "superadmin", "admin", "frontdesk", "staff", "lawyer", "representative"]
+            "icon": "FileSignature"
           },
           {
             "id": "doc-client-form",
             "name": "Client & Guardian Form",
             "nameBn": "ক্লায়েন্ট ও অভিভাবক ফরম",
             "path": "/admin/docs/client-form",
-            "icon": "UserCheck",
-            "roles": ["owner", "superadmin", "admin", "frontdesk", "staff", "lawyer", "representative", "visa_processor"]
+            "icon": "UserCheck"
           },
           {
             "id": "doc-indian-visa",
             "name": "Indian Visa Submission",
             "nameBn": "ইন্ডিয়ান ভিসা ফাইল",
             "path": "/admin/docs/indian-visa",
-            "icon": "Stamp",
-            "roles": ["owner", "superadmin", "admin", "frontdesk", "staff", "visa_processor"]
+            "icon": "Stamp"
           },
           {
             "id": "doc-passport-sub",
             "name": "Passport Submission Slip",
             "nameBn": "পাসপোর্ট জমা রশিদ",
             "path": "/admin/docs/passport-sub",
-            "icon": "BookOpen",
-            "roles": ["owner", "superadmin", "admin", "frontdesk", "staff", "visa_processor"]
+            "icon": "BookOpen"
           },
           {
             "id": "doc-exp-cert",
             "name": "Experience Certificate",
             "nameBn": "অভিজ্ঞতা সনদপত্র",
             "path": "/admin/docs/experience-certificate",
-            "icon": "Award",
-            "roles": ["owner", "superadmin", "admin", "frontdesk", "staff", "lawyer"]
+            "icon": "Award"
           },
           {
             "id": "doc-marr-cert",
             "name": "Marriage Certificate",
             "nameBn": "বিবাহ সনদপত্র",
             "path": "/admin/docs/marriage-certificate",
-            "icon": "Heart",
-            "roles": ["owner", "superadmin", "admin", "frontdesk", "staff", "lawyer"]
+            "icon": "Heart"
           },
           {
             "id": "doc-char-cert",
             "name": "Character Certificate",
             "nameBn": "চারিত্রিক সনদপত্র",
             "path": "/admin/docs/character-certificate",
-            "icon": "ShieldCheck",
-            "roles": ["owner", "superadmin", "admin", "frontdesk", "staff", "lawyer"]
+            "icon": "ShieldCheck"
+          },
+          {
+            "id": "doc-job-verification",
+            "name": "Job Verification Form",
+            "nameBn": "জব ভেরিফিকেশন ফরম",
+            "path": "/admin/docs/job-verification",
+            "icon": "FileCheck2"
           },
           {
             "id": "doc-idcard",
             "name": "Employee ID Card",
             "nameBn": "কর্মচারী আইডি কার্ড",
             "path": "/admin/docs/idcard",
-            "icon": "Contact",
-            "roles": ["owner", "superadmin", "admin"]
+            "icon": "Contact"
           }
         ]
       }

@@ -113,6 +113,20 @@ docsRouter
   ])
   .patch(ClientGuardianController.updateStatus);
 
+import { JobVerificationController } from "../../controllers/client/JobVerificationController.js";
+
+// /api/v1/docs/job-verifications
+docsRouter
+  .route(["/job-verifications", "/job-verification"])
+  .get(JobVerificationController.getAll)
+  .post(JobVerificationController.create);
+
+docsRouter
+  .route(["/job-verifications/:id", "/job-verification/:id"])
+  .get(JobVerificationController.getById)
+  .put(JobVerificationController.update)
+  .delete(JobVerificationController.delete);
+
 // Common Dedicated File Upload Endpoints under /api/v1/docs/upload
 import uploadRouter from "../shared/UploadRoute.js";
 docsRouter.use("/upload", uploadRouter);

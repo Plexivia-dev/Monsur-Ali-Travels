@@ -35,7 +35,8 @@
   {
     "groupLabel": "Accounts",
     "groupLabelBn": "হিসাব ও লেজার",
-    "roles": ["admin", "owner", "superadmin", "accountant", "representative"],
+    "roles": ["admin", "owner", "superadmin", "accountant", "accounts"],
+    "excludeRoles": ["staff", "frontdesk", "visa_processor", "lawyer", "representative"],
     "items": [
       {
         "id": "accounts-group",
@@ -109,8 +110,7 @@
             "portal": "docs",
             "submodule": "payroll",
             "path": "/dashboard/docs/payroll",
-            "icon": "Banknote",
-            "roles": ["owner", "superadmin", "admin", "accountant", "accounts"]
+            "icon": "Banknote"
           },
           {
             "id": "doc-invoice",
@@ -119,8 +119,7 @@
             "portal": "docs",
             "submodule": "invoice",
             "path": "/dashboard/docs/invoice",
-            "icon": "ReceiptText",
-            "roles": ["owner", "superadmin", "admin", "accountant", "accounts"]
+            "icon": "ReceiptText"
           },
           {
             "id": "doc-money-receipt",
@@ -129,8 +128,7 @@
             "portal": "docs",
             "submodule": "money-receipt",
             "path": "/dashboard/docs/money-receipt",
-            "icon": "Receipt",
-            "roles": ["owner", "superadmin", "admin", "accountant", "accounts"]
+            "icon": "Receipt"
           },
           {
             "id": "doc-cash-voucher",
@@ -139,8 +137,7 @@
             "portal": "docs",
             "submodule": "cash-voucher",
             "path": "/dashboard/docs/cash-voucher",
-            "icon": "Wallet",
-            "roles": ["owner", "superadmin", "admin", "accountant", "accounts"]
+            "icon": "Wallet"
           },
           {
             "id": "doc-agreement",
@@ -149,8 +146,7 @@
             "portal": "docs",
             "submodule": "agreement",
             "path": "/dashboard/docs/agreement",
-            "icon": "FileSignature",
-            "roles": ["owner", "superadmin", "admin", "frontdesk", "staff", "lawyer", "representative"]
+            "icon": "FileSignature"
           },
           {
             "id": "doc-client-form",
@@ -159,8 +155,7 @@
             "portal": "docs",
             "submodule": "client-form",
             "path": "/dashboard/docs/client-form",
-            "icon": "UserCheck",
-            "roles": ["owner", "superadmin", "admin", "frontdesk", "staff", "lawyer", "representative", "visa_processor"]
+            "icon": "UserCheck"
           },
           {
             "id": "doc-indian-visa",
@@ -169,8 +164,7 @@
             "portal": "docs",
             "submodule": "indian-visa",
             "path": "/dashboard/docs/indian-visa",
-            "icon": "Stamp",
-            "roles": ["owner", "superadmin", "admin", "frontdesk", "staff", "visa_processor"]
+            "icon": "Stamp"
           },
           {
             "id": "doc-passport-sub",
@@ -179,8 +173,7 @@
             "portal": "docs",
             "submodule": "passport-sub",
             "path": "/dashboard/docs/passport-sub",
-            "icon": "BookOpen",
-            "roles": ["owner", "superadmin", "admin", "frontdesk", "staff", "visa_processor"]
+            "icon": "BookOpen"
           },
           {
             "id": "doc-exp-cert",
@@ -189,8 +182,7 @@
             "portal": "docs",
             "submodule": "experience-certificate",
             "path": "/dashboard/docs/experience-certificate",
-            "icon": "Award",
-            "roles": ["owner", "superadmin", "admin", "frontdesk", "staff", "lawyer"]
+            "icon": "Award"
           },
           {
             "id": "doc-marr-cert",
@@ -199,8 +191,7 @@
             "portal": "docs",
             "submodule": "marriage-certificate",
             "path": "/dashboard/docs/marriage-certificate",
-            "icon": "Heart",
-            "roles": ["owner", "superadmin", "admin", "frontdesk", "staff", "lawyer"]
+            "icon": "Heart"
           },
           {
             "id": "doc-char-cert",
@@ -209,8 +200,16 @@
             "portal": "docs",
             "submodule": "character-certificate",
             "path": "/dashboard/docs/character-certificate",
-            "icon": "ShieldCheck",
-            "roles": ["owner", "superadmin", "admin", "frontdesk", "staff", "lawyer"]
+            "icon": "ShieldCheck"
+          },
+          {
+            "id": "doc-job-verification",
+            "name": "Job Verification Form",
+            "nameBn": "জব ভেরিফিকেশন ফরম",
+            "portal": "docs",
+            "submodule": "job-verification",
+            "path": "/dashboard/docs/job-verification",
+            "icon": "FileCheck2"
           },
           {
             "id": "doc-idcard",
@@ -219,8 +218,7 @@
             "portal": "docs",
             "submodule": "idcard",
             "path": "/dashboard/docs/idcard",
-            "icon": "Contact",
-            "roles": ["owner", "superadmin", "admin"]
+            "icon": "Contact"
           }
         ]
       }

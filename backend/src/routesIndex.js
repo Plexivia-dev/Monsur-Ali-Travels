@@ -63,9 +63,19 @@ adminRouter.use("/system", systemRouter);
 adminRouter.use("/users", usersRouter);
 adminRouter.use("/clients", clientRoute);
 adminRouter.use("/cases", adminCaseRouter);
+adminRouter.use("/tasks", taskRouter);
 adminRouter.use("/settings", settingsRouter);
 adminRouter.use("/storage", storageMaintenanceRouter);
 adminRouter.use("/accounts", accountsRouter);
+adminRouter.use("/agreements", agreementRouter);
+adminRouter.use("/indian-visas", indianVisaRouter);
+adminRouter.use("/passports", passportRouter);
+adminRouter.use("/payrolls", payrollRouter);
+adminRouter.use("/invoices", invoiceRouter);
+adminRouter.use("/receipts", moneyReceiptRouter);
+adminRouter.use("/money-receipts", moneyReceiptRouter);
+adminRouter.use("/cash-vouchers", cashVoucherRouter);
+adminRouter.use("/docs", docsRouter);
 
 coreRouter.use("/admin", adminRouter);
 

@@ -92,7 +92,7 @@ export function SalarySlipForm({ formData, setFormData, onSubmit, onReset, isSub
   };
 
   return (
-    <div className="bg-card border border-border rounded-2xl p-4 sm:p-6 shadow-xs space-y-6 max-w-[900px] mx-auto">
+    <div className="bg-card border border-border rounded-2xl p-4 sm:p-6 shadow-xs space-y-6">
       {/* Top Header Card */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-border pb-4">
         <div>

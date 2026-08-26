@@ -103,10 +103,16 @@ export class ClientGuardianController {
         createdByDid: req.user?.did || null,
       };
 
+      delete payload._id;
+      delete payload.id;
+
       if (payload.payment) {
         const total = Number(payload.payment.totalAmount) || 0;
         const advance = Number(payload.payment.advancePaid) || 0;
+        payload.payment.totalAmount = total;
+        payload.payment.advancePaid = advance;
         payload.payment.dueAmount = Math.max(0, total - advance);
+        payload.payment.paymentStatus = advance >= total && total > 0 ? "Paid" : advance > 0 ? "Partial" : "Unpaid";
       }
 
       // Add initial activity log
@@ -122,32 +128,37 @@ export class ClientGuardianController {
       const doc = await ClientGuardianModel.create(payload);
 
       // Automatically sync with central Client collection (relational link)
-      const syncedClient = await syncClientProfile({
-        fullName: payload.client?.fullName,
-        phone: payload.client?.mobileNumber,
-        nidNumber: payload.client?.nidNumber,
-        passportNumber: payload.client?.passportNumber,
-        fatherName: payload.client?.fatherName,
-        motherName: payload.client?.motherName,
-        email: payload.client?.email,
-        guardian: payload.guardian,
-        attachments: payload.attachments,
-        relationType: "application",
-        relationId: doc.did,
-        payment: payload.payment,
-        createdByDid: req.user?.did || null,
-      });
+      let syncedClient = null;
+      try {
+        syncedClient = await syncClientProfile({
+          fullName: payload.client?.fullName,
+          phone: payload.client?.mobileNumber,
+          nidNumber: payload.client?.nidNumber,
+          passportNumber: payload.client?.passportNumber,
+          fatherName: payload.client?.fatherName,
+          motherName: payload.client?.motherName,
+          email: payload.client?.email,
+          guardian: payload.guardian,
+          attachments: payload.attachments,
+          relationType: "application",
+          relationId: doc.did,
+          payment: payload.payment,
+          createdByDid: req.user?.did || null,
+        });
 
-      if (syncedClient && !doc.clientDid) {
-        doc.clientDid = syncedClient.did;
-        await doc.save();
+        if (syncedClient && !doc.clientDid) {
+          doc.clientDid = syncedClient.did;
+          await doc.save();
+        }
+      } catch (syncErr) {
+        console.warn("Client profile sync non-fatal error:", syncErr);
       }
 
       return res.status(201).json({
         status: "success",
         success: true,
         data: doc,
-        clientDid: syncedClient?.did || null,
+        clientDid: syncedClient?.did || doc.clientDid || null,
         message: "Client application created and synced successfully.",
       });
     } catch (err) {

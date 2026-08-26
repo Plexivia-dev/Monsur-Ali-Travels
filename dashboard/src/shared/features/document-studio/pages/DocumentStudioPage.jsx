@@ -2,6 +2,7 @@ import React from 'react';
 import { useLocation, useParams, Navigate } from 'react-router-dom';
 import { EmploymentAgreement } from '../components/agreement/EmploymentAgreement';
 import { IdCard } from '../components/idcard/IdCard';
+import { JobVerification } from '../components/job-verification/JobVerification';
 import { SalarySlip } from '../components/payroll/SalarySlip';
 import { Invoice } from '../components/invoice/Invoice';
 import { PassportSubmission } from '../components/passport/PassportSubmission';
@@ -61,6 +62,9 @@ export function DocumentStudioPage({
       {resolvedSubmodule === 'client-form' && <ClientGuardian />}
       {resolvedSubmodule === 'indian-visa' && <IndianVisa />}
       {resolvedSubmodule === 'passport-sub' && <PassportSubmission />}
+      {(resolvedSubmodule === 'job-verification' || resolvedSubmodule === 'job-verify' || resolvedSubmodule === 'job-verification-form') && (
+        <JobVerification />
+      )}
       {resolvedSubmodule === 'idcard' && <IdCard />}
       {(resolvedSubmodule === 'payroll' || resolvedSubmodule === 'salary-slip' || resolvedSubmodule === 'salary') && (
         <SalarySlip />

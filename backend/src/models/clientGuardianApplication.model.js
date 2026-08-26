@@ -83,12 +83,10 @@ const clientGuardianSchema = new mongoose.Schema(
       dueAmount: { type: Number, default: 0 },
       paymentMethod: {
         type: String,
-        enum: ["Cash", "bKash", "Nagad", "Rocket", "Bank Transfer", "Other"],
         default: "Cash",
       },
       paymentStatus: {
         type: String,
-        enum: ["Paid", "Partial", "Unpaid"],
         default: "Partial",
       },
       paymentDate: { type: String, default: "" },

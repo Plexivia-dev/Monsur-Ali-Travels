@@ -247,6 +247,13 @@ export const createCase = async (req, res) => {
       nidNumber,
       caseType,
       type,
+      serviceType,
+      destinationCountry,
+      packageCost,
+      packageAmount,
+      initialPaidAmount,
+      advanceAmount,
+      paymentMethod,
       status = "ENTRY",
       checklist = {},
       paymentLedger = {},
@@ -254,57 +261,71 @@ export const createCase = async (req, res) => {
       remarks = "",
     } = req.body;
 
-    const resolvedType = caseType || type;
-    if (!resolvedType) {
-      return res.status(400).json({
-        success: false,
-        message: "caseType (e.g. greece, n-macedonia, indian-bsf) is required",
-      });
-    }
-
+    const resolvedType = caseType || type || serviceType || destinationCountry || "general";
     let resolvedClientDid = clientDid || clientId;
 
     // If clientDid/clientId is not given, resolve or auto-create Client
-    if (!resolvedClientDid && passportNumber) {
-      let existingClient = await Client.findOne({
-        passportNumber: passportNumber.trim().toUpperCase(),
-      });
-
-      if (!existingClient && phone) {
+    if (!resolvedClientDid && (passportNumber || phone || applicantName)) {
+      let existingClient = null;
+      if (passportNumber && passportNumber.trim()) {
+        existingClient = await Client.findOne({
+          passportNumber: passportNumber.trim().toUpperCase(),
+        });
+      }
+      if (!existingClient && phone && phone.trim()) {
         existingClient = await Client.findOne({ phone: phone.trim() });
       }
 
-      if (!existingClient) {
-        existingClient = await Client.create({
+      if (!existingClient && applicantName) {
+        const newClientPayload = {
           fullName: applicantName || "Unknown Applicant",
-          passportNumber: passportNumber.trim().toUpperCase(),
-          phone: phone || "N/A",
-          nidNumber: nidNumber || "",
-        });
+          phone: phone ? phone.trim() : "N/A",
+        };
+        if (passportNumber && passportNumber.trim()) newClientPayload.passportNumber = passportNumber.trim().toUpperCase();
+        if (nidNumber && nidNumber.trim()) newClientPayload.nidNumber = nidNumber.trim();
+        existingClient = await Client.create(newClientPayload);
       }
-      resolvedClientDid = existingClient.did;
+      if (existingClient) {
+        resolvedClientDid = existingClient.did;
+      }
     }
 
     if (!resolvedClientDid) {
       return res.status(400).json({
         success: false,
-        message: "Client reference or Applicant Passport/Phone is required",
+        message: "Client reference or Applicant Name/Phone is required",
       });
     }
+
+    const totalAgreed = Number(packageCost || packageAmount || paymentLedger.totalAgreedAmount || 0) || 0;
+    const advancePaid = Number(initialPaidAmount || advanceAmount || paymentLedger.step1_advance || 0) || 0;
+    const due = Math.max(0, totalAgreed - advancePaid);
+
+    const mergedPaymentLedger = {
+      totalAgreedAmount: totalAgreed,
+      step1_advance: advancePaid,
+      step2_offerApproval: Number(paymentLedger.step2_offerApproval || 0) || 0,
+      step3_delivery: Number(paymentLedger.step3_delivery || 0) || 0,
+      totalPaidAmount: advancePaid,
+      dueAmount: due,
+      isFullyPaid: totalAgreed > 0 && advancePaid >= totalAgreed,
+      paymentMethod: paymentMethod || "CASH",
+    };
 
     const creatorName = req.user?.name || "Staff Member";
     const creatorDid = req.user?.did || req.user?.id || null;
 
     const newCase = await CaseFile.create({
       clientDid: resolvedClientDid,
-      applicantName,
+      applicantName: applicantName || "Unknown Applicant",
       passportNumber: passportNumber ? passportNumber.trim().toUpperCase() : "",
-      phone,
-      nidNumber,
+      phone: phone || "",
+      nidNumber: nidNumber || "",
       caseType: String(resolvedType).toLowerCase(),
+      destinationCountry: destinationCountry || "",
       status,
       checklist,
-      paymentLedger,
+      paymentLedger: mergedPaymentLedger,
       extraData,
       remarks,
       createdByDid: creatorDid,
@@ -324,22 +345,26 @@ export const createCase = async (req, res) => {
     await Client.findOneAndUpdate(
       { did: resolvedClientDid },
       {
-        $addToSet: { caseDids: newCase.did },
+        $addToSet: { caseDids: newCase.did, clientCaseDids: newCase.did },
         $inc: {
-          totalBilledAmount: paymentLedger?.totalAgreedAmount || 0,
-          totalDueAmount: paymentLedger?.dueAmount || paymentLedger?.totalAgreedAmount || 0,
+          totalBilledAmount: totalAgreed,
+          totalDueAmount: due,
+          totalPaidAmount: advancePaid,
         },
       }
     ).catch(() => {});
 
     return res.status(201).json({
       success: true,
+      status: "success",
       message: "Case created successfully",
       data: newCase,
     });
   } catch (error) {
+    console.error("caseFile.createCase error:", error);
     return res.status(500).json({
       success: false,
+      status: "error",
       message: error.message || "Failed to create case",
     });
   }

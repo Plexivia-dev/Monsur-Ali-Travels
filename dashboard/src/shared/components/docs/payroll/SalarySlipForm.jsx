@@ -127,7 +127,7 @@ export function SalarySlipForm({ formData, setFormData, onSubmit, onReset, isSub
   const progressPercent = ((currentStep - 1) / (steps.length - 1)) * 100;
 
   return (
-    <div className="space-y-5 max-w-[850px] mx-auto">
+    <div className="space-y-5 w-full">
       {/* Top Header Card */}
       <div className="bg-card border border-border p-6 rounded-[4px] shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b-2 border-border">
         <div>
