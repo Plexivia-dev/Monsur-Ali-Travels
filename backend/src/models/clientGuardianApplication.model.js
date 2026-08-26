@@ -192,7 +192,7 @@ clientGuardianSchema.pre("save", function (next) {
 });
 
 export const ClientGuardianModel =
-  mongoose.models.ClientGuardian ||
-  mongoose.model("ClientGuardian", clientGuardianSchema);
+  mongoose.models.ClientGuardianApplication || mongoose.models.ClientGuardian ||
+  mongoose.model("ClientGuardianApplication", clientGuardianSchema);
 
 export default ClientGuardianModel;
