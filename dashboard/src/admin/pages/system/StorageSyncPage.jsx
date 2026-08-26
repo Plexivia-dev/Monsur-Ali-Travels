@@ -204,21 +204,31 @@ const StorageSyncPage = () => {
   return (
     <div className="space-y-6 pb-12">
       {/* Header Banner */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-gradient-to-r from-primary/10 via-primary/5 to-transparent p-6 rounded-2xl border border-primary/20 shadow-sm">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-5 bg-card p-6 md:p-7 rounded-2xl border border-border/80 shadow-xs relative overflow-hidden">
         <div>
-          <div className="flex items-center gap-2">
-            <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-primary text-white uppercase tracking-wider">
+          <div className="flex items-center gap-2.5">
+            <span className="px-3 py-0.5 rounded-full text-[11px] font-extrabold bg-primary text-white uppercase tracking-wider shadow-2xs">
               Storage Engine
             </span>
-            <span className="flex items-center gap-1 text-xs font-semibold text-emerald-600 bg-emerald-50 dark:bg-emerald-950/40 px-2 py-0.5 rounded-full border border-emerald-200">
-              <span className="size-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+            <span
+              className={`flex items-center gap-1.5 text-xs font-bold px-3 py-0.5 rounded-full border ${
+                overview?.r2Configured
+                  ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20'
+                  : 'bg-zinc-500/10 text-zinc-600 dark:text-zinc-400 border-zinc-500/20'
+              }`}
+            >
+              <span
+                className={`size-2 rounded-full ${
+                  overview?.r2Configured ? 'bg-emerald-500 animate-pulse' : 'bg-zinc-400'
+                }`}
+              ></span>
               {overview?.r2Configured ? 'Cloudflare R2 Connected' : 'Local Disk Only'}
             </span>
           </div>
-            <h1 className="text-2xl md:text-3xl font-extrabold text-foreground tracking-tight mt-1.5">
+          <h1 className="text-2xl md:text-3xl font-black text-foreground tracking-tight mt-2.5">
             Storage & Cloud Sync
           </h1>
-          <p className="text-sm text-muted-foreground mt-0.5">
+          <p className="text-xs md:text-sm text-muted-foreground font-medium mt-1">
             Cloudflare R2 Object Storage, Storage Health, Data Transfer, and Automated Cleanups
           </p>
         </div>
@@ -228,29 +238,33 @@ const StorageSyncPage = () => {
           <button
             onClick={loadAllData}
             disabled={loading}
-            className="flex items-center gap-2 px-3.5 py-2 text-sm font-semibold rounded-xl border border-input bg-background hover:bg-muted text-foreground transition-all cursor-pointer shadow-xs disabled:opacity-50"
+            className="flex items-center gap-2 px-4 py-2.5 text-xs font-bold rounded-xl border border-border bg-card hover:bg-muted text-foreground transition-all cursor-pointer shadow-xs disabled:opacity-50"
             title="Refresh statistics"
           >
-            <RefreshCw className={`size-4 ${loading ? 'animate-spin' : ''}`} />
+            <RefreshCw className={`size-3.5 ${loading ? 'animate-spin' : ''}`} />
             <span>Refresh</span>
           </button>
 
           <button
             onClick={handleTriggerOrphanScan}
             disabled={detecting || loading}
-            className="flex items-center gap-2 px-4 py-2 text-sm font-semibold rounded-xl border border-amber-300 dark:border-amber-700 bg-amber-50 dark:bg-amber-950/30 text-amber-800 dark:text-amber-300 hover:bg-amber-100 transition-all cursor-pointer shadow-xs disabled:opacity-50"
+            className="flex items-center gap-2 px-4.5 py-2.5 text-xs font-bold rounded-xl border border-amber-500/30 bg-amber-500/10 hover:bg-amber-500/20 text-amber-700 dark:text-amber-400 transition-all cursor-pointer shadow-xs disabled:opacity-50"
           >
-            {detecting ? <Loader2 className="size-4 animate-spin" /> : <AlertTriangle className="size-4 text-amber-600" />}
+            {detecting ? (
+              <Loader2 className="size-3.5 animate-spin" />
+            ) : (
+              <AlertTriangle className="size-3.5 text-amber-600 dark:text-amber-400" />
+            )}
             <span>{detecting ? 'Scanning...' : 'Scan Unused Files'}</span>
           </button>
 
           <button
             onClick={handleTriggerSync}
             disabled={syncing || loading}
-            className="flex items-center gap-2 px-4.5 py-2 text-sm font-semibold rounded-xl bg-primary text-primary-foreground hover:bg-primary/90 transition-all cursor-pointer shadow-md disabled:opacity-50"
+            className="flex items-center gap-2 px-5 py-2.5 text-xs font-bold rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground transition-all cursor-pointer shadow-sm disabled:opacity-50"
           >
-            {syncing ? <Loader2 className="size-4 animate-spin text-white" /> : <Cloud className="size-4" />}
-            <span>{syncing ? 'Syncing with R2...' : 'Sync to R2 Now'}</span>
+            {syncing ? <Loader2 className="size-3.5 animate-spin text-white" /> : <Cloud className="size-3.5" />}
+            <span>{syncing ? 'Syncing...' : 'Sync to R2 Now'}</span>
           </button>
         </div>
       </div>
@@ -258,153 +272,152 @@ const StorageSyncPage = () => {
       {/* 4 Stat Overview Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {/* Card 1: Total Storage Used */}
-        <Card className="rounded-2xl border border-border shadow-xs hover:border-primary/40 transition-all">
-          <CardContent className="p-5">
-            <div className="flex items-center justify-between">
-              <span className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
-                Total Storage Used
-              </span>
-              <div className="p-2 rounded-xl bg-blue-50 dark:bg-blue-950/40 text-blue-600">
-                <HardDrive className="size-5" />
-              </div>
+        <div className="rounded-2xl border border-border/80 bg-card p-5 shadow-xs hover:border-primary/40 transition-all flex flex-col justify-between">
+          <div className="flex items-center justify-between">
+            <span className="text-[11px] font-extrabold uppercase tracking-wider text-muted-foreground">
+              Total Storage Used
+            </span>
+            <div className="size-9 rounded-xl bg-sky-500/10 border border-sky-500/20 text-sky-600 dark:text-sky-400 flex items-center justify-center">
+              <HardDrive className="size-4.5" />
             </div>
-            <div className="mt-3">
-              <div className="text-2xl font-black text-foreground">
-                {overview ? `${overview.totalLocalMB} MB` : '...'}
-              </div>
-              <p className="text-xs text-muted-foreground mt-1 flex items-center justify-between">
-                <span>{overview ? `${overview.localFilesCount} Total Files` : 'Scanning files...'}</span>
-                <span className="font-semibold text-foreground">{overview ? `${overview.totalLocalGB} GB` : ''}</span>
-              </p>
+          </div>
+          <div className="mt-4">
+            <div className="text-2xl font-black font-mono text-foreground tracking-tight">
+              {overview ? `${overview.totalLocalMB} MB` : '...'}
             </div>
-          </CardContent>
-        </Card>
+            <div className="text-xs text-muted-foreground mt-1.5 flex items-center justify-between font-medium">
+              <span>{overview ? `${overview.localFilesCount} Total Files` : 'Scanning files...'}</span>
+              <span className="font-bold text-foreground font-mono">{overview ? `${overview.totalLocalGB} GB` : ''}</span>
+            </div>
+          </div>
+        </div>
 
         {/* Card 2: Cumulative Data Transferred */}
-        <Card className="rounded-2xl border border-border shadow-xs hover:border-primary/40 transition-all">
-          <CardContent className="p-5">
-            <div className="flex items-center justify-between">
-              <span className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
-                Data Synced
-              </span>
-              <div className="p-2 rounded-xl bg-purple-50 dark:bg-purple-950/40 text-purple-600">
-                <Cloud className="size-5" />
-              </div>
+        <div className="rounded-2xl border border-border/80 bg-card p-5 shadow-xs hover:border-primary/40 transition-all flex flex-col justify-between">
+          <div className="flex items-center justify-between">
+            <span className="text-[11px] font-extrabold uppercase tracking-wider text-muted-foreground">
+              Data Synced
+            </span>
+            <div className="size-9 rounded-xl bg-indigo-500/10 border border-indigo-500/20 text-indigo-600 dark:text-indigo-400 flex items-center justify-center">
+              <Cloud className="size-4.5" />
             </div>
-            <div className="mt-3">
-              <div className="text-2xl font-black text-foreground">
-                {overview ? `${overview.cumulativeStats?.totalFilesUploaded || 0} Files` : '...'}
-              </div>
-              <p className="text-xs text-muted-foreground mt-1">
-                {overview?.cumulativeStats?.totalSyncRuns || 0} Total Sync Runs ({overview?.cumulativeStats?.successfulRuns || 0} Successful)
-              </p>
+          </div>
+          <div className="mt-4">
+            <div className="text-2xl font-black font-mono text-foreground tracking-tight">
+              {overview ? `${overview.cumulativeStats?.totalFilesUploaded || 0} Files` : '...'}
             </div>
-          </CardContent>
-        </Card>
+            <p className="text-xs text-muted-foreground mt-1.5 font-medium">
+              {overview?.cumulativeStats?.totalSyncRuns || 0} Runs ({overview?.cumulativeStats?.successfulRuns || 0} Successful)
+            </p>
+          </div>
+        </div>
 
         {/* Card 3: Last Sync Report */}
-        <Card className="rounded-2xl border border-border shadow-xs hover:border-primary/40 transition-all">
-          <CardContent className="p-5">
-            <div className="flex items-center justify-between">
-              <span className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
-                Last Sync
-              </span>
-              <div className="p-2 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600">
-                <Clock className="size-5" />
-              </div>
+        <div className="rounded-2xl border border-border/80 bg-card p-5 shadow-xs hover:border-primary/40 transition-all flex flex-col justify-between">
+          <div className="flex items-center justify-between">
+            <span className="text-[11px] font-extrabold uppercase tracking-wider text-muted-foreground">
+              Last Sync
+            </span>
+            <div className="size-9 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-600 dark:text-emerald-400 flex items-center justify-center">
+              <Clock className="size-4.5" />
             </div>
-            <div className="mt-3">
-              <div className="text-sm font-bold text-foreground truncate">
-                {overview?.lastSyncLog ? formatDate(overview.lastSyncLog.createdAt) : 'Never Synced'}
-              </div>
-              <div className="flex items-center gap-2 mt-1">
-                <span className={`px-2 py-0.5 rounded-full text-[11px] font-bold ${
-                  overview?.lastSyncLog?.status === 'Success' 
-                    ? 'bg-emerald-100 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-300' 
+          </div>
+          <div className="mt-4">
+            <div className="text-sm font-bold text-foreground truncate">
+              {overview?.lastSyncLog ? formatDate(overview.lastSyncLog.createdAt) : 'Never Synced'}
+            </div>
+            <div className="flex items-center gap-2 mt-1.5">
+              <span
+                className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider ${
+                  overview?.lastSyncLog?.status === 'Success'
+                    ? 'bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 border border-emerald-500/30'
                     : 'bg-muted text-muted-foreground'
-                }`}>
-                  {overview?.lastSyncLog?.status || 'No Log'}
-                </span>
-                <span className="text-xs text-muted-foreground">
-                  {overview?.lastSyncLog ? `${overview.lastSyncLog.durationMs}ms (${overview.lastSyncLog.triggeredBy})` : ''}
-                </span>
-              </div>
+                }`}
+              >
+                {overview?.lastSyncLog?.status || 'No Log'}
+              </span>
+              <span className="text-xs text-muted-foreground font-mono">
+                {overview?.lastSyncLog
+                  ? `${overview.lastSyncLog.durationMs}ms (${overview.lastSyncLog.triggeredBy})`
+                  : ''}
+              </span>
             </div>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
 
         {/* Card 4: Orphan Cleanup Queue */}
-        <Card className="rounded-2xl border border-border shadow-xs hover:border-primary/40 transition-all">
-          <CardContent className="p-5">
-            <div className="flex items-center justify-between">
-              <span className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
-                Orphan Pending
-              </span>
-              <div className="p-2 rounded-xl bg-amber-50 dark:bg-amber-950/40 text-amber-600">
-                <Trash2 className="size-5" />
-              </div>
+        <div className="rounded-2xl border border-border/80 bg-card p-5 shadow-xs hover:border-primary/40 transition-all flex flex-col justify-between">
+          <div className="flex items-center justify-between">
+            <span className="text-[11px] font-extrabold uppercase tracking-wider text-muted-foreground">
+              Orphan Pending
+            </span>
+            <div className="size-9 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-600 dark:text-rose-400 flex items-center justify-center">
+              <Trash2 className="size-4.5" />
             </div>
-            <div className="mt-3">
-              <div className="text-2xl font-black text-foreground flex items-center gap-2">
-                <span>{overview?.pendingBatchesCount || 0}</span>
-                <span className="text-xs font-semibold text-amber-600">Batches Pending</span>
-              </div>
-              <p className="text-xs text-muted-foreground mt-1">
-                {overview?.lastBatch?.orphanCount ? `${overview.lastBatch.orphanCount} unused files detected` : 'No pending cleanups'}
-              </p>
+          </div>
+          <div className="mt-4">
+            <div className="text-2xl font-black font-mono text-foreground flex items-center gap-2 tracking-tight">
+              <span>{overview?.pendingBatchesCount || 0}</span>
+              <span className="text-xs font-bold text-amber-600 dark:text-amber-400">Batches</span>
             </div>
-          </CardContent>
-        </Card>
+            <p className="text-xs text-muted-foreground mt-1.5 font-medium">
+              {overview?.lastBatch?.orphanCount
+                ? `${overview.lastBatch.orphanCount} unused files detected`
+                : 'No pending cleanups'}
+            </p>
+          </div>
+        </div>
       </div>
 
       {/* Category Storage Breakdown Grid */}
       {overview?.categories && (
-        <Card className="rounded-2xl border border-border shadow-xs">
-          <CardContent className="p-5">
-            <div className="flex items-center gap-2 mb-4">
-              <Layers className="size-4.5 text-primary" />
-              <h2 className="text-base font-bold text-foreground">
-                Storage Distribution by Category
-              </h2>
-            </div>
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3">
-              {Object.entries(overview.categories).map(([key, cat]) => (
-                <div
-                  key={key}
-                  className="p-3.5 rounded-xl bg-muted/40 border border-border flex flex-col justify-between"
-                >
-                  <span className="text-xs font-semibold text-muted-foreground capitalize">
+        <div className="rounded-2xl border border-border/80 bg-card p-6 shadow-xs">
+          <div className="flex items-center gap-2 mb-4">
+            <Layers className="size-4 text-primary" />
+            <h2 className="text-sm font-extrabold uppercase tracking-wider text-foreground">
+              Storage Distribution by Category
+            </h2>
+          </div>
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3.5">
+            {Object.entries(overview.categories).map(([key, cat]) => (
+              <div
+                key={key}
+                className="p-4 rounded-2xl bg-muted/20 border border-border/60 hover:border-primary/40 flex flex-col justify-between transition-all shadow-xs group"
+              >
+                <div className="flex items-center gap-1.5">
+                  <span className="size-1.5 rounded-full bg-primary group-hover:scale-125 transition-transform"></span>
+                  <span className="text-xs font-bold text-muted-foreground uppercase tracking-wide truncate">
                     {cat.name}
                   </span>
-                  <div className="mt-2">
-                    <span className="text-lg font-black text-foreground">
-                      {cat.count} <span className="text-xs font-normal text-muted-foreground">files</span>
-                    </span>
-                    <div className="text-xs font-semibold text-primary mt-0.5">
-                      {formatBytes(cat.bytes)}
-                    </div>
+                </div>
+                <div className="mt-3">
+                  <span className="text-xl font-black font-mono text-foreground">
+                    {cat.count} <span className="text-xs font-semibold text-muted-foreground font-sans">files</span>
+                  </span>
+                  <div className="text-xs font-bold text-primary font-mono mt-1">
+                    {formatBytes(cat.bytes)}
                   </div>
                 </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
+              </div>
+            ))}
+          </div>
+        </div>
       )}
 
       {/* Navigation Tabs */}
-      <div className="flex items-center gap-2 border-b border-border pb-1">
+      <div className="flex items-center gap-2 border-b border-border/80 pb-2">
         <button
           onClick={() => setActiveTab('batches')}
-          className={`flex items-center gap-2 px-4 py-2.5 text-sm font-bold rounded-t-xl transition-all cursor-pointer ${
+          className={`flex items-center gap-2 px-4 py-2 text-xs font-extrabold rounded-xl transition-all cursor-pointer ${
             activeTab === 'batches'
-              ? 'border-b-2 border-primary text-primary bg-primary/5'
-              : 'text-muted-foreground hover:text-foreground'
+              ? 'bg-primary/10 text-primary border border-primary/30 shadow-xs'
+              : 'text-muted-foreground hover:text-foreground hover:bg-muted/50 border border-transparent'
           }`}
         >
-          <Trash2 className="size-4" />
+          <Trash2 className="size-3.5" />
           <span>Orphan File Cleanups</span>
           {overview?.pendingBatchesCount > 0 && (
-            <span className="px-1.5 py-0.2 rounded-full text-xs font-bold bg-amber-500 text-white">
+            <span className="px-2 py-0.2 rounded-full text-[10px] font-black bg-amber-500 text-white">
               {overview.pendingBatchesCount}
             </span>
           )}
@@ -412,13 +425,13 @@ const StorageSyncPage = () => {
 
         <button
           onClick={() => setActiveTab('logs')}
-          className={`flex items-center gap-2 px-4 py-2.5 text-sm font-bold rounded-t-xl transition-all cursor-pointer ${
+          className={`flex items-center gap-2 px-4 py-2 text-xs font-extrabold rounded-xl transition-all cursor-pointer ${
             activeTab === 'logs'
-              ? 'border-b-2 border-primary text-primary bg-primary/5'
-              : 'text-muted-foreground hover:text-foreground'
+              ? 'bg-primary/10 text-primary border border-primary/30 shadow-xs'
+              : 'text-muted-foreground hover:text-foreground hover:bg-muted/50 border border-transparent'
           }`}
         >
-          <Clock className="size-4" />
+          <Clock className="size-3.5" />
           <span>Sync & Transfer History</span>
         </button>
       </div>
@@ -470,22 +483,22 @@ const StorageSyncPage = () => {
                           </td>
                           <td className="py-3.5 px-4">
                             <span
-                              className={`px-2.5 py-1 rounded-full text-xs font-bold ${
+                              className={`px-2.5 py-0.5 rounded-md text-xs font-bold ${
                                 isPending
-                                  ? 'bg-amber-100 dark:bg-amber-950/40 text-amber-700 dark:text-amber-300 border border-amber-200'
+                                  ? 'bg-amber-500/15 text-amber-700 dark:text-amber-300 border border-amber-500/30'
                                   : isPurged
-                                  ? 'bg-emerald-100 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 border border-emerald-200'
-                                  : 'bg-muted text-muted-foreground'
+                                  ? 'bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 border border-emerald-500/30'
+                                  : 'bg-zinc-500/15 text-zinc-700 dark:text-zinc-300 border border-zinc-500/30'
                               }`}
                             >
-                              {batch.status}
+                              {batch.status.replace(/_/g, ' ')}
                             </span>
                           </td>
                           <td className="py-3.5 px-4 text-right">
                             <div className="flex items-center justify-end gap-2">
                               <button
                                 onClick={() => handleViewBatchDetails(batch.did)}
-                                className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg border border-input bg-background hover:bg-muted text-foreground transition-all cursor-pointer"
+                                className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold rounded-lg border border-border bg-card hover:bg-muted text-foreground transition-all cursor-pointer shadow-2xs"
                               >
                                 <Eye className="size-3.5" />
                                 <span>Inspect</span>
@@ -496,7 +509,7 @@ const StorageSyncPage = () => {
                                   <button
                                     onClick={() => handleApprovePurge(batch.did)}
                                     disabled={purgingBatchDid === batch.did}
-                                    className="flex items-center gap-1 px-3 py-1.5 text-xs font-bold rounded-lg bg-rose-600 hover:bg-rose-700 text-white transition-all cursor-pointer shadow-xs disabled:opacity-50"
+                                    className="flex items-center gap-1 px-3 py-1.5 text-xs font-bold rounded-lg bg-rose-600 hover:bg-rose-500 text-white transition-all cursor-pointer shadow-xs disabled:opacity-50"
                                   >
                                     {purgingBatchDid === batch.did ? (
                                       <Loader2 className="size-3.5 animate-spin" />
@@ -509,7 +522,7 @@ const StorageSyncPage = () => {
                                   <button
                                     onClick={() => handleCancelBatch(batch.did)}
                                     disabled={cancellingBatchDid === batch.did}
-                                    className="flex items-center gap-1 px-2.5 py-1.5 text-xs font-semibold rounded-lg border border-border hover:bg-muted text-muted-foreground transition-all cursor-pointer disabled:opacity-50"
+                                    className="flex items-center gap-1 px-2.5 py-1.5 text-xs font-bold rounded-lg bg-rose-500/10 hover:bg-rose-500/20 text-rose-500 dark:text-rose-400 border border-rose-500/40 hover:border-rose-500/80 transition-all cursor-pointer disabled:opacity-50"
                                   >
                                     <XCircle className="size-3.5" />
                                     <span>Cancel</span>
@@ -576,10 +589,10 @@ const StorageSyncPage = () => {
                         </td>
                         <td className="py-3.5 px-4">
                           <span
-                            className={`px-2.5 py-0.5 rounded-full text-xs font-bold ${
+                            className={`px-2.5 py-0.5 rounded-md text-xs font-bold ${
                               log.status === 'Success'
-                                ? 'bg-emerald-100 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300'
-                                : 'bg-rose-100 dark:bg-rose-950/40 text-rose-700 dark:text-rose-300'
+                                ? 'bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 border border-emerald-500/30'
+                                : 'bg-rose-500/15 text-rose-700 dark:text-rose-300 border border-rose-500/30'
                             }`}
                           >
                             {log.status}
