@@ -14,7 +14,8 @@ import {
   CheckCircle2,
   AlertTriangle,
   Sparkles,
-  Calendar
+  Calendar,
+  Eye
 } from 'lucide-react';
 import {
   Dialog,
