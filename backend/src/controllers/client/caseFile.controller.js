@@ -3,6 +3,7 @@ import CaseFile from "../../models/caseFile.model.js";
 import Client from "../../models/client.model.js";
 import TaskModel from "../../models/task.model.js";
 import DocumentVaultModel from "../../models/documentVault.model.js";
+import { UserModel } from "../../models/user.model.js";
 import { generateDid } from "../../utils/generateDid.js";
 
 export const buildCaseIdentifierQuery = (identifier) => {
@@ -136,6 +137,14 @@ export const getAllCases = async (req, res) => {
 
     let queryBuilder = CaseFile.find(filter)
       .populate("clientId", "clientCode fullName phone passportNumber photo")
+      .populate("assignedTo", "name email role subRole designation phone")
+      .populate({
+        path: "workflowTasks",
+        populate: [
+          { path: "permittedDocs" },
+          { path: "assignedTo", select: "name email role subRole designation" }
+        ],
+      })
       .sort(sortOptions)
       .skip(skip)
       .limit(limitNum);
@@ -149,9 +158,27 @@ export const getAllCases = async (req, res) => {
       CaseFile.countDocuments(filter),
     ]);
 
+    const mappedCases = cases.map((c) => {
+      const doc = c.toObject ? c.toObject({ virtuals: true }) : c;
+      if (doc.assignedTo?.name && !doc.assignedToName) {
+        doc.assignedToName = doc.assignedTo.name;
+      }
+      if (!doc.assignedOfficer) {
+        doc.assignedOfficer = doc.assignedToName || doc.assignedTo?.name || "";
+      }
+      if (Array.isArray(doc.workflowTasks)) {
+        doc.workflowTasks.forEach((t) => {
+          if (!t.assignedToName && t.assignedTo?.name) {
+            t.assignedToName = t.assignedTo.name;
+          }
+        });
+      }
+      return doc;
+    });
+
     return res.status(200).json({
       success: true,
-      data: cases,
+      data: mappedCases,
       pagination: {
         total,
         page: pageNum,
@@ -192,6 +219,7 @@ export const lookupCase = async (req, res) => {
       ],
     })
       .populate("clientId", "fullName phone passportNumber clientCode")
+      .populate("assignedTo", "name email role subRole designation phone")
       .sort({ createdAt: -1 })
       .limit(Number(limit) || 10);
 
@@ -214,9 +242,13 @@ export const getCaseById = async (req, res) => {
     const caseDoc = await CaseFile.findOne(buildCaseIdentifierQuery(id))
       .populate("clientInfo")
       .populate("clientId")
+      .populate("assignedTo", "name email role subRole designation phone")
       .populate({
         path: "workflowTasks",
-        populate: { path: "permittedDocs" },
+        populate: [
+          { path: "permittedDocs" },
+          { path: "assignedTo", select: "name email role subRole designation" }
+        ],
       })
       .populate("financialReceipts")
       .populate("vaultDocuments")
@@ -226,6 +258,20 @@ export const getCaseById = async (req, res) => {
       return res.status(404).json({
         success: false,
         message: "Case file not found",
+      });
+    }
+
+    if (caseDoc.assignedTo?.name && !caseDoc.assignedToName) {
+      caseDoc.assignedToName = caseDoc.assignedTo.name;
+    }
+    if (!caseDoc.assignedOfficer) {
+      caseDoc.assignedOfficer = caseDoc.assignedToName || caseDoc.assignedTo?.name || "";
+    }
+    if (Array.isArray(caseDoc.workflowTasks)) {
+      caseDoc.workflowTasks.forEach((t) => {
+        if (!t.assignedToName && t.assignedTo?.name) {
+          t.assignedToName = t.assignedTo.name;
+        }
       });
     }
 

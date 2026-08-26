@@ -33,6 +33,7 @@ import {
   Edit3,
   X,
   Trash2,
+  UserCheck,
 } from 'lucide-react';
 import { apiClient } from '@/lib/api-client';
 import { toast } from 'sonner';
@@ -82,7 +83,8 @@ export default function CaseDetailPage() {
     documentName: 'Passport Scan Copy',
     fileName: '',
     fileUrl: '',
-    fileSize: '1.5 MB',
+    fileSize: '',
+    file: null,
   });
   const [uploadingDoc, setUploadingDoc] = useState(false);
 
@@ -185,17 +187,13 @@ export default function CaseDetailPage() {
     if (!file) return;
     const sizeInMb = (file.size / (1024 * 1024)).toFixed(2) + ' MB';
 
-    // Read file as Data URL automatically
-    const reader = new FileReader();
-    reader.onload = (event) => {
-      setUploadDocForm((prev) => ({
-        ...prev,
-        fileName: file.name,
-        fileSize: sizeInMb,
-        fileUrl: event.target?.result || '',
-      }));
-    };
-    reader.readAsDataURL(file);
+    setUploadDocForm((prev) => ({
+      ...prev,
+      fileName: file.name,
+      fileSize: sizeInMb,
+      file: file,
+      fileUrl: '',
+    }));
   };
 
   const handleRemoveSelectedFile = () => {
@@ -205,6 +203,7 @@ export default function CaseDetailPage() {
       fileName: '',
       fileUrl: '',
       fileSize: '',
+      file: null,
     }));
   };
 
@@ -256,27 +255,64 @@ export default function CaseDetailPage() {
 
   const handleUploadDocument = async (e) => {
     e.preventDefault();
-    if (!uploadDocForm.documentName || !uploadDocForm.fileUrl) {
+    if (!uploadDocForm.documentName || (!uploadDocForm.file && !uploadDocForm.fileUrl)) {
       toast.error('Please choose a file to upload.');
       return;
     }
     setUploadingDoc(true);
     try {
+      let finalFileUrl = uploadDocForm.fileUrl;
+      let finalFileName = uploadDocForm.fileName;
+      let finalFileSize = uploadDocForm.fileSize;
+
+      // 1. Upload physical file to server/R2 storage endpoint first
+      if (uploadDocForm.file) {
+        const formData = new FormData();
+        formData.append('file', uploadDocForm.file);
+
+        const clientId = caseData?.clientDid || caseData?.clientId || caseData?.clientInfo?.did || caseData?.clientInfo?._id || '';
+        const docCategorySlug = (uploadDocForm.documentName || 'document').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+        const queryParams = new URLSearchParams();
+        if (clientId) queryParams.append('clientId', clientId);
+        queryParams.append('documentType', `cases-${docCategorySlug}`);
+
+        const uploadRes = await apiClient.post(`/api/v1/upload/single?${queryParams.toString()}`, formData, {
+          headers: { 'Content-Type': 'multipart/form-data' },
+        });
+
+        if (uploadRes.data?.success && uploadRes.data?.data) {
+          finalFileUrl = uploadRes.data.data.url || uploadRes.data.data.fullUrl;
+          finalFileName = uploadRes.data.data.originalName || uploadRes.data.data.name || finalFileName;
+          if (uploadRes.data.data.size) {
+            finalFileSize = `${(uploadRes.data.data.size / (1024 * 1024)).toFixed(2)} MB`;
+          }
+        } else {
+          throw new Error(uploadRes.data?.message || 'Failed to upload physical file to server');
+        }
+      }
+
+      if (!finalFileUrl) {
+        throw new Error('Failed to resolve uploaded file URL');
+      }
+
+      // 2. Attach document metadata to the case vault
       const res = await apiClient.post(`/api/v1/client/cases/${caseData.did || caseData._id}/documents`, {
         documentName: uploadDocForm.documentName,
-        fileName: uploadDocForm.fileName || `${uploadDocForm.documentName}.pdf`,
-        fileUrl: uploadDocForm.fileUrl,
-        fileSize: uploadDocForm.fileSize || '1.2 MB',
+        fileName: finalFileName || `${uploadDocForm.documentName}.pdf`,
+        fileUrl: finalFileUrl,
+        fileSize: finalFileSize || '1.2 MB',
         accessLevel: 'Restricted',
       });
+
       if (res.data?.success || res.data?.status === 'success') {
-        toast.success('Document uploaded to case vault!');
+        toast.success('Document uploaded and saved to case vault!');
         setIsUploadModalOpen(false);
         setUploadDocForm({
           documentName: 'Passport Scan Copy',
           fileName: '',
           fileUrl: '',
           fileSize: '',
+          file: null,
         });
         if (fileInputRef.current) fileInputRef.current.value = '';
         fetchCaseDetails();
@@ -354,11 +390,12 @@ export default function CaseDetailPage() {
 
   // 3. Workflow tasks
   (caseData.workflowTasks || []).forEach((t) => {
+    const taskAssignee = t.assignedToName || t.assignedTo?.name || t.assignedToDid || 'Staff';
     activityTimeline.push({
       type: 'TASK',
       title: `Task Step ${t.stepNumber || 1}: ${t.title}`,
-      description: `Assigned to ${t.assignedToName || t.assignedToDid || 'Staff'} • Status: ${t.status}`,
-      user: t.assignedToName || 'Staff',
+      description: `Assigned to ${taskAssignee} • Status: ${t.status}`,
+      user: taskAssignee,
       role: 'Staff',
       timestamp: t.createdAt,
       icon: Layers,
@@ -526,6 +563,15 @@ export default function CaseDetailPage() {
               Created By:{' '}
               <strong className="text-foreground font-bold">
                 {caseData.createdByName || caseData.createdBy?.name || 'Staff Member'}
+              </strong>
+            </span>
+          </div>
+          <div className="flex items-center gap-2 text-muted-foreground">
+            <UserCheck className="w-4 h-4 text-sky-500" />
+            <span>
+              Assigned Staff:{' '}
+              <strong className="text-foreground font-bold">
+                {caseData.assignedToName || caseData.assignedTo?.name || caseData.assignedOfficer || caseData.workflowTasks?.[caseData.workflowTasks.length - 1]?.assignedToName || caseData.workflowTasks?.[caseData.workflowTasks.length - 1]?.assignedTo?.name || 'Unassigned'}
               </strong>
             </span>
           </div>
@@ -887,7 +933,7 @@ export default function CaseDetailPage() {
                     <div className="flex items-center justify-between text-xs pt-2 border-t border-border text-muted-foreground">
                       <span>
                         Assigned Staff:{' '}
-                        <strong className="text-foreground">{t.assignedToName || t.assignedToDid || 'Staff'}</strong>
+                        <strong className="text-foreground">{t.assignedToName || t.assignedTo?.name || t.assignedToDid || 'Unassigned'}</strong>
                       </span>
                       {t.status === 'Done' && (
                         <button
@@ -1264,7 +1310,7 @@ export default function CaseDetailPage() {
               </button>
               <button
                 type="submit"
-                disabled={uploadingDoc || !uploadDocForm.fileUrl}
+                disabled={uploadingDoc || (!uploadDocForm.file && !uploadDocForm.fileUrl)}
                 className="flex items-center gap-1.5 px-5 py-2 bg-primary text-primary-foreground font-bold rounded-xl shadow-xs disabled:opacity-50 cursor-pointer hover:bg-primary/90 transition-all"
               >
                 {uploadingDoc ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <UploadCloud className="w-3.5 h-3.5" />}

@@ -16,13 +16,15 @@ class UploadController {
    */
   async uploadSingleFile(req, res) {
     try {
-      if (!req.file) {
+      const file = req.file || (req.files && (Array.isArray(req.files) ? req.files[0] : (req.files.file?.[0] || req.files.image?.[0] || req.files.avatar?.[0] || req.files.photo?.[0])));
+      if (!file) {
         return res.status(400).json({
           success: false,
           status: 'error',
-          message: 'No file provided in request (use field name "file").'
+          message: 'No file provided in request (use field name "file" or "image").'
         });
       }
+      req.file = file;
 
       // Optimize image if it's an image file
       await processUploadedImage(req.file);
@@ -56,8 +58,8 @@ class UploadController {
       const fileData = {
         name: req.file.filename,
         originalName: req.file.originalname,
-        url: relativeUrl,
-        fullUrl: fullUrl,
+        url: r2Data?.publicUrl || relativeUrl,
+        fullUrl: r2Data?.publicUrl || fullUrl,
         r2Key: r2Data?.key || null,
         r2Bucket: r2Data?.bucket || null,
         storage: r2Data ? 'r2' : 'local',

@@ -57,7 +57,8 @@ export function CaseWorkspaceDrawer({ caseId, isOpen, onClose, onRefresh }) {
     documentName: 'Passport Scan Copy',
     fileName: '',
     fileUrl: '',
-    fileSize: '1.5 MB',
+    fileSize: '',
+    file: null,
   });
   const [uploadingDoc, setUploadingDoc] = useState(false);
 
@@ -155,17 +156,13 @@ export function CaseWorkspaceDrawer({ caseId, isOpen, onClose, onRefresh }) {
     if (!file) return;
     const sizeInMb = (file.size / (1024 * 1024)).toFixed(2) + ' MB';
 
-    // Read file as Data URL automatically
-    const reader = new FileReader();
-    reader.onload = (event) => {
-      setUploadDocForm((prev) => ({
-        ...prev,
-        fileName: file.name,
-        fileSize: sizeInMb,
-        fileUrl: event.target?.result || '',
-      }));
-    };
-    reader.readAsDataURL(file);
+    setUploadDocForm((prev) => ({
+      ...prev,
+      fileName: file.name,
+      fileSize: sizeInMb,
+      file: file,
+      fileUrl: '',
+    }));
   };
 
   const handleRemoveSelectedFile = () => {
@@ -175,38 +172,74 @@ export function CaseWorkspaceDrawer({ caseId, isOpen, onClose, onRefresh }) {
       fileName: '',
       fileUrl: '',
       fileSize: '',
+      file: null,
     }));
   };
 
   const handleUploadDocument = async (e) => {
     e.preventDefault();
-    if (!uploadDocForm.documentName || !uploadDocForm.fileUrl) {
+    if (!uploadDocForm.documentName || (!uploadDocForm.file && !uploadDocForm.fileUrl)) {
       toast.error('Please choose a file to upload.');
       return;
     }
     setUploadingDoc(true);
     try {
+      let finalFileUrl = uploadDocForm.fileUrl;
+      let finalFileName = uploadDocForm.fileName;
+      let finalFileSize = uploadDocForm.fileSize;
+
+      // 1. Upload physical file to server/R2 storage endpoint first
+      if (uploadDocForm.file) {
+        const formData = new FormData();
+        formData.append('file', uploadDocForm.file);
+
+        const clientId = caseData?.clientDid || caseData?.clientId || '';
+        const docCategorySlug = (uploadDocForm.documentName || 'document').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+        const queryParams = new URLSearchParams();
+        if (clientId) queryParams.append('clientId', clientId);
+        queryParams.append('documentType', `cases-${docCategorySlug}`);
+
+        const uploadRes = await apiClient.post(`/api/v1/upload/single?${queryParams.toString()}`, formData, {
+          headers: { 'Content-Type': 'multipart/form-data' },
+        });
+
+        if (uploadRes.data?.success && uploadRes.data?.data) {
+          finalFileUrl = uploadRes.data.data.url || uploadRes.data.data.fullUrl;
+          finalFileName = uploadRes.data.data.originalName || uploadRes.data.data.name || finalFileName;
+          if (uploadRes.data.data.size) {
+            finalFileSize = `${(uploadRes.data.data.size / (1024 * 1024)).toFixed(2)} MB`;
+          }
+        } else {
+          throw new Error(uploadRes.data?.message || 'Failed to upload physical file to server');
+        }
+      }
+
+      if (!finalFileUrl) {
+        throw new Error('Failed to resolve uploaded file URL');
+      }
+
       const res = await apiClient.post(`/api/v1/client/cases/${caseId}/documents`, {
         documentName: uploadDocForm.documentName,
-        fileName: uploadDocForm.fileName || `${uploadDocForm.documentName}.pdf`,
-        fileUrl: uploadDocForm.fileUrl,
-        fileSize: uploadDocForm.fileSize || '1.2 MB',
+        fileName: finalFileName || `${uploadDocForm.documentName}.pdf`,
+        fileUrl: finalFileUrl,
+        fileSize: finalFileSize || '1.2 MB',
         accessLevel: 'Restricted',
       });
       if (res.data?.success) {
-        toast.success('Document saved to case vault!');
+        toast.success('Document uploaded and saved to case vault!');
         setShowUploadModal(false);
         setUploadDocForm({
           documentName: 'Passport Scan Copy',
           fileName: '',
           fileUrl: '',
           fileSize: '',
+          file: null,
         });
         if (fileInputRef.current) fileInputRef.current.value = '';
         fetchCaseDetails();
       }
     } catch (err) {
-      toast.error('Failed to upload document.');
+      toast.error(err.response?.data?.message || err.message || 'Failed to upload document.');
     } finally {
       setUploadingDoc(false);
     }
@@ -865,7 +898,7 @@ export function CaseWorkspaceDrawer({ caseId, isOpen, onClose, onRefresh }) {
               </button>
               <button
                 type="submit"
-                disabled={uploadingDoc || !uploadDocForm.fileUrl}
+                disabled={uploadingDoc || (!uploadDocForm.file && !uploadDocForm.fileUrl)}
                 className="flex items-center gap-1.5 px-5 py-2 bg-primary text-primary-foreground font-bold rounded-xl shadow-xs disabled:opacity-50 cursor-pointer hover:bg-primary/90 transition-all"
               >
                 {uploadingDoc ? <Loader2 className="size-3.5 animate-spin" /> : <UploadCloud className="size-3.5" />}

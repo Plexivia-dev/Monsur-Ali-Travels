@@ -585,7 +585,7 @@ export default function ClientDetailPage() {
                                 </p>
                                 <div className="text-[10px] text-muted-foreground flex items-center gap-3 pt-1">
                                   <span>
-                                    Assigned: <strong>{task.assignedToName || 'Staff'}</strong>
+                                    Assigned: <strong>{task.assignedToName || task.assignedTo?.name || task.assignedToDid || 'Staff'}</strong>
                                   </span>
                                   <span>Updated: {formatDate(task.updatedAt)}</span>
                                 </div>
