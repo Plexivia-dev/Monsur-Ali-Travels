@@ -41,8 +41,6 @@ const CreateClientModal = ({ isOpen, onClose, onSuccess }) => {
     
     // Financial / Package Details
     packageAmount: '',
-    advanceAmount: '',
-    paymentMethod: 'CASH',
     
     // Notes & Address
     address: '',
@@ -140,8 +138,6 @@ const CreateClientModal = ({ isOpen, onClose, onSuccess }) => {
             caseType: formData.serviceType,
             serviceType: formData.serviceType,
             packageCost: Number(formData.packageAmount) || 0,
-            initialPaidAmount: Number(formData.advanceAmount) || 0,
-            paymentMethod: formData.paymentMethod,
             remarks: formData.notes.trim() || formData.address.trim() || undefined,
           });
         } catch (caseErr) {
@@ -408,57 +404,23 @@ const CreateClientModal = ({ isOpen, onClose, onSuccess }) => {
             </div>
           </div>
 
-          {/* ── SECTION 3: PACKAGE & PAYMENT DETAILS ────────────────────────────── */}
+          {/* ── SECTION 3: PACKAGE DETAILS ────────────────────────────── */}
           <div>
             <h3 className="text-xs font-bold uppercase tracking-wider text-muted-foreground mb-3">
-              3. Package & Payment Details
+              3. Package Details
             </h3>
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-              <div>
-                <label className="text-xs font-semibold text-foreground block mb-1.5">
-                  Total Package Amount (BDT)
-                </label>
-                <input
-                  type="number"
-                  name="packageAmount"
-                  placeholder="e.g. 450000"
-                  value={formData.packageAmount}
-                  onChange={handleChange}
-                  className="w-full px-3.5 py-2 text-xs rounded-xl border border-input bg-background focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary font-mono"
-                />
-              </div>
-
-              <div>
-                <label className="text-xs font-semibold text-foreground block mb-1.5">
-                  Initial Advance Paid (BDT)
-                </label>
-                <input
-                  type="number"
-                  name="advanceAmount"
-                  placeholder="e.g. 50000"
-                  value={formData.advanceAmount}
-                  onChange={handleChange}
-                  className="w-full px-3.5 py-2 text-xs rounded-xl border border-input bg-background focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary font-mono"
-                />
-              </div>
-
-              <div>
-                <label className="text-xs font-semibold text-foreground block mb-1.5">
-                  Payment Method
-                </label>
-                <select
-                  name="paymentMethod"
-                  value={formData.paymentMethod}
-                  onChange={handleChange}
-                  className="w-full px-3 py-2 text-xs rounded-xl border border-input bg-background focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
-                >
-                  <option value="CASH">Cash (ক্যাশ)</option>
-                  <option value="BKASH">bKash (বিকাশ)</option>
-                  <option value="NAGAD">Nagad (নগদ)</option>
-                  <option value="BANK_TRANSFER">Bank Transfer (ব্যাংক)</option>
-                  <option value="OTHER">Other</option>
-                </select>
-              </div>
+            <div>
+              <label className="text-xs font-semibold text-foreground block mb-1.5">
+                Total Agreed Package Amount (BDT)
+              </label>
+              <input
+                type="number"
+                name="packageAmount"
+                placeholder="e.g. 450000"
+                value={formData.packageAmount}
+                onChange={handleChange}
+                className="w-full px-3.5 py-2 text-xs rounded-xl border border-input bg-background focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary font-mono"
+              />
             </div>
           </div>
 

@@ -372,25 +372,45 @@ export function UnifiedSidebar({
           <button
             type="button"
             onClick={onProfileClick}
-            className="size-8 rounded-full border border-sky-400/50 bg-sidebar-accent hover:bg-sidebar-accent/80 text-sky-300 flex items-center justify-center shrink-0 transition-all duration-200 cursor-pointer mx-auto shadow-xs"
-            title={user?.name || 'My Profile'}
+            className="relative size-9 rounded-full border border-sky-400/50 bg-sidebar-accent hover:bg-sidebar-accent/80 text-sky-300 flex items-center justify-center shrink-0 transition-all duration-200 cursor-pointer mx-auto shadow-xs"
+            title={user?.name || user?.fullName || 'My Profile'}
             aria-label="Profile"
           >
-            <User className="w-4 h-4 text-sky-300 hover:text-white" />
+            {user?.avatar || user?.avatarUrl || user?.photoUrl ? (
+              <img
+                src={user.avatar || user.avatarUrl || user.photoUrl}
+                alt={user?.name || 'User'}
+                className="w-full h-full object-cover rounded-full"
+              />
+            ) : (
+              <span className="font-bold text-xs text-white">
+                {user?.name ? user.name[0].toUpperCase() : user?.fullName ? user.fullName[0].toUpperCase() : 'U'}
+              </span>
+            )}
+            <span className="ring-sidebar absolute right-0 bottom-0 block size-2.5 rounded-full bg-emerald-400 ring-2" />
           </button>
         ) : (
           <div className="flex items-center justify-between gap-2.5 px-2.5 py-2 rounded-xl bg-sidebar-accent border border-sidebar-border w-full overflow-hidden shadow-xs">
             <div
               onClick={onProfileClick}
               className="flex items-center gap-2.5 min-w-0 cursor-pointer hover:opacity-90 transition-opacity"
-              title={user?.name || 'My Profile'}
+              title={user?.name || user?.fullName || 'My Profile'}
             >
-              <div className="size-9 rounded-full bg-sky-500/30 border border-sky-300/40 text-white flex items-center justify-center font-bold text-xs shrink-0 shadow-xs">
-                {user?.name ? user.name[0].toUpperCase() : 'U'}
+              <div className="relative size-9 rounded-full bg-sky-500/30 border border-sky-300/40 text-white flex items-center justify-center font-bold text-xs shrink-0 shadow-xs">
+                {user?.avatar || user?.avatarUrl || user?.photoUrl ? (
+                  <img
+                    src={user.avatar || user.avatarUrl || user.photoUrl}
+                    alt={user?.name || 'User'}
+                    className="w-full h-full object-cover rounded-full"
+                  />
+                ) : (
+                  user?.name ? user.name[0].toUpperCase() : user?.fullName ? user.fullName[0].toUpperCase() : 'U'
+                )}
+                <span className="ring-sidebar absolute right-0 bottom-0 block size-2.5 rounded-full bg-emerald-400 ring-2" />
               </div>
               <div className="flex flex-col min-w-0 text-left">
                 <span className="text-xs font-bold text-sidebar-foreground truncate leading-tight">
-                  {user?.name || 'Administrator'}
+                  {user?.name || user?.fullName || 'Administrator'}
                 </span>
                 <span className="text-[10.5px] text-sky-200 font-medium truncate mt-0.5">
                   {user?.role || 'Staff'}

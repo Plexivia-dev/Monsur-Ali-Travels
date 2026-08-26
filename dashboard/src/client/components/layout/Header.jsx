@@ -6,7 +6,6 @@ import { usePortalStore } from '../../store/usePortalStore';
 import { Button } from '@/components/ui/button';
 import { SidebarTrigger } from '@/components/ui/sidebar';
 import ModeToggle from './ModeToggle';
-import ProfileDropdown from './ProfileDropdown';
 import LanguageToggle from './LanguageToggle';
 
 export const Header = () => {
@@ -101,9 +100,6 @@ export const Header = () => {
 
           {/* Dark / Light Mode Toggle */}
           <ModeToggle />
-
-          {/* User Profile Dropdown */}
-          <ProfileDropdown />
         </div>
       </div>
     </header>
