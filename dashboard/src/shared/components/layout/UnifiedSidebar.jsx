@@ -60,15 +60,24 @@ export function UnifiedSidebar({
   // Keep parent menus persistently open when any child is active to prevent collapsible accordion flicker
   React.useEffect(() => {
     if (!Array.isArray(menuGroups)) return;
-    const newOpen = {};
-    menuGroups.forEach((group) => {
-      group.items?.forEach((item) => {
-        if (item.childItems?.some((child) => activeChecker?.(child))) {
-          newOpen[item.id || item.name] = true;
-        }
+    setOpenMenus((prev) => {
+      let hasChanges = false;
+      const next = { ...prev };
+      
+      menuGroups.forEach((group) => {
+        group.items?.forEach((item) => {
+          if (item.childItems?.some((child) => activeChecker?.(child))) {
+            const id = item.id || item.name;
+            if (!next[id]) {
+              next[id] = true;
+              hasChanges = true;
+            }
+          }
+        });
       });
+      
+      return hasChanges ? next : prev;
     });
-    setOpenMenus((prev) => ({ ...newOpen, ...prev, ...newOpen }));
   }, [menuGroups, activeChecker]);
 
   const toggleGroup = (id) => {

@@ -10,13 +10,13 @@ export function AdminSidebar({ lang = 'EN', onOpenLogoutConfirm }) {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const activeChecker = (item) => {
+  const activeChecker = React.useCallback((item) => {
     if (!item.path) return false;
     if (item.path === '/admin') {
       return location.pathname === '/admin';
     }
     return location.pathname === item.path || location.pathname.startsWith(item.path);
-  };
+  }, [location.pathname]);
 
   const handleItemSelect = (item) => {
     if (item.path) {

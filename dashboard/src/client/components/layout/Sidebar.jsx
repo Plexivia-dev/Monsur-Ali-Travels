@@ -19,12 +19,12 @@ export const Sidebar = () => {
 
   const currentLang = (i18n.language || 'en').toUpperCase().startsWith('BN') ? 'BN' : 'EN';
 
-  const activeChecker = (item) => {
+  const activeChecker = React.useCallback((item) => {
     if (item.portal && item.submodule) {
       return activePortal === item.portal && activeSubmodule === item.submodule;
     }
     return false;
-  };
+  }, [activePortal, activeSubmodule]);
 
   const handleItemSelect = (item) => {
     if (item.portal && item.submodule) {
