@@ -527,7 +527,7 @@ export function CaseDetailDrawer({ caseDid, isOpen, onClose, onRefresh }) {
                             <th className="py-2.5 px-3">Receipt No</th>
                             <th className="py-2.5 px-3">Date</th>
                             <th className="py-2.5 px-3">Purpose / Notes</th>
-                            <th className="py-2.5 px-3 text-right">Amount (৳)</th>
+                            <th className="py-2.5 px-3 text-right">Amount (BDT )</th>
                             <th className="py-2.5 px-3">Status</th>
                           </tr>
                         </thead>

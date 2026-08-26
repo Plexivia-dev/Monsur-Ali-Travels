@@ -43,11 +43,11 @@ export default function AdminLayout() {
         <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-xs animate-fade-in p-4">
           <div className="bg-card border border-border rounded-2xl p-6 max-w-md w-full shadow-2xl animate-in scale-in duration-200">
             <h3 className="text-lg font-bold text-foreground">
-              {lang === 'BN' ? 'লগআউট নিশ্চিতকরণ' : 'Confirm Sign Out'}
+              {'Confirm Sign Out'}
             </h3>
             <p className="text-muted-foreground text-sm mt-2">
               {lang === 'BN'
-                ? 'আপনি কি নিশ্চিতভাবে অ্যাডমিন প্যানেল থেকে লগআউট করতে চান?'
+                ? 'Are you sure you want to sign out of the Admin Panel?'
                 : 'Are you sure you want to log out of the admin panel?'}
             </p>
             <div className="flex items-center justify-end gap-3 mt-6">
@@ -56,7 +56,7 @@ export default function AdminLayout() {
                 onClick={() => setShowLogoutConfirm(false)}
                 className="cursor-pointer"
               >
-                {lang === 'BN' ? 'বাতিল' : 'Cancel'}
+                {lang === 'BN' ? 'Rejected' : 'Cancel'}
               </Button>
               <Button
                 onClick={() => {
@@ -65,7 +65,7 @@ export default function AdminLayout() {
                 }}
                 className="bg-rose-600 hover:bg-rose-700 text-white font-semibold shadow-sm cursor-pointer"
               >
-                {lang === 'BN' ? 'লগআউট' : 'Sign Out'}
+                {lang === 'BN' ? 'Logout' : 'Sign Out'}
               </Button>
             </div>
           </div>

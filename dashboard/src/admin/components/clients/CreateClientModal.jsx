@@ -195,12 +195,12 @@ const CreateClientModal = ({ isOpen, onClose, onSuccess }) => {
                   onChange={handleChange}
                   className="w-full px-3 py-2 text-xs font-semibold rounded-xl border border-input bg-background focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
                 >
-                  <option value="WORK_PERMIT">Work Permit Visa (ওয়ার্ক পারমিট ভিসা)</option>
-                  <option value="INDIAN_VISA">Indian Visa (ইন্ডিয়ান ভিসা)</option>
-                  <option value="PASSPORT_SERVICE">Passport Application (পাসপোর্ট আবেদন)</option>
-                  <option value="TOURIST_VISA">Tourist / Visit Visa (ট্যুরিস্ট ভিসা)</option>
-                  <option value="UMRAH_HAJJ">Umrah / Hajj Package (উমরাহ ও হজ)</option>
-                  <option value="OTHER">Other Consular Service (অন্যান্য)</option>
+                  <option value="WORK_PERMIT">Work Permit Visa</option>
+                  <option value="INDIAN_VISA">Indian Visa</option>
+                  <option value="PASSPORT_SERVICE">Passport Application</option>
+                  <option value="TOURIST_VISA">Tourist / Visit Visa (Tourist Visa)</option>
+                  <option value="UMRAH_HAJJ">Umrah / Hajj Package</option>
+                  <option value="OTHER">Other Consular Service</option>
                 </select>
               </div>
 
@@ -216,9 +216,9 @@ const CreateClientModal = ({ isOpen, onClose, onSuccess }) => {
                     onChange={handleChange}
                     className="w-full px-3 py-2 text-xs font-semibold rounded-xl border border-input bg-background focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
                   >
-                    <option value="Greece">Greece (গ্রিস)</option>
-                    <option value="North Macedonia">North Macedonia (মেসিডোনিয়া)</option>
-                    <option value="Other">Other Country (অন্যান্য দেশ)</option>
+                    <option value="Greece">Greece</option>
+                    <option value="North Macedonia">North Macedonia</option>
+                    <option value="Other">Other Country</option>
                   </select>
                 </div>
               )}
@@ -251,7 +251,7 @@ const CreateClientModal = ({ isOpen, onClose, onSuccess }) => {
                 <div className="flex flex-col justify-center p-3 rounded-xl bg-blue-50 border border-blue-300 dark:bg-blue-950/40 dark:border-blue-700/60 shadow-2xs">
                   <div className="flex items-center gap-2 font-bold text-blue-950 dark:text-blue-200 text-xs">
                     <Plane className="size-4 text-blue-700 dark:text-blue-400 shrink-0" />
-                    <span>Destination: Saudi Arabia (সৌদি আরব)</span>
+                    <span>Destination: Saudi Arabia</span>
                   </div>
                   <span className="text-[11px] text-blue-900/80 dark:text-blue-300/90 font-medium mt-1">
                     Umrah / Hajj processing destination is Saudi Arabia.
@@ -289,7 +289,7 @@ const CreateClientModal = ({ isOpen, onClose, onSuccess }) => {
               formData.destinationCountry === 'Other' && (
                 <div className="animate-in fade-in duration-200">
                   <label className="text-xs font-semibold text-foreground block mb-1.5">
-                    Specify Country Name (দেশের নাম লিখুন) <span className="text-rose-500">*</span>
+                    Specify Country Name <span className="text-rose-500">*</span>
                   </label>
                   <input
                     type="text"

@@ -31,12 +31,12 @@ const ROLE_BADGE_COLORS = {
 };
 
 const TARGET_LABELS = {
-  clients: 'Client (ক্লায়েন্ট)',
-  caseFiles: 'Case File (ফাইল)',
-  tasks: 'Task (টাস্ক)',
-  moneyReceipts: 'Money Receipt (রিসিপ্ট)',
-  cashVouchers: 'Cash Voucher (ভাউচার)',
-  invoices: 'Invoice (ইনভয়েস)',
+  clients: 'Client',
+  caseFiles: 'Case File',
+  tasks: 'Task',
+  moneyReceipts: 'Money Receipt',
+  cashVouchers: 'Cash Voucher',
+  invoices: 'Invoice',
   salarySlips: 'Salary / Payroll',
   passports: 'Passport Record',
   indianVisas: 'Indian Visa',

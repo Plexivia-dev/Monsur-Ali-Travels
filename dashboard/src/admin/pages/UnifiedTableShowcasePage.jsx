@@ -280,9 +280,9 @@ export default function UnifiedTableShowcasePage() {
           const paid = row.original.paidAmount;
           return (
             <div>
-              <div className="font-bold text-foreground">৳{total.toLocaleString('en-BD')}</div>
+              <div className="font-bold text-foreground">BDT {total.toLocaleString('en-BD')}</div>
               <div className="text-[10px] text-muted-foreground">
-                Paid: ৳{paid.toLocaleString('en-BD')}
+                Paid: BDT {paid.toLocaleString('en-BD')}
               </div>
             </div>
           );
@@ -413,15 +413,15 @@ export default function UnifiedTableShowcasePage() {
             </span>
             <div className="flex justify-between text-muted-foreground text-[11px]">
               <span>Package Cost:</span>
-              <span className="font-bold text-foreground">৳{item.totalAmount.toLocaleString('en-BD')}</span>
+              <span className="font-bold text-foreground">BDT {item.totalAmount.toLocaleString('en-BD')}</span>
             </div>
             <div className="flex justify-between text-emerald-600 text-[11px] font-semibold">
               <span>Paid To Date:</span>
-              <span>৳{item.paidAmount.toLocaleString('en-BD')}</span>
+              <span>BDT {item.paidAmount.toLocaleString('en-BD')}</span>
             </div>
             <div className="flex justify-between text-amber-600 text-[11px] font-bold border-t border-border/60 pt-1">
               <span>Remaining Balance:</span>
-              <span>৳{dueAmount.toLocaleString('en-BD')}</span>
+              <span>BDT {dueAmount.toLocaleString('en-BD')}</span>
             </div>
           </div>
 

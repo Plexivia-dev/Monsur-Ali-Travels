@@ -8,9 +8,9 @@ export function cn(...inputs) {
 
 /** Format BDT currency */
 export function formatBDT(amount) {
-  if (amount >= 1_000_000) return `৳${(amount / 1_000_000).toFixed(1)}M`;
-  if (amount >= 1_000) return `৳${(amount / 1_000).toFixed(0)}k`;
-  return `৳${amount.toLocaleString()}`;
+  if (amount >= 1_000_000) return `BDT ${(amount / 1_000_000).toFixed(1)}M`;
+  if (amount >= 1_000) return `BDT ${(amount / 1_000).toFixed(0)}k`;
+  return `BDT ${amount.toLocaleString()}`;
 }
 
 /** Relative time string */

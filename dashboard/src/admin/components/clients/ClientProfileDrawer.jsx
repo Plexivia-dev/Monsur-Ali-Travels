@@ -433,7 +433,7 @@ const ClientProfileDrawer = ({ clientDid, isOpen, onClose, onRefresh }) => {
                         <th className="py-2.5 px-3">Date</th>
                         <th className="py-2.5 px-3">Service / Purpose</th>
                         <th className="py-2.5 px-3">Method</th>
-                        <th className="py-2.5 px-3 text-right">Amount (৳)</th>
+                        <th className="py-2.5 px-3 text-right">Amount (BDT )</th>
                         <th className="py-2.5 px-3">Status</th>
                       </tr>
                     </thead>

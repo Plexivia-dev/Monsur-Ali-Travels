@@ -48,10 +48,10 @@ export function AdminHeader({ lang, setLang }) {
             type="button"
             onClick={handleBack}
             className="flex h-9 items-center gap-1.5 px-2.5 rounded-lg text-white hover:bg-white/10 transition-all font-semibold text-xs border border-white/20 shadow-xs cursor-pointer"
-            title={lang === 'BN' ? 'পূর্ববর্তী পেজে ফিরে যান' : 'Go back to previous page'}
+            title={'Go back to previous page'}
           >
             <ArrowLeft className="h-4 w-4 text-white" />
-            <span className="hidden sm:inline">{lang === 'BN' ? 'ফিরে যান' : 'Back'}</span>
+            <span className="hidden sm:inline">{'Back'}</span>
           </button>
         )}
       </div>

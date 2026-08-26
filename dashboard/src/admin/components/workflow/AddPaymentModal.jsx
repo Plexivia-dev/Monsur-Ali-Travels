@@ -231,11 +231,11 @@ export const AddPaymentModal = ({
           <div className="p-4 bg-emerald-50/50 border-b border-emerald-100 flex justify-between items-center text-sm">
             <div>
               <p className="text-gray-500 text-xs">Total Bill</p>
-              <p className="font-bold text-gray-800">৳{totalAgreed.toLocaleString('en-IN')}</p>
+              <p className="font-bold text-gray-800">BDT {totalAgreed.toLocaleString('en-IN')}</p>
             </div>
             <div className="text-right">
               <p className="text-gray-500 text-xs">Current Due</p>
-              <p className="font-bold text-rose-600">৳{due.toLocaleString('en-IN')}</p>
+              <p className="font-bold text-rose-600">BDT {due.toLocaleString('en-IN')}</p>
             </div>
           </div>
 
