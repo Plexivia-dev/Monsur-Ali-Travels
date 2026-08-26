@@ -238,15 +238,6 @@
         "icon": "Database",
         "childItems": [
           {
-            "id": "data-profiles",
-            "name": "Client Profiles",
-            "nameBn": "ক্লায়েন্ট ডাটাবেস",
-            "portal": "data",
-            "submodule": "client-profiles",
-            "path": "/dashboard/data/client-profiles",
-            "icon": "Users"
-          },
-          {
             "id": "data-agreements",
             "name": "Agreement Records",
             "nameBn": "চুক্তিপত্র রেকর্ড",
