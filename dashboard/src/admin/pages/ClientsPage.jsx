@@ -389,7 +389,7 @@ export function ClientsPage() {
         </Card>
 
         {/* Card 3: Active Clients */}
-        <Card className="rounded-2xl border border-border bg-card shadow-xs hover:border-primary/40 hover:shadow-md transition-all">
+        <Card className="rounded-2xl border border-emerald-500/20 bg-card shadow-xs hover:border-emerald-500/40 hover:shadow-md transition-all">
           <CardContent className="p-5 flex items-center justify-between gap-3">
             <div className="min-w-0">
               <span className="text-[11px] font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400 block truncate">
@@ -398,9 +398,9 @@ export function ClientsPage() {
               <div className="text-2xl font-black text-emerald-600 dark:text-emerald-400 mt-1">
                 {clients.filter((c) => c.status === 'Active' || !c.status).length}
               </div>
-              <span className="text-[11px] text-muted-foreground font-medium">Active CRM accounts</span>
+              <span className="text-[11px] text-emerald-600/80 dark:text-emerald-400/80 font-semibold">Active CRM accounts</span>
             </div>
-            <div className="size-12 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0 shadow-2xs">
+            <div className="size-12 rounded-xl bg-emerald-500/10 border border-emerald-500/25 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0 shadow-2xs">
               <CheckCircle2 className="size-5" />
             </div>
           </CardContent>
