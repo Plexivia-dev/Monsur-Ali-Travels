@@ -174,7 +174,7 @@ export function ClientGuardianDataTable({ onEditItem }) {
         <button
           type="button"
           onClick={() => switchPortal('docs', 'client-form')}
-          className="flex items-center gap-2 bg-primary hover:bg-primary/90 text-primary-foreground text-xs font-bold px-4 py-2 rounded-xl shadow-xs transition-all cursor-pointer shrink-0"
+          className="flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-4 py-2 rounded-xl shadow-xs transition-all cursor-pointer shrink-0"
         >
           <span>{t('clientApplications.newApplication', '+ New Client File')}</span>
         </button>
