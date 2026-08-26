@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import {
   X,
   FolderOpen,
@@ -27,6 +27,7 @@ import {
   FileCheck,
   RefreshCw,
   Eye,
+  Trash2,
 } from 'lucide-react';
 import { apiClient } from '../../lib/api-client';
 import { toast } from 'sonner';
@@ -147,17 +148,47 @@ export function CaseWorkspaceDrawer({ caseId, isOpen, onClose, onRefresh }) {
     }
   };
 
+  const fileInputRef = useRef(null);
+
+  const handleFileChange = (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const sizeInMb = (file.size / (1024 * 1024)).toFixed(2) + ' MB';
+
+    // Read file as Data URL automatically
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      setUploadDocForm((prev) => ({
+        ...prev,
+        fileName: file.name,
+        fileSize: sizeInMb,
+        fileUrl: event.target?.result || '',
+      }));
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const handleRemoveSelectedFile = () => {
+    if (fileInputRef.current) fileInputRef.current.value = '';
+    setUploadDocForm((prev) => ({
+      ...prev,
+      fileName: '',
+      fileUrl: '',
+      fileSize: '',
+    }));
+  };
+
   const handleUploadDocument = async (e) => {
     e.preventDefault();
     if (!uploadDocForm.documentName || !uploadDocForm.fileUrl) {
-      toast.error('Document title and file link are required.');
+      toast.error('Please choose a file to upload.');
       return;
     }
     setUploadingDoc(true);
     try {
       const res = await apiClient.post(`/api/v1/client/cases/${caseId}/documents`, {
         documentName: uploadDocForm.documentName,
-        fileName: uploadDocForm.fileName || uploadDocForm.documentName,
+        fileName: uploadDocForm.fileName || `${uploadDocForm.documentName}.pdf`,
         fileUrl: uploadDocForm.fileUrl,
         fileSize: uploadDocForm.fileSize || '1.2 MB',
         accessLevel: 'Restricted',
@@ -169,8 +200,9 @@ export function CaseWorkspaceDrawer({ caseId, isOpen, onClose, onRefresh }) {
           documentName: 'Passport Scan Copy',
           fileName: '',
           fileUrl: '',
-          fileSize: '1.5 MB',
+          fileSize: '',
         });
+        if (fileInputRef.current) fileInputRef.current.value = '';
         fetchCaseDetails();
       }
     } catch (err) {
@@ -728,7 +760,7 @@ export function CaseWorkspaceDrawer({ caseId, isOpen, onClose, onRefresh }) {
         <div className="fixed inset-0 z-60 bg-black/80 backdrop-blur-xs flex items-center justify-center p-4">
           <form
             onSubmit={handleUploadDocument}
-            className="bg-card border border-border rounded-2xl max-w-md w-full p-6 space-y-4 shadow-2xl"
+            className="bg-card border border-border rounded-2xl max-w-md w-full p-6 space-y-4 shadow-2xl animate-in fade-in zoom-in-95 duration-200"
           >
             <div className="flex items-center justify-between border-b border-border pb-3">
               <h3 className="text-sm font-bold text-foreground flex items-center gap-2">
@@ -737,20 +769,23 @@ export function CaseWorkspaceDrawer({ caseId, isOpen, onClose, onRefresh }) {
               </h3>
               <button
                 type="button"
-                onClick={() => setShowUploadModal(false)}
-                className="p-1 rounded text-muted-foreground hover:text-foreground"
+                onClick={() => {
+                  setShowUploadModal(false);
+                  handleRemoveSelectedFile();
+                }}
+                className="p-1 rounded text-muted-foreground hover:text-foreground cursor-pointer"
               >
                 <X className="size-4" />
               </button>
             </div>
 
-            <div className="space-y-3 text-xs">
+            <div className="space-y-4 text-xs">
               <div>
-                <label className="block font-semibold text-muted-foreground mb-1">Document Category / Name *</label>
+                <label className="block font-semibold text-muted-foreground mb-1.5">Document Category / Name *</label>
                 <select
                   value={uploadDocForm.documentName}
                   onChange={(e) => setUploadDocForm({ ...uploadDocForm, documentName: e.target.value })}
-                  className="w-full px-3 py-2 bg-muted/50 border border-border rounded-xl text-foreground focus:outline-none"
+                  className="w-full px-3 py-2.5 bg-muted/40 border border-border rounded-xl text-foreground font-medium focus:outline-none focus:ring-1 focus:ring-primary cursor-pointer"
                 >
                   <option value="Passport Scan Copy">Passport Scan Copy</option>
                   <option value="Photo 2x2">Photo 2x2 White BG</option>
@@ -765,44 +800,76 @@ export function CaseWorkspaceDrawer({ caseId, isOpen, onClose, onRefresh }) {
               </div>
 
               <div>
-                <label className="block font-semibold text-muted-foreground mb-1">File Name / Label</label>
+                <label className="block font-semibold text-muted-foreground mb-1.5">Document File *</label>
                 <input
-                  type="text"
-                  placeholder="e.g. passport_scan_john.pdf"
-                  value={uploadDocForm.fileName}
-                  onChange={(e) => setUploadDocForm({ ...uploadDocForm, fileName: e.target.value })}
-                  className="w-full px-3 py-2 bg-muted/50 border border-border rounded-xl text-foreground focus:outline-none"
+                  type="file"
+                  ref={fileInputRef}
+                  onChange={handleFileChange}
+                  accept=".pdf,.png,.jpg,.jpeg,.doc,.docx"
+                  className="hidden"
                 />
-              </div>
 
-              <div>
-                <label className="block font-semibold text-muted-foreground mb-1">File URL / Cloud Storage Link *</label>
-                <input
-                  type="text"
-                  required
-                  placeholder="https://... or /uploads/docs/..."
-                  value={uploadDocForm.fileUrl}
-                  onChange={(e) => setUploadDocForm({ ...uploadDocForm, fileUrl: e.target.value })}
-                  className="w-full px-3 py-2 bg-muted/50 border border-border rounded-xl text-foreground focus:outline-none font-mono text-[11px]"
-                />
+                {!uploadDocForm.fileName ? (
+                  <div
+                    onClick={() => fileInputRef.current?.click()}
+                    className="border-2 border-dashed border-border hover:border-primary/60 bg-muted/20 hover:bg-muted/40 rounded-2xl p-6 flex flex-col items-center justify-center text-center cursor-pointer transition-all group"
+                  >
+                    <div className="size-12 rounded-2xl bg-primary/10 text-primary flex items-center justify-center mb-2 group-hover:scale-110 transition-transform">
+                      <UploadCloud className="w-6 h-6" />
+                    </div>
+                    <p className="font-bold text-foreground text-xs">
+                      Click to choose file from device
+                    </p>
+                    <p className="text-[11px] text-muted-foreground mt-0.5">
+                      PDF, JPG, PNG, DOCX (Max: 10 MB)
+                    </p>
+                  </div>
+                ) : (
+                  <div className="bg-primary/5 border border-primary/20 rounded-2xl p-3.5 flex items-center justify-between gap-3">
+                    <div className="flex items-center gap-3 min-w-0">
+                      <div className="size-10 rounded-xl bg-primary text-primary-foreground flex items-center justify-center shrink-0 shadow-xs">
+                        <FileText className="w-5 h-5" />
+                      </div>
+                      <div className="min-w-0">
+                        <p className="font-bold text-foreground text-xs truncate">
+                          {uploadDocForm.fileName}
+                        </p>
+                        <p className="text-[11px] text-muted-foreground">
+                          {uploadDocForm.fileSize || 'Selected'} • <span className="text-emerald-600 font-bold">Ready</span>
+                        </p>
+                      </div>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={handleRemoveSelectedFile}
+                      className="p-1.5 rounded-lg text-rose-500 hover:bg-rose-500/10 transition-colors cursor-pointer shrink-0"
+                      title="Remove selected file"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </button>
+                  </div>
+                )}
               </div>
             </div>
 
             <div className="flex items-center justify-end gap-2 pt-3 border-t border-border text-xs">
               <button
                 type="button"
-                onClick={() => setShowUploadModal(false)}
-                className="px-3 py-1.5 rounded-xl border border-border text-muted-foreground hover:bg-muted"
+                onClick={() => {
+                  setShowUploadModal(false);
+                  handleRemoveSelectedFile();
+                }}
+                className="px-4 py-2 rounded-xl border border-border text-muted-foreground hover:bg-muted font-medium cursor-pointer"
               >
                 Cancel
               </button>
               <button
                 type="submit"
-                disabled={uploadingDoc}
-                className="flex items-center gap-1.5 px-4 py-1.5 bg-primary text-primary-foreground font-bold rounded-xl shadow-xs disabled:opacity-50 cursor-pointer"
+                disabled={uploadingDoc || !uploadDocForm.fileUrl}
+                className="flex items-center gap-1.5 px-5 py-2 bg-primary text-primary-foreground font-bold rounded-xl shadow-xs disabled:opacity-50 cursor-pointer hover:bg-primary/90 transition-all"
               >
                 {uploadingDoc ? <Loader2 className="size-3.5 animate-spin" /> : <UploadCloud className="size-3.5" />}
-                <span>Save to Vault</span>
+                <span>{uploadingDoc ? 'Uploading...' : 'Save to Vault'}</span>
               </button>
             </div>
           </form>
