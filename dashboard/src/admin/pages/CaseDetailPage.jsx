@@ -83,6 +83,7 @@ export default function CaseDetailPage() {
     fileSize: '1.5 MB',
   });
   const [uploadingDoc, setUploadingDoc] = useState(false);
+  const [uploadingFile, setUploadingFile] = useState(false);
 
   // Internal Message
   const [newMessage, setNewMessage] = useState('');
@@ -176,27 +177,55 @@ export default function CaseDetailPage() {
     }
   };
 
-  const handleFileChange = (e) => {
+  const handleFileChange = async (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
     const sizeInMb = (file.size / (1024 * 1024)).toFixed(2) + ' MB';
     
-    // Auto populate file details
+    // Auto populate file metadata immediately
     setUploadDocForm((prev) => ({
       ...prev,
       fileName: file.name,
       fileSize: sizeInMb,
+      fileUrl: '',
     }));
 
-    // Read as Data URL / link
-    const reader = new FileReader();
-    reader.onload = (event) => {
-      setUploadDocForm((prev) => ({
-        ...prev,
-        fileUrl: event.target?.result || '',
-      }));
-    };
-    reader.readAsDataURL(file);
+    setUploadingFile(true);
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+      
+      const res = await apiClient.post('/api/v1/upload/single?folder=documents', formData, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      });
+
+      const uploadedUrl = res.data?.data?.url || res.data?.data?.fullUrl || res.data?.url || '';
+      if (uploadedUrl) {
+        setUploadDocForm((prev) => ({
+          ...prev,
+          fileName: file.name,
+          fileSize: sizeInMb,
+          fileUrl: uploadedUrl,
+        }));
+        toast.success('File uploaded and linked successfully!');
+      } else {
+        throw new Error('No file URL returned from upload');
+      }
+    } catch (err) {
+      // Fallback: Read as Data URL so user workflow is never blocked
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        setUploadDocForm((prev) => ({
+          ...prev,
+          fileName: file.name,
+          fileSize: sizeInMb,
+          fileUrl: event.target?.result || '',
+        }));
+      };
+      reader.readAsDataURL(file);
+    } finally {
+      setUploadingFile(false);
+    }
   };
 
   const handleOpenEditModal = () => {
@@ -1186,33 +1215,51 @@ export default function CaseDetailPage() {
               </div>
 
               <div>
-                <label className="block font-semibold text-muted-foreground mb-1">Choose Local File</label>
+                <label className="block font-semibold text-muted-foreground mb-1 flex items-center justify-between">
+                  <span>Choose Local File *</span>
+                  {uploadingFile && (
+                    <span className="flex items-center gap-1 text-[11px] text-primary font-medium animate-pulse">
+                      <Loader2 className="w-3 h-3 animate-spin" />
+                      Uploading...
+                    </span>
+                  )}
+                </label>
                 <input
                   type="file"
                   onChange={handleFileChange}
-                  className="w-full px-3 py-2 bg-muted/50 border border-border rounded-xl text-foreground focus:outline-none file:mr-3 file:py-1 file:px-2.5 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-primary file:text-primary-foreground hover:file:bg-primary/90 cursor-pointer"
+                  accept=".pdf,.png,.jpg,.jpeg,.doc,.docx"
+                  disabled={uploadingFile}
+                  className="w-full px-3 py-2 bg-muted/50 border border-border rounded-xl text-foreground focus:outline-none file:mr-3 file:py-1 file:px-2.5 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-primary file:text-primary-foreground hover:file:bg-primary/90 cursor-pointer disabled:opacity-50"
                 />
               </div>
 
               <div>
-                <label className="block font-semibold text-muted-foreground mb-1">File Name / Label</label>
+                <label className="block font-semibold text-muted-foreground mb-1 flex items-center justify-between">
+                  <span>File Name / Label</span>
+                  <span className="text-[10px] text-muted-foreground bg-muted px-1.5 py-0.5 rounded font-normal">Auto-generated</span>
+                </label>
                 <input
                   type="text"
-                  placeholder="e.g. passport_scan_client.pdf"
+                  placeholder="Auto-generated from chosen file"
                   value={uploadDocForm.fileName}
-                  onChange={(e) => setUploadDocForm({ ...uploadDocForm, fileName: e.target.value })}
-                  className="w-full px-3 py-2 bg-muted/50 border border-border rounded-xl text-foreground focus:outline-none"
+                  disabled
+                  readOnly
+                  className="w-full px-3 py-2 bg-muted/70 border border-border rounded-xl text-muted-foreground font-medium cursor-not-allowed select-none"
                 />
               </div>
 
               <div>
-                <label className="block font-semibold text-muted-foreground mb-1">File URL / Cloud Storage Link</label>
+                <label className="block font-semibold text-muted-foreground mb-1 flex items-center justify-between">
+                  <span>File URL / Cloud Storage Link</span>
+                  <span className="text-[10px] text-muted-foreground bg-muted px-1.5 py-0.5 rounded font-normal">Auto-generated</span>
+                </label>
                 <input
                   type="text"
-                  placeholder="https://... or auto-generated from file"
-                  value={uploadDocForm.fileUrl}
-                  onChange={(e) => setUploadDocForm({ ...uploadDocForm, fileUrl: e.target.value })}
-                  className="w-full px-3 py-2 bg-muted/50 border border-border rounded-xl text-foreground focus:outline-none font-mono text-[11px]"
+                  placeholder="Auto-generated upon file selection"
+                  value={uploadDocForm.fileUrl ? (uploadDocForm.fileUrl.startsWith('data:') ? `[Embedded File: ${uploadDocForm.fileName}]` : uploadDocForm.fileUrl) : ''}
+                  disabled
+                  readOnly
+                  className="w-full px-3 py-2 bg-muted/70 border border-border rounded-xl text-muted-foreground font-medium cursor-not-allowed select-none font-mono text-[11px] truncate"
                 />
               </div>
             </div>
@@ -1227,11 +1274,11 @@ export default function CaseDetailPage() {
               </button>
               <button
                 type="submit"
-                disabled={uploadingDoc}
-                className="flex items-center gap-1.5 px-4 py-1.5 bg-primary text-primary-foreground font-bold rounded-xl shadow-xs disabled:opacity-50 cursor-pointer"
+                disabled={uploadingDoc || uploadingFile || !uploadDocForm.fileUrl}
+                className="flex items-center gap-1.5 px-4 py-1.5 bg-primary text-primary-foreground font-bold rounded-xl shadow-xs disabled:opacity-50 cursor-pointer hover:bg-primary/90 transition-all"
               >
                 {uploadingDoc ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <UploadCloud className="w-3.5 h-3.5" />}
-                <span>Save to Vault</span>
+                <span>{uploadingDoc ? 'Saving...' : 'Save to Vault'}</span>
               </button>
             </div>
           </form>
