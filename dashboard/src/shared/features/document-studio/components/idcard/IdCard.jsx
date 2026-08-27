@@ -119,7 +119,7 @@ export function IdCard() {
 
       {/* Main Studio Views */}
       {viewMode === 'edit' && (
-        <div className="max-w-3xl mx-auto pb-16">
+        <div className="w-full pb-16">
           <IdCardForm
             cardData={cardData}
             setCardData={setCardData}

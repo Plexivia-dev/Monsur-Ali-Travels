@@ -183,7 +183,7 @@ export function InvoiceBuilder() {
 
       {/* Main Studio Views */}
       {viewMode === 'edit' && (
-        <div className="max-w-4xl mx-auto pb-16">
+        <div className="w-full pb-16">
           <InvoiceForm
             data={data}
             onChange={setData}

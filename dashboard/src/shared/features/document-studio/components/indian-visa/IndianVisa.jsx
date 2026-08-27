@@ -130,7 +130,7 @@ export function IndianVisa() {
 
       {/* Main Studio Views */}
       {viewMode === 'edit' && (
-        <div className="max-w-4xl mx-auto pb-16">
+        <div className="w-full pb-16">
           <IndianVisaForm
             data={data}
             onChange={setData}

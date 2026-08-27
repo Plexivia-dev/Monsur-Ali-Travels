@@ -96,7 +96,7 @@ export function MarriageCertificateForm({ data = {}, onChange }) {
               type="text"
               value={data.volumeNo || ''}
               onChange={(e) => handleChange(null, 'volumeNo', e.target.value)}
-              placeholder="e.g. Vol-IV/2021 (Page #48)"
+              placeholder="Enter volume & page reference"
               className="w-full px-3 py-2 text-xs font-mono rounded-lg border border-input bg-background focus:ring-1 focus:ring-primary outline-hidden"
             />
           </div>
@@ -127,7 +127,7 @@ export function MarriageCertificateForm({ data = {}, onChange }) {
               type="text"
               value={data.marriagePlace || ''}
               onChange={(e) => handleChange(null, 'marriagePlace', e.target.value)}
-              placeholder="e.g. Mominpur, Jagannathpur, Sunamganj"
+              placeholder="Enter marriage / registration location"
               className="w-full px-3 py-2 text-xs rounded-lg border border-input bg-background focus:ring-1 focus:ring-primary outline-hidden"
             />
           </div>
@@ -288,7 +288,7 @@ export function MarriageCertificateForm({ data = {}, onChange }) {
               type="text"
               value={data.marriageTerms?.dowerAmount || ''}
               onChange={(e) => handleChange('marriageTerms', 'dowerAmount', e.target.value)}
-              placeholder="e.g. 500,000"
+              placeholder="Enter dower / mahr amount"
               className="w-full px-3 py-2 text-xs font-mono rounded-lg border border-input bg-background focus:ring-1 focus:ring-primary outline-hidden"
             />
           </div>
@@ -299,7 +299,7 @@ export function MarriageCertificateForm({ data = {}, onChange }) {
               type="text"
               value={data.marriageTerms?.wakilName || ''}
               onChange={(e) => handleChange('marriageTerms', 'wakilName', e.target.value)}
-              placeholder="e.g. MD. DELWAR HOSSAIN (Father of Bride)"
+              placeholder="Enter bride representative name & relation"
               className="w-full px-3 py-2 text-xs rounded-lg border border-input bg-background focus:ring-1 focus:ring-primary outline-hidden"
             />
           </div>
@@ -310,7 +310,7 @@ export function MarriageCertificateForm({ data = {}, onChange }) {
               type="text"
               value={data.marriageTerms?.witness1 || ''}
               onChange={(e) => handleChange('marriageTerms', 'witness1', e.target.value)}
-              placeholder="e.g. MD. ANWARUL HOQUE, NID: 1980..."
+              placeholder="Enter 1st witness name, NID & address"
               className="w-full px-3 py-2 text-xs rounded-lg border border-input bg-background focus:ring-1 focus:ring-primary outline-hidden"
             />
           </div>
@@ -321,7 +321,7 @@ export function MarriageCertificateForm({ data = {}, onChange }) {
               type="text"
               value={data.marriageTerms?.witness2 || ''}
               onChange={(e) => handleChange('marriageTerms', 'witness2', e.target.value)}
-              placeholder="e.g. MD. SHAHJAHAN MIAH, NID: 1985..."
+              placeholder="Enter 2nd witness name, NID & address"
               className="w-full px-3 py-2 text-xs rounded-lg border border-input bg-background focus:ring-1 focus:ring-primary outline-hidden"
             />
           </div>

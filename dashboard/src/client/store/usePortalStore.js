@@ -5,11 +5,11 @@ export const parsePortalFromPath = (pathname) => {
     .replace(/^\/client\.html\/?/i, '/')
     .replace(/^\/client\/?/i, '/');
   const parts = cleanPath.split('/').filter(Boolean);
-  let portal = 'agency';
+  let portal = 'overview';
   let submodule = 'tasks';
 
   if (parts.length === 0) {
-    return { portal: 'agency', submodule: 'tasks' };
+    return { portal: 'overview', submodule: 'tasks' };
   }
 
   if (parts[0] === 'dashboard') {
@@ -20,16 +20,16 @@ export const parsePortalFromPath = (pathname) => {
     if (parts[1]) submodule = parts[1] === 'dashboard' ? 'tasks' : parts[1];
   }
 
-  const validPortals = ['factory', 'agency', 'admin', 'docs', 'data'];
+  const validPortals = ['overview', 'accounts', 'docs', 'data', 'admin', 'agency', 'factory', 'settings'];
   if (!validPortals.includes(portal)) {
-    portal = 'agency';
+    portal = 'overview';
     submodule = 'tasks';
   }
 
   return { portal, submodule };
 };
 
-const initialPath = typeof window !== 'undefined' ? window.location.pathname : '/dashboard/agency/tasks';
+const initialPath = typeof window !== 'undefined' ? window.location.pathname : '/dashboard/overview';
 const initialParsed = parsePortalFromPath(initialPath);
 
 export const usePortalStore = create((set, get) => ({

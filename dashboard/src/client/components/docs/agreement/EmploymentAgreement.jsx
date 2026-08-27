@@ -232,7 +232,7 @@ export function EmploymentAgreement() {
 
       {/* Main Studio Views */}
       {viewMode === 'edit' && (
-        <div className="max-w-4xl mx-auto">
+        <div className="w-full pb-16">
           <AgreementForm
             formData={formData}
             setFormData={setFormData}

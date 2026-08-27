@@ -134,7 +134,7 @@ export function JobVerification() {
 
       {/* Main Studio Views */}
       {viewMode === 'edit' && (
-        <div className="max-w-4xl mx-auto pb-16">
+        <div className="w-full pb-16">
           <JobVerificationForm
 
             formData={data}

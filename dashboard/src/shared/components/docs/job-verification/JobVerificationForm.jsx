@@ -190,7 +190,7 @@ export function JobVerificationForm({
                     type="text"
                     value={formData.companyInfo?.companyName || ''}
                     onChange={(e) => updateNested('companyInfo', 'companyName', e.target.value)}
-                    placeholder="e.g. MONSUR ALI TOURS & TRAVELS"
+                    placeholder="Enter organization / agency name"
                     className="mt-1"
                   />
                 </div>
@@ -201,7 +201,7 @@ export function JobVerificationForm({
                     type="text"
                     value={formData.companyInfo?.companyPhone || ''}
                     onChange={(e) => updateNested('companyInfo', 'companyPhone', e.target.value)}
-                    placeholder="e.g. +8801345579534"
+                    placeholder="Enter phone number"
                     className="mt-1"
                   />
                 </div>
@@ -212,7 +212,7 @@ export function JobVerificationForm({
                     type="email"
                     value={formData.companyInfo?.companyEmail || ''}
                     onChange={(e) => updateNested('companyInfo', 'companyEmail', e.target.value)}
-                    placeholder="e.g. contact@monsuralitravels.com"
+                    placeholder="Enter email address"
                     className="mt-1"
                   />
                 </div>
@@ -223,7 +223,7 @@ export function JobVerificationForm({
                     type="text"
                     value={formData.companyInfo?.companyTaxNumber || ''}
                     onChange={(e) => updateNested('companyInfo', 'companyTaxNumber', e.target.value)}
-                    placeholder="e.g. TAX-88392019"
+                    placeholder="Enter TAX / TIN number"
                     className="mt-1"
                   />
                 </div>
@@ -234,7 +234,7 @@ export function JobVerificationForm({
                     type="text"
                     value={formData.companyInfo?.companyIdNumber || ''}
                     onChange={(e) => updateNested('companyInfo', 'companyIdNumber', e.target.value)}
-                    placeholder="e.g. RL-1849 / GOVT-REG"
+                    placeholder="Enter recruiting license / registration number"
                     className="mt-1"
                   />
                 </div>
@@ -245,7 +245,7 @@ export function JobVerificationForm({
                     type="text"
                     value={formData.companyInfo?.companyCity || ''}
                     onChange={(e) => updateNested('companyInfo', 'companyCity', e.target.value)}
-                    placeholder="e.g. Sunamganj"
+                    placeholder="Enter city / district"
                     className="mt-1"
                   />
                 </div>
@@ -256,7 +256,7 @@ export function JobVerificationForm({
                     type="text"
                     value={formData.companyInfo?.companyAddress || ''}
                     onChange={(e) => updateNested('companyInfo', 'companyAddress', e.target.value)}
-                    placeholder="e.g. Mominpur Jagannathpur Road, Sunamganj, Post Code 3060"
+                    placeholder="Enter full office address"
                     className="mt-1"
                   />
                 </div>
@@ -280,7 +280,7 @@ export function JobVerificationForm({
                     required
                     value={formData.clientInfo?.clientName || ''}
                     onChange={(e) => updateNested('clientInfo', 'clientName', e.target.value)}
-                    placeholder="e.g. Md. Rafiqul Islam"
+                    placeholder="Enter candidate full name"
                     className="mt-1"
                   />
                 </div>
@@ -294,7 +294,7 @@ export function JobVerificationForm({
                     required
                     value={formData.clientInfo?.clientPhone || ''}
                     onChange={(e) => updateNested('clientInfo', 'clientPhone', e.target.value)}
-                    placeholder="e.g. +880 1712-345678"
+                    placeholder="Enter candidate phone number"
                     className="mt-1 font-mono"
                   />
                 </div>
@@ -305,7 +305,7 @@ export function JobVerificationForm({
                     type="email"
                     value={formData.clientInfo?.clientEmail || ''}
                     onChange={(e) => updateNested('clientInfo', 'clientEmail', e.target.value)}
-                    placeholder="e.g. rafiq@gmail.com"
+                    placeholder="Enter candidate email address"
                     className="mt-1"
                   />
                 </div>
@@ -316,7 +316,7 @@ export function JobVerificationForm({
                     type="text"
                     value={formData.clientInfo?.clientTaxNumber || ''}
                     onChange={(e) => updateNested('clientInfo', 'clientTaxNumber', e.target.value)}
-                    placeholder="e.g. TIN-48291039"
+                    placeholder="Enter candidate TIN / TAX number"
                     className="mt-1"
                   />
                 </div>
@@ -327,7 +327,7 @@ export function JobVerificationForm({
                     type="text"
                     value={formData.clientInfo?.clientIdNumber || ''}
                     onChange={(e) => updateNested('clientInfo', 'clientIdNumber', e.target.value.toUpperCase())}
-                    placeholder="e.g. A01234567 / NID-198829..."
+                    placeholder="Enter passport / NID number"
                     className="mt-1 font-mono uppercase"
                   />
                 </div>
@@ -338,7 +338,7 @@ export function JobVerificationForm({
                     type="text"
                     value={formData.clientInfo?.clientCity || ''}
                     onChange={(e) => updateNested('clientInfo', 'clientCity', e.target.value)}
-                    placeholder="e.g. Sylhet / Dhaka"
+                    placeholder="Enter place of birth / division"
                     className="mt-1"
                   />
                 </div>
@@ -349,7 +349,7 @@ export function JobVerificationForm({
                     type="text"
                     value={formData.clientInfo?.clientAddress || ''}
                     onChange={(e) => updateNested('clientInfo', 'clientAddress', e.target.value)}
-                    placeholder="e.g. Vill: Joypur, Upazila: Golapganj, Sylhet."
+                    placeholder="Enter candidate full address"
                     className="mt-1"
                   />
                 </div>
@@ -373,7 +373,7 @@ export function JobVerificationForm({
                   type="text"
                   value={formData.jobStayDetails?.destinationPlace || ''}
                   onChange={(e) => updateNested('jobStayDetails', 'destinationPlace', e.target.value)}
-                  placeholder="e.g. European Union / Gulf Region"
+                  placeholder="Enter target region / block"
                   className="mt-1"
                 />
               </div>
@@ -384,7 +384,7 @@ export function JobVerificationForm({
                   type="text"
                   value={formData.jobStayDetails?.destinationCountry || ''}
                   onChange={(e) => updateNested('jobStayDetails', 'destinationCountry', e.target.value)}
-                  placeholder="e.g. Greece / North Macedonia / Romania"
+                  placeholder="Enter destination country"
                   className="mt-1"
                 />
               </div>
@@ -395,7 +395,7 @@ export function JobVerificationForm({
                   type="text"
                   value={formData.jobStayDetails?.destinationCity || ''}
                   onChange={(e) => updateNested('jobStayDetails', 'destinationCity', e.target.value)}
-                  placeholder="e.g. Athens / Skopje / Bucharest"
+                  placeholder="Enter employment city / locality"
                   className="mt-1"
                 />
               </div>
@@ -406,7 +406,7 @@ export function JobVerificationForm({
                   type="text"
                   value={formData.jobStayDetails?.accommodationType || ''}
                   onChange={(e) => updateNested('jobStayDetails', 'accommodationType', e.target.value)}
-                  placeholder="e.g. Company Provided Accommodation"
+                  placeholder="Enter accommodation details"
                   className="mt-1"
                 />
               </div>
@@ -417,7 +417,7 @@ export function JobVerificationForm({
                   type="text"
                   value={formData.jobStayDetails?.residenceAddress || ''}
                   onChange={(e) => updateNested('jobStayDetails', 'residenceAddress', e.target.value)}
-                  placeholder="e.g. 14 Kolokotroni St, Athens 10562, Greece"
+                  placeholder="Enter workplace / employment address"
                   className="mt-1"
                 />
               </div>
@@ -428,7 +428,7 @@ export function JobVerificationForm({
                   type="text"
                   value={formData.jobStayDetails?.jobNature || ''}
                   onChange={(e) => updateNested('jobStayDetails', 'jobNature', e.target.value)}
-                  placeholder="e.g. Agriculture / Construction / Factory"
+                  placeholder="Enter employment sector / industry"
                   className="mt-1"
                 />
               </div>
@@ -439,7 +439,7 @@ export function JobVerificationForm({
                   type="text"
                   value={formData.jobStayDetails?.jobTitle || ''}
                   onChange={(e) => updateNested('jobStayDetails', 'jobTitle', e.target.value)}
-                  placeholder="e.g. Greenhouse Operative / General Worker"
+                  placeholder="Enter proposed position / job title"
                   className="mt-1"
                 />
               </div>
@@ -450,7 +450,7 @@ export function JobVerificationForm({
                   type="text"
                   value={formData.jobStayDetails?.dailyWorkingHours || ''}
                   onChange={(e) => updateNested('jobStayDetails', 'dailyWorkingHours', e.target.value)}
-                  placeholder="e.g. 8 Hours / Day"
+                  placeholder="Enter daily work hours"
                   className="mt-1"
                 />
               </div>
@@ -461,7 +461,7 @@ export function JobVerificationForm({
                   type="text"
                   value={formData.jobStayDetails?.weeklyWorkingHours || ''}
                   onChange={(e) => updateNested('jobStayDetails', 'weeklyWorkingHours', e.target.value)}
-                  placeholder="e.g. 48 Hours / Week"
+                  placeholder="Enter weekly work hours"
                   className="mt-1"
                 />
               </div>
@@ -472,7 +472,7 @@ export function JobVerificationForm({
                   type="text"
                   value={formData.jobStayDetails?.salaryAmount || ''}
                   onChange={(e) => updateNested('jobStayDetails', 'salaryAmount', e.target.value)}
-                  placeholder="e.g. 850"
+                  placeholder="Enter monthly salary amount"
                   className="mt-1 font-mono"
                 />
               </div>
@@ -483,7 +483,7 @@ export function JobVerificationForm({
                   type="text"
                   value={formData.jobStayDetails?.currency || ''}
                   onChange={(e) => updateNested('jobStayDetails', 'currency', e.target.value)}
-                  placeholder="e.g. EUR / USD / BDT / SAR"
+                  placeholder="Enter currency"
                   className="mt-1 uppercase"
                 />
               </div>
@@ -508,7 +508,7 @@ export function JobVerificationForm({
                   type="text"
                   value={formData.helperInfo?.helperName || ''}
                   onChange={(e) => updateNested('helperInfo', 'helperName', e.target.value)}
-                  placeholder="e.g. Md. Kabir Hossain (Sponsor / Uncle)"
+                  placeholder="Enter local contact / sponsor name"
                   className="mt-1"
                 />
               </div>
@@ -519,7 +519,7 @@ export function JobVerificationForm({
                   type="text"
                   value={formData.helperInfo?.helperRelationship || ''}
                   onChange={(e) => updateNested('helperInfo', 'helperRelationship', e.target.value)}
-                  placeholder="e.g. Uncle / Brother / Cousin / Relative"
+                  placeholder="Enter relationship to candidate"
                   className="mt-1"
                 />
               </div>
@@ -530,7 +530,7 @@ export function JobVerificationForm({
                   type="text"
                   value={formData.helperInfo?.helperDurationOfStay || ''}
                   onChange={(e) => updateNested('helperInfo', 'helperDurationOfStay', e.target.value)}
-                  placeholder="e.g. 5 Years / 8 Years"
+                  placeholder="Enter residency duration in destination"
                   className="mt-1"
                 />
               </div>
@@ -541,7 +541,7 @@ export function JobVerificationForm({
                   type="text"
                   value={formData.helperInfo?.helperImmigrationStatus || ''}
                   onChange={(e) => updateNested('helperInfo', 'helperImmigrationStatus', e.target.value)}
-                  placeholder="e.g. Legal Resident / Work Permit Holder"
+                  placeholder="Enter sponsor visa / residency status"
                   className="mt-1"
                 />
               </div>
@@ -578,7 +578,7 @@ export function JobVerificationForm({
                   type="text"
                   value={formData.helperInfo?.durationKnown || ''}
                   onChange={(e) => updateNested('helperInfo', 'durationKnown', e.target.value)}
-                  placeholder="e.g. Since childhood / 4 Years"
+                  placeholder="Enter acquaintance duration"
                   className="mt-1"
                 />
               </div>
@@ -598,7 +598,7 @@ export function JobVerificationForm({
                   type="text"
                   value={formData.helperInfo?.helperPhone || ''}
                   onChange={(e) => updateNested('helperInfo', 'helperPhone', e.target.value)}
-                  placeholder="e.g. +30 6912 345678"
+                  placeholder="Enter contact phone number"
                   className="mt-1 font-mono"
                 />
               </div>
@@ -631,7 +631,7 @@ export function JobVerificationForm({
                     type="text"
                     value={formData.verificationDetails?.authorizedSignatory || 'Managing Director'}
                     onChange={(e) => updateNested('verificationDetails', 'authorizedSignatory', e.target.value)}
-                    placeholder="e.g. Managing Director / Verification Officer"
+                    placeholder="Enter signing authority title"
                     className="mt-1"
                   />
                 </div>
@@ -660,7 +660,7 @@ export function JobVerificationForm({
                     rows={2}
                     value={formData.verificationDetails?.notes || ''}
                     onChange={(e) => updateNested('verificationDetails', 'notes', e.target.value)}
-                    placeholder="Official agency comments and verification clearance note..."
+                    placeholder="Enter agency verification comments & notes..."
                     className="mt-1"
                   />
                 </div>

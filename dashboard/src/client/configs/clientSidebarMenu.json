@@ -1,34 +1,16 @@
 [
   {
-    "groupLabel": "Agency",
-    "groupLabelBn": "",
-    "roles": ["admin", "owner", "superadmin", "accountant", "representative"],
+    "groupLabel": "Overview",
+    "groupLabelBn": "ওভারভিউ",
     "items": [
       {
-        "id": "clients-group",
-        "name": "Clients & Billing",
-        "nameBn": "",
-        "icon": "Building2",
-        "childItems": [
-          {
-            "id": "cases",
-            "name": "Client Files",
-            "nameBn": "",
-            "portal": "agency",
-            "submodule": "cases",
-            "path": "/dashboard/agency/cases",
-            "icon": "FolderOpen"
-          },
-          {
-            "id": "clients-all",
-            "name": "All Clients",
-            "nameBn": "",
-            "portal": "agency",
-            "submodule": "clients-all",
-            "path": "/dashboard/agency/clients-all",
-            "icon": "Users"
-          }
-        ]
+        "id": "overview-tasks",
+        "name": "Overview & Tasks",
+        "nameBn": "টাস্ক ওভারভিউ",
+        "portal": "overview",
+        "submodule": "tasks",
+        "path": "/dashboard/overview",
+        "icon": "LayoutDashboard"
       }
     ]
   },

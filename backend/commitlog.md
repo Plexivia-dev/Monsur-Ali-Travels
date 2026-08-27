@@ -1,8 +1,17 @@
 # Commit Log / Change Log
 
-## [2026-08-19]
-- **Backend Version**: `v0.4.1`
-- **Dashboard Version**: `v0.4.1`
+## [2026-08-27]
+- **Dashboard Version**: `v0.4.2`
+
+### 1. Client Dashboard Overview, Task Management & Monochrome Grayscale (NC01 - NC03)
+- **NC01 - Menu Streamlining**:
+  - Removed obsolete `Agency` group (`Clients & Billing` -> `Client Files`, `All Clients`) from `clientSidebarMenu.json`.
+- **NC02 - Overview Landing Page & Task Management**:
+  - Implemented `/dashboard/overview` as the default landing route with interactive KPI metrics.
+  - Created high-density `TasksOverviewList.jsx` and `TaskDetailModal.jsx` for assigned staff tasks.
+- **NC03 - Pure Monochrome Grayscale System**:
+  - Eliminated tinted/muddy grays in favor of pure shades of black (`#000000`, `#09090b`, `#18181b`, `#fcfcfc`, `#ffffff`).
+  - High-contrast badge tokens for Light and Dark modes.
 
 ### 1. Dynamic QR Code API & Agency Branding Engine (MB22 & MD99)
 - **Backend Dynamic QR Generation API**:

@@ -13,6 +13,7 @@ import DocumentStudio from './pages/DocumentStudio';
 import DocumentData from './pages/DocumentData';
 import Accounts from './pages/Accounts';
 import Settings from './pages/Settings';
+import Overview from './pages/Overview';
 import NotFoundPage from './pages/NotFoundPage';
 import { GlobalErrorBoundary } from './components/common/GlobalErrorBoundary';
 import { ToastContainer } from './components/common/ToastContainer';
@@ -71,7 +72,7 @@ function MainLayout() {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [setSearchOpen]);
 
-  const isKnownPortal = ['factory', 'agency', 'admin', 'docs', 'data', 'accounts', 'settings'].includes(activePortal);
+  const isKnownPortal = ['overview', 'factory', 'agency', 'admin', 'docs', 'data', 'accounts', 'settings'].includes(activePortal);
 
   return (
     <DashboardLayout
@@ -85,6 +86,7 @@ function MainLayout() {
       }
       modals={<GlobalSearchModal />}
     >
+      {activePortal === 'overview' && <Overview />}
       {activePortal === 'factory' && <Factory />}
       {activePortal === 'agency' && <Agency />}
       {activePortal === 'admin' && <Admin />}
@@ -105,8 +107,9 @@ export default function App() {
         <BrowserRouter>
           <Routes>
             <Route path="/login" element={<LoginPage />} />
-            <Route path="/client.html" element={<Navigate to="/dashboard/agency/clients-all" replace />} />
-            <Route path="/client" element={<Navigate to="/dashboard/agency/clients-all" replace />} />
+            <Route path="/client.html" element={<Navigate to="/dashboard/overview" replace />} />
+            <Route path="/client" element={<Navigate to="/dashboard/overview" replace />} />
+            <Route path="/" element={<Navigate to="/dashboard/overview" replace />} />
             <Route
               path="/*"
               element={
