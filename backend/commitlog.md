@@ -3,7 +3,11 @@
 ## [2026-08-27]
 - **Dashboard Version**: `v0.4.2`
 
-### 1. Client Dashboard Overview, Task Management & Real-Time Notifications (NC01 - NC06)
+### 1. Client Dashboard Overview, Task Management & Real-Time Notifications (NC01 - NC07)
+- **NC07 - Permanent Factory & Mock Asset Elimination**:
+  - Permanently deleted all `components/factory/`, `pages/Factory.jsx`, `components/admin/`, `components/agency/`, `Navbar.jsx`, and `client/api/` mock simulators.
+  - Removed factory keys from all translation locale files (`en.json`, `bn.json`).
+  - Purged factory references from `TopBreadcrumbBar.jsx` and `useAppStore.js`.
 - **NC06 - Full Mock Data & Legacy Portal Purge**:
   - Eliminated mock notification lists (`usePortalStore.js`).
   - Purged mock members, payments, and users fallbacks from client query hooks.
