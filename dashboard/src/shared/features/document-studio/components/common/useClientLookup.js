@@ -33,15 +33,24 @@ export function useClientLookup({ onClientFound }) {
       const isEmail = trimmed.includes('@') && trimmed.length >= 5;
       if (!isPhone && !isEmail) return;
 
-      // Skip if already prompted for this exact value this session
-      if (promptedValuesRef.current.has(trimmed)) return;
+
 
       if (debounceRef.current) clearTimeout(debounceRef.current);
 
       debounceRef.current = setTimeout(async () => {
         try {
+          let queryVal = trimmed;
+          if (isPhone) {
+            const digits = trimmed.replace(/\D/g, '');
+            if (digits.length >= 10) {
+              queryVal = digits.slice(-10); // Extract last 10 digits to match with/without country codes
+            } else {
+              queryVal = digits;
+            }
+          }
+
           const res = await apiClient.get('/api/v1/client/clients/lookup', {
-            params: { query: trimmed },
+            params: { query: queryVal },
           });
 
           if (res.data?.success && res.data?.data && res.data.data.length > 0) {
