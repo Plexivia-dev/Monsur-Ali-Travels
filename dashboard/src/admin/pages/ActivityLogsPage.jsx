@@ -20,6 +20,7 @@ import {
   DataTableColumnHeader,
 } from '@/components/ui/unified-table';
 import { HeaderTitle } from '@shared/components/common/HeaderTitle';
+import { PageAvatar } from '@shared/components/common/PageAvatar';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 
@@ -67,29 +68,6 @@ export default function ActivityLogsPage() {
   const [loading, setLoading] = useState(true);
   const [activeFilterIdx, setActiveFilterIdx] = useState(0);
   const [selectedPayload, setSelectedPayload] = useState(null);
-  const [userAvatars, setUserAvatars] = useState({});
-
-  useEffect(() => {
-    async function fetchUserAvatars() {
-      try {
-        const res = await apiClient.get('/api/v1/admin/users');
-        const data = res.data?.data || res.data?.users || [];
-        if (Array.isArray(data)) {
-          const map = {};
-          data.forEach((u) => {
-            const did = u.did || u._id;
-            if (did && u.avatar) {
-              map[did] = u.avatar;
-            }
-          });
-          setUserAvatars(map);
-        }
-      } catch (err) {
-        console.warn('Failed to load user avatars for logs lookup:', err);
-      }
-    }
-    fetchUserAvatars();
-  }, []);
 
   const fetchLogs = useCallback(async () => {
     setLoading(true);
@@ -153,31 +131,16 @@ export default function ActivityLogsPage() {
           const role = log.actionDetails?.role || log.role || 'Staff';
           const userName = log.actionDetails?.name || log.userName || log.user || 'User';
           const userDid = log.actionDetails?.did;
-          let avatarUrl = (userDid && userAvatars[userDid]) || log.actionDetails?.avatar || log.userAvatar || log.avatar;
-          if (avatarUrl) {
-            if (!avatarUrl.startsWith('http://') && !avatarUrl.startsWith('https://') && !avatarUrl.startsWith('data:')) {
-              const base = API_BASE_URL.replace(/\/+$/, '');
-              const path = avatarUrl.startsWith('/') ? avatarUrl : '/' + avatarUrl;
-              avatarUrl = `${base}${path}`;
-            }
-          } else {
-            avatarUrl = `https://ui-avatars.com/api/?name=${encodeURIComponent(userName)}&background=0284c7&color=ffffff&bold=true&rounded=true`;
-          }
           const badgeClass = ROLE_BADGE_COLORS[role] || 'bg-zinc-700 text-white font-bold';
 
           return (
             <div className="flex items-center gap-3 py-0.5">
-              <div className="size-9.5 rounded-xl overflow-hidden bg-primary/10 border border-primary/20 shrink-0 flex items-center justify-center shadow-xs">
-                <img
-                  src={avatarUrl}
-                  alt={userName}
-                  className="w-full h-full object-cover"
-                  onError={(e) => {
-                    e.currentTarget.onerror = null;
-                    e.currentTarget.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(userName)}&background=0284c7&color=ffffff&bold=true`;
-                  }}
-                />
-              </div>
+              <PageAvatar
+                did={userDid}
+                fallbackName={userName}
+                showAvatarOnly={true}
+                size="md"
+              />
               <div className="space-y-1">
                 <span className="font-black text-foreground block text-xs leading-tight tracking-tight">{userName}</span>
                 <span className={`inline-block px-2 py-0.5 rounded-md text-[10px] tracking-wide uppercase ${badgeClass}`}>
