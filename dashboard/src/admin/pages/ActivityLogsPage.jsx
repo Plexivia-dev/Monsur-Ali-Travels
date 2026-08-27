@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
-import { apiClient } from '@/lib/api-client';
+import { apiClient, API_BASE_URL } from '@/lib/api-client';
 import { toast } from 'sonner';
 import {
   Search,
@@ -67,6 +67,29 @@ export default function ActivityLogsPage() {
   const [loading, setLoading] = useState(true);
   const [activeFilterIdx, setActiveFilterIdx] = useState(0);
   const [selectedPayload, setSelectedPayload] = useState(null);
+  const [userAvatars, setUserAvatars] = useState({});
+
+  useEffect(() => {
+    async function fetchUserAvatars() {
+      try {
+        const res = await apiClient.get('/api/v1/admin/users');
+        const data = res.data?.data || res.data?.users || [];
+        if (Array.isArray(data)) {
+          const map = {};
+          data.forEach((u) => {
+            const did = u.did || u._id;
+            if (did && u.avatar) {
+              map[did] = u.avatar;
+            }
+          });
+          setUserAvatars(map);
+        }
+      } catch (err) {
+        console.warn('Failed to load user avatars for logs lookup:', err);
+      }
+    }
+    fetchUserAvatars();
+  }, []);
 
   const fetchLogs = useCallback(async () => {
     setLoading(true);
@@ -129,11 +152,17 @@ export default function ActivityLogsPage() {
           const log = row.original;
           const role = log.actionDetails?.role || log.role || 'Staff';
           const userName = log.actionDetails?.name || log.userName || log.user || 'User';
-          const avatarUrl =
-            log.actionDetails?.avatar ||
-            log.userAvatar ||
-            log.avatar ||
-            `https://ui-avatars.com/api/?name=${encodeURIComponent(userName)}&background=0284c7&color=ffffff&bold=true&rounded=true`;
+          const userDid = log.actionDetails?.did;
+          let avatarUrl = (userDid && userAvatars[userDid]) || log.actionDetails?.avatar || log.userAvatar || log.avatar;
+          if (avatarUrl) {
+            if (!avatarUrl.startsWith('http://') && !avatarUrl.startsWith('https://') && !avatarUrl.startsWith('data:')) {
+              const base = API_BASE_URL.replace(/\/+$/, '');
+              const path = avatarUrl.startsWith('/') ? avatarUrl : '/' + avatarUrl;
+              avatarUrl = `${base}${path}`;
+            }
+          } else {
+            avatarUrl = `https://ui-avatars.com/api/?name=${encodeURIComponent(userName)}&background=0284c7&color=ffffff&bold=true&rounded=true`;
+          }
           const badgeClass = ROLE_BADGE_COLORS[role] || 'bg-zinc-700 text-white font-bold';
 
           return (
