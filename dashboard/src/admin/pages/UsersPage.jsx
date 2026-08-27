@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react';
-import { apiClient } from '@/lib/api-client';
+import { apiClient, API_BASE_URL } from '@/lib/api-client';
 import {
   User,
   UserPlus,
@@ -132,10 +132,16 @@ const UsersPage = () => {
         cell: ({ row }) => {
           const u = row.original;
           const name = u.fullName || u.name || 'User';
-          const avatarUrl =
-            u.avatar ||
-            u.profilePicture ||
-            `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=0284c7&color=ffffff&bold=true&rounded=true`;
+          let avatarUrl = u.avatar || u.profilePicture;
+          if (avatarUrl) {
+            if (!avatarUrl.startsWith('http://') && !avatarUrl.startsWith('https://')) {
+              const base = API_BASE_URL.replace(/\/+$/, '');
+              const path = avatarUrl.startsWith('/') ? avatarUrl : '/' + avatarUrl;
+              avatarUrl = `${base}${path}`;
+            }
+          } else {
+            avatarUrl = `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=0284c7&color=ffffff&bold=true&rounded=true`;
+          }
           return (
             <div className="flex items-center gap-3">
               <div className="size-9.5 rounded-xl overflow-hidden bg-primary/10 border border-primary/20 shrink-0 flex items-center justify-center shadow-xs">
