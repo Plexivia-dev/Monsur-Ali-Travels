@@ -134,7 +134,7 @@ const UsersPage = () => {
           const name = u.fullName || u.name || 'User';
           let avatarUrl = u.avatar || u.profilePicture;
           if (avatarUrl) {
-            if (!avatarUrl.startsWith('http://') && !avatarUrl.startsWith('https://')) {
+            if (!avatarUrl.startsWith('http://') && !avatarUrl.startsWith('https://') && !avatarUrl.startsWith('data:')) {
               const base = API_BASE_URL.replace(/\/+$/, '');
               const path = avatarUrl.startsWith('/') ? avatarUrl : '/' + avatarUrl;
               avatarUrl = `${base}${path}`;
