@@ -3,7 +3,8 @@ import { generateDid } from "../utils/generateDid.js";
 
 const { models } = mongoose;
 
-export const USER_ROLES = ["Owner", "Admin", "Employee"];
+export const USER_ROLES = ["Owner", "Admin", "Manager", "Staff"];
+export const USER_SUB_ROLES = ["Frontdesk", "Lawyer", "Visa_Processor", "Accountant", "Representative", "ClientManager"];
 
 const userSchema = new Schema(
   {
@@ -26,14 +27,23 @@ const userSchema = new Schema(
     emailOtpExpiresAt: { type: Date, select: false },
     twoFactorSecret: { type: String, select: false },
     twoFactorEnabled: { type: Boolean, default: false },
-    role: { type: String, required: true, enum: USER_ROLES, default: "Employee" },
+    role: { type: String, required: true, enum: USER_ROLES, default: "Staff", index: true },
+    subRole: { 
+      type: String, 
+      enum: USER_SUB_ROLES,
+      required: function() { return this.role === 'Staff'; }
+    },
     department: { type: String, trim: true, default: "" },
     designation: { type: String, trim: true, default: "" },
+    avatar: { type: String, trim: true, default: "" },
+    bio: { type: String, trim: true, default: "" },
+    address: { type: String, trim: true, default: "" },
     assets: {
       type: [String],
       default: [],
     },
     isActive: { type: Boolean, default: true },
+    status: { type: String, enum: ["Active", "Inactive", "Invited"], default: "Active", index: true },
     lastLogin: { type: Date, default: null },
     createdByDid: { type: String, default: null },
     updatedByDid: { type: String, default: null },
@@ -60,6 +70,13 @@ const userSchema = new Schema(
     },
   },
 );
+
+userSchema.pre('save', function(next) {
+    if (this.role !== 'Staff' && this.subRole) {
+        this.subRole = undefined;
+    }
+    next();
+});
 
 userSchema.virtual("createdBy", {
   ref: "User",

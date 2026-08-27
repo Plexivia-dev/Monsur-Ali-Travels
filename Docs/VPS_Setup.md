@@ -82,11 +82,11 @@ certbot --nginx -d admin.monsuralitravels.com -d api.monsuralitravels.com -d das
 Inside `/opt/monsuralitravels`:
 
 ```bash
-# 1. Full Deploy (Pull live + Rebuild all + Start)
+# 1. Full Deploy (Clean + Pull live + Rebuild all + Start)
 make deploy
 
 # 2. Rebuild & Restart Individual Services
-make build-dash     # Client Dashboard (8005)
+make build-client   # Client Dashboard (8005)
 make build-admin    # Admin Dashboard (8007)
 make build-bg       # Backend API (5092)
 make build-front    # Frontend Landing (8006)
@@ -94,7 +94,7 @@ make build-front    # Frontend Landing (8006)
 # 3. View Logs
 make logs           # All services
 make logs-bg        # Backend logs
-make logs-dash      # Client Dashboard logs
+make logs-client    # Client Dashboard logs
 make logs-admin     # Admin Dashboard logs
 make logs-front     # Frontend logs
 

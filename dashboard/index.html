@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Admin | ERP</title>
+    <script>
+      // Automatic router: if path is /admin -> admin.html, otherwise client.html
+      const path = window.location.pathname;
+      if (path.startsWith('/admin')) {
+        window.location.replace('/admin.html' + window.location.search + window.location.hash);
+      } else {
+        window.location.replace('/client.html' + window.location.search + window.location.hash);
+      }
+    </script>
+  </head>
+  <body style="font-family: sans-serif; display: flex; align-items: center; justify-content: center; height: 100vh; margin: 0; background: #f4f6f8;">
+    <div style="text-align: center;">
+      <h2 style="color: #1e293b;">Redirecting to Monsur Ali Travels ERP...</h2>
+      <p style="color: #64748b;">
+        <a href="/admin.html" style="color: #0284c7; text-decoration: none; margin-right: 15px;">Admin Portal</a>
+        <a href="/client.html" style="color: #0284c7; text-decoration: none;">Client / Staff Portal</a>
+      </p>
+    </div>
+  </body>
+</html>

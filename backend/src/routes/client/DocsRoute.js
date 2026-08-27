@@ -28,7 +28,7 @@ import {
   deletePassportSubmission,
 } from "../../controllers/client/PassportSubmissionController.js";
 import { IndianVisaController } from "../../controllers/client/IndianVisaController.js";
-import { CustomerGuardianController } from "../../controllers/client/CustomerGuardianController.js";
+import { ClientGuardianController } from "../../controllers/client/ClientGuardianController.js";
 
 const docsRouter = Router();
 
@@ -92,21 +92,40 @@ docsRouter
   .put(IndianVisaController.update)
   .delete(IndianVisaController.delete);
 
-// /api/v1/docs/customer-guardians & /api/v1/docs/customer-forms
+// /api/v1/docs/client-guardians & /api/v1/docs/client-forms
 docsRouter
-  .route(["/customer-guardians", "/customer-forms"])
-  .get(CustomerGuardianController.getAll)
-  .post(CustomerGuardianController.create);
+  .route(["/client-guardians", "/client-forms", "/client-guardians", "/client-forms"])
+  .get(ClientGuardianController.getAll)
+  .post(ClientGuardianController.create);
 
 docsRouter
-  .route(["/customer-guardians/:id", "/customer-forms/:id"])
-  .get(CustomerGuardianController.getById)
-  .put(CustomerGuardianController.update)
-  .delete(CustomerGuardianController.delete);
+  .route(["/client-guardians/:id", "/client-forms/:id", "/client-guardians/:id", "/client-forms/:id"])
+  .get(ClientGuardianController.getById)
+  .put(ClientGuardianController.update)
+  .delete(ClientGuardianController.delete);
 
 docsRouter
-  .route(["/customer-guardians/:id/status", "/customer-forms/:id/status"])
-  .patch(CustomerGuardianController.updateStatus);
+  .route([
+    "/client-guardians/:id/status",
+    "/client-forms/:id/status",
+    "/client-guardians/:id/status",
+    "/client-forms/:id/status",
+  ])
+  .patch(ClientGuardianController.updateStatus);
+
+import { JobVerificationController } from "../../controllers/client/JobVerificationController.js";
+
+// /api/v1/docs/job-verifications
+docsRouter
+  .route(["/job-verifications", "/job-verification"])
+  .get(JobVerificationController.getAll)
+  .post(JobVerificationController.create);
+
+docsRouter
+  .route(["/job-verifications/:id", "/job-verification/:id"])
+  .get(JobVerificationController.getById)
+  .put(JobVerificationController.update)
+  .delete(JobVerificationController.delete);
 
 // Common Dedicated File Upload Endpoints under /api/v1/docs/upload
 import uploadRouter from "../shared/UploadRoute.js";

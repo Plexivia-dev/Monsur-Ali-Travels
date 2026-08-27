@@ -51,6 +51,10 @@ const documentVaultSchema = new Schema(
       type: String,
       default: null,
     },
+    uploadedByName: {
+      type: String,
+      default: "",
+    },
   },
   {
     timestamps: true,

@@ -66,7 +66,7 @@ export const getAllReceipts = async (req, res, next) => {
       .sort({ createdAt: -1 })
       .skip(skip)
       .limit(limit)
-      .populate("customerId", "fullName phone passportNumber clientCode")
+      .populate("clientId", "fullName phone passportNumber clientCode")
       .populate("createdBy", "name role")
       .populate("confirmedBy", "name role");
 
@@ -103,7 +103,7 @@ export const getReceiptById = async (req, res, next) => {
       : { $or: [{ receiptNo: id }, { did: id }], isActive: { $ne: false } };
 
     let receipt = await MoneyReceiptModel.findOne(query)
-      .populate("customerId", "fullName phone passportNumber clientCode totalDueAmount")
+      .populate("clientId", "fullName phone passportNumber clientCode totalDueAmount")
       .populate("createdBy", "name role")
       .populate("confirmedBy", "name role");
 
@@ -207,11 +207,11 @@ export const createReceipt = async (req, res, next) => {
     // Set creator user if present
     if (req.user?.did) {
       body.createdByDid = req.user.did;
-      body.createdByName = req.user.name || body.createdByName || "ম্যানেজার (Manager)";
+      body.createdByName = req.user.name || body.createdByName || "Manager";
     }
 
-    // Auto-link to client if phone or passport matches and clientDid/customerId not provided
-    if (!body.clientDid && !body.customerId && (body.passportNumber || body.clientPhone)) {
+    // Auto-link to client if phone or passport matches and clientDid/clientId not provided
+    if (!body.clientDid && !body.clientId && (body.passportNumber || body.clientPhone)) {
       const search = [];
       if (body.passportNumber) search.push({ passportNumber: body.passportNumber.trim().toUpperCase() });
       if (body.clientPhone) search.push({ phone: body.clientPhone.trim() });
@@ -219,8 +219,8 @@ export const createReceipt = async (req, res, next) => {
       if (matchedClient) {
         body.clientDid = matchedClient.did;
       }
-    } else if (body.clientDid || body.customerId) {
-      body.clientDid = body.clientDid || body.customerId;
+    } else if (body.clientDid || body.clientId) {
+      body.clientDid = body.clientDid || body.clientId;
     }
 
     const newReceipt = await MoneyReceiptModel.create(body);
@@ -308,7 +308,7 @@ export const confirmReceipt = async (req, res, next) => {
     receipt.status = "confirmed";
     receipt.confirmedAt = new Date();
     receipt.confirmedByDid = req.user?.did || null;
-    receipt.confirmedByName = confirmedByName || req.user?.name || "একাউন্টেন্ট (Accountant)";
+    receipt.confirmedByName = confirmedByName || req.user?.name || "Accountant";
     if (paymentMethod) receipt.paymentMethod = paymentMethod;
     if (notes) {
       receipt.notes = receipt.notes ? `${receipt.notes} | ${notes}` : notes;
@@ -362,7 +362,7 @@ export const cancelReceipt = async (req, res, next) => {
 
     receipt.status = "cancelled";
     if (reason) {
-      receipt.notes = receipt.notes ? `${receipt.notes} | বাতিল কারণ: ${reason}` : `বাতিল কারণ: ${reason}`;
+      receipt.notes = receipt.notes ? `${receipt.notes} | Cancellation Reason: ${reason}` : `Cancellation Reason: ${reason}`;
     }
 
     await receipt.save();

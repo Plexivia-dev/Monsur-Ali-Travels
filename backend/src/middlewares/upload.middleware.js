@@ -15,17 +15,17 @@ const storage = multer.diskStorage({
     const day = String(now.getDate()).padStart(2, '0');
     const dateStr = `${year}${month}${day}`;
 
-    // ১. ফোল্ডারের নাম (ব্যাচ সহ)
+    // 1. Folder Name
     const folderName = `${dateStr}-batch-${batchNumber}`;
     
-    // ২. Absolute Path ব্যবহার করা হলো (ডকারের ভেতরে নিরাপদ)
+    // 2. Absolute Path for Docker container safety
     const targetDir = path.join(process.cwd(), 'uploads/products', folderName);
 
     if (!fs.existsSync(targetDir)) {
       fs.mkdirSync(targetDir, { recursive: true });
     }
 
-    // URL জেনারেট করার জন্য রিলেটিভ ফোল্ডার পাথ সেভ রাখছি
+    // Save relative folder path for URL generation
     req.currentBatchPath = `/uploads/products/${folderName}`;
     
     cb(null, targetDir);
@@ -81,10 +81,10 @@ export const upload = (fields) => {
           });
         }
 
-        // Sharp দিয়ে ছবি কমপ্রেস করা
+        // Image compression via Sharp
         await Promise.all(filesToProcess.map(compressImageFile));
 
-        // DB তে সেভ করার জন্য ক্লিন ইউআরএল (req.file.url) জেনারেট
+        // Clean URL generation for DB storage
         if (req.file) {
           req.file.url = `${req.currentBatchPath}/${req.file.filename}`;
         }

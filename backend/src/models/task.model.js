@@ -35,6 +35,11 @@ const taskSchema = new Schema(
       required: [true, "Assigned user DID is required"],
       index: true,
     },
+    assignedToName: {
+      type: String,
+      default: "",
+      trim: true,
+    },
     allowedDocumentDids: {
       type: [String],
       default: [],
@@ -96,6 +101,14 @@ taskSchema.virtual("permittedDocs", {
   localField: "allowedDocumentDids",
   foreignField: "did",
   justOne: false,
+});
+
+// Virtual Relation: Fetch assigned user details via assignedToDid -> did
+taskSchema.virtual("assignedTo", {
+  ref: "User",
+  localField: "assignedToDid",
+  foreignField: "did",
+  justOne: true,
 });
 
 export const TaskModel = models.Task || model("Task", taskSchema);

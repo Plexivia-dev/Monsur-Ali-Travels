@@ -64,11 +64,11 @@ const caseFileSchema = new Schema(
     status: {
       type: String,
       enum: [
-        "ENTRY",                  // ১. রিসিভ / এন্ট্রি
-        "PROCESSING",             // ২. প্রসেসিং / কাজ চলমান
-        "APPROVED_OFFER_LETTER",  // ৩. অ্যাপ্রুভড / অফার লেটার
-        "SUBMITTED_EMBASSY_BSF",  // ৪. সাবমিটেড (এমবাসি / বিএসএফ)
-        "COMPLETED_DELIVERED",    // ৫. কমপ্লিট / ডেলিভার্ড
+        "ENTRY",                  // 1. Received / Entry
+        "PROCESSING",             // 2. Processing / In Progress
+        "APPROVED_OFFER_LETTER",  // 3. Approved / Offer Letter
+        "SUBMITTED_EMBASSY_BSF",  // 4. Submitted (Embassy / BSF)
+        "COMPLETED_DELIVERED",    // 5. Completed / Delivered
         "REJECTED",
         "ON_HOLD",
       ],
@@ -76,11 +76,20 @@ const caseFileSchema = new Schema(
       index: true,
     },
 
-    // 🚀 Advanced Handoff & Workflow Tracking (New)
     assignedToDid: {
       type: String,
       default: null,
       index: true,
+    },
+    assignedToName: {
+      type: String,
+      default: "",
+      trim: true,
+    },
+    assignedOfficer: {
+      type: String,
+      default: "",
+      trim: true,
     },
     workflowStatus: {
       type: String,
@@ -93,6 +102,7 @@ const caseFileSchema = new Schema(
         status: { type: String, required: true },
         remarks: { type: String, default: "" },
         updatedByDid: { type: String, ref: "User" },
+        updatedByName: { type: String, default: "" },
         assignedToDid: { type: String, ref: "User" },
         date: { type: Date, default: Date.now },
       }
@@ -101,21 +111,21 @@ const caseFileSchema = new Schema(
     // Document Checklist & Follow-up Reminders
     checklist: {
       photo2x2: { type: Boolean, default: false },
-      electricityBill: { type: Boolean, default: false }, // কারেন্ট বিল
+      electricityBill: { type: Boolean, default: false }, // Electricity Bill
       nidCopy: { type: Boolean, default: false },
-      landDocuments: { type: Boolean, default: false }, // জমির কাগজ
-      followUpCallRequired: { type: Boolean, default: false }, // পেন্ডিং পেপারের জন্য কল রিমাইন্ডার
+      landDocuments: { type: Boolean, default: false }, // Land Documents
+      followUpCallRequired: { type: Boolean, default: false }, // Pending paper call reminder
       notes: { type: String, default: "" },
     },
 
     // 3-Stage Payment Milestones & Company Due Tracking
     paymentLedger: {
       totalAgreedAmount: { type: Number, default: 0 },
-      step1_advance: { type: Number, default: 0 },        // ফাইল সাবমিশনের সময় অ্যাডভান্স
-      step2_offerApproval: { type: Number, default: 0 },   // অফার লেটার অ্যাপ্রুভ হলে
-      step3_delivery: { type: Number, default: 0 },        // ভিসা ও পাসপোর্ট ডেলিভারির সময়
+      step1_advance: { type: Number, default: 0 },        // Advance upon file submission
+      step2_offerApproval: { type: Number, default: 0 },   // Upon offer letter approval
+      step3_delivery: { type: Number, default: 0 },        // Upon visa & passport delivery
       totalPaidAmount: { type: Number, default: 0 },
-      dueAmount: { type: Number, default: 0, index: true }, // কোম্পানির বকেয়া ট্র্যাকিং
+      dueAmount: { type: Number, default: 0, index: true }, // Outstanding due balance tracking
       isFullyPaid: { type: Boolean, default: false },
     },
 
@@ -129,13 +139,33 @@ const caseFileSchema = new Schema(
       type: String,
       default: "",
     },
+    // Internal Staff Communication & Case Notes (Direct collaboration)
+    internalMessages: [
+      {
+        did: { type: String, default: () => generateDid() },
+        senderDid: { type: String, required: true },
+        senderName: { type: String, required: true },
+        senderRole: { type: String, default: "Staff" },
+        message: { type: String, required: true, trim: true },
+        attachments: [{ fileName: String, fileUrl: String }],
+        createdAt: { type: Date, default: Date.now },
+      }
+    ],
     createdByDid: {
       type: String,
       default: null,
     },
+    createdByName: {
+      type: String,
+      default: "",
+    },
     updatedByDid: {
       type: String,
       default: null,
+    },
+    assignedToName: {
+      type: String,
+      default: "",
     },
   },
   {
@@ -207,8 +237,15 @@ caseFileSchema.virtual("financialReceipts", {
   justOne: false,
 });
 
+caseFileSchema.virtual("vaultDocuments", {
+  ref: "DocumentVault",
+  localField: "did",
+  foreignField: "caseDid",
+  justOne: false,
+});
+
 // Virtual Populates for CaseFile relations using DIDs
-caseFileSchema.virtual("customerId", {
+caseFileSchema.virtual("clientId", {
   ref: "Client",
   localField: "clientDid",
   foreignField: "did",

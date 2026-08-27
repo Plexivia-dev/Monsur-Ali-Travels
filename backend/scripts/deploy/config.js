@@ -9,7 +9,8 @@ const __dirname = path.dirname(__filename);
 dotenv.config({ path: path.join(__dirname, '../../.env') });
 
 export const config = {
-  host: process.env.DEPLOY_SERVER_IP || '144.79.218.126',
+  host: process.env.DEPLOY_SERVER_IP || '144.79.218.241',
   user: process.env.DEPLOY_SERVER_USER || 'root',
-  deployPath: '/opt/dev'
+  deployPath: '/opt/monsuralitravels',
+  keyPath: process.env.DEPLOY_SSH_KEY || 'C:/Users/mdikr/.ssh/id_ed25519_ikramul',
 };

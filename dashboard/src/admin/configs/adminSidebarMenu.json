@@ -1,0 +1,258 @@
+[
+  {
+    "groupLabel": "Core Overview",
+    "groupLabelBn": "",
+    "items": [
+      {
+        "id": "overview",
+        "name": "Overview",
+        "nameBn": "",
+        "path": "/admin",
+        "icon": "LayoutDashboard"
+      }
+    ]
+  },
+  {
+    "groupLabel": "Agency Workspace",
+    "groupLabelBn": "",
+    "items": [
+      {
+        "id": "agency-group",
+        "name": "Agency",
+        "nameBn": "",
+        "icon": "Building2",
+        "childItems": [
+          {
+            "id": "cases",
+            "name": "Client Files",
+            "nameBn": "",
+            "path": "/admin/cases",
+            "icon": "FolderOpen",
+            "excludeRoles": ["accountant", "accounts"]
+          },
+          {
+            "id": "clients",
+            "name": "Clients",
+            "nameBn": "",
+            "path": "/admin/clients",
+            "icon": "Users"
+          },
+          {
+            "id": "users",
+            "name": "Users",
+            "nameBn": "",
+            "path": "/admin/users",
+            "icon": "User",
+            "roles": ["owner", "superadmin", "admin"]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "groupLabel": "Accounts & Ledger",
+    "groupLabelBn": "",
+    "roles": ["owner", "superadmin", "admin", "accountant", "accounts"],
+    "excludeRoles": ["staff", "frontdesk", "visa_processor", "lawyer", "representative"],
+    "items": [
+      {
+        "id": "accounts-group",
+        "name": "Accounts",
+        "nameBn": "",
+        "icon": "Wallet",
+        "childItems": [
+          {
+            "id": "payments",
+            "name": "Payments",
+            "nameBn": "",
+            "path": "/admin/accounts/payments",
+            "icon": "Wallet"
+          },
+          {
+            "id": "bills",
+            "name": "Bills",
+            "nameBn": "",
+            "path": "/admin/accounts/bills",
+            "icon": "Receipt"
+          },
+          {
+            "id": "salaries",
+            "name": "Salary Slips",
+            "nameBn": "",
+            "path": "/admin/accounts/salaries",
+            "icon": "Banknote"
+          },
+          {
+            "id": "expenses",
+            "name": "Expense Tracking",
+            "nameBn": "",
+            "path": "/admin/accounts/expenses",
+            "icon": "Receipt"
+          },
+          {
+            "id": "cash-book",
+            "name": "Cash Book",
+            "nameBn": "",
+            "path": "/admin/accounts/cash-book",
+            "icon": "BookOpen"
+          },
+          {
+            "id": "bank-ledger",
+            "name": "Bank Ledger",
+            "nameBn": "",
+            "path": "/admin/accounts/bank-ledger",
+            "icon": "Building2"
+          },
+          {
+            "id": "reports",
+            "name": "Reports",
+            "nameBn": "",
+            "path": "/admin/accounts/reports",
+            "icon": "FileSpreadsheet"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "groupLabel": "Document Studio",
+    "groupLabelBn": "",
+    "items": [
+      {
+        "id": "docs-group",
+        "name": "Studio Generators",
+        "nameBn": "",
+        "icon": "FileSpreadsheet",
+        "childItems": [
+          {
+            "id": "doc-payroll",
+            "name": "Salary Slip",
+            "nameBn": "",
+            "path": "/admin/docs/payroll",
+            "icon": "Banknote"
+          },
+          {
+            "id": "doc-invoice",
+            "name": "Invoice",
+            "nameBn": "",
+            "path": "/admin/docs/invoice",
+            "icon": "ReceiptText"
+          },
+          {
+            "id": "doc-money-receipt",
+            "name": "Money Receipt Voucher",
+            "nameBn": "",
+            "path": "/admin/docs/money-receipt",
+            "icon": "Receipt"
+          },
+          {
+            "id": "doc-cash-voucher",
+            "name": "Cash Money Voucher",
+            "nameBn": "",
+            "path": "/admin/docs/cash-voucher",
+            "icon": "Wallet"
+          },
+          {
+            "id": "doc-agreement",
+            "name": "Employment Agreement",
+            "nameBn": "",
+            "path": "/admin/docs/agreement",
+            "icon": "FileSignature"
+          },
+          {
+            "id": "doc-client-form",
+            "name": "Client & Guardian Form",
+            "nameBn": "",
+            "path": "/admin/docs/client-form",
+            "icon": "UserCheck"
+          },
+          {
+            "id": "doc-indian-visa",
+            "name": "Indian Visa Submission",
+            "nameBn": "",
+            "path": "/admin/docs/indian-visa",
+            "icon": "Stamp"
+          },
+          {
+            "id": "doc-passport-sub",
+            "name": "Passport Submission Slip",
+            "nameBn": "",
+            "path": "/admin/docs/passport-sub",
+            "icon": "BookOpen"
+          },
+          {
+            "id": "doc-exp-cert",
+            "name": "Experience Certificate",
+            "nameBn": "",
+            "path": "/admin/docs/experience-certificate",
+            "icon": "Award"
+          },
+          {
+            "id": "doc-marr-cert",
+            "name": "Marriage Certificate",
+            "nameBn": "",
+            "path": "/admin/docs/marriage-certificate",
+            "icon": "Heart"
+          },
+          {
+            "id": "doc-char-cert",
+            "name": "Character Certificate",
+            "nameBn": "",
+            "path": "/admin/docs/character-certificate",
+            "icon": "ShieldCheck"
+          },
+          {
+            "id": "doc-job-verification",
+            "name": "Job Verification Form",
+            "nameBn": "",
+            "path": "/admin/docs/job-verification",
+            "icon": "FileCheck2"
+          },
+          {
+            "id": "doc-idcard",
+            "name": "Employee ID Card",
+            "nameBn": "",
+            "path": "/admin/docs/idcard",
+            "icon": "Contact"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "groupLabel": "System & Logs",
+    "groupLabelBn": "",
+    "excludeRoles": ["accountant", "accounts", "frontdesk", "staff"],
+    "items": [
+      {
+        "id": "system-group",
+        "name": "Logs & Cloud",
+        "nameBn": "",
+        "icon": "Server",
+        "childItems": [
+          {
+            "id": "activity-logs",
+            "name": "Activity Logs",
+            "nameBn": "",
+            "path": "/admin/system/activity-logs",
+            "icon": "FileText"
+          },
+          {
+            "id": "storage",
+            "name": "Storage & Cloud Sync",
+            "nameBn": "",
+            "path": "/admin/system/storage",
+            "icon": "HardDrive"
+          },
+          {
+            "id": "trash",
+            "name": "Trash",
+            "nameBn": "",
+            "path": "/admin/system/trash",
+            "icon": "Trash2"
+          }
+        ]
+      }
+    ]
+  }
+]

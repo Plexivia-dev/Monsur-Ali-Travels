@@ -1,0 +1,659 @@
+/**
+ * Dynamic Role-Based Access Control (RBAC) & Navigation Configuration
+ * 
+ * Each role (and Staff subRole) has its own dedicated navigation schema,
+ * permitted submodules, and default landing page.
+ */
+
+// Master Navigation Items Catalogue
+export const MASTER_ITEMS = {
+  // Operational Tasks
+  myTasks: {
+    icon: 'CheckSquare',
+    label: 'My Tasks',
+    key: 'nav.myTasks',
+    portal: 'agency',
+    submodule: 'tasks',
+    href: '/dashboard/agency/tasks',
+  },
+
+  // Case Files (Clients)
+  caseFiles: {
+    icon: 'FolderOpen',
+    label: 'Case Files',
+    key: 'nav.caseFiles',
+    portal: 'agency',
+    childItems: [
+      {
+        icon: 'FilePlus2',
+        label: 'Client Profiles',
+        key: 'nav.clients',
+        portal: 'agency',
+        submodule: 'cases',
+      },
+      {
+        icon: 'Briefcase',
+        label: 'Client Pipeline',
+        key: 'nav.pipeline',
+        portal: 'agency',
+        submodule: 'pipeline',
+      },
+    ],
+  },
+
+  // Clients & Accounts
+  clientsAll: {
+    icon: 'Users',
+    label: 'All Clients',
+    key: 'nav.allClients',
+    portal: 'agency',
+    submodule: 'clients-all',
+    href: '/dashboard/agency/clients-all',
+  },
+  clientsAdd: {
+    icon: 'UserPlus',
+    label: 'Add Client',
+    key: 'nav.addClient',
+    portal: 'agency',
+    submodule: 'clients-add',
+    href: '/dashboard/agency/clients-add',
+  },
+
+  // Accounts Hub Items
+  accPayments: {
+    icon: 'Wallet',
+    label: 'Payments',
+    key: 'nav.payments',
+    portal: 'accounts',
+    submodule: 'payments',
+    href: '/dashboard/accounts/payments',
+  },
+  accBills: {
+    icon: 'Receipt',
+    label: 'Bills',
+    key: 'nav.bills',
+    portal: 'accounts',
+    submodule: 'bills',
+    href: '/dashboard/accounts/bills',
+  },
+  accSalaries: {
+    icon: 'Banknote',
+    label: 'Salary Slips',
+    key: 'nav.salarySlip',
+    portal: 'accounts',
+    submodule: 'salaries',
+    href: '/dashboard/accounts/salaries',
+  },
+  accExpenses: {
+    icon: 'Receipt',
+    label: 'Expense Tracking',
+    key: 'nav.expenses',
+    portal: 'accounts',
+    submodule: 'expenses',
+    href: '/dashboard/accounts/expenses',
+  },
+  accReports: {
+    icon: 'FileSpreadsheet',
+    label: 'Reports',
+    key: 'nav.reports',
+    portal: 'accounts',
+    submodule: 'reports',
+    href: '/dashboard/accounts/reports',
+  },
+
+  // Document Studio Items
+  docPayroll: {
+    icon: 'Banknote',
+    label: 'Salary Slip',
+    key: 'nav.salarySlip',
+    portal: 'docs',
+    submodule: 'payroll',
+    href: '/dashboard/docs/payroll',
+  },
+  docInvoice: {
+    icon: 'ReceiptText',
+    label: 'Invoice',
+    key: 'nav.invoice',
+    portal: 'docs',
+    submodule: 'invoice',
+    href: '/dashboard/docs/invoice',
+  },
+  docMoneyReceipt: {
+    icon: 'Receipt',
+    label: 'Money Receipt Voucher',
+    key: 'nav.moneyReceipt',
+    portal: 'docs',
+    submodule: 'money-receipt',
+    href: '/dashboard/docs/money-receipt',
+  },
+  docCashVoucher: {
+    icon: 'Wallet',
+    label: 'Cash Money Voucher',
+    key: 'nav.cashVoucher',
+    portal: 'docs',
+    submodule: 'cash-voucher',
+    href: '/dashboard/docs/cash-voucher',
+  },
+  docAgreement: {
+    icon: 'FileSignature',
+    label: 'Employment Agreement',
+    key: 'nav.employmentAgreement',
+    portal: 'docs',
+    submodule: 'agreement',
+    href: '/dashboard/docs/agreement',
+  },
+  docClientForm: {
+    icon: 'UserCheck',
+    label: 'Client & Guardian Form',
+    key: 'nav.clientGuardianForm',
+    portal: 'docs',
+    submodule: 'client-form',
+    href: '/dashboard/docs/client-form',
+  },
+  docIndianVisa: {
+    icon: 'Stamp',
+    label: 'Indian Visa Submission',
+    key: 'nav.indianVisaRecords',
+    portal: 'docs',
+    submodule: 'indian-visa',
+    href: '/dashboard/docs/indian-visa',
+  },
+  docPassportSub: {
+    icon: 'BookOpen',
+    label: 'Passport Submission',
+    key: 'nav.passportRecords',
+    portal: 'docs',
+    submodule: 'passport-sub',
+    href: '/dashboard/docs/passport-sub',
+  },
+  docJobVerification: {
+    icon: 'Briefcase',
+    label: 'Job Verification Form',
+    key: 'nav.jobVerification',
+    portal: 'docs',
+    submodule: 'job-verification',
+    href: '/dashboard/docs/job-verification',
+  },
+  docIdCard: {
+    icon: 'Contact',
+    label: 'Employee ID Card',
+    key: 'nav.idCard',
+    portal: 'docs',
+    submodule: 'idcard',
+    href: '/dashboard/docs/idcard',
+  },
+  docExpCert: {
+    icon: 'Award',
+    label: 'Experience Certificate',
+    key: 'nav.experienceCertificate',
+    portal: 'docs',
+    submodule: 'experience-certificate',
+    href: '/dashboard/docs/experience-certificate',
+  },
+  docCharCert: {
+    icon: 'ShieldCheck',
+    label: 'Character Certificate',
+    key: 'nav.characterCertificate',
+    portal: 'docs',
+    submodule: 'character-certificate',
+    href: '/dashboard/docs/character-certificate',
+  },
+  docMarrCert: {
+    icon: 'Heart',
+    label: 'Marriage Certificate',
+    key: 'nav.marriageCertificate',
+    portal: 'docs',
+    submodule: 'marriage-certificate',
+    href: '/dashboard/docs/marriage-certificate',
+  },
+
+  // Data Records Center Items
+  dataClientProfiles: {
+    icon: 'Users',
+    label: 'Client Profiles',
+    key: 'nav.clientProfiles',
+    portal: 'data',
+    submodule: 'client-profiles',
+    href: '/dashboard/data/client-profiles',
+  },
+  dataAgreements: {
+    icon: 'FileSignature',
+    label: 'Agreement Records',
+    key: 'nav.agreementRecords',
+    portal: 'data',
+    submodule: 'agreements',
+    href: '/dashboard/data/agreements',
+  },
+  dataClientApplications: {
+    icon: 'UserCheck',
+    label: 'Client Applications',
+    key: 'nav.clientApplications',
+    portal: 'data',
+    submodule: 'client-applications',
+    href: '/dashboard/data/client-applications',
+  },
+  dataIndianVisas: {
+    icon: 'Stamp',
+    label: 'Indian Visa Records',
+    key: 'nav.indianVisaRecords',
+    portal: 'data',
+    submodule: 'indian-visas',
+    href: '/dashboard/data/indian-visas',
+  },
+  dataPassports: {
+    icon: 'BookOpen',
+    label: 'Passport Submissions',
+    key: 'nav.passportRecords',
+    portal: 'data',
+    submodule: 'passports',
+    href: '/dashboard/data/passports',
+  },
+};
+
+/**
+ * Role-specific navigation presets
+ */
+export const ROLE_NAVIGATION_PRESETS = {
+  // ─── FRONTDESK / GENERAL STAFF ──────────────────────────────────────────────
+  frontdesk: {
+    defaultPortal: 'agency',
+    defaultSubmodule: 'tasks',
+    navGroups: [
+      {
+        groupLabel: '',
+        groupKey: '',
+        portal: 'agency',
+        items: [
+          MASTER_ITEMS.myTasks,
+          {
+            icon: 'FilePlus2',
+            label: 'Client Intake',
+            key: 'nav.clients',
+            portal: 'agency',
+            submodule: 'cases',
+            href: '/dashboard/agency/cases',
+          },
+          {
+            icon: 'FileText',
+            label: 'Document Studio',
+            key: 'nav.docs',
+            portal: 'docs',
+            childItems: [
+              MASTER_ITEMS.docPayroll,
+              MASTER_ITEMS.docInvoice,
+              MASTER_ITEMS.docMoneyReceipt,
+              MASTER_ITEMS.docCashVoucher,
+              MASTER_ITEMS.docAgreement,
+              MASTER_ITEMS.docClientForm,
+              MASTER_ITEMS.docIndianVisa,
+              MASTER_ITEMS.docPassportSub,
+              MASTER_ITEMS.docExpCert,
+              MASTER_ITEMS.docCharCert,
+              MASTER_ITEMS.docMarrCert,
+              MASTER_ITEMS.docJobVerification,
+              MASTER_ITEMS.docIdCard,
+            ],
+          },
+        ],
+      },
+      {
+        groupLabel: 'Records Management',
+        groupKey: 'nav.data',
+        portal: 'data',
+        items: [
+          MASTER_ITEMS.dataClientProfiles,
+          MASTER_ITEMS.dataAgreements,
+          MASTER_ITEMS.dataClientApplications,
+          MASTER_ITEMS.dataIndianVisas,
+          MASTER_ITEMS.dataPassports,
+        ],
+      },
+    ],
+  },
+
+  // ─── ACCOUNTANT ────────────────────────────────────────────────────────────
+  accountant: {
+    defaultPortal: 'accounts',
+    defaultSubmodule: 'payments',
+    navGroups: [
+      {
+        groupLabel: 'Accounts & Ledger',
+        groupKey: 'nav.accounts',
+        portal: 'accounts',
+        items: [
+          MASTER_ITEMS.accPayments,
+          MASTER_ITEMS.accBills,
+          MASTER_ITEMS.accSalaries,
+          MASTER_ITEMS.accExpenses,
+          MASTER_ITEMS.accReports,
+        ],
+      },
+      {
+        groupLabel: 'Document Studio',
+        groupKey: 'nav.docs',
+        portal: 'docs',
+        items: [
+          {
+            icon: 'FileText',
+            label: 'Financial Documents',
+            key: 'nav.docs',
+            portal: 'docs',
+            childItems: [
+              MASTER_ITEMS.docPayroll,
+              MASTER_ITEMS.docInvoice,
+              MASTER_ITEMS.docMoneyReceipt,
+              MASTER_ITEMS.docCashVoucher,
+              MASTER_ITEMS.docAgreement,
+              MASTER_ITEMS.docClientForm,
+              MASTER_ITEMS.docIndianVisa,
+              MASTER_ITEMS.docPassportSub,
+              MASTER_ITEMS.docExpCert,
+              MASTER_ITEMS.docCharCert,
+              MASTER_ITEMS.docMarrCert,
+              MASTER_ITEMS.docJobVerification,
+              MASTER_ITEMS.docIdCard,
+            ],
+          },
+        ],
+      },
+    ],
+  },
+
+  // ─── VISA PROCESSOR ────────────────────────────────────────────────────────
+  visa_processor: {
+    defaultPortal: 'agency',
+    defaultSubmodule: 'tasks',
+    navGroups: [
+      {
+        groupLabel: '',
+        groupKey: '',
+        portal: 'agency',
+        items: [
+          MASTER_ITEMS.myTasks,
+          MASTER_ITEMS.caseFiles,
+          {
+            icon: 'FileText',
+            label: 'Document Studio',
+            key: 'nav.docs',
+            portal: 'docs',
+            childItems: [
+              MASTER_ITEMS.docPayroll,
+              MASTER_ITEMS.docInvoice,
+              MASTER_ITEMS.docMoneyReceipt,
+              MASTER_ITEMS.docCashVoucher,
+              MASTER_ITEMS.docAgreement,
+              MASTER_ITEMS.docClientForm,
+              MASTER_ITEMS.docIndianVisa,
+              MASTER_ITEMS.docPassportSub,
+              MASTER_ITEMS.docExpCert,
+              MASTER_ITEMS.docCharCert,
+              MASTER_ITEMS.docMarrCert,
+              MASTER_ITEMS.docJobVerification,
+              MASTER_ITEMS.docIdCard,
+            ],
+          },
+        ],
+      },
+      {
+        groupLabel: 'Processing Records',
+        groupKey: 'nav.data',
+        portal: 'data',
+        items: [
+          MASTER_ITEMS.dataIndianVisas,
+          MASTER_ITEMS.dataPassports,
+          MASTER_ITEMS.dataClientApplications,
+          MASTER_ITEMS.dataClientProfiles,
+        ],
+      },
+    ],
+  },
+
+  // ─── LAWYER ────────────────────────────────────────────────────────────────
+  lawyer: {
+    defaultPortal: 'agency',
+    defaultSubmodule: 'tasks',
+    navGroups: [
+      {
+        groupLabel: '',
+        groupKey: '',
+        portal: 'agency',
+        items: [
+          MASTER_ITEMS.myTasks,
+          MASTER_ITEMS.caseFiles,
+          {
+            icon: 'FileText',
+            label: 'Document Studio',
+            key: 'nav.docs',
+            portal: 'docs',
+            childItems: [
+              MASTER_ITEMS.docPayroll,
+              MASTER_ITEMS.docInvoice,
+              MASTER_ITEMS.docMoneyReceipt,
+              MASTER_ITEMS.docCashVoucher,
+              MASTER_ITEMS.docAgreement,
+              MASTER_ITEMS.docClientForm,
+              MASTER_ITEMS.docIndianVisa,
+              MASTER_ITEMS.docPassportSub,
+              MASTER_ITEMS.docExpCert,
+              MASTER_ITEMS.docCharCert,
+              MASTER_ITEMS.docMarrCert,
+              MASTER_ITEMS.docJobVerification,
+              MASTER_ITEMS.docIdCard,
+            ],
+          },
+        ],
+      },
+      {
+        groupLabel: 'Legal Records',
+        groupKey: 'nav.data',
+        portal: 'data',
+        items: [
+          MASTER_ITEMS.dataAgreements,
+          MASTER_ITEMS.dataClientApplications,
+          MASTER_ITEMS.dataClientProfiles,
+        ],
+      },
+    ],
+  },
+
+  // ─── REPRESENTATIVE / CLIENT MANAGER ──────────────────────────────────────
+  representative: {
+    defaultPortal: 'agency',
+    defaultSubmodule: 'tasks',
+    navGroups: [
+      {
+        groupLabel: '',
+        groupKey: '',
+        portal: 'agency',
+        items: [
+          MASTER_ITEMS.myTasks,
+          MASTER_ITEMS.caseFiles,
+          {
+            icon: 'Building2',
+            label: 'Clients',
+            key: 'nav.clientsAndAccounts',
+            portal: 'agency',
+            childItems: [MASTER_ITEMS.clientsAll, MASTER_ITEMS.clientsAdd],
+          },
+          {
+            icon: 'FileText',
+            label: 'Document Studio',
+            key: 'nav.docs',
+            portal: 'docs',
+            childItems: [
+              MASTER_ITEMS.docPayroll,
+              MASTER_ITEMS.docInvoice,
+              MASTER_ITEMS.docMoneyReceipt,
+              MASTER_ITEMS.docCashVoucher,
+              MASTER_ITEMS.docAgreement,
+              MASTER_ITEMS.docClientForm,
+              MASTER_ITEMS.docIndianVisa,
+              MASTER_ITEMS.docPassportSub,
+              MASTER_ITEMS.docExpCert,
+              MASTER_ITEMS.docCharCert,
+              MASTER_ITEMS.docMarrCert,
+              MASTER_ITEMS.docJobVerification,
+              MASTER_ITEMS.docIdCard,
+            ],
+          },
+        ],
+      },
+      {
+        groupLabel: 'Records',
+        groupKey: 'nav.data',
+        portal: 'data',
+        items: [
+          MASTER_ITEMS.dataClientProfiles,
+          MASTER_ITEMS.dataClientApplications,
+        ],
+      },
+    ],
+  },
+
+  // ─── DEFAULT / SUPER ADMIN / OWNER / MANAGER ──────────────────────────────
+  admin: {
+    defaultPortal: 'agency',
+    defaultSubmodule: 'tasks',
+    navGroups: [
+      {
+        groupLabel: '',
+        groupKey: '',
+        portal: 'agency',
+        items: [
+          MASTER_ITEMS.myTasks,
+          MASTER_ITEMS.caseFiles,
+          {
+            icon: 'Building2',
+            label: 'Clients & Accounts',
+            key: 'nav.clientsAndAccounts',
+            portal: 'agency',
+            childItems: [
+              MASTER_ITEMS.clientsAll,
+              MASTER_ITEMS.clientsAdd,
+            ],
+          },
+          {
+            icon: 'FileText',
+            label: 'Document Studio',
+            key: 'nav.docs',
+            portal: 'docs',
+            childItems: [
+              MASTER_ITEMS.docPayroll,
+              MASTER_ITEMS.docInvoice,
+              MASTER_ITEMS.docMoneyReceipt,
+              MASTER_ITEMS.docCashVoucher,
+              MASTER_ITEMS.docAgreement,
+              MASTER_ITEMS.docClientForm,
+              MASTER_ITEMS.docIndianVisa,
+              MASTER_ITEMS.docPassportSub,
+              MASTER_ITEMS.docExpCert,
+              MASTER_ITEMS.docCharCert,
+              MASTER_ITEMS.docMarrCert,
+              MASTER_ITEMS.docJobVerification,
+              MASTER_ITEMS.docIdCard,
+            ],
+          },
+        ],
+      },
+      {
+        groupLabel: 'Accounts Hub',
+        groupKey: 'nav.accounts',
+        portal: 'accounts',
+        items: [
+          MASTER_ITEMS.accPayments,
+          MASTER_ITEMS.accBills,
+          MASTER_ITEMS.accSalaries,
+          MASTER_ITEMS.accExpenses,
+          MASTER_ITEMS.accReports,
+        ],
+      },
+      {
+        groupLabel: 'Data Records Center',
+        groupKey: 'nav.data',
+        portal: 'data',
+        items: [
+          MASTER_ITEMS.dataClientProfiles,
+          MASTER_ITEMS.dataAgreements,
+          MASTER_ITEMS.dataClientApplications,
+          MASTER_ITEMS.dataIndianVisas,
+          MASTER_ITEMS.dataPassports,
+        ],
+      },
+    ],
+  },
+};
+
+/**
+ * Normalizes user role key from auth object
+ */
+export function getRoleKey(user) {
+  if (!user) return 'admin';
+  const role = String(user.role || '').toLowerCase().trim();
+  const subRole = String(user.subRole || user.sub_role || user.designation || '')
+    .toLowerCase()
+    .trim()
+    .replace(/[-\s]/g, '_');
+
+  if (role === 'staff') {
+    if (subRole.includes('frontdesk')) return 'frontdesk';
+    if (subRole.includes('account')) return 'accountant';
+    if (subRole.includes('visa') || subRole.includes('processor')) return 'visa_processor';
+    if (subRole.includes('lawyer') || subRole.includes('legal')) return 'lawyer';
+    if (subRole.includes('rep') || subRole.includes('client') || subRole.includes('agent')) return 'representative';
+    return 'frontdesk'; // Default staff fallback
+  }
+
+  if (role === 'accountant' || role === 'accounts') {
+    return 'accountant';
+  }
+
+  return 'admin';
+}
+
+/**
+ * Returns the exact navigation structure for any user dynamically
+ */
+export function getNavGroupsForUser(user) {
+  const roleKey = getRoleKey(user);
+  const preset = ROLE_NAVIGATION_PRESETS[roleKey] || ROLE_NAVIGATION_PRESETS.admin;
+  return preset.navGroups;
+}
+
+/**
+ * Returns default landing submodule for any user
+ */
+export function getDefaultSubmoduleForUser(user) {
+  const roleKey = getRoleKey(user);
+  const preset = ROLE_NAVIGATION_PRESETS[roleKey] || ROLE_NAVIGATION_PRESETS.admin;
+  return preset.defaultSubmodule || 'tasks';
+}
+
+/**
+ * Checks if a specific route is permitted for a user
+ */
+export function isRouteAllowedForUser(user, portal, submodule) {
+  if (!user) return false;
+  const roleKey = getRoleKey(user);
+  if (roleKey === 'admin') return true;
+
+  const preset = ROLE_NAVIGATION_PRESETS[roleKey];
+  if (!preset) return true;
+
+  // Check against permitted items in navGroups
+  for (const group of preset.navGroups) {
+    for (const item of group.items) {
+      if (item.portal === portal && item.submodule === submodule) return true;
+      if (item.childItems) {
+        for (const child of item.childItems) {
+          if (child.portal === portal && child.submodule === submodule) return true;
+        }
+      }
+    }
+  }
+
+  // Common always-accessible utility routes (like user profile)
+  if (portal === 'admin' && (submodule === 'profile' || submodule === 'account')) return true;
+
+  return false;
+}
+

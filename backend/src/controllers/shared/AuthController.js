@@ -93,7 +93,11 @@ export const login = async (req, res, next) => {
           did: user.did,
           name: user.name,
           email: user.email,
+          avatar: user.avatar || "",
           role: user.role,
+          subRole: user.subRole || "",
+          department: user.department || "",
+          designation: user.designation || "",
           lastLogin: user.lastLogin,
         },
         accessToken,
@@ -107,7 +111,7 @@ export const login = async (req, res, next) => {
   }
 };
 
-// POST /auth/refresh - refresh token দিয়ে নতুন access token দেয়
+// POST /auth/refresh - Refresh access token
 export const refreshToken = async (req, res, next) => {
   try {
     const { refreshToken } = req.body ?? {};
@@ -149,7 +153,7 @@ export const refreshToken = async (req, res, next) => {
   }
 };
 
-// POST /auth/logout - refresh token সরিয়ে লগআউট করে
+// POST /auth/logout - Revoke refresh token and logout
 export const logout = async (req, res, next) => {
   try {
     const { refreshToken } = req.body ?? {};
@@ -170,7 +174,7 @@ export const logout = async (req, res, next) => {
   }
 };
 
-// POST /auth/create-super-admin - সুপার অ্যাডমিন তৈরি বা আপডেট করে
+// POST /auth/create-super-admin - Create or update super admin
 export const createSuperAdmin = async (req, res, next) => {
   try {
     if (!env.ALLOW_SUPER_ADMIN_CREATION) {
@@ -221,7 +225,7 @@ export const createSuperAdmin = async (req, res, next) => {
   }
 };
 
-// POST /auth/google - Google OAuth দিয়ে লগইন করে
+// POST /auth/google - Google OAuth login
 export const googleAuth = async (req, res, next) => {
   try {
     const { code, redirectUri } = req.body ?? {};
@@ -330,3 +334,80 @@ export const googleAuth = async (req, res, next) => {
   }
 };
 
+// GET /auth/me - Get current logged in user profile
+export const getProfile = async (req, res, next) => {
+  try {
+    const user = await UserModel.findOne({ did: req.user.did }).select("-passwordHash -__v");
+    if (!user) {
+      return res.status(404).json({ status: "error", message: "User not found" });
+    }
+    res.json({ status: "success", data: user });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// PUT /auth/profile - Update current logged in user profile
+export const updateProfile = async (req, res, next) => {
+  try {
+    const { name, username, phone, address, avatar, designation, department, bio } = req.body ?? {};
+    
+    const user = await UserModel.findOne({ did: req.user.did });
+    if (!user) {
+      return res.status(404).json({ status: "error", message: "User not found" });
+    }
+
+    if (name) user.name = name;
+    if (username !== undefined) user.username = username;
+    if (phone !== undefined) user.phone = phone;
+    if (address !== undefined) user.address = address;
+    if (avatar !== undefined) user.avatar = avatar;
+    if (designation !== undefined) user.designation = designation;
+    if (department !== undefined) user.department = department;
+    if (bio !== undefined) user.bio = bio;
+    
+    await user.save();
+    
+    const updatedUser = await UserModel.findOne({ did: req.user.did }).select("-passwordHash -__v");
+    res.json({ status: "success", message: "Profile updated successfully", data: updatedUser });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// POST /auth/change-password - Change password for authenticated user
+export const changePassword = async (req, res, next) => {
+  try {
+    const { currentPassword, newPassword } = req.body ?? {};
+
+    if (!currentPassword || !newPassword) {
+      return res.status(400).json({ status: "error", message: "Current password and new password are required" });
+    }
+
+    if (String(newPassword).length < 6) {
+      return res.status(400).json({ status: "error", message: "New password must be at least 6 characters" });
+    }
+
+    const user = await UserModel.findOne({ did: req.user.did }).select("+passwordHash");
+    if (!user || !user.passwordHash) {
+      return res.status(404).json({ status: "error", message: "User not found" });
+    }
+
+    const isMatch = (await comparePassword(String(currentPassword), user.passwordHash)) || (await comparePassword(String(currentPassword).trim(), user.passwordHash));
+    if (!isMatch) {
+      return res.status(400).json({ status: "error", message: "Current password is incorrect" });
+    }
+
+    user.passwordHash = await hashPassword(String(newPassword));
+    await user.save();
+
+    logger.info({ userId: user.id }, "User successfully changed password");
+
+    res.json({
+      status: "success",
+      message: "Password changed successfully",
+    });
+  } catch (error) {
+    next(error);
+  }
+};

@@ -47,7 +47,7 @@ export async function generateVoucherQrCode(voucherNo) {
 const lineItemSchema = new Schema(
   {
     slNo: { type: Number, default: 1 },
-    descriptionBn: { type: String, default: "" },   // খরচের বিবরণ (Bengali)
+    descriptionBn: { type: String, default: "" },   // Expense Description
     descriptionEn: { type: String, default: "" },   // Description of Expense (English)
     amount: { type: Number, default: 0 },
   },

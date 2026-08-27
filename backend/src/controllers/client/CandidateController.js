@@ -1,8 +1,8 @@
-import { CandidateCaseFileModel } from "../../models/candidateCaseFile.model.js";
+import { ClientCaseFileModel } from "../../models/clientCaseFile.model.js";
 import { logger } from "../../config/logger.js";
 
-// GET /candidates - List all candidate case files
-export const getCandidates = async (req, res, next) => {
+// GET /clients - List all client case files
+export const getClients = async (req, res, next) => {
   try {
     const { search, workflowType, country, status } = req.query;
 
@@ -19,7 +19,7 @@ export const getCandidates = async (req, res, next) => {
     if (search) {
       const searchRegex = new RegExp(search.trim(), "i");
       query.$or = [
-        { candidateName: searchRegex },
+        { clientName: searchRegex },
         { fileNumber: searchRegex },
         { passportNumber: searchRegex },
         { tradeSkill: searchRegex },
@@ -27,57 +27,57 @@ export const getCandidates = async (req, res, next) => {
       ];
     }
 
-    const candidates = await CandidateCaseFileModel.find(query).sort({ createdAt: -1 });
+    const clients = await ClientCaseFileModel.find(query).sort({ createdAt: -1 });
 
     res.json({
       status: "success",
-      results: candidates.length,
-      data: candidates,
+      results: clients.length,
+      data: clients,
     });
   } catch (err) {
     next(err);
   }
 };
 
-// GET /candidates/:id - Get single candidate by ID or fileNumber
-export const getCandidateById = async (req, res, next) => {
+// GET /clients/:id - Get single client by ID or fileNumber
+export const getClientById = async (req, res, next) => {
   try {
     const { id } = req.params;
 
-    const candidate = await CandidateCaseFileModel.findOne({
+    const client = await ClientCaseFileModel.findOne({
       $or: [{ _id: mongoose.isValidObjectId(id) ? id : null }, { fileNumber: id }],
       isActive: true,
     });
 
-    if (!candidate) {
-      return res.status(404).json({ status: "error", message: "Candidate Case File not found" });
+    if (!client) {
+      return res.status(404).json({ status: "error", message: "Client Case File not found" });
     }
 
     res.json({
       status: "success",
-      data: candidate,
+      data: client,
     });
   } catch (err) {
     next(err);
   }
 };
 
-// POST /candidates - Create new candidate case file
-export const createCandidate = async (req, res, next) => {
+// POST /clients - Create new client case file
+export const createClient = async (req, res, next) => {
   try {
     const body = req.body ?? {};
 
-    if (!body.candidateName || !body.passportNumber) {
+    if (!body.clientName || !body.passportNumber) {
       return res.status(400).json({
         status: "error",
-        message: "Candidate Name and Passport Number are required.",
+        message: "Client Name and Passport Number are required.",
       });
     }
 
     const fileNumber = body.fileNumber || `MP-2026-${Math.floor(1000 + Math.random() * 9000)}`;
 
     const defaultSteps = [
-      { id: 1, title: "Candidate Profiling", status: "completed", targetDays: 7, description: "Skill verification & passport intake" },
+      { id: 1, title: "Client Profiling", status: "completed", targetDays: 7, description: "Skill verification & passport intake" },
       { id: 2, title: "Client Selection", status: "in_progress", targetDays: 10, description: "CV submission & job offer signed" },
       { id: 3, title: "Medical & Police Clearance", status: "pending", targetDays: 14, description: "GAMCA medical & PCC attestation" },
       { id: 4, title: "Visa Stamping", status: "pending", targetDays: 18, description: "Embassy attestation & work permit" },
@@ -96,13 +96,13 @@ export const createCandidate = async (req, res, next) => {
       },
     ];
 
-    const candidate = await CandidateCaseFileModel.create({
+    const client = await ClientCaseFileModel.create({
       fileNumber,
-      candidateName: body.candidateName.trim(),
-      candidateAge: Number(body.candidateAge) || 28,
-      candidateGender: body.candidateGender || "Male",
-      candidatePhone: body.candidatePhone || "",
-      candidateEmail: body.candidateEmail || "",
+      clientName: body.clientName.trim(),
+      clientAge: Number(body.clientAge) || 28,
+      clientGender: body.clientGender || "Male",
+      clientPhone: body.clientPhone || "",
+      clientEmail: body.clientEmail || "",
       passportNumber: body.passportNumber.trim(),
       passportExpiry: body.passportExpiry || "",
       tradeSkill: body.tradeSkill || "General Technician",
@@ -119,70 +119,96 @@ export const createCandidate = async (req, res, next) => {
       documents: body.documents?.length ? body.documents : defaultDocs,
       casePriority: body.casePriority || "normal",
       expectedDeploymentDate: body.expectedDeploymentDate || "2026-10-01",
-      internalNotes: body.internalNotes || "Newly created candidate file.",
+      internalNotes: body.internalNotes || "Newly created client file.",
     });
 
-    logger.info({ candidateId: candidate._id, fileNumber: candidate.fileNumber }, "Created Candidate Case File");
+    logger.info({ clientId: client._id, fileNumber: client.fileNumber }, "Created Client Case File");
 
     res.status(201).json({
       status: "success",
-      message: "Candidate Case File created successfully",
-      data: candidate,
+      message: "Client Case File created successfully",
+      data: client,
     });
   } catch (err) {
     if (err.code === 11000) {
       return res.status(409).json({
         status: "error",
-        message: "A candidate case file with this passport or file number already exists.",
+        message: "A client case file with this passport or file number already exists.",
       });
     }
     next(err);
   }
 };
 
-// PUT /candidates/:id - Update candidate case file
-export const updateCandidate = async (req, res, next) => {
+// PUT /clients/:id - Update client case file
+export const updateClient = async (req, res, next) => {
   try {
     const { id } = req.params;
     const body = req.body ?? {};
 
-    const candidate = await CandidateCaseFileModel.findByIdAndUpdate(id, body, {
+    const client = await ClientCaseFileModel.findByIdAndUpdate(id, body, {
       new: true,
       runValidators: true,
     });
 
-    if (!candidate) {
-      return res.status(404).json({ status: "error", message: "Candidate Case File not found" });
+    if (!client) {
+      return res.status(404).json({ status: "error", message: "Client Case File not found" });
     }
 
     res.json({
       status: "success",
-      message: "Candidate Case File updated successfully",
-      data: candidate,
+      message: "Client Case File updated successfully",
+      data: client,
     });
   } catch (err) {
     next(err);
   }
 };
 
-// DELETE /candidates/:id - Delete candidate case file (soft delete)
-export const deleteCandidate = async (req, res, next) => {
+// DELETE /clients/:id - Delete client case file (soft delete)
+export const deleteClient = async (req, res, next) => {
   try {
     const { id } = req.params;
 
-    const candidate = await CandidateCaseFileModel.findByIdAndUpdate(
+    const client = await ClientCaseFileModel.findByIdAndUpdate(
       id,
       { isActive: false },
       { new: true }
     );
 
-    if (!candidate) {
-      return res.status(404).json({ status: "error", message: "Candidate Case File not found" });
+    if (!client) {
+      return res.status(404).json({ status: "error", message: "Client Case File not found" });
     }
 
     res.json({
       status: "success",
-      message: "Candidate Case File deleted successfully",
+      message: "Client Case File deleted successfully",
+    });
+  } catch (err) {
+    next(err);
+  }
+};
+
+// PATCH /clients/:id/status - Update client status
+export const updateClientStatus = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const { status } = req.body;
+
+    const client = await ClientCaseFileModel.findOneAndUpdate(
+      { $or: [{ _id: id.match(/^[0-9a-fA-F]{24}$/) ? id : null }, { did: id }, { fileNumber: id }] },
+      { status },
+      { new: true, runValidators: true }
+    );
+
+    if (!client) {
+      return res.status(404).json({ status: "error", message: "Client not found" });
+    }
+
+    res.json({
+      status: "success",
+      message: "Client status updated",
+      data: client,
     });
   } catch (err) {
     next(err);

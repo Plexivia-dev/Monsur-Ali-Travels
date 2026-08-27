@@ -1,5 +1,30 @@
+import mongoose from "mongoose";
 import CaseFile from "../../models/caseFile.model.js";
 import Client from "../../models/client.model.js";
+import TaskModel from "../../models/task.model.js";
+import DocumentVaultModel from "../../models/documentVault.model.js";
+import { UserModel } from "../../models/user.model.js";
+import { generateDid } from "../../utils/generateDid.js";
+
+export const buildCaseIdentifierQuery = (identifier) => {
+  if (!identifier) return { _id: null };
+  const idStr = String(identifier).trim();
+  const conditions = [{ did: idStr }, { caseNumber: idStr }];
+  if (mongoose.Types.ObjectId.isValid(idStr) && idStr.length === 24) {
+    conditions.push({ _id: new mongoose.Types.ObjectId(idStr) });
+  }
+  return { $or: conditions };
+};
+
+export const buildTaskIdentifierQuery = (identifier) => {
+  if (!identifier) return { _id: null };
+  const idStr = String(identifier).trim();
+  const conditions = [{ did: idStr }];
+  if (mongoose.Types.ObjectId.isValid(idStr) && idStr.length === 24) {
+    conditions.push({ _id: new mongoose.Types.ObjectId(idStr) });
+  }
+  return { $or: conditions };
+};
 
 /**
  * Generic Query Builder Helper (like .NET IQueryable filter builder)
@@ -17,7 +42,7 @@ function buildGenericCaseQuery(queryParams) {
     followUpOnly,
     startDate,
     endDate,
-    customerId,
+    clientId,
     clientDid,
   } = queryParams;
 
@@ -44,9 +69,9 @@ function buildGenericCaseQuery(queryParams) {
     filter.status = statusesArray.length === 1 ? statusesArray[0] : { $in: statusesArray };
   }
 
-  // 3. Client DID / Customer ID filter
-  if (clientDid || customerId) {
-    filter.clientDid = clientDid || customerId;
+  // 3. Client DID / Client ID filter
+  if (clientDid || clientId) {
+    filter.clientDid = clientDid || clientId;
   }
 
   // 4. Follow-up Call Reminder filter
@@ -111,7 +136,15 @@ export const getAllCases = async (req, res) => {
     const skip = (pageNum - 1) * limitNum;
 
     let queryBuilder = CaseFile.find(filter)
-      .populate("customerId", "clientCode fullName phone passportNumber photo")
+      .populate("clientId", "clientCode fullName phone passportNumber photo")
+      .populate("assignedTo", "name email role subRole designation phone")
+      .populate({
+        path: "workflowTasks",
+        populate: [
+          { path: "permittedDocs" },
+          { path: "assignedTo", select: "name email role subRole designation" }
+        ],
+      })
       .sort(sortOptions)
       .skip(skip)
       .limit(limitNum);
@@ -125,9 +158,27 @@ export const getAllCases = async (req, res) => {
       CaseFile.countDocuments(filter),
     ]);
 
+    const mappedCases = cases.map((c) => {
+      const doc = c.toObject ? c.toObject({ virtuals: true }) : c;
+      if (doc.assignedTo?.name && !doc.assignedToName) {
+        doc.assignedToName = doc.assignedTo.name;
+      }
+      if (!doc.assignedOfficer) {
+        doc.assignedOfficer = doc.assignedToName || doc.assignedTo?.name || "";
+      }
+      if (Array.isArray(doc.workflowTasks)) {
+        doc.workflowTasks.forEach((t) => {
+          if (!t.assignedToName && t.assignedTo?.name) {
+            t.assignedToName = t.assignedTo.name;
+          }
+        });
+      }
+      return doc;
+    });
+
     return res.status(200).json({
       success: true,
-      data: cases,
+      data: mappedCases,
       pagination: {
         total,
         page: pageNum,
@@ -167,7 +218,8 @@ export const lookupCase = async (req, res) => {
         { caseNumber: searchRegex },
       ],
     })
-      .populate("customerId", "fullName phone passportNumber clientCode")
+      .populate("clientId", "fullName phone passportNumber clientCode")
+      .populate("assignedTo", "name email role subRole designation phone")
       .sort({ createdAt: -1 })
       .limit(Number(limit) || 10);
 
@@ -187,7 +239,20 @@ export const lookupCase = async (req, res) => {
 export const getCaseById = async (req, res) => {
   try {
     const { id } = req.params;
-    const caseDoc = await CaseFile.findOne({ did: id }).populate("customerId");
+    const caseDoc = await CaseFile.findOne(buildCaseIdentifierQuery(id))
+      .populate("clientInfo")
+      .populate("clientId")
+      .populate("assignedTo", "name email role subRole designation phone")
+      .populate({
+        path: "workflowTasks",
+        populate: [
+          { path: "permittedDocs" },
+          { path: "assignedTo", select: "name email role subRole designation" }
+        ],
+      })
+      .populate("financialReceipts")
+      .populate("vaultDocuments")
+      .lean();
 
     if (!caseDoc) {
       return res.status(404).json({
@@ -195,6 +260,35 @@ export const getCaseById = async (req, res) => {
         message: "Case file not found",
       });
     }
+
+    if (caseDoc.assignedTo?.name && !caseDoc.assignedToName) {
+      caseDoc.assignedToName = caseDoc.assignedTo.name;
+    }
+    if (!caseDoc.assignedOfficer) {
+      caseDoc.assignedOfficer = caseDoc.assignedToName || caseDoc.assignedTo?.name || "";
+    }
+    if (Array.isArray(caseDoc.workflowTasks)) {
+      caseDoc.workflowTasks.forEach((t) => {
+        if (!t.assignedToName && t.assignedTo?.name) {
+          t.assignedToName = t.assignedTo.name;
+        }
+      });
+    }
+
+    // Also fetch client documents if any
+    let clientDocs = [];
+    if (caseDoc.clientDid) {
+      clientDocs = await DocumentVaultModel.find({ clientDid: caseDoc.clientDid }).lean();
+    }
+
+    const mergedDocs = [...(caseDoc.vaultDocuments || [])];
+    const existingDocDids = new Set(mergedDocs.map((d) => d.did || d._id?.toString()));
+    for (const d of clientDocs) {
+      if (!existingDocDids.has(d.did || d._id?.toString())) {
+        mergedDocs.push(d);
+      }
+    }
+    caseDoc.vaultDocuments = mergedDocs;
 
     return res.status(200).json({
       success: true,
@@ -208,11 +302,11 @@ export const getCaseById = async (req, res) => {
   }
 };
 
-// 4. Generic POST Create Case (Auto-links / Creates Customer)
+// 4. Generic POST Create Case (Auto-links / Creates Client)
 export const createCase = async (req, res) => {
   try {
     const {
-      customerId,
+      clientId,
       clientDid,
       applicantName,
       passportNumber,
@@ -220,6 +314,13 @@ export const createCase = async (req, res) => {
       nidNumber,
       caseType,
       type,
+      serviceType,
+      destinationCountry,
+      packageCost,
+      packageAmount,
+      initialPaidAmount,
+      advanceAmount,
+      paymentMethod,
       status = "ENTRY",
       checklist = {},
       paymentLedger = {},
@@ -227,73 +328,110 @@ export const createCase = async (req, res) => {
       remarks = "",
     } = req.body;
 
-    const resolvedType = caseType || type;
-    if (!resolvedType) {
-      return res.status(400).json({
-        success: false,
-        message: "caseType (e.g. greece, n-macedonia, indian-bsf) is required",
-      });
-    }
+    const resolvedType = caseType || type || serviceType || destinationCountry || "general";
+    let resolvedClientDid = clientDid || clientId;
 
-    let resolvedClientDid = clientDid || customerId;
-
-    // If clientDid/customerId is not given, resolve or auto-create Client
-    if (!resolvedClientDid && passportNumber) {
-      let existingClient = await Client.findOne({
-        passportNumber: passportNumber.trim().toUpperCase(),
-      });
-
-      if (!existingClient && phone) {
+    // If clientDid/clientId is not given, resolve or auto-create Client
+    if (!resolvedClientDid && (passportNumber || phone || applicantName)) {
+      let existingClient = null;
+      if (passportNumber && passportNumber.trim()) {
+        existingClient = await Client.findOne({
+          passportNumber: passportNumber.trim().toUpperCase(),
+        });
+      }
+      if (!existingClient && phone && phone.trim()) {
         existingClient = await Client.findOne({ phone: phone.trim() });
       }
 
-      if (!existingClient) {
-        existingClient = await Client.create({
+      if (!existingClient && applicantName) {
+        const newClientPayload = {
           fullName: applicantName || "Unknown Applicant",
-          passportNumber: passportNumber.trim().toUpperCase(),
-          phone: phone || "N/A",
-          nidNumber: nidNumber || "",
-        });
+          phone: phone ? phone.trim() : "N/A",
+        };
+        if (passportNumber && passportNumber.trim()) newClientPayload.passportNumber = passportNumber.trim().toUpperCase();
+        if (nidNumber && nidNumber.trim()) newClientPayload.nidNumber = nidNumber.trim();
+        existingClient = await Client.create(newClientPayload);
       }
-      resolvedClientDid = existingClient.did;
+      if (existingClient) {
+        resolvedClientDid = existingClient.did;
+      }
     }
 
     if (!resolvedClientDid) {
       return res.status(400).json({
         success: false,
-        message: "Client reference or Applicant Passport/Phone is required",
+        message: "Client reference or Applicant Name/Phone is required",
       });
     }
 
+    const totalAgreed = Number(packageCost || packageAmount || paymentLedger.totalAgreedAmount || 0) || 0;
+    const advancePaid = Number(initialPaidAmount || advanceAmount || paymentLedger.step1_advance || 0) || 0;
+    const due = Math.max(0, totalAgreed - advancePaid);
+
+    const mergedPaymentLedger = {
+      totalAgreedAmount: totalAgreed,
+      step1_advance: advancePaid,
+      step2_offerApproval: Number(paymentLedger.step2_offerApproval || 0) || 0,
+      step3_delivery: Number(paymentLedger.step3_delivery || 0) || 0,
+      totalPaidAmount: advancePaid,
+      dueAmount: due,
+      isFullyPaid: totalAgreed > 0 && advancePaid >= totalAgreed,
+      paymentMethod: paymentMethod || "CASH",
+    };
+
+    const creatorName = req.user?.name || "Staff Member";
+    const creatorDid = req.user?.did || req.user?.id || null;
+
     const newCase = await CaseFile.create({
       clientDid: resolvedClientDid,
-      applicantName,
+      applicantName: applicantName || "Unknown Applicant",
       passportNumber: passportNumber ? passportNumber.trim().toUpperCase() : "",
-      phone,
-      nidNumber,
+      phone: phone || "",
+      nidNumber: nidNumber || "",
       caseType: String(resolvedType).toLowerCase(),
+      destinationCountry: destinationCountry || "",
       status,
       checklist,
-      paymentLedger,
+      paymentLedger: mergedPaymentLedger,
       extraData,
       remarks,
-      createdByDid: req.user?.did || null,
+      createdByDid: creatorDid,
+      createdByName: creatorName,
+      statusHistory: [
+        {
+          status: status || "ENTRY",
+          remarks: `Case file created by ${creatorName}`,
+          updatedByDid: creatorDid,
+          updatedByName: creatorName,
+          date: new Date(),
+        },
+      ],
     });
 
-    // Add case reference to Client
+    // Add case reference to Client and update totals
     await Client.findOneAndUpdate(
       { did: resolvedClientDid },
-      { $addToSet: { caseDids: newCase.did } }
+      {
+        $addToSet: { caseDids: newCase.did, clientCaseDids: newCase.did },
+        $inc: {
+          totalBilledAmount: totalAgreed,
+          totalDueAmount: due,
+          totalPaidAmount: advancePaid,
+        },
+      }
     ).catch(() => {});
 
     return res.status(201).json({
       success: true,
+      status: "success",
       message: "Case created successfully",
       data: newCase,
     });
   } catch (error) {
+    console.error("caseFile.createCase error:", error);
     return res.status(500).json({
       success: false,
+      status: "error",
       message: error.message || "Failed to create case",
     });
   }
@@ -305,7 +443,7 @@ export const updateCase = async (req, res) => {
     const { id } = req.params;
     const updates = req.body;
 
-    const caseDoc = await CaseFile.findOne({ did: id });
+    const caseDoc = await CaseFile.findOne(buildCaseIdentifierQuery(id));
     if (!caseDoc) {
       return res.status(404).json({
         success: false,
@@ -371,7 +509,7 @@ export const updateCase = async (req, res) => {
 export const deleteCase = async (req, res) => {
   try {
     const { id } = req.params;
-    const deleted = await CaseFile.findOneAndDelete({ did: id });
+    const deleted = await CaseFile.findOneAndDelete(buildCaseIdentifierQuery(id));
 
     if (!deleted) {
       return res.status(404).json({
@@ -520,24 +658,37 @@ export const bulkImportCases = async (req, res) => {
 export const updateWorkflowStatus = async (req, res) => {
   try {
     const { id } = req.params;
-    const { workflowStatus, assignedTo, remarks } = req.body;
+    const { workflowStatus, status, assignedTo, remarks } = req.body;
     const updatedBy = req.user?.did;
+    
+    const userRole = req.user?.role?.toLowerCase() || '';
+    if (!['admin', 'manager', 'superadmin', 'owner'].includes(userRole)) {
+      return res.status(403).json({
+        success: false,
+        message: "Forbidden: Only Admin or Manager can update case workflow status or reassign staff."
+      });
+    }
 
-    const caseDoc = await CaseFile.findOne({ did: id });
+    const caseDoc = await CaseFile.findOne(buildCaseIdentifierQuery(id));
     if (!caseDoc) {
       return res.status(404).json({ success: false, message: "Case file not found" });
     }
 
     const previousAssignedToDid = caseDoc.assignedToDid;
+    const targetStatus = workflowStatus || status;
 
     // Update fields
-    if (workflowStatus) caseDoc.workflowStatus = workflowStatus;
+    if (targetStatus) {
+      caseDoc.workflowStatus = targetStatus;
+      caseDoc.status = targetStatus;
+    }
     if (assignedTo) caseDoc.assignedToDid = assignedTo;
 
     // Push to history
+    if (!caseDoc.statusHistory) caseDoc.statusHistory = [];
     caseDoc.statusHistory.push({
-      status: workflowStatus || caseDoc.workflowStatus,
-      remarks: remarks || "",
+      status: targetStatus || caseDoc.workflowStatus || caseDoc.status || "ENTRY",
+      remarks: remarks || `Stage updated to ${targetStatus || 'Updated'}`,
       updatedByDid: updatedBy,
       assignedToDid: assignedTo || caseDoc.assignedToDid,
       date: new Date()
@@ -580,6 +731,141 @@ export const updateWorkflowStatus = async (req, res) => {
     return res.status(500).json({
       success: false,
       message: error.message || "Failed to update workflow",
+    });
+  }
+};
+
+/**
+ * 10. Post Internal Staff Communication / Quick Note
+ */
+export const addCaseInternalMessage = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { message, attachments } = req.body;
+
+    if (!message || !message.trim()) {
+      return res.status(400).json({
+        success: false,
+        message: "Message content is required",
+      });
+    }
+
+    const caseDoc = await CaseFile.findOne(buildCaseIdentifierQuery(id));
+    if (!caseDoc) {
+      return res.status(404).json({
+        success: false,
+        message: "Case file not found",
+      });
+    }
+
+    const newMsg = {
+      did: generateDid(),
+      senderDid: req.user?.did || req.user?.id || "STAFF-01",
+      senderName: req.user?.name || "Staff Member",
+      senderRole: req.user?.role || "Staff",
+      message: message.trim(),
+      attachments: Array.isArray(attachments) ? attachments : [],
+      createdAt: new Date(),
+    };
+
+    if (!Array.isArray(caseDoc.internalMessages)) {
+      caseDoc.internalMessages = [];
+    }
+
+    caseDoc.internalMessages.push(newMsg);
+    await caseDoc.save();
+
+    return res.status(201).json({
+      success: true,
+      message: "Message posted successfully",
+      data: newMsg,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: error.message || "Failed to post message",
+    });
+  }
+};
+
+/**
+ * 11. Upload / Attach Document to Case Vault
+ */
+export const uploadCaseDocument = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { documentName, fileName, fileUrl, fileType, fileSize, accessLevel } = req.body;
+
+    if (!documentName || !fileUrl) {
+      return res.status(400).json({
+        success: false,
+        message: "Document name and File URL are required",
+      });
+    }
+
+    const caseDoc = await CaseFile.findOne(buildCaseIdentifierQuery(id));
+    if (!caseDoc) {
+      return res.status(404).json({
+        success: false,
+        message: "Case file not found",
+      });
+    }
+
+    const newDoc = await DocumentVaultModel.create({
+      clientDid: caseDoc.clientDid,
+      caseDid: caseDoc.did,
+      documentName: documentName.trim(),
+      fileName: fileName || documentName.trim(),
+      fileUrl: fileUrl.trim(),
+      fileType: fileType || "application/octet-stream",
+      fileSize: fileSize || "1.2 MB",
+      accessLevel: accessLevel || "Restricted",
+      uploadedByDid: req.user?.did || req.user?.id || null,
+      uploadedByName: req.user?.name || "Staff Member",
+    });
+
+    return res.status(201).json({
+      success: true,
+      message: "Document uploaded to case vault successfully",
+      data: newDoc,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: error.message || "Failed to upload document",
+    });
+  }
+};
+
+/**
+ * 12. Complete Task Step by Staff
+ */
+export const completeTaskStep = async (req, res) => {
+  try {
+    const { taskDid } = req.params;
+    const { remarks } = req.body;
+
+    const task = await TaskModel.findOne(buildTaskIdentifierQuery(taskDid));
+    if (!task) {
+      return res.status(404).json({
+        success: false,
+        message: "Task step not found",
+      });
+    }
+
+    task.status = "Done";
+    task.notes = remarks || task.notes;
+    await task.save();
+
+    return res.status(200).json({
+      success: true,
+      message: "Task marked as Done by staff",
+      data: task,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: error.message || "Failed to complete task",
     });
   }
 };

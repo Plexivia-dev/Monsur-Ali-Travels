@@ -24,19 +24,19 @@ async function runMigration() {
       let needsUpdate = false;
       const updatePayload = {};
 
-      // Migrate billing schema if legacy customer object is found
-      if (doc.customer && !doc.billingInfo) {
+      // Migrate billing schema if legacy client object is found
+      if (doc.client && !doc.billingInfo) {
         needsUpdate = true;
         updatePayload.billingInfo = {
-          fullName: doc.customer.fullName || doc.customer.name || 'Customer',
-          phone: doc.customer.phone || 'N/A',
-          email: doc.customer.email || '',
-          address: doc.customer.address || 'N/A',
-          thana: doc.customer.thana || '',
-          district: doc.customer.district || doc.customer.city || 'N/A',
-          zip: doc.customer.zip || '',
+          fullName: doc.client.fullName || doc.client.name || 'Client',
+          phone: doc.client.phone || 'N/A',
+          email: doc.client.email || '',
+          address: doc.client.address || 'N/A',
+          thana: doc.client.thana || '',
+          district: doc.client.district || doc.client.city || 'N/A',
+          zip: doc.client.zip || '',
         };
-        updatePayload.$unset = { ...(updatePayload.$unset || {}), customer: 1 };
+        updatePayload.$unset = { ...(updatePayload.$unset || {}), client: 1 };
       }
 
       // Migrate shipping schema if legacy shippingAddress object is found
@@ -48,7 +48,7 @@ async function runMigration() {
         if (legacyAddr && typeof legacyAddr === 'object' && Object.keys(legacyAddr).length > 0) {
           const street = legacyAddr.street || legacyAddr.address || activeBilling?.address || 'N/A';
           updatePayload.shippingInfo = {
-            fullName: legacyAddr.fullName || legacyAddr.name || activeBilling?.fullName || 'Customer',
+            fullName: legacyAddr.fullName || legacyAddr.name || activeBilling?.fullName || 'Client',
             phone: legacyAddr.phone || activeBilling?.phone || 'N/A',
             address: street,
             thana: legacyAddr.thana || activeBilling?.thana || '',
@@ -58,7 +58,7 @@ async function runMigration() {
         } else {
           // Copy billing details directly to shippingInfo when custom shipping is missing
           updatePayload.shippingInfo = {
-            fullName: activeBilling?.fullName || 'Customer',
+            fullName: activeBilling?.fullName || 'Client',
             phone: activeBilling?.phone || 'N/A',
             address: activeBilling?.address || 'N/A',
             thana: activeBilling?.thana || '',

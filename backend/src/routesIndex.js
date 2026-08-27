@@ -11,10 +11,11 @@ import notificationRouter from "./routes/shared/NotificationRoute.js";
 import dashboardRouter from "./routes/admin/DashboardRoute.js";
 import systemRouter from "./routes/admin/SystemRoute.js";
 import usersRouter from "./routes/admin/UsersRoute.js";
+import settingsRouter from "./routes/admin/SettingsRoute.js";
+import storageMaintenanceRouter from "./routes/admin/StorageMaintenanceRoute.js";
 
 // --- CLIENT (STAFF) ROUTES ---
-import candidateRouter from "./routes/client/CandidateRoute.js";
-import clientRouterInstance from "./routes/client/ClientRoute.js";
+import clientRoute from "./routes/client/ClientRoute.js";
 import caseFileRouter from "./routes/client/CaseFileRoute.js";
 import agreementRouter from "./routes/client/AgreementRoute.js";
 import indianVisaRouter from "./routes/client/IndianVisaRoute.js";
@@ -32,6 +33,10 @@ import { auditLog } from "./middlewares/auditLog.js";
 
 const coreRouter = Router();
 
+import accountsRouter from "./routes/shared/AccountsRoute.js";
+import adminCaseRouter from "./routes/admin/AdminCaseRoute.js";
+import taskRouter from "./routes/client/TaskRoute.js";
+
 // ==========================================
 // 1. SHARED ROUTES (Mounted directly at /api/v1/)
 // ==========================================
@@ -39,11 +44,10 @@ coreRouter.use("/auth", authRouter);
 coreRouter.use("/qr", qrRouter);
 coreRouter.use("/qrcode", qrRouter);
 coreRouter.use("/upload", uploadRouter);
+coreRouter.use("/uploads", uploadRouter);
 coreRouter.use("/notifications", notificationRouter);
+coreRouter.use("/accounts", authenticateToken, auditLog, accountsRouter);
 // coreRouter.use("/developer", developerRouter);
-
-import adminCaseRouter from "./routes/admin/AdminCaseRoute.js";
-import taskRouter from "./routes/client/TaskRoute.js";
 
 // ==========================================
 // 2. ADMIN SCOPE (Mounted at /api/v1/admin/)
@@ -58,30 +62,45 @@ adminRouter.use(auditLog);
 adminRouter.use("/dashboard", dashboardRouter);
 adminRouter.use("/system", systemRouter);
 adminRouter.use("/users", usersRouter);
+adminRouter.use("/clients", clientRoute);
 adminRouter.use("/cases", adminCaseRouter);
+adminRouter.use("/tasks", taskRouter);
+adminRouter.use("/settings", settingsRouter);
+adminRouter.use("/storage", storageMaintenanceRouter);
+adminRouter.use("/accounts", accountsRouter);
+adminRouter.use("/agreements", agreementRouter);
+adminRouter.use("/indian-visas", indianVisaRouter);
+adminRouter.use("/passports", passportRouter);
+adminRouter.use("/payrolls", payrollRouter);
+adminRouter.use("/invoices", invoiceRouter);
+adminRouter.use("/receipts", moneyReceiptRouter);
+adminRouter.use("/money-receipts", moneyReceiptRouter);
+adminRouter.use("/cash-vouchers", cashVoucherRouter);
+adminRouter.use("/docs", docsRouter);
 
 coreRouter.use("/admin", adminRouter);
 
 // ==========================================
 // 3. CLIENT/STAFF SCOPE (Mounted at /api/v1/client/)
 // ==========================================
-const clientRouter = Router();
-clientRouter.use("/tasks", taskRouter);
-clientRouter.use("/cases", caseFileRouter);
-clientRouter.use("/customers", clientRouterInstance);
-clientRouter.use("/clients", clientRouterInstance);
-clientRouter.use("/candidates", candidateRouter);
-clientRouter.use("/agreements", agreementRouter);
-clientRouter.use("/indian-visas", indianVisaRouter);
-clientRouter.use("/passports", passportRouter);
-clientRouter.use("/payrolls", payrollRouter);
-clientRouter.use("/invoices", invoiceRouter);
-clientRouter.use("/receipts", moneyReceiptRouter);
-clientRouter.use("/money-receipts", moneyReceiptRouter);
-clientRouter.use("/cash-vouchers", cashVoucherRouter);
-clientRouter.use("/docs", docsRouter);
-clientRouter.use("/sendEmail", emailRouter);
+const clientScopeRouter = Router();
+clientScopeRouter.use(authenticateToken);
+clientScopeRouter.use(auditLog);
+clientScopeRouter.use("/accounts", accountsRouter);
+clientScopeRouter.use("/tasks", taskRouter);
+clientScopeRouter.use("/cases", caseFileRouter);
+clientScopeRouter.use("/clients", clientRoute);
+clientScopeRouter.use("/agreements", agreementRouter);
+clientScopeRouter.use("/indian-visas", indianVisaRouter);
+clientScopeRouter.use("/passports", passportRouter);
+clientScopeRouter.use("/payrolls", payrollRouter);
+clientScopeRouter.use("/invoices", invoiceRouter);
+clientScopeRouter.use("/receipts", moneyReceiptRouter);
+clientScopeRouter.use("/money-receipts", moneyReceiptRouter);
+clientScopeRouter.use("/cash-vouchers", cashVoucherRouter);
+clientScopeRouter.use("/docs", docsRouter);
+clientScopeRouter.use("/sendEmail", emailRouter);
 
-coreRouter.use("/client", clientRouter);
+coreRouter.use("/client", clientScopeRouter);
 
 export default coreRouter;

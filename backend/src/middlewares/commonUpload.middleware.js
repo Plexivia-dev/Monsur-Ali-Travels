@@ -4,45 +4,51 @@ import fs from 'fs';
 import sharp from 'sharp';
 
 // Configure Multer Storage with dynamic daily folders:
-// Images => uploads/YYMMDD/ (or uploads/<folder>/YYMMDD)
-// Documents => documents/YYMMDD/ (or uploads/documents/YYMMDD)
+// 1. Onboarded client => uploads/clients/<clientId>/YYMMDD
+// 2. Non-client / Other document => uploads/other/<documentType>/YYMMDD
+// 3. Fallback folder => uploads/<folder>/YYMMDD
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    const isDocument = file.mimetype?.includes('pdf') ||
-      file.mimetype?.includes('word') ||
-      file.mimetype?.includes('excel') ||
-      file.mimetype?.includes('spreadsheet') ||
-      file.mimetype?.includes('text') ||
-      file.mimetype?.includes('csv') ||
-      req.query.type === 'document' ||
-      req.body.type === 'document';
-
-    // Root folder: 'documents' or 'uploads'
-    const defaultRoot = isDocument ? 'documents' : 'uploads';
-    const subFolder = (req.query.folder || req.body.folder || '').replace(/[^a-zA-Z0-9_-]/g, '');
-
-    // 6-digit YYMMDD date format (e.g. 260817)
+    // 6-digit YYMMDD date format (e.g. 260826)
     const now = new Date();
     const yy = String(now.getFullYear()).slice(-2);
     const mm = String(now.getMonth() + 1).padStart(2, '0');
     const dd = String(now.getDate()).padStart(2, '0');
     const dateFolder = `${yy}${mm}${dd}`;
 
-    const folderParts = [process.cwd(), defaultRoot];
-    if (subFolder) folderParts.push(subFolder);
-    folderParts.push(dateFolder);
+    const clientId = req.query.clientId || req.body.clientId;
+    const documentType = req.query.documentType || req.body.documentType;
+    const rawFolder = req.query.folder || req.body.folder;
 
-    const targetDir = path.join(...folderParts);
+    let subPathParts = [];
+    if (clientId) {
+      // Onboarded client: /clients/<clientId>/YYMMDD
+      const cleanClientId = String(clientId).replace(/[^a-zA-Z0-9_-]/g, '');
+      subPathParts = ['clients', cleanClientId, dateFolder];
+    } else if (documentType) {
+      // Non-client / specific document type: /other/<documentType>/YYMMDD
+      const cleanDocType = String(documentType).replace(/[^a-zA-Z0-9_-]/g, '');
+      subPathParts = ['other', cleanDocType, dateFolder];
+    } else if (rawFolder) {
+      const cleanFolder = String(rawFolder).replace(/[^a-zA-Z0-9_/-]/g, '');
+      subPathParts = cleanFolder.split('/').filter(Boolean);
+      if (!subPathParts.includes(dateFolder)) {
+        subPathParts.push(dateFolder);
+      }
+    } else {
+      subPathParts = ['other', 'general', dateFolder];
+    }
+
+    const defaultRoot = 'uploads';
+    const targetDir = path.join(process.cwd(), defaultRoot, ...subPathParts);
 
     if (!fs.existsSync(targetDir)) {
       fs.mkdirSync(targetDir, { recursive: true });
     }
 
-    const relParts = [`/${defaultRoot}`];
-    if (subFolder) relParts.push(subFolder);
-    relParts.push(dateFolder);
-
-    req.uploadRelativePath = relParts.join('/');
+    const subPath = subPathParts.join('/');
+    req.uploadSubPath = subPath;
+    req.uploadRelativePath = `/${defaultRoot}/${subPath}`;
     cb(null, targetDir);
   },
   filename: (req, file, cb) => {

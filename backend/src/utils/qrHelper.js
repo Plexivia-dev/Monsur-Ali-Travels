@@ -40,7 +40,7 @@ export function getAgencyInfo() {
       postcode: "3060",
       country: "Bangladesh",
       full: "Mominpur Jagannathpur Road, Sunamganj, Post Code 3060",
-      fullBn: "মমিনপুর জগন্নাথপুর রোড, সুনামগঞ্জ, পোস্ট কোড ৩০৬০"
+      fullBn: "Mominpur Jagannathpur Road, Sunamganj, Post Code 3060"
     }
   };
 }
@@ -101,7 +101,7 @@ export function formatAgencyQrText(mode = "text", customAgencyInfo = null) {
 export function formatInvoiceQrText(invoiceData = {}, customAgencyInfo = null) {
   const info = customAgencyInfo || getAgencyInfo();
   const invoiceNo = invoiceData.invoiceNo || "N/A";
-  const clientName = invoiceData.client?.name || "সম্মানিত কাস্টমার";
+  const clientName = invoiceData.client?.name || "Valued Client";
   const total = invoiceData.grandTotal || invoiceData.subtotal || 0;
   const currency = invoiceData.currency || "BDT";
   const status = invoiceData.paymentStatus || "Paid";
@@ -112,7 +112,7 @@ export function formatInvoiceQrText(invoiceData = {}, customAgencyInfo = null) {
     `-----------------------------------------`,
     `Invoice No: ${invoiceNo}`,
     `Billed To: ${clientName}`,
-    `Total Amount: ৳ ${Number(total).toLocaleString("en-IN")} ${currency}`,
+    `Total Amount: BDT  ${Number(total).toLocaleString("en-IN")} ${currency}`,
     `Payment Status: ${status}`,
     `Issue Date: ${date}`,
     `Helpline: ${info.phone}`,

@@ -91,16 +91,16 @@ This document tracks the incremental migration and implementation of the Next-Ge
 - **Scope**: Customer Guardian Application intake, `CGA-...` tracking generator, advance payment calculation, requirements checklist
 - **Description**:
   - Implemented `server/src/validations/guardianApp.validation.js` with Zod schemas for application intake, advance payment calculation, and requirements checklist.
-  - Implemented `server/src/services/CustomerGuardianService.js` with:
+  - Implemented `server/src/services/ClientGuardianService.js` with:
     - Auto-generation of unique tracking codes (`CGA-XX-XXXXXX`).
     - Payment calculation (total, advance, due, paymentStatus).
     - Central customer auto-sync and ledger billing via `CustomerSyncService`.
-  - Implemented `server/src/controllers/CustomerGuardianController.js` and `server/src/routes/CustomerGuardianRoute.js`.
+  - Implemented `server/src/controllers/ClientGuardianController.js` and `server/src/routes/ClientGuardianRoute.js`.
 - **Files Modified/Created**:
   - `server/src/validations/guardianApp.validation.js`
-  - `server/src/services/CustomerGuardianService.js`
-  - `server/src/controllers/CustomerGuardianController.js`
-  - `server/src/routes/CustomerGuardianRoute.js`
+  - `server/src/services/ClientGuardianService.js`
+  - `server/src/controllers/ClientGuardianController.js`
+  - `server/src/routes/ClientGuardianRoute.js`
   - `Docs/Backend/Backend_Version_2.md`
 
 ### BR-14: Passport Submission Module (Validation, Service, Controller, Route)
@@ -179,7 +179,7 @@ This document tracks the incremental migration and implementation of the Next-Ge
   - Implemented `server/src/validations/customer.validation.js` with Zod schemas for customer creation, partial updates, pagination, and autocomplete lookup.
   - Implemented `server/src/services/CustomerService.js` supporting:
     - Multi-field search (fullName, phone, passportNumber, nidNumber, customerCode, fatherName).
-    - Single customer profile fetching with linked relation history across 8 services (`cases`, `visaSubmissions`, `passportSubmissions`, `applications`, `invoices`, `receipts`, `agreements`, `candidateCases`).
+    - Single customer profile fetching with linked relation history across 8 services (`cases`, `visaSubmissions`, `passportSubmissions`, `applications`, `invoices`, `receipts`, `agreements`, `clientCases`).
     - Autocomplete lookup endpoint (`/api/v1/customers/lookup?query=...`).
   - Implemented `server/src/controllers/CustomerController.js` and `server/src/routes/CustomerRoute.js`.
 - **Files Modified/Created**:
@@ -284,7 +284,7 @@ This document tracks the incremental migration and implementation of the Next-Ge
     - `Customer`: Central customer single-source-of-truth with 8 relational foreign keys, bio fields, JSONB attachments, and Decimal ledger fields (`totalBilledAmount`, `totalPaidAmount`, `totalDueAmount`).
     - `MoneyReceipt`: Payment tokens with manager/accountant relations, bank turnover status, and BDT currency tracking.
     - `CaseFile`: Universal case management with 5 lifecycle stages enum, 3-stage payment milestone decimals, and checklist JSONB.
-    - `IndianVisaSubmission`, `PassportSubmission`, `CustomerGuardianApplication`, `CandidateCaseFile`, `Invoice`, `EmploymentAgreement`, `SalarySlip`.
+    - `IndianVisaSubmission`, `PassportSubmission`, `ClientGuardianApplication`, `ClientCaseFile`, `Invoice`, `EmploymentAgreement`, `SalarySlip`.
   - Defined 8 native PostgreSQL enums (`UserRole`, `Gender`, `CustomerStatus`, `CustomerType`, `ReceiptStatus`, `PaymentMethod`, `CaseStatus`, `VisaStage`).
   - Added compound B-tree indexes for fast queries across tracking codes, customer names, passport numbers, and lifecycle statuses.
 - **Files Modified/Created**:

@@ -12,7 +12,7 @@ export const buildOtpEmailHtml = ({
   otp,
   logoUrl = "https://server.monsuralitravelsbd.com/uploads/logo_horizontal.png"
 }) => {
-  const finalName = name || "Valued Customer";
+  const finalName = name || "Valued Client";
 
   return `
 <!DOCTYPE html>

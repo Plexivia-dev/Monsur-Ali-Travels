@@ -1,6 +1,16 @@
 import mongoose, { Schema, model } from "mongoose";
 import { generateDid } from "../utils/generateDid.js";
 
+// Ensure all referenced models are registered in Mongoose for virtual populate
+import "./clientGuardianApplication.model.js";
+import "./indianVisaSubmission.model.js";
+import "./passportSubmission.model.js";
+import "./clientCaseFile.model.js";
+import "./employmentAgreement.model.js";
+import "./invoice.model.js";
+import "./caseFile.model.js";
+import "./user.model.js";
+
 const { models } = mongoose;
 
 // Unique Client Reference Number Generator: MAT-CLNT- + 6 digits
@@ -78,7 +88,7 @@ const clientSchema = new Schema(
     // Primary Guardian Info
     guardian: {
       name: { type: String, default: "", trim: true },
-      relationship: { type: String, default: "Father (পিতা)" },
+      relationship: { type: String, default: "Father" },
       phone: { type: String, default: "", trim: true },
       nidNumber: { type: String, default: "", trim: true },
       fatherName: { type: String, default: "" },
@@ -107,7 +117,7 @@ const clientSchema = new Schema(
     applicationDids: { type: [String], default: [] },
     visaSubmissionDids: { type: [String], default: [] },
     passportSubmissionDids: { type: [String], default: [] },
-    candidateCaseDids: { type: [String], default: [] },
+    clientCaseDids: { type: [String], default: [] },
     agreementDids: { type: [String], default: [] },
     invoiceDids: { type: [String], default: [] },
     caseDids: { type: [String], default: [] },
@@ -118,7 +128,7 @@ const clientSchema = new Schema(
       enum: ["Active", "Lead", "Inactive", "Blacklisted", "Archived"],
       default: "Active",
     },
-    customerType: {
+    clientType: {
       type: String,
       enum: ["Individual", "Corporate", "Agent_Referred", "VIP"],
       default: "Individual",
@@ -160,7 +170,7 @@ clientSchema.index({
 
 // Virtual Populates for Client relations using DIDs
 clientSchema.virtual("applications", {
-  ref: "CustomerGuardianApplication",
+  ref: "ClientGuardianApplication",
   localField: "applicationDids",
   foreignField: "did",
 });
@@ -174,9 +184,9 @@ clientSchema.virtual("passportSubmissions", {
   localField: "passportSubmissionDids",
   foreignField: "did",
 });
-clientSchema.virtual("candidateCases", {
-  ref: "CandidateCaseFile",
-  localField: "candidateCaseDids",
+clientSchema.virtual("clientCases", {
+  ref: "ClientCaseFile",
+  localField: "clientCaseDids",
   foreignField: "did",
 });
 clientSchema.virtual("agreements", {

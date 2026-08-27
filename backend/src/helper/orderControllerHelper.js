@@ -290,16 +290,16 @@ export const buildAllowedOrderUpdates = async (payload, existingOrder) => {
     allowedUpdates.shippingTotalAmount = Number(payload.shippingTotalAmount || 0);
   }
 
-  const customerInfo = payload.billingInfo || payload.customer;
-  if (customerInfo) {
+  const clientInfo = payload.billingInfo || payload.client;
+  if (clientInfo) {
     allowedUpdates.billingInfo = {
-      fullName: normalizeText(customerInfo.fullName || customerInfo.name) || existingOrder.billingInfo?.fullName || '',
-      phone: normalizeText(customerInfo.phone) || existingOrder.billingInfo?.phone || '',
-      email: normalizeText(customerInfo.email) || existingOrder.billingInfo?.email || '',
-      address: normalizeText(customerInfo.address || customerInfo.street) || existingOrder.billingInfo?.address || '',
-      thana: normalizeText(customerInfo.thana) || existingOrder.billingInfo?.thana || '',
-      district: normalizeText(customerInfo.district) || existingOrder.billingInfo?.district || '',
-      zip: normalizeText(customerInfo.zip) || existingOrder.billingInfo?.zip || '',
+      fullName: normalizeText(clientInfo.fullName || clientInfo.name) || existingOrder.billingInfo?.fullName || '',
+      phone: normalizeText(clientInfo.phone) || existingOrder.billingInfo?.phone || '',
+      email: normalizeText(clientInfo.email) || existingOrder.billingInfo?.email || '',
+      address: normalizeText(clientInfo.address || clientInfo.street) || existingOrder.billingInfo?.address || '',
+      thana: normalizeText(clientInfo.thana) || existingOrder.billingInfo?.thana || '',
+      district: normalizeText(clientInfo.district) || existingOrder.billingInfo?.district || '',
+      zip: normalizeText(clientInfo.zip) || existingOrder.billingInfo?.zip || '',
     };
 
     if (!payload.shippingInfo) {

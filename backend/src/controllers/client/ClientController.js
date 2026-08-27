@@ -1,4 +1,13 @@
+import mongoose from "mongoose";
 import Client from "../../models/client.model.js";
+
+const isObjectId = (id) => typeof id === "string" && /^[0-9a-fA-F]{24}$/.test(id);
+const buildIdQuery = (id) => {
+  if (isObjectId(id)) {
+    return { $or: [{ did: id }, { _id: id }] };
+  }
+  return { did: id };
+};
 
 /**
  * Controller for Central Client Management & Relations
@@ -10,7 +19,7 @@ class ClientController {
       const page = Math.max(1, parseInt(req.query.page, 10) || 1);
       const limit = req.query.limit !== undefined ? Math.max(1, parseInt(req.query.limit, 10) || 10) : 10;
       const skip = req.query.skip !== undefined ? Math.max(0, parseInt(req.query.skip, 10)) : (page - 1) * limit;
-      const { search, status, customerType } = req.query;
+      const { search, status, clientType } = req.query;
 
       const query = {};
       query.isActive = { $ne: false };
@@ -18,8 +27,8 @@ class ClientController {
       if (status && status !== "all") {
         query.status = status;
       }
-      if (customerType && customerType !== "all") {
-        query.customerType = customerType;
+      if (clientType && clientType !== "all") {
+        query.clientType = clientType;
       }
 
       if (search && search.trim()) {
@@ -39,7 +48,7 @@ class ClientController {
         .populate("applications", "applicationNo serviceType status dateReceived payment")
         .populate("visaSubmissions", "trackingNo visaType status submissionDate")
         .populate("passportSubmissions", "trackingNo passportType status submissionDate")
-        .populate("candidateCases", "fileNumber candidateName destinationCountry tradeSkill workflowStatus")
+        .populate("clientCases", "fileNumber clientName destinationCountry tradeSkill workflowStatus")
         .sort({ createdAt: -1 })
         .skip(skip)
         .limit(limit);
@@ -73,11 +82,12 @@ class ClientController {
   // GET /api/v1/clients/:id
   async getById(req, res) {
     try {
-      const client = await Client.findOne({ did: req.params.id, isActive: { $ne: false } })
+      const query = { ...buildIdQuery(req.params.id), isActive: { $ne: false } };
+      const client = await Client.findOne(query)
         .populate("applications")
         .populate("visaSubmissions")
         .populate("passportSubmissions")
-        .populate("candidateCases")
+        .populate("clientCases")
         .populate("agreements")
         .populate("invoices");
 
@@ -112,6 +122,13 @@ class ClientController {
         createdByDid: req.user?.did || null,
       };
 
+      delete clientData._id;
+      delete clientData.id;
+
+      if (!clientData.email || !String(clientData.email).trim()) delete clientData.email;
+      if (!clientData.passportNumber || !String(clientData.passportNumber).trim()) delete clientData.passportNumber;
+      if (!clientData.nidNumber || !String(clientData.nidNumber).trim()) delete clientData.nidNumber;
+
       const client = await Client.create(clientData);
 
       return res.status(201).json({
@@ -133,8 +150,9 @@ class ClientController {
   // PUT /api/v1/clients/:id
   async update(req, res) {
     try {
+      const query = buildIdQuery(req.params.id);
       const client = await Client.findOneAndUpdate(
-        { did: req.params.id },
+        query,
         {
           ...req.body,
           updatedByDid: req.user?.did || null,
@@ -166,11 +184,58 @@ class ClientController {
     }
   }
 
+  // PATCH /api/v1/clients/:id/status
+  async updateStatus(req, res) {
+    try {
+      const { status } = req.body;
+      if (!status) {
+        return res.status(400).json({
+          status: "fail",
+          success: false,
+          message: "Status is required.",
+        });
+      }
+
+      const query = buildIdQuery(req.params.id);
+      const client = await Client.findOneAndUpdate(
+        query,
+        {
+          status,
+          updatedByDid: req.user?.did || null,
+        },
+        { new: true, runValidators: true }
+      );
+
+      if (!client) {
+        return res.status(404).json({
+          status: "fail",
+          success: false,
+          message: "Client not found.",
+        });
+      }
+
+      return res.status(200).json({
+        status: "success",
+        success: true,
+        data: client,
+        message: `Client status updated to ${status}.`,
+      });
+    } catch (err) {
+      console.error("ClientController.updateStatus error:", err);
+      return res.status(500).json({
+        status: "error",
+        success: false,
+        message: err.message || "Failed to update client status.",
+      });
+    }
+  }
+
   // DELETE /api/v1/clients/:id
   async delete(req, res) {
     try {
+      const query = buildIdQuery(req.params.id);
       const client = await Client.findOneAndUpdate(
-        { did: req.params.id },
+        query,
         { isActive: false },
         { new: true }
       );
