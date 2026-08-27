@@ -23,6 +23,7 @@ import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
 import { useClientLookup } from '../common/useClientLookup';
 import { ExistingClientAlertModal } from '../common/ExistingClientAlertModal';
+import { validateBdPhone } from '../common/phoneValidator';
 
 export function MoneyReceiptForm({ data, onChange, onReset, onSave, onPreview, isSubmitting }) {
   const { t } = useTranslation();
@@ -73,6 +74,30 @@ export function MoneyReceiptForm({ data, onChange, onReset, onSave, onPreview, i
     resetLookup(val);
     toast.info('Please enter a different phone number or email.');
     setDetectedMatch(null);
+  };
+
+  const handleSave = () => {
+    const phone = data.phone || '';
+    if (phone) {
+      const check = validateBdPhone(phone);
+      if (!check.isValid) {
+        toast.error(`Phone: ${check.error}`);
+        return;
+      }
+    }
+    onSave();
+  };
+
+  const handlePreviewAction = () => {
+    const phone = data.phone || '';
+    if (phone) {
+      const check = validateBdPhone(phone);
+      if (!check.isValid) {
+        toast.error(`Phone: ${check.error}`);
+        return;
+      }
+    }
+    onPreview();
   };
 
   const handleDateModeChange = (mode) => {
@@ -204,6 +229,11 @@ export function MoneyReceiptForm({ data, onChange, onReset, onSave, onPreview, i
               value={data.phone || ''}
               onChange={(val) => handleFieldChange('phone', val)}
             />
+            {data.phone && !validateBdPhone(data.phone).isValid && (
+              <p className="text-[10px] text-rose-500 font-bold mt-1">
+                {validateBdPhone(data.phone).error}
+              </p>
+            )}
           </div>
         </div>
       </div>
@@ -376,7 +406,7 @@ export function MoneyReceiptForm({ data, onChange, onReset, onSave, onPreview, i
       <div className="flex flex-col sm:flex-row items-center justify-end gap-3 pt-4 border-t border-border">
         <button
           type="button"
-          onClick={onPreview}
+          onClick={handlePreviewAction}
           className="w-full sm:w-auto flex items-center justify-center gap-2 bg-muted hover:bg-muted/80 text-foreground px-5 py-2.5 rounded-xl font-bold text-xs transition-all cursor-pointer shadow-xs"
         >
           <Eye className="w-4 h-4 text-primary" />
@@ -385,7 +415,7 @@ export function MoneyReceiptForm({ data, onChange, onReset, onSave, onPreview, i
 
         <button
           type="button"
-          onClick={onSave}
+          onClick={handleSave}
           disabled={isSubmitting}
           className="w-full sm:w-auto flex items-center justify-center gap-2 bg-primary hover:bg-primary/90 text-primary-foreground px-6 py-2.5 rounded-xl font-bold text-xs transition-all cursor-pointer shadow-xs disabled:opacity-50"
         >

@@ -5,6 +5,7 @@ import { BdPhoneInput } from '@/components/common/BdPhoneInput';
 import { DatePicker } from '@/components/ui/date-picker';
 import { useClientLookup } from '../common/useClientLookup';
 import { ExistingClientAlertModal } from '../common/ExistingClientAlertModal';
+import { validateBdPhone } from '../common/phoneValidator';
 import { toast } from 'sonner';
 
 export function PassportSubmissionForm({ data, onChange, onSubmit, onReset, isSubmitting = false }) {
@@ -52,8 +53,29 @@ export function PassportSubmissionForm({ data, onChange, onSubmit, onReset, isSu
     });
   };
 
+  const handleSubmit = (e) => {
+    if (e && e.preventDefault) e.preventDefault();
+    const phone = data.applicantPhone || '';
+    if (phone) {
+      const check = validateBdPhone(phone);
+      if (!check.isValid) {
+        toast.error(`Applicant Phone: ${check.error}`);
+        return;
+      }
+    }
+    const gPhone = data.guardianPhone || '';
+    if (gPhone) {
+      const check = validateBdPhone(gPhone);
+      if (!check.isValid) {
+        toast.error(`Guardian Phone: ${check.error}`);
+        return;
+      }
+    }
+    onSubmit();
+  };
+
   return (
-    <form onSubmit={(e) => { e.preventDefault(); onSubmit(); }} className="w-full space-y-5">
+    <form onSubmit={handleSubmit} className="w-full space-y-5">
       <div className="bg-card border border-border rounded-2xl p-6 sm:p-7 space-y-6 text-sm shadow-xs">
         {/* METADATA */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 bg-muted/20 p-4 rounded-xl border border-border">
@@ -149,6 +171,11 @@ export function PassportSubmissionForm({ data, onChange, onSubmit, onReset, isSu
                 onChange={(val) => { onChange({ ...data, applicantPhone: val }); triggerLookup(val); }}
                 required
               />
+              {data.applicantPhone && !validateBdPhone(data.applicantPhone).isValid && (
+                <p className="text-[10px] text-rose-500 font-bold mt-1">
+                  {validateBdPhone(data.applicantPhone).error}
+                </p>
+              )}
             </div>
 
             <div>
@@ -216,6 +243,11 @@ export function PassportSubmissionForm({ data, onChange, onSubmit, onReset, isSu
                 value={data.guardianPhone}
                 onChange={(val) => onChange({ ...data, guardianPhone: val })}
               />
+              {data.guardianPhone && !validateBdPhone(data.guardianPhone).isValid && (
+                <p className="text-[10px] text-rose-500 font-bold mt-1">
+                  {validateBdPhone(data.guardianPhone).error}
+                </p>
+              )}
             </div>
           </div>
         </div>

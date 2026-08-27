@@ -3,6 +3,7 @@ import { Building2, User, Heart, FileText, Calendar, DollarSign } from 'lucide-r
 import { BdPhoneInput } from '@/components/common/BdPhoneInput';
 import { useClientLookup } from '../common/useClientLookup';
 import { ExistingClientAlertModal } from '../common/ExistingClientAlertModal';
+import { validateBdPhone } from '../common/phoneValidator';
 import { toast } from 'sonner';
 
 export function MarriageCertificateForm({ data = {}, onChange }) {
@@ -205,6 +206,11 @@ export function MarriageCertificateForm({ data = {}, onChange }) {
                 triggerLookup(val);
               }}
             />
+            {data.groom?.phone && !validateBdPhone(data.groom.phone).isValid && (
+              <p className="text-[10px] text-rose-500 font-bold mt-1">
+                {validateBdPhone(data.groom.phone).error}
+              </p>
+            )}
           </div>
 
           <div>

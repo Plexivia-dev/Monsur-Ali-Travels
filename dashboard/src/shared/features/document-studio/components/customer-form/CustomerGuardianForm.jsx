@@ -36,6 +36,7 @@ import { DatePicker } from '@/components/ui/date-picker';
 import { SERVICE_TYPES, STATUS_OPTIONS, getServiceLabel, getStatusLabel } from './sampleData';
 import { ExistingClientAlertModal } from '../common/ExistingClientAlertModal';
 import { useClientLookup } from '../common/useClientLookup';
+import { validateBdPhone } from '../common/phoneValidator';
 import { apiClient } from '@shared/lib/api-client';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
@@ -484,6 +485,11 @@ export function ClientGuardianForm({ data, onChange, onReset, onSave, onPreview,
               value={data.client?.mobileNumber || ''}
               onChange={(val) => handleClientChange('mobileNumber', val)}
             />
+            {data.client?.mobileNumber && !validateBdPhone(data.client.mobileNumber).isValid && (
+              <p className="text-[10px] text-rose-500 font-bold mt-1">
+                {validateBdPhone(data.client.mobileNumber).error}
+              </p>
+            )}
           </div>
 
           <div>
@@ -557,6 +563,11 @@ export function ClientGuardianForm({ data, onChange, onReset, onSave, onPreview,
               value={data.guardian?.mobileNumber || ''}
               onChange={(val) => handleGuardianChange('mobileNumber', val)}
             />
+            {data.guardian?.mobileNumber && !validateBdPhone(data.guardian.mobileNumber).isValid && (
+              <p className="text-[10px] text-rose-500 font-bold mt-1">
+                {validateBdPhone(data.guardian.mobileNumber).error}
+              </p>
+            )}
           </div>
 
           <div>

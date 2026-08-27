@@ -25,6 +25,7 @@ import { apiClient } from '@shared/lib/api-client';
 import { toast } from 'sonner';
 import { useClientLookup } from '../common/useClientLookup';
 import { ExistingClientAlertModal } from '../common/ExistingClientAlertModal';
+import { validateBdPhone } from '../common/phoneValidator';
 
 export function InvoiceForm({ data, onChange, onSubmit, onReset, isSubmitting = false }) {
   const [detectedMatch, setDetectedMatch] = useState(null);
@@ -74,6 +75,19 @@ export function InvoiceForm({ data, onChange, onSubmit, onReset, isSubmitting = 
     resetLookup(val);
     toast.info('Please enter a different phone number or email.');
     setDetectedMatch(null);
+  };
+
+  const handleSubmit = (e) => {
+    if (e && e.preventDefault) e.preventDefault();
+    const phone = data.client?.phone || '';
+    if (phone) {
+      const check = validateBdPhone(phone);
+      if (!check.isValid) {
+        toast.error(`Client Phone: ${check.error}`);
+        return;
+      }
+    }
+    onSubmit();
   };
 
   const handleAddItem = () => {
@@ -212,6 +226,11 @@ export function InvoiceForm({ data, onChange, onSubmit, onReset, isSubmitting = 
               value={data.client?.phone || ''}
               onChange={(val) => handleClientChange('phone', val)}
             />
+            {data.client?.phone && !validateBdPhone(data.client.phone).isValid && (
+              <p className="text-[10px] text-rose-500 font-bold mt-1">
+                {validateBdPhone(data.client.phone).error}
+              </p>
+            )}
           </div>
 
           <div>
@@ -415,7 +434,7 @@ export function InvoiceForm({ data, onChange, onSubmit, onReset, isSubmitting = 
       <div className="flex flex-col sm:flex-row items-center justify-end gap-3 pt-4 border-t border-border">
         <button
           type="button"
-          onClick={onSubmit}
+          onClick={handleSubmit}
           className="w-full sm:w-auto flex items-center justify-center gap-2 bg-muted hover:bg-muted/80 text-foreground px-5 py-2.5 rounded-xl font-bold text-xs transition-all cursor-pointer shadow-xs"
         >
           <Eye className="w-4 h-4 text-primary" />
@@ -424,7 +443,7 @@ export function InvoiceForm({ data, onChange, onSubmit, onReset, isSubmitting = 
 
         <button
           type="button"
-          onClick={onSubmit}
+          onClick={handleSubmit}
           disabled={isSubmitting}
           className="w-full sm:w-auto flex items-center justify-center gap-2 bg-primary hover:bg-primary/90 text-primary-foreground px-6 py-2.5 rounded-xl font-bold text-xs transition-all cursor-pointer shadow-xs disabled:opacity-50"
         >

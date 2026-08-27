@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useClientLookup } from '../common/useClientLookup';
 import { ExistingClientAlertModal } from '../common/ExistingClientAlertModal';
+import { validateBdPhone } from '../common/phoneValidator';
 import { toast } from 'sonner';
 import { Building2, User, FileText, ShieldCheck, Sparkles, Upload, Image, Trash2 } from 'lucide-react';
 import { BdPhoneInput } from '@/components/common/BdPhoneInput';
@@ -324,6 +325,11 @@ export function CharacterCertificateForm({ data = {}, onChange }) {
                 triggerLookup(val);
               }}
             />
+            {data.client?.phone && !validateBdPhone(data.client.phone).isValid && (
+              <p className="text-[10px] text-rose-500 font-bold mt-1">
+                {validateBdPhone(data.client.phone).error}
+              </p>
+            )}
           </div>
 
           <div>

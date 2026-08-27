@@ -34,6 +34,7 @@ import { Button } from '@/components/ui/button';
 import { useClientLookup } from '../common/useClientLookup';
 import { ExistingClientAlertModal } from '../common/ExistingClientAlertModal';
 import { toast } from 'sonner';
+import { validateBdPhone } from '../common/phoneValidator';
 
 export function AgreementForm({ formData, setFormData, onSubmit, onReset, isSubmitting = false }) {
   const { t } = useTranslation();
@@ -86,6 +87,24 @@ export function AgreementForm({ formData, setFormData, onSubmit, onReset, isSubm
 
   const handleNext = (e) => {
     e.preventDefault();
+    if (currentStep === 1) {
+      const empPhone = formData.parties?.employeePhone || '';
+      if (empPhone) {
+        const check = validateBdPhone(empPhone);
+        if (!check.isValid) {
+          toast.error(`Employee Phone: ${check.error}`);
+          return;
+        }
+      }
+      const mgrPhone = formData.parties?.employerPhone || '';
+      if (mgrPhone) {
+        const check = validateBdPhone(mgrPhone);
+        if (!check.isValid) {
+          toast.error(`Employer Phone: ${check.error}`);
+          return;
+        }
+      }
+    }
     if (currentStep < 4) {
       setCurrentStep(currentStep + 1);
     } else {
@@ -312,6 +331,11 @@ export function AgreementForm({ formData, setFormData, onSubmit, onReset, isSubm
                       triggerLookup(val);
                     }}
                   />
+                  {formData.parties?.employeePhone && !validateBdPhone(formData.parties.employeePhone).isValid && (
+                    <p className="text-[10px] text-rose-500 font-bold mt-1">
+                      {validateBdPhone(formData.parties.employeePhone).error}
+                    </p>
+                  )}
                 </div>
                 <div className="space-y-1.5">
                   <Label>{t('agreement.employeeEmail')} :</Label>

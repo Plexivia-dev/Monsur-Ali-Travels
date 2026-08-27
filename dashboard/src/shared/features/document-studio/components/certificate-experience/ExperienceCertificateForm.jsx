@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Building2, User, FileText, Calendar, Briefcase, ShieldCheck, Sparkles, Upload, RotateCcw } from 'lucide-react';
 import { useClientLookup } from '../common/useClientLookup';
 import { ExistingClientAlertModal } from '../common/ExistingClientAlertModal';
+import { validateBdPhone } from '../common/phoneValidator';
 import { toast } from 'sonner';
 
 const PRESETS = [
@@ -327,6 +328,11 @@ export function ExperienceCertificateForm({ data = {}, onChange }) {
               placeholder="Enter employee phone number"
               className="w-full px-3 py-2 text-xs font-mono rounded-lg border border-input bg-background focus:ring-1 focus:ring-primary outline-hidden"
             />
+            {data.employee?.phone && !validateBdPhone(data.employee.phone).isValid && (
+              <p className="text-[10px] text-rose-500 font-bold mt-1">
+                {validateBdPhone(data.employee.phone).error}
+              </p>
+            )}
           </div>
 
           <div>

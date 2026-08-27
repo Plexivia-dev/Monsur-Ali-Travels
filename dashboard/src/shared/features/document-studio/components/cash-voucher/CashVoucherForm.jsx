@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
 import { useClientLookup } from '../common/useClientLookup';
 import { ExistingClientAlertModal } from '../common/ExistingClientAlertModal';
+import { validateBdPhone } from '../common/phoneValidator';
 
 export function CashVoucherForm({ data, onChange, onReset, onSave, onPreview, isSubmitting }) {
   const { t } = useTranslation();
@@ -39,6 +40,30 @@ export function CashVoucherForm({ data, onChange, onReset, onSave, onPreview, is
     resetLookup(val);
     toast.info('Please enter a different phone number or email.');
     setDetectedMatch(null);
+  };
+
+  const handleSave = () => {
+    const phone = data.phone || '';
+    if (phone) {
+      const check = validateBdPhone(phone);
+      if (!check.isValid) {
+        toast.error(`Phone: ${check.error}`);
+        return;
+      }
+    }
+    onSave();
+  };
+
+  const handlePreviewAction = () => {
+    const phone = data.phone || '';
+    if (phone) {
+      const check = validateBdPhone(phone);
+      if (!check.isValid) {
+        toast.error(`Phone: ${check.error}`);
+        return;
+      }
+    }
+    onPreview();
   };
 
 
@@ -149,6 +174,11 @@ export function CashVoucherForm({ data, onChange, onReset, onSave, onPreview, is
               placeholder={t('cashVoucherForm.phonePlaceholder', 'e.g. 01700000000')}
               className="w-full bg-muted border border-border rounded-xl px-3 py-2 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
             />
+            {data.phone && !validateBdPhone(data.phone).isValid && (
+              <p className="text-[10px] text-rose-500 font-bold mt-1">
+                {validateBdPhone(data.phone).error}
+              </p>
+            )}
           </div>
         </div>
       </div>
@@ -316,14 +346,14 @@ export function CashVoucherForm({ data, onChange, onReset, onSave, onPreview, is
         <Button
           type="button"
           variant="outline"
-          onClick={onPreview}
+          onClick={handlePreviewAction}
         >
           {t('cashVoucherForm.previewOnly', 'Preview Only')}
         </Button>
         <Button
           type="button"
           variant="primary"
-          onClick={onSave}
+          onClick={handleSave}
           disabled={isSubmitting}
         >
           {isSubmitting ? t('cashVoucherForm.saving', 'Saving...') : t('cashVoucherForm.savePreview', 'Save & Preview')}

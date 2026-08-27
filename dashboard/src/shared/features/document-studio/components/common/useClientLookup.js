@@ -1,5 +1,6 @@
 import { useRef, useCallback } from 'react';
 import { apiClient } from '@shared/lib/api-client';
+import { validateBdPhone } from './phoneValidator';
 
 /**
  * useClientLookup
@@ -28,27 +29,22 @@ export function useClientLookup({ onClientFound }) {
       if (!value || typeof value !== 'string') return;
       const trimmed = value.trim();
 
-      // Phone: min 8 chars | Email: must contain @
-      const isPhone = /^[0-9+\-\s()]+$/.test(trimmed) && trimmed.replace(/\D/g, '').length >= 8;
       const isEmail = trimmed.includes('@') && trimmed.length >= 5;
-      if (!isPhone && !isEmail) return;
+      const isPhone = /^[0-9+\-\s()]+$/.test(trimmed) && trimmed.replace(/\D/g, '').length >= 8;
 
-
+      let queryVal = trimmed;
+      if (isPhone) {
+        const bdCheck = validateBdPhone(trimmed);
+        if (!bdCheck.isValid) return; // Do not query if not a valid BD phone number
+        queryVal = bdCheck.formatted; // Use standardized 11-digit format
+      } else if (!isEmail) {
+        return;
+      }
 
       if (debounceRef.current) clearTimeout(debounceRef.current);
 
       debounceRef.current = setTimeout(async () => {
         try {
-          let queryVal = trimmed;
-          if (isPhone) {
-            const digits = trimmed.replace(/\D/g, '');
-            if (digits.length >= 10) {
-              queryVal = digits.slice(-10); // Extract last 10 digits to match with/without country codes
-            } else {
-              queryVal = digits;
-            }
-          }
-
           const res = await apiClient.get('/api/v1/client/clients/lookup', {
             params: { query: queryVal },
           });

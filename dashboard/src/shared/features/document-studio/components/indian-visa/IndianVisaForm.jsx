@@ -9,6 +9,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { toast } from 'sonner';
 import { useClientLookup } from '../common/useClientLookup';
 import { ExistingClientAlertModal } from '../common/ExistingClientAlertModal';
+import { validateBdPhone } from '../common/phoneValidator';
 
 export function IndianVisaForm({ data, onChange, onSubmit, onReset, isSubmitting = false }) {
   const { t } = useTranslation();
@@ -60,8 +61,21 @@ export function IndianVisaForm({ data, onChange, onSubmit, onReset, isSubmitting
     });
   };
 
+  const handleSubmit = (e) => {
+    if (e && e.preventDefault) e.preventDefault();
+    const phone = data.applicantPhone || '';
+    if (phone) {
+      const check = validateBdPhone(phone);
+      if (!check.isValid) {
+        toast.error(`Applicant Phone: ${check.error}`);
+        return;
+      }
+    }
+    onSubmit();
+  };
+
   return (
-    <form onSubmit={(e) => { e.preventDefault(); onSubmit(); }} className="w-full mx-auto space-y-5">
+    <form onSubmit={handleSubmit} className="w-full mx-auto space-y-5">
       <div className="bg-card border border-border rounded-xl p-6 sm:p-7 space-y-5 text-sm shadow-sm">
         {/* METADATA */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 bg-muted/20 p-4.5 rounded-lg border border-border">
@@ -155,6 +169,11 @@ export function IndianVisaForm({ data, onChange, onSubmit, onReset, isSubmitting
                 }}
                 required
               />
+              {data.applicantPhone && !validateBdPhone(data.applicantPhone).isValid && (
+                <p className="text-[10px] text-rose-500 font-bold mt-1">
+                  {validateBdPhone(data.applicantPhone).error}
+                </p>
+              )}
             </div>
 
             <div className="space-y-1.5">

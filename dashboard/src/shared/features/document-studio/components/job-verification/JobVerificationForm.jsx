@@ -35,6 +35,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { useClientLookup } from '../common/useClientLookup';
 import { ExistingClientAlertModal } from '../common/ExistingClientAlertModal';
+import { validateBdPhone } from '../common/phoneValidator';
 import { toast } from 'sonner';
 
 export function JobVerificationForm({
@@ -109,8 +110,10 @@ export function JobVerificationForm({
         alert('Please enter Client Name.');
         return;
       }
-      if (!formData.clientInfo?.clientPhone?.trim()) {
-        alert('Please enter Client Mobile Number.');
+      const phone = formData.clientInfo?.clientPhone || '';
+      const check = validateBdPhone(phone);
+      if (!check.isValid) {
+        toast.error(`Client Mobile: ${check.error}`);
         return;
       }
     }
@@ -317,6 +320,11 @@ export function JobVerificationForm({
                     placeholder="Enter candidate phone number"
                     className="mt-1 font-mono"
                   />
+                  {formData.clientInfo?.clientPhone && !validateBdPhone(formData.clientInfo.clientPhone).isValid && (
+                    <p className="text-[10px] text-rose-500 font-bold mt-1">
+                      {validateBdPhone(formData.clientInfo.clientPhone).error}
+                    </p>
+                  )}
                 </div>
 
                 <div>
