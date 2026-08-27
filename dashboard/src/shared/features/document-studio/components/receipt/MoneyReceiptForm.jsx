@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useState } from 'react';
 import {
   Receipt,
   User,
@@ -14,43 +14,24 @@ import {
   CheckCircle2,
   DollarSign,
   Layers,
-  Sparkles,
-  Search,
-  ExternalLink,
 } from 'lucide-react';
 import { BdPhoneInput } from '@/components/common/BdPhoneInput';
 import { DatePicker } from '@/components/ui/date-picker';
 import { PAYMENT_METHODS, SERVICE_PURPOSES, numberToWords } from './sampleData';
-import { apiClient } from '@shared/lib/api-client';
 import { toast } from 'sonner';
 import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
+import { useClientLookup } from '../common/useClientLookup';
+import { ExistingClientAlertModal } from '../common/ExistingClientAlertModal';
 
 export function MoneyReceiptForm({ data, onChange, onReset, onSave, onPreview, isSubmitting }) {
   const { t } = useTranslation();
-  const [detectedClient, setDetectedClient] = useState(null);
-  const [hasPromptedFor, setHasPromptedFor] = useState(new Set());
-  const lookupTimeoutRef = useRef(null);
+  const [detectedMatch, setDetectedMatch] = useState(null);
   const [dateMode, setDateMode] = useState('auto'); // 'auto' | 'custom'
 
-  // Auto-detect existing client by phone or passport
-  const checkExistingClient = async (queryValue) => {
-    if (!queryValue || queryValue.length < 7) return;
-    if (hasPromptedFor.has(queryValue.trim())) return;
-
-    try {
-      const res = await apiClient.get('/api/v1/client/clients/lookup', {
-        params: { query: queryValue.trim() },
-      });
-      if (res.data?.success && res.data?.data && res.data.data.length > 0) {
-        const matched = res.data.data[0];
-        setDetectedClient(matched);
-        setHasPromptedFor((prev) => new Set(prev).add(queryValue.trim()));
-      }
-    } catch (err) {
-      console.warn('Client lookup skipped:', err.message);
-    }
-  };
+  const { triggerLookup, resetLookup } = useClientLookup({
+    onClientFound: (client, caseFile) => setDetectedMatch({ client, caseFile }),
+  });
 
   const handleFieldChange = (field, value) => {
     onChange((prev) => ({ ...prev, [field]: value }));
@@ -65,11 +46,33 @@ export function MoneyReceiptForm({ data, onChange, onReset, onSave, onPreview, i
     }
 
     if (field === 'phone' || field === 'passportNumber') {
-      if (lookupTimeoutRef.current) clearTimeout(lookupTimeoutRef.current);
-      lookupTimeoutRef.current = setTimeout(() => {
-        checkExistingClient(value);
-      }, 700);
+      triggerLookup(value);
     }
+  };
+
+  const handleYes = () => {
+    if (!detectedMatch?.client) return;
+    const c = detectedMatch.client;
+    onChange((prev) => ({
+      ...prev,
+      clientName: c.fullName || prev.clientName,
+      phone: c.phone || prev.phone,
+      passportNumber: c.passportNumber || prev.passportNumber,
+      clientId: c._id || prev.clientId,
+      clientDid: c.did || prev.clientDid,
+      linkedCaseId: detectedMatch.caseFile?._id || prev.linkedCaseId || null,
+      linkedCaseDid: detectedMatch.caseFile?.did || prev.linkedCaseDid || null,
+    }));
+    toast.success(`"${c.fullName}" info auto-filled!`);
+    setDetectedMatch(null);
+  };
+
+  const handleNo = () => {
+    const val = detectedMatch?.client?.phone || '';
+    onChange((prev) => ({ ...prev, phone: '' }));
+    resetLookup(val);
+    toast.info('Please enter a different phone number or email.');
+    setDetectedMatch(null);
   };
 
   const handleDateModeChange = (mode) => {
@@ -86,47 +89,9 @@ export function MoneyReceiptForm({ data, onChange, onReset, onSave, onPreview, i
     }
   };
 
-  const handleAutoFillClient = () => {
-    if (!detectedClient) return;
-    onChange((prev) => ({
-      ...prev,
-      clientName: detectedClient.fullName || prev.clientName,
-      phone: detectedClient.phone || prev.phone,
-      passportNumber: detectedClient.passportNumber || prev.passportNumber,
-    }));
-    toast.success(`Client "${detectedClient.fullName}" info auto-filled!`);
-    setDetectedClient(null);
-  };
-
   return (
     <div className="bg-card border border-border rounded-2xl p-4 sm:p-6 shadow-xs space-y-6">
-      {/* Existing Client Auto-Fill Notification */}
-      {detectedClient && (
-        <div className="bg-sky-500/10 border border-sky-500/30 p-3 rounded-xl flex items-center justify-between gap-3 text-xs animate-in fade-in duration-200">
-          <div className="flex items-center gap-2">
-            <Sparkles className="w-4 h-4 text-sky-500 shrink-0" />
-            <span>
-              Existing client found: <strong className="text-foreground">{detectedClient.fullName}</strong> ({detectedClient.phone})
-            </span>
-          </div>
-          <div className="flex items-center gap-2">
-            <button
-              type="button"
-              onClick={handleAutoFillClient}
-              className="bg-sky-600 hover:bg-sky-700 text-white px-3 py-1 rounded-lg font-bold text-[11px] cursor-pointer transition-colors shadow-2xs"
-            >
-              Auto-Fill
-            </button>
-            <button
-              type="button"
-              onClick={() => setDetectedClient(null)}
-              className="text-muted-foreground hover:text-foreground text-[11px] px-1.5 py-1"
-            >
-              Dismiss
-            </button>
-          </div>
-        </div>
-      )}
+
 
       {/* Meta Bar: Date, Time & Print Layout */}
       <div className="bg-muted/30 border border-border p-4 rounded-xl space-y-3">
@@ -179,7 +144,7 @@ export function MoneyReceiptForm({ data, onChange, onReset, onSave, onPreview, i
                   <input
                     type="text"
                     value={data.time || ''}
-                    placeholder="e.g. 11:30 AM"
+                    placeholder="Enter receipt time"
                     onChange={(e) => handleFieldChange('time', e.target.value)}
                     className="w-full px-3 py-2 bg-background border border-border rounded-xl text-foreground font-mono text-xs focus:ring-1 focus:ring-primary outline-none"
                   />
@@ -216,7 +181,7 @@ export function MoneyReceiptForm({ data, onChange, onReset, onSave, onPreview, i
             <input
               type="text"
               value={data.clientName || ''}
-              placeholder="e.g. Md. Abdul Karim"
+              placeholder="Enter recipient / client name"
               onChange={(e) => handleFieldChange('clientName', e.target.value)}
               className="w-full px-3 py-2 bg-background border border-border rounded-xl text-foreground font-semibold text-xs focus:ring-2 focus:ring-sky-400/40 outline-none"
             />
@@ -227,7 +192,7 @@ export function MoneyReceiptForm({ data, onChange, onReset, onSave, onPreview, i
             <input
               type="text"
               value={data.passportNumber || ''}
-              placeholder="e.g. A08492014"
+              placeholder="Enter passport number"
               onChange={(e) => handleFieldChange('passportNumber', e.target.value)}
               className="w-full px-3 py-2 bg-background border border-border rounded-xl text-foreground font-mono font-medium text-xs focus:ring-2 focus:ring-sky-400/40 outline-none"
             />
@@ -257,7 +222,7 @@ export function MoneyReceiptForm({ data, onChange, onReset, onSave, onPreview, i
               type="text"
               list="service-purpose-options"
               value={data.purpose || ''}
-              placeholder="e.g. Visa Processing & Flight Ticket Booking (Saudi Arabia)"
+              placeholder="Enter payment purpose / description"
               onChange={(e) => handleFieldChange('purpose', e.target.value)}
               className="w-full px-3 py-2 bg-background border border-border rounded-xl text-foreground font-medium text-xs focus:ring-2 focus:ring-sky-400/40 outline-none"
             />
@@ -274,14 +239,14 @@ export function MoneyReceiptForm({ data, onChange, onReset, onSave, onPreview, i
               <input
                 type="text"
                 value={data.receivedBy || ''}
-                placeholder="e.g. Md. Tanvir Hossain"
+                placeholder="Enter recipient officer name"
                 onChange={(e) => handleFieldChange('receivedBy', e.target.value)}
                 className="w-full px-3 py-2 bg-background border border-border rounded-xl text-foreground font-medium text-xs focus:ring-2 focus:ring-sky-400/40 outline-none"
               />
               <input
                 type="text"
                 value={data.receivedByRole || ''}
-                placeholder="Role (e.g. Accounts Officer)"
+                placeholder="Enter officer designation / role"
                 onChange={(e) => handleFieldChange('receivedByRole', e.target.value)}
                 className="w-full px-3 py-2 bg-background border border-border rounded-xl text-foreground text-xs focus:ring-2 focus:ring-sky-400/40 outline-none"
               />
@@ -332,7 +297,7 @@ export function MoneyReceiptForm({ data, onChange, onReset, onSave, onPreview, i
                 <input
                   type="number"
                   value={data.amount || ''}
-                  placeholder="e.g. 50000"
+                  placeholder="0.00"
                   onChange={(e) => handleFieldChange('amount', e.target.value)}
                   className="w-full pl-8 pr-3 py-2 bg-background border border-border rounded-xl text-foreground font-mono font-bold text-sm focus:ring-2 focus:ring-sky-400/40 outline-none"
                 />
@@ -344,7 +309,7 @@ export function MoneyReceiptForm({ data, onChange, onReset, onSave, onPreview, i
               <input
                 type="text"
                 value={data.amountInWords || ''}
-                placeholder="e.g. Fifty Thousand Taka Only."
+                placeholder="Enter amount in words"
                 onChange={(e) => handleFieldChange('amountInWords', e.target.value)}
                 className="w-full px-3 py-2 bg-background border border-border rounded-xl text-foreground font-medium text-xs italic focus:ring-2 focus:ring-sky-400/40 outline-none"
               />
@@ -366,7 +331,7 @@ export function MoneyReceiptForm({ data, onChange, onReset, onSave, onPreview, i
             <input
               type="text"
               value={data.preparedBy || ''}
-              placeholder="Paid By"
+              placeholder="Paid by name / title"
               onChange={(e) => handleFieldChange('preparedBy', e.target.value)}
               className="w-full px-3 py-1.5 bg-background border border-border rounded-lg text-foreground text-xs"
             />
@@ -377,7 +342,7 @@ export function MoneyReceiptForm({ data, onChange, onReset, onSave, onPreview, i
             <input
               type="text"
               value={data.receivedBySignature || ''}
-              placeholder="Received By"
+              placeholder="Received by name / title"
               onChange={(e) => handleFieldChange('receivedBySignature', e.target.value)}
               className="w-full px-3 py-1.5 bg-background border border-border rounded-lg text-foreground text-xs"
             />
@@ -388,7 +353,7 @@ export function MoneyReceiptForm({ data, onChange, onReset, onSave, onPreview, i
             <input
               type="text"
               value={data.accountsSignature || ''}
-              placeholder="Accountant"
+              placeholder="Accountant designation"
               onChange={(e) => handleFieldChange('accountsSignature', e.target.value)}
               className="w-full px-3 py-1.5 bg-background border border-border rounded-lg text-foreground text-xs"
             />
@@ -399,7 +364,7 @@ export function MoneyReceiptForm({ data, onChange, onReset, onSave, onPreview, i
             <input
               type="text"
               value={data.approvedBySignature || ''}
-              placeholder="General Manager / Proprietor"
+              placeholder="Authorized signatory title"
               onChange={(e) => handleFieldChange('approvedBySignature', e.target.value)}
               className="w-full px-3 py-1.5 bg-background border border-border rounded-lg text-foreground text-xs"
             />
@@ -428,6 +393,15 @@ export function MoneyReceiptForm({ data, onChange, onReset, onSave, onPreview, i
           <span>{isSubmitting ? 'Saving...' : 'Save & Generate Voucher'}</span>
         </button>
       </div>
+
+      {detectedMatch && (
+        <ExistingClientAlertModal
+          client={detectedMatch.client}
+          caseFile={detectedMatch.caseFile}
+          onYes={handleYes}
+          onNo={handleNo}
+        />
+      )}
     </div>
   );
 }

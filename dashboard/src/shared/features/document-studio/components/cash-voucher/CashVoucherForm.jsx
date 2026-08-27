@@ -1,11 +1,47 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useState } from 'react';
 import { PlusCircle, Trash2 } from 'lucide-react';
 import { numberToWords, numberToWordsBn, generateVoucherNo } from './sampleData';
 import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
+import { toast } from 'sonner';
+import { useClientLookup } from '../common/useClientLookup';
+import { ExistingClientAlertModal } from '../common/ExistingClientAlertModal';
 
 export function CashVoucherForm({ data, onChange, onReset, onSave, onPreview, isSubmitting }) {
   const { t } = useTranslation();
+
+  // ─── Client Lookup ────────────────────────────────────────────────────────
+  const [detectedMatch, setDetectedMatch] = useState(null);
+
+  const { triggerLookup, resetLookup } = useClientLookup({
+    onClientFound: (client, caseFile) => setDetectedMatch({ client, caseFile }),
+  });
+
+  const handleYes = () => {
+    const { client, caseFile } = detectedMatch;
+    onChange((prev) => ({
+      ...prev,
+      receivedFrom: client.fullName || prev.receivedFrom,
+      phone: client.phone || prev.phone,
+      email: client.email || prev.email,
+      clientId: client._id || null,
+      clientDid: client.did || null,
+      linkedCaseId: caseFile?._id || null,
+      linkedCaseDid: caseFile?.did || null,
+    }));
+    toast.success(`Auto-filled from existing client: ${client.fullName}`);
+    setDetectedMatch(null);
+  };
+
+  const handleNo = () => {
+    const val = data.phone || data.email || '';
+    onChange((prev) => ({ ...prev, phone: '' }));
+    resetLookup(val);
+    toast.info('Please enter a different phone number or email.');
+    setDetectedMatch(null);
+  };
+
+
 
   // ─── Helpers ─────────────────────────────────────────────────────────────
   const recalc = useCallback((items, taxVat) => {
@@ -44,7 +80,7 @@ export function CashVoucherForm({ data, onChange, onReset, onSave, onPreview, is
     <div className="space-y-6">
       {/* Voucher Meta */}
       <div className="bg-card border border-border rounded-2xl p-5 shadow-xs">
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           {/* Voucher No */}
           <div>
             <label className="block text-xs font-semibold text-muted-foreground mb-1">
@@ -82,8 +118,41 @@ export function CashVoucherForm({ data, onChange, onReset, onSave, onPreview, is
               className="w-full bg-muted border border-border rounded-xl px-3 py-2 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
             />
           </div>
+
+          {/* Received From */}
+          <div>
+            <label className="block text-xs font-semibold text-muted-foreground mb-1">
+              {t('cashVoucherForm.receivedFrom', 'Received From / Paid To')}
+            </label>
+            <input
+              type="text"
+              value={data.receivedFrom || ''}
+              onChange={(e) => handleChange('receivedFrom', e.target.value)}
+              placeholder={t('cashVoucherForm.receivedFromPlaceholder', 'Client / Person name')}
+              className="w-full bg-muted border border-border rounded-xl px-3 py-2 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
+            />
+          </div>
+
+          {/* Phone */}
+          <div>
+            <label className="block text-xs font-semibold text-muted-foreground mb-1">
+              {t('cashVoucherForm.phone', 'Phone Number')}
+            </label>
+            <input
+              type="tel"
+              value={data.phone || ''}
+              onChange={(e) => {
+                const value = e.target.value;
+                handleChange('phone', value);
+                triggerLookup(value);
+              }}
+              placeholder={t('cashVoucherForm.phonePlaceholder', 'e.g. 01700000000')}
+              className="w-full bg-muted border border-border rounded-xl px-3 py-2 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
+            />
+          </div>
         </div>
       </div>
+
 
       {/* Expense Items */}
       <div className="bg-card border border-border rounded-2xl p-5 shadow-xs space-y-4">
@@ -260,6 +329,15 @@ export function CashVoucherForm({ data, onChange, onReset, onSave, onPreview, is
           {isSubmitting ? t('cashVoucherForm.saving', 'Saving...') : t('cashVoucherForm.savePreview', 'Save & Preview')}
         </Button>
       </div>
+
+      {detectedMatch && (
+        <ExistingClientAlertModal
+          client={detectedMatch.client}
+          caseFile={detectedMatch.caseFile}
+          onYes={handleYes}
+          onNo={handleNo}
+        />
+      )}
     </div>
   );
 }

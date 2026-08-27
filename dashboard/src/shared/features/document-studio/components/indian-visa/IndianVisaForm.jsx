@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { RotateCcw, Eye, FileCheck, UserCheck } from 'lucide-react';
 import { BdPhoneInput } from '@/components/common/BdPhoneInput';
@@ -6,9 +6,49 @@ import { DatePicker } from '@/components/ui/date-picker';
 import { Input, Select } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
+import { toast } from 'sonner';
+import { useClientLookup } from '../common/useClientLookup';
+import { ExistingClientAlertModal } from '../common/ExistingClientAlertModal';
 
 export function IndianVisaForm({ data, onChange, onSubmit, onReset, isSubmitting = false }) {
   const { t } = useTranslation();
+
+  const [detectedMatch, setDetectedMatch] = useState(null);
+  const { triggerLookup, resetLookup } = useClientLookup({
+    onClientFound: (client, caseFile) => setDetectedMatch({ client, caseFile }),
+  });
+
+  const handleYes = () => {
+    if (!detectedMatch?.client) return;
+    const c = detectedMatch.client;
+    onChange({
+      ...data,
+      clientId: c._id,
+      clientDid: c.did,
+      linkedCaseId: detectedMatch.caseFile?._id || null,
+      linkedCaseDid: detectedMatch.caseFile?.did || null,
+      applicantName: c.fullName || data.applicantName,
+      applicantPhone: c.phone || data.applicantPhone,
+      applicantEmail: c.email || data.applicantEmail,
+      passportNo: c.passportNumber || data.passportNo,
+      nidBirthCertNo: c.nidNumber || data.nidBirthCertNo,
+      address: c.presentAddress || c.address || data.address,
+    });
+    toast.success(`"${c.fullName}" info auto-filled from database!`);
+    setDetectedMatch(null);
+  };
+
+  const handleNo = () => {
+    const val = detectedMatch?.client?.phone || '';
+    onChange({
+      ...data,
+      applicantPhone: '',
+      applicantEmail: '',
+    });
+    resetLookup(val);
+    toast.info('Please enter a different phone number or email.');
+    setDetectedMatch(null);
+  };
 
   const handleChecklistChange = (key, checked) => {
     onChange({
@@ -109,7 +149,10 @@ export function IndianVisaForm({ data, onChange, onSubmit, onReset, isSubmitting
               <Label className="block text-xs font-semibold text-foreground">{t('visa.phone', 'Phone Number')} *</Label>
               <BdPhoneInput
                 value={data.applicantPhone}
-                onChange={(val) => onChange({ ...data, applicantPhone: val })}
+                onChange={(val) => {
+                  onChange({ ...data, applicantPhone: val });
+                  triggerLookup(val);
+                }}
                 required
               />
             </div>
@@ -119,7 +162,10 @@ export function IndianVisaForm({ data, onChange, onSubmit, onReset, isSubmitting
               <Input
                 type="email"
                 value={data.applicantEmail}
-                onChange={e => onChange({ ...data, applicantEmail: e.target.value })}
+                onChange={e => {
+                  onChange({ ...data, applicantEmail: e.target.value });
+                  triggerLookup(e.target.value);
+                }}
                 placeholder=""
               />
             </div>
@@ -263,6 +309,14 @@ export function IndianVisaForm({ data, onChange, onSubmit, onReset, isSubmitting
           )}
         </button>
       </div>
+      {detectedMatch && (
+        <ExistingClientAlertModal
+          client={detectedMatch.client}
+          caseFile={detectedMatch.caseFile}
+          onYes={handleYes}
+          onNo={handleNo}
+        />
+      )}
     </form>
   );
 }

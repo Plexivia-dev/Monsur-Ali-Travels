@@ -209,7 +209,7 @@ export function ReceiptConfirmModal({
                     type="text"
                     value={notes}
                     onChange={(e) => setNotes(e.target.value)}
-                    placeholder="e.g. Received via cash desk / Voucher #889"
+                    placeholder="Enter confirmation notes / remarks"
                     className="w-full px-3 py-2 text-xs rounded-lg border border-input bg-background focus:ring-2 focus:ring-primary/20 focus:border-primary outline-hidden"
                   />
                 </div>

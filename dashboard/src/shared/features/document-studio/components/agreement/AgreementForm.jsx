@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   FileText,
@@ -31,11 +31,18 @@ import { Input, Select } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
+import { useClientLookup } from '../common/useClientLookup';
+import { ExistingClientAlertModal } from '../common/ExistingClientAlertModal';
+import { toast } from 'sonner';
 
 export function AgreementForm({ formData, setFormData, onSubmit, onReset, isSubmitting = false }) {
   const { t } = useTranslation();
   const [currentStep, setCurrentStep] = useState(1);
   const [resetDialogOpen, setResetDialogOpen] = useState(false);
+  const [detectedMatch, setDetectedMatch] = useState(null);
+  const { triggerLookup, resetLookup } = useClientLookup({
+    onClientFound: (client, caseFile) => setDetectedMatch({ client, caseFile }),
+  });
 
   const steps = [
     { id: 1, title: t('agreement.partiesGuardian'), icon: User },
@@ -90,6 +97,45 @@ export function AgreementForm({ formData, setFormData, onSubmit, onReset, isSubm
     if (currentStep > 1) {
       setCurrentStep(currentStep - 1);
     }
+  };
+
+  const handleYes = () => {
+    if (!detectedMatch?.client) return;
+    const c = detectedMatch.client;
+    setFormData(prev => ({
+      ...prev,
+      clientId: c._id,
+      clientDid: c.did,
+      linkedCaseId: detectedMatch.caseFile?._id || null,
+      linkedCaseDid: detectedMatch.caseFile?.did || null,
+      parties: {
+        ...prev.parties,
+        employeeName: c.fullName || prev.parties.employeeName,
+        employeePhone: c.phone || prev.parties.employeePhone,
+        employeeEmail: c.email || prev.parties.employeeEmail,
+        nidPassport: c.passportNumber || c.nidNumber || prev.parties.nidPassport,
+        fatherHusbandName: c.fatherName || prev.parties.fatherHusbandName,
+        address: c.presentAddress || c.address || prev.parties.address,
+      },
+      guardian: {
+        ...prev.guardian,
+        guardianName: c.guardian?.name || prev.guardian.guardianName,
+        guardianPhone: c.guardian?.phone || prev.guardian.guardianPhone,
+      },
+    }));
+    toast.success(`"${c.fullName}" info auto-filled from database!`);
+    setDetectedMatch(null);
+  };
+
+  const handleNo = () => {
+    const val = detectedMatch?.client?.phone || '';
+    setFormData(prev => ({
+      ...prev,
+      parties: { ...prev.parties, employeePhone: '', employeeEmail: '' },
+    }));
+    resetLookup(val);
+    toast.info('Please enter a different phone number or email.');
+    setDetectedMatch(null);
   };
 
   const confirmReset = () => {
@@ -238,7 +284,10 @@ export function AgreementForm({ formData, setFormData, onSubmit, onReset, isSubm
                   <Label>{t('agreement.employerPhone')} :</Label>
                   <BdPhoneInput
                     value={formData.parties?.employerPhone || ''}
-                    onChange={(val) => updateNested('parties', 'employerPhone', val)}
+                    onChange={(val) => {
+                      updateNested('parties', 'employerPhone', val);
+                      triggerLookup(val);
+                    }}
                   />
                 </div>
                 <div className="space-y-1.5">
@@ -255,11 +304,24 @@ export function AgreementForm({ formData, setFormData, onSubmit, onReset, isSubm
                   />
                 </div>
                 <div className="space-y-1.5">
+                  <Label>{t('agreement.employeePhone', 'Employee Phone')} : *</Label>
+                  <BdPhoneInput
+                    value={formData.parties?.employeePhone || ''}
+                    onChange={(val) => {
+                      updateNested('parties', 'employeePhone', val);
+                      triggerLookup(val);
+                    }}
+                  />
+                </div>
+                <div className="space-y-1.5">
                   <Label>{t('agreement.employeeEmail')} :</Label>
                   <Input
                     type="email"
                     value={formData.parties?.employeeEmail || ''}
-                    onChange={(e) => updateNested('parties', 'employeeEmail', e.target.value)}
+                    onChange={(e) => {
+                      updateNested('parties', 'employeeEmail', e.target.value);
+                      triggerLookup(e.target.value);
+                    }}
                     placeholder=""
                   />
                 </div>
@@ -695,6 +757,15 @@ export function AgreementForm({ formData, setFormData, onSubmit, onReset, isSubm
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {detectedMatch && (
+        <ExistingClientAlertModal
+          client={detectedMatch.client}
+          caseFile={detectedMatch.caseFile}
+          onYes={handleYes}
+          onNo={handleNo}
+        />
+      )}
     </div>
   );
 }

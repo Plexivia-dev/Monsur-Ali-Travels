@@ -624,7 +624,7 @@ export function ClientGuardianForm({ data, onChange, onReset, onSave, onPreview,
             <label className="block font-semibold text-foreground mb-1">{t('clientForm.relationship', 'Relationship with Client')}</label>
             <input
               type="text"
-              placeholder={t('clientForm.relationshipPlaceholder', 'e.g. Father, Uncle, Brother')}
+              placeholder={t('clientForm.relationshipPlaceholder', 'Enter relationship')}
               value={data.guardian?.relationship || ''}
               onChange={(e) => handleGuardianChange('relationship', e.target.value)}
               className="w-full px-3 py-2 bg-muted/50 border border-border rounded-lg text-foreground focus:outline-hidden focus:ring-1 focus:ring-primary font-medium"
@@ -848,7 +848,7 @@ export function ClientGuardianForm({ data, onChange, onReset, onSave, onPreview,
             <label className="block font-bold text-foreground mb-1">{t('clientForm.receiptNo', 'Money Receipt No.')}</label>
             <input
               type="text"
-              placeholder="e.g. REC-5829"
+              placeholder="Enter receipt number"
               value={data.payment?.receiptNo || ''}
               onChange={(e) => handlePaymentChange('receiptNo', e.target.value)}
               className="w-full px-3 py-2 bg-background border border-border rounded-lg text-foreground font-mono font-medium focus:outline-hidden focus:ring-1 focus:ring-primary"

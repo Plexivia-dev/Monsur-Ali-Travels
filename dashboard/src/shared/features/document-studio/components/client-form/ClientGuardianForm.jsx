@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   User,
@@ -35,6 +35,7 @@ import { BdPhoneInput } from '@/components/common/BdPhoneInput';
 import { DatePicker } from '@/components/ui/date-picker';
 import { SERVICE_TYPES, STATUS_OPTIONS, getServiceLabel, getStatusLabel } from './sampleData';
 import { ExistingClientAlertModal } from '../common/ExistingClientAlertModal';
+import { useClientLookup } from '../common/useClientLookup';
 import { apiClient } from '@shared/lib/api-client';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
@@ -43,27 +44,54 @@ export function ClientGuardianForm({ data, onChange, onReset, onSave, onPreview,
   const { t, i18n } = useTranslation();
   const isBn = i18n.language === 'bn';
   const [selectedPreviewDoc, setSelectedPreviewDoc] = useState(null);
-  const [detectedClient, setDetectedClient] = useState(null);
-  const [hasPromptedFor, setHasPromptedFor] = useState(new Set());
-  const lookupTimeoutRef = useRef(null);
+  const [detectedMatch, setDetectedMatch] = useState(null);
 
-  // Auto-detect existing client by mobile or passport
-  const checkExistingClient = async (queryValue) => {
-    if (!queryValue || queryValue.length < 8) return;
-    if (hasPromptedFor.has(queryValue.trim())) return;
+  const { triggerLookup, resetLookup } = useClientLookup({
+    onClientFound: (client, caseFile) => setDetectedMatch({ client, caseFile }),
+  });
 
-    try {
-      const res = await apiClient.get('/api/v1/client/clients/lookup', {
-        params: { query: queryValue.trim() }
-      });
-      if (res.data?.success && res.data?.data && res.data.data.length > 0) {
-        const matched = res.data.data[0];
-        setDetectedClient(matched);
-        setHasPromptedFor(prev => new Set(prev).add(queryValue.trim()));
-      }
-    } catch (err) {
-      console.warn('Client lookup skipped:', err.message);
-    }
+  const handleYes = () => {
+    if (!detectedMatch?.client) return;
+    const c = detectedMatch.client;
+    onChange(prev => ({
+      ...prev,
+      clientId: c._id,
+      clientDid: c.did,
+      linkedCaseId: detectedMatch.caseFile?._id || null,
+      linkedCaseDid: detectedMatch.caseFile?.did || null,
+      client: {
+        ...prev.client,
+        fullName: c.fullName || prev.client.fullName,
+        nidNumber: c.nidNumber || prev.client.nidNumber,
+        passportNumber: c.passportNumber || prev.client.passportNumber,
+        mobileNumber: c.phone || prev.client.mobileNumber,
+        email: c.email || prev.client.email,
+        fatherName: c.fatherName || prev.client.fatherName,
+        motherName: c.motherName || prev.client.motherName,
+        presentAddress: c.presentAddress || c.address || prev.client.presentAddress,
+      },
+      guardian: {
+        ...prev.guardian,
+        fullName: c.guardian?.name || prev.guardian.fullName,
+        mobileNumber: c.guardian?.phone || prev.guardian.mobileNumber,
+        nidNumber: c.guardian?.nidNumber || prev.guardian.nidNumber,
+        relationship: c.guardian?.relationship || prev.guardian.relationship,
+        address: c.guardian?.address || prev.guardian.address,
+      },
+    }));
+    toast.success(`"${c.fullName}" info auto-filled from database!`);
+    setDetectedMatch(null);
+  };
+
+  const handleNo = () => {
+    const val = detectedMatch?.client?.phone || '';
+    onChange(prev => ({
+      ...prev,
+      client: { ...prev.client, mobileNumber: '', email: '' },
+    }));
+    resetLookup(val);
+    toast.info('Please enter a different phone number or email.');
+    setDetectedMatch(null);
   };
 
   const handleClientChange = (field, value) => {
@@ -72,69 +100,10 @@ export function ClientGuardianForm({ data, onChange, onReset, onSave, onPreview,
       client: { ...prev.client, [field]: value }
     }));
 
-    // Trigger lookup for mobileNumber or passportNumber
-    if (field === 'mobileNumber' || field === 'passportNumber') {
-      if (lookupTimeoutRef.current) clearTimeout(lookupTimeoutRef.current);
-      lookupTimeoutRef.current = setTimeout(() => {
-        checkExistingClient(value);
-      }, 700);
+    // Trigger lookup for mobileNumber, email, or passportNumber
+    if (field === 'mobileNumber' || field === 'email' || field === 'passportNumber') {
+      triggerLookup(value);
     }
-  };
-
-  // Option 1: Auto Fill from Existing Profile
-  const handleAutoFillClient = () => {
-    if (!detectedClient) return;
-    onChange(prev => ({
-      ...prev,
-      clientId: detectedClient._id,
-      client: {
-        ...prev.client,
-        fullName: detectedClient.fullName || prev.client.fullName,
-        nidNumber: detectedClient.nidNumber || prev.client.nidNumber,
-        passportNumber: detectedClient.passportNumber || prev.client.passportNumber,
-        mobileNumber: detectedClient.phone || prev.client.mobileNumber,
-        email: detectedClient.email || prev.client.email,
-        fatherName: detectedClient.fatherName || prev.client.fatherName,
-        motherName: detectedClient.motherName || prev.client.motherName,
-      },
-      guardian: {
-        ...prev.guardian,
-        fullName: detectedClient.guardian?.name || prev.guardian.fullName,
-        mobileNumber: detectedClient.guardian?.phone || prev.guardian.mobileNumber,
-        nidNumber: detectedClient.guardian?.nidNumber || prev.guardian.nidNumber,
-        relationship: detectedClient.guardian?.relationship || prev.guardian.relationship,
-        address: detectedClient.guardian?.address || prev.guardian.address,
-      },
-      attachments: {
-        ...prev.attachments,
-        passportPhoto: detectedClient.attachments?.photo || prev.attachments.passportPhoto,
-        passportScan: detectedClient.attachments?.passportScan || prev.attachments.passportScan,
-        nidScan: detectedClient.attachments?.nidScan || prev.attachments.nidScan,
-      }
-    }));
-    toast.success(`"${detectedClient.fullName}"  records have been auto-filled into form!`);
-    setDetectedClient(null);
-  };
-
-  // Option 2: Update Existing Profile with current form data
-  const handleUpdateExistingClient = () => {
-    if (!detectedClient) return;
-    onChange(prev => ({
-      ...prev,
-      clientId: detectedClient._id,
-    }));
-    toast.success(`Client "${detectedClient.fullName}" linked successfully. Saving will update client profile!`);
-    setDetectedClient(null);
-  };
-
-  // Option 3: Ignore & Proceed as New Unlinked
-  const handleProceedAsNew = () => {
-    onChange(prev => ({
-      ...prev,
-      clientId: null,
-    }));
-    toast.info('Switched to new standalone document creation mode.');
-    setDetectedClient(null);
   };
 
   const handleGuardianChange = (field, value) => {
@@ -611,7 +580,7 @@ export function ClientGuardianForm({ data, onChange, onReset, onSave, onPreview,
             <label className="block font-semibold text-foreground mb-1">{t('clientForm.relationship', 'Relationship with Client')}</label>
             <input
               type="text"
-              placeholder={t('clientForm.relationshipPlaceholder', 'e.g. Father, Uncle, Brother')}
+              placeholder={t('clientForm.relationshipPlaceholder', 'Enter relationship')}
               value={data.guardian?.relationship || ''}
               onChange={(e) => handleGuardianChange('relationship', e.target.value)}
               className="w-full px-3 py-2 bg-muted/50 border border-border rounded-lg text-foreground focus:outline-hidden focus:ring-1 focus:ring-primary font-medium"
@@ -835,7 +804,7 @@ export function ClientGuardianForm({ data, onChange, onReset, onSave, onPreview,
             <label className="block font-bold text-foreground mb-1">{t('clientForm.receiptNo', 'Money Receipt No.')}</label>
             <input
               type="text"
-              placeholder="e.g. REC-5829"
+              placeholder="Enter receipt number"
               value={data.payment?.receiptNo || ''}
               onChange={(e) => handlePaymentChange('receiptNo', e.target.value)}
               className="w-full px-3 py-2 bg-background border border-border rounded-lg text-foreground font-mono font-medium focus:outline-hidden focus:ring-1 focus:ring-primary"
@@ -1261,12 +1230,12 @@ export function ClientGuardianForm({ data, onChange, onReset, onSave, onPreview,
       )}
 
       {/* Screen Freeze Modal: Duplicate / Existing Client Prompt */}
-      {detectedClient && (
+      {detectedMatch && (
         <ExistingClientAlertModal
-          client={detectedClient}
-          onAutoFill={handleAutoFillClient}
-          onUpdateExisting={handleUpdateExistingClient}
-          onProceedAsNew={handleProceedAsNew}
+          client={detectedMatch.client}
+          caseFile={detectedMatch.caseFile}
+          onYes={handleYes}
+          onNo={handleNo}
         />
       )}
     </div>

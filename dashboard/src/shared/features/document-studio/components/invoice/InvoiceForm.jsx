@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useState } from 'react';
 import {
   ReceiptText,
   User,
@@ -23,30 +23,15 @@ import { BdPhoneInput } from '@/components/common/BdPhoneInput';
 import { DatePicker } from '@/components/ui/date-picker';
 import { apiClient } from '@shared/lib/api-client';
 import { toast } from 'sonner';
+import { useClientLookup } from '../common/useClientLookup';
+import { ExistingClientAlertModal } from '../common/ExistingClientAlertModal';
 
 export function InvoiceForm({ data, onChange, onSubmit, onReset, isSubmitting = false }) {
-  const [detectedClient, setDetectedClient] = useState(null);
-  const [hasPromptedFor, setHasPromptedFor] = useState(new Set());
-  const lookupTimeoutRef = useRef(null);
+  const [detectedMatch, setDetectedMatch] = useState(null);
 
-  // Auto-detect existing client by phone
-  const checkExistingClient = async (queryValue) => {
-    if (!queryValue || queryValue.length < 7) return;
-    if (hasPromptedFor.has(queryValue.trim())) return;
-
-    try {
-      const res = await apiClient.get('/api/v1/client/clients/lookup', {
-        params: { query: queryValue.trim() },
-      });
-      if (res.data?.success && res.data?.data && res.data.data.length > 0) {
-        const matched = res.data.data[0];
-        setDetectedClient(matched);
-        setHasPromptedFor((prev) => new Set(prev).add(queryValue.trim()));
-      }
-    } catch (err) {
-      console.warn('Client lookup skipped:', err.message);
-    }
-  };
+  const { triggerLookup, resetLookup } = useClientLookup({
+    onClientFound: (client, caseFile) => setDetectedMatch({ client, caseFile }),
+  });
 
   const handleClientChange = (field, value) => {
     onChange((prev) => ({
@@ -54,28 +39,41 @@ export function InvoiceForm({ data, onChange, onSubmit, onReset, isSubmitting = 
       client: { ...prev.client, [field]: value },
     }));
 
-    if (field === 'phone') {
-      if (lookupTimeoutRef.current) clearTimeout(lookupTimeoutRef.current);
-      lookupTimeoutRef.current = setTimeout(() => {
-        checkExistingClient(value);
-      }, 700);
+    if (field === 'phone' || field === 'email') {
+      triggerLookup(value);
     }
   };
 
-  const handleAutoFillClient = () => {
-    if (!detectedClient) return;
-    onChange((prev) => ({
+  const handleYes = () => {
+    if (!detectedMatch?.client) return;
+    const c = detectedMatch.client;
+    onChange(prev => ({
       ...prev,
+      clientId: c._id,
+      clientDid: c.did,
+      linkedCaseId: detectedMatch.caseFile?._id || null,
+      linkedCaseDid: detectedMatch.caseFile?.did || null,
       client: {
         ...prev.client,
-        name: detectedClient.fullName || prev.client.name,
-        phone: detectedClient.phone || prev.client.phone,
-        email: detectedClient.email || prev.client.email,
-        address: detectedClient.address || prev.client.address,
+        name: c.fullName || prev.client.name,
+        phone: c.phone || prev.client.phone,
+        email: c.email || prev.client.email,
+        address: c.presentAddress || c.address || prev.client.address,
       },
     }));
-    toast.success(`Client "${detectedClient.fullName}" info auto-filled!`);
-    setDetectedClient(null);
+    toast.success(`"${c.fullName}" info auto-filled!`);
+    setDetectedMatch(null);
+  };
+
+  const handleNo = () => {
+    const val = detectedMatch?.client?.phone || '';
+    onChange(prev => ({
+      ...prev,
+      client: { ...prev.client, phone: '', email: '' },
+    }));
+    resetLookup(val);
+    toast.info('Please enter a different phone number or email.');
+    setDetectedMatch(null);
   };
 
   const handleAddItem = () => {
@@ -118,33 +116,6 @@ export function InvoiceForm({ data, onChange, onSubmit, onReset, isSubmitting = 
 
   return (
     <div className="bg-card border border-border rounded-2xl p-4 sm:p-6 shadow-xs space-y-6">
-      {/* Existing Client Auto-Fill Notification */}
-      {detectedClient && (
-        <div className="bg-sky-500/10 border border-sky-500/30 p-3 rounded-xl flex items-center justify-between gap-3 text-xs animate-in fade-in duration-200">
-          <div className="flex items-center gap-2">
-            <Sparkles className="w-4 h-4 text-sky-500 shrink-0" />
-            <span>
-              Existing client detected: <strong className="text-foreground">{detectedClient.fullName}</strong> ({detectedClient.phone})
-            </span>
-          </div>
-          <div className="flex items-center gap-2">
-            <button
-              type="button"
-              onClick={handleAutoFillClient}
-              className="bg-sky-600 hover:bg-sky-700 text-white px-3 py-1 rounded-lg font-bold text-[11px] cursor-pointer transition-colors shadow-2xs"
-            >
-              Auto-Fill
-            </button>
-            <button
-              type="button"
-              onClick={() => setDetectedClient(null)}
-              className="text-muted-foreground hover:text-foreground text-[11px] px-1.5 py-1"
-            >
-              Dismiss
-            </button>
-          </div>
-        </div>
-      )}
 
       {/* Meta Bar: Invoice No, Dates & Payment Status */}
       <div className="bg-muted/30 border border-border p-4 rounded-xl space-y-3">
@@ -218,7 +189,7 @@ export function InvoiceForm({ data, onChange, onSubmit, onReset, isSubmitting = 
               type="text"
               required
               value={data.client?.name || ''}
-              placeholder="e.g. Md. Abdul Karim"
+              placeholder="Enter recipient / client name"
               onChange={(e) => handleClientChange('name', e.target.value)}
               className="w-full px-3 py-2 bg-background border border-border rounded-xl text-foreground font-semibold text-xs focus:ring-2 focus:ring-sky-400/40 outline-none"
             />
@@ -229,7 +200,7 @@ export function InvoiceForm({ data, onChange, onSubmit, onReset, isSubmitting = 
             <input
               type="text"
               value={data.client?.contactPerson || ''}
-              placeholder="e.g. Managing Director"
+              placeholder="Enter designation / company name"
               onChange={(e) => handleClientChange('contactPerson', e.target.value)}
               className="w-full px-3 py-2 bg-background border border-border rounded-xl text-foreground text-xs focus:ring-2 focus:ring-sky-400/40 outline-none"
             />
@@ -248,7 +219,7 @@ export function InvoiceForm({ data, onChange, onSubmit, onReset, isSubmitting = 
             <input
               type="email"
               value={data.client?.email || ''}
-              placeholder="e.g. client@example.com"
+              placeholder="Enter client email address"
               onChange={(e) => handleClientChange('email', e.target.value)}
               className="w-full px-3 py-2 bg-background border border-border rounded-xl text-foreground text-xs focus:ring-2 focus:ring-sky-400/40 outline-none"
             />
@@ -259,7 +230,7 @@ export function InvoiceForm({ data, onChange, onSubmit, onReset, isSubmitting = 
             <input
               type="text"
               value={data.client?.address || ''}
-              placeholder="e.g. 120/A Motijheel C/A, Dhaka - 1000"
+              placeholder="Enter client billing address"
               onChange={(e) => handleClientChange('address', e.target.value)}
               className="w-full px-3 py-2 bg-background border border-border rounded-xl text-foreground text-xs focus:ring-2 focus:ring-sky-400/40 outline-none"
             />
@@ -317,7 +288,7 @@ export function InvoiceForm({ data, onChange, onSubmit, onReset, isSubmitting = 
                     type="text"
                     required
                     value={item.title || ''}
-                    placeholder="e.g. Saudi Work Visa Processing"
+                    placeholder="Enter item description"
                     onChange={(e) => handleUpdateItem(item.id, 'title', e.target.value)}
                     className="w-full bg-background border border-border rounded-lg px-3 py-1.5 text-foreground font-semibold text-xs focus:ring-2 focus:ring-sky-400/40 outline-none"
                   />
@@ -328,7 +299,7 @@ export function InvoiceForm({ data, onChange, onSubmit, onReset, isSubmitting = 
                   <input
                     type="text"
                     value={item.description || ''}
-                    placeholder="e.g. Embassy fee and biometric included"
+                    placeholder="Enter item notes / specifications"
                     onChange={(e) => handleUpdateItem(item.id, 'description', e.target.value)}
                     className="w-full bg-background border border-border rounded-lg px-3 py-1.5 text-foreground text-xs focus:ring-2 focus:ring-sky-400/40 outline-none"
                   />
@@ -390,7 +361,7 @@ export function InvoiceForm({ data, onChange, onSubmit, onReset, isSubmitting = 
               <textarea
                 rows={3}
                 value={data.paymentTerms || ''}
-                placeholder="Payment is due within 15 days. Please make payment via Cash or Bank Transfer..."
+                placeholder="Enter payment terms & instructions..."
                 onChange={(e) => onChange({ ...data, paymentTerms: e.target.value })}
                 className="w-full px-3 py-2 bg-background border border-border rounded-xl text-foreground text-xs focus:ring-2 focus:ring-sky-400/40 outline-none resize-none"
               />
@@ -461,6 +432,15 @@ export function InvoiceForm({ data, onChange, onSubmit, onReset, isSubmitting = 
           <span>{isSubmitting ? 'Saving...' : 'Save & Generate Invoice'}</span>
         </button>
       </div>
+
+      {detectedMatch && (
+        <ExistingClientAlertModal
+          client={detectedMatch.client}
+          caseFile={detectedMatch.caseFile}
+          onYes={handleYes}
+          onNo={handleNo}
+        />
+      )}
     </div>
   );
 }

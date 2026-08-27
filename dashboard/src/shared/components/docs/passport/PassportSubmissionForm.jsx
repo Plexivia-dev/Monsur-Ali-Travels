@@ -86,7 +86,7 @@ export function PassportSubmissionForm({ data, onChange, onSubmit, onReset, isSu
                 required
                 value={data.applicantName}
                 onChange={(e) => onChange({ ...data, applicantName: e.target.value })}
-                placeholder="e.g. Md. Rafiqul Islam"
+                placeholder="Enter candidate full name"
                 className="w-full bg-background border border-border rounded-xl px-3 py-2 text-foreground font-bold text-xs outline-none focus:ring-1 focus:ring-primary"
               />
             </div>
@@ -99,7 +99,7 @@ export function PassportSubmissionForm({ data, onChange, onSubmit, onReset, isSu
                 type="text"
                 value={data.nidBirthCertNo}
                 onChange={(e) => onChange({ ...data, nidBirthCertNo: e.target.value })}
-                placeholder="e.g. 19881234567890"
+                placeholder="Enter National ID (NID) number"
                 className="w-full bg-background border border-border rounded-xl px-3 py-2 text-foreground font-mono text-xs outline-none focus:ring-1 focus:ring-primary"
               />
             </div>
@@ -112,7 +112,7 @@ export function PassportSubmissionForm({ data, onChange, onSubmit, onReset, isSu
                 type="text"
                 value={data.previousPassportNo}
                 onChange={(e) => onChange({ ...data, previousPassportNo: e.target.value })}
-                placeholder="e.g. A01234567"
+                placeholder="Enter passport number"
                 className="w-full bg-background border border-border rounded-xl px-3 py-2 text-foreground font-mono text-xs outline-none focus:ring-1 focus:ring-primary uppercase"
               />
             </div>
@@ -134,7 +134,7 @@ export function PassportSubmissionForm({ data, onChange, onSubmit, onReset, isSu
                 type="email"
                 value={data.applicantEmail}
                 onChange={(e) => onChange({ ...data, applicantEmail: e.target.value })}
-                placeholder="e.g. applicant@example.com"
+                placeholder="Enter email address"
                 className="w-full bg-background border border-border rounded-xl px-3 py-2 text-foreground text-xs outline-none focus:ring-1 focus:ring-primary"
               />
             </div>
@@ -145,7 +145,7 @@ export function PassportSubmissionForm({ data, onChange, onSubmit, onReset, isSu
                 type="text"
                 value={data.address}
                 onChange={(e) => onChange({ ...data, address: e.target.value })}
-                placeholder="e.g. Joypur, Golapganj, Sylhet."
+                placeholder="Enter present address"
                 className="w-full bg-background border border-border rounded-xl px-3 py-2 text-foreground text-xs outline-none focus:ring-1 focus:ring-primary"
               />
             </div>
@@ -166,7 +166,7 @@ export function PassportSubmissionForm({ data, onChange, onSubmit, onReset, isSu
                 type="text"
                 value={data.guardianName}
                 onChange={(e) => onChange({ ...data, guardianName: e.target.value })}
-                placeholder="e.g. Md. Abdul Jalil"
+                placeholder="Enter father's name"
                 className="w-full bg-background border border-border rounded-xl px-3 py-2 text-foreground text-xs outline-none focus:ring-1 focus:ring-primary"
               />
             </div>
@@ -297,7 +297,7 @@ export function PassportSubmissionForm({ data, onChange, onSubmit, onReset, isSu
             rows={2}
             value={data.remarks}
             onChange={(e) => onChange({ ...data, remarks: e.target.value })}
-            placeholder="Add any internal processing notes, biometric appointment date, or instructions..."
+            placeholder="Enter internal processing notes & instructions..."
             className="w-full bg-background border border-border rounded-xl p-3 text-foreground text-xs outline-none resize-none focus:ring-1 focus:ring-primary"
           />
         </div>

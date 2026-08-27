@@ -202,7 +202,7 @@ export function MoneyReceiptModal({
                       name="clientName"
                       value={formData.clientName}
                       onChange={handleChange}
-                      placeholder="e.g. Md. Karim Hossain"
+                      placeholder="Enter passenger / client name"
                       required
                       className="w-full px-3 py-2 text-xs rounded-lg border border-input bg-background focus:ring-2 focus:ring-primary/20 focus:border-primary outline-hidden"
                     />
@@ -217,7 +217,7 @@ export function MoneyReceiptModal({
                       name="clientPhone"
                       value={formData.clientPhone}
                       onChange={handleChange}
-                      placeholder="e.g. 01711223344"
+                      placeholder="Enter contact phone number"
                       className="w-full px-3 py-2 text-xs rounded-lg border border-input bg-background focus:ring-2 focus:ring-primary/20 focus:border-primary outline-hidden"
                     />
                   </div>
@@ -231,7 +231,7 @@ export function MoneyReceiptModal({
                       name="passportNumber"
                       value={formData.passportNumber}
                       onChange={handleChange}
-                      placeholder="e.g. A01234567"
+                      placeholder="Enter passport number"
                       className="w-full px-3 py-2 text-xs font-mono uppercase rounded-lg border border-input bg-background focus:ring-2 focus:ring-primary/20 focus:border-primary outline-hidden"
                     />
                   </div>
@@ -275,7 +275,7 @@ export function MoneyReceiptModal({
                         name="amount"
                         value={formData.amount}
                         onChange={handleChange}
-                        placeholder="e.g. 5000"
+                        placeholder="0.00"
                         min="0"
                         required
                         className="w-full pl-7 pr-3 py-2 text-xs font-mono font-bold text-foreground rounded-lg border border-input bg-background focus:ring-2 focus:ring-primary/20 focus:border-primary outline-hidden"
@@ -292,7 +292,7 @@ export function MoneyReceiptModal({
                       name="amountInWords"
                       value={formData.amountInWords}
                       onChange={handleChange}
-                      placeholder="e.g. Five Thousand BDT Only"
+                      placeholder="Enter amount in words"
                       className="w-full px-3 py-2 text-xs rounded-lg border border-input bg-background focus:ring-2 focus:ring-primary/20 focus:border-primary outline-hidden"
                     />
                   </div>
@@ -323,7 +323,7 @@ export function MoneyReceiptModal({
                       name="purpose"
                       value={formData.purpose}
                       onChange={handleChange}
-                      placeholder="e.g. Advance deposit for visa dossier processing"
+                      placeholder="Enter payment purpose / notes"
                       className="w-full px-3 py-2 text-xs rounded-lg border border-input bg-background focus:ring-2 focus:ring-primary/20 focus:border-primary outline-hidden"
                     />
                   </div>

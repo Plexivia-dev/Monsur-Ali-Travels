@@ -1,10 +1,47 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { RotateCcw, Eye, ShieldCheck, UserCheck, FileCheck, PhoneCall, Sparkles } from 'lucide-react';
 import { generateUniquePassportTrackingNo } from './sampleData';
 import { BdPhoneInput } from '@/components/common/BdPhoneInput';
 import { DatePicker } from '@/components/ui/date-picker';
+import { useClientLookup } from '../common/useClientLookup';
+import { ExistingClientAlertModal } from '../common/ExistingClientAlertModal';
+import { toast } from 'sonner';
 
 export function PassportSubmissionForm({ data, onChange, onSubmit, onReset, isSubmitting = false }) {
+  const [detectedMatch, setDetectedMatch] = useState(null);
+
+  const { triggerLookup, resetLookup } = useClientLookup({
+    onClientFound: (client, caseFile) => setDetectedMatch({ client, caseFile }),
+  });
+
+  const handleYes = () => {
+    if (!detectedMatch?.client) return;
+    const c = detectedMatch.client;
+    onChange({
+      ...data,
+      clientId: c._id,
+      clientDid: c.did,
+      linkedCaseId: detectedMatch.caseFile?._id || null,
+      linkedCaseDid: detectedMatch.caseFile?.did || null,
+      applicantName: c.fullName || data.applicantName,
+      applicantPhone: c.phone || data.applicantPhone,
+      applicantEmail: c.email || data.applicantEmail,
+      previousPassportNo: c.passportNumber || data.previousPassportNo,
+      nidBirthCertNo: c.nidNumber || data.nidBirthCertNo,
+      address: c.presentAddress || c.address || data.address,
+    });
+    toast.success(`"${c.fullName}" info auto-filled!`);
+    setDetectedMatch(null);
+  };
+
+  const handleNo = () => {
+    const val = detectedMatch?.client?.phone || '';
+    onChange({ ...data, applicantPhone: '' });
+    resetLookup(val);
+    toast.info('Please enter a different phone number.');
+    setDetectedMatch(null);
+  };
+
   const handleChecklistChange = (key, checked) => {
     onChange({
       ...data,
@@ -72,7 +109,7 @@ export function PassportSubmissionForm({ data, onChange, onSubmit, onReset, isSu
                 required
                 value={data.applicantName}
                 onChange={(e) => onChange({ ...data, applicantName: e.target.value })}
-                placeholder="e.g. Md. Rafiqul Islam"
+                placeholder="Enter candidate full name"
                 className="w-full bg-background border border-border rounded-xl px-3 py-2 text-foreground font-bold text-xs outline-none focus:ring-1 focus:ring-primary"
               />
             </div>
@@ -85,7 +122,7 @@ export function PassportSubmissionForm({ data, onChange, onSubmit, onReset, isSu
                 type="text"
                 value={data.nidBirthCertNo}
                 onChange={(e) => onChange({ ...data, nidBirthCertNo: e.target.value })}
-                placeholder="e.g. 19881234567890"
+                placeholder="Enter National ID (NID) number"
                 className="w-full bg-background border border-border rounded-xl px-3 py-2 text-foreground font-mono text-xs outline-none focus:ring-1 focus:ring-primary"
               />
             </div>
@@ -98,7 +135,7 @@ export function PassportSubmissionForm({ data, onChange, onSubmit, onReset, isSu
                 type="text"
                 value={data.previousPassportNo}
                 onChange={(e) => onChange({ ...data, previousPassportNo: e.target.value })}
-                placeholder="e.g. A01234567"
+                placeholder="Enter passport number"
                 className="w-full bg-background border border-border rounded-xl px-3 py-2 text-foreground font-mono text-xs outline-none focus:ring-1 focus:ring-primary uppercase"
               />
             </div>
@@ -109,7 +146,7 @@ export function PassportSubmissionForm({ data, onChange, onSubmit, onReset, isSu
               </label>
               <BdPhoneInput
                 value={data.applicantPhone}
-                onChange={(val) => onChange({ ...data, applicantPhone: val })}
+                onChange={(val) => { onChange({ ...data, applicantPhone: val }); triggerLookup(val); }}
                 required
               />
             </div>
@@ -120,7 +157,7 @@ export function PassportSubmissionForm({ data, onChange, onSubmit, onReset, isSu
                 type="email"
                 value={data.applicantEmail}
                 onChange={(e) => onChange({ ...data, applicantEmail: e.target.value })}
-                placeholder="e.g. applicant@example.com"
+                placeholder="Enter email address"
                 className="w-full bg-background border border-border rounded-xl px-3 py-2 text-foreground text-xs outline-none focus:ring-1 focus:ring-primary"
               />
             </div>
@@ -131,7 +168,7 @@ export function PassportSubmissionForm({ data, onChange, onSubmit, onReset, isSu
                 type="text"
                 value={data.address}
                 onChange={(e) => onChange({ ...data, address: e.target.value })}
-                placeholder="e.g. Joypur, Golapganj, Sylhet."
+                placeholder="Enter present address"
                 className="w-full bg-background border border-border rounded-xl px-3 py-2 text-foreground text-xs outline-none focus:ring-1 focus:ring-primary"
               />
             </div>
@@ -152,7 +189,7 @@ export function PassportSubmissionForm({ data, onChange, onSubmit, onReset, isSu
                 type="text"
                 value={data.guardianName}
                 onChange={(e) => onChange({ ...data, guardianName: e.target.value })}
-                placeholder="e.g. Md. Abdul Jalil"
+                placeholder="Enter father's name"
                 className="w-full bg-background border border-border rounded-xl px-3 py-2 text-foreground text-xs outline-none focus:ring-1 focus:ring-primary"
               />
             </div>
@@ -283,7 +320,7 @@ export function PassportSubmissionForm({ data, onChange, onSubmit, onReset, isSu
             rows={2}
             value={data.remarks}
             onChange={(e) => onChange({ ...data, remarks: e.target.value })}
-            placeholder="Add any internal processing notes, biometric appointment date, or instructions..."
+            placeholder="Enter internal processing notes & instructions..."
             className="w-full bg-background border border-border rounded-xl p-3 text-foreground text-xs outline-none resize-none focus:ring-1 focus:ring-primary"
           />
         </div>
@@ -319,6 +356,15 @@ export function PassportSubmissionForm({ data, onChange, onSubmit, onReset, isSu
           )}
         </button>
       </div>
+
+      {detectedMatch && (
+        <ExistingClientAlertModal
+          client={detectedMatch.client}
+          caseFile={detectedMatch.caseFile}
+          onYes={handleYes}
+          onNo={handleNo}
+        />
+      )}
     </form>
   );
 }

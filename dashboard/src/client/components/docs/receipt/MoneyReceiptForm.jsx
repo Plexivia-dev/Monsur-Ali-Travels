@@ -179,7 +179,7 @@ export function MoneyReceiptForm({ data, onChange, onReset, onSave, onPreview, i
                   <input
                     type="text"
                     value={data.time || ''}
-                    placeholder="e.g. 11:30 AM"
+                    placeholder="Enter receipt time"
                     onChange={(e) => handleFieldChange('time', e.target.value)}
                     className="w-full px-3 py-2 bg-background border border-border rounded-xl text-foreground font-mono text-xs focus:ring-1 focus:ring-primary outline-none"
                   />
@@ -216,7 +216,7 @@ export function MoneyReceiptForm({ data, onChange, onReset, onSave, onPreview, i
             <input
               type="text"
               value={data.clientName || ''}
-              placeholder="e.g. Md. Abdul Karim"
+              placeholder="Enter recipient / client name"
               onChange={(e) => handleFieldChange('clientName', e.target.value)}
               className="w-full px-3 py-2 bg-background border border-border rounded-xl text-foreground font-semibold text-xs focus:ring-2 focus:ring-sky-400/40 outline-none"
             />
@@ -227,7 +227,7 @@ export function MoneyReceiptForm({ data, onChange, onReset, onSave, onPreview, i
             <input
               type="text"
               value={data.passportNumber || ''}
-              placeholder="e.g. A08492014"
+              placeholder="Enter passport number"
               onChange={(e) => handleFieldChange('passportNumber', e.target.value)}
               className="w-full px-3 py-2 bg-background border border-border rounded-xl text-foreground font-mono font-medium text-xs focus:ring-2 focus:ring-sky-400/40 outline-none"
             />
@@ -257,7 +257,7 @@ export function MoneyReceiptForm({ data, onChange, onReset, onSave, onPreview, i
               type="text"
               list="service-purpose-options"
               value={data.purpose || ''}
-              placeholder="e.g. Visa Processing & Flight Ticket Booking (Saudi Arabia)"
+              placeholder="Enter payment purpose / description"
               onChange={(e) => handleFieldChange('purpose', e.target.value)}
               className="w-full px-3 py-2 bg-background border border-border rounded-xl text-foreground font-medium text-xs focus:ring-2 focus:ring-sky-400/40 outline-none"
             />
@@ -274,14 +274,14 @@ export function MoneyReceiptForm({ data, onChange, onReset, onSave, onPreview, i
               <input
                 type="text"
                 value={data.receivedBy || ''}
-                placeholder="e.g. Md. Tanvir Hossain"
+                placeholder="Enter recipient officer name"
                 onChange={(e) => handleFieldChange('receivedBy', e.target.value)}
                 className="w-full px-3 py-2 bg-background border border-border rounded-xl text-foreground font-medium text-xs focus:ring-2 focus:ring-sky-400/40 outline-none"
               />
               <input
                 type="text"
                 value={data.receivedByRole || ''}
-                placeholder="Role (e.g. Accounts Officer)"
+                placeholder="Enter officer designation / role"
                 onChange={(e) => handleFieldChange('receivedByRole', e.target.value)}
                 className="w-full px-3 py-2 bg-background border border-border rounded-xl text-foreground text-xs focus:ring-2 focus:ring-sky-400/40 outline-none"
               />
@@ -332,7 +332,7 @@ export function MoneyReceiptForm({ data, onChange, onReset, onSave, onPreview, i
                 <input
                   type="number"
                   value={data.amount || ''}
-                  placeholder="e.g. 50000"
+                  placeholder="0.00"
                   onChange={(e) => handleFieldChange('amount', e.target.value)}
                   className="w-full pl-8 pr-3 py-2 bg-background border border-border rounded-xl text-foreground font-mono font-bold text-sm focus:ring-2 focus:ring-sky-400/40 outline-none"
                 />
@@ -344,7 +344,7 @@ export function MoneyReceiptForm({ data, onChange, onReset, onSave, onPreview, i
               <input
                 type="text"
                 value={data.amountInWords || ''}
-                placeholder="e.g. Fifty Thousand Taka Only."
+                placeholder="Enter amount in words"
                 onChange={(e) => handleFieldChange('amountInWords', e.target.value)}
                 className="w-full px-3 py-2 bg-background border border-border rounded-xl text-foreground font-medium text-xs italic focus:ring-2 focus:ring-sky-400/40 outline-none"
               />
@@ -366,7 +366,7 @@ export function MoneyReceiptForm({ data, onChange, onReset, onSave, onPreview, i
             <input
               type="text"
               value={data.preparedBy || ''}
-              placeholder="Paid By"
+              placeholder="Paid by name / title"
               onChange={(e) => handleFieldChange('preparedBy', e.target.value)}
               className="w-full px-3 py-1.5 bg-background border border-border rounded-lg text-foreground text-xs"
             />
@@ -377,7 +377,7 @@ export function MoneyReceiptForm({ data, onChange, onReset, onSave, onPreview, i
             <input
               type="text"
               value={data.receivedBySignature || ''}
-              placeholder="Received By"
+              placeholder="Received by name / title"
               onChange={(e) => handleFieldChange('receivedBySignature', e.target.value)}
               className="w-full px-3 py-1.5 bg-background border border-border rounded-lg text-foreground text-xs"
             />
@@ -388,7 +388,7 @@ export function MoneyReceiptForm({ data, onChange, onReset, onSave, onPreview, i
             <input
               type="text"
               value={data.accountsSignature || ''}
-              placeholder="Accountant"
+              placeholder="Accountant designation"
               onChange={(e) => handleFieldChange('accountsSignature', e.target.value)}
               className="w-full px-3 py-1.5 bg-background border border-border rounded-lg text-foreground text-xs"
             />
@@ -399,7 +399,7 @@ export function MoneyReceiptForm({ data, onChange, onReset, onSave, onPreview, i
             <input
               type="text"
               value={data.approvedBySignature || ''}
-              placeholder="General Manager / Proprietor"
+              placeholder="Authorized signatory title"
               onChange={(e) => handleFieldChange('approvedBySignature', e.target.value)}
               className="w-full px-3 py-1.5 bg-background border border-border rounded-lg text-foreground text-xs"
             />
