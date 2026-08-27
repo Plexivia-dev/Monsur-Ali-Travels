@@ -20,7 +20,7 @@ export const parsePortalFromPath = (pathname) => {
     if (parts[1]) submodule = parts[1] === 'dashboard' ? 'tasks' : parts[1];
   }
 
-  const validPortals = ['overview', 'accounts', 'docs', 'data', 'admin', 'agency', 'factory', 'settings'];
+  const validPortals = ['overview', 'accounts', 'docs', 'data', 'settings'];
   if (!validPortals.includes(portal)) {
     portal = 'overview';
     submodule = 'tasks';
@@ -40,13 +40,7 @@ export const usePortalStore = create((set, get) => ({
   searchOpen: false,
   searchQuery: '',
   toasts: [],
-  notifications: [
-    { id: 1, portal: 'factory', title: 'Coal Stock Alert', message: 'Coal level dropped below 20 Tons threshold (Currently 18.4 Tons).', time: '10 mins ago', unread: true, type: 'warning' },
-    { id: 2, portal: 'factory', title: 'Batch #892 Complete', message: 'Daily molded brick batch #892 completed with 42,500 units.', time: '1 hour ago', unread: true, type: 'success' },
-    { id: 3, portal: 'agency', title: 'Timesheet Approved', message: 'Client Apex Tech approved 12 contractor timesheets for Week 32.', time: '2 hours ago', unread: false, type: 'info' },
-    { id: 4, portal: 'agency', title: 'Pending Placement', message: '3 clients awaiting client confirmation for Logistics Hub.', time: '4 hours ago', unread: true, type: 'warning' },
-    { id: 5, portal: 'admin', title: 'System Backup Complete', message: 'Automated database snapshot created successfully.', time: '12 hours ago', unread: false, type: 'info' }
-  ],
+  notifications: [],
 
   setLanguage: (lang) => {
     if (typeof window !== 'undefined') localStorage.setItem('app_language', lang);

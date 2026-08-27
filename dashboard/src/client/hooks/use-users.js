@@ -1,90 +1,63 @@
 import { useQuery } from '@tanstack/react-query';
 import { apiClient } from '@/lib/api-client';
 
-const mockUsers = [
-  {
-    id: 'U001',
-    name: 'Admin User',
-    email: 'admin@example.com',
-    role: 'Admin',
-    status: 'Active',
-    lastLogin: '2026-07-30T10:30:00Z',
-    avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=128&q=80',
-  },
-  {
-    id: 'U002',
-    name: 'Sarah Smith',
-    email: 'sarah.manager@example.com',
-    role: 'Manager',
-    status: 'Active',
-    lastLogin: '2026-07-29T14:15:00Z',
-    avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=128&q=80',
-  },
-  {
-    id: 'U003',
-    name: 'Tom Editor',
-    email: 'tom.editor@example.com',
-    role: 'Editor',
-    status: 'Inactive',
-    lastLogin: '2026-07-15T09:00:00Z',
-  },
-];
-
 const fetchSystemUsers = async (params) => {
+  const page = params?.page ?? 1;
+  const limit = params?.limit ?? 15;
+
   try {
     const queryParams = {
-      limit: params?.limit ?? 15,
-      page: params?.page ?? 1,
+      limit,
+      page,
     };
     if (params?.search) queryParams.q = params.search;
     if (params?.role && params.role !== 'All') queryParams.role = params.role;
 
-    const response = await apiClient.get('/api/v1/admin/users', { params: queryParams });
-    const userList = response.data?.data || (Array.isArray(response.data) ? response.data : []);
-    const meta = response.data?.meta;
+    const response = await apiClient.get('/api/v1/users', { params: queryParams });
+    const rawData = response.data;
+    const userList = rawData?.data ?? (Array.isArray(rawData) ? rawData : []);
+    const meta = rawData?.meta ?? {
+      total: userList.length,
+      page,
+      limit,
+      totalPages: Math.ceil(userList.length / limit) || 1,
+    };
 
-    if (userList.length > 0) {
-      return {
-        data: userList.map((u) => ({
-          id: u.id || u._id,
-          name: u.name || u.email?.split('@')[0] || 'User',
-          email: u.email || '',
-          role: u.role || 'Admin',
-          status: u.isActive !== false ? 'Active' : 'Inactive',
-          lastLogin: u.updatedAt || u.createdAt || new Date().toISOString(),
-          avatar: u.avatar || undefined,
-        })),
-        meta,
-      };
-    }
+    const parsedUsers = (Array.isArray(userList) ? userList : []).map((u) => ({
+      id: u.id || u._id,
+      name: u.name || u.fullName || '',
+      email: u.email || '',
+      role: u.role || 'Staff',
+      status: u.status || 'Active',
+      lastLogin: u.lastLogin || u.updatedAt || new Date().toISOString(),
+      avatar: u.avatar || undefined,
+    }));
+
+    return {
+      data: parsedUsers,
+      meta: {
+        total: meta.total ?? parsedUsers.length,
+        page: meta.page ?? page,
+        limit: meta.limit ?? limit,
+        totalPages: meta.totalPages ?? Math.ceil((meta.total ?? parsedUsers.length) / limit) || 1,
+      },
+    };
   } catch (err) {
-    console.warn('Backend API system users request failed, using fallback mock data:', err);
+    return {
+      data: [],
+      meta: {
+        total: 0,
+        page,
+        limit,
+        totalPages: 1,
+      },
+    };
   }
-
-  // Fallback to mockUsers
-  let result = [...mockUsers];
-  if (params?.search) {
-    const q = params.search.toLowerCase();
-    result = result.filter(u => u.name.toLowerCase().includes(q) || u.email.toLowerCase().includes(q));
-  }
-  if (params?.role && params.role !== 'All') {
-    result = result.filter(u => u.role === params.role);
-  }
-
-  return {
-    data: result,
-    meta: {
-      total: result.length,
-      page: params?.page ?? 1,
-      limit: params?.limit ?? 15,
-      totalPages: Math.ceil(result.length / (params?.limit ?? 15)),
-    },
-  };
 };
 
-export function useSystemUsers(params) {
+export function useUsers(params) {
   return useQuery({
-    queryKey: ['system-users', params],
+    queryKey: ['users', params],
     queryFn: () => fetchSystemUsers(params),
   });
 }

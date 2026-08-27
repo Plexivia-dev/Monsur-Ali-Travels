@@ -3,7 +3,11 @@
 ## [2026-08-27]
 - **Dashboard Version**: `v0.4.2`
 
-### 1. Client Dashboard Overview, Task Management & Real-Time Notifications (NC01 - NC05)
+### 1. Client Dashboard Overview, Task Management & Real-Time Notifications (NC01 - NC06)
+- **NC06 - Full Mock Data & Legacy Portal Purge**:
+  - Eliminated mock notification lists (`usePortalStore.js`).
+  - Purged mock members, payments, and users fallbacks from client query hooks.
+  - Removed legacy unused portal routes (`Factory`, `Agency`, `Admin`) from client application bundle.
 - **NC05 - Purge Dummy Content & Clean English UI**:
   - Removed `SAMPLE_TASKS` fallback; strictly bound overview to `/api/v1/client/tasks/my-tasks`.
   - Removed redundant "Start" action button (tasks only require "Mark Done" / "Details").

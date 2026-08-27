@@ -6,9 +6,6 @@ import { usePortalStore } from './store/usePortalStore';
 import { DashboardLayout } from '@shared/components/layout/DashboardLayout';
 import { Sidebar } from './components/layout/Sidebar';
 import { Header } from './components/layout/Header';
-import Factory from './pages/Factory';
-import Agency from './pages/Agency';
-import Admin from './pages/Admin';
 import DocumentStudio from './pages/DocumentStudio';
 import DocumentData from './pages/DocumentData';
 import Accounts from './pages/Accounts';
@@ -72,7 +69,7 @@ function MainLayout() {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [setSearchOpen]);
 
-  const isKnownPortal = ['overview', 'factory', 'agency', 'admin', 'docs', 'data', 'accounts', 'settings'].includes(activePortal);
+  const isKnownPortal = ['overview', 'docs', 'data', 'accounts', 'settings'].includes(activePortal);
 
   return (
     <DashboardLayout
@@ -87,9 +84,6 @@ function MainLayout() {
       modals={<GlobalSearchModal />}
     >
       {activePortal === 'overview' && <Overview />}
-      {activePortal === 'factory' && <Factory />}
-      {activePortal === 'agency' && <Agency />}
-      {activePortal === 'admin' && <Admin />}
       {activePortal === 'docs' && <DocumentStudio />}
       {activePortal === 'data' && <DocumentData />}
       {activePortal === 'accounts' && <Accounts />}
