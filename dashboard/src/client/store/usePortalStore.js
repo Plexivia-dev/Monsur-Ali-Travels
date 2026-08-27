@@ -109,9 +109,27 @@ export const usePortalStore = create((set, get) => ({
     set((state) => ({ toasts: state.toasts.filter((t) => t.id !== id) }));
   },
 
+  addNotification: (notification) => {
+    set((state) => {
+      const exists = state.notifications.some((n) => n.id === notification.id || (n.did && n.did === notification.did));
+      if (exists) return state;
+      return {
+        notifications: [notification, ...state.notifications].slice(0, 50),
+      };
+    });
+  },
+
+  markNotificationRead: async (id) => {
+    set((state) => ({
+      notifications: state.notifications.map((n) =>
+        n.id === id || n.did === id ? { ...n, unread: false, isRead: true } : n
+      ),
+    }));
+  },
+
   markAllNotificationsRead: () => {
     set((state) => ({
-      notifications: state.notifications.map((n) => ({ ...n, unread: false })),
+      notifications: state.notifications.map((n) => ({ ...n, unread: false, isRead: true })),
     }));
   },
 }));

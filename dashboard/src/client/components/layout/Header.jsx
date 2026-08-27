@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
-import { Search, Bell, ArrowLeft } from 'lucide-react';
+import { Search, Bell, ArrowLeft, Check, CheckCheck, FileText, Sparkles, FolderOpen, AlertCircle } from 'lucide-react';
 import { usePortalStore } from '../../store/usePortalStore';
+import { useSocketNotification } from '../../hooks/useSocketNotification';
 import { Button } from '@/components/ui/button';
 import { SidebarTrigger } from '@/components/ui/sidebar';
 import ModeToggle from './ModeToggle';
@@ -11,13 +12,35 @@ import LanguageToggle from './LanguageToggle';
 export const Header = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
+
+  // Activate real-time socket notification listener for client session
+  useSocketNotification();
+
   const activePortal = usePortalStore((state) => state.activePortal);
   const activeSubmodule = usePortalStore((state) => state.activeSubmodule);
   const switchPortal = usePortalStore((state) => state.switchPortal);
   const setSearchOpen = usePortalStore((state) => state.setSearchOpen);
   const notifications = usePortalStore((state) => state.notifications);
+  const markNotificationRead = usePortalStore((state) => state.markNotificationRead);
+  const markAllNotificationsRead = usePortalStore((state) => state.markAllNotificationsRead);
 
-  const unreadCount = notifications.filter((n) => n.unread).length;
+  const [notifOpen, setNotifOpen] = useState(false);
+  const notifRef = useRef(null);
+
+  const unreadCount = notifications.filter((n) => n.unread || !n.isRead).length;
+
+  // Close dropdown on click outside
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (notifRef.current && !notifRef.current.contains(e.target)) {
+        setNotifOpen(false);
+      }
+    };
+    if (notifOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [notifOpen]);
 
   const handleBack = () => {
     if (activePortal === 'docs' && activeSubmodule && activeSubmodule !== 'overview') {
@@ -26,9 +49,21 @@ export const Header = () => {
     } else if (window.history.length > 1) {
       navigate(-1);
     } else {
-      switchPortal('agency', 'tasks');
-      navigate('/dashboard/agency/tasks');
+      switchPortal('overview', 'tasks');
+      navigate('/dashboard/overview');
     }
+  };
+
+  const handleNotificationClick = (item) => {
+    markNotificationRead(item.id || item.did);
+    if (item.module === 'visa' || item.module === 'task' || item.portal === 'agency') {
+      switchPortal('overview', 'tasks');
+      navigate('/dashboard/overview');
+    } else if (item.portal && item.submodule) {
+      switchPortal(item.portal, item.submodule);
+      navigate(`/dashboard/${item.portal}/${item.submodule}`);
+    }
+    setNotifOpen(false);
   };
 
   return (
@@ -81,22 +116,122 @@ export const Header = () => {
           {/* Language Switcher Toggle */}
           <LanguageToggle />
 
-          {/* Notifications Trigger */}
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => switchPortal(activePortal, 'reports')}
-            className="relative text-white hover:text-white hover:bg-white/15 cursor-pointer rounded-lg h-8 w-8"
-            title={t('header.notifications', 'Notifications')}
-          >
-            <Bell className="w-4 h-4 text-white" />
-            {unreadCount > 0 && (
-              <span className="absolute top-1 right-1 flex h-2 w-2">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-rose-400 opacity-75" />
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-rose-500 ring-1 ring-white" />
-              </span>
+          {/* Real-time Notifications Popover Trigger */}
+          <div className="relative" ref={notifRef}>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => setNotifOpen(!notifOpen)}
+              className="relative text-white hover:text-white hover:bg-white/15 cursor-pointer rounded-lg h-8 w-8 transition-colors"
+              title={t('header.notifications', 'Notifications')}
+              aria-label="Notifications"
+            >
+              <Bell className="w-4 h-4 text-white" />
+              {unreadCount > 0 && (
+                <span className="absolute top-1 right-1 flex h-2 w-2">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-rose-400 opacity-75" />
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-rose-500 ring-1 ring-white" />
+                </span>
+              )}
+            </Button>
+
+            {/* Notification Dropdown Panel */}
+            {notifOpen && (
+              <div className="absolute right-0 mt-2 w-80 sm:w-96 bg-card border border-border rounded-2xl shadow-2xl z-50 overflow-hidden animate-in zoom-in-95 duration-150 text-foreground">
+                {/* Header */}
+                <div className="flex items-center justify-between px-4 py-3 border-b border-border bg-black/5 dark:bg-white/5">
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs font-extrabold uppercase tracking-wider text-foreground">
+                      Notifications
+                    </span>
+                    {unreadCount > 0 && (
+                      <span className="px-1.5 py-0.5 rounded-full text-[10px] font-bold bg-black text-white dark:bg-white dark:text-black">
+                        {unreadCount} new
+                      </span>
+                    )}
+                  </div>
+
+                  {unreadCount > 0 && (
+                    <button
+                      type="button"
+                      onClick={() => markAllNotificationsRead()}
+                      className="text-[11px] font-semibold text-muted-foreground hover:text-foreground flex items-center gap-1 transition-colors cursor-pointer"
+                    >
+                      <CheckCheck className="w-3.5 h-3.5" />
+                      Mark all as read
+                    </button>
+                  )}
+                </div>
+
+                {/* Notifications List */}
+                <div className="max-h-80 overflow-y-auto divide-y divide-border">
+                  {notifications.length === 0 ? (
+                    <div className="p-8 text-center space-y-2 text-muted-foreground">
+                      <Bell className="w-6 h-6 mx-auto text-muted-foreground/60" />
+                      <p className="text-xs font-semibold">No notifications yet</p>
+                      <p className="text-[11px]">Real-time system updates will appear here.</p>
+                    </div>
+                  ) : (
+                    notifications.map((item, idx) => {
+                      const isUnread = item.unread || !item.isRead;
+                      return (
+                        <div
+                          key={item.id || item.did || idx}
+                          onClick={() => handleNotificationClick(item)}
+                          className={`p-3 text-left transition-colors cursor-pointer hover:bg-neutral-50 dark:hover:bg-neutral-900/50 flex items-start gap-3 ${
+                            isUnread ? 'bg-black/5 dark:bg-white/5' : ''
+                          }`}
+                        >
+                          <div className="p-1.5 rounded-lg bg-black/5 dark:bg-white/10 border border-border shrink-0 mt-0.5">
+                            {item.module === 'visa' || item.module === 'task' ? (
+                              <Sparkles className="w-3.5 h-3.5 text-foreground" />
+                            ) : item.module === 'invoice' ? (
+                              <FileText className="w-3.5 h-3.5 text-foreground" />
+                            ) : (
+                              <FolderOpen className="w-3.5 h-3.5 text-foreground" />
+                            )}
+                          </div>
+
+                          <div className="flex-1 min-w-0 space-y-0.5">
+                            <div className="flex items-center justify-between gap-1">
+                              <h5 className="text-xs font-bold text-foreground truncate">
+                                {item.title}
+                              </h5>
+                              <span className="text-[10px] text-muted-foreground shrink-0 font-mono">
+                                {item.time || (item.createdAt ? new Date(item.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : 'Now')}
+                              </span>
+                            </div>
+                            <p className="text-[11px] text-muted-foreground line-clamp-2 leading-relaxed">
+                              {item.message}
+                            </p>
+                          </div>
+
+                          {isUnread && (
+                            <span className="size-2 rounded-full bg-rose-500 shrink-0 mt-1.5" />
+                          )}
+                        </div>
+                      );
+                    })
+                  )}
+                </div>
+
+                {/* Footer */}
+                <div className="p-2 border-t border-border bg-black/5 dark:bg-white/5 text-center">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setNotifOpen(false);
+                      switchPortal('overview', 'tasks');
+                      navigate('/dashboard/overview');
+                    }}
+                    className="text-[11px] font-bold text-foreground hover:underline transition-all cursor-pointer"
+                  >
+                    View Task Overview →
+                  </button>
+                </div>
+              </div>
             )}
-          </Button>
+          </div>
 
           {/* Dark / Light Mode Toggle */}
           <ModeToggle />
