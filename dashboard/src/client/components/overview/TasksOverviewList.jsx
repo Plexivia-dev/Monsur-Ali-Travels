@@ -5,15 +5,10 @@ import {
   Clock,
   FileText,
   Lock,
-  ArrowUpDown,
-  Filter,
-  Play,
   Eye,
   RefreshCw,
   FolderOpen,
   AlertCircle,
-  Sparkles,
-  ChevronRight,
 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -24,108 +19,30 @@ import { TaskDoneModal } from '../tasks/TaskDoneModal';
 import { TaskDetailModal } from './TaskDetailModal';
 import { toast } from 'sonner';
 
-const SAMPLE_TASKS = [
-  {
-    did: 'TASK-2026-001',
-    caseDid: 'CASE-MAT-8942',
-    title: 'Verify Passport Bio-Page & Validity Check',
-    description: 'Verify the scanned applicant passport machine-readable zone (MRZ), check minimum 6-month validity, and compare name spelling with national ID.',
-    stepNumber: 1,
-    status: 'Pending',
-    createdAt: new Date(Date.now() - 3600000 * 5).toISOString(),
-    updatedAt: new Date(Date.now() - 3600000 * 2).toISOString(),
-    permittedDocs: [
-      { did: 'DOC-8821', documentName: 'Applicant Original Passport Copy', fileName: 'passport_scan.pdf' },
-      { did: 'DOC-8822', documentName: 'National NID Verification Extract', fileName: 'nid_record.pdf' }
-    ]
-  },
-  {
-    did: 'TASK-2026-002',
-    caseDid: 'CASE-MAT-8940',
-    title: 'Prepare Official Employment Contract Draft',
-    description: 'Draft the bilingual Arabic/English Employment Agreement as per overseas employer terms. Fill salary breakdown and job placement grade.',
-    stepNumber: 2,
-    status: 'In_Progress',
-    startedAt: new Date(Date.now() - 3600000 * 8).toISOString(),
-    createdAt: new Date(Date.now() - 3600000 * 24).toISOString(),
-    updatedAt: new Date(Date.now() - 3600000 * 1).toISOString(),
-    permittedDocs: [
-      { did: 'DOC-8819', documentName: 'Employer Demand Letter', fileName: 'demand_letter.pdf' },
-      { did: 'DOC-8820', documentName: 'Standard Contract Template', fileName: 'contract_std.docx' }
-    ]
-  },
-  {
-    did: 'TASK-2026-003',
-    caseDid: 'CASE-MAT-8935',
-    title: 'Medical Fitness Certificate Review & Cross-Match',
-    description: 'Verify GCC approved GAMCA/Wafid medical fitness clearance certificate and ensure negative infectious disease test results.',
-    stepNumber: 2,
-    status: 'In_Progress',
-    startedAt: new Date(Date.now() - 3600000 * 12).toISOString(),
-    createdAt: new Date(Date.now() - 3600000 * 30).toISOString(),
-    updatedAt: new Date(Date.now() - 3600000 * 4).toISOString(),
-    permittedDocs: [
-      { did: 'DOC-8810', documentName: 'GAMCA Medical Fitness Slip', fileName: 'medical_fit_8935.pdf' }
-    ]
-  },
-  {
-    did: 'TASK-2026-004',
-    caseDid: 'CASE-MAT-8929',
-    title: 'Embassy Visa Stamping Submission Package',
-    description: 'Compile complete physical dossier with embassy token slip, verified passport photos, and authenticated police clearance record.',
-    stepNumber: 3,
-    status: 'Done',
-    completedAt: new Date(Date.now() - 3600000 * 18).toISOString(),
-    createdAt: new Date(Date.now() - 3600000 * 48).toISOString(),
-    updatedAt: new Date(Date.now() - 3600000 * 18).toISOString(),
-    completionNotes: 'All 4 dossier items verified, token generated and delivered to liaison agent.',
-    permittedDocs: [
-      { did: 'DOC-8801', documentName: 'Police Clearance Certificate', fileName: 'police_clearance.pdf' },
-      { did: 'DOC-8802', documentName: 'Embassy Submission Token Slip', fileName: 'token_slip_09.pdf' }
-    ]
-  },
-  {
-    did: 'TASK-2026-005',
-    caseDid: 'CASE-MAT-8920',
-    title: 'Flight Ticket & BMET Smart Card Clearance Verification',
-    description: 'Confirm BMET clearance card is active on government immigration portal and link electronic flight e-ticket to candidate file.',
-    stepNumber: 4,
-    status: 'Approved',
-    completedAt: new Date(Date.now() - 3600000 * 72).toISOString(),
-    createdAt: new Date(Date.now() - 3600000 * 96).toISOString(),
-    updatedAt: new Date(Date.now() - 3600000 * 72).toISOString(),
-    completionNotes: 'BMET Smart card QR validated. Flight itinerary confirmed with Biman Bangladesh Airlines.',
-    permittedDocs: [
-      { did: 'DOC-8790', documentName: 'BMET Clearance Card PDF', fileName: 'bmet_card.pdf' },
-      { did: 'DOC-8791', documentName: 'Airlines E-Ticket', fileName: 'eticket_flight.pdf' }
-    ]
-  }
-];
-
 export function TasksOverviewList({ activeFilter, onFilterChange }) {
   const user = useAuthStore((state) => state.user);
   const [tasks, setTasks] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [sortBy, setSortBy] = useState('step'); // 'step', 'newest', 'status'
-  
+
   // Modals state
   const [doneModalTask, setDoneModalTask] = useState(null);
   const [detailModalTask, setDetailModalTask] = useState(null);
 
-  // Fetch tasks
+  // Fetch tasks exclusively from live backend API
   const fetchTasks = async () => {
     setLoading(true);
     try {
       const res = await apiClient.get('/api/v1/client/tasks/my-tasks');
-      if (res.data?.data && Array.isArray(res.data.data) && res.data.data.length > 0) {
+      if (res.data?.data && Array.isArray(res.data.data)) {
         setTasks(res.data.data);
       } else {
-        setTasks(SAMPLE_TASKS);
+        setTasks([]);
       }
     } catch (err) {
-      // Fallback to sample tasks for resilient client UI
-      setTasks(SAMPLE_TASKS);
+      setTasks([]);
+      toast.error(err.response?.data?.message || 'Failed to fetch assigned tasks.');
     } finally {
       setLoading(false);
     }
@@ -135,40 +52,30 @@ export function TasksOverviewList({ activeFilter, onFilterChange }) {
     fetchTasks();
   }, []);
 
-  // Quick action: start in progress
-  const handleStartTask = async (task) => {
-    try {
-      // Optimistic update
-      setTasks((prev) =>
-        prev.map((t) => (t.did === task.did || t._id === task._id ? { ...t, status: 'In_Progress' } : t))
-      );
-      toast.success(`Task "${task.title}" started!`);
-    } catch (e) {
-      toast.error('Failed to update task status');
-    }
-  };
-
-  // Filtered and sorted tasks
+  // Filter and sort tasks
   const filteredTasks = useMemo(() => {
     return tasks
       .filter((task) => {
-        // Status filter tab
-        if (activeFilter === 'pending' && task.status !== 'Pending') return false;
-        if (activeFilter === 'in_progress' && task.status !== 'In_Progress' && task.status !== 'In Progress') return false;
-        if (activeFilter === 'completed' && task.status !== 'Done' && task.status !== 'Approved') return false;
-
-        // Search query
+        // Status filter
+        if (activeFilter === 'pending') return task.status === 'Pending';
+        if (activeFilter === 'in_progress') return task.status === 'In_Progress' || task.status === 'In Progress';
+        if (activeFilter === 'completed') return task.status === 'Done' || task.status === 'Approved';
+        return true;
+      })
+      .filter((task) => {
+        // Search query filter
         if (!searchQuery.trim()) return true;
         const q = searchQuery.toLowerCase();
-        const titleMatch = task.title?.toLowerCase().includes(q);
-        const descMatch = task.description?.toLowerCase().includes(q);
-        const caseMatch = task.caseDid?.toLowerCase().includes(q);
-        const didMatch = task.did?.toLowerCase().includes(q);
-        return titleMatch || descMatch || caseMatch || didMatch;
+        return (
+          task.title?.toLowerCase().includes(q) ||
+          task.description?.toLowerCase().includes(q) ||
+          task.did?.toLowerCase().includes(q) ||
+          task.caseDid?.toLowerCase().includes(q)
+        );
       })
       .sort((a, b) => {
         if (sortBy === 'step') {
-          return (a.stepNumber || 1) - (b.stepNumber || 1);
+          return (a.stepNumber || 0) - (b.stepNumber || 0);
         }
         if (sortBy === 'newest') {
           return new Date(b.createdAt || 0) - new Date(a.createdAt || 0);
@@ -180,69 +87,57 @@ export function TasksOverviewList({ activeFilter, onFilterChange }) {
       });
   }, [tasks, activeFilter, searchQuery, sortBy]);
 
+  // Helper for status badge
   const getStatusBadge = (status) => {
-    switch (status) {
-      case 'Pending':
-        return (
-          <Badge variant="pending" className="gap-1 font-semibold">
-            <span className="size-1.5 rounded-full bg-amber-500" />
-            Pending
-          </Badge>
-        );
-      case 'In_Progress':
-      case 'In Progress':
-        return (
-          <Badge variant="in_progress" className="gap-1 font-semibold">
-            <span className="size-1.5 rounded-full bg-sky-500 animate-pulse" />
-            In Progress
-          </Badge>
-        );
-      case 'Done':
-        return (
-          <Badge variant="done" className="gap-1 font-semibold">
-            <CheckCircle2 className="w-3 h-3 text-emerald-600 dark:text-emerald-400" />
-            Done
-          </Badge>
-        );
-      case 'Approved':
-        return (
-          <Badge variant="approved" className="gap-1 font-semibold">
-            <CheckCircle2 className="w-3 h-3 text-teal-600 dark:text-teal-400" />
-            Approved
-          </Badge>
-        );
-      case 'Rejected':
-        return (
-          <Badge variant="rejected" className="gap-1 font-semibold">
-            <AlertCircle className="w-3 h-3 text-rose-600 dark:text-rose-400" />
-            Rejected
-          </Badge>
-        );
-      default:
-        return <Badge variant="default">{status}</Badge>;
+    const s = (status || '').toLowerCase().replace(/\s+/g, '_');
+    if (s === 'pending') {
+      return (
+        <Badge variant="pending" className="font-semibold text-xs">
+          Pending
+        </Badge>
+      );
     }
+    if (s === 'in_progress' || s === 'in progress') {
+      return (
+        <Badge variant="in_progress" className="font-semibold text-xs">
+          In Progress
+        </Badge>
+      );
+    }
+    if (s === 'done' || s === 'approved') {
+      return (
+        <Badge variant="done" className="font-semibold text-xs">
+          Completed
+        </Badge>
+      );
+    }
+    return (
+      <Badge variant="secondary" className="font-semibold text-xs">
+        {status || 'Unknown'}
+      </Badge>
+    );
   };
 
   return (
     <div className="space-y-4">
-      {/* Control / Filter Bar */}
-      <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 bg-card border border-border p-3 rounded-xl shadow-xs">
-        {/* Search */}
-        <div className="relative flex-1 min-w-[220px]">
-          <Search className="w-4 h-4 text-muted-foreground absolute left-3 top-1/2 -translate-y-1/2" />
+      {/* Search Bar & Filter Controls */}
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 bg-card border border-border p-3.5 rounded-xl shadow-xs">
+        {/* Search Input */}
+        <div className="relative flex-1 min-w-[240px]">
+          <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
           <Input
-            type="text"
-            placeholder="Search by task title, case reference, instructions..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="pl-9 h-9 text-xs bg-muted/40 border-border focus-visible:ring-primary"
+            placeholder="Search tasks by title, ID, or case number..."
+            className="pl-9 h-9 text-xs bg-black/5 dark:bg-white/5 border-border focus-visible:ring-black dark:focus-visible:ring-white"
           />
           {searchQuery && (
             <button
+              type="button"
               onClick={() => setSearchQuery('')}
-              className="absolute right-2.5 top-1/2 -translate-y-1/2 text-xs text-muted-foreground hover:text-foreground p-0.5"
+              className="absolute right-2.5 top-1/2 -translate-y-1/2 text-xs text-muted-foreground hover:text-foreground cursor-pointer"
             >
-              Clear
+              ✕
             </button>
           )}
         </div>
@@ -442,18 +337,6 @@ export function TasksOverviewList({ activeFilter, onFilterChange }) {
                         Details
                       </Button>
 
-                      {task.status === 'Pending' && (
-                        <Button
-                          type="button"
-                          size="sm"
-                          onClick={() => handleStartTask(task)}
-                          className="h-8 px-3 text-xs font-bold bg-black text-white hover:bg-neutral-800 dark:bg-white dark:text-black dark:hover:bg-neutral-200 flex items-center gap-1.5 shadow-xs"
-                        >
-                          <Play className="w-3 h-3" />
-                          Start
-                        </Button>
-                      )}
-
                       {!isCompleted && (
                         <Button
                           type="button"
@@ -481,7 +364,7 @@ export function TasksOverviewList({ activeFilter, onFilterChange }) {
         )}
       </div>
 
-      {/* Mark as Done Modal */}
+      {/* Task Completion Modal */}
       {doneModalTask && (
         <TaskDoneModal
           task={doneModalTask}
@@ -493,7 +376,7 @@ export function TasksOverviewList({ activeFilter, onFilterChange }) {
         />
       )}
 
-      {/* Task Detail Modal */}
+      {/* Task Full Details Modal */}
       {detailModalTask && (
         <TaskDetailModal
           task={detailModalTask}
@@ -508,4 +391,5 @@ export function TasksOverviewList({ activeFilter, onFilterChange }) {
     </div>
   );
 }
+
 export default TasksOverviewList;

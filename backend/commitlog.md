@@ -3,7 +3,11 @@
 ## [2026-08-27]
 - **Dashboard Version**: `v0.4.2`
 
-### 1. Client Dashboard Overview, Task Management & Real-Time Notifications (NC01 - NC04)
+### 1. Client Dashboard Overview, Task Management & Real-Time Notifications (NC01 - NC05)
+- **NC05 - Purge Dummy Content & Clean English UI**:
+  - Removed `SAMPLE_TASKS` fallback; strictly bound overview to `/api/v1/client/tasks/my-tasks`.
+  - Removed redundant "Start" action button (tasks only require "Mark Done" / "Details").
+  - Standardized overview and task modals to clean, consistent English.
 - **NC04 - WebSocket Live Notification Fix & Popover**:
   - Integrated `useSocketNotification.js` into Client Dashboard Header.
   - Added interactive real-time notification popover dropdown with live toast banners.

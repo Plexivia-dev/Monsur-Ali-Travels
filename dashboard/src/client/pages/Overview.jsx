@@ -17,13 +17,6 @@ export default function Overview() {
   const user = useAuthStore((state) => state.user);
   const [filter, setFilter] = useState('all');
 
-  const todayFormatted = new Date().toLocaleDateString('bn-BD', {
-    weekday: 'long',
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
-  });
-
   const englishDate = new Date().toLocaleDateString('en-US', {
     weekday: 'short',
     month: 'short',
@@ -38,25 +31,25 @@ export default function Overview() {
         <div className="space-y-1">
           <div className="flex items-center gap-2 flex-wrap">
             <h1 className="text-xl sm:text-2xl font-extrabold text-foreground tracking-tight">
-              টাস্ক ওভারভিউ (Task Overview)
+              Task Overview
             </h1>
-            <Badge variant="primary" className="font-semibold text-xs capitalize">
+            <Badge variant="secondary" className="font-semibold text-xs capitalize bg-black/5 dark:bg-white/10 text-foreground border border-border">
               {user?.role || 'Staff'} Workspace
             </Badge>
           </div>
           <p className="text-xs sm:text-sm text-muted-foreground">
-            Welcome back, <span className="font-semibold text-foreground">{user?.name || user?.fullName || 'Colleague'}</span>. আপনার নির্ধারিত কাজের তালিকা ও আপডেট নিচে দেওয়া হলো।
+            Welcome back, <span className="font-semibold text-foreground">{user?.name || user?.fullName || 'Colleague'}</span>. Here is your assigned task overview and active workflow status.
           </p>
         </div>
 
         {/* Live Date Chip */}
         <div className="flex items-center gap-2 bg-card border border-border px-3 py-1.5 rounded-xl shadow-xs shrink-0 self-start sm:self-auto">
-          <Calendar className="w-4 h-4 text-sky-600 dark:text-sky-400" />
+          <Calendar className="w-4 h-4 text-foreground/70" />
           <span className="text-xs font-semibold text-foreground">{englishDate}</span>
         </div>
       </div>
 
-      {/* Horizontal KPI Summary Strip (Compact & Clickable) */}
+      {/* Horizontal KPI Summary Strip */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
         {/* All Tasks */}
         <div
@@ -69,10 +62,10 @@ export default function Overview() {
         >
           <div className="space-y-0.5 min-w-0">
             <span className={`text-[11px] font-bold uppercase tracking-wider block ${filter === 'all' ? 'text-white/80 dark:text-black/70' : 'text-muted-foreground'}`}>
-              মোট টাস্ক (Total)
+              Total Tasks
             </span>
             <span className={`text-xl font-extrabold tracking-tight ${filter === 'all' ? 'text-white dark:text-black' : 'text-foreground'}`}>
-              Assigned Tasks
+              All Assigned
             </span>
           </div>
           <div className={`p-2 rounded-lg border shrink-0 ${filter === 'all' ? 'bg-white/10 dark:bg-black/10 border-white/20 dark:border-black/20 text-white dark:text-black' : 'bg-black/5 dark:bg-white/10 border-border text-foreground'}`}>
@@ -91,10 +84,10 @@ export default function Overview() {
         >
           <div className="space-y-0.5 min-w-0">
             <span className={`text-[11px] font-bold uppercase tracking-wider block ${filter === 'pending' ? 'text-white/80 dark:text-black/70' : 'text-muted-foreground'}`}>
-              অপেক্ষমান (Pending)
+              Pending Tasks
             </span>
             <span className={`text-xl font-extrabold tracking-tight ${filter === 'pending' ? 'text-white dark:text-black' : 'text-foreground'}`}>
-              To Be Started
+              Action Required
             </span>
           </div>
           <div className={`p-2 rounded-lg border shrink-0 ${filter === 'pending' ? 'bg-white/10 dark:bg-black/10 border-white/20 dark:border-black/20 text-white dark:text-black' : 'bg-black/5 dark:bg-white/10 border-border text-foreground'}`}>
@@ -113,10 +106,10 @@ export default function Overview() {
         >
           <div className="space-y-0.5 min-w-0">
             <span className={`text-[11px] font-bold uppercase tracking-wider block ${filter === 'in_progress' ? 'text-white/80 dark:text-black/70' : 'text-muted-foreground'}`}>
-              চলমান (In Progress)
+              In Progress
             </span>
             <span className={`text-xl font-extrabold tracking-tight ${filter === 'in_progress' ? 'text-white dark:text-black' : 'text-foreground'}`}>
-              Active Working
+              In Workflow
             </span>
           </div>
           <div className={`p-2 rounded-lg border shrink-0 ${filter === 'in_progress' ? 'bg-white/10 dark:bg-black/10 border-white/20 dark:border-black/20 text-white dark:text-black' : 'bg-black/5 dark:bg-white/10 border-border text-foreground'}`}>
@@ -135,7 +128,7 @@ export default function Overview() {
         >
           <div className="space-y-0.5 min-w-0">
             <span className={`text-[11px] font-bold uppercase tracking-wider block ${filter === 'completed' ? 'text-white/80 dark:text-black/70' : 'text-muted-foreground'}`}>
-              সম্পন্ন (Completed)
+              Completed
             </span>
             <span className={`text-xl font-extrabold tracking-tight ${filter === 'completed' ? 'text-white dark:text-black' : 'text-foreground'}`}>
               Done & Verified
