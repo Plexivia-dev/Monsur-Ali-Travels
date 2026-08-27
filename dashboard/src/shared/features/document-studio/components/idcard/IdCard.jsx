@@ -131,7 +131,7 @@ export function IdCard({ initialData = null, onSavedSuccess = null, isLocked = f
 
       {/* Main Studio Views */}
       {viewMode === 'edit' && (
-        <div className="max-w-3xl mx-auto pb-16">
+        <div className="w-full pb-16">
           <IdCardForm
             cardData={cardData}
             setCardData={setCardData}

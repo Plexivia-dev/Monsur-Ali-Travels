@@ -193,7 +193,7 @@ export function SalarySlip() {
 
       {/* Main Studio Views */}
       {viewMode === 'edit' && (
-        <div className="max-w-4xl mx-auto pb-16">
+        <div className="w-full pb-16">
           <SalarySlipForm
             formData={formData}
             setFormData={setFormData}

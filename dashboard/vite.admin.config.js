@@ -87,6 +87,18 @@ export default defineConfig({
     port: 5174,
     host: '127.0.0.1',
     open: false,
+    proxy: {
+      '/uploads': {
+        target: 'https://api.monsuralitravels.com',
+        changeOrigin: true,
+        secure: false,
+      },
+      '/documents': {
+        target: 'https://api.monsuralitravels.com',
+        changeOrigin: true,
+        secure: false,
+      },
+    },
   },
   build: {
     outDir: 'dist/admin',
