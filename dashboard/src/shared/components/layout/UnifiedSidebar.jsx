@@ -275,6 +275,10 @@ export function UnifiedSidebar({
                                     const hasRole = subItem.roles.includes(userRole) || subItem.roles.includes(userSubRole);
                                     if (!hasRole) return null;
                                   }
+                                  if (subItem.excludeRoles && subItem.excludeRoles.length > 0) {
+                                    const isExcluded = subItem.excludeRoles.includes(userRole) || subItem.excludeRoles.includes(userSubRole);
+                                    if (isExcluded) return null;
+                                  }
                                   const isSubActive = activeChecker ? activeChecker(subItem) : false;
                                   const subLabel = lang === 'BN' ? (subItem.nameBn || subItem.name || subItem.label) : (subItem.name || subItem.label);
 

@@ -36,24 +36,50 @@ export function DocumentStudioPage({
     }
   }
 
+  // Determine user role
+  let userRole = '';
+  try {
+    const storedUser = localStorage.getItem('user');
+    if (storedUser) {
+      const parsed = JSON.parse(storedUser);
+      userRole = String(parsed.role || parsed.subRole || parsed.sub_role || parsed.designation || '').toLowerCase();
+    }
+  } catch (_) {}
+
+  const isAccountant = userRole.includes('account');
+  const isAdminRoute = location.pathname.startsWith('/admin');
+
   // If no generator is specified, determine role-based default
   if (!resolvedSubmodule || resolvedSubmodule === 'overview' || resolvedSubmodule === 'studio' || resolvedSubmodule === 'all') {
-    let userRole = '';
-    try {
-      const storedUser = localStorage.getItem('user');
-      if (storedUser) {
-        const parsed = JSON.parse(storedUser);
-        userRole = String(parsed.role || parsed.subRole || parsed.sub_role || '').toLowerCase();
-      }
-    } catch (_) {}
-
-    const isAccountant = userRole.includes('account');
     const defaultGen = isAccountant ? 'payroll' : 'agreement';
-
-    const isAdminRoute = location.pathname.startsWith('/admin');
     const targetPath = isAdminRoute ? `/admin/docs/${defaultGen}` : `/dashboard/docs/${defaultGen}`;
-
     return <Navigate to={targetPath} replace />;
+  }
+
+  // Security guard for Accountant role on non-financial generators
+  const nonFinancialGenerators = [
+    'agreement',
+    'client-form',
+    'indian-visa',
+    'passport-sub',
+    'job-verification',
+    'job-verify',
+    'job-verification-form',
+    'idcard',
+    'experience-certificate',
+    'certificate-exp',
+    'exp-cert',
+    'character-certificate',
+    'certificate-char',
+    'char-cert',
+    'marriage-certificate',
+    'certificate-marr',
+    'marr-cert',
+  ];
+
+  if (isAccountant && nonFinancialGenerators.includes(resolvedSubmodule)) {
+    const fallbackPath = isAdminRoute ? '/admin/docs/payroll' : '/dashboard/docs/payroll';
+    return <Navigate to={fallbackPath} replace />;
   }
 
   return (

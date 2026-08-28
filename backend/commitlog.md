@@ -3,7 +3,9 @@
 ## [2026-08-27]
 - **Dashboard Version**: `v0.4.2`
 
-### 1. Client Dashboard Overview, Task Management & Real-Time Notifications (NC01 - NC07)
+### 1. Client Dashboard Overview, Task Management & Real-Time Notifications (NC01 - NC08)
+- **NC08 - RBAC Restrictions for Accountant Role**:
+  - Excluded non-financial document generators (Agreement, Client Form, Visa, Passport, Certificates, ID Card) from Accountant sidebar and direct routes.
 - **NC07 - Permanent Factory & Mock Asset Elimination**:
   - Permanently deleted all `components/factory/`, `pages/Factory.jsx`, `components/admin/`, `components/agency/`, `Navbar.jsx`, and `client/api/` mock simulators.
   - Removed factory keys from all translation locale files (`en.json`, `bn.json`).

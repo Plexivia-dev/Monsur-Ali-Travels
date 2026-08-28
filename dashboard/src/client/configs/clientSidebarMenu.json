@@ -128,7 +128,8 @@
             "portal": "docs",
             "submodule": "agreement",
             "path": "/dashboard/docs/agreement",
-            "icon": "FileSignature"
+            "icon": "FileSignature",
+            "excludeRoles": ["accountant", "accounts"]
           },
           {
             "id": "doc-client-form",
@@ -137,7 +138,8 @@
             "portal": "docs",
             "submodule": "client-form",
             "path": "/dashboard/docs/client-form",
-            "icon": "UserCheck"
+            "icon": "UserCheck",
+            "excludeRoles": ["accountant", "accounts"]
           },
           {
             "id": "doc-indian-visa",
@@ -146,7 +148,8 @@
             "portal": "docs",
             "submodule": "indian-visa",
             "path": "/dashboard/docs/indian-visa",
-            "icon": "Stamp"
+            "icon": "Stamp",
+            "excludeRoles": ["accountant", "accounts"]
           },
           {
             "id": "doc-passport-sub",
@@ -155,7 +158,8 @@
             "portal": "docs",
             "submodule": "passport-sub",
             "path": "/dashboard/docs/passport-sub",
-            "icon": "BookOpen"
+            "icon": "BookOpen",
+            "excludeRoles": ["accountant", "accounts"]
           },
           {
             "id": "doc-exp-cert",
@@ -164,7 +168,8 @@
             "portal": "docs",
             "submodule": "experience-certificate",
             "path": "/dashboard/docs/experience-certificate",
-            "icon": "Award"
+            "icon": "Award",
+            "excludeRoles": ["accountant", "accounts"]
           },
           {
             "id": "doc-marr-cert",
@@ -173,7 +178,8 @@
             "portal": "docs",
             "submodule": "marriage-certificate",
             "path": "/dashboard/docs/marriage-certificate",
-            "icon": "Heart"
+            "icon": "Heart",
+            "excludeRoles": ["accountant", "accounts"]
           },
           {
             "id": "doc-char-cert",
@@ -182,7 +188,8 @@
             "portal": "docs",
             "submodule": "character-certificate",
             "path": "/dashboard/docs/character-certificate",
-            "icon": "ShieldCheck"
+            "icon": "ShieldCheck",
+            "excludeRoles": ["accountant", "accounts"]
           },
           {
             "id": "doc-job-verification",
@@ -191,7 +198,8 @@
             "portal": "docs",
             "submodule": "job-verification",
             "path": "/dashboard/docs/job-verification",
-            "icon": "FileCheck2"
+            "icon": "FileCheck2",
+            "excludeRoles": ["accountant", "accounts"]
           },
           {
             "id": "doc-idcard",
@@ -200,7 +208,8 @@
             "portal": "docs",
             "submodule": "idcard",
             "path": "/dashboard/docs/idcard",
-            "icon": "Contact"
+            "icon": "Contact",
+            "excludeRoles": ["accountant", "accounts"]
           }
         ]
       }
