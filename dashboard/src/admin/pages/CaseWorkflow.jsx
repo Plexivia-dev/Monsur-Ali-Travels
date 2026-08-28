@@ -342,7 +342,7 @@ export default function CaseWorkflow() {
               className="h-10 px-4 bg-sky-500 hover:bg-sky-400 text-slate-950 rounded-xl font-bold text-xs transition shadow-lg cursor-pointer gap-2"
             >
               <Plus className="size-4" />
-              <span>New Client Case</span>
+              <span>New Client File</span>
             </Button>
 
             <Button
