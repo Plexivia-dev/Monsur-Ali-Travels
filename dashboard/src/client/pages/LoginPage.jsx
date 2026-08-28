@@ -248,15 +248,15 @@ const LoginPage = () => {
                   </div>
                 </div>
 
-                {/* Log In Button with mt-5 (20px margin-top) */}
+                {/* Log In Button with solid Light Blue (Sky) and mt-5 (20px margin-top) */}
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="w-full mt-5 h-10 flex items-center justify-center font-bold text-xs bg-white hover:bg-zinc-200 text-zinc-950 rounded-xl transition-all cursor-pointer shadow-lg active:scale-[0.99] disabled:opacity-60"
+                  className="w-full mt-5 h-10 flex items-center justify-center font-bold text-xs bg-sky-500 hover:bg-sky-400 text-white rounded-xl transition-all cursor-pointer shadow-lg shadow-sky-500/25 active:scale-[0.99] disabled:opacity-60"
                   style={{ marginTop: '20px' }}
                 >
                   {isSubmitting ? (
-                    <div className="h-4 w-4 border-2 border-zinc-950/30 border-t-zinc-950 rounded-full animate-spin mr-2" />
+                    <div className="h-4 w-4 border-2 border-white/30 border-t-white rounded-full animate-spin mr-2" />
                   ) : (
                     <LogIn className="h-4 w-4 mr-1.5" />
                   )}
@@ -304,11 +304,11 @@ const LoginPage = () => {
                 <button
                   type="submit"
                   disabled={isResetSubmitting}
-                  className="w-full mt-5 h-10 flex items-center justify-center font-bold text-xs bg-white hover:bg-zinc-200 text-zinc-950 rounded-xl transition-all cursor-pointer shadow-lg active:scale-[0.99] disabled:opacity-60"
+                  className="w-full mt-5 h-10 flex items-center justify-center font-bold text-xs bg-sky-500 hover:bg-sky-400 text-white rounded-xl transition-all cursor-pointer shadow-lg shadow-sky-500/25 active:scale-[0.99] disabled:opacity-60"
                   style={{ marginTop: '20px' }}
                 >
                   {isResetSubmitting ? (
-                    <div className="h-4 w-4 border-2 border-zinc-950/30 border-t-zinc-950 rounded-full animate-spin mr-2" />
+                    <div className="h-4 w-4 border-2 border-white/30 border-t-white rounded-full animate-spin mr-2" />
                   ) : (
                     <KeyRound className="h-4 w-4 mr-1.5" />
                   )}
@@ -420,15 +420,15 @@ const LoginPage = () => {
                   </div>
                 </div>
 
-                {/* Submit Reset Button */}
+                {/* Submit Reset Button with solid Light Blue (Sky) */}
                 <button
                   type="submit"
                   disabled={isResetSubmitting}
-                  className="w-full mt-5 h-10 flex items-center justify-center font-bold text-xs bg-white hover:bg-zinc-200 text-zinc-950 rounded-xl transition-all cursor-pointer shadow-lg active:scale-[0.99] disabled:opacity-60"
+                  className="w-full mt-5 h-10 flex items-center justify-center font-bold text-xs bg-sky-500 hover:bg-sky-400 text-white rounded-xl transition-all cursor-pointer shadow-lg shadow-sky-500/25 active:scale-[0.99] disabled:opacity-60"
                   style={{ marginTop: '20px' }}
                 >
                   {isResetSubmitting ? (
-                    <div className="h-4 w-4 border-2 border-zinc-950/30 border-t-zinc-950 rounded-full animate-spin mr-2" />
+                    <div className="h-4 w-4 border-2 border-white/30 border-t-white rounded-full animate-spin mr-2" />
                   ) : (
                     <KeyRound className="h-4 w-4 mr-1.5" />
                   )}
@@ -468,7 +468,7 @@ const LoginPage = () => {
                 <button
                   type="button"
                   onClick={() => setViewMode('login')}
-                  className="w-full h-10 flex items-center justify-center font-bold text-xs bg-white hover:bg-zinc-200 text-zinc-950 rounded-xl transition-all cursor-pointer shadow-lg active:scale-[0.99]"
+                  className="w-full h-10 flex items-center justify-center font-bold text-xs bg-sky-500 hover:bg-sky-400 text-white rounded-xl transition-all cursor-pointer shadow-lg shadow-sky-500/25 active:scale-[0.99]"
                 >
                   <LogIn className="h-4 w-4 mr-1.5" />
                   <span>Proceed to Log In</span>
