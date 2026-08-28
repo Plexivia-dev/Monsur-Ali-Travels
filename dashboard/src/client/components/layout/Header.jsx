@@ -78,11 +78,11 @@ export const Header = () => {
             variant="ghost"
             size="sm"
             onClick={handleBack}
-            className="flex items-center gap-1.5 text-xs font-semibold text-white bg-white/10 hover:bg-white/20 border border-white/20 hover:border-white/30 px-2.5 h-8 rounded-lg transition-all cursor-pointer shadow-xs group"
+            className="flex items-center gap-1.5 text-xs font-bold text-slate-900 bg-white hover:bg-white/95 border border-white/40 px-3 h-8 rounded-lg transition-all cursor-pointer shadow-sm group"
             title={t('common.back', 'Back')}
           >
-            <ArrowLeft className="w-4 h-4 text-white group-hover:-translate-x-0.5 transition-transform" />
-            <span className="font-semibold text-white">{t('common.back', 'Back')}</span>
+            <ArrowLeft className="w-4 h-4 text-slate-900 stroke-[2.5] group-hover:-translate-x-0.5 transition-transform" />
+            <span className="font-bold text-slate-900">{t('common.back', 'Back')}</span>
           </Button>
         </div>
 

@@ -89,6 +89,11 @@ export const updateUser = async (req, res, next) => {
     user.email = payload.email.toLowerCase().trim();
     user.phone = payload.phone.trim();
     user.role = payload.role || user.role;
+    if (user.role === 'Staff') {
+      user.subRole = payload.subRole || user.subRole || 'Frontdesk';
+    } else {
+      user.subRole = undefined;
+    }
     user.isActive = payload.isActive !== undefined ? Boolean(payload.isActive) : user.isActive;
 
     if (payload.password) {

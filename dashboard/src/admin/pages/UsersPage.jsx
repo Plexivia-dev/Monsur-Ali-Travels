@@ -12,6 +12,8 @@ import {
   ToggleRight,
   X,
   Calendar,
+  Pencil,
+  Key,
 } from 'lucide-react';
 import { toast } from 'sonner';
 import {
@@ -29,6 +31,9 @@ const UsersPage = () => {
   const [loading, setLoading] = useState(true);
   const [createModalOpen, setCreateModalOpen] = useState(false);
   const [createLoading, setCreateLoading] = useState(false);
+  const [editModalOpen, setEditModalOpen] = useState(false);
+  const [editLoading, setEditLoading] = useState(false);
+  const [editingUser, setEditingUser] = useState(null);
   const [togglingId, setTogglingId] = useState(null);
   const [createForm, setCreateForm] = useState({
     fullName: '',
@@ -36,6 +41,15 @@ const UsersPage = () => {
     phone: '',
     password: '',
     role: 'Staff',
+    subRole: 'Frontdesk',
+  });
+  const [editForm, setEditForm] = useState({
+    name: '',
+    email: '',
+    phone: '',
+    role: 'Staff',
+    subRole: 'Frontdesk',
+    password: '',
   });
 
   // Fetches system users list
@@ -87,15 +101,65 @@ const UsersPage = () => {
         phone: createForm.phone.trim() || undefined,
         password: createForm.password,
         role: createForm.role,
+        subRole: createForm.role === 'Staff' ? createForm.subRole : undefined,
       });
       toast.success(`User "${createForm.fullName}" created successfully!`);
       setCreateModalOpen(false);
-      setCreateForm({ fullName: '', email: '', phone: '', password: '', role: 'Staff' });
+      setCreateForm({ fullName: '', email: '', phone: '', password: '', role: 'Staff', subRole: 'Frontdesk' });
       fetchUsers();
     } catch (err) {
       toast.error(err.response?.data?.message || 'Failed to create user.');
     } finally {
       setCreateLoading(false);
+    }
+  };
+
+  // Opens Edit User modal
+  const openEditModal = (user) => {
+    setEditingUser(user);
+    setEditForm({
+      name: user.fullName || user.name || '',
+      email: user.email || '',
+      phone: user.phone || '',
+      role: user.role || 'Staff',
+      subRole: user.subRole || 'Frontdesk',
+      password: '',
+    });
+    setEditModalOpen(true);
+  };
+
+  // Updates an existing user record (including Role & SubRole)
+  const handleUpdateUser = async (e) => {
+    e.preventDefault();
+    if (!editingUser) return;
+    const userId = editingUser._id || editingUser.did || editingUser.id;
+    if (!userId) return toast.error('Invalid user identifier.');
+
+    if (!editForm.name.trim()) return toast.error('User name is required.');
+    if (!editForm.email.trim()) return toast.error('Email is required.');
+
+    setEditLoading(true);
+    try {
+      const payload = {
+        name: editForm.name.trim(),
+        email: editForm.email.trim(),
+        phone: editForm.phone.trim(),
+        role: editForm.role,
+        subRole: editForm.role === 'Staff' ? editForm.subRole : undefined,
+      };
+      if (editForm.password && editForm.password.length >= 6) {
+        payload.password = editForm.password;
+      }
+
+      await apiClient.put(`/api/v1/admin/users/${userId}`, payload);
+      toast.success(`User "${editForm.name}" updated successfully!`);
+      setEditModalOpen(false);
+      setEditingUser(null);
+      fetchUsers();
+    } catch (err) {
+      toast.error(err.response?.data?.message || 'Failed to update user.');
+    } finally {
+      setEditLoading(false);
     }
   };
 
@@ -249,29 +313,45 @@ const UsersPage = () => {
           const isToggling = togglingId === userId;
           const isActive = u.isActive !== false;
           return (
-            <Button
-              variant="outline"
-              size="sm"
-              disabled={isToggling}
-              onClick={(e) => {
-                e.stopPropagation();
-                handleToggleStatus(u);
-              }}
-              className={`h-7 px-2.5 text-xs font-semibold cursor-pointer gap-1 shadow-xs ${
-                isActive
-                  ? 'text-destructive border-destructive/30 hover:bg-destructive/5'
-                  : 'text-primary border-primary/30 hover:bg-primary/5'
-              }`}
-            >
-              {isToggling ? (
-                <Loader2 className="size-3.5 animate-spin" />
-              ) : isActive ? (
-                <ToggleRight className="size-3.5" />
-              ) : (
-                <ToggleLeft className="size-3.5" />
-              )}
-              <span>{isActive ? 'Suspend' : 'Activate'}</span>
-            </Button>
+            <div className="flex items-center gap-1.5">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  openEditModal(u);
+                }}
+                className="h-7 px-2.5 text-xs font-semibold cursor-pointer gap-1 shadow-xs hover:bg-muted"
+                title="Edit User & Roles"
+              >
+                <Pencil className="size-3 text-muted-foreground" />
+                <span>Edit</span>
+              </Button>
+
+              <Button
+                variant="outline"
+                size="sm"
+                disabled={isToggling}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleToggleStatus(u);
+                }}
+                className={`h-7 px-2.5 text-xs font-semibold cursor-pointer gap-1 shadow-xs ${
+                  isActive
+                    ? 'text-destructive border-destructive/30 hover:bg-destructive/5'
+                    : 'text-primary border-primary/30 hover:bg-primary/5'
+                }`}
+              >
+                {isToggling ? (
+                  <Loader2 className="size-3.5 animate-spin" />
+                ) : isActive ? (
+                  <ToggleRight className="size-3.5" />
+                ) : (
+                  <ToggleLeft className="size-3.5" />
+                )}
+                <span>{isActive ? 'Suspend' : 'Activate'}</span>
+              </Button>
+            </div>
           );
         },
       },
@@ -385,6 +465,27 @@ const UsersPage = () => {
                       <option value="Accountant" className="bg-popover text-popover-foreground">Accountant</option>
                     </select>
                   </div>
+
+                  {createForm.role === 'Staff' && (
+                    <div>
+                      <label className="text-xs font-semibold text-muted-foreground block mb-1.5">
+                        Staff Sub-Role / Designation <span className="text-destructive">*</span>
+                      </label>
+                      <select
+                        value={createForm.subRole}
+                        onChange={(e) => setCreateForm((p) => ({ ...p, subRole: e.target.value }))}
+                        className="w-full px-3.5 py-2.5 text-xs rounded-xl border border-input bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-ring/20 focus:border-ring cursor-pointer"
+                      >
+                        <option value="Frontdesk" className="bg-popover text-popover-foreground">Frontdesk</option>
+                        <option value="Lawyer" className="bg-popover text-popover-foreground">Lawyer</option>
+                        <option value="Visa_Processor" className="bg-popover text-popover-foreground">Visa Processor</option>
+                        <option value="Accountant" className="bg-popover text-popover-foreground">Accountant</option>
+                        <option value="Representative" className="bg-popover text-popover-foreground">Representative</option>
+                        <option value="ClientManager" className="bg-popover text-popover-foreground">Client Manager</option>
+                      </select>
+                    </div>
+                  )}
+
                   <div>
                     <label className="text-xs font-semibold text-muted-foreground block mb-1.5">
                       Email Address <span className="text-destructive">*</span>
@@ -435,6 +536,150 @@ const UsersPage = () => {
                 loadingText="Creating..."
                 submitIcon={CheckCircle2}
                 loading={createLoading}
+              />
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Edit User & Role Assignment Modal */}
+      {editModalOpen && editingUser && (
+        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4">
+          <div className="bg-card rounded-2xl border border-border text-card-foreground shadow-2xl max-w-lg w-full flex flex-col overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+            {/* Unified Modal Header */}
+            <UnifiedModalHeader
+              icon={Pencil}
+              title={`Edit User: ${editingUser.fullName || editingUser.name}`}
+              subtitle="Update account credentials, authority role, and permissions."
+              onClose={() => {
+                setEditModalOpen(false);
+                setEditingUser(null);
+              }}
+            />
+
+            {/* Modal Form */}
+            <form onSubmit={handleUpdateUser} className="flex flex-col flex-grow overflow-hidden text-xs">
+              <div className="p-6 space-y-4 overflow-y-auto">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="sm:col-span-2">
+                    <label className="text-xs font-semibold text-muted-foreground block mb-1.5">
+                      Full Name <span className="text-destructive">*</span>
+                    </label>
+                    <input
+                      type="text"
+                      value={editForm.name}
+                      onChange={(e) => setEditForm((p) => ({ ...p, name: e.target.value }))}
+                      placeholder="e.g. Md. Rafiqul Islam"
+                      required
+                      className="w-full px-3.5 py-2.5 text-xs rounded-xl border border-input bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring/20 focus:border-ring font-medium"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="text-xs font-semibold text-muted-foreground block mb-1.5">
+                      Assigned Role <span className="text-destructive">*</span>
+                    </label>
+                    <select
+                      value={editForm.role}
+                      onChange={(e) => setEditForm((p) => ({ ...p, role: e.target.value }))}
+                      className="w-full px-3.5 py-2.5 text-xs rounded-xl border border-input bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-ring/20 focus:border-ring cursor-pointer font-bold"
+                    >
+                      <option value="Owner" className="bg-popover text-popover-foreground">Owner (Full Authority)</option>
+                      <option value="Admin" className="bg-popover text-popover-foreground">Admin (Operations Manager)</option>
+                      <option value="Staff" className="bg-popover text-popover-foreground">Staff (Standard User)</option>
+                      <option value="Accountant" className="bg-popover text-popover-foreground">Accountant (Ledgers & Bills)</option>
+                    </select>
+                  </div>
+
+                  {editForm.role === 'Staff' ? (
+                    <div>
+                      <label className="text-xs font-semibold text-muted-foreground block mb-1.5">
+                        Staff Sub-Role <span className="text-destructive">*</span>
+                      </label>
+                      <select
+                        value={editForm.subRole}
+                        onChange={(e) => setEditForm((p) => ({ ...p, subRole: e.target.value }))}
+                        className="w-full px-3.5 py-2.5 text-xs rounded-xl border border-input bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-ring/20 focus:border-ring cursor-pointer font-semibold"
+                      >
+                        <option value="Frontdesk" className="bg-popover text-popover-foreground">Frontdesk</option>
+                        <option value="Lawyer" className="bg-popover text-popover-foreground">Lawyer</option>
+                        <option value="Visa_Processor" className="bg-popover text-popover-foreground">Visa Processor</option>
+                        <option value="Accountant" className="bg-popover text-popover-foreground">Accountant</option>
+                        <option value="Representative" className="bg-popover text-popover-foreground">Representative</option>
+                        <option value="ClientManager" className="bg-popover text-popover-foreground">Client Manager</option>
+                      </select>
+                    </div>
+                  ) : (
+                    <div>
+                      <label className="text-xs font-semibold text-muted-foreground block mb-1.5">
+                        Phone Number
+                      </label>
+                      <input
+                        type="tel"
+                        value={editForm.phone}
+                        onChange={(e) => setEditForm((p) => ({ ...p, phone: e.target.value }))}
+                        placeholder="e.g. +880 1712-345678"
+                        className="w-full px-3.5 py-2.5 text-xs rounded-xl border border-input bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring/20 focus:border-ring"
+                      />
+                    </div>
+                  )}
+
+                  <div>
+                    <label className="text-xs font-semibold text-muted-foreground block mb-1.5">
+                      Email Address <span className="text-destructive">*</span>
+                    </label>
+                    <input
+                      type="email"
+                      value={editForm.email}
+                      onChange={(e) => setEditForm((p) => ({ ...p, email: e.target.value }))}
+                      placeholder="e.g. user@agency.com"
+                      required
+                      className="w-full px-3.5 py-2.5 text-xs rounded-xl border border-input bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring/20 focus:border-ring"
+                    />
+                  </div>
+
+                  {editForm.role === 'Staff' && (
+                    <div>
+                      <label className="text-xs font-semibold text-muted-foreground block mb-1.5">
+                        Phone Number
+                      </label>
+                      <input
+                        type="tel"
+                        value={editForm.phone}
+                        onChange={(e) => setEditForm((p) => ({ ...p, phone: e.target.value }))}
+                        placeholder="e.g. +880 1712-345678"
+                        className="w-full px-3.5 py-2.5 text-xs rounded-xl border border-input bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring/20 focus:border-ring"
+                      />
+                    </div>
+                  )}
+
+                  <div className="sm:col-span-2">
+                    <label className="text-xs font-semibold text-muted-foreground block mb-1.5">
+                      Reset Password (Leave blank to keep current)
+                    </label>
+                    <input
+                      type="password"
+                      value={editForm.password}
+                      onChange={(e) => setEditForm((p) => ({ ...p, password: e.target.value }))}
+                      placeholder="Enter new password (optional, min 6 chars)"
+                      minLength={6}
+                      className="w-full px-3.5 py-2.5 text-xs rounded-xl border border-input bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring/20 focus:border-ring font-mono"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Unified Modal Footer */}
+              <UnifiedModalFooter
+                onCancel={() => {
+                  setEditModalOpen(false);
+                  setEditingUser(null);
+                }}
+                cancelText="Cancel"
+                submitText="Save Changes"
+                loadingText="Saving..."
+                submitIcon={CheckCircle2}
+                loading={editLoading}
               />
             </form>
           </div>
