@@ -2,9 +2,6 @@ import { useState, useEffect } from "react"
 import { useNavigate, useLocation } from "react-router-dom"
 import { LogIn, Mail, Lock, Eye, EyeOff, KeyRound, ArrowLeft, CheckCircle2 } from "lucide-react"
 import { useAuth } from "@/store/useAuthStore"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Card, CardHeader, CardDescription, CardContent } from "@/components/ui/card"
 import { Label } from "@/components/ui/label"
 import { toast } from "@/components/ui/toast"
 import { getErrorMessage } from "@/lib/error-handler"
@@ -132,9 +129,10 @@ export function LoginPage() {
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[550px] h-[550px] bg-primary/10 rounded-full blur-[120px] pointer-events-none opacity-70 animate-pulse" />
 
       <div className="w-full max-w-[420px] relative z-10">
-        <div className="bg-[#121214]/90 border border-zinc-800/90 shadow-2xl backdrop-blur-2xl rounded-2xl p-6 sm:p-7 space-y-6">
+        <div className="bg-[#121214]/95 border border-zinc-800/90 shadow-2xl backdrop-blur-2xl rounded-2xl p-6 sm:p-7 space-y-6">
           <div className="flex flex-col items-center text-center space-y-3">
-            <div className="size-16 rounded-2xl bg-zinc-900 border border-zinc-700/60 p-2.5 flex items-center justify-center shadow-md">
+            {/* Logo Container with light gray background */}
+            <div className="size-16 rounded-2xl bg-zinc-200 border border-zinc-300/80 p-2.5 flex items-center justify-center shadow-md">
               <img src={logo} alt="Monsur Ali Travels Logo" className="w-full h-full object-contain" />
             </div>
             <div className="space-y-1">
@@ -158,7 +156,7 @@ export function LoginPage() {
                   Email Address
                 </Label>
                 <div className="relative">
-                  <span className="absolute inset-y-0 left-0 flex items-center pl-3.5 text-zinc-400 pointer-events-none">
+                  <span className="absolute inset-y-0 left-0 flex items-center pl-3.5 text-zinc-600 pointer-events-none">
                     <Mail className="h-4 w-4" />
                   </span>
                   <input
@@ -167,7 +165,7 @@ export function LoginPage() {
                     autoComplete="off"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    className="w-full pl-10 pr-3.5 h-10 text-xs bg-zinc-900/90 border border-zinc-800 rounded-xl text-zinc-100 placeholder:text-zinc-500 focus:outline-hidden focus:border-zinc-500 focus:ring-1 focus:ring-zinc-500/30 transition-all"
+                    className="w-full pl-10 pr-3.5 h-10 text-xs bg-zinc-100 border border-zinc-300 rounded-xl text-zinc-900 placeholder:text-zinc-500 focus:outline-hidden focus:bg-white focus:border-zinc-400 focus:ring-2 focus:ring-zinc-400/20 transition-all font-medium"
                     placeholder="name@example.com"
                     required
                   />
@@ -191,7 +189,7 @@ export function LoginPage() {
                   </button>
                 </div>
                 <div className="relative">
-                  <span className="absolute inset-y-0 left-0 flex items-center pl-3.5 text-zinc-400 pointer-events-none">
+                  <span className="absolute inset-y-0 left-0 flex items-center pl-3.5 text-zinc-600 pointer-events-none">
                     <Lock className="h-4 w-4" />
                   </span>
                   <input
@@ -200,31 +198,33 @@ export function LoginPage() {
                     autoComplete="new-password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    className="w-full pl-10 pr-10 h-10 text-xs bg-zinc-900/90 border border-zinc-800 rounded-xl text-zinc-100 placeholder:text-zinc-500 focus:outline-hidden focus:border-zinc-500 focus:ring-1 focus:ring-zinc-500/30 transition-all"
+                    className="w-full pl-10 pr-10 h-10 text-xs bg-zinc-100 border border-zinc-300 rounded-xl text-zinc-900 placeholder:text-zinc-500 focus:outline-hidden focus:bg-white focus:border-zinc-400 focus:ring-2 focus:ring-zinc-400/20 transition-all font-medium"
                     placeholder="••••••••"
                     required
                   />
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="absolute inset-y-0 right-0 flex items-center pr-3.5 text-zinc-400 hover:text-zinc-200 transition cursor-pointer"
+                    className="absolute inset-y-0 right-0 flex items-center pr-3.5 text-zinc-600 hover:text-zinc-900 transition cursor-pointer"
                   >
                     {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                   </button>
                 </div>
               </div>
 
+              {/* Log In Button with mt-5 (20px margin-top) */}
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="w-full mt-3 h-10 flex items-center justify-center font-bold text-xs bg-white hover:bg-zinc-200 text-zinc-950 rounded-xl transition-all cursor-pointer shadow-lg active:scale-[0.99] disabled:opacity-60"
+                className="w-full mt-5 h-10 flex items-center justify-center font-bold text-xs bg-white hover:bg-zinc-200 text-zinc-950 rounded-xl transition-all cursor-pointer shadow-lg active:scale-[0.99] disabled:opacity-60"
+                style={{ marginTop: '20px' }}
               >
                 {isSubmitting ? (
                   <div className="h-4 w-4 border-2 border-zinc-950/30 border-t-zinc-950 rounded-full animate-spin mr-2" />
                 ) : (
                   <LogIn className="h-4 w-4 mr-1.5" />
                 )}
-                {isSubmitting ? "Signing In…" : "Sign In"}
+                {isSubmitting ? "Logging In…" : "Log In"}
               </button>
             </form>
           )}
@@ -241,14 +241,14 @@ export function LoginPage() {
                   Account Email Address
                 </Label>
                 <div className="relative">
-                  <span className="absolute inset-y-0 left-0 flex items-center pl-3.5 text-zinc-400 pointer-events-none">
+                  <span className="absolute inset-y-0 left-0 flex items-center pl-3.5 text-zinc-600 pointer-events-none">
                     <Mail className="h-4 w-4" />
                   </span>
                   <input
                     type="email"
                     value={resetEmail}
                     onChange={(e) => setResetEmail(e.target.value)}
-                    className="w-full pl-10 pr-3.5 h-10 text-xs bg-zinc-900/90 border border-zinc-800 rounded-xl text-zinc-100 placeholder:text-zinc-500 focus:outline-hidden focus:border-zinc-500 focus:ring-1 focus:ring-zinc-500/30 transition-all"
+                    className="w-full pl-10 pr-3.5 h-10 text-xs bg-zinc-100 border border-zinc-300 rounded-xl text-zinc-900 placeholder:text-zinc-500 focus:outline-hidden focus:bg-white focus:border-zinc-400 focus:ring-2 focus:ring-zinc-400/20 transition-all font-medium"
                     placeholder="name@example.com"
                     required
                   />
@@ -258,7 +258,8 @@ export function LoginPage() {
               <button
                 type="submit"
                 disabled={isResetSubmitting}
-                className="w-full h-10 flex items-center justify-center font-bold text-xs bg-white hover:bg-zinc-200 text-zinc-950 rounded-xl transition-all cursor-pointer shadow-lg active:scale-[0.99] disabled:opacity-60"
+                className="w-full mt-5 h-10 flex items-center justify-center font-bold text-xs bg-white hover:bg-zinc-200 text-zinc-950 rounded-xl transition-all cursor-pointer shadow-lg active:scale-[0.99] disabled:opacity-60"
+                style={{ marginTop: '20px' }}
               >
                 {isResetSubmitting ? (
                   <div className="h-4 w-4 border-2 border-zinc-950/30 border-t-zinc-950 rounded-full animate-spin mr-2" />
@@ -274,7 +275,7 @@ export function LoginPage() {
                 className="w-full h-9 flex items-center justify-center font-medium text-xs text-zinc-400 hover:text-white transition-colors cursor-pointer"
               >
                 <ArrowLeft className="h-3.5 w-3.5 mr-1" />
-                <span>Back to Sign In</span>
+                <span>Back to Log In</span>
               </button>
             </form>
           )}
@@ -302,7 +303,7 @@ export function LoginPage() {
                   </button>
                 </div>
                 <div className="relative">
-                  <span className="absolute inset-y-0 left-0 flex items-center pl-3.5 text-zinc-400 pointer-events-none">
+                  <span className="absolute inset-y-0 left-0 flex items-center pl-3.5 text-zinc-600 pointer-events-none">
                     <KeyRound className="h-4 w-4" />
                   </span>
                   <input
@@ -310,7 +311,7 @@ export function LoginPage() {
                     maxLength={6}
                     value={resetOtp}
                     onChange={(e) => setResetOtp(e.target.value.replace(/\D/g, ''))}
-                    className="w-full pl-10 pr-3.5 h-10 text-sm font-mono tracking-widest bg-zinc-900/90 border border-zinc-800 rounded-xl text-zinc-100 placeholder:text-zinc-600 focus:outline-hidden focus:border-zinc-500 focus:ring-1 focus:ring-zinc-500/30 transition-all text-center"
+                    className="w-full pl-10 pr-3.5 h-10 text-sm font-mono tracking-widest bg-zinc-100 border border-zinc-300 rounded-xl text-zinc-900 placeholder:text-zinc-500 focus:outline-hidden focus:bg-white focus:border-zinc-400 focus:ring-2 focus:ring-zinc-400/20 transition-all text-center font-bold"
                     placeholder="123456"
                     required
                   />
@@ -322,21 +323,21 @@ export function LoginPage() {
                   New Password
                 </Label>
                 <div className="relative">
-                  <span className="absolute inset-y-0 left-0 flex items-center pl-3.5 text-zinc-400 pointer-events-none">
+                  <span className="absolute inset-y-0 left-0 flex items-center pl-3.5 text-zinc-600 pointer-events-none">
                     <Lock className="h-4 w-4" />
                   </span>
                   <input
                     type={showNewPassword ? "text" : "password"}
                     value={newPassword}
                     onChange={(e) => setNewPassword(e.target.value)}
-                    className="w-full pl-10 pr-10 h-10 text-xs bg-zinc-900/90 border border-zinc-800 rounded-xl text-zinc-100 placeholder:text-zinc-500 focus:outline-hidden focus:border-zinc-500 focus:ring-1 focus:ring-zinc-500/30 transition-all"
+                    className="w-full pl-10 pr-10 h-10 text-xs bg-zinc-100 border border-zinc-300 rounded-xl text-zinc-900 placeholder:text-zinc-500 focus:outline-hidden focus:bg-white focus:border-zinc-400 focus:ring-2 focus:ring-zinc-400/20 transition-all font-medium"
                     placeholder="Min 6 characters"
                     required
                   />
                   <button
                     type="button"
                     onClick={() => setShowNewPassword(!showNewPassword)}
-                    className="absolute inset-y-0 right-0 flex items-center pr-3.5 text-zinc-400 hover:text-zinc-200 transition cursor-pointer"
+                    className="absolute inset-y-0 right-0 flex items-center pr-3.5 text-zinc-600 hover:text-zinc-900 transition cursor-pointer"
                   >
                     {showNewPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                   </button>
@@ -348,14 +349,14 @@ export function LoginPage() {
                   Confirm New Password
                 </Label>
                 <div className="relative">
-                  <span className="absolute inset-y-0 left-0 flex items-center pl-3.5 text-zinc-400 pointer-events-none">
+                  <span className="absolute inset-y-0 left-0 flex items-center pl-3.5 text-zinc-600 pointer-events-none">
                     <Lock className="h-4 w-4" />
                   </span>
                   <input
                     type={showNewPassword ? "text" : "password"}
                     value={confirmPassword}
                     onChange={(e) => setConfirmPassword(e.target.value)}
-                    className="w-full pl-10 pr-3.5 h-10 text-xs bg-zinc-900/90 border border-zinc-800 rounded-xl text-zinc-100 placeholder:text-zinc-500 focus:outline-hidden focus:border-zinc-500 focus:ring-1 focus:ring-zinc-500/30 transition-all"
+                    className="w-full pl-10 pr-3.5 h-10 text-xs bg-zinc-100 border border-zinc-300 rounded-xl text-zinc-900 placeholder:text-zinc-500 focus:outline-hidden focus:bg-white focus:border-zinc-400 focus:ring-2 focus:ring-zinc-400/20 transition-all font-medium"
                     placeholder="Repeat new password"
                     required
                   />
@@ -365,7 +366,8 @@ export function LoginPage() {
               <button
                 type="submit"
                 disabled={isResetSubmitting}
-                className="w-full h-10 flex items-center justify-center font-bold text-xs bg-white hover:bg-zinc-200 text-zinc-950 rounded-xl transition-all cursor-pointer shadow-lg active:scale-[0.99] disabled:opacity-60"
+                className="w-full mt-5 h-10 flex items-center justify-center font-bold text-xs bg-white hover:bg-zinc-200 text-zinc-950 rounded-xl transition-all cursor-pointer shadow-lg active:scale-[0.99] disabled:opacity-60"
+                style={{ marginTop: '20px' }}
               >
                 {isResetSubmitting ? (
                   <div className="h-4 w-4 border-2 border-zinc-950/30 border-t-zinc-950 rounded-full animate-spin mr-2" />
@@ -397,7 +399,7 @@ export function LoginPage() {
                   Password Reset Successful
                 </h3>
                 <p className="text-xs text-zinc-400 leading-relaxed">
-                  Your administrator password has been securely updated. You can now sign in using your new credentials.
+                  Your administrator password has been securely updated. You can now log in using your new credentials.
                 </p>
               </div>
               <button
@@ -406,7 +408,7 @@ export function LoginPage() {
                 className="w-full h-10 flex items-center justify-center font-bold text-xs bg-white hover:bg-zinc-200 text-zinc-950 rounded-xl transition-all cursor-pointer shadow-lg active:scale-[0.99]"
               >
                 <LogIn className="h-4 w-4 mr-1.5" />
-                <span>Proceed to Sign In</span>
+                <span>Proceed to Log In</span>
               </button>
             </div>
           )}
