@@ -31,27 +31,27 @@ export function normalizeFileUrl(fileUrl = '') {
   if (!fileUrl || typeof fileUrl !== 'string') return '';
   const trimmed = fileUrl.trim();
 
-  // Data URLs and Blobs can be displayed directly
+  // 1. Data URLs and Blobs
   if (trimmed.startsWith('data:') || trimmed.startsWith('blob:')) {
     return trimmed;
   }
 
-  // If already absolute HTTP / HTTPS URL
+  // 2. Localhost URLs stored in database -> Redirect to live API domain
+  if (trimmed.startsWith('http://localhost:') || trimmed.startsWith('http://127.0.0.1:')) {
+    return trimmed.replace(/^https?:\/\/[^/]+/, 'https://api.monsuralitravels.com');
+  }
+
+  // 3. HTTP live domain -> Upgrade to HTTPS
+  if (trimmed.startsWith('http://api.monsuralitravels.com')) {
+    return trimmed.replace('http://', 'https://');
+  }
+
+  // 4. Absolute URLs (Cloudflare R2 or HTTPS)
   if (trimmed.startsWith('http://') || trimmed.startsWith('https://')) {
-    // If it points to localhost or dev server, rewrite to live production API URL
-    if (trimmed.includes('localhost:') || trimmed.includes('127.0.0.1:') || trimmed.includes('server.monsuralitravels.com') || trimmed.includes('service.monsuralitravels.com')) {
-      return trimmed.replace(/^https?:\/\/[^/]+/, 'https://api.monsuralitravels.com');
-    }
-
-    // Always ensure HTTPS for live API domain
-    if (trimmed.startsWith('http://api.monsuralitravels.com')) {
-      return trimmed.replace('http://', 'https://');
-    }
-
     return trimmed;
   }
 
-  // Relative paths: e.g. /uploads/... or documents/...
+  // 5. Relative paths (/uploads/...) -> prepend live API_BASE_URL
   const cleanBase = 'https://api.monsuralitravels.com';
   const cleanPath = trimmed.startsWith('/') ? trimmed : `/${trimmed}`;
   return `${cleanBase}${cleanPath}`;
