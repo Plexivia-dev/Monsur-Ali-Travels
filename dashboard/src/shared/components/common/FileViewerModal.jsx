@@ -55,6 +55,8 @@ export function normalizeFileUrl(fileUrl = '') {
  */
 export function getFileTypeInfo(fileUrl = '', mimeType = '', fileName = '') {
   const urlLower = String(fileUrl || '').toLowerCase();
+  // Strip query string for extension matching
+  const urlPath = urlLower.split('?')[0].split('#')[0];
   const nameLower = String(fileName || '').toLowerCase();
   const mimeLower = String(mimeType || '').toLowerCase();
 
@@ -64,7 +66,7 @@ export function getFileTypeInfo(fileUrl = '', mimeType = '', fileName = '') {
   if (
     isDataImage ||
     mimeLower.startsWith('image/') ||
-    /\.(jpg|jpeg|png|webp|gif|svg|avif|bmp|ico)$/i.test(urlLower) ||
+    /\.(jpg|jpeg|png|webp|gif|svg|avif|bmp|ico)$/i.test(urlPath) ||
     /\.(jpg|jpeg|png|webp|gif|svg|avif|bmp|ico)$/i.test(nameLower)
   ) {
     return { type: 'image', label: 'Image Scan', isImage: true, isPdf: false };
@@ -73,22 +75,22 @@ export function getFileTypeInfo(fileUrl = '', mimeType = '', fileName = '') {
   if (
     isDataPdf ||
     mimeLower.includes('pdf') ||
-    urlLower.endsWith('.pdf') ||
+    urlPath.endsWith('.pdf') ||
     nameLower.endsWith('.pdf') ||
-    urlLower.includes('/pdf')
+    urlPath.includes('/pdf')
   ) {
     return { type: 'pdf', label: 'PDF Document', isImage: false, isPdf: true };
   }
 
   if (
     mimeLower.includes('text') ||
-    /\.(txt|md|csv|json|log)$/i.test(urlLower) ||
+    /\.(txt|md|csv|json|log)$/i.test(urlPath) ||
     /\.(txt|md|csv|json|log)$/i.test(nameLower)
   ) {
     return { type: 'text', label: 'Text Document', isImage: false, isPdf: false };
   }
 
-  return { type: 'other', label: 'Document File', isImage: false, isPdf: false };
+  return { type: 'other', label: 'Other Document', isImage: false, isPdf: false };
 }
 
 /**
@@ -167,6 +169,7 @@ export function FileViewer({ file, className = '' }) {
         <img
           src={resolvedUrl}
           alt={resolvedName}
+          referrerPolicy="no-referrer"
           onLoad={() => setLoading(false)}
           onError={() => {
             setLoading(false);
@@ -517,6 +520,7 @@ export function FileViewerModal({
                   key={retryIndex}
                   src={resolvedUrl}
                   alt={resolvedName}
+                  referrerPolicy="no-referrer"
                   onLoad={() => setLoading(false)}
                   onError={() => {
                     setLoading(false);

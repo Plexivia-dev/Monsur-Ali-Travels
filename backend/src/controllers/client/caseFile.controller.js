@@ -811,13 +811,40 @@ export const uploadCaseDocument = async (req, res) => {
       });
     }
 
+    // Resolve clientDid: from case doc, or fallback to client lookup by clientId/_id
+    let resolvedClientDid = caseDoc.clientDid;
+    if (!resolvedClientDid && (caseDoc.clientId || caseDoc.clientInfo)) {
+      const clientRef = caseDoc.clientId || caseDoc.clientInfo;
+      const clientDoc = await Client.findOne({ $or: [{ _id: clientRef }, { did: clientRef }] }).lean();
+      resolvedClientDid = clientDoc?.did || String(clientRef);
+    }
+
+    if (!resolvedClientDid) {
+      return res.status(400).json({
+        success: false,
+        message: "Unable to resolve client reference for this case",
+      });
+    }
+
+    // Detect fileType from URL if not provided
+    let resolvedFileType = fileType;
+    if (!resolvedFileType || resolvedFileType === "application/octet-stream") {
+      const urlLower = String(fileUrl).toLowerCase();
+      if (/\.(jpg|jpeg)$/i.test(urlLower)) resolvedFileType = "image/jpeg";
+      else if (/\.png$/i.test(urlLower)) resolvedFileType = "image/png";
+      else if (/\.webp$/i.test(urlLower)) resolvedFileType = "image/webp";
+      else if (/\.gif$/i.test(urlLower)) resolvedFileType = "image/gif";
+      else if (/\.pdf$/i.test(urlLower)) resolvedFileType = "application/pdf";
+      else resolvedFileType = "application/octet-stream";
+    }
+
     const newDoc = await DocumentVaultModel.create({
-      clientDid: caseDoc.clientDid,
+      clientDid: resolvedClientDid,
       caseDid: caseDoc.did,
       documentName: documentName.trim(),
       fileName: fileName || documentName.trim(),
       fileUrl: fileUrl.trim(),
-      fileType: fileType || "application/octet-stream",
+      fileType: resolvedFileType,
       fileSize: fileSize || "1.2 MB",
       accessLevel: accessLevel || "Restricted",
       uploadedByDid: req.user?.did || req.user?.id || null,
@@ -833,6 +860,49 @@ export const uploadCaseDocument = async (req, res) => {
     return res.status(500).json({
       success: false,
       message: error.message || "Failed to upload document",
+    });
+  }
+};
+
+/**
+ * 11b. Rename / Relabel a Case Document
+ * PATCH /api/v1/client/cases/:id/documents/:docDid/rename
+ */
+export const renameCaseDocument = async (req, res) => {
+  try {
+    const { docDid } = req.params;
+    const { documentName } = req.body;
+
+    if (!documentName || !documentName.trim()) {
+      return res.status(400).json({
+        success: false,
+        message: "New document name is required",
+      });
+    }
+
+    const doc = await DocumentVaultModel.findOne({
+      $or: [{ did: docDid }, { _id: mongoose.Types.ObjectId.isValid(docDid) ? docDid : null }],
+    });
+
+    if (!doc) {
+      return res.status(404).json({
+        success: false,
+        message: "Document not found",
+      });
+    }
+
+    doc.documentName = documentName.trim();
+    await doc.save();
+
+    return res.status(200).json({
+      success: true,
+      message: "Document renamed successfully",
+      data: doc,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: error.message || "Failed to rename document",
     });
   }
 };

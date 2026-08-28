@@ -210,6 +210,12 @@ export default function CaseDetailPage() {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [savingEdit, setSavingEdit] = useState(false);
 
+  // Rename document inline
+  const [renamingDocDid, setRenamingDocDid] = useState(null);
+  const [renameValue, setRenameValue] = useState('');
+  const [savingRename, setSavingRename] = useState(false);
+
+
   const [editForm, setEditForm] = useState({
     applicantName: '',
     phone: '',
@@ -397,7 +403,37 @@ export default function CaseDetailPage() {
     }
   };
 
+  const handleRenameDocument = async (doc) => {
+    if (!renameValue.trim() || renameValue.trim() === doc.documentName) {
+      setRenamingDocDid(null);
+      setRenameValue('');
+      return;
+    }
+    setSavingRename(true);
+    try {
+      const docId = doc.did || doc._id;
+      const caseId = caseData.did || caseData._id;
+      const res = await apiClient.patch(
+        `/api/v1/client/cases/${caseId}/documents/${docId}/rename`,
+        { documentName: renameValue.trim() }
+      );
+      if (res.data?.success || res.data?.status === 'success') {
+        toast.success('Document renamed successfully!');
+        setRenamingDocDid(null);
+        setRenameValue('');
+        fetchCaseDetails();
+      } else {
+        throw new Error(res.data?.message || 'Rename failed');
+      }
+    } catch (err) {
+      toast.error(err.response?.data?.message || err.message || 'Failed to rename document.');
+    } finally {
+      setSavingRename(false);
+    }
+  };
+
   const handleUploadDocument = async (e) => {
+
     e.preventDefault();
     if (!uploadDocForm.documentName || (!uploadDocForm.file && !uploadDocForm.fileUrl)) {
       toast.error('Please choose a file to upload.');
@@ -1396,56 +1432,118 @@ export default function CaseDetailPage() {
               </div>
             ) : (
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-                {caseData.vaultDocuments.map((doc, idx) => (
-                  <div
-                    key={doc.did || doc._id || idx}
-                    className="bg-muted/20 border border-border p-4 rounded-xl space-y-3"
-                  >
-                    <div className="flex items-start justify-between gap-2">
-                      <div className="flex items-center gap-2.5 min-w-0">
-                        <div className="size-9 rounded-lg bg-sky-500/10 text-sky-600 flex items-center justify-center font-bold shrink-0">
-                          <FileText className="w-4 h-4" />
+                {caseData.vaultDocuments.map((doc, idx) => {
+                  const docKey = doc.did || doc._id || idx;
+                  const isRenaming = renamingDocDid === docKey;
+                  return (
+                    <div
+                      key={docKey}
+                      className="bg-muted/20 border border-border p-4 rounded-xl space-y-3"
+                    >
+                      <div className="flex items-start justify-between gap-2">
+                        <div className="flex items-center gap-2.5 min-w-0 flex-1">
+                          <div className="size-9 rounded-lg bg-sky-500/10 text-sky-600 flex items-center justify-center font-bold shrink-0">
+                            <FileText className="w-4 h-4" />
+                          </div>
+                          <div className="min-w-0 flex-1">
+                            {isRenaming ? (
+                              <div className="flex items-center gap-1.5">
+                                <input
+                                  type="text"
+                                  value={renameValue}
+                                  onChange={(e) => setRenameValue(e.target.value)}
+                                  onKeyDown={(e) => {
+                                    if (e.key === 'Enter') handleRenameDocument(doc);
+                                    if (e.key === 'Escape') { setRenamingDocDid(null); setRenameValue(''); }
+                                  }}
+                                  autoFocus
+                                  className="flex-1 min-w-0 px-2 py-1 text-xs bg-background border border-primary rounded-lg focus:outline-none font-semibold text-foreground"
+                                />
+                                <button
+                                  type="button"
+                                  onClick={() => handleRenameDocument(doc)}
+                                  disabled={savingRename}
+                                  className="p-1 text-emerald-600 hover:bg-emerald-500/10 rounded cursor-pointer shrink-0"
+                                  title="Save rename"
+                                >
+                                  {savingRename ? <Loader2 className="w-3 h-3 animate-spin" /> : <Check className="w-3 h-3" />}
+                                </button>
+                                <button
+                                  type="button"
+                                  onClick={() => { setRenamingDocDid(null); setRenameValue(''); }}
+                                  className="p-1 text-muted-foreground hover:bg-muted rounded cursor-pointer shrink-0"
+                                  title="Cancel"
+                                >
+                                  <X className="w-3 h-3" />
+                                </button>
+                              </div>
+                            ) : (
+                              <div className="flex items-center gap-1 group">
+                                <h5 className="font-bold text-xs text-foreground truncate">{doc.documentName || doc.name}</h5>
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    setRenamingDocDid(docKey);
+                                    setRenameValue(doc.documentName || doc.name || '');
+                                  }}
+                                  className="p-0.5 text-muted-foreground hover:text-foreground opacity-0 group-hover:opacity-100 transition cursor-pointer shrink-0"
+                                  title="Rename document"
+                                >
+                                  <Edit3 className="w-3 h-3" />
+                                </button>
+                              </div>
+                            )}
+                            <p className="text-[10px] text-muted-foreground truncate mt-0.5">
+                              {doc.fileName || 'file.pdf'} • {doc.fileSize || '1.2 MB'}
+                            </p>
+                          </div>
                         </div>
-                        <div className="min-w-0">
-                          <h5 className="font-bold text-xs text-foreground truncate">{doc.documentName || doc.name}</h5>
-                          <p className="text-[10px] text-muted-foreground truncate">
-                            {doc.fileName || 'file.pdf'} • {doc.fileSize || '1.2 MB'}
-                          </p>
-                        </div>
+                        <span className="px-2 py-0.5 rounded text-[9px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200 shrink-0">
+                          Verified
+                        </span>
                       </div>
-                      <span className="px-2 py-0.5 rounded text-[9px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200 shrink-0">
-                        Verified
-                      </span>
-                    </div>
 
-                    <div className="flex items-center justify-between text-[11px] pt-2 border-t border-border text-muted-foreground">
-                      <span>
-                        Uploaded By: <strong className="text-foreground">{doc.uploadedByName || 'Staff Member'}</strong>
-                      </span>
-                      <div className="flex items-center gap-2">
-                        <button
-                          type="button"
-                          onClick={() => setPreviewFile(doc)}
-                          className="text-primary hover:underline font-bold flex items-center gap-1 cursor-pointer"
-                        >
-                          <Eye className="w-3 h-3" />
-                          View
-                        </button>
-                        {doc.fileUrl && (
-                          <a
-                            href={doc.fileUrl}
-                            target="_blank"
-                            rel="noreferrer"
-                            className="text-muted-foreground hover:text-foreground font-bold flex items-center gap-0.5"
-                            title="Open in new tab"
+                      <div className="flex items-center justify-between text-[11px] pt-2 border-t border-border text-muted-foreground">
+                        <span>
+                          By: <strong className="text-foreground">{doc.uploadedByName || 'Staff'}</strong>
+                        </span>
+                        <div className="flex items-center gap-2">
+                          <button
+                            type="button"
+                            onClick={() => setPreviewFile(doc)}
+                            className="text-primary hover:underline font-bold flex items-center gap-1 cursor-pointer"
                           >
-                            <ExternalLink className="w-3 h-3" />
-                          </a>
-                        )}
+                            <Eye className="w-3 h-3" />
+                            View
+                          </button>
+                          {doc.fileUrl && (
+                            <a
+                              href={doc.fileUrl}
+                              download
+                              target="_blank"
+                              rel="noreferrer"
+                              className="text-muted-foreground hover:text-foreground font-bold flex items-center gap-0.5"
+                              title="Download file"
+                            >
+                              <Download className="w-3 h-3" />
+                            </a>
+                          )}
+                          {doc.fileUrl && (
+                            <a
+                              href={doc.fileUrl}
+                              target="_blank"
+                              rel="noreferrer"
+                              className="text-muted-foreground hover:text-foreground font-bold flex items-center gap-0.5"
+                              title="Open in new tab"
+                            >
+                              <ExternalLink className="w-3 h-3" />
+                            </a>
+                          )}
+                        </div>
                       </div>
                     </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             )}
           </div>
