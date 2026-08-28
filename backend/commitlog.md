@@ -3,7 +3,10 @@
 ## [2026-08-27]
 - **Dashboard Version**: `v0.4.2`
 
-### 1. Client Dashboard Overview, Task Management & Real-Time Notifications (NC01 - NC11)
+### 1. Client Dashboard Overview, Task Management & Real-Time Notifications (NC01 - NC12)
+- **NC12 - Strict Direct Real-Time API Data Fetching**:
+  - Removed all fallback logic from `AgencyClientList.jsx` and `AgencyEmployeeList.jsx`.
+  - Bound direct real-time data flow to `/api/v1/client/clients` and `/api/v1/client/users`.
 - **NC11 - Fix Agency API Route Mounting & Fallbacks**:
   - Mounted `/users` and `/clients` under `clientScopeRouter` (`/api/v1/client/users`, `/api/v1/client/clients`) and root `coreRouter`.
   - Updated `AgencyClientList.jsx` and `AgencyEmployeeList.jsx` endpoints with robust multi-endpoint fallbacks.

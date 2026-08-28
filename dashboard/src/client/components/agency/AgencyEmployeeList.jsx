@@ -29,24 +29,8 @@ export function AgencyEmployeeList() {
   const fetchEmployees = async () => {
     setIsLoading(true);
     try {
-      let staffList = [];
-      try {
-        const response = await apiClient.get('/api/v1/client/users');
-        const payload = response.data;
-        staffList = Array.isArray(payload?.data)
-          ? payload.data
-          : Array.isArray(payload)
-          ? payload
-          : [];
-      } catch (e) {
-        const response = await apiClient.get('/api/v1/users');
-        const payload = response.data;
-        staffList = Array.isArray(payload?.data)
-          ? payload.data
-          : Array.isArray(payload)
-          ? payload
-          : [];
-      }
+      const response = await apiClient.get('/api/v1/client/users');
+      const staffList = response.data?.data || (Array.isArray(response.data) ? response.data : []);
       setEmployees(staffList);
     } catch (err) {
       console.error('Failed to load agency employees:', err);

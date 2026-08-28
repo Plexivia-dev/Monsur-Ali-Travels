@@ -29,28 +29,10 @@ export function AgencyClientList() {
   const fetchClients = async () => {
     setIsLoading(true);
     try {
-      let clientList = [];
-      try {
-        const response = await apiClient.get('/api/v1/client/clients', {
-          params: { page, limit: 100, search: search.trim() || undefined }
-        });
-        const payload = response.data;
-        clientList = Array.isArray(payload?.data)
-          ? payload.data
-          : Array.isArray(payload)
-          ? payload
-          : [];
-      } catch (e) {
-        const response = await apiClient.get('/api/v1/clients', {
-          params: { page, limit: 100, search: search.trim() || undefined }
-        });
-        const payload = response.data;
-        clientList = Array.isArray(payload?.data)
-          ? payload.data
-          : Array.isArray(payload)
-          ? payload
-          : [];
-      }
+      const response = await apiClient.get('/api/v1/client/clients', {
+        params: { page, limit: 100, search: search.trim() || undefined }
+      });
+      const clientList = response.data?.data || (Array.isArray(response.data) ? response.data : []);
       setClients(clientList);
     } catch (err) {
       console.error('Failed to load agency clients:', err);
