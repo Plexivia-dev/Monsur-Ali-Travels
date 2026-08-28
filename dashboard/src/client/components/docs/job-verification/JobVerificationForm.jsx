@@ -33,10 +33,6 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
-import { useClientLookup } from '../common/useClientLookup';
-import { ExistingClientAlertModal } from '../common/ExistingClientAlertModal';
-import { validateBdPhone } from '../common/phoneValidator';
-import { toast } from 'sonner';
 
 export function JobVerificationForm({
   formData,
@@ -47,44 +43,6 @@ export function JobVerificationForm({
 }) {
   const [currentStep, setCurrentStep] = useState(1);
   const [resetDialogOpen, setResetDialogOpen] = useState(false);
-  const [detectedMatch, setDetectedMatch] = useState(null);
-
-  const { triggerLookup, resetLookup } = useClientLookup({
-    onClientFound: (client, caseFile) => setDetectedMatch({ client, caseFile }),
-  });
-
-  const handleYes = () => {
-    if (!detectedMatch?.client) return;
-    const c = detectedMatch.client;
-    setFormData(prev => ({
-      ...prev,
-      clientId: c._id,
-      clientDid: c.did,
-      linkedCaseId: detectedMatch.caseFile?._id || null,
-      linkedCaseDid: detectedMatch.caseFile?.did || null,
-      clientInfo: {
-        ...prev.clientInfo,
-        clientName: c.fullName || prev.clientInfo?.clientName,
-        clientPhone: c.phone || prev.clientInfo?.clientPhone,
-        clientEmail: c.email || prev.clientInfo?.clientEmail,
-        passportNumber: c.passportNumber || prev.clientInfo?.passportNumber,
-        nidNumber: c.nidNumber || prev.clientInfo?.nidNumber,
-      },
-    }));
-    toast.success(`"${c.fullName}" info auto-filled!`);
-    setDetectedMatch(null);
-  };
-
-  const handleNo = () => {
-    const val = detectedMatch?.client?.phone || '';
-    setFormData(prev => ({
-      ...prev,
-      clientInfo: { ...prev.clientInfo, clientPhone: '', clientEmail: '' },
-    }));
-    resetLookup(val);
-    toast.info('Please enter a different phone number or email.');
-    setDetectedMatch(null);
-  };
 
   const steps = [
     { id: 1, title: 'Company & Client', icon: Building2 },
@@ -106,33 +64,13 @@ export function JobVerificationForm({
   const handleNext = (e) => {
     e.preventDefault();
     if (currentStep === 1) {
-      const compPhone = formData.companyInfo?.companyPhone || '';
-      if (compPhone) {
-        const check = validateBdPhone(compPhone);
-        if (!check.isValid) {
-          toast.error(`Company Mobile: ${check.error}`);
-          return;
-        }
-      }
       if (!formData.clientInfo?.clientName?.trim()) {
-        toast.error('Please enter Client Name.');
+        alert('Please enter Client Name.');
         return;
       }
-      const phone = formData.clientInfo?.clientPhone || '';
-      const check = validateBdPhone(phone);
-      if (!check.isValid) {
-        toast.error(`Client Mobile: ${check.error}`);
+      if (!formData.clientInfo?.clientPhone?.trim()) {
+        alert('Please enter Client Mobile Number.');
         return;
-      }
-    }
-    if (currentStep === 3) {
-      const helperPhone = formData.helperInfo?.helperPhone || '';
-      if (helperPhone) {
-        const check = validateBdPhone(helperPhone);
-        if (!check.isValid) {
-          toast.error(`Helper Mobile: ${check.error}`);
-          return;
-        }
       }
     }
     if (currentStep < 4) {
@@ -158,6 +96,30 @@ export function JobVerificationForm({
 
   return (
     <div className="space-y-5 w-full mx-auto">
+      {/* Top Header Card */}
+      <div className="bg-card border border-border p-6 rounded-xl shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b-2 border-border">
+        <div>
+          <h2 className="text-xl sm:text-2xl font-bold text-foreground flex items-center gap-2 tracking-tight">
+            <FileCheck2 className="w-6 h-6 text-primary shrink-0" />
+            Job Verification Details Form (Step {currentStep} of 4)
+          </h2>
+          <p className="text-xs text-muted-foreground mt-0.5">
+            Company, Client &amp; Overseas Employment Verification Protocol
+          </p>
+        </div>
+
+        <Button
+          type="button"
+          variant="reset"
+          size="sm"
+          onClick={() => setResetDialogOpen(true)}
+          className="shrink-0 self-start sm:self-auto"
+        >
+          <RotateCcw className="w-3.5 h-3.5" />
+          <span>Reset</span>
+        </Button>
+      </div>
+
       {/* Stepper Header */}
       <div className="bg-card border border-border p-4 rounded-xl shadow-xs space-y-3">
         <div className="relative w-full h-1.5 bg-muted rounded-full overflow-hidden">
@@ -240,13 +202,8 @@ export function JobVerificationForm({
                     value={formData.companyInfo?.companyPhone || ''}
                     onChange={(e) => updateNested('companyInfo', 'companyPhone', e.target.value)}
                     placeholder="Enter phone number"
-                    className="mt-1 font-mono"
+                    className="mt-1"
                   />
-                  {formData.companyInfo?.companyPhone && !validateBdPhone(formData.companyInfo.companyPhone).isValid && (
-                    <p className="text-[10px] text-rose-500 font-bold mt-1">
-                      {validateBdPhone(formData.companyInfo.companyPhone).error}
-                    </p>
-                  )}
                 </div>
 
                 <div>
@@ -336,18 +293,10 @@ export function JobVerificationForm({
                     type="text"
                     required
                     value={formData.clientInfo?.clientPhone || ''}
-                    onChange={(e) => {
-                      updateNested('clientInfo', 'clientPhone', e.target.value);
-                      triggerLookup(e.target.value);
-                    }}
+                    onChange={(e) => updateNested('clientInfo', 'clientPhone', e.target.value)}
                     placeholder="Enter candidate phone number"
                     className="mt-1 font-mono"
                   />
-                  {formData.clientInfo?.clientPhone && !validateBdPhone(formData.clientInfo.clientPhone).isValid && (
-                    <p className="text-[10px] text-rose-500 font-bold mt-1">
-                      {validateBdPhone(formData.clientInfo.clientPhone).error}
-                    </p>
-                  )}
                 </div>
 
                 <div>
@@ -355,10 +304,7 @@ export function JobVerificationForm({
                   <Input
                     type="email"
                     value={formData.clientInfo?.clientEmail || ''}
-                    onChange={(e) => {
-                      updateNested('clientInfo', 'clientEmail', e.target.value);
-                      triggerLookup(e.target.value);
-                    }}
+                    onChange={(e) => updateNested('clientInfo', 'clientEmail', e.target.value)}
                     placeholder="Enter candidate email address"
                     className="mt-1"
                   />
@@ -655,11 +601,6 @@ export function JobVerificationForm({
                   placeholder="Enter contact phone number"
                   className="mt-1 font-mono"
                 />
-                {formData.helperInfo?.helperPhone && !validateBdPhone(formData.helperInfo.helperPhone).isValid && (
-                  <p className="text-[10px] text-rose-500 font-bold mt-1">
-                    {validateBdPhone(formData.helperInfo.helperPhone).error}
-                  </p>
-                )}
               </div>
             </div>
           </div>
@@ -806,17 +747,6 @@ export function JobVerificationForm({
           </DialogFooter>
         </DialogContent>
       </Dialog>
-
-      {detectedMatch && (
-        <ExistingClientAlertModal
-          client={detectedMatch.client}
-          caseFile={detectedMatch.caseFile}
-          onYes={handleYes}
-          onNo={handleNo}
-        />
-      )}
     </div>
   );
 }
-
-export default JobVerificationForm;

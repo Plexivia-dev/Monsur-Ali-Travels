@@ -113,9 +113,10 @@ export function InvoiceBuilder() {
 
   const handlePrint = () => {
     printDocument({
-      docId: data.invoiceNo,
+      docId: data?.invoiceNo,
       docType: 'Invoice',
-      clientName: data.client?.name,
+      clientName: data?.client?.name,
+      elementId: 'printable-invoice-canvas',
     });
   };
 

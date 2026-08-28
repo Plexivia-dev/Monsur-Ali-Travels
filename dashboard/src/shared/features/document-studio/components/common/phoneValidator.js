@@ -3,24 +3,19 @@
  * Supports:
  * - Local 11-digit format: 013XXXXXXXX - 019XXXXXXXX
  * - Country code formats: +8801XXXXXXXXX or 8801XXXXXXXXX
- * - Formatted inputs: +880 1345-579534, 01712-345678, etc.
  */
 export function validateBdPhone(phone) {
   if (!phone || typeof phone !== 'string' || !phone.trim()) {
     return { isValid: false, formatted: '', error: 'Phone number is required' };
   }
 
-  const trimmed = phone.trim();
-  const clean = trimmed.replace(/\D/g, '');
+  const clean = phone.replace(/\D/g, '');
 
   let normalized = clean;
-  // If starts with 8801... (13 digits), strip 88 -> 01XXXXXXXXX
   if (clean.length === 13 && clean.startsWith('8801')) {
-    normalized = clean.slice(2);
+    normalized = '0' + clean.slice(2);
   } else if (clean.length === 14 && clean.startsWith('88001')) {
-    normalized = clean.slice(3);
-  } else if (clean.length === 10 && clean.startsWith('1')) {
-    normalized = '0' + clean;
+    normalized = '0' + clean.slice(3);
   }
 
   // BD standard: 11 digits starting with 013, 014, 015, 016, 017, 018, 019
@@ -53,4 +48,3 @@ export function validateBdPhone(phone) {
   };
 }
 
-export default validateBdPhone;

@@ -20,7 +20,7 @@ export function JobVerificationPreview({ data }) {
   return (
     <div
       id="job-verification-canvas"
-      className="printable-a4-paper w-full max-w-[210mm] min-h-[296mm] bg-white text-slate-900 px-6 py-5 flex flex-col justify-between font-sans shadow-xl border border-slate-300 relative box-border print:shadow-none print:border-0 print:m-0 print:p-0 print:max-w-none print:w-full"
+      className="printable-a4-paper w-[210mm] max-w-full min-h-[296mm] bg-white text-slate-900 px-6 py-5 flex flex-col justify-between font-sans shadow-xl border border-slate-300 relative box-border print:shadow-none print:border-0 print:m-0 print:p-0"
       style={{ fontFamily: "'Montserrat', 'Plus Jakarta Sans', Arial, sans-serif" }}
     >
       <div className="w-full">

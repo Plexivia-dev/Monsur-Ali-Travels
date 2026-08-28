@@ -84,9 +84,10 @@ export function JobVerification({ initialData = null, onSavedSuccess = null, isL
 
   const handlePrint = () => {
     printDocument({
-      docId: data.verificationId,
+      docId: data?.verificationId,
       docType: 'Job_Verification',
-      clientName: data.employeeName,
+      clientName: data?.clientInfo?.clientName || data?.employeeName,
+      elementId: 'job-verification-canvas',
     });
   };
 

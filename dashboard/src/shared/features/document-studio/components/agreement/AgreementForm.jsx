@@ -88,14 +88,6 @@ export function AgreementForm({ formData, setFormData, onSubmit, onReset, isSubm
   const handleNext = (e) => {
     e.preventDefault();
     if (currentStep === 1) {
-      const headerPhone = formData.header?.phone || '';
-      if (headerPhone) {
-        const check = validateBdPhone(headerPhone);
-        if (!check.isValid) {
-          toast.error(`Company Phone: ${check.error}`);
-          return;
-        }
-      }
       const empPhone = formData.parties?.employeePhone || '';
       if (empPhone) {
         const check = validateBdPhone(empPhone);
@@ -112,43 +104,7 @@ export function AgreementForm({ formData, setFormData, onSubmit, onReset, isSubm
           return;
         }
       }
-      const guardianPhone = formData.guardian?.guardianPhone || '';
-      if (guardianPhone) {
-        const check = validateBdPhone(guardianPhone);
-        if (!check.isValid) {
-          toast.error(`Guardian Phone: ${check.error}`);
-          return;
-        }
-      }
-      const emergencyPhone = formData.guardian?.emergencyPhone || '';
-      if (emergencyPhone) {
-        const check = validateBdPhone(emergencyPhone);
-        if (!check.isValid) {
-          toast.error(`Emergency Phone: ${check.error}`);
-          return;
-        }
-      }
     }
-
-    if (currentStep === 4) {
-      const w1Phone = formData.witnesses?.firstWitnessPhone || '';
-      if (w1Phone) {
-        const check = validateBdPhone(w1Phone);
-        if (!check.isValid) {
-          toast.error(`Witness 1 Phone: ${check.error}`);
-          return;
-        }
-      }
-      const w2Phone = formData.witnesses?.secondWitnessPhone || '';
-      if (w2Phone) {
-        const check = validateBdPhone(w2Phone);
-        if (!check.isValid) {
-          toast.error(`Witness 2 Phone: ${check.error}`);
-          return;
-        }
-      }
-    }
-
     if (currentStep < 4) {
       setCurrentStep(currentStep + 1);
     } else {
@@ -294,11 +250,6 @@ export function AgreementForm({ formData, setFormData, onSubmit, onReset, isSubm
                     value={formData.header?.phone || ''}
                     onChange={(val) => updateNested('header', 'phone', val)}
                   />
-                  {formData.header?.phone && !validateBdPhone(formData.header.phone).isValid && (
-                    <p className="text-[10px] text-rose-500 font-bold mt-1">
-                      {validateBdPhone(formData.header.phone).error}
-                    </p>
-                  )}
                 </div>
                 <div className="space-y-1.5">
                   <Label>{t('agreement.email')} :</Label>
@@ -357,11 +308,6 @@ export function AgreementForm({ formData, setFormData, onSubmit, onReset, isSubm
                       triggerLookup(val);
                     }}
                   />
-                  {formData.parties?.employerPhone && !validateBdPhone(formData.parties.employerPhone).isValid && (
-                    <p className="text-[10px] text-rose-500 font-bold mt-1">
-                      {validateBdPhone(formData.parties.employerPhone).error}
-                    </p>
-                  )}
                 </div>
                 <div className="space-y-1.5">
                   <Label>{t('agreement.employeeName')} : *</Label>
@@ -446,11 +392,6 @@ export function AgreementForm({ formData, setFormData, onSubmit, onReset, isSubm
                     value={formData.guardian?.guardianPhone || ''}
                     onChange={(val) => updateNested('guardian', 'guardianPhone', val)}
                   />
-                  {formData.guardian?.guardianPhone && !validateBdPhone(formData.guardian.guardianPhone).isValid && (
-                    <p className="text-[10px] text-rose-500 font-bold mt-1">
-                      {validateBdPhone(formData.guardian.guardianPhone).error}
-                    </p>
-                  )}
                 </div>
                 <div className="space-y-1.5">
                   <Label>{t('agreement.relationship')} :</Label>
@@ -471,11 +412,6 @@ export function AgreementForm({ formData, setFormData, onSubmit, onReset, isSubm
                     value={formData.guardian?.emergencyPhone || ''}
                     onChange={(val) => updateNested('guardian', 'emergencyPhone', val)}
                   />
-                  {formData.guardian?.emergencyPhone && !validateBdPhone(formData.guardian.emergencyPhone).isValid && (
-                    <p className="text-[10px] text-rose-500 font-bold mt-1">
-                      {validateBdPhone(formData.guardian.emergencyPhone).error}
-                    </p>
-                  )}
                 </div>
                 <div className="space-y-1.5">
                   <Label>{t('agreement.guardianNid')} :</Label>
@@ -715,11 +651,6 @@ export function AgreementForm({ formData, setFormData, onSubmit, onReset, isSubm
                       value={formData.witnesses?.firstWitnessPhone || ''}
                       onChange={(val) => updateNested('witnesses', 'firstWitnessPhone', val)}
                     />
-                    {formData.witnesses?.firstWitnessPhone && !validateBdPhone(formData.witnesses.firstWitnessPhone).isValid && (
-                      <p className="text-[10px] text-rose-500 font-bold mt-1">
-                        {validateBdPhone(formData.witnesses.firstWitnessPhone).error}
-                      </p>
-                    )}
                   </div>
                 </div>
 
@@ -741,11 +672,6 @@ export function AgreementForm({ formData, setFormData, onSubmit, onReset, isSubm
                       value={formData.witnesses?.secondWitnessPhone || ''}
                       onChange={(val) => updateNested('witnesses', 'secondWitnessPhone', val)}
                     />
-                    {formData.witnesses?.secondWitnessPhone && !validateBdPhone(formData.witnesses.secondWitnessPhone).isValid && (
-                      <p className="text-[10px] text-rose-500 font-bold mt-1">
-                        {validateBdPhone(formData.witnesses.secondWitnessPhone).error}
-                      </p>
-                    )}
                   </div>
                 </div>
               </div>

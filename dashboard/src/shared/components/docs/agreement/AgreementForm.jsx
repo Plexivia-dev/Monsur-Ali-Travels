@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   FileText,
@@ -31,19 +31,11 @@ import { Input, Select } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
-import { useClientLookup } from '../common/useClientLookup';
-import { ExistingClientAlertModal } from '../common/ExistingClientAlertModal';
-import { toast } from 'sonner';
-import { validateBdPhone } from '../common/phoneValidator';
 
 export function AgreementForm({ formData, setFormData, onSubmit, onReset, isSubmitting = false }) {
   const { t } = useTranslation();
   const [currentStep, setCurrentStep] = useState(1);
   const [resetDialogOpen, setResetDialogOpen] = useState(false);
-  const [detectedMatch, setDetectedMatch] = useState(null);
-  const { triggerLookup, resetLookup } = useClientLookup({
-    onClientFound: (client, caseFile) => setDetectedMatch({ client, caseFile }),
-  });
 
   const steps = [
     { id: 1, title: t('agreement.partiesGuardian'), icon: User },
@@ -87,68 +79,6 @@ export function AgreementForm({ formData, setFormData, onSubmit, onReset, isSubm
 
   const handleNext = (e) => {
     e.preventDefault();
-    if (currentStep === 1) {
-      const headerPhone = formData.header?.phone || '';
-      if (headerPhone) {
-        const check = validateBdPhone(headerPhone);
-        if (!check.isValid) {
-          toast.error(`Company Phone: ${check.error}`);
-          return;
-        }
-      }
-      const empPhone = formData.parties?.employeePhone || '';
-      if (empPhone) {
-        const check = validateBdPhone(empPhone);
-        if (!check.isValid) {
-          toast.error(`Employee Phone: ${check.error}`);
-          return;
-        }
-      }
-      const mgrPhone = formData.parties?.employerPhone || '';
-      if (mgrPhone) {
-        const check = validateBdPhone(mgrPhone);
-        if (!check.isValid) {
-          toast.error(`Employer Phone: ${check.error}`);
-          return;
-        }
-      }
-      const guardianPhone = formData.guardian?.guardianPhone || '';
-      if (guardianPhone) {
-        const check = validateBdPhone(guardianPhone);
-        if (!check.isValid) {
-          toast.error(`Guardian Phone: ${check.error}`);
-          return;
-        }
-      }
-      const emergencyPhone = formData.guardian?.emergencyPhone || '';
-      if (emergencyPhone) {
-        const check = validateBdPhone(emergencyPhone);
-        if (!check.isValid) {
-          toast.error(`Emergency Phone: ${check.error}`);
-          return;
-        }
-      }
-    }
-
-    if (currentStep === 4) {
-      const w1Phone = formData.witnesses?.firstWitnessPhone || '';
-      if (w1Phone) {
-        const check = validateBdPhone(w1Phone);
-        if (!check.isValid) {
-          toast.error(`Witness 1 Phone: ${check.error}`);
-          return;
-        }
-      }
-      const w2Phone = formData.witnesses?.secondWitnessPhone || '';
-      if (w2Phone) {
-        const check = validateBdPhone(w2Phone);
-        if (!check.isValid) {
-          toast.error(`Witness 2 Phone: ${check.error}`);
-          return;
-        }
-      }
-    }
-
     if (currentStep < 4) {
       setCurrentStep(currentStep + 1);
     } else {
@@ -162,45 +92,6 @@ export function AgreementForm({ formData, setFormData, onSubmit, onReset, isSubm
     }
   };
 
-  const handleYes = () => {
-    if (!detectedMatch?.client) return;
-    const c = detectedMatch.client;
-    setFormData(prev => ({
-      ...prev,
-      clientId: c._id,
-      clientDid: c.did,
-      linkedCaseId: detectedMatch.caseFile?._id || null,
-      linkedCaseDid: detectedMatch.caseFile?.did || null,
-      parties: {
-        ...prev.parties,
-        employeeName: c.fullName || prev.parties.employeeName,
-        employeePhone: c.phone || prev.parties.employeePhone,
-        employeeEmail: c.email || prev.parties.employeeEmail,
-        nidPassport: c.passportNumber || c.nidNumber || prev.parties.nidPassport,
-        fatherHusbandName: c.fatherName || prev.parties.fatherHusbandName,
-        address: c.presentAddress || c.address || prev.parties.address,
-      },
-      guardian: {
-        ...prev.guardian,
-        guardianName: c.guardian?.name || prev.guardian.guardianName,
-        guardianPhone: c.guardian?.phone || prev.guardian.guardianPhone,
-      },
-    }));
-    toast.success(`"${c.fullName}" info auto-filled from database!`);
-    setDetectedMatch(null);
-  };
-
-  const handleNo = () => {
-    const val = detectedMatch?.client?.phone || '';
-    setFormData(prev => ({
-      ...prev,
-      parties: { ...prev.parties, employeePhone: '', employeeEmail: '' },
-    }));
-    resetLookup(val);
-    toast.info('Please enter a different phone number or email.');
-    setDetectedMatch(null);
-  };
-
   const confirmReset = () => {
     onReset();
     setCurrentStep(1);
@@ -211,6 +102,27 @@ export function AgreementForm({ formData, setFormData, onSubmit, onReset, isSubm
 
   return (
     <div className="space-y-5 w-full mx-auto">
+      {/* Top Header Card */}
+      <div className="bg-card border border-border p-6 rounded-xl shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b-2 border-border">
+        <div>
+          <h2 className="text-xl sm:text-2xl font-bold text-foreground flex items-center gap-2 tracking-tight">
+            <FileText className="w-6 h-6 text-primary shrink-0" />
+            {t('agreement.formTitle', { step: currentStep })}
+          </h2>
+        </div>
+
+        <Button
+          type="button"
+          variant="reset"
+          size="sm"
+          onClick={() => setResetDialogOpen(true)}
+          className="shrink-0 self-start sm:self-auto"
+        >
+          <RotateCcw className="w-3.5 h-3.5" />
+          <span>{t('agreement.reset', 'Reset')}</span>
+        </Button>
+      </div>
+
       {/* Corporate Stepper Header */}
       <div className="bg-card border border-border p-4 rounded-xl shadow-sm space-y-3">
         {/* Progress Bar */}
@@ -294,11 +206,6 @@ export function AgreementForm({ formData, setFormData, onSubmit, onReset, isSubm
                     value={formData.header?.phone || ''}
                     onChange={(val) => updateNested('header', 'phone', val)}
                   />
-                  {formData.header?.phone && !validateBdPhone(formData.header.phone).isValid && (
-                    <p className="text-[10px] text-rose-500 font-bold mt-1">
-                      {validateBdPhone(formData.header.phone).error}
-                    </p>
-                  )}
                 </div>
                 <div className="space-y-1.5">
                   <Label>{t('agreement.email')} :</Label>
@@ -331,11 +238,9 @@ export function AgreementForm({ formData, setFormData, onSubmit, onReset, isSubm
                   <Input
                     type="text"
                     required
-                    readOnly={formData.isLocked}
-                    disabled={formData.isLocked}
                     value={formData.parties?.nidPassport || ''}
                     onChange={(e) => updateNested('parties', 'nidPassport', e.target.value)}
-                    className={`font-mono font-bold ${formData.isLocked ? 'bg-muted/70 cursor-not-allowed opacity-80' : ''}`}
+                    className="font-mono font-bold"
                     placeholder=""
                   />
                 </div>
@@ -352,54 +257,25 @@ export function AgreementForm({ formData, setFormData, onSubmit, onReset, isSubm
                   <Label>{t('agreement.employerPhone')} :</Label>
                   <BdPhoneInput
                     value={formData.parties?.employerPhone || ''}
-                    onChange={(val) => {
-                      updateNested('parties', 'employerPhone', val);
-                      triggerLookup(val);
-                    }}
+                    onChange={(val) => updateNested('parties', 'employerPhone', val)}
                   />
-                  {formData.parties?.employerPhone && !validateBdPhone(formData.parties.employerPhone).isValid && (
-                    <p className="text-[10px] text-rose-500 font-bold mt-1">
-                      {validateBdPhone(formData.parties.employerPhone).error}
-                    </p>
-                  )}
                 </div>
                 <div className="space-y-1.5">
                   <Label>{t('agreement.employeeName')} : *</Label>
                   <Input
                     type="text"
                     required
-                    readOnly={formData.isLocked}
-                    disabled={formData.isLocked}
                     value={formData.parties?.employeeName || ''}
                     onChange={(e) => updateNested('parties', 'employeeName', e.target.value)}
-                    className={formData.isLocked ? 'bg-muted/70 cursor-not-allowed font-bold opacity-80' : ''}
                     placeholder=""
                   />
-                </div>
-                <div className="space-y-1.5">
-                  <Label>{t('agreement.employeePhone', 'Employee Phone')} : *</Label>
-                  <BdPhoneInput
-                    value={formData.parties?.employeePhone || ''}
-                    onChange={(val) => {
-                      updateNested('parties', 'employeePhone', val);
-                      triggerLookup(val);
-                    }}
-                  />
-                  {formData.parties?.employeePhone && !validateBdPhone(formData.parties.employeePhone).isValid && (
-                    <p className="text-[10px] text-rose-500 font-bold mt-1">
-                      {validateBdPhone(formData.parties.employeePhone).error}
-                    </p>
-                  )}
                 </div>
                 <div className="space-y-1.5">
                   <Label>{t('agreement.employeeEmail')} :</Label>
                   <Input
                     type="email"
                     value={formData.parties?.employeeEmail || ''}
-                    onChange={(e) => {
-                      updateNested('parties', 'employeeEmail', e.target.value);
-                      triggerLookup(e.target.value);
-                    }}
+                    onChange={(e) => updateNested('parties', 'employeeEmail', e.target.value)}
                     placeholder=""
                   />
                 </div>
@@ -446,11 +322,6 @@ export function AgreementForm({ formData, setFormData, onSubmit, onReset, isSubm
                     value={formData.guardian?.guardianPhone || ''}
                     onChange={(val) => updateNested('guardian', 'guardianPhone', val)}
                   />
-                  {formData.guardian?.guardianPhone && !validateBdPhone(formData.guardian.guardianPhone).isValid && (
-                    <p className="text-[10px] text-rose-500 font-bold mt-1">
-                      {validateBdPhone(formData.guardian.guardianPhone).error}
-                    </p>
-                  )}
                 </div>
                 <div className="space-y-1.5">
                   <Label>{t('agreement.relationship')} :</Label>
@@ -471,11 +342,6 @@ export function AgreementForm({ formData, setFormData, onSubmit, onReset, isSubm
                     value={formData.guardian?.emergencyPhone || ''}
                     onChange={(val) => updateNested('guardian', 'emergencyPhone', val)}
                   />
-                  {formData.guardian?.emergencyPhone && !validateBdPhone(formData.guardian.emergencyPhone).isValid && (
-                    <p className="text-[10px] text-rose-500 font-bold mt-1">
-                      {validateBdPhone(formData.guardian.emergencyPhone).error}
-                    </p>
-                  )}
                 </div>
                 <div className="space-y-1.5">
                   <Label>{t('agreement.guardianNid')} :</Label>
@@ -715,11 +581,6 @@ export function AgreementForm({ formData, setFormData, onSubmit, onReset, isSubm
                       value={formData.witnesses?.firstWitnessPhone || ''}
                       onChange={(val) => updateNested('witnesses', 'firstWitnessPhone', val)}
                     />
-                    {formData.witnesses?.firstWitnessPhone && !validateBdPhone(formData.witnesses.firstWitnessPhone).isValid && (
-                      <p className="text-[10px] text-rose-500 font-bold mt-1">
-                        {validateBdPhone(formData.witnesses.firstWitnessPhone).error}
-                      </p>
-                    )}
                   </div>
                 </div>
 
@@ -741,11 +602,6 @@ export function AgreementForm({ formData, setFormData, onSubmit, onReset, isSubm
                       value={formData.witnesses?.secondWitnessPhone || ''}
                       onChange={(val) => updateNested('witnesses', 'secondWitnessPhone', val)}
                     />
-                    {formData.witnesses?.secondWitnessPhone && !validateBdPhone(formData.witnesses.secondWitnessPhone).isValid && (
-                      <p className="text-[10px] text-rose-500 font-bold mt-1">
-                        {validateBdPhone(formData.witnesses.secondWitnessPhone).error}
-                      </p>
-                    )}
                   </div>
                 </div>
               </div>
@@ -855,17 +711,6 @@ export function AgreementForm({ formData, setFormData, onSubmit, onReset, isSubm
           </DialogFooter>
         </DialogContent>
       </Dialog>
-
-      {detectedMatch && (
-        <ExistingClientAlertModal
-          client={detectedMatch.client}
-          caseFile={detectedMatch.caseFile}
-          onYes={handleYes}
-          onNo={handleNo}
-        />
-      )}
     </div>
   );
 }
-
-export default AgreementForm;
