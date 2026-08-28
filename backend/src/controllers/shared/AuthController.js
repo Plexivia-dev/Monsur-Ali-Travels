@@ -337,7 +337,23 @@ export const getProfile = async (req, res, next) => {
     if (!user) {
       return res.status(404).json({ status: "error", message: "User not found" });
     }
-    res.json({ status: "success", data: user });
+    res.json({
+      status: "success",
+      data: {
+        id: user.did,
+        did: user.did,
+        name: user.name,
+        email: user.email,
+        phone: user.phone || "",
+        address: user.address || "",
+        role: user.role,
+        subRole: user.subRole || "",
+        department: user.department || "",
+        designation: user.designation || "",
+        avatar: user.avatar || "",
+        lastLogin: user.lastLogin,
+      },
+    });
   } catch (error) {
     next(error);
   }

@@ -3,7 +3,10 @@
 ## [2026-08-27]
 - **Dashboard Version**: `v0.4.2`
 
-### 1. Client Dashboard Overview, Task Management & Real-Time Notifications (NC01 - NC14)
+### 1. Client Dashboard Overview, Task Management & Real-Time Notifications (NC01 - NC15)
+- **NC15 - Sync User Profile on App Mount & Sanitize GET /auth/me**:
+  - Implemented automatic `fetchProfile()` in `AuthGuard` on app initialization.
+  - Sanitized return schema in `getProfile` (`/api/v1/auth/me`).
 - **NC14 - Fix Auth Role Fallback & Remove Hardcoded Avatars**:
   - Removed `{ role: "Owner" }` fallback from `AuthController.js` login.
   - Removed Unsplash placeholder avatars from `useAuthStore.js` and profile forms.
