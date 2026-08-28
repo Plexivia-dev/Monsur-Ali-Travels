@@ -421,6 +421,16 @@ export const createCase = async (req, res) => {
       }
     ).catch(() => {});
 
+    // Broadcast new case creation notification
+    await NotificationModel.create({
+      title: "New Case Created",
+      message: `Case ${newCase.caseNumber} opened for ${newCase.applicantName || "Client"} (${newCase.caseType}).`,
+      module: "visa",
+      type: "info",
+      refDid: newCase.did,
+      createdBy: creatorName,
+    }).catch(() => {});
+
     return res.status(201).json({
       success: true,
       status: "success",
