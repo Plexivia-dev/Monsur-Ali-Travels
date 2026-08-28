@@ -4,6 +4,10 @@ import {
   generateVoucherQrCode,
   generateVoucherQrUrl,
 } from "../models/cashVoucher.model.js";
+import {
+  sendPaymentDocCreatedEmailToAccountants,
+  sendPaymentOrBillCreatedEmailToOwners,
+} from "../services/emailNotification.service.js";
 
 // ─── GET ALL ──────────────────────────────────────────────────────────────────
 // @route  GET /api/v1/cash-vouchers
@@ -101,6 +105,27 @@ export const createVoucher = async (req, res, next) => {
     }
 
     const voucher = await CashVoucherModel.create(body);
+
+    const creatorName = req.user?.name || body.createdByName || "Staff Member";
+    const voucherAmount = Number(voucher.grandTotal || voucher.totalAmount || voucher.amount || 0);
+
+    // Action 3: Email Accountant
+    sendPaymentDocCreatedEmailToAccountants({
+      createdByUserName: creatorName,
+      docType: "Cash Voucher",
+      docNumber: voucher.voucherNo,
+      amount: voucherAmount,
+      clientName: voucher.receivedFrom || "",
+    }).catch((err) => console.error("[EmailTrigger] sendPaymentDocCreatedEmailToAccountants (Voucher) error:", err.message));
+
+    // Action 4: Email Owners for payment entry
+    sendPaymentOrBillCreatedEmailToOwners({
+      createdByUserName: creatorName,
+      type: "Cash Voucher",
+      refNumber: voucher.voucherNo,
+      amount: voucherAmount,
+      notes: `Voucher paid to/received from: ${voucher.receivedFrom || "N/A"}`,
+    }).catch((err) => console.error("[EmailTrigger] sendPaymentOrBillCreatedEmailToOwners (Voucher) error:", err.message));
 
     return res.status(201).json({
       status: "success",

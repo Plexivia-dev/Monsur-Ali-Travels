@@ -5,6 +5,10 @@ import {
   generateReceiptQrText,
 } from "../../models/moneyReceipt.model.js";
 import Client from "../../models/client.model.js";
+import {
+  sendPaymentDocCreatedEmailToAccountants,
+  sendPaymentOrBillCreatedEmailToOwners,
+} from "../../services/emailNotification.service.js";
 
 // @desc    Get all money receipts / tokens with pagination and search
 // @route   GET /api/v1/receipts
@@ -224,6 +228,27 @@ export const createReceipt = async (req, res, next) => {
     }
 
     const newReceipt = await MoneyReceiptModel.create(body);
+
+    const creatorName = req.user?.name || body.createdByName || "Staff Member";
+    const receiptAmount = Number(newReceipt.amount || 0);
+
+    // Action 3: Email Accountant
+    sendPaymentDocCreatedEmailToAccountants({
+      createdByUserName: creatorName,
+      docType: "Money Receipt / Payment Token",
+      docNumber: newReceipt.receiptNo,
+      amount: receiptAmount,
+      clientName: newReceipt.clientName || "",
+    }).catch((err) => console.error("[EmailTrigger] sendPaymentDocCreatedEmailToAccountants (Receipt) error:", err.message));
+
+    // Action 4: Email Owners for payment entry
+    sendPaymentOrBillCreatedEmailToOwners({
+      createdByUserName: creatorName,
+      type: "Money Receipt",
+      refNumber: newReceipt.receiptNo,
+      amount: receiptAmount,
+      notes: `Purpose: ${newReceipt.purpose || newReceipt.serviceType || "Visa Service"} (Client: ${newReceipt.clientName || "N/A"})`,
+    }).catch((err) => console.error("[EmailTrigger] sendPaymentOrBillCreatedEmailToOwners (Receipt) error:", err.message));
 
     return res.status(201).json({
       status: "success",

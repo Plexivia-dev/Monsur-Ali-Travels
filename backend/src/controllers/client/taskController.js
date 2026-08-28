@@ -1,6 +1,7 @@
 import TaskModel from "../../models/task.model.js";
 import CaseFile from "../../models/caseFile.model.js";
 import { NotificationModel } from "../../models/notification.model.js";
+import { sendTaskCompletedEmailToOwners } from "../../services/emailNotification.service.js";
 
 /**
  * 1. Get My Tasks (Staff Scope)
@@ -66,6 +67,14 @@ export const markTaskDone = async (req, res) => {
       type: "success",
       createdBy: req.user?.name || "Staff",
     }).catch(() => {});
+
+    // Action 5: Email Owners when staff marks task Done / Complete
+    sendTaskCompletedEmailToOwners({
+      staffName: req.user?.name || "Staff Member",
+      taskTitle: task.title,
+      caseNumber: task.caseDid,
+      completionNotes: completionNotes || "",
+    }).catch((err) => console.error("[EmailTrigger] sendTaskCompletedEmailToOwners error:", err.message));
 
     return res.status(200).json({
       status: "success",

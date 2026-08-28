@@ -4,6 +4,10 @@ import TaskModel from "../../models/task.model.js";
 import DocumentVaultModel from "../../models/documentVault.model.js";
 import { NotificationModel } from "../../models/notification.model.js";
 import { UserModel } from "../../models/user.model.js";
+import {
+  sendTaskAssignedEmailToStaff,
+  sendPaymentOrBillCreatedEmailToOwners,
+} from "../../services/emailNotification.service.js";
 
 export const buildCaseIdentifierQuery = (identifier) => {
   if (!identifier) return { _id: null };
@@ -169,6 +173,14 @@ export const assignTaskStep = async (req, res) => {
       createdBy: req.user?.name || "Admin",
     }).catch(() => {});
 
+    // Action 2: Email staff member
+    sendTaskAssignedEmailToStaff({
+      assignedByUserName: req.user?.name || "Management",
+      assignedToDid: canonicalAssignedToDid,
+      taskTitle: title,
+      caseNumber: caseDoc.caseNumber || caseDoc.did,
+    }).catch((err) => console.error("[EmailTrigger] sendTaskAssignedEmailToStaff error:", err.message));
+
     return res.status(201).json({
       status: "success",
       message: "Task step assigned successfully",
@@ -307,6 +319,15 @@ export const addPayment = async (req, res) => {
       recipientUserDid: caseDoc.assignedToDid || null,
       createdBy: req.user?.name || "Admin",
     }).catch(() => {});
+
+    // Action 4: Email Owners for payment entry
+    sendPaymentOrBillCreatedEmailToOwners({
+      createdByUserName: req.user?.name || "Accounts / Admin",
+      type: `Payment (${paymentType})`,
+      refNumber: `Case #${caseDoc.caseNumber || caseDoc.did}`,
+      amount: paymentAmount,
+      notes: notes || `Payment method: ${paymentMethod}`,
+    }).catch((err) => console.error("[EmailTrigger] sendPaymentOrBillCreatedEmailToOwners error:", err.message));
 
     return res.status(200).json({
       status: "success",
