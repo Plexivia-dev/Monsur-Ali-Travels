@@ -47,10 +47,10 @@ export function AdminHeader({ lang, setLang }) {
           <button
             type="button"
             onClick={handleBack}
-            className="flex h-9 items-center gap-1.5 px-2.5 rounded-lg text-white hover:bg-white/10 transition-all font-semibold text-xs border border-white/20 shadow-xs cursor-pointer"
+            className="flex h-9 items-center gap-1.5 px-3 rounded-lg bg-white hover:bg-white/95 text-slate-900 font-bold text-xs shadow-sm cursor-pointer border border-white/40 transition-all group"
             title={'Go back to previous page'}
           >
-            <ArrowLeft className="h-4 w-4 text-white" />
+            <ArrowLeft className="h-4 w-4 text-slate-900 group-hover:-translate-x-0.5 transition-transform stroke-[2.5]" />
             <span className="hidden sm:inline">{'Back'}</span>
           </button>
         )}
