@@ -29,6 +29,7 @@ import { validateBdPhone } from '../common/phoneValidator';
 
 export function InvoiceForm({ data, onChange, onSubmit, onReset, isSubmitting = false }) {
   const [detectedMatch, setDetectedMatch] = useState(null);
+  const [phoneTouched, setPhoneTouched] = useState(false);
 
   const { triggerLookup, resetLookup } = useClientLookup({
     onClientFound: (client, caseFile) => setDetectedMatch({ client, caseFile }),
@@ -40,7 +41,7 @@ export function InvoiceForm({ data, onChange, onSubmit, onReset, isSubmitting = 
       client: { ...prev.client, [field]: value },
     }));
 
-    if (field === 'phone' || field === 'email') {
+    if (field === 'phone') {
       triggerLookup(value);
     }
   };
@@ -48,47 +49,48 @@ export function InvoiceForm({ data, onChange, onSubmit, onReset, isSubmitting = 
   const handleYes = () => {
     if (!detectedMatch?.client) return;
     const c = detectedMatch.client;
-    onChange(prev => ({
+    onChange((prev) => ({
       ...prev,
-      clientId: c._id,
-      clientDid: c.did,
-      linkedCaseId: detectedMatch.caseFile?._id || null,
-      linkedCaseDid: detectedMatch.caseFile?.did || null,
+      clientId: c._id || c.did || prev.clientId,
+      clientDid: c.did || c._id || prev.clientDid,
+      linkedCaseId: detectedMatch.caseFile?._id || prev.linkedCaseId || null,
+      linkedCaseDid: detectedMatch.caseFile?.did || prev.linkedCaseDid || null,
       client: {
         ...prev.client,
-        name: c.fullName || prev.client.name,
-        phone: c.phone || prev.client.phone,
+        name: c.fullName || c.name || prev.client.name,
+        phone: c.phone || c.mobileNumber || prev.client.phone,
         email: c.email || prev.client.email,
-        address: c.presentAddress || c.address || prev.client.address,
+        address: c.presentAddress || c.permanentAddress || c.address || prev.client.address,
       },
     }));
-    toast.success(`"${c.fullName}" info auto-filled!`);
+    toast.success(`"${c.fullName || c.name}" info auto-filled!`);
     setDetectedMatch(null);
   };
 
   const handleNo = () => {
-    const val = detectedMatch?.client?.phone || '';
-    onChange(prev => ({
+    const val = detectedMatch?.client?.phone || data.client?.phone || '';
+    onChange((prev) => ({
       ...prev,
-      client: { ...prev.client, phone: '', email: '' },
+      client: { ...prev.client, phone: '' },
     }));
     resetLookup(val);
-    toast.info('Please enter a different phone number or email.');
+    setPhoneTouched(false);
+    toast.info('Please enter a different phone number.');
     setDetectedMatch(null);
   };
 
   const handleSubmit = (e) => {
     if (e && e.preventDefault) e.preventDefault();
     const phone = data.client?.phone || '';
-    if (phone) {
-      const check = validateBdPhone(phone);
-      if (!check.isValid) {
-        toast.error(`Client Phone: ${check.error}`);
-        return;
-      }
+    const check = validateBdPhone(phone);
+    if (!check.isValid) {
+      setPhoneTouched(true);
+      toast.error(`Client Phone: ${check.error}`);
+      return;
     }
     onSubmit();
   };
+
 
   const handleAddItem = () => {
     const newItem = {
@@ -221,14 +223,21 @@ export function InvoiceForm({ data, onChange, onSubmit, onReset, isSubmitting = 
           </div>
 
           <div>
-            <label className="block font-bold text-foreground mb-1">Phone / Mobile No.</label>
+            <label className="block font-bold text-foreground mb-1">
+              Phone / Mobile No. <span className="text-rose-500">*</span>
+            </label>
             <BdPhoneInput
               value={data.client?.phone || ''}
-              onChange={(val) => handleClientChange('phone', val)}
+              required
+              onBlur={() => setPhoneTouched(true)}
+              onChange={(val) => {
+                handleClientChange('phone', val);
+                if (phoneTouched) setPhoneTouched(true);
+              }}
             />
-            {data.client?.phone && !validateBdPhone(data.client.phone).isValid && (
+            {((phoneTouched || Boolean(data.client?.phone)) && !validateBdPhone(data.client?.phone || '').isValid) && (
               <p className="text-[10px] text-rose-500 font-bold mt-1">
-                {validateBdPhone(data.client.phone).error}
+                {validateBdPhone(data.client?.phone || '').error}
               </p>
             )}
           </div>

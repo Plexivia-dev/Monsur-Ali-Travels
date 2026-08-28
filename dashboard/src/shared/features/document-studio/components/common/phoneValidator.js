@@ -1,34 +1,50 @@
 /**
  * Utility to validate and normalize Bangladeshi phone numbers.
  * Supports:
- * - Local 11-digit format: 01XXXXXXXXX
+ * - Local 11-digit format: 013XXXXXXXX - 019XXXXXXXX
  * - Country code formats: +8801XXXXXXXXX or 8801XXXXXXXXX
  */
 export function validateBdPhone(phone) {
-  if (!phone) {
+  if (!phone || typeof phone !== 'string' || !phone.trim()) {
     return { isValid: false, formatted: '', error: 'Phone number is required' };
   }
 
   const clean = phone.replace(/\D/g, '');
 
-  // Local 11-digit BD number
-  if (clean.length === 11 && clean.startsWith('01')) {
-    return { isValid: true, formatted: clean, error: null };
-  }
-
-  // Country code with 13 digits (8801XXXXXXXXX)
+  let normalized = clean;
   if (clean.length === 13 && clean.startsWith('8801')) {
-    return { isValid: true, formatted: '0' + clean.slice(2), error: null };
+    normalized = '0' + clean.slice(2);
+  } else if (clean.length === 14 && clean.startsWith('88001')) {
+    normalized = '0' + clean.slice(3);
   }
 
-  // Country code with 14 characters (+8801XXXXXXXXX)
-  if (phone.trim().startsWith('+') && clean.length === 13 && clean.startsWith('8801')) {
-    return { isValid: true, formatted: '0' + clean.slice(2), error: null };
+  // BD standard: 11 digits starting with 013, 014, 015, 016, 017, 018, 019
+  const bdRegex = /^01[3-9]\d{8}$/;
+
+  if (bdRegex.test(normalized)) {
+    return { isValid: true, formatted: normalized, error: null };
+  }
+
+  if (normalized.length > 0 && !normalized.startsWith('01')) {
+    return {
+      isValid: false,
+      formatted: phone,
+      error: 'Phone number must start with 01 (e.g. 017XXXXXXXX)',
+    };
+  }
+
+  if (normalized.length > 0 && normalized.length !== 11) {
+    return {
+      isValid: false,
+      formatted: phone,
+      error: `Invalid length (${normalized.length}/11 digits). Must be 11 digits`,
+    };
   }
 
   return {
     isValid: false,
     formatted: phone,
-    error: 'Must be a valid Bangladeshi phone number (e.g. 017XXXXXXXX)',
+    error: 'Must be a valid Bangladeshi mobile number (013-019)',
   };
 }
+

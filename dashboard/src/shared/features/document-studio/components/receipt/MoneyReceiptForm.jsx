@@ -28,6 +28,7 @@ import { validateBdPhone } from '../common/phoneValidator';
 export function MoneyReceiptForm({ data, onChange, onReset, onSave, onPreview, isSubmitting }) {
   const { t } = useTranslation();
   const [detectedMatch, setDetectedMatch] = useState(null);
+  const [phoneTouched, setPhoneTouched] = useState(false);
   const [dateMode, setDateMode] = useState('auto'); // 'auto' | 'custom'
 
   const { triggerLookup, resetLookup } = useClientLookup({
@@ -46,7 +47,7 @@ export function MoneyReceiptForm({ data, onChange, onReset, onSave, onPreview, i
       }));
     }
 
-    if (field === 'phone' || field === 'passportNumber') {
+    if (field === 'phone') {
       triggerLookup(value);
     }
   };
@@ -56,49 +57,49 @@ export function MoneyReceiptForm({ data, onChange, onReset, onSave, onPreview, i
     const c = detectedMatch.client;
     onChange((prev) => ({
       ...prev,
-      clientName: c.fullName || prev.clientName,
-      phone: c.phone || prev.phone,
-      passportNumber: c.passportNumber || prev.passportNumber,
-      clientId: c._id || prev.clientId,
-      clientDid: c.did || prev.clientDid,
+      clientName: c.fullName || c.name || prev.clientName,
+      phone: c.phone || c.mobileNumber || prev.phone,
+      passportNumber: c.passportNumber || c.nidNumber || prev.passportNumber,
+      clientId: c._id || c.did || prev.clientId,
+      clientDid: c.did || c._id || prev.clientDid,
       linkedCaseId: detectedMatch.caseFile?._id || prev.linkedCaseId || null,
       linkedCaseDid: detectedMatch.caseFile?.did || prev.linkedCaseDid || null,
     }));
-    toast.success(`"${c.fullName}" info auto-filled!`);
+    toast.success(`"${c.fullName || c.name}" info auto-filled!`);
     setDetectedMatch(null);
   };
 
   const handleNo = () => {
-    const val = detectedMatch?.client?.phone || '';
+    const val = detectedMatch?.client?.phone || data.phone || '';
     onChange((prev) => ({ ...prev, phone: '' }));
     resetLookup(val);
-    toast.info('Please enter a different phone number or email.');
+    setPhoneTouched(false);
+    toast.info('Please enter a different phone number.');
     setDetectedMatch(null);
   };
 
   const handleSave = () => {
     const phone = data.phone || '';
-    if (phone) {
-      const check = validateBdPhone(phone);
-      if (!check.isValid) {
-        toast.error(`Phone: ${check.error}`);
-        return;
-      }
+    const check = validateBdPhone(phone);
+    if (!check.isValid) {
+      setPhoneTouched(true);
+      toast.error(`Phone: ${check.error}`);
+      return;
     }
     onSave();
   };
 
   const handlePreviewAction = () => {
     const phone = data.phone || '';
-    if (phone) {
-      const check = validateBdPhone(phone);
-      if (!check.isValid) {
-        toast.error(`Phone: ${check.error}`);
-        return;
-      }
+    const check = validateBdPhone(phone);
+    if (!check.isValid) {
+      setPhoneTouched(true);
+      toast.error(`Phone: ${check.error}`);
+      return;
     }
     onPreview();
   };
+
 
   const handleDateModeChange = (mode) => {
     setDateMode(mode);
@@ -224,14 +225,21 @@ export function MoneyReceiptForm({ data, onChange, onReset, onSave, onPreview, i
           </div>
 
           <div>
-            <label className="block font-bold text-foreground mb-1">Phone / Mobile No.</label>
+            <label className="block font-bold text-foreground mb-1">
+              Phone / Mobile No. <span className="text-rose-500">*</span>
+            </label>
             <BdPhoneInput
               value={data.phone || ''}
-              onChange={(val) => handleFieldChange('phone', val)}
+              required
+              onBlur={() => setPhoneTouched(true)}
+              onChange={(val) => {
+                handleFieldChange('phone', val);
+                if (phoneTouched) setPhoneTouched(true);
+              }}
             />
-            {data.phone && !validateBdPhone(data.phone).isValid && (
+            {((phoneTouched || Boolean(data.phone)) && !validateBdPhone(data.phone || '').isValid) && (
               <p className="text-[10px] text-rose-500 font-bold mt-1">
-                {validateBdPhone(data.phone).error}
+                {validateBdPhone(data.phone || '').error}
               </p>
             )}
           </div>

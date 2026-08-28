@@ -7,18 +7,7 @@ import { validateBdPhone } from './phoneValidator';
  *
  * Reusable hook for all Document Studio forms.
  * Performs a debounced (1000ms) lookup against the client database
- * when a phone number or email address is entered.
- *
- * Usage:
- *   const { triggerLookup, resetLookup } = useClientLookup({
- *     onClientFound: (client, activeCaseFile) => setDetectedClient({ client, caseFile }),
- *   });
- *
- *   // In phone input onChange:
- *   triggerLookup(phoneValue);
- *
- *   // When modal is dismissed:
- *   resetLookup();
+ * when a valid 11-digit BD mobile number is entered.
  */
 export function useClientLookup({ onClientFound }) {
   const debounceRef = useRef(null);
@@ -35,10 +24,14 @@ export function useClientLookup({ onClientFound }) {
       let queryVal = trimmed;
       if (isPhone) {
         const bdCheck = validateBdPhone(trimmed);
-        if (!bdCheck.isValid) return; // Do not query if not a valid BD phone number
+        if (!bdCheck.isValid) return; // Do not query backend if not a valid BD phone number
         queryVal = bdCheck.formatted; // Use standardized 11-digit format
       } else if (!isEmail) {
         return;
+      }
+
+      if (promptedValuesRef.current.has(queryVal)) {
+        return; // Already prompted for this value in current session
       }
 
       if (debounceRef.current) clearTimeout(debounceRef.current);
@@ -52,7 +45,7 @@ export function useClientLookup({ onClientFound }) {
           if (res.data?.success && res.data?.data && res.data.data.length > 0) {
             const matched = res.data.data[0];
 
-            // Also fetch active case file for this client
+            // Also fetch active case file for this client if any
             let activeCaseFile = null;
             if (matched._id || matched.did) {
               try {
@@ -66,7 +59,6 @@ export function useClientLookup({ onClientFound }) {
                 });
                 const cases = caseRes.data?.data || [];
                 if (cases.length > 0) {
-                  // Filter: not completed, deleted, or inactive
                   const openCase = cases.find(
                     (c) =>
                       !['completed', 'deleted', 'inactive', 'cancelled'].includes(
@@ -76,11 +68,11 @@ export function useClientLookup({ onClientFound }) {
                   activeCaseFile = openCase || null;
                 }
               } catch (_) {
-                // Case lookup is optional — proceed without it
+                // Ignore optional case query
               }
             }
 
-            promptedValuesRef.current.add(trimmed);
+            promptedValuesRef.current.add(queryVal);
             onClientFound(matched, activeCaseFile);
           }
         } catch (err) {
@@ -94,10 +86,10 @@ export function useClientLookup({ onClientFound }) {
   const resetLookup = useCallback((valueToReset) => {
     if (debounceRef.current) clearTimeout(debounceRef.current);
     if (valueToReset) {
-      // Allow this value to be prompted again if user re-enters
-      promptedValuesRef.current.delete(valueToReset.trim());
+      promptedValuesRef.current.delete(String(valueToReset).trim());
     }
   }, []);
 
   return { triggerLookup, resetLookup };
 }
+
