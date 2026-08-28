@@ -299,8 +299,6 @@ export function ClientsPage() {
 
       {/* Unified Data Table */}
       <UnifiedDataTable
-        title="All Registered Clients"
-        subtitle="Full CRM client records with contact info, passports, and 360° profile access"
         columns={columns}
         data={clients}
         loading={loading}
