@@ -259,7 +259,7 @@ export function ClientsPage() {
   ];
 
   const filterTabs = [
-    { id: 'all', label: 'All Clients', count: meta.totalCount },
+    { id: 'all', label: 'All', count: meta.totalCount },
     { id: 'Active', label: 'Active' },
     { id: 'Inactive', label: 'Inactive' },
     { id: 'Individual', label: 'Individual' },
@@ -273,7 +273,6 @@ export function ClientsPage() {
         variant="general"
         icon={Users}
         title="All Clients"
-        badge={`${meta.totalCount} Registered Clients`}
         subtitle="Centralized database of visa candidates, pilgrimage groups, and corporate representatives with full 360° milestone records."
         actions={
           <>
@@ -321,7 +320,6 @@ export function ClientsPage() {
           setActiveTab(tab);
           setPage(1);
         }}
-        onRefresh={fetchClients}
         exportFileName="monsur-ali-travels-clients.csv"
         emptyMessage="No client records found. Click '+ Register New Client' to create one."
       />
@@ -330,8 +328,16 @@ export function ClientsPage() {
       <CreateClientModal
         isOpen={createModalOpen}
         onClose={() => setCreateModalOpen(false)}
-        onSuccess={() => {
-          fetchClients();
+        onSuccess={(newClient) => {
+          if (newClient) {
+            setClients((prev) => [newClient, ...prev.filter((c) => (c.did || c._id) !== (newClient.did || newClient._id))]);
+            setMeta((prev) => ({ ...prev, totalCount: prev.totalCount + 1 }));
+          }
+          if (page !== 1) {
+            setPage(1);
+          } else {
+            fetchClients();
+          }
         }}
       />
     </div>

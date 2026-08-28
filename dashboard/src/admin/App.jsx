@@ -17,6 +17,7 @@ import StorageSyncPage from '@/pages/system/StorageSyncPage'
 import ClientsPage from '@/pages/ClientsPage'
 import ClientDetailPage from '@/pages/ClientDetailPage'
 import UsersPage from '@/pages/UsersPage'
+import EmployeesPage from '@/pages/EmployeesPage'
 import SettingsPage from '@/pages/SettingsPage'
 import DocumentStudioPage from '@/pages/DocumentStudioPage'
 import NotFoundPage from '@/pages/NotFoundPage'
@@ -67,6 +68,8 @@ export default function App() {
               <Route path="agency/clients/:id" element={<ClientDetailPage />} />
               <Route path="users" element={<UsersPage />} />
               <Route path="agency/users" element={<UsersPage />} />
+              <Route path="employees" element={<EmployeesPage />} />
+              <Route path="agency/employees" element={<EmployeesPage />} />
               <Route path="activity-logs" element={<ActivityLogsPage />} />
               <Route path="system/activity-logs" element={<ActivityLogsPage />} />
               <Route path="system/logs" element={<ActivityLogsPage />} />
