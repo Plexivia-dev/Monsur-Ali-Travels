@@ -3,7 +3,10 @@
 ## [2026-08-27]
 - **Dashboard Version**: `v0.4.2`
 
-### 1. Client Dashboard Overview, Task Management & Real-Time Notifications (NC01 - NC15)
+### 1. Client Dashboard Overview, Task Management & Real-Time Notifications (NC01 - NC16)
+- **NC16 - Clear Default Credentials in Login Forms**:
+  - Removed prefilled `md.ikr4m@gmail.com` and `ihkhan2027@gmail.com` from `LoginPage.jsx`.
+  - Set default state to blank inputs for both email and password.
 - **NC15 - Sync User Profile on App Mount & Sanitize GET /auth/me**:
   - Implemented automatic `fetchProfile()` in `AuthGuard` on app initialization.
   - Sanitized return schema in `getProfile` (`/api/v1/auth/me`).
