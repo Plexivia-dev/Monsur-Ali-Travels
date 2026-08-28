@@ -181,7 +181,7 @@ const LoginPage = () => {
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0, x: 10 }}
                 onSubmit={handleSubmit}
-                className="space-y-4"
+                className="flex flex-col gap-4"
                 autoComplete="off"
               >
                 {/* Email Field */}
@@ -248,11 +248,11 @@ const LoginPage = () => {
                   </div>
                 </div>
 
-                {/* Log In Button with solid Light Blue (Sky) and mt-5 (20px margin-top) */}
+                {/* Log In Button with explicit 20px margin-top */}
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="w-full mt-5 h-10 flex items-center justify-center font-bold text-xs bg-sky-500 hover:bg-sky-400 text-white rounded-xl transition-all cursor-pointer shadow-lg shadow-sky-500/25 active:scale-[0.99] disabled:opacity-60"
+                  className="w-full h-10 flex items-center justify-center font-bold text-xs bg-sky-500 hover:bg-sky-400 text-white rounded-xl transition-all cursor-pointer shadow-lg shadow-sky-500/25 active:scale-[0.99] disabled:opacity-60"
                   style={{ marginTop: '20px' }}
                 >
                   {isSubmitting ? (
@@ -273,10 +273,11 @@ const LoginPage = () => {
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0, x: -10 }}
                 onSubmit={handleRequestResetOtp}
-                className="space-y-4"
+                className="flex flex-col gap-4"
                 autoComplete="off"
               >
-                <div className="text-left bg-zinc-900/50 border border-zinc-800/80 rounded-xl p-3.5 text-xs text-zinc-400 leading-relaxed">
+                {/* Info Container with dark screen background color (#09090b) */}
+                <div className="text-left bg-[#09090b] border border-zinc-800 rounded-xl p-3.5 text-xs text-zinc-400 leading-relaxed shadow-inner">
                   Enter your registered account email address. We will send a secure 6-digit verification code to reset your password.
                 </div>
 
@@ -304,7 +305,7 @@ const LoginPage = () => {
                 <button
                   type="submit"
                   disabled={isResetSubmitting}
-                  className="w-full mt-5 h-10 flex items-center justify-center font-bold text-xs bg-sky-500 hover:bg-sky-400 text-white rounded-xl transition-all cursor-pointer shadow-lg shadow-sky-500/25 active:scale-[0.99] disabled:opacity-60"
+                  className="w-full h-10 flex items-center justify-center font-bold text-xs bg-sky-500 hover:bg-sky-400 text-white rounded-xl transition-all cursor-pointer shadow-lg shadow-sky-500/25 active:scale-[0.99] disabled:opacity-60"
                   style={{ marginTop: '20px' }}
                 >
                   {isResetSubmitting ? (
@@ -334,10 +335,11 @@ const LoginPage = () => {
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0, x: -10 }}
                 onSubmit={handleResetPassword}
-                className="space-y-4"
+                className="flex flex-col gap-4"
                 autoComplete="off"
               >
-                <div className="text-left bg-zinc-900/60 border border-zinc-800/80 rounded-xl p-3 text-xs text-zinc-300">
+                {/* OTP Target Banner with dark screen background color (#09090b) */}
+                <div className="text-left bg-[#09090b] border border-zinc-800 rounded-xl p-3 text-xs text-zinc-400 shadow-inner">
                   <span>Enter the 6-digit code sent to: </span>
                   <span className="font-bold text-white block mt-0.5">{resetEmail}</span>
                 </div>
@@ -420,11 +422,11 @@ const LoginPage = () => {
                   </div>
                 </div>
 
-                {/* Submit Reset Button with solid Light Blue (Sky) */}
+                {/* Submit Reset Button */}
                 <button
                   type="submit"
                   disabled={isResetSubmitting}
-                  className="w-full mt-5 h-10 flex items-center justify-center font-bold text-xs bg-sky-500 hover:bg-sky-400 text-white rounded-xl transition-all cursor-pointer shadow-lg shadow-sky-500/25 active:scale-[0.99] disabled:opacity-60"
+                  className="w-full h-10 flex items-center justify-center font-bold text-xs bg-sky-500 hover:bg-sky-400 text-white rounded-xl transition-all cursor-pointer shadow-lg shadow-sky-500/25 active:scale-[0.99] disabled:opacity-60"
                   style={{ marginTop: '20px' }}
                 >
                   {isResetSubmitting ? (
@@ -452,7 +454,7 @@ const LoginPage = () => {
                 key="forgot-success-view"
                 initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
-                className="space-y-5 text-center py-2"
+                className="flex flex-col gap-4 text-center py-2"
               >
                 <div className="size-16 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 flex items-center justify-center mx-auto shadow-inner">
                   <CheckCircle2 className="size-8" />
@@ -469,6 +471,7 @@ const LoginPage = () => {
                   type="button"
                   onClick={() => setViewMode('login')}
                   className="w-full h-10 flex items-center justify-center font-bold text-xs bg-sky-500 hover:bg-sky-400 text-white rounded-xl transition-all cursor-pointer shadow-lg shadow-sky-500/25 active:scale-[0.99]"
+                  style={{ marginTop: '10px' }}
                 >
                   <LogIn className="h-4 w-4 mr-1.5" />
                   <span>Proceed to Log In</span>

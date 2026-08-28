@@ -150,7 +150,7 @@ export function LoginPage() {
 
           {/* VIEW 1: Login Form */}
           {viewMode === "login" && (
-            <form onSubmit={handleSubmit} className="space-y-4" autoComplete="off">
+            <form onSubmit={handleSubmit} className="flex flex-col gap-4" autoComplete="off">
               <div className="space-y-1.5 text-left">
                 <Label className="text-xs font-semibold text-zinc-300">
                   Email Address
@@ -212,27 +212,29 @@ export function LoginPage() {
                 </div>
               </div>
 
-              {/* Log In Button with solid Light Blue (Sky) and mt-5 */}
-              <button
-                type="submit"
-                disabled={isSubmitting}
-                className="w-full mt-5 h-10 flex items-center justify-center font-bold text-xs bg-sky-500 hover:bg-sky-400 text-white rounded-xl transition-all cursor-pointer shadow-lg shadow-sky-500/25 active:scale-[0.99] disabled:opacity-60"
-                style={{ marginTop: '20px' }}
-              >
-                {isSubmitting ? (
-                  <div className="h-4 w-4 border-2 border-white/30 border-t-white rounded-full animate-spin mr-2" />
-                ) : (
-                  <LogIn className="h-4 w-4 mr-1.5" />
-                )}
-                {isSubmitting ? "Logging In…" : "Log In"}
-              </button>
+              {/* Log In Button Container with guaranteed 20px top space */}
+              <div className="pt-5" style={{ paddingTop: '20px' }}>
+                <button
+                  type="submit"
+                  disabled={isSubmitting}
+                  className="w-full h-10 flex items-center justify-center font-bold text-xs bg-sky-500 hover:bg-sky-400 text-white rounded-xl transition-all cursor-pointer shadow-lg shadow-sky-500/25 active:scale-[0.99] disabled:opacity-60"
+                >
+                  {isSubmitting ? (
+                    <div className="h-4 w-4 border-2 border-white/30 border-t-white rounded-full animate-spin mr-2" />
+                  ) : (
+                    <LogIn className="h-4 w-4 mr-1.5" />
+                  )}
+                  {isSubmitting ? "Logging In…" : "Log In"}
+                </button>
+              </div>
             </form>
           )}
 
           {/* VIEW 2: Request Reset OTP */}
           {viewMode === "forgot_request" && (
-            <form onSubmit={handleRequestResetOtp} className="space-y-4" autoComplete="off">
-              <div className="text-left bg-zinc-900/50 border border-zinc-800/80 rounded-xl p-3.5 text-xs text-zinc-400 leading-relaxed">
+            <form onSubmit={handleRequestResetOtp} className="flex flex-col gap-4" autoComplete="off">
+              {/* Info Container with dark screen background color (#09090b) */}
+              <div className="text-left bg-[#09090b] border border-zinc-800 rounded-xl p-3.5 text-xs text-zinc-400 leading-relaxed shadow-inner">
                 Enter your registered administrator email address to receive a secure 6-digit password reset code.
               </div>
 
@@ -255,19 +257,20 @@ export function LoginPage() {
                 </div>
               </div>
 
-              <button
-                type="submit"
-                disabled={isResetSubmitting}
-                className="w-full mt-5 h-10 flex items-center justify-center font-bold text-xs bg-sky-500 hover:bg-sky-400 text-white rounded-xl transition-all cursor-pointer shadow-lg shadow-sky-500/25 active:scale-[0.99] disabled:opacity-60"
-                style={{ marginTop: '20px' }}
-              >
-                {isResetSubmitting ? (
-                  <div className="h-4 w-4 border-2 border-white/30 border-t-white rounded-full animate-spin mr-2" />
-                ) : (
-                  <KeyRound className="h-4 w-4 mr-1.5" />
-                )}
-                {isResetSubmitting ? "Sending Verification Code…" : "Send Verification Code"}
-              </button>
+              <div className="pt-5" style={{ paddingTop: '20px' }}>
+                <button
+                  type="submit"
+                  disabled={isResetSubmitting}
+                  className="w-full h-10 flex items-center justify-center font-bold text-xs bg-sky-500 hover:bg-sky-400 text-white rounded-xl transition-all cursor-pointer shadow-lg shadow-sky-500/25 active:scale-[0.99] disabled:opacity-60"
+                >
+                  {isResetSubmitting ? (
+                    <div className="h-4 w-4 border-2 border-white/30 border-t-white rounded-full animate-spin mr-2" />
+                  ) : (
+                    <KeyRound className="h-4 w-4 mr-1.5" />
+                  )}
+                  {isResetSubmitting ? "Sending Verification Code…" : "Send Verification Code"}
+                </button>
+              </div>
 
               <button
                 type="button"
@@ -282,8 +285,9 @@ export function LoginPage() {
 
           {/* VIEW 3: Verify OTP & New Password */}
           {viewMode === "forgot_reset" && (
-            <form onSubmit={handleResetPassword} className="space-y-4" autoComplete="off">
-              <div className="text-left bg-zinc-900/60 border border-zinc-800/80 rounded-xl p-3 text-xs text-zinc-300">
+            <form onSubmit={handleResetPassword} className="flex flex-col gap-4" autoComplete="off">
+              {/* OTP Target Banner with dark screen background color (#09090b) */}
+              <div className="text-left bg-[#09090b] border border-zinc-800 rounded-xl p-3 text-xs text-zinc-400 shadow-inner">
                 <span>Enter the 6-digit code sent to: </span>
                 <span className="font-bold text-white block mt-0.5">{resetEmail}</span>
               </div>
@@ -363,19 +367,20 @@ export function LoginPage() {
                 </div>
               </div>
 
-              <button
-                type="submit"
-                disabled={isResetSubmitting}
-                className="w-full mt-5 h-10 flex items-center justify-center font-bold text-xs bg-sky-500 hover:bg-sky-400 text-white rounded-xl transition-all cursor-pointer shadow-lg shadow-sky-500/25 active:scale-[0.99] disabled:opacity-60"
-                style={{ marginTop: '20px' }}
-              >
-                {isResetSubmitting ? (
-                  <div className="h-4 w-4 border-2 border-white/30 border-t-white rounded-full animate-spin mr-2" />
-                ) : (
-                  <KeyRound className="h-4 w-4 mr-1.5" />
-                )}
-                {isResetSubmitting ? "Updating Password…" : "Reset & Save Password"}
-              </button>
+              <div className="pt-5" style={{ paddingTop: '20px' }}>
+                <button
+                  type="submit"
+                  disabled={isResetSubmitting}
+                  className="w-full h-10 flex items-center justify-center font-bold text-xs bg-sky-500 hover:bg-sky-400 text-white rounded-xl transition-all cursor-pointer shadow-lg shadow-sky-500/25 active:scale-[0.99] disabled:opacity-60"
+                >
+                  {isResetSubmitting ? (
+                    <div className="h-4 w-4 border-2 border-white/30 border-t-white rounded-full animate-spin mr-2" />
+                  ) : (
+                    <KeyRound className="h-4 w-4 mr-1.5" />
+                  )}
+                  {isResetSubmitting ? "Updating Password…" : "Reset & Save Password"}
+                </button>
+              </div>
 
               <button
                 type="button"
@@ -390,7 +395,7 @@ export function LoginPage() {
 
           {/* VIEW 4: Success View */}
           {viewMode === "forgot_success" && (
-            <div className="space-y-5 text-center py-2">
+            <div className="flex flex-col gap-4 text-center py-2">
               <div className="size-16 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 flex items-center justify-center mx-auto shadow-inner">
                 <CheckCircle2 className="size-8" />
               </div>
@@ -402,14 +407,16 @@ export function LoginPage() {
                   Your administrator password has been securely updated. You can now log in using your new credentials.
                 </p>
               </div>
-              <button
-                type="button"
-                onClick={() => setViewMode("login")}
-                className="w-full h-10 flex items-center justify-center font-bold text-xs bg-sky-500 hover:bg-sky-400 text-white rounded-xl transition-all cursor-pointer shadow-lg shadow-sky-500/25 active:scale-[0.99]"
-              >
-                <LogIn className="h-4 w-4 mr-1.5" />
-                <span>Proceed to Log In</span>
-              </button>
+              <div className="pt-3">
+                <button
+                  type="button"
+                  onClick={() => setViewMode("login")}
+                  className="w-full h-10 flex items-center justify-center font-bold text-xs bg-sky-500 hover:bg-sky-400 text-white rounded-xl transition-all cursor-pointer shadow-lg shadow-sky-500/25 active:scale-[0.99]"
+                >
+                  <LogIn className="h-4 w-4 mr-1.5" />
+                  <span>Proceed to Log In</span>
+                </button>
+              </div>
             </div>
           )}
         </div>
