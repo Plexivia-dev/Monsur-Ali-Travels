@@ -218,7 +218,6 @@
   {
     "groupLabel": "Data Records Center",
     "groupLabelBn": "",
-    "roles": ["admin", "owner", "superadmin", "frontdesk", "staff", "lawyer", "representative", "visa_processor"],
     "items": [
       {
         "id": "data-group",
@@ -227,13 +226,41 @@
         "icon": "Database",
         "childItems": [
           {
+            "id": "data-salary-slips",
+            "name": "Salary Slip Records",
+            "nameBn": "",
+            "portal": "data",
+            "submodule": "salary-slips",
+            "path": "/dashboard/data/salary-slips",
+            "icon": "Banknote"
+          },
+          {
+            "id": "data-invoices",
+            "name": "Invoice Records",
+            "nameBn": "",
+            "portal": "data",
+            "submodule": "invoices",
+            "path": "/dashboard/data/invoices",
+            "icon": "ReceiptText"
+          },
+          {
+            "id": "data-money-receipts",
+            "name": "Money Receipt Records",
+            "nameBn": "",
+            "portal": "data",
+            "submodule": "money-receipts",
+            "path": "/dashboard/data/money-receipts",
+            "icon": "Receipt"
+          },
+          {
             "id": "data-agreements",
             "name": "Agreement Records",
             "nameBn": "",
             "portal": "data",
             "submodule": "agreements",
             "path": "/dashboard/data/agreements",
-            "icon": "FileSignature"
+            "icon": "FileSignature",
+            "excludeRoles": ["accountant", "accounts"]
           },
           {
             "id": "data-applications",
@@ -242,7 +269,8 @@
             "portal": "data",
             "submodule": "client-applications",
             "path": "/dashboard/data/client-applications",
-            "icon": "UserCheck"
+            "icon": "UserCheck",
+            "excludeRoles": ["accountant", "accounts"]
           },
           {
             "id": "data-indian-visas",
@@ -251,7 +279,8 @@
             "portal": "data",
             "submodule": "indian-visas",
             "path": "/dashboard/data/indian-visas",
-            "icon": "Stamp"
+            "icon": "Stamp",
+            "excludeRoles": ["accountant", "accounts"]
           },
           {
             "id": "data-passports",
@@ -260,7 +289,8 @@
             "portal": "data",
             "submodule": "passports",
             "path": "/dashboard/data/passports",
-            "icon": "BookOpen"
+            "icon": "BookOpen",
+            "excludeRoles": ["accountant", "accounts"]
           }
         ]
       }

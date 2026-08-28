@@ -3,7 +3,10 @@
 ## [2026-08-27]
 - **Dashboard Version**: `v0.4.2`
 
-### 1. Client Dashboard Overview, Task Management & Real-Time Notifications (NC01 - NC08)
+### 1. Client Dashboard Overview, Task Management & Real-Time Notifications (NC01 - NC09)
+- **NC09 - Data Records Center RBAC for Accountant Role**:
+  - Added financial records (Salary Slips, Invoices, Money Receipts) to Records Management.
+  - Excluded non-financial records (Agreements, Client Applications, Indian Visas, Passports) from Accountant role.
 - **NC08 - RBAC Restrictions for Accountant Role**:
   - Excluded non-financial document generators (Agreement, Client Form, Visa, Passport, Certificates, ID Card) from Accountant sidebar and direct routes.
 - **NC07 - Permanent Factory & Mock Asset Elimination**:
