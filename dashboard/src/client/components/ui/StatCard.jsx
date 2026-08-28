@@ -46,19 +46,19 @@ export const StatCard = ({
         {trend && (
           <div className="flex items-center gap-1 font-medium">
             {trendType === 'up' && (
-              <span className="inline-flex items-center text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-full text-[11px] font-medium border border-emerald-500/20">
+              <span className="inline-flex items-center text-emerald-800 dark:text-emerald-300 bg-emerald-50 dark:bg-emerald-950/60 px-2 py-0.5 rounded-full text-[11px] font-semibold border border-emerald-300 dark:border-emerald-800">
                 <TrendingUp className="w-3 h-3 mr-1" />
                 {trend}
               </span>
             )}
             {trendType === 'down' && (
-              <span className="inline-flex items-center text-rose-600 dark:text-rose-400 bg-rose-500/10 px-2 py-0.5 rounded-full text-[11px] font-medium border border-rose-500/20">
+              <span className="inline-flex items-center text-rose-800 dark:text-rose-300 bg-rose-50 dark:bg-rose-950/60 px-2 py-0.5 rounded-full text-[11px] font-semibold border border-rose-300 dark:border-rose-800">
                 <TrendingDown className="w-3 h-3 mr-1" />
                 {trend}
               </span>
             )}
             {trendType === 'neutral' && (
-              <span className="inline-flex items-center text-muted-foreground bg-muted px-2 py-0.5 rounded-full text-[11px] font-medium border border-border">
+              <span className="inline-flex items-center text-slate-700 dark:text-slate-300 bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded-full text-[11px] font-semibold border border-slate-300 dark:border-slate-700">
                 {trend}
               </span>
             )}

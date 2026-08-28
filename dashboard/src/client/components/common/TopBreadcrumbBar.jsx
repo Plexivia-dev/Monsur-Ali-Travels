@@ -5,20 +5,21 @@ import {
   ArrowLeft,
   ChevronRight,
   Home,
+  Building2,
   FileSpreadsheet,
-  Users2,
-  Factory,
-  Shield,
+  Wallet,
+  Settings,
   Database,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 const PORTAL_LABELS = {
+  overview: { label: 'Overview', icon: Home, homeSub: 'tasks', hasParentPage: false },
+  agency: { label: 'Agency', icon: Building2, homeSub: 'clients', hasParentPage: false },
   docs: { label: 'Document Studio', icon: FileSpreadsheet, homeSub: 'agreement', hasParentPage: false },
-  data: { label: 'Data Records Center', icon: Database, homeSub: 'client-applications', hasParentPage: false },
-  agency: { label: 'Manpower Agency', icon: Users2, homeSub: 'dashboard', hasParentPage: true },
-  factory: { label: 'Brick Factory', icon: Factory, homeSub: 'dashboard', hasParentPage: true },
-  admin: { label: 'System Admin', icon: Shield, homeSub: 'users', hasParentPage: false },
+  data: { label: 'Data Records Center', icon: Database, homeSub: 'agreements', hasParentPage: false },
+  accounts: { label: 'Accounts & Finance', icon: Wallet, homeSub: 'payments', hasParentPage: false },
+  settings: { label: 'Settings', icon: Settings, homeSub: 'profile', hasParentPage: false },
 };
 
 const SUBMODULE_LABELS = {

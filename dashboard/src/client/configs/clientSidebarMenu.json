@@ -1,5 +1,20 @@
 [
   {
+    "groupLabel": "Overview",
+    "groupLabelBn": "ওভারভিউ",
+    "items": [
+      {
+        "id": "overview-tasks",
+        "name": "Overview & Tasks",
+        "nameBn": "টাস্ক ওভারভিউ",
+        "portal": "overview",
+        "submodule": "tasks",
+        "path": "/dashboard/overview",
+        "icon": "LayoutDashboard"
+      }
+    ]
+  },
+  {
     "groupLabel": "Workspace",
     "groupLabelBn": "",
     "items": [
@@ -25,8 +40,8 @@
         "icon": "Building2",
         "childItems": [
           {
-            "id": "cases",
-            "name": "Client Files",
+            "id": "agency-clients",
+            "name": "Client List",
             "nameBn": "",
             "portal": "agency",
             "submodule": "cases",
@@ -36,13 +51,12 @@
           },
           {
             "id": "clients-all",
-            "name": "All Clients Directory",
+            "name": "All Clients",
             "nameBn": "",
             "portal": "agency",
             "submodule": "clients-all",
             "path": "/dashboard/agency/clients-all",
-            "icon": "Users",
-            "roles": ["admin", "owner", "superadmin", "manager", "frontdesk", "clientmanager", "representative"]
+            "icon": "Users"
           }
         ]
       }
@@ -166,8 +180,7 @@
             "portal": "docs",
             "submodule": "agreement",
             "path": "/dashboard/docs/agreement",
-            "icon": "FileSignature",
-            "roles": ["admin", "owner", "superadmin", "manager", "lawyer", "clientmanager"]
+            "icon": "FileSignature"
           },
           {
             "id": "doc-client-form",
@@ -176,8 +189,7 @@
             "portal": "docs",
             "submodule": "client-form",
             "path": "/dashboard/docs/client-form",
-            "icon": "UserCheck",
-            "roles": ["admin", "owner", "superadmin", "manager", "frontdesk", "representative", "clientmanager"]
+            "icon": "UserCheck"
           },
           {
             "id": "doc-indian-visa",
@@ -186,8 +198,7 @@
             "portal": "docs",
             "submodule": "indian-visa",
             "path": "/dashboard/docs/indian-visa",
-            "icon": "Stamp",
-            "roles": ["admin", "owner", "superadmin", "manager", "visa_processor", "frontdesk"]
+            "icon": "Stamp"
           },
           {
             "id": "doc-passport-sub",
@@ -196,8 +207,7 @@
             "portal": "docs",
             "submodule": "passport-sub",
             "path": "/dashboard/docs/passport-sub",
-            "icon": "BookOpen",
-            "roles": ["admin", "owner", "superadmin", "manager", "visa_processor", "frontdesk"]
+            "icon": "BookOpen"
           },
           {
             "id": "doc-exp-cert",
@@ -206,8 +216,7 @@
             "portal": "docs",
             "submodule": "experience-certificate",
             "path": "/dashboard/docs/experience-certificate",
-            "icon": "Award",
-            "roles": ["admin", "owner", "superadmin", "manager", "lawyer", "clientmanager"]
+            "icon": "Award"
           },
           {
             "id": "doc-marr-cert",
@@ -216,8 +225,7 @@
             "portal": "docs",
             "submodule": "marriage-certificate",
             "path": "/dashboard/docs/marriage-certificate",
-            "icon": "Heart",
-            "roles": ["admin", "owner", "superadmin", "manager", "lawyer", "clientmanager"]
+            "icon": "Heart"
           },
           {
             "id": "doc-char-cert",
@@ -226,8 +234,7 @@
             "portal": "docs",
             "submodule": "character-certificate",
             "path": "/dashboard/docs/character-certificate",
-            "icon": "ShieldCheck",
-            "roles": ["admin", "owner", "superadmin", "manager", "lawyer", "clientmanager"]
+            "icon": "ShieldCheck"
           },
           {
             "id": "doc-job-verification",
@@ -236,8 +243,7 @@
             "portal": "docs",
             "submodule": "job-verification",
             "path": "/dashboard/docs/job-verification",
-            "icon": "FileCheck2",
-            "roles": ["admin", "owner", "superadmin", "manager", "visa_processor", "clientmanager"]
+            "icon": "FileCheck2"
           },
           {
             "id": "doc-idcard",
@@ -246,8 +252,7 @@
             "portal": "docs",
             "submodule": "idcard",
             "path": "/dashboard/docs/idcard",
-            "icon": "Contact",
-            "roles": ["admin", "owner", "superadmin", "manager", "frontdesk"]
+            "icon": "Contact"
           }
         ]
       }
@@ -256,7 +261,7 @@
   {
     "groupLabel": "Records Center",
     "groupLabelBn": "",
-    "roles": ["admin", "owner", "superadmin", "manager", "frontdesk", "visa_processor", "lawyer", "clientmanager"],
+    "roles": ["admin", "owner", "superadmin", "frontdesk", "staff", "lawyer", "representative", "visa_processor"],
     "items": [
       {
         "id": "data-group",
@@ -265,14 +270,40 @@
         "icon": "Database",
         "childItems": [
           {
+            "id": "data-salary-slips",
+            "name": "Salary Slip Records",
+            "nameBn": "",
+            "portal": "data",
+            "submodule": "salary-slips",
+            "path": "/dashboard/data/salary-slips",
+            "icon": "Banknote"
+          },
+          {
+            "id": "data-invoices",
+            "name": "Invoice Records",
+            "nameBn": "",
+            "portal": "data",
+            "submodule": "invoices",
+            "path": "/dashboard/data/invoices",
+            "icon": "ReceiptText"
+          },
+          {
+            "id": "data-money-receipts",
+            "name": "Money Receipt Records",
+            "nameBn": "",
+            "portal": "data",
+            "submodule": "money-receipts",
+            "path": "/dashboard/data/money-receipts",
+            "icon": "Receipt"
+          },
+          {
             "id": "data-agreements",
             "name": "Agreement Records",
             "nameBn": "",
             "portal": "data",
             "submodule": "agreements",
             "path": "/dashboard/data/agreements",
-            "icon": "FileSignature",
-            "roles": ["admin", "owner", "superadmin", "manager", "lawyer", "clientmanager"]
+            "icon": "FileSignature"
           },
           {
             "id": "data-applications",
@@ -281,8 +312,7 @@
             "portal": "data",
             "submodule": "client-applications",
             "path": "/dashboard/data/client-applications",
-            "icon": "UserCheck",
-            "roles": ["admin", "owner", "superadmin", "manager", "frontdesk", "clientmanager"]
+            "icon": "UserCheck"
           },
           {
             "id": "data-indian-visas",
@@ -291,8 +321,7 @@
             "portal": "data",
             "submodule": "indian-visas",
             "path": "/dashboard/data/indian-visas",
-            "icon": "Stamp",
-            "roles": ["admin", "owner", "superadmin", "manager", "visa_processor"]
+            "icon": "Stamp"
           },
           {
             "id": "data-passports",
@@ -301,8 +330,7 @@
             "portal": "data",
             "submodule": "passports",
             "path": "/dashboard/data/passports",
-            "icon": "BookOpen",
-            "roles": ["admin", "owner", "superadmin", "manager", "visa_processor", "frontdesk"]
+            "icon": "BookOpen"
           }
         ]
       }

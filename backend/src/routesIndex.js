@@ -47,6 +47,8 @@ coreRouter.use("/upload", uploadRouter);
 coreRouter.use("/uploads", uploadRouter);
 coreRouter.use("/notifications", notificationRouter);
 coreRouter.use("/accounts", authenticateToken, auditLog, accountsRouter);
+coreRouter.use("/users", authenticateToken, auditLog, usersRouter);
+coreRouter.use("/clients", authenticateToken, auditLog, clientRoute);
 // coreRouter.use("/developer", developerRouter);
 
 // ==========================================
@@ -90,6 +92,8 @@ clientScopeRouter.use("/accounts", accountsRouter);
 clientScopeRouter.use("/tasks", taskRouter);
 clientScopeRouter.use("/cases", caseFileRouter);
 clientScopeRouter.use("/clients", clientRoute);
+clientScopeRouter.use("/users", usersRouter);
+clientScopeRouter.use("/employees", usersRouter);
 clientScopeRouter.use("/agreements", agreementRouter);
 clientScopeRouter.use("/indian-visas", indianVisaRouter);
 clientScopeRouter.use("/passports", passportRouter);

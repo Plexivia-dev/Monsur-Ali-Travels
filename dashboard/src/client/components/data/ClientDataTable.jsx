@@ -24,7 +24,6 @@ import { MoneyReceiptModal } from '@/shared/features/document-studio';
 import { ConfirmDeleteDialog } from '@/components/ui/confirm-delete-dialog';
 import { Button } from '@/components/ui/button';
 import { useTranslation } from 'react-i18next';
-import { CaseWorkspaceDrawer } from '../agency/CaseWorkspaceDrawer';
 
 export function ClientDataTable({ activeSubmodule }) {
   const { t } = useTranslation();

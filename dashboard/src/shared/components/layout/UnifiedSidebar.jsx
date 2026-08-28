@@ -275,6 +275,10 @@ export function UnifiedSidebar({
                                     const hasRole = subItem.roles.includes(userRole) || subItem.roles.includes(userSubRole);
                                     if (!hasRole) return null;
                                   }
+                                  if (subItem.excludeRoles && subItem.excludeRoles.length > 0) {
+                                    const isExcluded = subItem.excludeRoles.includes(userRole) || subItem.excludeRoles.includes(userSubRole);
+                                    if (isExcluded) return null;
+                                  }
                                   const isSubActive = activeChecker ? activeChecker(subItem) : false;
                                   const subLabel = lang === 'BN' ? (subItem.nameBn || subItem.name || subItem.label) : (subItem.name || subItem.label);
 
@@ -410,10 +414,10 @@ export function UnifiedSidebar({
               </div>
               <div className="flex flex-col min-w-0 text-left">
                 <span className="text-xs font-bold text-sidebar-foreground truncate leading-tight">
-                  {user?.name || user?.fullName || 'Administrator'}
+                  {user?.name || user?.fullName || user?.email?.split('@')[0] || 'User'}
                 </span>
-                <span className="text-[10.5px] text-sky-200 font-medium truncate mt-0.5">
-                  {user?.role || 'Staff'}
+                <span className="text-[10.5px] text-sky-200 font-medium truncate mt-0.5 capitalize">
+                  {user?.subRole ? user.subRole.replace(/_/g, ' ') : (user?.role || 'Staff')}
                 </span>
               </div>
             </div>

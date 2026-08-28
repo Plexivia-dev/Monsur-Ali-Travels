@@ -29,10 +29,12 @@ async function bootstrap() {
   io.on("connection", (socket) => {
     logger.info({ socketId: socket.id }, "WebSocket client connected");
 
-    socket.on("join_room", (userDid) => {
+    socket.on("join_room", (data) => {
+      const userDid = typeof data === "string" ? data : data?.userDid || data?.did || data?.id;
       if (userDid) {
         socket.join(`user:${userDid}`);
-        logger.info({ socketId: socket.id, userDid }, "User joined room");
+        socket.join(userDid);
+        logger.info({ socketId: socket.id, userDid }, "User joined notification room");
       }
     });
 

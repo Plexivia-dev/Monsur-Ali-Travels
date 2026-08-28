@@ -51,7 +51,7 @@ export const useAuthStore = create((set, get) => ({
         subRole: apiUser.subRole || apiUser.sub_role || '',
         department: apiUser.department || '',
         designation: apiUser.designation || '',
-        avatar: apiUser.avatar || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=256&q=80',
+        avatar: apiUser.avatar || '',
       };
 
       if (typeof window !== 'undefined') {
@@ -168,7 +168,7 @@ export const useAuthStore = create((set, get) => ({
         subRole: apiUser.subRole || apiUser.sub_role || '',
         department: apiUser.department || '',
         designation: apiUser.designation || '',
-        avatar: apiUser.avatar || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=256&q=80',
+        avatar: apiUser.avatar || '',
       };
 
       if (typeof window !== 'undefined') {
@@ -203,7 +203,7 @@ export const useAuthStore = create((set, get) => ({
         subRole: apiUser.subRole || apiUser.sub_role || '',
         department: apiUser.department || '',
         designation: apiUser.designation || '',
-        avatar: apiUser.avatar || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=256&q=80',
+        avatar: apiUser.avatar || '',
       };
 
       if (typeof window !== 'undefined') {
