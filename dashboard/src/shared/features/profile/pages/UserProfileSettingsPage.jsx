@@ -85,7 +85,7 @@ export function UserProfileSettingsPage({ onProfileUpdated = null }) {
         department: user.department || '',
         address: user.address || '',
         bio: user.bio || '',
-        avatar: user.avatar || AVATAR_PRESETS[0],
+        avatar: user.avatar || '',
         role: user.role || 'Staff',
         subRole: user.subRole || '',
         did: user.did || user.id || '',

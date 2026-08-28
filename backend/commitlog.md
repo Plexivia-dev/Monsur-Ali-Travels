@@ -3,7 +3,13 @@
 ## [2026-08-27]
 - **Dashboard Version**: `v0.4.2`
 
-### 1. Client Dashboard Overview, Task Management & Real-Time Notifications (NC01 - NC12)
+### 1. Client Dashboard Overview, Task Management & Real-Time Notifications (NC01 - NC14)
+- **NC14 - Fix Auth Role Fallback & Remove Hardcoded Avatars**:
+  - Removed `{ role: "Owner" }` fallback from `AuthController.js` login.
+  - Removed Unsplash placeholder avatars from `useAuthStore.js` and profile forms.
+  - Dynamically render user's real `name` and `subRole` / `role` in the sidebar footer.
+- **NC13 - Fix Agency Router Imports**:
+  - Resolved component import references in `Agency.jsx`.
 - **NC12 - Strict Direct Real-Time API Data Fetching**:
   - Removed all fallback logic from `AgencyClientList.jsx` and `AgencyEmployeeList.jsx`.
   - Bound direct real-time data flow to `/api/v1/client/clients` and `/api/v1/client/users`.

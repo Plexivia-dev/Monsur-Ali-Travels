@@ -30,24 +30,20 @@ export const login = async (req, res, next) => {
 
     const searchConditions = [
       { email: normalizedInput },
+      { username: normalizedInput },
       { phone: normalizedInput },
-      { did: normalizedInput }
+      { did: normalizedInput },
     ];
-
-    if (normalizedInput === "iskand997" || normalizedInput === "iskander" || normalizedInput === "developer") {
-      searchConditions.push({ email: "ihkhan997@gmail.com" });
-    }
-    if (normalizedInput === "admin" || normalizedInput === "monsur" || normalizedInput.includes("monsuralitravels")) {
-      searchConditions.push({ email: "mr.monsur1988@gmail.com" }, { email: "admin@monsuralitravels.com" });
-    }
 
     let user = await UserModel.findOne({ $or: searchConditions }).select("+passwordHash");
     if (!user) {
-      // Fallback lookup by regex or role
-      user = await UserModel.findOne({ email: new RegExp(`^${normalizedInput.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&')}`, 'i') }).select("+passwordHash");
-    }
-    if (!user) {
-      user = await UserModel.findOne({ role: "Owner" }).select("+passwordHash");
+      // Case-insensitive exact match by email or username
+      user = await UserModel.findOne({
+        $or: [
+          { email: new RegExp(`^${normalizedInput.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&')}$`, 'i') },
+          { username: new RegExp(`^${normalizedInput.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&')}$`, 'i') },
+        ],
+      }).select("+passwordHash");
     }
 
     if (!user || !user.passwordHash) {
