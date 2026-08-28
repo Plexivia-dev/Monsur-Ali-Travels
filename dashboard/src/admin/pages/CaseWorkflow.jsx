@@ -302,7 +302,7 @@ export default function CaseWorkflow() {
     for (const c of filteredCases) {
       const chip = getDestinationChip(c);
       const st = getStageBadge(c.workflowStatus || c.status);
-      const officer = c.assignedOfficer || c.assignedTo?.name || 'Unassigned';
+      const officer = c.assignedToName || c.assignedTo?.name || c.assignedOfficer || c.workflowTasks?.[c.workflowTasks?.length - 1]?.assignedToName || 'Unassigned';
       const updated = formatDateTime(c.updatedAt || c.createdAt);
 
       rows.push([
@@ -425,26 +425,28 @@ export default function CaseWorkflow() {
             <button
               type="button"
               onClick={() => setViewMode('grid')}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition cursor-pointer ${
+              title="5-Col Grid View"
+              aria-label="5-Col Grid View"
+              className={`p-2 rounded-lg transition cursor-pointer flex items-center justify-center ${
                 viewMode === 'grid'
                   ? 'bg-card text-primary shadow-xs border border-border'
                   : 'text-muted-foreground hover:text-foreground'
               }`}
             >
-              <LayoutGrid className="size-3.5" />
-              <span>5-Col Grid View</span>
+              <LayoutGrid className="size-4" />
             </button>
             <button
               type="button"
               onClick={() => setViewMode('column')}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition cursor-pointer ${
+              title="Column / Table View"
+              aria-label="Column / Table View"
+              className={`p-2 rounded-lg transition cursor-pointer flex items-center justify-center ${
                 viewMode === 'column'
                   ? 'bg-card text-primary shadow-xs border border-border'
                   : 'text-muted-foreground hover:text-foreground'
               }`}
             >
-              <List className="size-3.5" />
-              <span>Column / Table View</span>
+              <List className="size-4" />
             </button>
           </div>
         </div>
@@ -520,7 +522,7 @@ export default function CaseWorkflow() {
             const chip = getDestinationChip(c);
             const stage = getStageBadge(c.workflowStatus || c.status);
             const clientName = c.applicantName || c.clientName || 'Unnamed Client';
-            const officerName = c.assignedOfficer || c.assignedTo?.name || 'Unassigned';
+            const officerName = c.assignedToName || c.assignedTo?.name || c.assignedOfficer || c.workflowTasks?.[c.workflowTasks?.length - 1]?.assignedToName || 'Unassigned';
             const lastUpdated = formatDateTime(c.updatedAt || c.createdAt);
 
             return (
@@ -621,7 +623,7 @@ export default function CaseWorkflow() {
                   const chip = getDestinationChip(c);
                   const stage = getStageBadge(c.workflowStatus || c.status);
                   const clientName = c.applicantName || c.clientName || 'Unnamed Client';
-                  const officerName = c.assignedOfficer || c.assignedTo?.name || 'Unassigned';
+                  const officerName = c.assignedToName || c.assignedTo?.name || c.assignedOfficer || c.workflowTasks?.[c.workflowTasks?.length - 1]?.assignedToName || 'Unassigned';
                   const lastUpdated = formatDateTime(c.updatedAt || c.createdAt);
 
                   return (

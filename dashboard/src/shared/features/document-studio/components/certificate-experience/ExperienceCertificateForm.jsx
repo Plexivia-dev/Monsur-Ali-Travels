@@ -1,5 +1,9 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Building2, User, FileText, Calendar, Briefcase, ShieldCheck, Sparkles, Upload, RotateCcw } from 'lucide-react';
+import { useClientLookup } from '../common/useClientLookup';
+import { ExistingClientAlertModal } from '../common/ExistingClientAlertModal';
+import { validateBdPhone } from '../common/phoneValidator';
+import { toast } from 'sonner';
 
 const PRESETS = [
   {
@@ -60,6 +64,40 @@ const PRESETS = [
 ];
 
 export function ExperienceCertificateForm({ data = {}, onChange }) {
+  const [detectedMatch, setDetectedMatch] = useState(null);
+  const { triggerLookup, resetLookup } = useClientLookup({
+    onClientFound: (client, caseFile) => setDetectedMatch({ client, caseFile }),
+  });
+
+  const handleYes = () => {
+    if (!detectedMatch?.client) return;
+    const c = detectedMatch.client;
+    onChange((prev) => ({
+      ...prev,
+      clientId: c._id,
+      clientDid: c.did,
+      linkedCaseId: detectedMatch.caseFile?._id || null,
+      employee: {
+        ...prev.employee,
+        fullName: c.fullName || prev.employee?.fullName,
+        phone: c.phone || prev.employee?.phone,
+        passportNo: c.passportNumber || prev.employee?.passportNo,
+        nidNo: c.nidNumber || prev.employee?.nidNo,
+        fatherName: c.fatherName || prev.employee?.fatherName,
+      },
+    }));
+    toast.success(`"${c.fullName}" info auto-filled!`);
+    setDetectedMatch(null);
+  };
+
+  const handleNo = () => {
+    const val = detectedMatch?.client?.phone || '';
+    onChange((prev) => ({ ...prev, employee: { ...prev.employee, phone: '' } }));
+    resetLookup(val);
+    toast.info('Please enter a different phone number.');
+    setDetectedMatch(null);
+  };
+
   const handleChange = (section, field, value) => {
     if (section) {
       onChange((prev) => ({
@@ -278,6 +316,26 @@ export function ExperienceCertificateForm({ data = {}, onChange }) {
           </div>
 
           <div>
+            <label className="block text-xs font-semibold mb-1">Phone Number</label>
+            <input
+              type="text"
+              value={data.employee?.phone || ''}
+              onChange={(e) => {
+                const value = e.target.value;
+                handleChange('employee', 'phone', value);
+                triggerLookup(value);
+              }}
+              placeholder="Enter employee phone number"
+              className="w-full px-3 py-2 text-xs font-mono rounded-lg border border-input bg-background focus:ring-1 focus:ring-primary outline-hidden"
+            />
+            {data.employee?.phone && !validateBdPhone(data.employee.phone).isValid && (
+              <p className="text-[10px] text-rose-500 font-bold mt-1">
+                {validateBdPhone(data.employee.phone).error}
+              </p>
+            )}
+          </div>
+
+          <div>
             <label className="block text-xs font-semibold mb-1">Passport Number</label>
             <input
               type="text"
@@ -415,6 +473,14 @@ export function ExperienceCertificateForm({ data = {}, onChange }) {
         </div>
       </div>
 
+      {detectedMatch && (
+        <ExistingClientAlertModal
+          client={detectedMatch.client}
+          caseFile={detectedMatch.caseFile}
+          onYes={handleYes}
+          onNo={handleNo}
+        />
+      )}
     </div>
   );
 }

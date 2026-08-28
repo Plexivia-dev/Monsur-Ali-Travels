@@ -76,11 +76,20 @@ const caseFileSchema = new Schema(
       index: true,
     },
 
-    // 🚀 Advanced Handoff & Workflow Tracking (New)
     assignedToDid: {
       type: String,
       default: null,
       index: true,
+    },
+    assignedToName: {
+      type: String,
+      default: "",
+      trim: true,
+    },
+    assignedOfficer: {
+      type: String,
+      default: "",
+      trim: true,
     },
     workflowStatus: {
       type: String,

@@ -1,5 +1,5 @@
-import React from 'react';
-import { useLocation, useParams, Navigate } from 'react-router-dom';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import { useLocation, useParams, useNavigate, Navigate } from 'react-router-dom';
 import { EmploymentAgreement } from '../components/agreement/EmploymentAgreement';
 import { IdCard } from '../components/idcard/IdCard';
 import { JobVerification } from '../components/job-verification/JobVerification';
@@ -13,12 +13,16 @@ import { CashVoucher } from '../components/cash-voucher/CashVoucher';
 import { ExperienceCertificate } from '../components/certificate-experience/ExperienceCertificate';
 import { CharacterCertificate } from '../components/certificate-character/CharacterCertificate';
 import { MarriageCertificate } from '../components/certificate-marriage/MarriageCertificate';
+import { apiClient } from '@shared/lib/api-client';
+import { toast } from 'sonner';
+import { ShieldCheck, ArrowLeft, Lock, FileText, CheckCircle2, Loader2 } from 'lucide-react';
 
 export function DocumentStudioPage({
   activeSubmodule: propSubmodule,
 }) {
   const location = useLocation();
   const params = useParams();
+  const navigate = useNavigate();
 
   const routeGenerator = params.generator || params.submodule || null;
 
@@ -36,76 +40,404 @@ export function DocumentStudioPage({
     }
   }
 
-  // Determine user role
-  let userRole = '';
-  try {
-    const storedUser = localStorage.getItem('user');
-    if (storedUser) {
-      const parsed = JSON.parse(storedUser);
-      userRole = String(parsed.role || parsed.subRole || parsed.sub_role || parsed.designation || '').toLowerCase();
-    }
-  } catch (_) {}
+  // Parse Case Dossier URL Query Parameters
+  const searchParams = useMemo(() => new URLSearchParams(location.search), [location.search]);
+  const clientDid = searchParams.get('clientDid') || searchParams.get('clientId');
+  const caseDid = searchParams.get('caseDid') || searchParams.get('caseId');
+  const caseNumberParam = searchParams.get('caseNumber');
+  const returnUrl = searchParams.get('returnUrl');
 
-  const isAccountant = userRole.includes('account');
-  const isAdminRoute = location.pathname.startsWith('/admin');
+  const [dossierLoading, setDossierLoading] = useState(Boolean(clientDid || caseDid));
+  const [dossierContext, setDossierContext] = useState(null);
+
+  // Fetch client and case dossier details if linked via URL
+  useEffect(() => {
+    let isMounted = true;
+
+    async function loadDossier() {
+      if (!clientDid && !caseDid) {
+        setDossierLoading(false);
+        return;
+      }
+
+      try {
+        setDossierLoading(true);
+        let clientData = null;
+        let caseData = null;
+
+        if (caseDid) {
+          try {
+            const caseRes = await apiClient.get(`/api/v1/admin/cases/${caseDid}/full-details`);
+            if (caseRes.data?.data) {
+              caseData = caseRes.data.data;
+              clientData = caseData.clientInfo || caseData.clientId || null;
+            }
+          } catch (_) {
+            try {
+              const fallbackCaseRes = await apiClient.get(`/api/v1/client/cases/${caseDid}`);
+              if (fallbackCaseRes.data?.data) {
+                caseData = fallbackCaseRes.data.data;
+                clientData = caseData.clientInfo || caseData.clientId || null;
+              }
+            } catch (e) {
+              console.warn('Case fetch fallback:', e);
+            }
+          }
+        }
+
+        if (!clientData && clientDid) {
+          try {
+            const clientRes = await apiClient.get(`/api/v1/client/clients/${clientDid}`);
+            if (clientRes.data?.data) {
+              clientData = clientRes.data.data;
+            }
+          } catch (_) {
+            try {
+              const fallbackClientRes = await apiClient.get(`/api/v1/admin/clients/${clientDid}`);
+              if (fallbackClientRes.data?.data) {
+                clientData = fallbackClientRes.data.data;
+              }
+            } catch (e) {
+              console.warn('Client fetch fallback:', e);
+            }
+          }
+        }
+
+        if (isMounted) {
+          setDossierContext({
+            client: clientData || {},
+            caseFile: caseData || {},
+            isLocked: true,
+          });
+        }
+      } catch (err) {
+        console.error('Error fetching dossier context:', err);
+      } finally {
+        if (isMounted) setDossierLoading(false);
+      }
+    }
+
+    loadDossier();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [clientDid, caseDid]);
+
+  // Build mapped initialData for each generator based on dossierContext
+  const initialData = useMemo(() => {
+    if (!dossierContext) return null;
+    const { client, caseFile } = dossierContext;
+
+    const applicantFullName = client.fullName || caseFile.applicantName || '';
+    const phone = client.phone || caseFile.phone || '';
+    const passportNumber = client.passportNumber || caseFile.passportNumber || '';
+    const nidNumber = client.nidNumber || caseFile.nidNumber || '';
+    const destination = caseFile.destinationCountry || caseFile.caseType?.toUpperCase() || 'Work Permit / Visa';
+    const trade = caseFile.tradeSkill || 'General Worker';
+
+    switch (resolvedSubmodule) {
+      case 'client-form':
+        return {
+          clientId: client._id,
+          clientDid: client.did,
+          caseDid: caseFile.did || caseFile._id,
+          caseNumber: caseFile.caseNumber || caseNumberParam,
+          serviceType: destination,
+          client: {
+            fullName: applicantFullName,
+            mobileNumber: phone,
+            nidNumber,
+            passportNumber,
+            email: client.email || '',
+            fatherName: client.fatherName || '',
+            motherName: client.motherName || '',
+            presentAddress: client.presentAddress || client.address || '',
+            permanentAddress: client.permanentAddress || '',
+          },
+          guardian: {
+            fullName: client.guardian?.name || '',
+            relationship: client.guardian?.relationship || 'Father',
+            mobileNumber: client.guardian?.phone || '',
+            nidNumber: client.guardian?.nidNumber || '',
+            address: client.guardian?.address || '',
+          },
+          isLocked: true,
+        };
+
+      case 'agreement':
+        return {
+          parties: {
+            agreementDate: new Date().toISOString().split('T')[0],
+            nidPassport: passportNumber || nidNumber,
+            employeeName: applicantFullName,
+            employeePhone: phone,
+            employeeEmail: client.email || '',
+            fatherHusbandName: client.fatherName || '',
+            address: client.presentAddress || client.address || client.permanentAddress || '',
+          },
+          guardian: {
+            guardianName: client.guardian?.name || '',
+            guardianPhone: client.guardian?.phone || '',
+            relationship: client.guardian?.relationship || 'Father',
+            emergencyPhone: client.guardian?.phone || client.altPhone || '',
+            guardianNid: client.guardian?.nidNumber || '',
+            guardianAddress: client.guardian?.address || '',
+          },
+          position: {
+            designation: trade,
+            department: destination,
+            location: 'Head Office / Overseas Placement',
+          },
+          isLocked: true,
+        };
+
+      case 'indian-visa':
+        return {
+          applicant: {
+            fullName: applicantFullName,
+            mobileNumber: phone,
+            passportNumber,
+            nidNumber,
+            email: client.email || '',
+            fatherName: client.fatherName || '',
+            motherName: client.motherName || '',
+            presentAddress: client.presentAddress || client.address || '',
+            permanentAddress: client.permanentAddress || '',
+          },
+          isLocked: true,
+        };
+
+      case 'passport-sub':
+        return {
+          clientName: applicantFullName,
+          phone,
+          passportNumber,
+          nidNumber,
+          fatherName: client.fatherName || '',
+          destinationCountry: destination,
+          isLocked: true,
+        };
+
+      case 'job-verification':
+        return {
+          employeeName: applicantFullName,
+          phone,
+          passportNumber,
+          nidNumber,
+          designation: trade,
+          country: destination,
+          isLocked: true,
+        };
+
+      case 'idcard':
+        return {
+          fullName: applicantFullName,
+          role: trade,
+          idNumber: client.clientCode || (client.did ? `CLNT-${client.did.slice(0, 6)}` : 'ID-001'),
+          contactPhone: phone,
+          bloodGroup: client.bloodGroup || '',
+          isLocked: true,
+        };
+
+      case 'invoice':
+      case 'money-receipt':
+        return {
+          clientName: applicantFullName,
+          phone,
+          passportNumber,
+          caseNumber: caseFile.caseNumber || caseNumberParam || '',
+          isLocked: true,
+        };
+
+      default:
+        return {
+          clientName: applicantFullName,
+          phone,
+          passportNumber,
+          nidNumber,
+          isLocked: true,
+        };
+    }
+  }, [dossierContext, resolvedSubmodule, caseNumberParam]);
+
+  // Callback when a document is saved successfully in Document Studio
+  const handleSavedSuccess = useCallback(
+    (savedDoc) => {
+      toast.success('Document successfully generated and recorded in database!');
+      if (returnUrl) {
+        toast.info('Returning to Case File Dossier in 1.5s...', {
+          action: {
+            label: 'Return Now',
+            onClick: () => navigate(returnUrl),
+          },
+        });
+        setTimeout(() => {
+          navigate(returnUrl);
+        }, 1500);
+      }
+    },
+    [returnUrl, navigate]
+  );
 
   // If no generator is specified, determine role-based default
   if (!resolvedSubmodule || resolvedSubmodule === 'overview' || resolvedSubmodule === 'studio' || resolvedSubmodule === 'all') {
+    let userRole = '';
+    try {
+      const storedUser = localStorage.getItem('user');
+      if (storedUser) {
+        const parsed = JSON.parse(storedUser);
+        userRole = String(parsed.role || parsed.subRole || parsed.sub_role || '').toLowerCase();
+      }
+    } catch (_) {}
+
+    const isAccountant = userRole.includes('account');
     const defaultGen = isAccountant ? 'payroll' : 'agreement';
+
+    const isAdminRoute = location.pathname.startsWith('/admin');
     const targetPath = isAdminRoute ? `/admin/docs/${defaultGen}` : `/dashboard/docs/${defaultGen}`;
+
     return <Navigate to={targetPath} replace />;
-  }
-
-  // Security guard for Accountant role on non-financial generators
-  const nonFinancialGenerators = [
-    'agreement',
-    'client-form',
-    'indian-visa',
-    'passport-sub',
-    'job-verification',
-    'job-verify',
-    'job-verification-form',
-    'idcard',
-    'experience-certificate',
-    'certificate-exp',
-    'exp-cert',
-    'character-certificate',
-    'certificate-char',
-    'char-cert',
-    'marriage-certificate',
-    'certificate-marr',
-    'marr-cert',
-  ];
-
-  if (isAccountant && nonFinancialGenerators.includes(resolvedSubmodule)) {
-    const fallbackPath = isAdminRoute ? '/admin/docs/payroll' : '/dashboard/docs/payroll';
-    return <Navigate to={fallbackPath} replace />;
   }
 
   return (
     <div className="space-y-6">
-      {resolvedSubmodule === 'agreement' && <EmploymentAgreement />}
-      {resolvedSubmodule === 'client-form' && <ClientGuardian />}
-      {resolvedSubmodule === 'indian-visa' && <IndianVisa />}
-      {resolvedSubmodule === 'passport-sub' && <PassportSubmission />}
+      {/* LINKED CASE DOSSIER AUDIT BANNER */}
+      {dossierContext && (
+        <div className="bg-sky-500/10 border border-sky-500/30 rounded-2xl p-4 flex flex-wrap items-center justify-between gap-4 shadow-xs">
+          <div className="flex items-center gap-3">
+            <div className="size-10 rounded-xl bg-sky-500/20 text-sky-600 dark:text-sky-400 flex items-center justify-center font-bold shrink-0">
+              <ShieldCheck className="size-5" />
+            </div>
+            <div>
+              <div className="flex items-center gap-2">
+                <span className="text-xs font-bold text-sky-700 dark:text-sky-300 uppercase tracking-wider">
+                  Linked Case File #{dossierContext.caseFile?.caseNumber || caseNumberParam || 'CASE-DOSSIER'}
+                </span>
+                <span className="inline-flex items-center gap-1 px-2 py-0.2 rounded-full text-[10px] font-bold bg-amber-500/20 text-amber-800 dark:text-amber-300 border border-amber-500/30">
+                  <Lock className="size-2.5" />
+                  Client Bio Locked
+                </span>
+              </div>
+              <p className="text-xs text-foreground font-semibold mt-0.5">
+                Applicant: <strong className="text-primary">{dossierContext.client?.fullName || dossierContext.caseFile?.applicantName || 'Client'}</strong>
+                {' • '}Phone: {dossierContext.client?.phone || dossierContext.caseFile?.phone || '—'}
+                {' • '}Passport: <span className="font-mono font-bold text-sky-600 dark:text-sky-400">{dossierContext.caseFile?.passportNumber || dossierContext.client?.passportNumber || '—'}</span>
+                {' • '}NID: <span className="font-mono">{dossierContext.client?.nidNumber || dossierContext.caseFile?.nidNumber || '—'}</span>
+              </p>
+            </div>
+          </div>
+
+          {returnUrl && (
+            <button
+              type="button"
+              onClick={() => navigate(returnUrl)}
+              className="flex items-center gap-1.5 px-3.5 py-2 bg-background border border-border hover:bg-muted text-foreground font-bold text-xs rounded-xl shadow-xs transition cursor-pointer"
+            >
+              <ArrowLeft className="size-3.5" />
+              <span>← Return to Case Dossier</span>
+            </button>
+          )}
+        </div>
+      )}
+
+      {dossierLoading && (
+        <div className="p-4 bg-muted/20 border border-border rounded-xl flex items-center gap-2 text-xs text-muted-foreground animate-pulse">
+          <Loader2 className="size-4 animate-spin text-primary" />
+          <span>Loading client dossier particulars from database...</span>
+        </div>
+      )}
+
+      {resolvedSubmodule === 'agreement' && (
+        <EmploymentAgreement
+          initialData={initialData}
+          onSavedSuccess={handleSavedSuccess}
+          isLocked={Boolean(dossierContext?.isLocked)}
+        />
+      )}
+      {resolvedSubmodule === 'client-form' && (
+        <ClientGuardian
+          initialData={initialData}
+          onSavedSuccess={handleSavedSuccess}
+          isLocked={Boolean(dossierContext?.isLocked)}
+        />
+      )}
+      {resolvedSubmodule === 'indian-visa' && (
+        <IndianVisa
+          initialData={initialData}
+          onSavedSuccess={handleSavedSuccess}
+          isLocked={Boolean(dossierContext?.isLocked)}
+        />
+      )}
+      {resolvedSubmodule === 'passport-sub' && (
+        <PassportSubmission
+          initialData={initialData}
+          onSavedSuccess={handleSavedSuccess}
+          isLocked={Boolean(dossierContext?.isLocked)}
+        />
+      )}
       {(resolvedSubmodule === 'job-verification' || resolvedSubmodule === 'job-verify' || resolvedSubmodule === 'job-verification-form') && (
-        <JobVerification />
+        <JobVerification
+          initialData={initialData}
+          onSavedSuccess={handleSavedSuccess}
+          isLocked={Boolean(dossierContext?.isLocked)}
+        />
       )}
-      {resolvedSubmodule === 'idcard' && <IdCard />}
+      {resolvedSubmodule === 'idcard' && (
+        <IdCard
+          initialData={initialData}
+          onSavedSuccess={handleSavedSuccess}
+          isLocked={Boolean(dossierContext?.isLocked)}
+        />
+      )}
       {(resolvedSubmodule === 'payroll' || resolvedSubmodule === 'salary-slip' || resolvedSubmodule === 'salary') && (
-        <SalarySlip />
+        <SalarySlip
+          initialData={initialData}
+          onSavedSuccess={handleSavedSuccess}
+          isLocked={Boolean(dossierContext?.isLocked)}
+        />
       )}
-      {resolvedSubmodule === 'invoice' && <Invoice />}
-      {(resolvedSubmodule === 'money-receipt' || resolvedSubmodule === 'receipt') && <MoneyReceipt />}
-      {(resolvedSubmodule === 'cash-voucher' || resolvedSubmodule === 'cash-money-voucher') && <CashVoucher />}
+      {resolvedSubmodule === 'invoice' && (
+        <Invoice
+          initialData={initialData}
+          onSavedSuccess={handleSavedSuccess}
+          isLocked={Boolean(dossierContext?.isLocked)}
+        />
+      )}
+      {(resolvedSubmodule === 'money-receipt' || resolvedSubmodule === 'receipt') && (
+        <MoneyReceipt
+          initialData={initialData}
+          onSavedSuccess={handleSavedSuccess}
+          isLocked={Boolean(dossierContext?.isLocked)}
+        />
+      )}
+      {(resolvedSubmodule === 'cash-voucher' || resolvedSubmodule === 'cash-money-voucher') && (
+        <CashVoucher
+          initialData={initialData}
+          onSavedSuccess={handleSavedSuccess}
+          isLocked={Boolean(dossierContext?.isLocked)}
+        />
+      )}
       {(resolvedSubmodule === 'experience-certificate' || resolvedSubmodule === 'certificate-exp' || resolvedSubmodule === 'exp-cert') && (
-        <ExperienceCertificate />
+        <ExperienceCertificate
+          initialData={initialData}
+          onSavedSuccess={handleSavedSuccess}
+          isLocked={Boolean(dossierContext?.isLocked)}
+        />
       )}
       {(resolvedSubmodule === 'character-certificate' || resolvedSubmodule === 'certificate-char' || resolvedSubmodule === 'char-cert') && (
-        <CharacterCertificate />
+        <CharacterCertificate
+          initialData={initialData}
+          onSavedSuccess={handleSavedSuccess}
+          isLocked={Boolean(dossierContext?.isLocked)}
+        />
       )}
       {(resolvedSubmodule === 'marriage-certificate' || resolvedSubmodule === 'certificate-marr' || resolvedSubmodule === 'marr-cert') && (
-        <MarriageCertificate />
+        <MarriageCertificate
+          initialData={initialData}
+          onSavedSuccess={handleSavedSuccess}
+          isLocked={Boolean(dossierContext?.isLocked)}
+        />
       )}
     </div>
   );

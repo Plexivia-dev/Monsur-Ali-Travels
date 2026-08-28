@@ -35,8 +35,8 @@ function CardTitle({ className, icon: Icon, children, ...props }) {
       className={cn('text-base font-semibold text-foreground flex items-center gap-2', className)}
       {...props}
     >
-      {Icon && <Icon className="w-4 h-4 text-primary shrink-0" />}
-      <span>{children}</span>
+      {Icon && <Icon className="w-4 h-4 text-primary shrink-0 inline-flex" />}
+      {children}
     </div>
   );
 }

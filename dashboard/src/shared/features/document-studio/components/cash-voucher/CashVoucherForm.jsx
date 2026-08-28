@@ -1,11 +1,74 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useState } from 'react';
 import { PlusCircle, Trash2 } from 'lucide-react';
 import { numberToWords, numberToWordsBn, generateVoucherNo } from './sampleData';
 import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
+import { toast } from 'sonner';
+import { useClientLookup } from '../common/useClientLookup';
+import { ExistingClientAlertModal } from '../common/ExistingClientAlertModal';
+import { validateBdPhone } from '../common/phoneValidator';
+
+import { BdPhoneInput } from '@/components/common/BdPhoneInput';
 
 export function CashVoucherForm({ data, onChange, onReset, onSave, onPreview, isSubmitting }) {
   const { t } = useTranslation();
+
+  // ─── Client Lookup ────────────────────────────────────────────────────────
+  const [detectedMatch, setDetectedMatch] = useState(null);
+  const [phoneTouched, setPhoneTouched] = useState(false);
+
+  const { triggerLookup, resetLookup } = useClientLookup({
+    onClientFound: (client, caseFile) => setDetectedMatch({ client, caseFile }),
+  });
+
+  const handleYes = () => {
+    const { client, caseFile } = detectedMatch;
+    onChange((prev) => ({
+      ...prev,
+      receivedFrom: client.fullName || client.name || prev.receivedFrom,
+      phone: client.phone || client.mobileNumber || prev.phone,
+      email: client.email || prev.email,
+      clientId: client._id || client.did || null,
+      clientDid: client.did || client._id || null,
+      linkedCaseId: caseFile?._id || null,
+      linkedCaseDid: caseFile?.did || null,
+    }));
+    toast.success(`Auto-filled from existing client: ${client.fullName || client.name}`);
+    setDetectedMatch(null);
+  };
+
+  const handleNo = () => {
+    const val = detectedMatch?.client?.phone || data.phone || '';
+    onChange((prev) => ({ ...prev, phone: '' }));
+    resetLookup(val);
+    setPhoneTouched(false);
+    toast.info('Please enter a different phone number.');
+    setDetectedMatch(null);
+  };
+
+  const handleSave = () => {
+    const phone = data.phone || '';
+    const check = validateBdPhone(phone);
+    if (!check.isValid) {
+      setPhoneTouched(true);
+      toast.error(`Phone: ${check.error}`);
+      return;
+    }
+    onSave();
+  };
+
+  const handlePreviewAction = () => {
+    const phone = data.phone || '';
+    const check = validateBdPhone(phone);
+    if (!check.isValid) {
+      setPhoneTouched(true);
+      toast.error(`Phone: ${check.error}`);
+      return;
+    }
+    onPreview();
+  };
+
+
 
   // ─── Helpers ─────────────────────────────────────────────────────────────
   const recalc = useCallback((items, taxVat) => {
@@ -44,7 +107,7 @@ export function CashVoucherForm({ data, onChange, onReset, onSave, onPreview, is
     <div className="space-y-6">
       {/* Voucher Meta */}
       <div className="bg-card border border-border rounded-2xl p-5 shadow-xs">
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           {/* Voucher No */}
           <div>
             <label className="block text-xs font-semibold text-muted-foreground mb-1">
@@ -82,8 +145,45 @@ export function CashVoucherForm({ data, onChange, onReset, onSave, onPreview, is
               className="w-full bg-muted border border-border rounded-xl px-3 py-2 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
             />
           </div>
+
+          {/* Received From */}
+          <div>
+            <label className="block text-xs font-semibold text-muted-foreground mb-1">
+              {t('cashVoucherForm.receivedFrom', 'Received From / Paid To')}
+            </label>
+            <input
+              type="text"
+              value={data.receivedFrom || ''}
+              onChange={(e) => handleChange('receivedFrom', e.target.value)}
+              placeholder={t('cashVoucherForm.receivedFromPlaceholder', 'Client / Person name')}
+              className="w-full bg-muted border border-border rounded-xl px-3 py-2 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
+            />
+          </div>
+
+          {/* Phone */}
+          <div>
+            <label className="block text-xs font-semibold text-muted-foreground mb-1">
+              {t('cashVoucherForm.phone', 'Phone Number')} <span className="text-rose-500">*</span>
+            </label>
+            <BdPhoneInput
+              value={data.phone || ''}
+              required
+              onBlur={() => setPhoneTouched(true)}
+              onChange={(val) => {
+                handleChange('phone', val);
+                triggerLookup(val);
+                if (phoneTouched) setPhoneTouched(true);
+              }}
+            />
+            {((phoneTouched || Boolean(data.phone)) && !validateBdPhone(data.phone || '').isValid) && (
+              <p className="text-[10px] text-rose-500 font-bold mt-1">
+                {validateBdPhone(data.phone || '').error}
+              </p>
+            )}
+          </div>
         </div>
       </div>
+
 
       {/* Expense Items */}
       <div className="bg-card border border-border rounded-2xl p-5 shadow-xs space-y-4">
@@ -247,19 +347,28 @@ export function CashVoucherForm({ data, onChange, onReset, onSave, onPreview, is
         <Button
           type="button"
           variant="outline"
-          onClick={onPreview}
+          onClick={handlePreviewAction}
         >
           {t('cashVoucherForm.previewOnly', 'Preview Only')}
         </Button>
         <Button
           type="button"
           variant="primary"
-          onClick={onSave}
+          onClick={handleSave}
           disabled={isSubmitting}
         >
           {isSubmitting ? t('cashVoucherForm.saving', 'Saving...') : t('cashVoucherForm.savePreview', 'Save & Preview')}
         </Button>
       </div>
+
+      {detectedMatch && (
+        <ExistingClientAlertModal
+          client={detectedMatch.client}
+          caseFile={detectedMatch.caseFile}
+          onYes={handleYes}
+          onNo={handleNo}
+        />
+      )}
     </div>
   );
 }

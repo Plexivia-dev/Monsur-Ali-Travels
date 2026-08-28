@@ -44,6 +44,7 @@ coreRouter.use("/auth", authRouter);
 coreRouter.use("/qr", qrRouter);
 coreRouter.use("/qrcode", qrRouter);
 coreRouter.use("/upload", uploadRouter);
+coreRouter.use("/uploads", uploadRouter);
 coreRouter.use("/notifications", notificationRouter);
 coreRouter.use("/accounts", authenticateToken, auditLog, accountsRouter);
 coreRouter.use("/users", authenticateToken, auditLog, usersRouter);

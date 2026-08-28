@@ -1,7 +1,52 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Building2, User, Heart, FileText, Calendar, DollarSign } from 'lucide-react';
+import { BdPhoneInput } from '@/components/common/BdPhoneInput';
+import { useClientLookup } from '../common/useClientLookup';
+import { ExistingClientAlertModal } from '../common/ExistingClientAlertModal';
+import { validateBdPhone } from '../common/phoneValidator';
+import { toast } from 'sonner';
 
 export function MarriageCertificateForm({ data = {}, onChange }) {
+  const [detectedMatch, setDetectedMatch] = useState(null);
+  const { triggerLookup, resetLookup } = useClientLookup({
+    onClientFound: (client, caseFile) => setDetectedMatch({ client, caseFile }),
+  });
+
+  const handleYes = () => {
+    if (!detectedMatch?.client) return;
+    const c = detectedMatch.client;
+    onChange((prev) => ({
+      ...prev,
+      clientId: c._id,
+      clientDid: c.did,
+      linkedCaseId: detectedMatch.caseFile?._id || null,
+      linkedCaseDid: detectedMatch.caseFile?.did || null,
+      groom: {
+        ...prev.groom,
+        name: c.fullName || prev.groom?.name,
+        phone: c.phone || prev.groom?.phone,
+        passportNo: c.passportNumber || prev.groom?.passportNo,
+        nidNo: c.nidNumber || prev.groom?.nidNo,
+        fatherName: c.fatherName || prev.groom?.fatherName,
+        motherName: c.motherName || prev.groom?.motherName,
+        address: c.presentAddress || c.address || prev.groom?.address,
+      },
+    }));
+    toast.success(`"${c.fullName}" info auto-filled!`);
+    setDetectedMatch(null);
+  };
+
+  const handleNo = () => {
+    const val = detectedMatch?.client?.phone || '';
+    onChange((prev) => ({
+      ...prev,
+      groom: { ...prev.groom, phone: '' },
+    }));
+    resetLookup(val);
+    toast.info('Please enter a different phone number.');
+    setDetectedMatch(null);
+  };
+
   const handleChange = (section, field, value) => {
     if (section) {
       onChange((prev) => ({
@@ -150,6 +195,22 @@ export function MarriageCertificateForm({ data = {}, onChange }) {
               onChange={(e) => handleChange('groom', 'name', e.target.value)}
               className="w-full px-3 py-2 text-xs rounded-lg border border-input bg-background font-bold focus:ring-1 focus:ring-primary outline-hidden uppercase"
             />
+          </div>
+
+          <div>
+            <label className="block text-xs font-semibold mb-1">Groom Phone Number</label>
+            <BdPhoneInput
+              value={data.groom?.phone || ''}
+              onChange={(val) => {
+                handleChange('groom', 'phone', val);
+                triggerLookup(val);
+              }}
+            />
+            {data.groom?.phone && !validateBdPhone(data.groom.phone).isValid && (
+              <p className="text-[10px] text-rose-500 font-bold mt-1">
+                {validateBdPhone(data.groom.phone).error}
+              </p>
+            )}
           </div>
 
           <div>
@@ -328,6 +389,14 @@ export function MarriageCertificateForm({ data = {}, onChange }) {
         </div>
       </div>
 
+      {detectedMatch && (
+        <ExistingClientAlertModal
+          client={detectedMatch.client}
+          caseFile={detectedMatch.caseFile}
+          onYes={handleYes}
+          onNo={handleNo}
+        />
+      )}
     </div>
   );
 }

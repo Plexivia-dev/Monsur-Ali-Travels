@@ -4,9 +4,35 @@ import { commonMulter } from '../../middlewares/commonUpload.middleware.js';
 
 const uploadRouter = Router();
 
-// 1. Single File Upload (field name: 'file')
+// Middleware to support flexible field names ('file', 'image', 'avatar', 'photo', 'document')
+const handleSingleUpload = (req, res, next) => {
+  commonMulter.any()(req, res, (err) => {
+    if (err) return next(err);
+    if (req.files && req.files.length > 0) {
+      req.file = req.files[0];
+    }
+    next();
+  });
+};
+
+// 1. Single File Upload (field name: 'file', 'image', 'avatar', etc.)
 // POST /api/v1/upload/single?folder=documents
-uploadRouter.post('/single', commonMulter.single('file'), (req, res) => {
+uploadRouter.post('/single', handleSingleUpload, (req, res) => {
+  UploadController.uploadSingleFile(req, res);
+});
+
+// Image Upload Alias: POST /api/v1/upload/image or POST /api/v1/uploads/image
+uploadRouter.post('/image', handleSingleUpload, (req, res) => {
+  UploadController.uploadSingleFile(req, res);
+});
+
+// Avatar Upload Alias: POST /api/v1/upload/avatar or POST /api/v1/uploads/avatar
+uploadRouter.post('/avatar', handleSingleUpload, (req, res) => {
+  UploadController.uploadSingleFile(req, res);
+});
+
+// Document Upload Alias: POST /api/v1/upload/document or POST /api/v1/uploads/document
+uploadRouter.post('/document', handleSingleUpload, (req, res) => {
   UploadController.uploadSingleFile(req, res);
 });
 

@@ -31,7 +31,7 @@ import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Separator } from '@/components/ui/separator';
 import { toast } from 'sonner';
-import { apiClient } from '@/lib/api-client';
+import { apiClient, API_BASE_URL } from '@/lib/api-client';
 import { handleGlobalError } from '@/lib/error-handler';
 
 export function UserProfilePage() {
@@ -102,6 +102,17 @@ export function UserProfilePage() {
     .slice(0, 2)
     .toUpperCase();
 
+  const getAvatarSrc = (avatar) => {
+    if (!avatar) return '';
+    if (avatar.startsWith('http://') || avatar.startsWith('https://') || avatar.startsWith('data:')) {
+      return avatar;
+    }
+    if (avatar.startsWith('/')) {
+      return `${API_BASE_URL || ''}${avatar}`;
+    }
+    return avatar;
+  };
+
   const handleInputChange = (field, value) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
@@ -125,13 +136,28 @@ export function UserProfilePage() {
       const uploadFormData = new FormData();
       uploadFormData.append('file', file);
 
-      const res = await apiClient.post('/api/v1/uploads/image', uploadFormData, {
+      const res = await apiClient.post('/api/v1/upload/single?folder=avatars', uploadFormData, {
         headers: { 'Content-Type': 'multipart/form-data' },
       });
 
-      if (res.data?.data?.url) {
-        const newAvatarUrl = res.data.data.url;
-        setFormData((prev) => ({ ...prev, avatar: newAvatarUrl }));
+      const uploadedUrl = res.data?.data?.fullUrl || res.data?.data?.url;
+      if (uploadedUrl) {
+        setFormData((prev) => ({ ...prev, avatar: uploadedUrl }));
+        
+        // Auto-save photo change to profile
+        try {
+          await updateProfile({
+            name: formData.name.trim() || user?.name || '',
+            username: formData.username ? formData.username.trim() : (user?.username || null),
+            phone: formData.phone.trim() || user?.phone || '',
+            address: formData.address.trim() || user?.address || '',
+            avatar: uploadedUrl,
+          });
+          setInitialData((prev) => ({ ...prev, avatar: uploadedUrl }));
+        } catch (profileErr) {
+          console.warn('Could not auto-save avatar to profile:', profileErr);
+        }
+
         toast.success(t('account.updateSuccess', 'Profile photo updated!'));
       }
     } catch (err) {
@@ -142,8 +168,24 @@ export function UserProfilePage() {
     }
   };
 
-  const handleRemovePhoto = () => {
-    setFormData((prev) => ({ ...prev, avatar: '' }));
+  const handleRemovePhoto = async () => {
+    try {
+      setIsUploadingPhoto(true);
+      await updateProfile({
+        name: formData.name.trim() || user?.name || '',
+        username: formData.username ? formData.username.trim() : (user?.username || null),
+        phone: formData.phone.trim() || user?.phone || '',
+        address: formData.address.trim() || user?.address || '',
+        avatar: '',
+      });
+      setFormData((prev) => ({ ...prev, avatar: '' }));
+      setInitialData((prev) => ({ ...prev, avatar: '' }));
+      toast.success(t('account.updateSuccess', 'Profile photo removed!'));
+    } catch (err) {
+      handleGlobalError(err, 'Failed to remove photo.');
+    } finally {
+      setIsUploadingPhoto(false);
+    }
   };
 
   // Discard Changes
@@ -234,29 +276,29 @@ export function UserProfilePage() {
   };
 
   return (
-    <div className="space-y-6 max-w-5xl mx-auto pb-12">
+    <div className="space-y-4 sm:space-y-5 max-w-5xl mx-auto pb-8">
       {/* Page Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-border/80 pb-5">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-border/80 pb-3 sm:pb-4">
         <div>
-          <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-foreground flex items-center gap-2.5">
-            <User className="w-6 h-6 text-primary" />
+          <h1 className="text-lg sm:text-xl font-bold tracking-tight text-foreground flex items-center gap-2">
+            <User className="w-5 h-5 text-primary shrink-0" />
             <span>{t('account.title', 'Account & Profile Settings')}</span>
           </h1>
-          <p className="text-xs sm:text-sm text-muted-foreground mt-1">
+          <p className="text-xs sm:text-sm text-muted-foreground mt-0.5">
             {t('account.subtitle', 'Manage your personal profile, contact information, unique username, and security credentials.')}
           </p>
         </div>
       </div>
 
       {/* Profile Overview Header Card */}
-      <Card className="border-border/80 bg-card shadow-xs overflow-hidden">
-        <CardContent className="p-6">
-          <div className="flex flex-col sm:flex-row items-center sm:items-start gap-6">
+      <Card className="border-border/80 bg-card shadow-xs overflow-hidden p-0 gap-0">
+        <CardContent className="p-4 sm:p-5">
+          <div className="flex flex-col sm:flex-row items-center sm:items-start gap-4 sm:gap-5">
             {/* Avatar with Upload Overlay */}
-            <div className="relative group">
-              <Avatar className="size-24 sm:size-28 border-4 border-background shadow-md ring-2 ring-border">
-                <AvatarImage src={formData.avatar || ''} alt={formData.name} className="object-cover" />
-                <AvatarFallback className="bg-primary/10 text-primary font-bold text-2xl">
+            <div className="relative group shrink-0">
+              <Avatar className="size-20 sm:size-24 border-3 border-background shadow-md ring-2 ring-border">
+                <AvatarImage src={getAvatarSrc(formData.avatar)} alt={formData.name} className="object-cover" />
+                <AvatarFallback className="bg-primary/10 text-primary font-bold text-xl sm:text-2xl">
                   {initials}
                 </AvatarFallback>
               </Avatar>
@@ -268,13 +310,13 @@ export function UserProfilePage() {
                 size="icon"
                 onClick={() => fileInputRef.current?.click()}
                 disabled={isUploadingPhoto}
-                className="absolute bottom-0 right-0 rounded-full shadow-lg ring-2 ring-background group-hover:scale-105 cursor-pointer"
+                className="absolute bottom-0 right-0 rounded-full shadow-lg ring-2 ring-background group-hover:scale-105 cursor-pointer size-7 sm:size-8"
                 title={t('account.changePhoto', 'Change Photo')}
               >
                 {isUploadingPhoto ? (
-                  <Loader2 className="w-4 h-4 animate-spin" />
+                  <Loader2 className="w-3.5 h-3.5 animate-spin" />
                 ) : (
-                  <Camera className="w-4 h-4" />
+                  <Camera className="w-3.5 h-3.5" />
                 )}
               </Button>
               <input
@@ -287,50 +329,50 @@ export function UserProfilePage() {
             </div>
 
             {/* User Meta Information */}
-            <div className="flex-1 text-center sm:text-left space-y-2">
+            <div className="flex-1 text-center sm:text-left space-y-1.5 min-w-0">
               <div className="flex flex-col sm:flex-row sm:items-center gap-2 justify-between">
                 <div>
-                  <h2 className="text-lg font-bold text-foreground flex items-center justify-center sm:justify-start gap-2">
-                    <span>{formData.name || user?.name || 'Administrator'}</span>
-                    <BadgeCheck className="w-4 h-4 text-sky-500 fill-sky-500/20" />
+                  <h2 className="text-base sm:text-lg font-bold text-foreground flex items-center justify-center sm:justify-start gap-1.5">
+                    <span className="truncate">{formData.name || user?.name || 'Administrator'}</span>
+                    <BadgeCheck className="w-4 h-4 text-sky-500 fill-sky-500/20 shrink-0" />
                   </h2>
                   <p className="text-xs font-mono text-muted-foreground mt-0.5">
                     {formData.username ? `@${formData.username}` : user?.email}
                   </p>
                 </div>
 
-                <div className="flex items-center justify-center sm:justify-end gap-2 flex-wrap">
-                  <Badge variant="outline" className="text-xs bg-primary/10 text-primary border-primary/20 font-semibold uppercase">
+                <div className="flex items-center justify-center sm:justify-end gap-1.5 flex-wrap">
+                  <Badge variant="outline" className="text-[11px] bg-primary/10 text-primary border-primary/20 font-semibold uppercase px-2 py-0.5">
                     {user?.role || 'Employee'}
                   </Badge>
                   {user?.department && (
-                    <Badge variant="outline" className="text-xs bg-muted text-muted-foreground">
+                    <Badge variant="outline" className="text-[11px] bg-muted text-muted-foreground px-2 py-0.5">
                       {user.department}
                     </Badge>
                   )}
                 </div>
               </div>
 
-              <div className="flex items-center justify-center sm:justify-start gap-4 text-xs text-muted-foreground flex-wrap pt-1">
+              <div className="flex items-center justify-center sm:justify-start gap-3 sm:gap-4 text-xs text-muted-foreground flex-wrap pt-0.5">
                 <span className="flex items-center gap-1">
-                  <Mail className="w-3.5 h-3.5 text-muted-foreground/70" />
-                  <span>{user?.email}</span>
+                  <Mail className="w-3.5 h-3.5 text-muted-foreground/70 shrink-0" />
+                  <span className="truncate">{user?.email}</span>
                 </span>
                 {formData.phone && (
                   <span className="flex items-center gap-1">
-                    <Phone className="w-3.5 h-3.5 text-muted-foreground/70" />
+                    <Phone className="w-3.5 h-3.5 text-muted-foreground/70 shrink-0" />
                     <span>{formData.phone}</span>
                   </span>
                 )}
                 {user?.did && (
-                  <span className="font-mono text-[11px] bg-muted/60 px-2 py-0.5 rounded border border-border">
+                  <span className="font-mono text-[11px] bg-muted/60 px-1.5 py-0.5 rounded border border-border">
                     DID: {user.did}
                   </span>
                 )}
               </div>
 
               {/* Photo Actions */}
-              <div className="pt-2 flex items-center justify-center sm:justify-start gap-2">
+              <div className="pt-1 flex items-center justify-center sm:justify-start gap-2">
                 <Button
                   type="button"
                   variant="outline"
@@ -361,22 +403,22 @@ export function UserProfilePage() {
       </Card>
 
       {/* Main Grid: Personal Info & Security */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-5 items-start">
         {/* Left 2 Columns: Personal Information Form */}
-        <div className="lg:col-span-2 space-y-6">
-          <Card className="border-border/80 shadow-xs">
-            <CardHeader className="border-b border-border/60 pb-4">
-              <CardTitle className="text-base font-semibold text-foreground flex items-center gap-2">
-                <User className="w-4 h-4 text-primary" />
+        <div className="lg:col-span-2 space-y-4">
+          <Card className="border-border/80 shadow-xs p-0 gap-0 overflow-hidden">
+            <CardHeader className="border-b border-border/60 px-4 py-3 sm:px-5 sm:py-3.5 flex flex-row items-center justify-between">
+              <CardTitle className="text-sm sm:text-base font-semibold text-foreground flex flex-row items-center gap-2">
+                <User className="w-4 h-4 text-primary shrink-0 inline-flex" />
                 <span>{t('account.personalInfo', 'Personal Information')}</span>
               </CardTitle>
             </CardHeader>
 
             <form onSubmit={handleSaveProfile}>
-              <CardContent className="p-5 space-y-4">
+              <CardContent className="p-4 sm:p-5 space-y-3.5">
                 {/* Full Name */}
-                <div className="space-y-1.5">
-                  <Label className="text-xs font-semibold text-foreground flex items-center gap-1.5">
+                <div className="space-y-1">
+                  <Label className="text-xs font-semibold text-foreground flex items-center gap-1">
                     <span>{t('account.fullName', 'Full Name')}</span>
                     <span className="text-rose-500">*</span>
                   </Label>
@@ -387,14 +429,14 @@ export function UserProfilePage() {
                       value={formData.name}
                       onChange={(e) => handleInputChange('name', e.target.value)}
                       placeholder={t('account.fullNamePlaceholder', 'Enter your full name')}
-                      className="pl-9 h-10 text-sm"
+                      className="pl-9 h-9 text-sm"
                       required
                     />
                   </div>
                 </div>
 
                 {/* Custom Unique Username */}
-                <div className="space-y-1.5">
+                <div className="space-y-1">
                   <Label className="text-xs font-semibold text-foreground flex items-center justify-between">
                     <span className="flex items-center gap-1.5">
                       <AtSign className="w-3.5 h-3.5 text-primary" />
@@ -413,7 +455,7 @@ export function UserProfilePage() {
                       value={formData.username}
                       onChange={(e) => handleInputChange('username', e.target.value.toLowerCase().replace(/[^a-zA-Z0-9_.-]/g, ''))}
                       placeholder={t('account.usernamePlaceholder', 'e.g. johndoe')}
-                      className="pl-8 font-mono text-sm h-10"
+                      className="pl-8 font-mono text-sm h-9"
                     />
                   </div>
                   <p className="text-[11px] text-muted-foreground">
@@ -422,9 +464,9 @@ export function UserProfilePage() {
                 </div>
 
                 {/* Phone & Email Row */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                   {/* Phone Number */}
-                  <div className="space-y-1.5">
+                  <div className="space-y-1">
                     <Label className="text-xs font-semibold text-foreground flex items-center gap-1.5">
                       <Phone className="w-3.5 h-3.5 text-primary" />
                       <span>{t('account.phone', 'Phone Number')}</span>
@@ -434,12 +476,12 @@ export function UserProfilePage() {
                       value={formData.phone}
                       onChange={(e) => handleInputChange('phone', e.target.value)}
                       placeholder={t('account.phonePlaceholder', 'Enter your phone number')}
-                      className="h-10 text-sm"
+                      className="h-9 text-sm"
                     />
                   </div>
 
                   {/* Email (Read-only) */}
-                  <div className="space-y-1.5">
+                  <div className="space-y-1">
                     <Label className="text-xs font-semibold text-foreground flex items-center justify-between">
                       <span className="flex items-center gap-1.5">
                         <Mail className="w-3.5 h-3.5 text-primary" />
@@ -453,13 +495,13 @@ export function UserProfilePage() {
                       type="email"
                       value={user?.email || ''}
                       disabled
-                      className="h-10 text-sm bg-muted/50 cursor-not-allowed"
+                      className="h-9 text-sm bg-muted/50 cursor-not-allowed"
                     />
                   </div>
                 </div>
 
                 {/* Address */}
-                <div className="space-y-1.5">
+                <div className="space-y-1">
                   <Label className="text-xs font-semibold text-foreground flex items-center gap-1.5">
                     <MapPin className="w-3.5 h-3.5 text-primary" />
                     <span>{t('account.address', 'Address / Location')}</span>
@@ -468,20 +510,20 @@ export function UserProfilePage() {
                     value={formData.address}
                     onChange={(e) => handleInputChange('address', e.target.value)}
                     placeholder={t('account.addressPlaceholder', 'Enter your street address, city, and country')}
-                    rows={3}
+                    rows={2.5}
                     className="text-sm resize-none"
                   />
                 </div>
               </CardContent>
 
-              <CardFooter className="border-t border-border/60 px-5 py-3.5 flex items-center justify-between gap-3 bg-muted/20">
+              <CardFooter className="border-t border-border/60 px-4 py-2.5 sm:px-5 sm:py-3 flex items-center justify-between gap-3 bg-muted/20">
                 <Button
                   type="button"
                   variant="outline"
                   size="sm"
                   onClick={handleDiscard}
                   disabled={!isFormDirty || isSavingProfile}
-                  className="text-xs cursor-pointer"
+                  className="text-xs cursor-pointer h-8"
                 >
                   <RotateCcw className="w-3.5 h-3.5 mr-1.5" />
                   <span>{t('account.discard', 'Discard Changes')}</span>
@@ -491,7 +533,7 @@ export function UserProfilePage() {
                   type="submit"
                   size="sm"
                   disabled={!isFormDirty || isSavingProfile}
-                  className="text-xs gap-1.5 bg-primary text-primary-foreground hover:bg-primary/90 shadow-xs cursor-pointer"
+                  className="text-xs gap-1.5 bg-primary text-primary-foreground hover:bg-primary/90 shadow-xs cursor-pointer h-8"
                 >
                   {isSavingProfile ? (
                     <Loader2 className="w-3.5 h-3.5 animate-spin" />
@@ -506,20 +548,20 @@ export function UserProfilePage() {
         </div>
 
         {/* Right 1 Column: Security & System Credentials */}
-        <div className="space-y-6">
+        <div className="space-y-4">
           {/* Security & Password Card */}
-          <Card className="border-border/80 shadow-xs">
-            <CardHeader className="border-b border-border/60 pb-4">
-              <CardTitle className="text-base font-semibold text-foreground flex items-center gap-2">
-                <KeyRound className="w-4 h-4 text-amber-500" />
+          <Card className="border-border/80 shadow-xs p-0 gap-0 overflow-hidden">
+            <CardHeader className="border-b border-border/60 px-4 py-3 sm:px-5 sm:py-3.5 flex flex-row items-center justify-between">
+              <CardTitle className="text-sm sm:text-base font-semibold text-foreground flex flex-row items-center gap-2">
+                <KeyRound className="w-4 h-4 text-amber-500 shrink-0 inline-flex" />
                 <span>{t('account.security', 'Security & Password')}</span>
               </CardTitle>
             </CardHeader>
 
             <form onSubmit={handleChangePasswordSubmit}>
-              <CardContent className="p-5 space-y-3.5">
+              <CardContent className="p-4 sm:p-5 space-y-3">
                 {/* Current Password */}
-                <div className="space-y-1.5">
+                <div className="space-y-1">
                   <Label className="text-xs font-semibold text-foreground">
                     {t('account.currentPassword', 'Current Password')}
                   </Label>
@@ -545,7 +587,7 @@ export function UserProfilePage() {
                 </div>
 
                 {/* New Password */}
-                <div className="space-y-1.5">
+                <div className="space-y-1">
                   <Label className="text-xs font-semibold text-foreground">
                     {t('account.newPassword', 'New Password')}
                   </Label>
@@ -571,7 +613,7 @@ export function UserProfilePage() {
                 </div>
 
                 {/* Confirm New Password */}
-                <div className="space-y-1.5">
+                <div className="space-y-1">
                   <Label className="text-xs font-semibold text-foreground">
                     {t('account.confirmPassword', 'Confirm New Password')}
                   </Label>
@@ -597,7 +639,7 @@ export function UserProfilePage() {
                 </div>
               </CardContent>
 
-              <CardFooter className="border-t border-border/60 px-5 py-3 bg-muted/20">
+              <CardFooter className="border-t border-border/60 px-4 py-2.5 sm:px-5 sm:py-3 bg-muted/20">
                 <Button
                   type="submit"
                   size="sm"
@@ -607,7 +649,7 @@ export function UserProfilePage() {
                     !passwordData.confirmPassword ||
                     isChangingPassword
                   }
-                  className="w-full text-xs gap-1.5 cursor-pointer"
+                  className="w-full text-xs gap-1.5 cursor-pointer h-8"
                 >
                   {isChangingPassword ? (
                     <Loader2 className="w-3.5 h-3.5 animate-spin" />

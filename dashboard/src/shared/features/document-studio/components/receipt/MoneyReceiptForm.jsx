@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useState } from 'react';
 import {
   Receipt,
   User,
@@ -14,43 +14,26 @@ import {
   CheckCircle2,
   DollarSign,
   Layers,
-  Sparkles,
-  Search,
-  ExternalLink,
 } from 'lucide-react';
 import { BdPhoneInput } from '@/components/common/BdPhoneInput';
 import { DatePicker } from '@/components/ui/date-picker';
 import { PAYMENT_METHODS, SERVICE_PURPOSES, numberToWords } from './sampleData';
-import { apiClient } from '@shared/lib/api-client';
 import { toast } from 'sonner';
 import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
+import { useClientLookup } from '../common/useClientLookup';
+import { ExistingClientAlertModal } from '../common/ExistingClientAlertModal';
+import { validateBdPhone } from '../common/phoneValidator';
 
 export function MoneyReceiptForm({ data, onChange, onReset, onSave, onPreview, isSubmitting }) {
   const { t } = useTranslation();
-  const [detectedClient, setDetectedClient] = useState(null);
-  const [hasPromptedFor, setHasPromptedFor] = useState(new Set());
-  const lookupTimeoutRef = useRef(null);
+  const [detectedMatch, setDetectedMatch] = useState(null);
+  const [phoneTouched, setPhoneTouched] = useState(false);
   const [dateMode, setDateMode] = useState('auto'); // 'auto' | 'custom'
 
-  // Auto-detect existing client by phone or passport
-  const checkExistingClient = async (queryValue) => {
-    if (!queryValue || queryValue.length < 7) return;
-    if (hasPromptedFor.has(queryValue.trim())) return;
-
-    try {
-      const res = await apiClient.get('/api/v1/client/clients/lookup', {
-        params: { query: queryValue.trim() },
-      });
-      if (res.data?.success && res.data?.data && res.data.data.length > 0) {
-        const matched = res.data.data[0];
-        setDetectedClient(matched);
-        setHasPromptedFor((prev) => new Set(prev).add(queryValue.trim()));
-      }
-    } catch (err) {
-      console.warn('Client lookup skipped:', err.message);
-    }
-  };
+  const { triggerLookup, resetLookup } = useClientLookup({
+    onClientFound: (client, caseFile) => setDetectedMatch({ client, caseFile }),
+  });
 
   const handleFieldChange = (field, value) => {
     onChange((prev) => ({ ...prev, [field]: value }));
@@ -64,13 +47,59 @@ export function MoneyReceiptForm({ data, onChange, onReset, onSave, onPreview, i
       }));
     }
 
-    if (field === 'phone' || field === 'passportNumber') {
-      if (lookupTimeoutRef.current) clearTimeout(lookupTimeoutRef.current);
-      lookupTimeoutRef.current = setTimeout(() => {
-        checkExistingClient(value);
-      }, 700);
+    if (field === 'phone') {
+      triggerLookup(value);
     }
   };
+
+  const handleYes = () => {
+    if (!detectedMatch?.client) return;
+    const c = detectedMatch.client;
+    onChange((prev) => ({
+      ...prev,
+      clientName: c.fullName || c.name || prev.clientName,
+      phone: c.phone || c.mobileNumber || prev.phone,
+      passportNumber: c.passportNumber || c.nidNumber || prev.passportNumber,
+      clientId: c._id || c.did || prev.clientId,
+      clientDid: c.did || c._id || prev.clientDid,
+      linkedCaseId: detectedMatch.caseFile?._id || prev.linkedCaseId || null,
+      linkedCaseDid: detectedMatch.caseFile?.did || prev.linkedCaseDid || null,
+    }));
+    toast.success(`"${c.fullName || c.name}" info auto-filled!`);
+    setDetectedMatch(null);
+  };
+
+  const handleNo = () => {
+    const val = detectedMatch?.client?.phone || data.phone || '';
+    onChange((prev) => ({ ...prev, phone: '' }));
+    resetLookup(val);
+    setPhoneTouched(false);
+    toast.info('Please enter a different phone number.');
+    setDetectedMatch(null);
+  };
+
+  const handleSave = () => {
+    const phone = data.phone || '';
+    const check = validateBdPhone(phone);
+    if (!check.isValid) {
+      setPhoneTouched(true);
+      toast.error(`Phone: ${check.error}`);
+      return;
+    }
+    onSave();
+  };
+
+  const handlePreviewAction = () => {
+    const phone = data.phone || '';
+    const check = validateBdPhone(phone);
+    if (!check.isValid) {
+      setPhoneTouched(true);
+      toast.error(`Phone: ${check.error}`);
+      return;
+    }
+    onPreview();
+  };
+
 
   const handleDateModeChange = (mode) => {
     setDateMode(mode);
@@ -86,47 +115,9 @@ export function MoneyReceiptForm({ data, onChange, onReset, onSave, onPreview, i
     }
   };
 
-  const handleAutoFillClient = () => {
-    if (!detectedClient) return;
-    onChange((prev) => ({
-      ...prev,
-      clientName: detectedClient.fullName || prev.clientName,
-      phone: detectedClient.phone || prev.phone,
-      passportNumber: detectedClient.passportNumber || prev.passportNumber,
-    }));
-    toast.success(`Client "${detectedClient.fullName}" info auto-filled!`);
-    setDetectedClient(null);
-  };
-
   return (
     <div className="bg-card border border-border rounded-2xl p-4 sm:p-6 shadow-xs space-y-6">
-      {/* Existing Client Auto-Fill Notification */}
-      {detectedClient && (
-        <div className="bg-sky-500/10 border border-sky-500/30 p-3 rounded-xl flex items-center justify-between gap-3 text-xs animate-in fade-in duration-200">
-          <div className="flex items-center gap-2">
-            <Sparkles className="w-4 h-4 text-sky-500 shrink-0" />
-            <span>
-              Existing client found: <strong className="text-foreground">{detectedClient.fullName}</strong> ({detectedClient.phone})
-            </span>
-          </div>
-          <div className="flex items-center gap-2">
-            <button
-              type="button"
-              onClick={handleAutoFillClient}
-              className="bg-sky-600 hover:bg-sky-700 text-white px-3 py-1 rounded-lg font-bold text-[11px] cursor-pointer transition-colors shadow-2xs"
-            >
-              Auto-Fill
-            </button>
-            <button
-              type="button"
-              onClick={() => setDetectedClient(null)}
-              className="text-muted-foreground hover:text-foreground text-[11px] px-1.5 py-1"
-            >
-              Dismiss
-            </button>
-          </div>
-        </div>
-      )}
+
 
       {/* Meta Bar: Date, Time & Print Layout */}
       <div className="bg-muted/30 border border-border p-4 rounded-xl space-y-3">
@@ -234,11 +225,23 @@ export function MoneyReceiptForm({ data, onChange, onReset, onSave, onPreview, i
           </div>
 
           <div>
-            <label className="block font-bold text-foreground mb-1">Phone / Mobile No.</label>
+            <label className="block font-bold text-foreground mb-1">
+              Phone / Mobile No. <span className="text-rose-500">*</span>
+            </label>
             <BdPhoneInput
               value={data.phone || ''}
-              onChange={(val) => handleFieldChange('phone', val)}
+              required
+              onBlur={() => setPhoneTouched(true)}
+              onChange={(val) => {
+                handleFieldChange('phone', val);
+                if (phoneTouched) setPhoneTouched(true);
+              }}
             />
+            {((phoneTouched || Boolean(data.phone)) && !validateBdPhone(data.phone || '').isValid) && (
+              <p className="text-[10px] text-rose-500 font-bold mt-1">
+                {validateBdPhone(data.phone || '').error}
+              </p>
+            )}
           </div>
         </div>
       </div>
@@ -411,7 +414,7 @@ export function MoneyReceiptForm({ data, onChange, onReset, onSave, onPreview, i
       <div className="flex flex-col sm:flex-row items-center justify-end gap-3 pt-4 border-t border-border">
         <button
           type="button"
-          onClick={onPreview}
+          onClick={handlePreviewAction}
           className="w-full sm:w-auto flex items-center justify-center gap-2 bg-muted hover:bg-muted/80 text-foreground px-5 py-2.5 rounded-xl font-bold text-xs transition-all cursor-pointer shadow-xs"
         >
           <Eye className="w-4 h-4 text-primary" />
@@ -420,7 +423,7 @@ export function MoneyReceiptForm({ data, onChange, onReset, onSave, onPreview, i
 
         <button
           type="button"
-          onClick={onSave}
+          onClick={handleSave}
           disabled={isSubmitting}
           className="w-full sm:w-auto flex items-center justify-center gap-2 bg-primary hover:bg-primary/90 text-primary-foreground px-6 py-2.5 rounded-xl font-bold text-xs transition-all cursor-pointer shadow-xs disabled:opacity-50"
         >
@@ -428,6 +431,15 @@ export function MoneyReceiptForm({ data, onChange, onReset, onSave, onPreview, i
           <span>{isSubmitting ? 'Saving...' : 'Save & Generate Voucher'}</span>
         </button>
       </div>
+
+      {detectedMatch && (
+        <ExistingClientAlertModal
+          client={detectedMatch.client}
+          caseFile={detectedMatch.caseFile}
+          onYes={handleYes}
+          onNo={handleNo}
+        />
+      )}
     </div>
   );
 }

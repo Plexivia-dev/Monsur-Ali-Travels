@@ -1,26 +1,44 @@
 import React from 'react';
-import { useLocation, useParams } from 'react-router-dom';
 import { usePortalStore } from '../store/usePortalStore';
-import { AgencyClientList } from '../components/agency/AgencyClientList';
-import { AgencyEmployeeList } from '../components/agency/AgencyEmployeeList';
+import { AgencyEmployees } from '../components/agency/AgencyEmployees';
+import { ClientDataTable } from '../components/data/ClientDataTable';
+import { InvoiceDataTable } from '../components/data/InvoiceDataTable';
+import { CaseFileTracker } from '../components/agency/CaseFileTracker';
+import { MyTasks } from '../components/agency/MyTasks';
 
-export function Agency() {
-  const storeSubmodule = usePortalStore((state) => state.activeSubmodule);
-  const location = useLocation();
-  const params = useParams();
+export default function Agency() {
+  const activeSubmodule = usePortalStore((state) => state.activeSubmodule);
 
-  let activeSub = params.submodule || storeSubmodule || 'clients';
-  if (location.pathname.includes('/agency/employees')) {
-    activeSub = 'employees';
-  } else if (location.pathname.includes('/agency/clients')) {
-    activeSub = 'clients';
+  switch (activeSubmodule) {
+    // ── Staff Tasks (My Tasks Workspace) ────
+    case 'tasks':
+    case 'my-tasks':
+      return <MyTasks />;
+
+    // ── Case Files / Client Files (Master Workflow Tracker) ────
+    case 'cases':
+    case 'client-files':
+    case 'case-files':
+      return <CaseFileTracker />;
+
+    // ── Employees ─────────────────────────────────────────────
+    case 'employees':
+      return <AgencyEmployees />;
+
+    // ── Client Invoices & Bills ────────────────────────────────
+    case 'bills':
+    case 'invoices':
+      return <InvoiceDataTable />;
+
+    // ── Clients & Accounts (Live Database Records) ───────────
+    case 'clients':
+    case 'clients-all':
+    case 'all-clients':
+    case 'clients-add':
+    case 'add-client':
+    case 'payments':
+    case 'clients-payments':
+    default:
+      return <ClientDataTable activeSubmodule={activeSubmodule} />;
   }
-
-  return (
-    <div className="space-y-6">
-      {activeSub === 'employees' ? <AgencyEmployeeList /> : <AgencyClientList />}
-    </div>
-  );
 }
-
-export default Agency;

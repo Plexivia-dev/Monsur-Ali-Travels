@@ -27,6 +27,43 @@ import { apiClient } from '@/lib/api-client';
 import { toast } from 'sonner';
 import { CaseDetailDrawer } from '@/components/workflow/CaseDetailDrawer';
 
+const getTaskStatusConfig = (status) => {
+  switch (status) {
+    case 'Approved':
+      return {
+        label: 'Approved ✓',
+        badgeClass: 'bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 border-emerald-500/30',
+        dotClass: 'bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]',
+      };
+    case 'Done':
+      return {
+        label: 'Done',
+        badgeClass: 'bg-blue-500/15 text-blue-700 dark:text-blue-300 border-blue-500/30',
+        dotClass: 'bg-blue-500 shadow-[0_0_8px_rgba(59,130,246,0.5)]',
+      };
+    case 'In Progress':
+    case 'Processing':
+      return {
+        label: 'In Progress',
+        badgeClass: 'bg-sky-500/15 text-sky-700 dark:text-sky-300 border-sky-500/30',
+        dotClass: 'bg-sky-500 animate-pulse shadow-[0_0_8px_rgba(14,165,233,0.5)]',
+      };
+    case 'Rejected':
+      return {
+        label: 'Rejected ✗',
+        badgeClass: 'bg-rose-500/15 text-rose-700 dark:text-rose-300 border-rose-500/30',
+        dotClass: 'bg-rose-500 shadow-[0_0_8px_rgba(244,63,94,0.5)]',
+      };
+    case 'Pending':
+    default:
+      return {
+        label: 'Pending',
+        badgeClass: 'bg-slate-500/10 text-slate-700 dark:text-slate-300 border-slate-300 dark:border-slate-700',
+        dotClass: 'bg-slate-400 shadow-[0_0_8px_rgba(148,163,184,0.5)]',
+      };
+  }
+};
+
 // Renders a slide-over 360-degree drawer view of a client's profile, workflow history, documents, and payments
 const ClientProfileDrawer = ({ clientDid, isOpen, onClose, onRefresh }) => {
   const navigate = useNavigate();
@@ -377,25 +414,28 @@ const ClientProfileDrawer = ({ clientDid, isOpen, onClose, onRefresh }) => {
                               return (
                                 <div key={task.did || idx} className="relative flex items-start gap-3">
                                   <div className={`absolute -left-6 size-4 rounded-full border-2 bg-background flex items-center justify-center ${
-                                    isApproved ? 'border-emerald-500 text-emerald-500' : isDone ? 'border-blue-500' : 'border-amber-500'
+                                    isApproved ? 'border-emerald-500 text-emerald-500' : isDone ? 'border-blue-500' : 'border-slate-400'
                                   }`}>
                                     <div className={`size-1.5 rounded-full ${
-                                      isApproved ? 'bg-emerald-500' : isDone ? 'bg-blue-500' : 'bg-amber-500'
+                                      isApproved ? 'bg-emerald-500' : isDone ? 'bg-blue-500' : 'bg-slate-400'
                                     }`} />
                                   </div>
                                   <div className="p-3 rounded-xl bg-background border border-border w-full space-y-1 shadow-xs">
                                     <div className="flex items-center justify-between">
                                       <h5 className="text-xs font-bold text-foreground">{task.title}</h5>
-                                      <span className={`px-2 py-0.5 rounded text-[10px] font-bold ${
-                                        isApproved ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300' :
-                                        isDone ? 'bg-blue-100 text-blue-700' : 'bg-amber-100 text-amber-700'
-                                      }`}>
-                                        {task.status}
-                                      </span>
+                                      {(() => {
+                                        const statusCfg = getTaskStatusConfig(task.status);
+                                        return (
+                                          <span className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-bold border ${statusCfg.badgeClass}`}>
+                                            <span className={`w-1.5 h-1.5 rounded-full ${statusCfg.dotClass}`} />
+                                            {statusCfg.label}
+                                          </span>
+                                        );
+                                      })()}
                                     </div>
                                     <p className="text-[11px] text-muted-foreground">{task.description || 'Workflow operation in progress.'}</p>
                                     <div className="text-[10px] text-muted-foreground flex items-center gap-3 pt-1">
-                                      <span>Assigned: <strong>{task.assignedToName || 'Staff'}</strong></span>
+                                      <span>Assigned: <strong>{task.assignedToName || task.assignedTo?.name || task.assignedToDid || 'Staff Member'}</strong></span>
                                       <span>Updated: {formatDate(task.updatedAt)}</span>
                                     </div>
                                   </div>

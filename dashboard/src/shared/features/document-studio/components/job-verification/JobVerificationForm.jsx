@@ -33,6 +33,10 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
+import { useClientLookup } from '../common/useClientLookup';
+import { ExistingClientAlertModal } from '../common/ExistingClientAlertModal';
+import { validateBdPhone } from '../common/phoneValidator';
+import { toast } from 'sonner';
 
 export function JobVerificationForm({
   formData,
@@ -43,6 +47,44 @@ export function JobVerificationForm({
 }) {
   const [currentStep, setCurrentStep] = useState(1);
   const [resetDialogOpen, setResetDialogOpen] = useState(false);
+  const [detectedMatch, setDetectedMatch] = useState(null);
+
+  const { triggerLookup, resetLookup } = useClientLookup({
+    onClientFound: (client, caseFile) => setDetectedMatch({ client, caseFile }),
+  });
+
+  const handleYes = () => {
+    if (!detectedMatch?.client) return;
+    const c = detectedMatch.client;
+    setFormData(prev => ({
+      ...prev,
+      clientId: c._id,
+      clientDid: c.did,
+      linkedCaseId: detectedMatch.caseFile?._id || null,
+      linkedCaseDid: detectedMatch.caseFile?.did || null,
+      clientInfo: {
+        ...prev.clientInfo,
+        clientName: c.fullName || prev.clientInfo?.clientName,
+        clientPhone: c.phone || prev.clientInfo?.clientPhone,
+        clientEmail: c.email || prev.clientInfo?.clientEmail,
+        passportNumber: c.passportNumber || prev.clientInfo?.passportNumber,
+        nidNumber: c.nidNumber || prev.clientInfo?.nidNumber,
+      },
+    }));
+    toast.success(`"${c.fullName}" info auto-filled!`);
+    setDetectedMatch(null);
+  };
+
+  const handleNo = () => {
+    const val = detectedMatch?.client?.phone || '';
+    setFormData(prev => ({
+      ...prev,
+      clientInfo: { ...prev.clientInfo, clientPhone: '', clientEmail: '' },
+    }));
+    resetLookup(val);
+    toast.info('Please enter a different phone number or email.');
+    setDetectedMatch(null);
+  };
 
   const steps = [
     { id: 1, title: 'Company & Client', icon: Building2 },
@@ -68,8 +110,10 @@ export function JobVerificationForm({
         alert('Please enter Client Name.');
         return;
       }
-      if (!formData.clientInfo?.clientPhone?.trim()) {
-        alert('Please enter Client Mobile Number.');
+      const phone = formData.clientInfo?.clientPhone || '';
+      const check = validateBdPhone(phone);
+      if (!check.isValid) {
+        toast.error(`Client Mobile: ${check.error}`);
         return;
       }
     }
@@ -269,10 +313,18 @@ export function JobVerificationForm({
                     type="text"
                     required
                     value={formData.clientInfo?.clientPhone || ''}
-                    onChange={(e) => updateNested('clientInfo', 'clientPhone', e.target.value)}
+                    onChange={(e) => {
+                      updateNested('clientInfo', 'clientPhone', e.target.value);
+                      triggerLookup(e.target.value);
+                    }}
                     placeholder="Enter candidate phone number"
                     className="mt-1 font-mono"
                   />
+                  {formData.clientInfo?.clientPhone && !validateBdPhone(formData.clientInfo.clientPhone).isValid && (
+                    <p className="text-[10px] text-rose-500 font-bold mt-1">
+                      {validateBdPhone(formData.clientInfo.clientPhone).error}
+                    </p>
+                  )}
                 </div>
 
                 <div>
@@ -280,7 +332,10 @@ export function JobVerificationForm({
                   <Input
                     type="email"
                     value={formData.clientInfo?.clientEmail || ''}
-                    onChange={(e) => updateNested('clientInfo', 'clientEmail', e.target.value)}
+                    onChange={(e) => {
+                      updateNested('clientInfo', 'clientEmail', e.target.value);
+                      triggerLookup(e.target.value);
+                    }}
                     placeholder="Enter candidate email address"
                     className="mt-1"
                   />
@@ -723,6 +778,15 @@ export function JobVerificationForm({
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {detectedMatch && (
+        <ExistingClientAlertModal
+          client={detectedMatch.client}
+          caseFile={detectedMatch.caseFile}
+          onYes={handleYes}
+          onNo={handleNo}
+        />
+      )}
     </div>
   );
 }

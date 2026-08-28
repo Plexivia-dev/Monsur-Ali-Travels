@@ -3,6 +3,7 @@ import CaseFile from "../../models/caseFile.model.js";
 import TaskModel from "../../models/task.model.js";
 import DocumentVaultModel from "../../models/documentVault.model.js";
 import { NotificationModel } from "../../models/notification.model.js";
+import { UserModel } from "../../models/user.model.js";
 
 export const buildCaseIdentifierQuery = (identifier) => {
   if (!identifier) return { _id: null };
@@ -26,7 +27,7 @@ export const buildTaskIdentifierQuery = (identifier) => {
 
 /**
  * 1. Get Case Full Details (360-Degree Admin View)
- * Populates clientInfo, workflowTasks (with permittedDocs), and financialReceipts
+ * Populates clientInfo, workflowTasks (with permittedDocs & assignedTo), and financialReceipts
  */
 export const getCaseFullDetails = async (req, res) => {
   try {
@@ -35,9 +36,13 @@ export const getCaseFullDetails = async (req, res) => {
     const caseDoc = await CaseFile.findOne(buildCaseIdentifierQuery(caseDid))
       .populate("clientInfo")
       .populate("clientId")
+      .populate("assignedTo", "name email role subRole designation phone")
       .populate({
         path: "workflowTasks",
-        populate: { path: "permittedDocs" },
+        populate: [
+          { path: "permittedDocs" },
+          { path: "assignedTo", select: "name email role subRole designation" }
+        ],
       })
       .populate("financialReceipts")
       .populate("vaultDocuments")
@@ -45,6 +50,22 @@ export const getCaseFullDetails = async (req, res) => {
 
     if (!caseDoc) {
       return res.status(404).json({ status: "error", message: "Case File not found" });
+    }
+
+    // Resolve assigned staff names if not pre-populated
+    if (caseDoc.assignedTo?.name && !caseDoc.assignedToName) {
+      caseDoc.assignedToName = caseDoc.assignedTo.name;
+    }
+    if (!caseDoc.assignedOfficer) {
+      caseDoc.assignedOfficer = caseDoc.assignedToName || caseDoc.assignedTo?.name || "";
+    }
+
+    if (Array.isArray(caseDoc.workflowTasks)) {
+      caseDoc.workflowTasks.forEach((t) => {
+        if (!t.assignedToName && t.assignedTo?.name) {
+          t.assignedToName = t.assignedTo.name;
+        }
+      });
     }
 
     // Merge Document Vault records
@@ -97,25 +118,42 @@ export const assignTaskStep = async (req, res) => {
       return res.status(404).json({ status: "error", message: "Associated Case File not found" });
     }
 
+    // Look up assigned user to get canonical name and DID
+    const assignedUser = await UserModel.findOne({
+      $or: [
+        { did: assignedToDid },
+        ...(mongoose.Types.ObjectId.isValid(assignedToDid) && assignedToDid.length === 24
+          ? [{ _id: new mongoose.Types.ObjectId(assignedToDid) }]
+          : []),
+      ],
+    }).lean();
+
+    const assignedUserName = assignedUser?.name || "Staff Member";
+    const canonicalAssignedToDid = assignedUser?.did || assignedToDid;
+
     const newTask = await TaskModel.create({
       caseDid: caseDoc.did,
       title,
       description: description || "",
-      stepNumber: stepNumber || 1,
-      assignedToDid,
+      stepNumber: stepNumber || (caseDoc.workflowTasks?.length ? caseDoc.workflowTasks.length + 1 : 1),
+      assignedToDid: canonicalAssignedToDid,
+      assignedToName: assignedUserName,
       allowedDocumentDids: Array.isArray(allowedDocumentDids) ? allowedDocumentDids : [],
       status: "Pending",
       createdByDid: adminDid,
     });
 
-    // Update case workflow status and push to history
-    caseDoc.assignedToDid = assignedToDid;
+    // Update case workflow status, assigned officer, and push to history
+    caseDoc.assignedToDid = canonicalAssignedToDid;
+    caseDoc.assignedToName = assignedUserName;
+    caseDoc.assignedOfficer = assignedUserName;
     caseDoc.workflowStatus = `Step ${newTask.stepNumber}: ${title}`;
     caseDoc.statusHistory.push({
       status: `Assigned Step: ${title}`,
-      remarks: `Assigned to ${assignedToDid}`,
+      remarks: `Assigned to ${assignedUserName}`,
       updatedByDid: adminDid,
-      assignedToDid: assignedToDid,
+      updatedByName: req.user?.name || "Admin",
+      assignedToDid: canonicalAssignedToDid,
       date: new Date(),
     });
     await caseDoc.save();
@@ -127,7 +165,7 @@ export const assignTaskStep = async (req, res) => {
       module: "visa",
       type: "info",
       refId: caseDoc._id,
-      recipientId: assignedToDid,
+      recipientId: canonicalAssignedToDid,
       createdBy: req.user?.name || "Admin",
     }).catch(() => {});
 

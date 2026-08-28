@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
+import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import {
   ArrowLeft,
   FolderOpen,
@@ -31,10 +31,11 @@ import {
   History,
   Info,
   Edit3,
-  ChevronDown,
-  Briefcase,
-  UserCheck,
   X,
+  Trash2,
+  UserCheck,
+  MapPin,
+  ArrowUpRight,
 } from 'lucide-react';
 import { apiClient } from '@/lib/api-client';
 import { toast } from 'sonner';
@@ -42,6 +43,98 @@ import { useAuth } from '@/store/useAuthStore';
 import { StepAssignModal } from '@/components/workflow/StepAssignModal';
 import { AddPaymentModal } from '@/components/workflow/AddPaymentModal';
 import { PageTitle } from '@shared/components/layout/PageTitle';
+import { FileViewerModal } from '@shared/components/common/FileViewerModal';
+
+const DOCUMENT_STUDIO_TEMPLATES = [
+  {
+    id: 'agreement',
+    title: 'Employment & Service Agreement',
+    subtitle: 'Official 4-page job contract & appointment agreement with terms',
+    category: 'Legal & Contract',
+    badge: 'Contract',
+    icon: FileText,
+  },
+  {
+    id: 'client-form',
+    title: 'Customer & Guardian Application Form',
+    subtitle: 'Master bio, emergency guardian particulars & fee schedule',
+    category: 'Intake & Bio',
+    badge: 'Master Intake',
+    icon: User,
+  },
+  {
+    id: 'indian-visa',
+    title: 'Indian Visa & BSF Application',
+    subtitle: 'High Commission submission application & port particulars',
+    category: 'Visa & Immigration',
+    badge: 'Visa Form',
+    icon: Globe2,
+  },
+  {
+    id: 'passport-sub',
+    title: 'Passport Intake & Submission Memo',
+    subtitle: 'Physical passport receipt, tracking ID & custody memo',
+    category: 'Passport & Custody',
+    badge: 'Custody Memo',
+    icon: FileCheck,
+  },
+  {
+    id: 'job-verification',
+    title: 'Job Verification & Work Permit Letter',
+    subtitle: 'Ministry & employer verification letter and deployment terms',
+    category: 'Employment',
+    badge: 'Verification',
+    icon: Building2,
+  },
+  {
+    id: 'idcard',
+    title: 'Client / Trainee Identity Card',
+    subtitle: 'Dual-sided PVC plastic identity badge with photo & QR code',
+    category: 'Identity & Cards',
+    badge: 'PVC ID Card',
+    icon: UserCheck,
+  },
+  {
+    id: 'money-receipt',
+    title: 'Official Money Receipt',
+    subtitle: 'Formal 3-copy accounts payment receipt with verification stamp',
+    category: 'Financials',
+    badge: 'Receipt',
+    icon: Receipt,
+  },
+  {
+    id: 'cash-voucher',
+    title: 'Office Debit & Cash Voucher',
+    subtitle: 'Internal cash disbursement and expense voucher',
+    category: 'Financials',
+    badge: 'Voucher',
+    icon: CreditCard,
+  },
+  {
+    id: 'experience-certificate',
+    title: 'Trade Experience Certificate',
+    subtitle: 'Official certified proof of trade & employment experience',
+    category: 'Certifications',
+    badge: 'Certificate',
+    icon: ShieldCheck,
+  },
+  {
+    id: 'character-certificate',
+    title: 'Character Clearance Certificate',
+    subtitle: 'Local administration & municipal character verification letter',
+    category: 'Certifications',
+    badge: 'Clearance',
+    icon: CheckCircle2,
+  },
+  {
+    id: 'marriage-certificate',
+    title: 'Marriage Affidavit Certificate',
+    subtitle: 'Official spousal affidavit for overseas dependency processing',
+    category: 'Legal & Affidavit',
+    badge: 'Affidavit',
+    icon: FileText,
+  },
+];
 
 const PIPELINE_STAGES = [
   { id: 'ENTRY', title: '1. File Intake', color: 'bg-slate-100 text-slate-800' },
@@ -51,29 +144,77 @@ const PIPELINE_STAGES = [
   { id: 'COMPLETED_DELIVERED', title: '5. Completed & Delivered', color: 'bg-emerald-100 text-emerald-800' },
 ];
 
-const formatCleanLabel = (str, fallback = '—') => {
-  if (!str) return fallback;
-  return String(str)
-    .replace(/[_-]/g, ' ')
-    .toLowerCase()
-    .replace(/\b\w/g, (c) => c.toUpperCase());
+export const getTaskStatusConfig = (status) => {
+  switch (status) {
+    case 'Approved':
+      return {
+        label: 'Approved ✓',
+        badgeClass: 'bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 border-emerald-500/30',
+        dotClass: 'bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]',
+      };
+    case 'Done':
+      return {
+        label: 'Done',
+        badgeClass: 'bg-blue-500/15 text-blue-700 dark:text-blue-300 border-blue-500/30',
+        dotClass: 'bg-blue-500 shadow-[0_0_8px_rgba(59,130,246,0.5)]',
+      };
+    case 'In Progress':
+    case 'Processing':
+      return {
+        label: 'In Progress',
+        badgeClass: 'bg-sky-500/15 text-sky-700 dark:text-sky-300 border-sky-500/30',
+        dotClass: 'bg-sky-500 animate-pulse shadow-[0_0_8px_rgba(14,165,233,0.5)]',
+      };
+    case 'Rejected':
+      return {
+        label: 'Rejected ✗',
+        badgeClass: 'bg-rose-500/15 text-rose-700 dark:text-rose-300 border-rose-500/30',
+        dotClass: 'bg-rose-500 shadow-[0_0_8px_rgba(244,63,94,0.5)]',
+      };
+    case 'Pending':
+    default:
+      return {
+        label: 'Pending',
+        badgeClass: 'bg-slate-500/10 text-slate-700 dark:text-slate-300 border-slate-300 dark:border-slate-700',
+        dotClass: 'bg-slate-400 shadow-[0_0_8px_rgba(148,163,184,0.5)]',
+      };
+  }
 };
 
 export default function CaseDetailPage() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const user = useAuth((state) => state.user);
 
+  const initialTab = searchParams.get('tab') || 'overview';
   const [caseData, setCaseData] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState('overview'); // 'overview' | 'activity' | 'tasks' | 'payments' | 'documents' | 'communication'
+  const [activeTab, setActiveTab] = useState(initialTab); // 'overview' | 'activity' | 'tasks' | 'payments' | 'documents' | 'communication'
+
+  // Synchronize tab from URL if present
+  useEffect(() => {
+    const tabFromUrl = searchParams.get('tab');
+    if (tabFromUrl) {
+      setActiveTab(tabFromUrl);
+    }
+  }, [searchParams]);
 
   // Modals
   const [isAssignModalOpen, setIsAssignModalOpen] = useState(false);
   const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
   const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
+  const [isCreateDocModalOpen, setIsCreateDocModalOpen] = useState(false);
+  const [selectedTemplateId, setSelectedTemplateId] = useState('agreement');
+  const [previewFile, setPreviewFile] = useState(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [savingEdit, setSavingEdit] = useState(false);
+
+  // Rename document inline
+  const [renamingDocDid, setRenamingDocDid] = useState(null);
+  const [renameValue, setRenameValue] = useState('');
+  const [savingRename, setSavingRename] = useState(false);
+
 
   const [editForm, setEditForm] = useState({
     applicantName: '',
@@ -92,10 +233,10 @@ export default function CaseDetailPage() {
     documentName: 'Passport Scan Copy',
     fileName: '',
     fileUrl: '',
-    fileSize: '1.5 MB',
+    fileSize: '',
+    file: null,
   });
   const [uploadingDoc, setUploadingDoc] = useState(false);
-  const [uploadingFile, setUploadingFile] = useState(false);
 
   // Internal Message
   const [newMessage, setNewMessage] = useState('');
@@ -147,28 +288,15 @@ export default function CaseDetailPage() {
   }, [fetchCaseDetails]);
 
   const handleStageChange = async (newStatus) => {
-    if (!newStatus || !caseData) return;
-    const caseId = caseData.did || caseData._id;
     try {
-      try {
-        await apiClient.patch(`/api/v1/admin/cases/${caseId}/workflow`, {
-          status: newStatus,
-          workflowStatus: newStatus,
-          remarks: `Stage updated to ${newStatus} by ${user?.name || 'Admin'}`,
-        });
-      } catch (adminErr) {
-        await apiClient.put(`/api/v1/admin/cases/${caseId}`, {
-          status: newStatus,
-          workflowStatus: newStatus,
-          remarks: `Stage updated to ${newStatus} by ${user?.name || 'Admin'}`,
-        });
-      }
-
-      toast.success(`Case stage updated to ${formatCleanLabel(newStatus)}`);
-      await fetchCaseDetails();
+      await apiClient.patch(`/api/v1/client/cases/${caseData.did || caseData._id}/workflow`, {
+        status: newStatus,
+        remarks: `Stage updated to ${newStatus} by ${user?.name || 'Admin'}`,
+      });
+      toast.success(`Case stage updated to ${newStatus.replace(/_/g, ' ')}`);
+      fetchCaseDetails();
     } catch (err) {
-      console.error('Failed to update stage:', err);
-      toast.error(err.response?.data?.message || 'Failed to update stage.');
+      toast.error('Failed to update stage.');
     }
   };
 
@@ -202,55 +330,31 @@ export default function CaseDetailPage() {
     }
   };
 
-  const handleFileChange = async (e) => {
+  const fileInputRef = useRef(null);
+
+  const handleFileChange = (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
     const sizeInMb = (file.size / (1024 * 1024)).toFixed(2) + ' MB';
-    
-    // Auto populate file metadata immediately
+
     setUploadDocForm((prev) => ({
       ...prev,
       fileName: file.name,
       fileSize: sizeInMb,
+      file: file,
       fileUrl: '',
     }));
+  };
 
-    setUploadingFile(true);
-    try {
-      const formData = new FormData();
-      formData.append('file', file);
-      
-      const res = await apiClient.post('/api/v1/upload/single?folder=documents', formData, {
-        headers: { 'Content-Type': 'multipart/form-data' },
-      });
-
-      const uploadedUrl = res.data?.data?.url || res.data?.data?.fullUrl || res.data?.url || '';
-      if (uploadedUrl) {
-        setUploadDocForm((prev) => ({
-          ...prev,
-          fileName: file.name,
-          fileSize: sizeInMb,
-          fileUrl: uploadedUrl,
-        }));
-        toast.success('File uploaded and linked successfully!');
-      } else {
-        throw new Error('No file URL returned from upload');
-      }
-    } catch (err) {
-      // Fallback: Read as Data URL so user workflow is never blocked
-      const reader = new FileReader();
-      reader.onload = (event) => {
-        setUploadDocForm((prev) => ({
-          ...prev,
-          fileName: file.name,
-          fileSize: sizeInMb,
-          fileUrl: event.target?.result || '',
-        }));
-      };
-      reader.readAsDataURL(file);
-    } finally {
-      setUploadingFile(false);
-    }
+  const handleRemoveSelectedFile = () => {
+    if (fileInputRef.current) fileInputRef.current.value = '';
+    setUploadDocForm((prev) => ({
+      ...prev,
+      fileName: '',
+      fileUrl: '',
+      fileSize: '',
+      file: null,
+    }));
   };
 
   const handleOpenEditModal = () => {
@@ -299,30 +403,98 @@ export default function CaseDetailPage() {
     }
   };
 
+  const handleRenameDocument = async (doc) => {
+    if (!renameValue.trim() || renameValue.trim() === doc.documentName) {
+      setRenamingDocDid(null);
+      setRenameValue('');
+      return;
+    }
+    setSavingRename(true);
+    try {
+      const docId = doc.did || doc._id;
+      const caseId = caseData.did || caseData._id;
+      const res = await apiClient.patch(
+        `/api/v1/client/cases/${caseId}/documents/${docId}/rename`,
+        { documentName: renameValue.trim() }
+      );
+      if (res.data?.success || res.data?.status === 'success') {
+        toast.success('Document renamed successfully!');
+        setRenamingDocDid(null);
+        setRenameValue('');
+        fetchCaseDetails();
+      } else {
+        throw new Error(res.data?.message || 'Rename failed');
+      }
+    } catch (err) {
+      toast.error(err.response?.data?.message || err.message || 'Failed to rename document.');
+    } finally {
+      setSavingRename(false);
+    }
+  };
+
   const handleUploadDocument = async (e) => {
+
     e.preventDefault();
-    if (!uploadDocForm.documentName || !uploadDocForm.fileUrl) {
-      toast.error('Please select a file or provide a document URL.');
+    if (!uploadDocForm.documentName || (!uploadDocForm.file && !uploadDocForm.fileUrl)) {
+      toast.error('Please choose a file to upload.');
       return;
     }
     setUploadingDoc(true);
     try {
+      let finalFileUrl = uploadDocForm.fileUrl;
+      let finalFileName = uploadDocForm.fileName;
+      let finalFileSize = uploadDocForm.fileSize;
+
+      // 1. Upload physical file to server/R2 storage endpoint first
+      if (uploadDocForm.file) {
+        const formData = new FormData();
+        formData.append('file', uploadDocForm.file);
+
+        const clientId = caseData?.clientDid || caseData?.clientId || caseData?.clientInfo?.did || caseData?.clientInfo?._id || '';
+        const docCategorySlug = (uploadDocForm.documentName || 'document').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+        const queryParams = new URLSearchParams();
+        if (clientId) queryParams.append('clientId', clientId);
+        queryParams.append('documentType', `cases-${docCategorySlug}`);
+
+        const uploadRes = await apiClient.post(`/api/v1/upload/single?${queryParams.toString()}`, formData, {
+          headers: { 'Content-Type': 'multipart/form-data' },
+        });
+
+        if (uploadRes.data?.success && uploadRes.data?.data) {
+          finalFileUrl = uploadRes.data.data.url || uploadRes.data.data.fullUrl;
+          finalFileName = uploadRes.data.data.originalName || uploadRes.data.data.name || finalFileName;
+          if (uploadRes.data.data.size) {
+            finalFileSize = `${(uploadRes.data.data.size / (1024 * 1024)).toFixed(2)} MB`;
+          }
+        } else {
+          throw new Error(uploadRes.data?.message || 'Failed to upload physical file to server');
+        }
+      }
+
+      if (!finalFileUrl) {
+        throw new Error('Failed to resolve uploaded file URL');
+      }
+
+      // 2. Attach document metadata to the case vault
       const res = await apiClient.post(`/api/v1/client/cases/${caseData.did || caseData._id}/documents`, {
         documentName: uploadDocForm.documentName,
-        fileName: uploadDocForm.fileName || uploadDocForm.documentName,
-        fileUrl: uploadDocForm.fileUrl,
-        fileSize: uploadDocForm.fileSize || '1.2 MB',
+        fileName: finalFileName || `${uploadDocForm.documentName}.pdf`,
+        fileUrl: finalFileUrl,
+        fileSize: finalFileSize || '1.2 MB',
         accessLevel: 'Restricted',
       });
+
       if (res.data?.success || res.data?.status === 'success') {
-        toast.success('Document uploaded to case vault!');
+        toast.success('Document uploaded and saved to case vault!');
         setIsUploadModalOpen(false);
         setUploadDocForm({
           documentName: 'Passport Scan Copy',
           fileName: '',
           fileUrl: '',
-          fileSize: '1.5 MB',
+          fileSize: '',
+          file: null,
         });
+        if (fileInputRef.current) fileInputRef.current.value = '';
         fetchCaseDetails();
       } else {
         throw new Error(res.data?.message || 'Failed to upload document');
@@ -360,33 +532,10 @@ export default function CaseDetailPage() {
   }
 
   const ledger = caseData.paymentLedger || {};
-  const totalAgreed =
-    Number(ledger.totalAgreedAmount) ||
-    Number(caseData.totalAgreedAmount) ||
-    Number(caseData.packageCost) ||
-    Number(caseData.agreedAmount) ||
-    0;
-
-  const receiptsSum = (caseData.financialReceipts || []).reduce((acc, r) => acc + (Number(r.amount) || 0), 0);
-  const totalPaid =
-    Number(ledger.totalPaidAmount) ||
-    Number(caseData.totalPaid) ||
-    Number(caseData.paidAmount) ||
-    Number(caseData.initialPaidAmount) ||
-    receiptsSum ||
-    0;
-
-  const totalDue =
-    ledger.dueAmount !== undefined
-      ? Number(ledger.dueAmount)
-      : Math.max(0, totalAgreed - totalPaid);
-
-  const paidPercent =
-    totalAgreed > 0
-      ? Math.min(100, Math.round((totalPaid / totalAgreed) * 100))
-      : totalPaid > 0
-      ? 100
-      : 0;
+  const totalAgreed = ledger.totalAgreedAmount || caseData.packageCost || 0;
+  const totalPaid = ledger.totalPaidAmount || caseData.initialPaidAmount || 0;
+  const totalDue = ledger.dueAmount !== undefined ? ledger.dueAmount : Math.max(0, totalAgreed - totalPaid);
+  const paidPercent = totalAgreed > 0 ? Math.min(100, Math.round((totalPaid / totalAgreed) * 100)) : 0;
 
   // Build Comprehensive Chronological Activity History
   const activityTimeline = [];
@@ -421,11 +570,12 @@ export default function CaseDetailPage() {
 
   // 3. Workflow tasks
   (caseData.workflowTasks || []).forEach((t) => {
+    const taskAssignee = t.assignedToName || t.assignedTo?.name || t.assignedToDid || 'Staff';
     activityTimeline.push({
       type: 'TASK',
       title: `Task Step ${t.stepNumber || 1}: ${t.title}`,
-      description: `Assigned to ${t.assignedToName || t.assignedToDid || 'Staff'} • Status: ${t.status}`,
-      user: t.assignedToName || 'Staff',
+      description: `Assigned to ${taskAssignee} • Status: ${t.status}`,
+      user: taskAssignee,
       role: 'Staff',
       timestamp: t.createdAt,
       icon: Layers,
@@ -478,20 +628,33 @@ export default function CaseDetailPage() {
   // Sort timeline descending
   activityTimeline.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
 
-  // Resolve active task & assigned staff
-  const activeTask =
-    (caseData?.workflowTasks || []).find((t) => t.status !== 'Approved') ||
-    caseData?.workflowTasks?.[(caseData?.workflowTasks || []).length - 1] ||
-    null;
+  const workflowTasks = caseData.workflowTasks || [];
+  // Find active task: first task that is Pending, In Progress, or Done; fallback to the latest step
+  const activeTask = workflowTasks.find((t) => t.status === 'Pending' || t.status === 'In Progress' || t.status === 'Processing' || t.status === 'Done') || workflowTasks[workflowTasks.length - 1];
+  const activeHandlerName = activeTask?.assignedToName || activeTask?.assignedTo?.name || caseData.assignedToName || caseData.assignedTo?.name || caseData.assignedOfficer || null;
+  const activeTaskStatusCfg = activeTask ? getTaskStatusConfig(activeTask.status) : null;
 
-  const currentAssignee =
-    activeTask?.assignedToName ||
-    caseData?.assignedToName ||
-    caseData?.assignedStaff?.name ||
-    caseData?.assignedTo?.name ||
-    'Unassigned';
-
-  const currentTaskStatus = activeTask?.status || caseData?.workflowStatus || caseData?.status || 'In Progress';
+  const client = caseData.clientInfo || caseData.clientId || {};
+  const clientDid = client.did || caseData.clientDid;
+  const clientCode = client.clientCode || (clientDid ? `CLNT-${clientDid.slice(0, 8)}` : '—');
+  const clientName = client.fullName || caseData.applicantName || 'Unnamed Client';
+  const clientPhone = client.phone || caseData.phone || '—';
+  const clientAltPhone = client.altPhone || '';
+  const clientEmail = client.email || '';
+  const passportNo = caseData.passportNumber || client.passportNumber || '—';
+  const passportExpiry = client.passportExpiryDate || caseData.passportExpiryDate || '';
+  const nidNo = client.nidNumber || caseData.nidNumber || '—';
+  const birthDate = client.birthDate || '';
+  const gender = client.gender || 'Male';
+  const bloodGroup = client.bloodGroup || '';
+  const maritalStatus = client.maritalStatus || '';
+  const presentAddress = client.presentAddress || client.address || '';
+  const permanentAddress = client.permanentAddress || '';
+  const district = client.district || '';
+  const policeStation = client.policeStation || '';
+  const fatherName = client.fatherName || '';
+  const motherName = client.motherName || '';
+  const guardian = client.guardian || {};
 
   return (
     <div className="space-y-6 pb-12 animate-in fade-in duration-200">
@@ -547,101 +710,130 @@ export default function CaseDetailPage() {
       />
 
       {/* Case Identity & Creator Banner */}
-      <div className="bg-card border border-border/80 rounded-2xl p-5 sm:p-6 shadow-xs space-y-4">
-        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 border-b border-border/60 pb-4">
+      <div className="bg-card border border-border rounded-2xl p-6 shadow-xs space-y-4">
+        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 border-b border-border pb-4">
           <div className="space-y-2">
-            <h2 className="text-2xl font-black tracking-tight text-foreground">
-              {caseData.applicantName || caseData.clientInfo?.fullName}
-            </h2>
+            <div className="flex flex-wrap items-center gap-3">
+              <span className="text-xl font-black text-foreground">
+                {caseData.applicantName || caseData.clientInfo?.fullName}
+              </span>
+              <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-sky-500/10 text-sky-600 dark:text-sky-400 border border-sky-500/20">
+                Destination: {caseData.destinationCountry || caseData.caseType?.toUpperCase()}
+              </span>
+              <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-purple-500/10 text-purple-600 dark:text-purple-400 border border-purple-500/20">
+                Trade: {caseData.tradeSkill || 'General Worker'}
+              </span>
+            </div>
 
-            <div className="flex flex-wrap items-center gap-2.5 text-xs">
-              {/* Assigned Staff */}
-              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl bg-muted/40 border border-border/60 text-muted-foreground">
-                <UserCheck className="w-3.5 h-3.5 text-primary" />
-                <span>Assigned To:</span>
-                <strong className="text-foreground font-bold">
-                  {currentAssignee}
-                </strong>
-              </div>
-
-              {/* Task Status */}
-              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl bg-muted/40 border border-border/60 text-muted-foreground">
-                <Layers className="w-3.5 h-3.5 text-amber-500" />
-                <span>Task Status:</span>
-                <span
-                  className={`px-2 py-0.5 rounded-md text-[11px] font-bold ${
-                    currentTaskStatus === 'Approved' || currentTaskStatus === 'COMPLETED_DELIVERED'
-                      ? 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30'
-                      : currentTaskStatus === 'Done'
-                      ? 'bg-blue-500/15 text-blue-600 dark:text-blue-400 border border-blue-500/30'
-                      : 'bg-amber-500/15 text-amber-600 dark:text-amber-400 border border-amber-500/30'
-                  }`}
-                >
-                  {formatCleanLabel(currentTaskStatus)}
-                </span>
-                {activeTask?.title && (
-                  <span className="text-muted-foreground font-medium hidden sm:inline truncate max-w-[220px]">
-                    ({activeTask.title})
-                  </span>
+            {/* Active Handler & Current Task Status Pill Bar */}
+            <div className="flex flex-wrap items-center gap-2 pt-0.5">
+              {/* Handler Pill */}
+              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-muted/40 border border-border">
+                <UserCheck className="w-3.5 h-3.5 text-sky-500 shrink-0" />
+                <span className="text-muted-foreground font-medium">Currently Handling:</span>
+                {activeHandlerName ? (
+                  <strong className="text-foreground font-bold">{activeHandlerName}</strong>
+                ) : (
+                  <button
+                    onClick={() => setIsAssignModalOpen(true)}
+                    className="text-primary font-bold hover:underline cursor-pointer flex items-center gap-1"
+                  >
+                    Unassigned (+ Assign Staff)
+                  </button>
                 )}
               </div>
-            </div>
-          </div>
 
-          {/* Interactive Case Stage / Status Switcher */}
-          <div className="flex flex-col gap-1.5 bg-card border-2 border-primary/20 hover:border-primary/40 rounded-2xl p-3 shadow-xs shrink-0 self-start lg:self-center min-w-[260px] transition-all">
-            <div className="flex items-center justify-between gap-2">
-              <div className="flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider text-muted-foreground">
-                <span className="size-2 rounded-full bg-emerald-500 animate-pulse" />
-                <span>Workflow Stage</span>
-              </div>
-              {caseData.workflowStatus && (
-                <span className="text-[10px] font-semibold px-2 py-0.5 rounded-md bg-primary/10 text-primary border border-primary/20">
-                  {formatCleanLabel(caseData.workflowStatus)}
-                </span>
+              {/* Task Status Pill */}
+              {activeTask ? (
+                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-muted/40 border border-border">
+                  <Layers className="w-3.5 h-3.5 text-primary shrink-0" />
+                  <span className="text-muted-foreground font-medium">Status:</span>
+                  <span className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-bold border ${activeTaskStatusCfg.badgeClass}`}>
+                    <span className={`w-1.5 h-1.5 rounded-full ${activeTaskStatusCfg.dotClass}`} />
+                    {activeTask.status || 'Pending'}
+                  </span>
+                </div>
+              ) : (
+                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-muted/40 border border-border text-muted-foreground">
+                  <Layers className="w-3.5 h-3.5 text-muted-foreground/60 shrink-0" />
+                  <span className="text-muted-foreground font-medium">Status:</span>
+                  <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold border bg-slate-500/10 text-slate-600 dark:text-slate-400 border-slate-500/20">
+                    <span className="w-1.5 h-1.5 rounded-full bg-slate-400" />
+                    Unassigned
+                  </span>
+                  <button
+                    onClick={() => setIsAssignModalOpen(true)}
+                    className="text-primary font-bold hover:underline cursor-pointer ml-1"
+                  >
+                    (+ Assign Step)
+                  </button>
+                </div>
               )}
             </div>
 
-            <div className="relative mt-0.5">
-              <select
-                value={caseData.status || 'ENTRY'}
-                onChange={(e) => handleStageChange(e.target.value)}
-                className="w-full appearance-none pl-3.5 pr-9 py-2 text-xs font-bold rounded-xl border border-primary/40 bg-primary/5 hover:bg-primary/10 hover:border-primary text-foreground focus:outline-none focus:ring-2 focus:ring-primary/30 cursor-pointer shadow-2xs transition-all"
-                title="Click to change case status"
-              >
-                {PIPELINE_STAGES.map((st) => (
-                  <option key={st.id} value={st.id} className="bg-popover text-popover-foreground py-1 font-medium">
-                    {st.title} {st.id === caseData.status ? '✓ (Current)' : ''}
-                  </option>
-                ))}
-              </select>
-              <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center pointer-events-none text-primary">
-                <ChevronDown className="w-4 h-4" />
-              </div>
+            <div className="flex flex-wrap items-center gap-x-5 gap-y-1 text-xs text-muted-foreground pt-1">
+              <span className="flex items-center gap-1.5">
+                <Phone className="w-3.5 h-3.5 text-primary" />
+                {caseData.phone || caseData.clientInfo?.phone || '—'}
+              </span>
+              <span className="flex items-center gap-1.5 font-mono text-sky-600 dark:text-sky-400 font-semibold">
+                <FileText className="w-3.5 h-3.5" />
+                Passport: {caseData.passportNumber || caseData.clientInfo?.passportNumber || '—'}
+              </span>
+              {caseData.clientInfo?.nidNumber && (
+                <span className="flex items-center gap-1.5">
+                  <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
+                  NID: {caseData.clientInfo.nidNumber}
+                </span>
+              )}
             </div>
-            <span className="text-[10px] text-muted-foreground flex items-center gap-1 font-medium">
-              <span>⚡</span>
-              <span>Select option above to change status</span>
-            </span>
+          </div>
+
+          {/* Current Processing Stage Dropdown */}
+          <div className="flex items-center gap-3 bg-muted/40 p-2.5 rounded-xl border border-border shrink-0">
+            <div className="text-right">
+              <span className="text-[10px] font-bold uppercase text-muted-foreground block">Processing Stage</span>
+              <span className="text-xs font-black text-primary block">{caseData.workflowStatus || caseData.status}</span>
+            </div>
+            <select
+              value={caseData.status || 'ENTRY'}
+              onChange={(e) => handleStageChange(e.target.value)}
+              className="px-3 py-1.5 text-xs font-bold rounded-lg border border-input bg-background text-foreground focus:outline-none cursor-pointer"
+            >
+              {PIPELINE_STAGES.map((st) => (
+                <option key={st.id} value={st.id}>
+                  {st.title}
+                </option>
+              ))}
+            </select>
           </div>
         </div>
 
         {/* Creator Audit Strip */}
-        <div className="flex flex-wrap items-center justify-between gap-3 text-xs bg-muted/20 px-4 py-2 rounded-xl border border-border/60">
+        <div className="flex flex-wrap items-center justify-between gap-3 text-xs bg-muted/20 px-4 py-2.5 rounded-xl border border-border">
           <div className="flex items-center gap-2 text-muted-foreground">
-            <User className="w-3.5 h-3.5 text-primary" />
+            <User className="w-4 h-4 text-primary" />
             <span>
               Created By:{' '}
-              <strong className="text-foreground font-semibold">
+              <strong className="text-foreground font-bold">
                 {caseData.createdByName || caseData.createdBy?.name || 'Staff Member'}
               </strong>
             </span>
           </div>
           <div className="flex items-center gap-2 text-muted-foreground">
-            <Calendar className="w-3.5 h-3.5 text-primary" />
+            <UserCheck className="w-4 h-4 text-sky-500" />
+            <span>
+              Assigned Staff:{' '}
+              <strong className="text-foreground font-bold">
+                {activeHandlerName || 'Unassigned'}
+              </strong>
+            </span>
+          </div>
+          <div className="flex items-center gap-2 text-muted-foreground">
+            <Calendar className="w-4 h-4 text-primary" />
             <span>
               Registered Date:{' '}
-              <strong className="text-foreground font-semibold">
+              <strong className="text-foreground font-bold">
                 {new Date(caseData.createdAt || Date.now()).toLocaleString('en-GB', {
                   day: '2-digit',
                   month: 'short',
@@ -653,10 +845,10 @@ export default function CaseDetailPage() {
             </span>
           </div>
           <div className="flex items-center gap-2 text-muted-foreground">
-            <Clock className="w-3.5 h-3.5 text-primary" />
+            <Clock className="w-4 h-4 text-primary" />
             <span>
               Last Updated:{' '}
-              <strong className="text-foreground font-semibold">
+              <strong className="text-foreground font-bold">
                 {new Date(caseData.updatedAt || Date.now()).toLocaleString('en-GB', {
                   day: '2-digit',
                   month: 'short',
@@ -672,111 +864,36 @@ export default function CaseDetailPage() {
 
       {/* 4 Financial & Pipeline Snapshot Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        {/* Card 1: Agreed Package */}
-        <div className="bg-card border border-border/80 hover:border-border p-4.5 rounded-2xl shadow-xs space-y-2.5 transition-all">
-          <div className="flex items-center justify-between">
-            <span className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground flex items-center gap-1.5">
-              <Receipt className="w-3.5 h-3.5 text-primary" />
-              <span>Agreed Package</span>
-            </span>
-            <span className="text-[10px] font-semibold px-2 py-0.5 rounded-md bg-muted text-muted-foreground border border-border">
-              Contract
-            </span>
-          </div>
-          <div className="text-2xl font-black text-foreground tracking-tight font-mono">
-            BDT {Number(totalAgreed).toLocaleString('en-IN')}
-          </div>
-          <p className="text-[11px] text-muted-foreground">Total agreed client contract</p>
+        <div className="bg-card border border-border p-4 rounded-2xl shadow-xs space-y-1">
+          <span className="text-[11px] font-bold uppercase text-muted-foreground">Total Agreed Package</span>
+          <div className="text-xl font-black text-foreground">BDT {Number(totalAgreed).toLocaleString('en-IN')}</div>
+          <span className="text-[10px] text-muted-foreground">Total agreed client contract</span>
         </div>
 
-        {/* Card 2: Collected Payment */}
-        <div className="bg-card border border-emerald-500/20 dark:border-emerald-500/30 hover:border-emerald-500/40 p-4.5 rounded-2xl shadow-xs space-y-2.5 transition-all">
+        <div className="bg-card border border-border p-4 rounded-2xl shadow-xs space-y-1">
           <div className="flex items-center justify-between">
-            <span className="text-[11px] font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400 flex items-center gap-1.5">
-              <CreditCard className="w-3.5 h-3.5 text-emerald-500" />
-              <span>Total Collected</span>
-            </span>
-            <span className="text-xs font-black px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 font-mono">
-              {paidPercent}%
-            </span>
+            <span className="text-[11px] font-bold uppercase text-emerald-600">Total Collected Payment</span>
+            <span className="text-[11px] font-bold text-emerald-600">{paidPercent}%</span>
           </div>
-          <div className="text-2xl font-black text-emerald-600 dark:text-emerald-400 tracking-tight font-mono">
-            BDT {Number(totalPaid).toLocaleString('en-IN')}
-          </div>
-          <div className="space-y-1">
-            <div className="w-full h-2 bg-muted/60 dark:bg-zinc-800 rounded-full overflow-hidden p-0.5">
-              <div
-                className="h-full bg-emerald-500 rounded-full transition-all duration-500"
-                style={{ width: `${paidPercent}%` }}
-              />
-            </div>
-            <div className="flex items-center justify-between text-[10px] text-muted-foreground font-medium">
-              <span>Collection Progress</span>
-              <span>{paidPercent}% Paid</span>
-            </div>
+          <div className="text-xl font-black text-emerald-600">BDT {Number(totalPaid).toLocaleString('en-IN')}</div>
+          <div className="w-full h-1.5 bg-muted rounded-full overflow-hidden">
+            <div className="h-full bg-emerald-500 rounded-full" style={{ width: `${paidPercent}%` }} />
           </div>
         </div>
 
-        {/* Card 3: Due Balance */}
-        <div className="bg-card border border-rose-500/20 dark:border-rose-500/30 hover:border-rose-500/40 p-4.5 rounded-2xl shadow-xs space-y-2.5 transition-all">
-          <div className="flex items-center justify-between">
-            <span className="text-[11px] font-bold uppercase tracking-wider text-rose-600 dark:text-rose-400 flex items-center gap-1.5">
-              <AlertCircle className="w-3.5 h-3.5 text-rose-500" />
-              <span>Due Balance</span>
-            </span>
-            {totalDue > 0 ? (
-              <span className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-rose-500/10 text-rose-600 dark:text-rose-400 border border-rose-500/20">
-                Pending
-              </span>
-            ) : (
-              <span className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
-                Cleared ✓
-              </span>
-            )}
-          </div>
-          <div className="text-2xl font-black text-rose-600 dark:text-rose-400 tracking-tight font-mono">
-            BDT {Number(totalDue).toLocaleString('en-IN')}
-          </div>
-          <p className="text-[11px] text-muted-foreground">Pending collection balance</p>
+        <div className="bg-card border border-border p-4 rounded-2xl shadow-xs space-y-1">
+          <span className="text-[11px] font-bold uppercase text-rose-600">Total Due Balance</span>
+          <div className="text-xl font-black text-rose-600">BDT {Number(totalDue).toLocaleString('en-IN')}</div>
+          <span className="text-[10px] text-rose-500 font-medium">Pending collection balance</span>
         </div>
 
-        {/* Card 4: Operational Tasks Progress */}
-        <div className="bg-card border border-primary/20 hover:border-primary/40 p-4.5 rounded-2xl shadow-xs space-y-2.5 transition-all">
-          <div className="flex items-center justify-between">
-            <span className="text-[11px] font-bold uppercase tracking-wider text-primary flex items-center gap-1.5">
-              <Layers className="w-3.5 h-3.5 text-primary" />
-              <span>Tasks Progress</span>
-            </span>
-            <span className="text-xs font-black px-2 py-0.5 rounded-full bg-primary/10 text-primary border border-primary/20 font-mono">
-              {Math.round(
-                (((caseData.workflowTasks || []).filter((t) => t.status === 'Approved' || t.status === 'Done').length) /
-                  ((caseData.workflowTasks || []).length || 1)) *
-                  100
-              )}%
-            </span>
-          </div>
-          <div className="text-2xl font-black text-foreground tracking-tight font-mono">
+        <div className="bg-card border border-border p-4 rounded-2xl shadow-xs space-y-1">
+          <span className="text-[11px] font-bold uppercase text-primary">Operational Tasks Progress</span>
+          <div className="text-xl font-black text-foreground">
             {(caseData.workflowTasks || []).filter((t) => t.status === 'Approved' || t.status === 'Done').length} /{' '}
             {(caseData.workflowTasks || []).length || 5} Steps
           </div>
-          <div className="space-y-1">
-            <div className="w-full h-2 bg-muted/60 dark:bg-zinc-800 rounded-full overflow-hidden p-0.5">
-              <div
-                className="h-full bg-primary rounded-full transition-all duration-500"
-                style={{
-                  width: `${Math.round(
-                    (((caseData.workflowTasks || []).filter((t) => t.status === 'Approved' || t.status === 'Done').length) /
-                      ((caseData.workflowTasks || []).length || 1)) *
-                      100
-                  )}%`,
-                }}
-              />
-            </div>
-            <div className="flex items-center justify-between text-[10px] text-muted-foreground font-medium">
-              <span>Milestone Execution</span>
-              <span>Active Stage</span>
-            </div>
-          </div>
+          <span className="text-[10px] text-muted-foreground">Active step execution</span>
         </div>
       </div>
 
@@ -823,37 +940,132 @@ export default function CaseDetailPage() {
         {/* TAB 1: FILE & CLIENT OVERVIEW */}
         {activeTab === 'overview' && (
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {/* Bio Details */}
+            {/* Client Particulars & Master Bio Dossier */}
             <div className="bg-card border border-border rounded-2xl p-6 space-y-4 shadow-xs">
-              <h3 className="text-sm font-bold text-foreground uppercase tracking-wider flex items-center gap-2">
-                <User className="w-4 h-4 text-primary" />
-                Client & Passport Particulars
-              </h3>
-              <div className="grid grid-cols-2 gap-4 text-xs">
-                <div className="p-3 rounded-xl bg-muted/30 border border-border">
-                  <span className="text-muted-foreground block text-[10px]">Applicant Full Name</span>
-                  <p className="font-bold text-foreground mt-0.5">{caseData.applicantName || '—'}</p>
+              <div className="flex items-center justify-between border-b border-border pb-3">
+                <div className="flex items-center gap-2">
+                  <User className="w-4 h-4 text-primary" />
+                  <h3 className="text-sm font-bold text-foreground uppercase tracking-wider">
+                    Client & Passport Particulars
+                  </h3>
                 </div>
+                {clientDid && (
+                  <button
+                    onClick={() => navigate(`/admin/clients/${clientDid}`)}
+                    className="inline-flex items-center gap-1 text-xs font-bold text-primary hover:underline cursor-pointer"
+                  >
+                    <span>View 360° Profile</span>
+                    <ArrowUpRight className="size-3.5" />
+                  </button>
+                )}
+              </div>
+
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 text-xs">
+                {/* 1. Client Full Name */}
                 <div className="p-3 rounded-xl bg-muted/30 border border-border">
-                  <span className="text-muted-foreground block text-[10px]">Phone Number</span>
-                  <p className="font-bold text-foreground mt-0.5">{caseData.phone || '—'}</p>
+                  <span className="text-muted-foreground block text-[10px] uppercase font-semibold">Client / Applicant Name</span>
+                  <p className="font-bold text-foreground mt-0.5 truncate">{clientName}</p>
                 </div>
+
+                {/* 2. Client Code */}
                 <div className="p-3 rounded-xl bg-muted/30 border border-border">
-                  <span className="text-muted-foreground block text-[10px]">Passport Number</span>
-                  <p className="font-mono font-bold text-sky-600 mt-0.5">{caseData.passportNumber || '—'}</p>
+                  <span className="text-muted-foreground block text-[10px] uppercase font-semibold">Client Code / ID</span>
+                  <p className="font-mono font-bold text-primary mt-0.5">{clientCode}</p>
                 </div>
+
+                {/* 3. Primary Phone */}
                 <div className="p-3 rounded-xl bg-muted/30 border border-border">
-                  <span className="text-muted-foreground block text-[10px]">National ID (NID)</span>
-                  <p className="font-mono font-bold text-foreground mt-0.5">{caseData.nidNumber || caseData.clientInfo?.nidNumber || '—'}</p>
+                  <span className="text-muted-foreground block text-[10px] uppercase font-semibold">Primary Phone</span>
+                  <p className="font-bold text-foreground mt-0.5 flex items-center gap-1">
+                    <Phone className="size-3 text-primary shrink-0" />
+                    <span>{clientPhone}</span>
+                  </p>
                 </div>
+
+                {/* 4. Passport Number */}
                 <div className="p-3 rounded-xl bg-muted/30 border border-border">
-                  <span className="text-muted-foreground block text-[10px]">Destination Country</span>
-                  <p className="font-bold text-foreground mt-0.5">{caseData.destinationCountry || caseData.caseType?.toUpperCase()}</p>
+                  <span className="text-muted-foreground block text-[10px] uppercase font-semibold">Passport Number</span>
+                  <p className="font-mono font-bold text-sky-600 dark:text-sky-400 mt-0.5">{passportNo}</p>
+                  {passportExpiry && (
+                    <span className="text-[10px] text-muted-foreground block mt-0.5">Exp: {passportExpiry}</span>
+                  )}
                 </div>
+
+                {/* 5. National ID (NID) */}
                 <div className="p-3 rounded-xl bg-muted/30 border border-border">
-                  <span className="text-muted-foreground block text-[10px]">Trade / Skill Category</span>
+                  <span className="text-muted-foreground block text-[10px] uppercase font-semibold">National ID (NID)</span>
+                  <p className="font-mono font-bold text-foreground mt-0.5">{nidNo}</p>
+                </div>
+
+                {/* 6. Email Address */}
+                <div className="p-3 rounded-xl bg-muted/30 border border-border">
+                  <span className="text-muted-foreground block text-[10px] uppercase font-semibold">Email Address</span>
+                  <p className="font-medium text-foreground mt-0.5 truncate">{clientEmail || '—'}</p>
+                </div>
+
+                {/* 7. Destination Country */}
+                <div className="p-3 rounded-xl bg-muted/30 border border-border">
+                  <span className="text-muted-foreground block text-[10px] uppercase font-semibold">Destination Country</span>
+                  <p className="font-bold text-foreground mt-0.5">{caseData.destinationCountry || caseData.caseType?.toUpperCase() || '—'}</p>
+                </div>
+
+                {/* 8. Trade / Skill */}
+                <div className="p-3 rounded-xl bg-muted/30 border border-border">
+                  <span className="text-muted-foreground block text-[10px] uppercase font-semibold">Trade / Skill Category</span>
                   <p className="font-bold text-foreground mt-0.5">{caseData.tradeSkill || 'General Worker'}</p>
                 </div>
+
+                {/* 9. Case Number */}
+                <div className="p-3 rounded-xl bg-muted/30 border border-border">
+                  <span className="text-muted-foreground block text-[10px] uppercase font-semibold">Case File Number</span>
+                  <p className="font-mono font-bold text-primary mt-0.5">{caseData.caseNumber || '—'}</p>
+                </div>
+
+                {/* 10. Date of Birth & Gender */}
+                {(birthDate || gender) && (
+                  <div className="p-3 rounded-xl bg-muted/30 border border-border">
+                    <span className="text-muted-foreground block text-[10px] uppercase font-semibold">Birth Date & Gender</span>
+                    <p className="font-medium text-foreground mt-0.5">
+                      {birthDate ? birthDate : '—'} • {gender}{bloodGroup ? ` (${bloodGroup})` : ''}
+                    </p>
+                  </div>
+                )}
+
+                {/* 11. Parents Info */}
+                {(fatherName || motherName) && (
+                  <div className="p-3 rounded-xl bg-muted/30 border border-border">
+                    <span className="text-muted-foreground block text-[10px] uppercase font-semibold">Parents Information</span>
+                    <p className="font-medium text-foreground mt-0.5 truncate">
+                      {fatherName ? `F: ${fatherName}` : ''}{motherName ? ` • M: ${motherName}` : ''}
+                    </p>
+                  </div>
+                )}
+
+                {/* 12. Address */}
+                {(presentAddress || permanentAddress || district) && (
+                  <div className="p-3 rounded-xl bg-muted/30 border border-border sm:col-span-2">
+                    <span className="text-muted-foreground block text-[10px] uppercase font-semibold">Address / Location</span>
+                    <p className="font-medium text-foreground mt-0.5 flex items-center gap-1 truncate">
+                      <MapPin className="size-3 text-primary shrink-0" />
+                      <span>
+                        {presentAddress || permanentAddress || ''} {district ? `(${policeStation ? policeStation + ', ' : ''}${district})` : ''}
+                      </span>
+                    </p>
+                  </div>
+                )}
+
+                {/* 13. Guardian Info */}
+                {guardian?.name && (
+                  <div className="p-3 rounded-xl bg-muted/30 border border-border sm:col-span-2">
+                    <span className="text-muted-foreground block text-[10px] uppercase font-semibold">Primary Guardian</span>
+                    <p className="font-medium text-foreground mt-0.5 flex items-center gap-1.5 truncate">
+                      <ShieldCheck className="size-3 text-emerald-600 shrink-0" />
+                      <span>
+                        <strong>{guardian.name}</strong> ({guardian.relationship || 'Guardian'}) {guardian.phone ? `• 📞 ${guardian.phone}` : ''}
+                      </span>
+                    </p>
+                  </div>
+                )}
               </div>
             </div>
 
@@ -1050,17 +1262,15 @@ export default function CaseDetailPage() {
                         </span>
                         <h4 className="font-bold text-sm text-foreground">{t.title}</h4>
                       </div>
-                      <span
-                        className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold ${
-                          t.status === 'Approved'
-                            ? 'bg-emerald-100 text-emerald-800'
-                            : t.status === 'Done'
-                            ? 'bg-blue-100 text-blue-800'
-                            : 'bg-amber-100 text-amber-800'
-                        }`}
-                      >
-                        {t.status}
-                      </span>
+                      {(() => {
+                        const statusCfg = getTaskStatusConfig(t.status);
+                        return (
+                          <span className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-bold border ${statusCfg.badgeClass}`}>
+                            <span className={`w-1.5 h-1.5 rounded-full ${statusCfg.dotClass}`} />
+                            {statusCfg.label}
+                          </span>
+                        );
+                      })()}
                     </div>
 
                     {t.description && (
@@ -1070,7 +1280,7 @@ export default function CaseDetailPage() {
                     <div className="flex items-center justify-between text-xs pt-2 border-t border-border text-muted-foreground">
                       <span>
                         Assigned Staff:{' '}
-                        <strong className="text-foreground">{t.assignedToName || t.assignedToDid || 'Staff'}</strong>
+                        <strong className="text-foreground">{t.assignedToName || t.assignedTo?.name || t.assignedToDid || 'Unassigned'}</strong>
                       </span>
                       {t.status === 'Done' && (
                         <button
@@ -1167,74 +1377,173 @@ export default function CaseDetailPage() {
         {/* TAB 5: DOCUMENT VAULT & UPLOADER AUDIT */}
         {activeTab === 'documents' && (
           <div className="bg-card border border-border rounded-2xl p-6 shadow-xs space-y-6">
-            <div className="flex items-center justify-between border-b border-border pb-4">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-border pb-4">
               <div>
                 <h3 className="text-base font-bold text-foreground">Verified Document Vault & Uploader Audit</h3>
                 <p className="text-xs text-muted-foreground">
                   Verified repository of case scans and attachments with audit trail of staff uploaders.
                 </p>
               </div>
-              <button
-                onClick={() => setIsUploadModalOpen(true)}
-                className="flex items-center gap-1.5 px-3.5 py-2 bg-primary text-primary-foreground font-bold text-xs rounded-xl shadow-xs hover:bg-primary/90 transition cursor-pointer"
-              >
-                <UploadCloud className="w-3.5 h-3.5" />
-                <span>+ Upload New File</span>
-              </button>
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => setIsCreateDocModalOpen(true)}
+                  className="flex items-center gap-1.5 px-3.5 py-2 bg-sky-500/10 hover:bg-sky-500/20 text-sky-700 dark:text-sky-300 border border-sky-500/30 font-bold text-xs rounded-xl shadow-xs transition cursor-pointer"
+                >
+                  <Plus className="w-3.5 h-3.5 text-sky-500" />
+                  <span>+ Add New Document</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setIsUploadModalOpen(true)}
+                  className="flex items-center gap-1.5 px-3.5 py-2 bg-primary text-primary-foreground font-bold text-xs rounded-xl shadow-xs hover:bg-primary/90 transition cursor-pointer"
+                >
+                  <UploadCloud className="w-3.5 h-3.5" />
+                  <span>+ Upload New File</span>
+                </button>
+              </div>
             </div>
 
             {(caseData.vaultDocuments || []).length === 0 ? (
-              <div className="py-12 text-center text-muted-foreground text-xs space-y-2 border border-dashed border-border rounded-2xl">
+              <div className="py-12 text-center text-muted-foreground text-xs space-y-3 border border-dashed border-border rounded-2xl">
                 <FileText className="w-8 h-8 mx-auto opacity-40" />
-                <p className="font-semibold">No documents uploaded to this vault yet.</p>
-                <button
-                  onClick={() => setIsUploadModalOpen(true)}
-                  className="text-primary font-bold hover:underline cursor-pointer"
-                >
-                  + Upload First Document
-                </button>
+                <p className="font-semibold text-foreground">No documents in this vault yet.</p>
+                <p className="text-muted-foreground max-w-sm mx-auto">
+                  Generate official documents in Document Studio with auto-filled client data or upload scanned attachments.
+                </p>
+                <div className="flex items-center justify-center gap-3 pt-2">
+                  <button
+                    type="button"
+                    onClick={() => setIsCreateDocModalOpen(true)}
+                    className="flex items-center gap-1.5 px-4 py-2 bg-sky-500/10 hover:bg-sky-500/20 text-sky-700 dark:text-sky-300 border border-sky-500/30 font-bold text-xs rounded-xl cursor-pointer"
+                  >
+                    <Plus className="w-3.5 h-3.5" />
+                    <span>+ Generate Official Document</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setIsUploadModalOpen(true)}
+                    className="flex items-center gap-1.5 px-4 py-2 bg-primary text-primary-foreground font-bold text-xs rounded-xl cursor-pointer"
+                  >
+                    <UploadCloud className="w-3.5 h-3.5" />
+                    <span>+ Upload File Scan</span>
+                  </button>
+                </div>
               </div>
             ) : (
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-                {caseData.vaultDocuments.map((doc, idx) => (
-                  <div
-                    key={doc.did || doc._id || idx}
-                    className="bg-muted/20 border border-border p-4 rounded-xl space-y-3"
-                  >
-                    <div className="flex items-start justify-between gap-2">
-                      <div className="flex items-center gap-2.5 min-w-0">
-                        <div className="size-9 rounded-lg bg-sky-500/10 text-sky-600 flex items-center justify-center font-bold shrink-0">
-                          <FileText className="w-4 h-4" />
+                {caseData.vaultDocuments.map((doc, idx) => {
+                  const docKey = doc.did || doc._id || idx;
+                  const isRenaming = renamingDocDid === docKey;
+                  return (
+                    <div
+                      key={docKey}
+                      className="bg-muted/20 border border-border p-4 rounded-xl space-y-3"
+                    >
+                      <div className="flex items-start justify-between gap-2">
+                        <div className="flex items-center gap-2.5 min-w-0 flex-1">
+                          <div className="size-9 rounded-lg bg-sky-500/10 text-sky-600 flex items-center justify-center font-bold shrink-0">
+                            <FileText className="w-4 h-4" />
+                          </div>
+                          <div className="min-w-0 flex-1">
+                            {isRenaming ? (
+                              <div className="flex items-center gap-1.5">
+                                <input
+                                  type="text"
+                                  value={renameValue}
+                                  onChange={(e) => setRenameValue(e.target.value)}
+                                  onKeyDown={(e) => {
+                                    if (e.key === 'Enter') handleRenameDocument(doc);
+                                    if (e.key === 'Escape') { setRenamingDocDid(null); setRenameValue(''); }
+                                  }}
+                                  autoFocus
+                                  className="flex-1 min-w-0 px-2 py-1 text-xs bg-background border border-primary rounded-lg focus:outline-none font-semibold text-foreground"
+                                />
+                                <button
+                                  type="button"
+                                  onClick={() => handleRenameDocument(doc)}
+                                  disabled={savingRename}
+                                  className="p-1 text-emerald-600 hover:bg-emerald-500/10 rounded cursor-pointer shrink-0"
+                                  title="Save rename"
+                                >
+                                  {savingRename ? <Loader2 className="w-3 h-3 animate-spin" /> : <Check className="w-3 h-3" />}
+                                </button>
+                                <button
+                                  type="button"
+                                  onClick={() => { setRenamingDocDid(null); setRenameValue(''); }}
+                                  className="p-1 text-muted-foreground hover:bg-muted rounded cursor-pointer shrink-0"
+                                  title="Cancel"
+                                >
+                                  <X className="w-3 h-3" />
+                                </button>
+                              </div>
+                            ) : (
+                              <div className="flex items-center gap-1 group">
+                                <h5 className="font-bold text-xs text-foreground truncate">{doc.documentName || doc.name}</h5>
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    setRenamingDocDid(docKey);
+                                    setRenameValue(doc.documentName || doc.name || '');
+                                  }}
+                                  className="p-0.5 text-muted-foreground hover:text-foreground opacity-0 group-hover:opacity-100 transition cursor-pointer shrink-0"
+                                  title="Rename document"
+                                >
+                                  <Edit3 className="w-3 h-3" />
+                                </button>
+                              </div>
+                            )}
+                            <p className="text-[10px] text-muted-foreground truncate mt-0.5">
+                              {doc.fileName || 'file.pdf'} • {doc.fileSize || '1.2 MB'}
+                            </p>
+                          </div>
                         </div>
-                        <div className="min-w-0">
-                          <h5 className="font-bold text-xs text-foreground truncate">{doc.documentName || doc.name}</h5>
-                          <p className="text-[10px] text-muted-foreground truncate">
-                            {doc.fileName || 'file.pdf'} • {doc.fileSize || '1.2 MB'}
-                          </p>
+                        <span className="px-2 py-0.5 rounded text-[9px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200 shrink-0">
+                          Verified
+                        </span>
+                      </div>
+
+                      <div className="flex items-center justify-between text-[11px] pt-2 border-t border-border text-muted-foreground">
+                        <span>
+                          By: <strong className="text-foreground">{doc.uploadedByName || 'Staff'}</strong>
+                        </span>
+                        <div className="flex items-center gap-2">
+                          <button
+                            type="button"
+                            onClick={() => setPreviewFile(doc)}
+                            className="text-primary hover:underline font-bold flex items-center gap-1 cursor-pointer"
+                          >
+                            <Eye className="w-3 h-3" />
+                            View
+                          </button>
+                          {doc.fileUrl && (
+                            <a
+                              href={doc.fileUrl}
+                              download
+                              target="_blank"
+                              rel="noreferrer"
+                              className="text-muted-foreground hover:text-foreground font-bold flex items-center gap-0.5"
+                              title="Download file"
+                            >
+                              <Download className="w-3 h-3" />
+                            </a>
+                          )}
+                          {doc.fileUrl && (
+                            <a
+                              href={doc.fileUrl}
+                              target="_blank"
+                              rel="noreferrer"
+                              className="text-muted-foreground hover:text-foreground font-bold flex items-center gap-0.5"
+                              title="Open in new tab"
+                            >
+                              <ExternalLink className="w-3 h-3" />
+                            </a>
+                          )}
                         </div>
                       </div>
-                      <span className="px-2 py-0.5 rounded text-[9px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200 shrink-0">
-                        Verified
-                      </span>
                     </div>
-
-                    <div className="flex items-center justify-between text-[11px] pt-2 border-t border-border text-muted-foreground">
-                      <span>
-                        Uploaded By: <strong className="text-foreground">{doc.uploadedByName || 'Staff Member'}</strong>
-                      </span>
-                      {doc.fileUrl && (
-                        <a
-                          href={doc.fileUrl}
-                          target="_blank"
-                          rel="noreferrer"
-                          className="text-primary hover:underline font-bold flex items-center gap-0.5"
-                        >
-                          View <ExternalLink className="w-3 h-3" />
-                        </a>
-                      )}
-                    </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             )}
           </div>
@@ -1338,112 +1647,120 @@ export default function CaseDetailPage() {
 
       {/* Upload Document Modal */}
       {isUploadModalOpen && (
-        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4">
+        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-xs flex items-center justify-center p-4">
           <form
             onSubmit={handleUploadDocument}
-            className="bg-zinc-950 border border-zinc-800 text-zinc-100 rounded-2xl max-w-md w-full p-6 space-y-4 shadow-2xl overflow-hidden animate-in zoom-in-95 duration-200"
+            className="bg-card border border-border rounded-2xl max-w-md w-full p-6 space-y-4 shadow-2xl animate-in fade-in zoom-in-95 duration-200"
           >
-            <div className="flex items-center justify-between border-b border-zinc-800 pb-4 -mx-6 -mt-6 p-6 bg-linear-to-r from-zinc-950 via-slate-950 to-black">
-              <h3 className="text-sm font-bold text-white flex items-center gap-2">
-                <UploadCloud className="w-4 h-4 text-sky-400" />
+            <div className="flex items-center justify-between border-b border-border pb-3">
+              <h3 className="text-sm font-bold text-foreground flex items-center gap-2">
+                <UploadCloud className="w-4 h-4 text-primary" />
                 Attach File to Document Vault
               </h3>
               <button
                 type="button"
-                onClick={() => setIsUploadModalOpen(false)}
-                className="p-1.5 rounded-xl bg-rose-500/10 hover:bg-rose-500/20 text-rose-500 hover:text-rose-400 border border-rose-500/40 hover:border-rose-500/80 shadow-xs transition-all cursor-pointer"
-                aria-label="Close modal"
+                onClick={() => {
+                  setIsUploadModalOpen(false);
+                  handleRemoveSelectedFile();
+                }}
+                className="p-1 rounded text-muted-foreground hover:text-foreground cursor-pointer"
               >
-                <X className="w-4 h-4 stroke-[2.5]" />
+                <X className="w-4 h-4" />
               </button>
             </div>
 
-            <div className="space-y-3.5 text-xs">
+            <div className="space-y-4 text-xs">
               <div>
-                <label className="block font-semibold text-zinc-300 mb-1.5">Document Category *</label>
+                <label className="block font-semibold text-muted-foreground mb-1.5">Document Category *</label>
                 <select
                   value={uploadDocForm.documentName}
                   onChange={(e) => setUploadDocForm({ ...uploadDocForm, documentName: e.target.value })}
-                  className="w-full px-3.5 py-2.5 bg-zinc-900/80 border border-zinc-800 rounded-xl text-zinc-100 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary cursor-pointer"
+                  className="w-full px-3 py-2.5 bg-muted/40 border border-border rounded-xl text-foreground font-medium focus:outline-none focus:ring-1 focus:ring-primary cursor-pointer"
                 >
-                  <option value="Passport Scan Copy" className="bg-zinc-950 text-zinc-100">Passport Scan Copy</option>
-                  <option value="Photo (35x45mm / 2x2 White BG)" className="bg-zinc-950 text-zinc-100">Photo (35x45mm / 2x2 White BG)</option>
-                  <option value="Police Clearance Certificate (PCC)" className="bg-zinc-950 text-zinc-100">Police Clearance Certificate (PCC)</option>
-                  <option value="National ID Card (NID)" className="bg-zinc-950 text-zinc-100">National ID Card (NID)</option>
-                  <option value="Medical Examination Report" className="bg-zinc-950 text-zinc-100">Medical Examination Report</option>
-                  <option value="Work Permit / Offer Letter" className="bg-zinc-950 text-zinc-100">Work Permit / Offer Letter</option>
-                  <option value="Visa Sticker / Approval Dossier" className="bg-zinc-950 text-zinc-100">Visa Sticker / Approval Dossier</option>
-                  <option value="Embassy / VFS Submission Slip" className="bg-zinc-950 text-zinc-100">Embassy / VFS Submission Slip</option>
-                  <option value="Bank Statement / Solvency" className="bg-zinc-950 text-zinc-100">Bank Statement / Solvency</option>
-                  <option value="Other Document" className="bg-zinc-950 text-zinc-100">Other Document</option>
+                  <option value="Passport Scan Copy">Passport Scan Copy</option>
+                  <option value="Photo (35x45mm / 2x2 White BG)">Photo (35x45mm / 2x2 White BG)</option>
+                  <option value="Police Clearance Certificate (PCC)">Police Clearance Certificate (PCC)</option>
+                  <option value="National ID Card (NID)">National ID Card (NID)</option>
+                  <option value="Medical Examination Report">Medical Examination Report</option>
+                  <option value="Work Permit / Offer Letter">Work Permit / Offer Letter</option>
+                  <option value="Visa Sticker / Approval Dossier">Visa Sticker / Approval Dossier</option>
+                  <option value="Embassy / VFS Submission Slip">Embassy / VFS Submission Slip</option>
+                  <option value="Bank Statement / Solvency">Bank Statement / Solvency</option>
+                  <option value="Other Document">Other Document</option>
                 </select>
               </div>
 
               <div>
-                <label className="block font-semibold text-zinc-300 mb-1.5 flex items-center justify-between">
-                  <span>Choose Local File *</span>
-                  {uploadingFile && (
-                    <span className="flex items-center gap-1 text-[11px] text-sky-400 font-medium animate-pulse">
-                      <Loader2 className="w-3 h-3 animate-spin" />
-                      Uploading...
-                    </span>
-                  )}
-                </label>
+                <label className="block font-semibold text-muted-foreground mb-1.5">Document File *</label>
                 <input
                   type="file"
+                  ref={fileInputRef}
                   onChange={handleFileChange}
                   accept=".pdf,.png,.jpg,.jpeg,.doc,.docx"
-                  disabled={uploadingFile}
-                  className="w-full px-3 py-2 bg-zinc-900/80 border border-zinc-800 rounded-xl text-zinc-100 focus:outline-none file:mr-3 file:py-1 file:px-2.5 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-primary file:text-primary-foreground hover:file:bg-primary/90 cursor-pointer disabled:opacity-50"
+                  className="hidden"
                 />
-              </div>
 
-              <div>
-                <label className="block font-semibold text-zinc-300 mb-1.5 flex items-center justify-between">
-                  <span>File Name / Label</span>
-                  <span className="text-[10px] text-zinc-400 bg-zinc-900 px-2 py-0.5 rounded-md border border-zinc-800">Auto-generated</span>
-                </label>
-                <input
-                  type="text"
-                  placeholder="Auto-generated from chosen file"
-                  value={uploadDocForm.fileName}
-                  disabled
-                  readOnly
-                  className="w-full px-3.5 py-2.5 bg-zinc-900/40 border border-zinc-800/80 rounded-xl text-zinc-400 font-medium cursor-not-allowed select-none"
-                />
-              </div>
-
-              <div>
-                <label className="block font-semibold text-zinc-300 mb-1.5 flex items-center justify-between">
-                  <span>File URL / Cloud Storage Link</span>
-                  <span className="text-[10px] text-zinc-400 bg-zinc-900 px-2 py-0.5 rounded-md border border-zinc-800">Auto-generated</span>
-                </label>
-                <input
-                  type="text"
-                  placeholder="Auto-generated upon file selection"
-                  value={uploadDocForm.fileUrl ? (uploadDocForm.fileUrl.startsWith('data:') ? `[Embedded File: ${uploadDocForm.fileName}]` : uploadDocForm.fileUrl) : ''}
-                  disabled
-                  readOnly
-                  className="w-full px-3.5 py-2.5 bg-zinc-900/40 border border-zinc-800/80 rounded-xl text-zinc-400 font-medium cursor-not-allowed select-none font-mono text-[11px] truncate"
-                />
+                {!uploadDocForm.fileName ? (
+                  <div
+                    onClick={() => fileInputRef.current?.click()}
+                    className="border-2 border-dashed border-border hover:border-primary/60 bg-muted/20 hover:bg-muted/40 rounded-2xl p-6 flex flex-col items-center justify-center text-center cursor-pointer transition-all group"
+                  >
+                    <div className="size-12 rounded-2xl bg-primary/10 text-primary flex items-center justify-center mb-2 group-hover:scale-110 transition-transform">
+                      <UploadCloud className="w-6 h-6" />
+                    </div>
+                    <p className="font-bold text-foreground text-xs">
+                      Click to choose file from device
+                    </p>
+                    <p className="text-[11px] text-muted-foreground mt-0.5">
+                      PDF, JPG, PNG, DOCX (Max: 10 MB)
+                    </p>
+                  </div>
+                ) : (
+                  <div className="bg-primary/5 border border-primary/20 rounded-2xl p-3.5 flex items-center justify-between gap-3">
+                    <div className="flex items-center gap-3 min-w-0">
+                      <div className="size-10 rounded-xl bg-primary text-primary-foreground flex items-center justify-center shrink-0 shadow-xs">
+                        <FileText className="w-5 h-5" />
+                      </div>
+                      <div className="min-w-0">
+                        <p className="font-bold text-foreground text-xs truncate">
+                          {uploadDocForm.fileName}
+                        </p>
+                        <p className="text-[11px] text-muted-foreground">
+                          {uploadDocForm.fileSize || 'Selected'} • <span className="text-emerald-600 font-bold">Ready</span>
+                        </p>
+                      </div>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={handleRemoveSelectedFile}
+                      className="p-1.5 rounded-lg text-rose-500 hover:bg-rose-500/10 transition-colors cursor-pointer shrink-0"
+                      title="Remove selected file"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </button>
+                  </div>
+                )}
               </div>
             </div>
 
-            <div className="flex items-center justify-end gap-2.5 pt-4 -mx-6 -mb-6 p-4 border-t border-zinc-800 bg-zinc-950 text-xs">
+            <div className="flex items-center justify-end gap-2 pt-3 border-t border-border text-xs">
               <button
                 type="button"
-                onClick={() => setIsUploadModalOpen(false)}
-                className="px-4 py-2 font-bold rounded-xl bg-rose-500/10 hover:bg-rose-500/20 text-rose-500 dark:text-rose-400 hover:text-rose-300 border border-rose-500/40 hover:border-rose-500/80 transition-all cursor-pointer"
+                onClick={() => {
+                  setIsUploadModalOpen(false);
+                  handleRemoveSelectedFile();
+                }}
+                className="px-4 py-2 rounded-xl border border-border text-muted-foreground hover:bg-muted font-medium cursor-pointer"
               >
                 Cancel
               </button>
               <button
                 type="submit"
-                disabled={uploadingDoc || uploadingFile || !uploadDocForm.fileUrl}
-                className="flex items-center gap-2 px-5 py-2 bg-primary text-primary-foreground font-bold rounded-xl shadow-xs disabled:opacity-50 cursor-pointer hover:bg-primary/90 transition-all"
+                disabled={uploadingDoc || (!uploadDocForm.file && !uploadDocForm.fileUrl)}
+                className="flex items-center gap-1.5 px-5 py-2 bg-primary text-primary-foreground font-bold rounded-xl shadow-xs disabled:opacity-50 cursor-pointer hover:bg-primary/90 transition-all"
               >
                 {uploadingDoc ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <UploadCloud className="w-3.5 h-3.5" />}
-                <span>{uploadingDoc ? 'Saving...' : 'Save to Vault'}</span>
+                <span>{uploadingDoc ? 'Uploading...' : 'Save to Vault'}</span>
               </button>
             </div>
           </form>
@@ -1452,108 +1769,107 @@ export default function CaseDetailPage() {
 
       {/* Edit Case File Modal */}
       {isEditModalOpen && (
-        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4 overflow-y-auto">
+        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-xs flex items-center justify-center p-4 overflow-y-auto">
           <form
             onSubmit={handleSaveCaseEdit}
-            className="bg-zinc-950 border border-zinc-800 text-zinc-100 rounded-2xl max-w-2xl w-full p-6 space-y-4 shadow-2xl my-8 overflow-hidden animate-in zoom-in-95 duration-200"
+            className="bg-card border border-border rounded-2xl max-w-2xl w-full p-6 space-y-4 shadow-2xl my-8"
           >
-            <div className="flex items-center justify-between border-b border-zinc-800 pb-4 -mx-6 -mt-6 p-6 bg-linear-to-r from-zinc-950 via-slate-950 to-black">
-              <h3 className="text-base font-bold text-white flex items-center gap-2">
-                <Edit3 className="w-4 h-4 text-sky-400" />
+            <div className="flex items-center justify-between border-b border-border pb-3">
+              <h3 className="text-base font-bold text-foreground flex items-center gap-2">
+                <Edit3 className="w-4 h-4 text-primary" />
                 Edit Case File #{caseData.caseNumber || 'CASE-FILE'}
               </h3>
               <button
                 type="button"
                 onClick={() => setIsEditModalOpen(false)}
-                className="p-1.5 rounded-xl bg-rose-500/10 hover:bg-rose-500/20 text-rose-500 hover:text-rose-400 border border-rose-500/40 hover:border-rose-500/80 shadow-xs transition-all cursor-pointer"
-                aria-label="Close modal"
+                className="p-1 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted cursor-pointer"
               >
-                <X className="w-4 h-4 stroke-[2.5]" />
+                ✕
               </button>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
               <div>
-                <label className="block font-semibold text-zinc-300 mb-1.5">Applicant Full Name *</label>
+                <label className="block font-bold text-foreground mb-1">Applicant Full Name *</label>
                 <input
                   type="text"
                   required
                   value={editForm.applicantName}
                   onChange={(e) => setEditForm({ ...editForm, applicantName: e.target.value })}
-                  className="w-full px-3.5 py-2.5 bg-zinc-900/80 border border-zinc-800 rounded-xl text-zinc-100 placeholder:text-zinc-500 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary text-xs"
+                  className="w-full px-3 py-2 bg-muted/40 border border-border rounded-xl text-foreground focus:outline-none focus:border-primary text-xs"
                 />
               </div>
 
               <div>
-                <label className="block font-semibold text-zinc-300 mb-1.5">Phone Number</label>
+                <label className="block font-bold text-foreground mb-1">Phone Number</label>
                 <input
                   type="text"
                   value={editForm.phone}
                   onChange={(e) => setEditForm({ ...editForm, phone: e.target.value })}
-                  className="w-full px-3.5 py-2.5 bg-zinc-900/80 border border-zinc-800 rounded-xl text-zinc-100 placeholder:text-zinc-500 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary text-xs font-mono"
+                  className="w-full px-3 py-2 bg-muted/40 border border-border rounded-xl text-foreground focus:outline-none focus:border-primary text-xs font-mono"
                 />
               </div>
 
               <div>
-                <label className="block font-semibold text-zinc-300 mb-1.5">Passport Number</label>
+                <label className="block font-bold text-foreground mb-1">Passport Number</label>
                 <input
                   type="text"
                   value={editForm.passportNumber}
                   onChange={(e) => setEditForm({ ...editForm, passportNumber: e.target.value.toUpperCase() })}
-                  className="w-full px-3.5 py-2.5 bg-zinc-900/80 border border-zinc-800 rounded-xl text-zinc-100 placeholder:text-zinc-500 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary text-xs font-mono uppercase"
+                  className="w-full px-3 py-2 bg-muted/40 border border-border rounded-xl text-foreground focus:outline-none focus:border-primary text-xs font-mono"
                 />
               </div>
 
               <div>
-                <label className="block font-semibold text-zinc-300 mb-1.5">National ID (NID)</label>
+                <label className="block font-bold text-foreground mb-1">National ID (NID)</label>
                 <input
                   type="text"
                   value={editForm.nidNumber}
                   onChange={(e) => setEditForm({ ...editForm, nidNumber: e.target.value })}
-                  className="w-full px-3.5 py-2.5 bg-zinc-900/80 border border-zinc-800 rounded-xl text-zinc-100 placeholder:text-zinc-500 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary text-xs font-mono"
+                  className="w-full px-3 py-2 bg-muted/40 border border-border rounded-xl text-foreground focus:outline-none focus:border-primary text-xs font-mono"
                 />
               </div>
 
               <div>
-                <label className="block font-semibold text-zinc-300 mb-1.5">Destination Country</label>
+                <label className="block font-bold text-foreground mb-1">Destination Country</label>
                 <input
                   type="text"
                   value={editForm.destinationCountry}
                   onChange={(e) => setEditForm({ ...editForm, destinationCountry: e.target.value })}
-                  className="w-full px-3.5 py-2.5 bg-zinc-900/80 border border-zinc-800 rounded-xl text-zinc-100 placeholder:text-zinc-500 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary text-xs"
+                  className="w-full px-3 py-2 bg-muted/40 border border-border rounded-xl text-foreground focus:outline-none focus:border-primary text-xs"
                 />
               </div>
 
               <div>
-                <label className="block font-semibold text-zinc-300 mb-1.5">Trade / Skill Category</label>
+                <label className="block font-bold text-foreground mb-1">Trade / Skill Category</label>
                 <input
                   type="text"
                   value={editForm.tradeSkill}
                   onChange={(e) => setEditForm({ ...editForm, tradeSkill: e.target.value })}
-                  className="w-full px-3.5 py-2.5 bg-zinc-900/80 border border-zinc-800 rounded-xl text-zinc-100 placeholder:text-zinc-500 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary text-xs"
+                  className="w-full px-3 py-2 bg-muted/40 border border-border rounded-xl text-foreground focus:outline-none focus:border-primary text-xs"
                 />
               </div>
 
               <div>
-                <label className="block font-semibold text-zinc-300 mb-1.5">Total Agreed Package Bill (BDT)</label>
+                <label className="block font-bold text-foreground mb-1">Total Agreed Package Bill (BDT)</label>
                 <input
                   type="number"
                   min="0"
                   value={editForm.totalAgreedAmount}
                   onChange={(e) => setEditForm({ ...editForm, totalAgreedAmount: e.target.value })}
-                  className="w-full px-3.5 py-2.5 bg-zinc-900/80 border border-zinc-800 rounded-xl text-zinc-100 placeholder:text-zinc-500 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary text-xs font-mono"
+                  className="w-full px-3 py-2 bg-muted/40 border border-border rounded-xl text-foreground focus:outline-none focus:border-primary text-xs font-mono"
                 />
               </div>
 
               <div>
-                <label className="block font-semibold text-zinc-300 mb-1.5">Current Processing Stage</label>
+                <label className="block font-bold text-foreground mb-1">Current Processing Stage</label>
                 <select
                   value={editForm.status}
                   onChange={(e) => setEditForm({ ...editForm, status: e.target.value })}
-                  className="w-full px-3.5 py-2.5 bg-zinc-900/80 border border-zinc-800 rounded-xl text-zinc-100 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary text-xs cursor-pointer"
+                  className="w-full px-3 py-2 bg-muted/40 border border-border rounded-xl text-foreground focus:outline-none focus:border-primary text-xs"
                 >
                   {PIPELINE_STAGES.map((st) => (
-                    <option key={st.id} value={st.id} className="bg-zinc-950 text-zinc-100">
+                    <option key={st.id} value={st.id}>
                       {st.title}
                     </option>
                   ))}
@@ -1561,29 +1877,29 @@ export default function CaseDetailPage() {
               </div>
 
               <div className="sm:col-span-2">
-                <label className="block font-semibold text-zinc-300 mb-1.5">Remarks & Operational Notes</label>
+                <label className="block font-bold text-foreground mb-1">Remarks & Operational Notes</label>
                 <textarea
                   rows={3}
                   value={editForm.remarks}
                   onChange={(e) => setEditForm({ ...editForm, remarks: e.target.value })}
                   placeholder="Case notes, sponsor particulars, or timeline updates..."
-                  className="w-full px-3.5 py-2.5 bg-zinc-900/80 border border-zinc-800 rounded-xl text-zinc-100 placeholder:text-zinc-500 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary text-xs resize-none"
+                  className="w-full px-3 py-2 bg-muted/40 border border-border rounded-xl text-foreground focus:outline-none focus:border-primary text-xs resize-none"
                 />
               </div>
             </div>
 
-            <div className="flex items-center justify-end gap-2.5 pt-4 -mx-6 -mb-6 p-4 border-t border-zinc-800 bg-zinc-950 text-xs">
+            <div className="flex items-center justify-end gap-2 pt-3 border-t border-border text-xs">
               <button
                 type="button"
                 onClick={() => setIsEditModalOpen(false)}
-                className="px-4 py-2 font-bold rounded-xl bg-rose-500/10 hover:bg-rose-500/20 text-rose-500 dark:text-rose-400 hover:text-rose-300 border border-rose-500/40 hover:border-rose-500/80 transition-all cursor-pointer"
+                className="px-4 py-2 rounded-xl border border-border text-muted-foreground hover:bg-muted font-semibold cursor-pointer"
               >
                 Cancel
               </button>
               <button
                 type="submit"
                 disabled={savingEdit}
-                className="flex items-center gap-2 px-5 py-2 bg-primary hover:bg-primary/90 text-primary-foreground font-bold rounded-xl shadow-xs transition-all disabled:opacity-50 cursor-pointer"
+                className="flex items-center gap-1.5 px-5 py-2 bg-primary hover:bg-primary/90 text-primary-foreground font-bold rounded-xl shadow-xs transition-all disabled:opacity-50 cursor-pointer"
               >
                 {savingEdit ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <CheckCircle2 className="w-3.5 h-3.5" />}
                 <span>Save Changes</span>
@@ -1592,6 +1908,152 @@ export default function CaseDetailPage() {
           </form>
         </div>
       )}
+
+      {/* MODAL: CREATE DOCUMENT STUDIO TEMPLATE SELECTOR */}
+      {isCreateDocModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4 animate-in fade-in duration-150">
+          <div className="bg-card border border-border rounded-2xl w-full max-w-2xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
+            {/* Header */}
+            <div className="flex items-center justify-between p-5 border-b border-border bg-muted/20">
+              <div className="flex items-center gap-2.5">
+                <div className="size-9 rounded-xl bg-sky-500/10 text-sky-600 dark:text-sky-400 flex items-center justify-center font-bold">
+                  <FileText className="size-4" />
+                </div>
+                <div>
+                  <h3 className="text-sm font-black text-foreground">Create Official Case Document</h3>
+                  <p className="text-[11px] text-muted-foreground">
+                    Select a document template to generate. Client particulars will be automatically pre-filled and locked.
+                  </p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setIsCreateDocModalOpen(false)}
+                className="p-1.5 rounded-lg text-muted-foreground hover:bg-muted hover:text-foreground cursor-pointer"
+              >
+                <X className="size-4" />
+              </button>
+            </div>
+
+            {/* Body */}
+            <div className="p-5 overflow-y-auto space-y-4 text-xs">
+              {/* Autofill Preview & Lock Notice */}
+              <div className="p-3.5 rounded-xl bg-sky-500/10 border border-sky-500/30 space-y-2">
+                <div className="flex items-center justify-between">
+                  <span className="font-bold text-sky-700 dark:text-sky-300 uppercase tracking-wider text-[10px] flex items-center gap-1.5">
+                    <ShieldCheck className="size-3.5" />
+                    Auto-Filling From Case Dossier
+                  </span>
+                  <span className="px-2 py-0.2 rounded-full text-[9px] font-bold bg-amber-500/20 text-amber-800 dark:text-amber-300 border border-amber-500/30">
+                    🔒 Client Bio Locked
+                  </span>
+                </div>
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-[11px]">
+                  <div className="bg-background/80 p-2 rounded-lg border border-border/60">
+                    <span className="text-muted-foreground block text-[9px] uppercase font-semibold">Client Name</span>
+                    <strong className="text-foreground truncate block">{clientName}</strong>
+                  </div>
+                  <div className="bg-background/80 p-2 rounded-lg border border-border/60">
+                    <span className="text-muted-foreground block text-[9px] uppercase font-semibold">Phone</span>
+                    <strong className="text-foreground truncate block">{clientPhone}</strong>
+                  </div>
+                  <div className="bg-background/80 p-2 rounded-lg border border-border/60">
+                    <span className="text-muted-foreground block text-[9px] uppercase font-semibold">Passport</span>
+                    <strong className="text-sky-600 truncate block font-mono">{passportNo}</strong>
+                  </div>
+                  <div className="bg-background/80 p-2 rounded-lg border border-border/60">
+                    <span className="text-muted-foreground block text-[9px] uppercase font-semibold">Destination</span>
+                    <strong className="text-foreground truncate block">{caseData?.destinationCountry || caseData?.caseType?.toUpperCase() || 'Overseas'}</strong>
+                  </div>
+                </div>
+              </div>
+
+              {/* Template Dropdown Selector */}
+              <div className="space-y-1.5">
+                <label className="block font-bold text-foreground">Select Document Template:</label>
+                <select
+                  value={selectedTemplateId}
+                  onChange={(e) => setSelectedTemplateId(e.target.value)}
+                  className="w-full px-3.5 py-2.5 bg-background border border-input rounded-xl text-foreground font-semibold text-xs focus:outline-none focus:ring-2 focus:ring-primary cursor-pointer shadow-xs"
+                >
+                  {DOCUMENT_STUDIO_TEMPLATES.map((tmpl) => (
+                    <option key={tmpl.id} value={tmpl.id}>
+                      {tmpl.title} ({tmpl.category})
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              {/* Visual Template Cards Selection Grid */}
+              <div className="space-y-1.5">
+                <label className="block font-bold text-muted-foreground text-[11px] uppercase tracking-wider">Available Studio Templates:</label>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 max-h-56 overflow-y-auto pr-1">
+                  {DOCUMENT_STUDIO_TEMPLATES.map((tmpl) => {
+                    const Icon = tmpl.icon;
+                    const isSelected = selectedTemplateId === tmpl.id;
+                    return (
+                      <button
+                        key={tmpl.id}
+                        type="button"
+                        onClick={() => setSelectedTemplateId(tmpl.id)}
+                        className={`p-3 rounded-xl border text-left transition-all flex items-start gap-2.5 cursor-pointer ${
+                          isSelected
+                            ? 'bg-primary/10 border-primary shadow-xs ring-1 ring-primary'
+                            : 'bg-background hover:bg-muted/40 border-border'
+                        }`}
+                      >
+                        <div className={`p-2 rounded-lg shrink-0 ${isSelected ? 'bg-primary text-primary-foreground' : 'bg-muted text-muted-foreground'}`}>
+                          <Icon className="size-4" />
+                        </div>
+                        <div className="min-w-0 flex-1">
+                          <div className="flex items-center justify-between gap-1">
+                            <h4 className="font-bold text-xs text-foreground truncate">{tmpl.title}</h4>
+                            <span className="text-[9px] font-bold px-1.5 py-0.2 rounded bg-muted text-muted-foreground shrink-0">{tmpl.badge}</span>
+                          </div>
+                          <p className="text-[10px] text-muted-foreground mt-0.5 line-clamp-2">{tmpl.subtitle}</p>
+                        </div>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            </div>
+
+            {/* Footer */}
+            <div className="flex items-center justify-between p-4 border-t border-border bg-muted/20">
+              <button
+                type="button"
+                onClick={() => setIsCreateDocModalOpen(false)}
+                className="px-4 py-2 text-xs font-bold text-muted-foreground hover:bg-muted rounded-xl transition cursor-pointer"
+              >
+                Cancel
+              </button>
+
+              <button
+                type="button"
+                onClick={() => {
+                  setIsCreateDocModalOpen(false);
+                  const returnUrl = `/admin/cases/${caseData?.did || caseData?.caseNumber || id}?tab=documents`;
+                  navigate(
+                    `/admin/docs/${selectedTemplateId}?clientDid=${clientDid || ''}&caseDid=${caseData?.did || caseData?._id || id}&caseNumber=${encodeURIComponent(caseData?.caseNumber || '')}&returnUrl=${encodeURIComponent(returnUrl)}`
+                  );
+                }}
+                className="flex items-center gap-1.5 px-5 py-2.5 bg-primary text-primary-foreground font-bold text-xs rounded-xl shadow-xs hover:bg-primary/90 transition cursor-pointer"
+              >
+                <span>Proceed to Document Studio</span>
+                <ArrowUpRight className="size-4" />
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* FILE VIEWER MODAL */}
+      <FileViewerModal
+        isOpen={Boolean(previewFile)}
+        file={previewFile}
+        onClose={() => setPreviewFile(null)}
+      />
     </div>
   );
 }

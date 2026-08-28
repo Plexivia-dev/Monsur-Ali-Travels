@@ -1,5 +1,10 @@
-import React from 'react';
+import React, { useState } from 'react';
+import { useClientLookup } from '../common/useClientLookup';
+import { ExistingClientAlertModal } from '../common/ExistingClientAlertModal';
+import { validateBdPhone } from '../common/phoneValidator';
+import { toast } from 'sonner';
 import { Building2, User, FileText, ShieldCheck, Sparkles, Upload, Image, Trash2 } from 'lucide-react';
+import { BdPhoneInput } from '@/components/common/BdPhoneInput';
 
 const AUTHORITY_PRESETS = [
   {
@@ -45,6 +50,43 @@ const AUTHORITY_PRESETS = [
 ];
 
 export function CharacterCertificateForm({ data = {}, onChange }) {
+  const [detectedMatch, setDetectedMatch] = useState(null);
+  const { triggerLookup, resetLookup } = useClientLookup({
+    onClientFound: (client, caseFile) => setDetectedMatch({ client, caseFile }),
+  });
+
+  const handleYes = () => {
+    if (!detectedMatch?.client) return;
+    const c = detectedMatch.client;
+    onChange((prev) => ({
+      ...prev,
+      clientId: c._id,
+      clientDid: c.did,
+      linkedCaseId: detectedMatch.caseFile?._id || null,
+      linkedCaseDid: detectedMatch.caseFile?.did || null,
+      client: {
+        ...prev.client,
+        fullName: c.fullName || prev.client?.fullName,
+        phone: c.phone || prev.client?.phone,
+        passportNo: c.passportNumber || prev.client?.passportNo,
+        nidNo: c.nidNumber || prev.client?.nidNo,
+        fatherName: c.fatherName || prev.client?.fatherName,
+        motherName: c.motherName || prev.client?.motherName,
+        permanentAddress: c.presentAddress || c.address || prev.client?.permanentAddress,
+      },
+    }));
+    toast.success(`"${c.fullName}" info auto-filled!`);
+    setDetectedMatch(null);
+  };
+
+  const handleNo = () => {
+    const val = detectedMatch?.client?.phone || '';
+    onChange((prev) => ({ ...prev, client: { ...prev.client, phone: '' } }));
+    resetLookup(val);
+    toast.info('Please enter a different phone number.');
+    setDetectedMatch(null);
+  };
+
   const handleChange = (section, field, value) => {
     if (section) {
       onChange((prev) => ({
@@ -275,6 +317,22 @@ export function CharacterCertificateForm({ data = {}, onChange }) {
           </div>
 
           <div>
+            <label className="block text-xs font-semibold mb-1">Candidate Phone Number</label>
+            <BdPhoneInput
+              value={data.client?.phone || ''}
+              onChange={(val) => {
+                handleChange('client', 'phone', val);
+                triggerLookup(val);
+              }}
+            />
+            {data.client?.phone && !validateBdPhone(data.client.phone).isValid && (
+              <p className="text-[10px] text-rose-500 font-bold mt-1">
+                {validateBdPhone(data.client.phone).error}
+              </p>
+            )}
+          </div>
+
+          <div>
             <label className="block text-xs font-semibold mb-1">Father's Name</label>
             <input
               type="text"
@@ -376,6 +434,14 @@ export function CharacterCertificateForm({ data = {}, onChange }) {
         </div>
       </div>
 
+      {detectedMatch && (
+        <ExistingClientAlertModal
+          client={detectedMatch.client}
+          caseFile={detectedMatch.caseFile}
+          onYes={handleYes}
+          onNo={handleNo}
+        />
+      )}
     </div>
   );
 }

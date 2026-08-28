@@ -1,10 +1,48 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { RotateCcw, Eye, ShieldCheck, UserCheck, FileCheck, PhoneCall, Sparkles } from 'lucide-react';
 import { generateUniquePassportTrackingNo } from './sampleData';
 import { BdPhoneInput } from '@/components/common/BdPhoneInput';
 import { DatePicker } from '@/components/ui/date-picker';
+import { useClientLookup } from '../common/useClientLookup';
+import { ExistingClientAlertModal } from '../common/ExistingClientAlertModal';
+import { validateBdPhone } from '../common/phoneValidator';
+import { toast } from 'sonner';
 
 export function PassportSubmissionForm({ data, onChange, onSubmit, onReset, isSubmitting = false }) {
+  const [detectedMatch, setDetectedMatch] = useState(null);
+
+  const { triggerLookup, resetLookup } = useClientLookup({
+    onClientFound: (client, caseFile) => setDetectedMatch({ client, caseFile }),
+  });
+
+  const handleYes = () => {
+    if (!detectedMatch?.client) return;
+    const c = detectedMatch.client;
+    onChange({
+      ...data,
+      clientId: c._id,
+      clientDid: c.did,
+      linkedCaseId: detectedMatch.caseFile?._id || null,
+      linkedCaseDid: detectedMatch.caseFile?.did || null,
+      applicantName: c.fullName || data.applicantName,
+      applicantPhone: c.phone || data.applicantPhone,
+      applicantEmail: c.email || data.applicantEmail,
+      previousPassportNo: c.passportNumber || data.previousPassportNo,
+      nidBirthCertNo: c.nidNumber || data.nidBirthCertNo,
+      address: c.presentAddress || c.address || data.address,
+    });
+    toast.success(`"${c.fullName}" info auto-filled!`);
+    setDetectedMatch(null);
+  };
+
+  const handleNo = () => {
+    const val = detectedMatch?.client?.phone || '';
+    onChange({ ...data, applicantPhone: '' });
+    resetLookup(val);
+    toast.info('Please enter a different phone number.');
+    setDetectedMatch(null);
+  };
+
   const handleChecklistChange = (key, checked) => {
     onChange({
       ...data,
@@ -15,8 +53,29 @@ export function PassportSubmissionForm({ data, onChange, onSubmit, onReset, isSu
     });
   };
 
+  const handleSubmit = (e) => {
+    if (e && e.preventDefault) e.preventDefault();
+    const phone = data.applicantPhone || '';
+    if (phone) {
+      const check = validateBdPhone(phone);
+      if (!check.isValid) {
+        toast.error(`Applicant Phone: ${check.error}`);
+        return;
+      }
+    }
+    const gPhone = data.guardianPhone || '';
+    if (gPhone) {
+      const check = validateBdPhone(gPhone);
+      if (!check.isValid) {
+        toast.error(`Guardian Phone: ${check.error}`);
+        return;
+      }
+    }
+    onSubmit();
+  };
+
   return (
-    <form onSubmit={(e) => { e.preventDefault(); onSubmit(); }} className="w-full space-y-5">
+    <form onSubmit={handleSubmit} className="w-full space-y-5">
       <div className="bg-card border border-border rounded-2xl p-6 sm:p-7 space-y-6 text-sm shadow-xs">
         {/* METADATA */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 bg-muted/20 p-4 rounded-xl border border-border">
@@ -109,9 +168,14 @@ export function PassportSubmissionForm({ data, onChange, onSubmit, onReset, isSu
               </label>
               <BdPhoneInput
                 value={data.applicantPhone}
-                onChange={(val) => onChange({ ...data, applicantPhone: val })}
+                onChange={(val) => { onChange({ ...data, applicantPhone: val }); triggerLookup(val); }}
                 required
               />
+              {data.applicantPhone && !validateBdPhone(data.applicantPhone).isValid && (
+                <p className="text-[10px] text-rose-500 font-bold mt-1">
+                  {validateBdPhone(data.applicantPhone).error}
+                </p>
+              )}
             </div>
 
             <div>
@@ -179,6 +243,11 @@ export function PassportSubmissionForm({ data, onChange, onSubmit, onReset, isSu
                 value={data.guardianPhone}
                 onChange={(val) => onChange({ ...data, guardianPhone: val })}
               />
+              {data.guardianPhone && !validateBdPhone(data.guardianPhone).isValid && (
+                <p className="text-[10px] text-rose-500 font-bold mt-1">
+                  {validateBdPhone(data.guardianPhone).error}
+                </p>
+              )}
             </div>
           </div>
         </div>
@@ -319,6 +388,15 @@ export function PassportSubmissionForm({ data, onChange, onSubmit, onReset, isSu
           )}
         </button>
       </div>
+
+      {detectedMatch && (
+        <ExistingClientAlertModal
+          client={detectedMatch.client}
+          caseFile={detectedMatch.caseFile}
+          onYes={handleYes}
+          onNo={handleNo}
+        />
+      )}
     </form>
   );
 }

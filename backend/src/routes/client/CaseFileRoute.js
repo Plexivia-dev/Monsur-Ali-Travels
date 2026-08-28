@@ -11,6 +11,7 @@ import {
   updateWorkflowStatus,
   addCaseInternalMessage,
   uploadCaseDocument,
+  renameCaseDocument,
   completeTaskStep
 } from "../../controllers/client/caseFile.controller.js";
 
@@ -41,6 +42,7 @@ caseFileRouter.post("/bulk-import", bulkImportCases);
 // ==========================================
 caseFileRouter.post("/:id/messages", addCaseInternalMessage);
 caseFileRouter.post("/:id/documents", uploadCaseDocument);
+caseFileRouter.patch("/:id/documents/:docDid/rename", renameCaseDocument);
 caseFileRouter.patch("/tasks/:taskDid/complete", completeTaskStep);
 
 // ==========================================

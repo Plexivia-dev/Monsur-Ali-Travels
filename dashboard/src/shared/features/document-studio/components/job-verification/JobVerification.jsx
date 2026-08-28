@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { JobVerificationForm } from './JobVerificationForm';
 import { JobVerificationPreview } from './JobVerificationPreview';
 import { getDefaultJobVerificationData, generateUniqueJobVerificationId } from './sampleData';
@@ -9,10 +9,25 @@ import { printDocument } from '@shared/lib/utils';
 import { HeaderTitle } from '@shared/components/common/HeaderTitle';
 import { StudioFloatingViewSwitcher } from '../common/StudioFloatingViewSwitcher';
 
-export function JobVerification() {
+export function JobVerification({ initialData = null, onSavedSuccess = null, isLocked = false }) {
   const [viewMode, setViewMode] = useState('edit'); // 'edit' | 'split' | 'preview'
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [data, setData] = useState(getDefaultJobVerificationData());
+  const [data, setData] = useState(() => {
+    if (initialData) {
+      return { ...getDefaultJobVerificationData(), ...initialData, isLocked };
+    }
+    return getDefaultJobVerificationData();
+  });
+
+  useEffect(() => {
+    if (initialData) {
+      setData((prev) => ({
+        ...prev,
+        ...initialData,
+        isLocked,
+      }));
+    }
+  }, [initialData, isLocked]);
 
   const handleReset = () => {
     setData(getDefaultJobVerificationData());
@@ -45,6 +60,7 @@ export function JobVerification() {
             ? `Job verification updated successfully! (ID: ${returnedId})`
             : `Job verification saved to database! (ID: ${returnedId})`
         );
+        if (onSavedSuccess) onSavedSuccess(savedDoc);
       } else {
         throw new Error(res.data?.message || 'Failed to save to database.');
       }
@@ -56,6 +72,7 @@ export function JobVerification() {
         verificationId: fallbackId,
       }));
       toast.info(`Job verification document ready! (ID: ${fallbackId})`);
+      if (onSavedSuccess) onSavedSuccess({ verificationId: fallbackId });
     } finally {
       setIsSubmitting(false);
     }

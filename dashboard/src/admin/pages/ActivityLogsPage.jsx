@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
-import { apiClient } from '@/lib/api-client';
+import { apiClient, API_BASE_URL } from '@/lib/api-client';
 import { toast } from 'sonner';
 import {
   Search,
@@ -20,6 +20,7 @@ import {
   DataTableColumnHeader,
 } from '@/components/ui/unified-table';
 import { HeaderTitle } from '@shared/components/common/HeaderTitle';
+import { PageAvatar } from '@shared/components/common/PageAvatar';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 
@@ -129,26 +130,17 @@ export default function ActivityLogsPage() {
           const log = row.original;
           const role = log.actionDetails?.role || log.role || 'Staff';
           const userName = log.actionDetails?.name || log.userName || log.user || 'User';
-          const avatarUrl =
-            log.actionDetails?.avatar ||
-            log.userAvatar ||
-            log.avatar ||
-            `https://ui-avatars.com/api/?name=${encodeURIComponent(userName)}&background=0284c7&color=ffffff&bold=true&rounded=true`;
+          const userDid = log.actionDetails?.did;
           const badgeClass = ROLE_BADGE_COLORS[role] || 'bg-zinc-700 text-white font-bold';
 
           return (
             <div className="flex items-center gap-3 py-0.5">
-              <div className="size-9.5 rounded-xl overflow-hidden bg-primary/10 border border-primary/20 shrink-0 flex items-center justify-center shadow-xs">
-                <img
-                  src={avatarUrl}
-                  alt={userName}
-                  className="w-full h-full object-cover"
-                  onError={(e) => {
-                    e.currentTarget.onerror = null;
-                    e.currentTarget.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(userName)}&background=0284c7&color=ffffff&bold=true`;
-                  }}
-                />
-              </div>
+              <PageAvatar
+                did={userDid}
+                fallbackName={userName}
+                showAvatarOnly={true}
+                size="md"
+              />
               <div className="space-y-1">
                 <span className="font-black text-foreground block text-xs leading-tight tracking-tight">{userName}</span>
                 <span className={`inline-block px-2 py-0.5 rounded-md text-[10px] tracking-wide uppercase ${badgeClass}`}>
