@@ -106,8 +106,16 @@ export function JobVerificationForm({
   const handleNext = (e) => {
     e.preventDefault();
     if (currentStep === 1) {
+      const compPhone = formData.companyInfo?.companyPhone || '';
+      if (compPhone) {
+        const check = validateBdPhone(compPhone);
+        if (!check.isValid) {
+          toast.error(`Company Mobile: ${check.error}`);
+          return;
+        }
+      }
       if (!formData.clientInfo?.clientName?.trim()) {
-        alert('Please enter Client Name.');
+        toast.error('Please enter Client Name.');
         return;
       }
       const phone = formData.clientInfo?.clientPhone || '';
@@ -115,6 +123,16 @@ export function JobVerificationForm({
       if (!check.isValid) {
         toast.error(`Client Mobile: ${check.error}`);
         return;
+      }
+    }
+    if (currentStep === 3) {
+      const helperPhone = formData.helperInfo?.helperPhone || '';
+      if (helperPhone) {
+        const check = validateBdPhone(helperPhone);
+        if (!check.isValid) {
+          toast.error(`Helper Mobile: ${check.error}`);
+          return;
+        }
       }
     }
     if (currentStep < 4) {
@@ -222,8 +240,13 @@ export function JobVerificationForm({
                     value={formData.companyInfo?.companyPhone || ''}
                     onChange={(e) => updateNested('companyInfo', 'companyPhone', e.target.value)}
                     placeholder="Enter phone number"
-                    className="mt-1"
+                    className="mt-1 font-mono"
                   />
+                  {formData.companyInfo?.companyPhone && !validateBdPhone(formData.companyInfo.companyPhone).isValid && (
+                    <p className="text-[10px] text-rose-500 font-bold mt-1">
+                      {validateBdPhone(formData.companyInfo.companyPhone).error}
+                    </p>
+                  )}
                 </div>
 
                 <div>
@@ -632,6 +655,11 @@ export function JobVerificationForm({
                   placeholder="Enter contact phone number"
                   className="mt-1 font-mono"
                 />
+                {formData.helperInfo?.helperPhone && !validateBdPhone(formData.helperInfo.helperPhone).isValid && (
+                  <p className="text-[10px] text-rose-500 font-bold mt-1">
+                    {validateBdPhone(formData.helperInfo.helperPhone).error}
+                  </p>
+                )}
               </div>
             </div>
           </div>
