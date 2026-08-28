@@ -5,6 +5,7 @@ import {
   ArrowLeft,
   ChevronRight,
   Home,
+  Building2,
   FileSpreadsheet,
   Wallet,
   Settings,
@@ -14,6 +15,7 @@ import { Button } from '@/components/ui/button';
 
 const PORTAL_LABELS = {
   overview: { label: 'Overview', icon: Home, homeSub: 'tasks', hasParentPage: false },
+  agency: { label: 'Agency', icon: Building2, homeSub: 'clients', hasParentPage: false },
   docs: { label: 'Document Studio', icon: FileSpreadsheet, homeSub: 'agreement', hasParentPage: false },
   data: { label: 'Data Records Center', icon: Database, homeSub: 'agreements', hasParentPage: false },
   accounts: { label: 'Accounts & Finance', icon: Wallet, homeSub: 'payments', hasParentPage: false },

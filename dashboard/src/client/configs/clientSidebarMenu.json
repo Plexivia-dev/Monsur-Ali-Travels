@@ -15,6 +15,39 @@
     ]
   },
   {
+    "groupLabel": "Agency",
+    "groupLabelBn": "",
+    "roles": ["admin", "owner", "superadmin", "accountant", "accounts"],
+    "items": [
+      {
+        "id": "agency-group",
+        "name": "Agency",
+        "nameBn": "",
+        "icon": "Building2",
+        "childItems": [
+          {
+            "id": "agency-clients",
+            "name": "Client List",
+            "nameBn": "",
+            "portal": "agency",
+            "submodule": "clients",
+            "path": "/dashboard/agency/clients",
+            "icon": "Users"
+          },
+          {
+            "id": "agency-employees",
+            "name": "Employee List",
+            "nameBn": "",
+            "portal": "agency",
+            "submodule": "employees",
+            "path": "/dashboard/agency/employees",
+            "icon": "UserCheck"
+          }
+        ]
+      }
+    ]
+  },
+  {
     "groupLabel": "Accounts",
     "groupLabelBn": "",
     "roles": ["admin", "owner", "superadmin", "accountant", "accounts"],

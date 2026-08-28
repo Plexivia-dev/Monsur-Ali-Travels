@@ -3,7 +3,11 @@
 ## [2026-08-27]
 - **Dashboard Version**: `v0.4.2`
 
-### 1. Client Dashboard Overview, Task Management & Real-Time Notifications (NC01 - NC09)
+### 1. Client Dashboard Overview, Task Management & Real-Time Notifications (NC01 - NC10)
+- **NC10 - Agency Module with Read-Only Client & Employee Lists**:
+  - Added Agency portal to client dashboard for Accountant & Admin roles.
+  - Built read-only Client List and Employee List directories with search, filter, and detail modal viewers.
+  - Authorized Accountant for `GET /api/v1/users` read endpoints on the backend.
 - **NC09 - Data Records Center RBAC for Accountant Role**:
   - Added financial records (Salary Slips, Invoices, Money Receipts) to Records Management.
   - Excluded non-financial records (Agreements, Client Applications, Indian Visas, Passports) from Accountant role.
