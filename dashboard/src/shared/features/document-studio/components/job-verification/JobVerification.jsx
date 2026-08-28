@@ -60,6 +60,8 @@ export function JobVerification({ initialData = null, onSavedSuccess = null, isL
             ? `Job verification updated successfully! (ID: ${returnedId})`
             : `Job verification saved to database! (ID: ${returnedId})`
         );
+        setViewMode('preview');
+        window.scrollTo({ top: 0, behavior: 'smooth' });
         if (onSavedSuccess) onSavedSuccess(savedDoc);
       } else {
         throw new Error(res.data?.message || 'Failed to save to database.');
@@ -72,6 +74,8 @@ export function JobVerification({ initialData = null, onSavedSuccess = null, isL
         verificationId: fallbackId,
       }));
       toast.info(`Job verification document ready! (ID: ${fallbackId})`);
+      setViewMode('preview');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
       if (onSavedSuccess) onSavedSuccess({ verificationId: fallbackId });
     } finally {
       setIsSubmitting(false);

@@ -14,8 +14,8 @@ export function StudioFloatingViewSwitcher({
   if (!setViewMode) return null;
 
   return (
-    <div className={`sticky bottom-6 z-40 flex justify-center w-full pointer-events-none print:hidden ${className}`}>
-      <div className="flex items-center gap-1.5 p-1.5 rounded-2xl bg-zinc-950/90 dark:bg-black/90 text-zinc-100 border border-zinc-700/80 shadow-2xl backdrop-blur-xl ring-1 ring-white/10 pointer-events-auto animate-in fade-in slide-in-from-bottom-4 duration-300">
+    <div className={`fixed bottom-[20px] left-1/2 -translate-x-1/2 z-50 flex justify-center pointer-events-none print:hidden ${className}`}>
+      <div className="flex items-center gap-1.5 p-1.5 rounded-2xl bg-zinc-950/95 dark:bg-black/95 text-zinc-100 border border-zinc-700/80 shadow-2xl backdrop-blur-xl ring-1 ring-white/10 pointer-events-auto animate-in fade-in slide-in-from-bottom-3 duration-200">
         {modes.map((btn) => {
           const Icon = btn.icon;
           const isActive = viewMode === btn.id;

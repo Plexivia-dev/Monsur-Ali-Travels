@@ -7,6 +7,7 @@ import { apiClient } from '@shared/lib/api-client';
 import { toast } from 'sonner';
 import { printDocument } from '@shared/lib/utils';
 import { HeaderTitle } from '@shared/components/common/HeaderTitle';
+import { StudioFloatingViewSwitcher } from '@shared/features/document-studio/components/common/StudioFloatingViewSwitcher';
 
 export function JobVerification() {
   const [viewMode, setViewMode] = useState('split'); // 'split' | 'edit' | 'preview'
@@ -49,6 +50,8 @@ export function JobVerification() {
             ? `Job verification updated! (ID: ${returnedId})`
             : `Job verification saved to database! (ID: ${returnedId})`
         );
+        setViewMode('preview');
+        window.scrollTo({ top: 0, behavior: 'smooth' });
       } else {
         throw new Error(res.data?.message || 'Failed to save job verification to database.');
       }
@@ -60,6 +63,8 @@ export function JobVerification() {
         verificationId: fallbackId,
       }));
       toast.info(`Document preview ready! (ID: ${fallbackId})`);
+      setViewMode('preview');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     } finally {
       setIsSubmitting(false);
     }
@@ -200,6 +205,8 @@ export function JobVerification() {
           </div>
         </div>
       )}
+      {/* Floating View Mode Switcher fixed 20px from bottom */}
+      <StudioFloatingViewSwitcher viewMode={viewMode} setViewMode={setViewMode} />
     </div>
   );
 }
