@@ -149,6 +149,10 @@ export function MoneyReceipt() {
             onPreview={() => setViewMode('preview')}
             isSubmitting={isSubmitting}
           />
+          {/* Always mount printable canvas for instant print in edit mode */}
+          <div className="hidden print:block w-full">
+            <MoneyReceiptPreview data={data} />
+          </div>
         </div>
       )}
 

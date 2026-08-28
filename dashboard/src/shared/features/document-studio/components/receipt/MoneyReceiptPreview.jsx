@@ -278,12 +278,12 @@ export function MoneyReceiptPreview({ data = {} }) {
     <div className="w-full flex justify-center py-2 sm:py-4 no-print-padding print:p-0 print:m-0">
       {/* 
         A4 container: 
-        In display mode: max-w-[850px], height fits content naturally (not full page stretched).
+        In display mode: max-w-[850px], height fits content naturally.
         In print mode: fits standard A4 with clean margins.
       */}
       <div
-        id="printable-money-receipt"
-        className="printable-money-receipt bg-white text-slate-900 shadow-2xl rounded-2xl w-full max-w-[850px] p-4 sm:p-6 flex flex-col justify-start print:min-h-0 print:h-auto print:p-4 print:m-0 print:shadow-none print:w-full print:max-w-none space-y-3"
+        id="printable-receipt-canvas"
+        className="printable-a4-paper printable-money-receipt bg-white text-slate-900 shadow-2xl rounded-2xl w-full max-w-[850px] p-4 sm:p-6 flex flex-col justify-start print:min-h-0 print:h-auto print:p-4 print:m-0 print:shadow-none print:w-full print:max-w-none space-y-3"
       >
         {/* First Voucher Slip (Original Copy) */}
         <VoucherSlipCard

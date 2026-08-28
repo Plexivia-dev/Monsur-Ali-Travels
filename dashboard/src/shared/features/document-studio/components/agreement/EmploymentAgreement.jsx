@@ -235,6 +235,9 @@ export function EmploymentAgreement({ initialData = null, onSavedSuccess = null,
             onReset={handleReset}
             isSubmitting={isSubmitting}
           />
+          <div className="hidden print:block w-full">
+            <AgreementPreview data={formData} formData={formData} />
+          </div>
         </div>
       )}
 

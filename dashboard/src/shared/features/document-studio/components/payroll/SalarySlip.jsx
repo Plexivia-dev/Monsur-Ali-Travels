@@ -201,6 +201,9 @@ export function SalarySlip() {
             onReset={handleReset}
             isSubmitting={isSubmitting}
           />
+          <div className="hidden print:block w-full">
+            <SalarySlipPreview data={formData} formData={formData} />
+          </div>
         </div>
       )}
 

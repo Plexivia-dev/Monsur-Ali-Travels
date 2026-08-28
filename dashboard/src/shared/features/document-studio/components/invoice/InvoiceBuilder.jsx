@@ -191,6 +191,9 @@ export function InvoiceBuilder() {
             onReset={handleReset}
             isSubmitting={isSubmitting}
           />
+          <div className="hidden print:block w-full">
+            <InvoicePreview data={data} />
+          </div>
         </div>
       )}
 

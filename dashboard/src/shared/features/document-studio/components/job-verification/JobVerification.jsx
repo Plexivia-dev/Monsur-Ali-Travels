@@ -153,13 +153,15 @@ export function JobVerification({ initialData = null, onSavedSuccess = null, isL
       {viewMode === 'edit' && (
         <div className="w-full pb-16">
           <JobVerificationForm
-
             formData={data}
             setFormData={setData}
             onSubmit={handleFormSubmit}
             onReset={handleReset}
             isSubmitting={isSubmitting}
           />
+          <div className="hidden print:block w-full">
+            <JobVerificationPreview data={data} />
+          </div>
         </div>
       )}
 
