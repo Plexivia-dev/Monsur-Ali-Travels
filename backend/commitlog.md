@@ -3,7 +3,10 @@
 ## [2026-08-27]
 - **Dashboard Version**: `v0.4.2`
 
-### 1. Client Dashboard Overview, Task Management & Real-Time Notifications (NC01 - NC10)
+### 1. Client Dashboard Overview, Task Management & Real-Time Notifications (NC01 - NC11)
+- **NC11 - Fix Agency API Route Mounting & Fallbacks**:
+  - Mounted `/users` and `/clients` under `clientScopeRouter` (`/api/v1/client/users`, `/api/v1/client/clients`) and root `coreRouter`.
+  - Updated `AgencyClientList.jsx` and `AgencyEmployeeList.jsx` endpoints with robust multi-endpoint fallbacks.
 - **NC10 - Agency Module with Read-Only Client & Employee Lists**:
   - Added Agency portal to client dashboard for Accountant & Admin roles.
   - Built read-only Client List and Employee List directories with search, filter, and detail modal viewers.
