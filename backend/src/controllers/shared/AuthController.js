@@ -18,7 +18,15 @@ export const createRefreshToken = () => {
   return crypto.randomBytes(48).toString("hex");
 };
 
-// POST /auth/login - Validates credentials and logs in directly or prompts 2FA if enabled
+export const createTwoFactorToken = (user) => {
+  return jwt.sign(
+    { did: user.did, email: user.email, purpose: "2fa_login" },
+    env.ACCESS_TOKEN_SECRET,
+    { expiresIn: "10m" },
+  );
+};
+
+// POST /auth/login - Validates credentials, generates 2FA token and dispatches Email OTP
 export const login = async (req, res, next) => {
   try {
     const { email, username, login: loginInput, password } = req.body ?? {};
@@ -36,7 +44,7 @@ export const login = async (req, res, next) => {
       { did: normalizedInput },
     ];
 
-    let user = await UserModel.findOne({ $or: searchConditions }).select("+passwordHash");
+    let user = await UserModel.findOne({ $or: searchConditions }).select("+passwordHash +twoFactorSecret");
     if (!user) {
       // Case-insensitive exact match by email or username
       user = await UserModel.findOne({
@@ -44,7 +52,7 @@ export const login = async (req, res, next) => {
           { email: new RegExp(`^${normalizedInput.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&')}$`, 'i') },
           { username: new RegExp(`^${normalizedInput.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&')}$`, 'i') },
         ],
-      }).select("+passwordHash");
+      }).select("+passwordHash +twoFactorSecret");
     }
 
     if (!user || !user.passwordHash) {
@@ -61,47 +69,36 @@ export const login = async (req, res, next) => {
       return res.status(401).json({ status: "error", message: "Invalid credentials" });
     }
 
-    // If user has explicitly enabled 2FA, require 2FA OTP verification
-    if (user.twoFactorEnabled) {
-      return res.json({
-        status: "success",
-        requires2fa: true,
-        email: user.email,
-      });
-    }
-
-    // Direct Login without 2FA
-    const accessToken = createAccessToken(user);
-    const refreshToken = createRefreshToken();
-    const refreshTokenExpiresAt = new Date(Date.now() + env.REFRESH_TOKEN_EXPIRES_MS);
-
-    user.lastLogin = new Date();
-    user.refreshToken = refreshToken;
-    user.refreshTokenExpiresAt = refreshTokenExpiresAt;
+    // Generate 6-digit numeric OTP for Email 2FA
+    const otp = crypto.randomInt(100000, 999999).toString();
+    user.emailOtp = otp;
+    user.emailOtpExpiresAt = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
     await user.save();
 
-    logger.info({ userId: user.id }, "Successfully logged in directly (2FA disabled)");
+    // Dispatch 2FA OTP Email
+    sendOtpEmail({
+      toEmail: user.email,
+      otp,
+      name: user.name,
+      type: "two-factor",
+    }).catch((err) => {
+      logger.warn({ error: err.message, email: user.email }, "Failed to send 2FA email OTP during login");
+    });
 
-    res.json({
+    const twoFactorToken = createTwoFactorToken(user);
+
+    logger.info({ userId: user.id, email: user.email }, "User password validated; 2FA challenge initiated");
+
+    // Do NOT issue access or refresh tokens here; require 2FA completion
+    return res.json({
       status: "success",
-      data: {
-        user: {
-          id: user.did,
-          did: user.did,
-          name: user.name,
-          email: user.email,
-          avatar: user.avatar || "",
-          role: user.role,
-          subRole: user.subRole || "",
-          department: user.department || "",
-          designation: user.designation || "",
-          lastLogin: user.lastLogin,
-        },
-        accessToken,
-        accessTokenExpiresIn: env.ACCESS_TOKEN_EXPIRES_IN,
-        refreshToken,
-        refreshTokenExpiresAt: refreshTokenExpiresAt.toISOString(),
-      },
+      requires2fa: true,
+      twoFactorToken,
+      availableMethods: ["email", "authenticator"],
+      defaultMethod: user.twoFactorMethod || "email",
+      email: user.email,
+      hasAuthenticatorConfigured: !!user.twoFactorSecret,
+      message: "Password verified. Please enter the 6-digit verification code sent to your email or from your Authenticator app.",
     });
   } catch (error) {
     next(error);

@@ -27,6 +27,7 @@ const userSchema = new Schema(
     emailOtpExpiresAt: { type: Date, select: false },
     twoFactorSecret: { type: String, select: false },
     twoFactorEnabled: { type: Boolean, default: false },
+    twoFactorMethod: { type: String, enum: ["email", "authenticator"], default: "email" },
     role: { type: String, required: true, enum: USER_ROLES, default: "Staff", index: true },
     subRole: { 
       type: String, 

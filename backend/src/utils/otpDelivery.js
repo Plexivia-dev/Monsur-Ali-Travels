@@ -39,12 +39,17 @@ export async function sendOtpEmail({
   }
 
   const isForgotPassword = type === "forgot-password";
+  const isTwoFactor = type === "two-factor";
   const subject = isForgotPassword
     ? "Your Monsur Ali Travels Password Reset Code"
+    : isTwoFactor
+    ? "Your Monsur Ali Travels Login 2FA Code"
     : "Your OTP verification code";
   const text = isForgotPassword
-    ? `Hello ${name || "there"},\n\nUse this OTP to reset your Monsur Ali Travels password: ${otp}\nThis code will expire in 3 minutes.\n\nIf you did not request this, please ignore this email.`
-    : `Hello ${name || "there"},\n\nYour OTP verification code is ${otp}.\nThis code will expire in 3 minutes.\n\nThank you.`;
+    ? `Hello ${name || "there"},\n\nUse this OTP to reset your Monsur Ali Travels password: ${otp}\nThis code will expire in 10 minutes.\n\nIf you did not request this, please ignore this email.`
+    : isTwoFactor
+    ? `Hello ${name || "there"},\n\nUse this 6-digit verification code to complete your login to Monsur Ali Travels Dashboard: ${otp}\nThis code will expire in 10 minutes.\n\nIf you did not request this, please change your password immediately.`
+    : `Hello ${name || "there"},\n\nYour OTP verification code is ${otp}.\nThis code will expire in 10 minutes.\n\nThank you.`;
   
   const html = buildOtpEmailHtml({ name, otp, type });
 

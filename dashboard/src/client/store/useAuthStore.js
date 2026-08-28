@@ -68,6 +68,64 @@ export const useAuthStore = create((set, get) => ({
     }
   },
 
+  verify2fa: async ({ twoFactorToken, code, method = 'email' }) => {
+    try {
+      set({ isLoading: true });
+      const response = await apiClient.post('/api/v1/auth/2fa/verify', {
+        twoFactorToken,
+        code,
+        method,
+      });
+
+      const { user: apiUser, accessToken, refreshToken } = response.data.data;
+
+      const loggedUser = {
+        id: apiUser.id || apiUser._id || apiUser.did,
+        did: apiUser.did,
+        email: apiUser.email,
+        name: apiUser.name || apiUser.email.split('@')[0].replace('.', ' ').replace(/\b\w/g, (l) => l.toUpperCase()),
+        username: apiUser.username || '',
+        phone: apiUser.phone || '',
+        address: apiUser.address || '',
+        role: apiUser.role || 'Employee',
+        subRole: apiUser.subRole || apiUser.sub_role || '',
+        department: apiUser.department || '',
+        designation: apiUser.designation || '',
+        avatar: apiUser.avatar || '',
+      };
+
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('accessToken', accessToken);
+        localStorage.setItem('refreshToken', refreshToken);
+        localStorage.setItem('user', JSON.stringify(loggedUser));
+      }
+
+      set({ user: loggedUser, isLoading: false });
+      return { success: true, user: loggedUser };
+    } catch (err) {
+      set({ isLoading: false });
+      throw new Error(getGenericErrorMessage(err, '2FA verification failed. Please try again.'));
+    }
+  },
+
+  resendEmailOtp: async (twoFactorToken) => {
+    try {
+      const response = await apiClient.post('/api/v1/auth/2fa/resend-email-otp', { twoFactorToken });
+      return response.data;
+    } catch (err) {
+      throw new Error(getGenericErrorMessage(err, 'Failed to resend verification code.'));
+    }
+  },
+
+  setupAuthenticator: async (twoFactorToken) => {
+    try {
+      const response = await apiClient.post('/api/v1/auth/2fa/setup-authenticator', { twoFactorToken });
+      return response.data?.data;
+    } catch (err) {
+      throw new Error(getGenericErrorMessage(err, 'Failed to load Authenticator QR setup.'));
+    }
+  },
+
   fetchProfile: async () => {
     try {
       const response = await apiClient.get('/api/v1/auth/me');
