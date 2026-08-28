@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'motion/react';
-import { LogIn, Mail, Lock, Eye, EyeOff, KeyRound, ArrowLeft, CheckCircle2 } from 'lucide-react';
+import { LogIn, Mail, Lock, Eye, EyeOff, KeyRound, X, CheckCircle2 } from 'lucide-react';
 import { useAuth } from '@/lib/auth-context';
 import { apiClient } from '@/lib/api-client';
 import { handleGlobalError } from '@/lib/error-handler';
@@ -135,12 +135,12 @@ const LoginPage = () => {
 
   return (
     <div className="dark min-h-screen w-screen bg-[#09090b] text-zinc-100 flex items-center justify-center p-4 relative overflow-hidden font-sans select-none">
-      {/* Background Ambient Lighting */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-sky-500/10 rounded-full blur-[140px] pointer-events-none opacity-60" />
-      <div className="absolute top-1/4 left-1/3 w-[300px] h-[300px] bg-indigo-500/10 rounded-full blur-[100px] pointer-events-none opacity-40" />
+      {/* Subtle Background Lighting (Subdued Glow) */}
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[420px] h-[420px] bg-sky-500/5 rounded-full blur-[140px] pointer-events-none opacity-30" />
+      <div className="absolute top-1/4 left-1/3 w-[220px] h-[220px] bg-indigo-500/5 rounded-full blur-[100px] pointer-events-none opacity-20" />
 
       {/* Grid Pattern */}
-      <div className="absolute inset-0 bg-[radial-gradient(#27272a_1px,transparent_1px)] [background-size:24px_24px] [mask-image:radial-gradient(ellipse_60%_60%_at_50%_50%,#000_70%,transparent_100%)] pointer-events-none opacity-40" />
+      <div className="absolute inset-0 bg-[radial-gradient(#27272a_1px,transparent_1px)] [background-size:24px_24px] [mask-image:radial-gradient(ellipse_60%_60%_at_50%_50%,#000_70%,transparent_100%)] pointer-events-none opacity-30" />
 
       <motion.div
         initial={{ opacity: 0, y: 12 }}
@@ -148,11 +148,11 @@ const LoginPage = () => {
         transition={{ duration: 0.35, ease: 'easeOut' }}
         className="w-full max-w-[420px] relative z-10 my-auto"
       >
-        <div className="bg-[#121214]/95 border border-zinc-800/90 shadow-2xl backdrop-blur-2xl rounded-2xl p-6 sm:p-7 space-y-6">
+        <div className="bg-[#121214]/95 border border-zinc-800/90 shadow-xl backdrop-blur-2xl rounded-2xl p-6 sm:p-7 space-y-6">
           {/* Top Branding Header */}
           <div className="flex flex-col items-center text-center space-y-3">
-            {/* Logo Container with light gray background */}
-            <div className="size-16 rounded-2xl bg-zinc-200 border border-zinc-300/80 p-2.5 flex items-center justify-center shadow-md">
+            {/* Logo Container with crisp white background */}
+            <div className="size-16 rounded-2xl bg-white border border-zinc-200 p-1 flex items-center justify-center shadow-xs">
               <img
                 src={logo}
                 alt="Monsur Ali Travels Logo"
@@ -199,7 +199,7 @@ const LoginPage = () => {
                       autoComplete="off"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
-                      className="w-full pl-10 pr-3.5 h-10 text-xs bg-zinc-100 border border-zinc-300 rounded-xl text-zinc-900 placeholder:text-zinc-500 focus:outline-hidden focus:bg-white focus:border-zinc-400 focus:ring-2 focus:ring-zinc-400/20 transition-all font-medium"
+                      className="w-full pl-10 pr-3.5 h-10 text-xs bg-white border border-zinc-300 rounded-xl text-zinc-900 placeholder:text-zinc-500 focus:outline-hidden focus:bg-white focus:border-zinc-400 focus:ring-2 focus:ring-zinc-400/20 transition-all font-medium"
                       placeholder="name@example.com"
                       required
                     />
@@ -233,7 +233,7 @@ const LoginPage = () => {
                       autoComplete="new-password"
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
-                      className="w-full pl-10 pr-10 h-10 text-xs bg-zinc-100 border border-zinc-300 rounded-xl text-zinc-900 placeholder:text-zinc-500 focus:outline-hidden focus:bg-white focus:border-zinc-400 focus:ring-2 focus:ring-zinc-400/20 transition-all font-medium"
+                      className="w-full pl-10 pr-10 h-10 text-xs bg-white border border-zinc-300 rounded-xl text-zinc-900 placeholder:text-zinc-500 focus:outline-hidden focus:bg-white focus:border-zinc-400 focus:ring-2 focus:ring-zinc-400/20 transition-all font-medium"
                       placeholder="••••••••"
                       required
                     />
@@ -248,11 +248,11 @@ const LoginPage = () => {
                   </div>
                 </div>
 
-                {/* Log In Button with explicit 20px margin-top */}
+                {/* Log In Button with subdued clean shadow and explicit 20px margin-top */}
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="w-full h-10 flex items-center justify-center font-bold text-xs bg-sky-500 hover:bg-sky-400 text-white rounded-xl transition-all cursor-pointer shadow-lg shadow-sky-500/25 active:scale-[0.99] disabled:opacity-60"
+                  className="w-full h-10 flex items-center justify-center font-bold text-xs bg-sky-500 hover:bg-sky-400 text-white rounded-xl transition-all cursor-pointer shadow-sm active:scale-[0.99] disabled:opacity-60"
                   style={{ marginTop: '20px' }}
                 >
                   {isSubmitting ? (
@@ -276,8 +276,8 @@ const LoginPage = () => {
                 className="flex flex-col gap-4"
                 autoComplete="off"
               >
-                {/* Info Container with dark screen background color (#09090b) */}
-                <div className="text-left bg-[#09090b] border border-zinc-800 rounded-xl p-3.5 text-xs text-zinc-400 leading-relaxed shadow-inner">
+                {/* Info Container with dark background and sky blue text */}
+                <div className="text-left bg-[#09090b] border border-sky-900/40 rounded-xl p-3.5 text-xs text-sky-400 font-medium leading-relaxed shadow-inner">
                   Enter your registered account email address. We will send a secure 6-digit verification code to reset your password.
                 </div>
 
@@ -295,17 +295,18 @@ const LoginPage = () => {
                       autoComplete="off"
                       value={resetEmail}
                       onChange={(e) => setResetEmail(e.target.value)}
-                      className="w-full pl-10 pr-3.5 h-10 text-xs bg-zinc-100 border border-zinc-300 rounded-xl text-zinc-900 placeholder:text-zinc-500 focus:outline-hidden focus:bg-white focus:border-zinc-400 focus:ring-2 focus:ring-zinc-400/20 transition-all font-medium"
+                      className="w-full pl-10 pr-3.5 h-10 text-xs bg-white border border-zinc-300 rounded-xl text-zinc-900 placeholder:text-zinc-500 focus:outline-hidden focus:bg-white focus:border-zinc-400 focus:ring-2 focus:ring-zinc-400/20 transition-all font-medium"
                       placeholder="name@example.com"
                       required
                     />
                   </div>
                 </div>
 
+                {/* Send Verification Code Action */}
                 <button
                   type="submit"
                   disabled={isResetSubmitting}
-                  className="w-full h-10 flex items-center justify-center font-bold text-xs bg-sky-500 hover:bg-sky-400 text-white rounded-xl transition-all cursor-pointer shadow-lg shadow-sky-500/25 active:scale-[0.99] disabled:opacity-60"
+                  className="w-full h-10 flex items-center justify-center font-bold text-xs bg-sky-500 hover:bg-sky-400 text-white rounded-xl transition-all cursor-pointer shadow-sm active:scale-[0.99] disabled:opacity-60"
                   style={{ marginTop: '20px' }}
                 >
                   {isResetSubmitting ? (
@@ -316,13 +317,14 @@ const LoginPage = () => {
                   {isResetSubmitting ? 'Sending Verification Code…' : 'Send Verification Code'}
                 </button>
 
+                {/* Light Red (Rose) Cancel Button */}
                 <button
                   type="button"
                   onClick={() => setViewMode('login')}
-                  className="w-full h-9 flex items-center justify-center font-medium text-xs text-zinc-400 hover:text-white transition-colors cursor-pointer"
+                  className="w-full h-10 flex items-center justify-center font-bold text-xs bg-rose-500 hover:bg-rose-400 text-white rounded-xl transition-all cursor-pointer shadow-sm active:scale-[0.99]"
                 >
-                  <ArrowLeft className="h-3.5 w-3.5 mr-1" />
-                  <span>Back to Log In</span>
+                  <X className="h-4 w-4 mr-1.5" />
+                  <span>Cancel</span>
                 </button>
               </motion.form>
             )}
@@ -338,10 +340,10 @@ const LoginPage = () => {
                 className="flex flex-col gap-4"
                 autoComplete="off"
               >
-                {/* OTP Target Banner with dark screen background color (#09090b) */}
-                <div className="text-left bg-[#09090b] border border-zinc-800 rounded-xl p-3 text-xs text-zinc-400 shadow-inner">
+                {/* OTP Target Banner with dark background and sky blue text */}
+                <div className="text-left bg-[#09090b] border border-sky-900/40 rounded-xl p-3 text-xs text-sky-400 font-medium shadow-inner">
                   <span>Enter the 6-digit code sent to: </span>
-                  <span className="font-bold text-white block mt-0.5">{resetEmail}</span>
+                  <span className="font-bold text-sky-200 block mt-0.5">{resetEmail}</span>
                 </div>
 
                 {/* 6-Digit OTP Field */}
@@ -368,7 +370,7 @@ const LoginPage = () => {
                       maxLength={6}
                       value={resetOtp}
                       onChange={(e) => setResetOtp(e.target.value.replace(/\D/g, ''))}
-                      className="w-full pl-10 pr-3.5 h-10 text-sm font-mono tracking-widest bg-zinc-100 border border-zinc-300 rounded-xl text-zinc-900 placeholder:text-zinc-500 focus:outline-hidden focus:bg-white focus:border-zinc-400 focus:ring-2 focus:ring-zinc-400/20 transition-all text-center font-bold"
+                      className="w-full pl-10 pr-3.5 h-10 text-sm font-mono tracking-widest bg-white border border-zinc-300 rounded-xl text-zinc-900 placeholder:text-zinc-500 focus:outline-hidden focus:bg-white focus:border-zinc-400 focus:ring-2 focus:ring-zinc-400/20 transition-all text-center font-bold"
                       placeholder="123456"
                       required
                     />
@@ -388,7 +390,7 @@ const LoginPage = () => {
                       type={showNewPassword ? 'text' : 'password'}
                       value={newPassword}
                       onChange={(e) => setNewPassword(e.target.value)}
-                      className="w-full pl-10 pr-10 h-10 text-xs bg-zinc-100 border border-zinc-300 rounded-xl text-zinc-900 placeholder:text-zinc-500 focus:outline-hidden focus:bg-white focus:border-zinc-400 focus:ring-2 focus:ring-zinc-400/20 transition-all font-medium"
+                      className="w-full pl-10 pr-10 h-10 text-xs bg-white border border-zinc-300 rounded-xl text-zinc-900 placeholder:text-zinc-500 focus:outline-hidden focus:bg-white focus:border-zinc-400 focus:ring-2 focus:ring-zinc-400/20 transition-all font-medium"
                       placeholder="Min 6 characters"
                       required
                     />
@@ -415,7 +417,7 @@ const LoginPage = () => {
                       type={showNewPassword ? 'text' : 'password'}
                       value={confirmPassword}
                       onChange={(e) => setConfirmPassword(e.target.value)}
-                      className="w-full pl-10 pr-3.5 h-10 text-xs bg-zinc-100 border border-zinc-300 rounded-xl text-zinc-900 placeholder:text-zinc-500 focus:outline-hidden focus:bg-white focus:border-zinc-400 focus:ring-2 focus:ring-zinc-400/20 transition-all font-medium"
+                      className="w-full pl-10 pr-3.5 h-10 text-xs bg-white border border-zinc-300 rounded-xl text-zinc-900 placeholder:text-zinc-500 focus:outline-hidden focus:bg-white focus:border-zinc-400 focus:ring-2 focus:ring-zinc-400/20 transition-all font-medium"
                       placeholder="Repeat new password"
                       required
                     />
@@ -426,7 +428,7 @@ const LoginPage = () => {
                 <button
                   type="submit"
                   disabled={isResetSubmitting}
-                  className="w-full h-10 flex items-center justify-center font-bold text-xs bg-sky-500 hover:bg-sky-400 text-white rounded-xl transition-all cursor-pointer shadow-lg shadow-sky-500/25 active:scale-[0.99] disabled:opacity-60"
+                  className="w-full h-10 flex items-center justify-center font-bold text-xs bg-sky-500 hover:bg-sky-400 text-white rounded-xl transition-all cursor-pointer shadow-sm active:scale-[0.99] disabled:opacity-60"
                   style={{ marginTop: '20px' }}
                 >
                   {isResetSubmitting ? (
@@ -437,13 +439,14 @@ const LoginPage = () => {
                   {isResetSubmitting ? 'Updating Password…' : 'Reset & Save Password'}
                 </button>
 
+                {/* Light Red (Rose) Cancel Button */}
                 <button
                   type="button"
-                  onClick={() => setViewMode('forgot_request')}
-                  className="w-full h-9 flex items-center justify-center font-medium text-xs text-zinc-400 hover:text-white transition-colors cursor-pointer"
+                  onClick={() => setViewMode('login')}
+                  className="w-full h-10 flex items-center justify-center font-bold text-xs bg-rose-500 hover:bg-rose-400 text-white rounded-xl transition-all cursor-pointer shadow-sm active:scale-[0.99]"
                 >
-                  <ArrowLeft className="h-3.5 w-3.5 mr-1" />
-                  <span>Change Email</span>
+                  <X className="h-4 w-4 mr-1.5" />
+                  <span>Cancel</span>
                 </button>
               </motion.form>
             )}
@@ -470,7 +473,7 @@ const LoginPage = () => {
                 <button
                   type="button"
                   onClick={() => setViewMode('login')}
-                  className="w-full h-10 flex items-center justify-center font-bold text-xs bg-sky-500 hover:bg-sky-400 text-white rounded-xl transition-all cursor-pointer shadow-lg shadow-sky-500/25 active:scale-[0.99]"
+                  className="w-full h-10 flex items-center justify-center font-bold text-xs bg-sky-500 hover:bg-sky-400 text-white rounded-xl transition-all cursor-pointer shadow-sm active:scale-[0.99]"
                   style={{ marginTop: '10px' }}
                 >
                   <LogIn className="h-4 w-4 mr-1.5" />

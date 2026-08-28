@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react"
 import { useNavigate, useLocation } from "react-router-dom"
-import { LogIn, Mail, Lock, Eye, EyeOff, KeyRound, ArrowLeft, CheckCircle2 } from "lucide-react"
+import { LogIn, Mail, Lock, Eye, EyeOff, KeyRound, X, CheckCircle2 } from "lucide-react"
 import { useAuth } from "@/store/useAuthStore"
 import { Label } from "@/components/ui/label"
 import { toast } from "@/components/ui/toast"
@@ -34,7 +34,7 @@ export function LoginPage() {
   useEffect(() => {
     let timer
     if (resendCooldown > 0) {
-      timer = setTimeout(() => setResendCooldown((c) => c - 1), 1000)
+      timer = setTimeout(() => setResetCooldown((c) => c - 1), 1000)
     }
     return () => clearTimeout(timer)
   }, [resendCooldown])
@@ -126,13 +126,14 @@ export function LoginPage() {
 
   return (
     <div className="dark min-h-screen w-full bg-[#09090b] text-zinc-100 flex items-center justify-center p-4 relative overflow-hidden font-sans select-none">
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[550px] h-[550px] bg-primary/10 rounded-full blur-[120px] pointer-events-none opacity-70 animate-pulse" />
+      {/* Subtle Background Lighting (Subdued Glow) */}
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[420px] h-[420px] bg-sky-500/5 rounded-full blur-[140px] pointer-events-none opacity-30" />
 
       <div className="w-full max-w-[420px] relative z-10">
-        <div className="bg-[#121214]/95 border border-zinc-800/90 shadow-2xl backdrop-blur-2xl rounded-2xl p-6 sm:p-7 space-y-6">
+        <div className="bg-[#121214]/95 border border-zinc-800/90 shadow-xl backdrop-blur-2xl rounded-2xl p-6 sm:p-7 space-y-6">
           <div className="flex flex-col items-center text-center space-y-3">
-            {/* Logo Container with light gray background */}
-            <div className="size-16 rounded-2xl bg-zinc-200 border border-zinc-300/80 p-2.5 flex items-center justify-center shadow-md">
+            {/* Logo Container with crisp white background */}
+            <div className="size-16 rounded-2xl bg-white border border-zinc-200 p-1 flex items-center justify-center shadow-xs">
               <img src={logo} alt="Monsur Ali Travels Logo" className="w-full h-full object-contain" />
             </div>
             <div className="space-y-1">
@@ -165,7 +166,7 @@ export function LoginPage() {
                     autoComplete="off"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    className="w-full pl-10 pr-3.5 h-10 text-xs bg-zinc-100 border border-zinc-300 rounded-xl text-zinc-900 placeholder:text-zinc-500 focus:outline-hidden focus:bg-white focus:border-zinc-400 focus:ring-2 focus:ring-zinc-400/20 transition-all font-medium"
+                    className="w-full pl-10 pr-3.5 h-10 text-xs bg-white border border-zinc-300 rounded-xl text-zinc-900 placeholder:text-zinc-500 focus:outline-hidden focus:bg-white focus:border-zinc-400 focus:ring-2 focus:ring-zinc-400/20 transition-all font-medium"
                     placeholder="name@example.com"
                     required
                   />
@@ -198,7 +199,7 @@ export function LoginPage() {
                     autoComplete="new-password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    className="w-full pl-10 pr-10 h-10 text-xs bg-zinc-100 border border-zinc-300 rounded-xl text-zinc-900 placeholder:text-zinc-500 focus:outline-hidden focus:bg-white focus:border-zinc-400 focus:ring-2 focus:ring-zinc-400/20 transition-all font-medium"
+                    className="w-full pl-10 pr-10 h-10 text-xs bg-white border border-zinc-300 rounded-xl text-zinc-900 placeholder:text-zinc-500 focus:outline-hidden focus:bg-white focus:border-zinc-400 focus:ring-2 focus:ring-zinc-400/20 transition-all font-medium"
                     placeholder="••••••••"
                     required
                   />
@@ -217,7 +218,7 @@ export function LoginPage() {
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="w-full h-10 flex items-center justify-center font-bold text-xs bg-sky-500 hover:bg-sky-400 text-white rounded-xl transition-all cursor-pointer shadow-lg shadow-sky-500/25 active:scale-[0.99] disabled:opacity-60"
+                  className="w-full h-10 flex items-center justify-center font-bold text-xs bg-sky-500 hover:bg-sky-400 text-white rounded-xl transition-all cursor-pointer shadow-sm active:scale-[0.99] disabled:opacity-60"
                 >
                   {isSubmitting ? (
                     <div className="h-4 w-4 border-2 border-white/30 border-t-white rounded-full animate-spin mr-2" />
@@ -233,8 +234,8 @@ export function LoginPage() {
           {/* VIEW 2: Request Reset OTP */}
           {viewMode === "forgot_request" && (
             <form onSubmit={handleRequestResetOtp} className="flex flex-col gap-4" autoComplete="off">
-              {/* Info Container with dark screen background color (#09090b) */}
-              <div className="text-left bg-[#09090b] border border-zinc-800 rounded-xl p-3.5 text-xs text-zinc-400 leading-relaxed shadow-inner">
+              {/* Info Container with dark screen background color (#09090b) and sky blue text */}
+              <div className="text-left bg-[#09090b] border border-sky-900/40 rounded-xl p-3.5 text-xs text-sky-400 font-medium leading-relaxed shadow-inner">
                 Enter your registered administrator email address to receive a secure 6-digit password reset code.
               </div>
 
@@ -250,35 +251,36 @@ export function LoginPage() {
                     type="email"
                     value={resetEmail}
                     onChange={(e) => setResetEmail(e.target.value)}
-                    className="w-full pl-10 pr-3.5 h-10 text-xs bg-zinc-100 border border-zinc-300 rounded-xl text-zinc-900 placeholder:text-zinc-500 focus:outline-hidden focus:bg-white focus:border-zinc-400 focus:ring-2 focus:ring-zinc-400/20 transition-all font-medium"
+                    className="w-full pl-10 pr-3.5 h-10 text-xs bg-white border border-zinc-300 rounded-xl text-zinc-900 placeholder:text-zinc-500 focus:outline-hidden focus:bg-white focus:border-zinc-400 focus:ring-2 focus:ring-zinc-400/20 transition-all font-medium"
                     placeholder="name@example.com"
                     required
                   />
                 </div>
               </div>
 
-              <div className="pt-5" style={{ paddingTop: '20px' }}>
-                <button
-                  type="submit"
-                  disabled={isResetSubmitting}
-                  className="w-full h-10 flex items-center justify-center font-bold text-xs bg-sky-500 hover:bg-sky-400 text-white rounded-xl transition-all cursor-pointer shadow-lg shadow-sky-500/25 active:scale-[0.99] disabled:opacity-60"
-                >
-                  {isResetSubmitting ? (
-                    <div className="h-4 w-4 border-2 border-white/30 border-t-white rounded-full animate-spin mr-2" />
-                  ) : (
-                    <KeyRound className="h-4 w-4 mr-1.5" />
-                  )}
-                  {isResetSubmitting ? "Sending Verification Code…" : "Send Verification Code"}
-                </button>
-              </div>
+              {/* Send Verification Code Action */}
+              <button
+                type="submit"
+                disabled={isResetSubmitting}
+                className="w-full h-10 flex items-center justify-center font-bold text-xs bg-sky-500 hover:bg-sky-400 text-white rounded-xl transition-all cursor-pointer shadow-sm active:scale-[0.99] disabled:opacity-60"
+                style={{ marginTop: '20px' }}
+              >
+                {isResetSubmitting ? (
+                  <div className="h-4 w-4 border-2 border-white/30 border-t-white rounded-full animate-spin mr-2" />
+                ) : (
+                  <KeyRound className="h-4 w-4 mr-1.5" />
+                )}
+                {isResetSubmitting ? "Sending Verification Code…" : "Send Verification Code"}
+              </button>
 
+              {/* Light Red (Rose) Cancel Button */}
               <button
                 type="button"
                 onClick={() => setViewMode("login")}
-                className="w-full h-9 flex items-center justify-center font-medium text-xs text-zinc-400 hover:text-white transition-colors cursor-pointer"
+                className="w-full h-10 flex items-center justify-center font-bold text-xs bg-rose-500 hover:bg-rose-400 text-white rounded-xl transition-all cursor-pointer shadow-sm active:scale-[0.99]"
               >
-                <ArrowLeft className="h-3.5 w-3.5 mr-1" />
-                <span>Back to Log In</span>
+                <X className="h-4 w-4 mr-1.5" />
+                <span>Cancel</span>
               </button>
             </form>
           )}
@@ -286,10 +288,10 @@ export function LoginPage() {
           {/* VIEW 3: Verify OTP & New Password */}
           {viewMode === "forgot_reset" && (
             <form onSubmit={handleResetPassword} className="flex flex-col gap-4" autoComplete="off">
-              {/* OTP Target Banner with dark screen background color (#09090b) */}
-              <div className="text-left bg-[#09090b] border border-zinc-800 rounded-xl p-3 text-xs text-zinc-400 shadow-inner">
+              {/* OTP Target Banner with dark screen background color (#09090b) and sky blue text */}
+              <div className="text-left bg-[#09090b] border border-sky-900/40 rounded-xl p-3 text-xs text-sky-400 font-medium shadow-inner">
                 <span>Enter the 6-digit code sent to: </span>
-                <span className="font-bold text-white block mt-0.5">{resetEmail}</span>
+                <span className="font-bold text-sky-200 block mt-0.5">{resetEmail}</span>
               </div>
 
               <div className="space-y-1.5 text-left">
@@ -315,7 +317,7 @@ export function LoginPage() {
                     maxLength={6}
                     value={resetOtp}
                     onChange={(e) => setResetOtp(e.target.value.replace(/\D/g, ''))}
-                    className="w-full pl-10 pr-3.5 h-10 text-sm font-mono tracking-widest bg-zinc-100 border border-zinc-300 rounded-xl text-zinc-900 placeholder:text-zinc-500 focus:outline-hidden focus:bg-white focus:border-zinc-400 focus:ring-2 focus:ring-zinc-400/20 transition-all text-center font-bold"
+                    className="w-full pl-10 pr-3.5 h-10 text-sm font-mono tracking-widest bg-white border border-zinc-300 rounded-xl text-zinc-900 placeholder:text-zinc-500 focus:outline-hidden focus:bg-white focus:border-zinc-400 focus:ring-2 focus:ring-zinc-400/20 transition-all text-center font-bold"
                     placeholder="123456"
                     required
                   />
@@ -334,7 +336,7 @@ export function LoginPage() {
                     type={showNewPassword ? "text" : "password"}
                     value={newPassword}
                     onChange={(e) => setNewPassword(e.target.value)}
-                    className="w-full pl-10 pr-10 h-10 text-xs bg-zinc-100 border border-zinc-300 rounded-xl text-zinc-900 placeholder:text-zinc-500 focus:outline-hidden focus:bg-white focus:border-zinc-400 focus:ring-2 focus:ring-zinc-400/20 transition-all font-medium"
+                    className="w-full pl-10 pr-10 h-10 text-xs bg-white border border-zinc-300 rounded-xl text-zinc-900 placeholder:text-zinc-500 focus:outline-hidden focus:bg-white focus:border-zinc-400 focus:ring-2 focus:ring-zinc-400/20 transition-all font-medium"
                     placeholder="Min 6 characters"
                     required
                   />
@@ -360,35 +362,35 @@ export function LoginPage() {
                     type={showNewPassword ? "text" : "password"}
                     value={confirmPassword}
                     onChange={(e) => setConfirmPassword(e.target.value)}
-                    className="w-full pl-10 pr-3.5 h-10 text-xs bg-zinc-100 border border-zinc-300 rounded-xl text-zinc-900 placeholder:text-zinc-500 focus:outline-hidden focus:bg-white focus:border-zinc-400 focus:ring-2 focus:ring-zinc-400/20 transition-all font-medium"
+                    className="w-full pl-10 pr-3.5 h-10 text-xs bg-white border border-zinc-300 rounded-xl text-zinc-900 placeholder:text-zinc-500 focus:outline-hidden focus:bg-white focus:border-zinc-400 focus:ring-2 focus:ring-zinc-400/20 transition-all font-medium"
                     placeholder="Repeat new password"
                     required
                   />
                 </div>
               </div>
 
-              <div className="pt-5" style={{ paddingTop: '20px' }}>
-                <button
-                  type="submit"
-                  disabled={isResetSubmitting}
-                  className="w-full h-10 flex items-center justify-center font-bold text-xs bg-sky-500 hover:bg-sky-400 text-white rounded-xl transition-all cursor-pointer shadow-lg shadow-sky-500/25 active:scale-[0.99] disabled:opacity-60"
-                >
-                  {isResetSubmitting ? (
-                    <div className="h-4 w-4 border-2 border-white/30 border-t-white rounded-full animate-spin mr-2" />
-                  ) : (
-                    <KeyRound className="h-4 w-4 mr-1.5" />
-                  )}
-                  {isResetSubmitting ? "Updating Password…" : "Reset & Save Password"}
-                </button>
-              </div>
+              <button
+                type="submit"
+                disabled={isResetSubmitting}
+                className="w-full h-10 flex items-center justify-center font-bold text-xs bg-sky-500 hover:bg-sky-400 text-white rounded-xl transition-all cursor-pointer shadow-sm active:scale-[0.99] disabled:opacity-60"
+                style={{ marginTop: '20px' }}
+              >
+                {isResetSubmitting ? (
+                  <div className="h-4 w-4 border-2 border-white/30 border-t-white rounded-full animate-spin mr-2" />
+                ) : (
+                  <KeyRound className="h-4 w-4 mr-1.5" />
+                )}
+                {isResetSubmitting ? "Updating Password…" : "Reset & Save Password"}
+              </button>
 
+              {/* Light Red (Rose) Cancel Button */}
               <button
                 type="button"
-                onClick={() => setViewMode("forgot_request")}
-                className="w-full h-9 flex items-center justify-center font-medium text-xs text-zinc-400 hover:text-white transition-colors cursor-pointer"
+                onClick={() => setViewMode("login")}
+                className="w-full h-10 flex items-center justify-center font-bold text-xs bg-rose-500 hover:bg-rose-400 text-white rounded-xl transition-all cursor-pointer shadow-sm active:scale-[0.99]"
               >
-                <ArrowLeft className="h-3.5 w-3.5 mr-1" />
-                <span>Change Email</span>
+                <X className="h-4 w-4 mr-1.5" />
+                <span>Cancel</span>
               </button>
             </form>
           )}
@@ -411,7 +413,7 @@ export function LoginPage() {
                 <button
                   type="button"
                   onClick={() => setViewMode("login")}
-                  className="w-full h-10 flex items-center justify-center font-bold text-xs bg-sky-500 hover:bg-sky-400 text-white rounded-xl transition-all cursor-pointer shadow-lg shadow-sky-500/25 active:scale-[0.99]"
+                  className="w-full h-10 flex items-center justify-center font-bold text-xs bg-sky-500 hover:bg-sky-400 text-white rounded-xl transition-all cursor-pointer shadow-sm active:scale-[0.99]"
                 >
                   <LogIn className="h-4 w-4 mr-1.5" />
                   <span>Proceed to Log In</span>
