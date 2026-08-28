@@ -117,7 +117,7 @@ const LoginPage = () => {
           </CardHeader>
 
           <CardContent className="p-4 sm:p-5 space-y-3.5">
-            <form onSubmit={handleSubmit} className="space-y-3">
+            <form onSubmit={handleSubmit} className="space-y-3" autoComplete="off">
               <div className="space-y-1">
                 <label className="block text-[11px] font-semibold text-muted-foreground">
                   Email Address
@@ -127,7 +127,9 @@ const LoginPage = () => {
                     <Mail className="h-3.5 w-3.5" />
                   </span>
                   <Input
-                    type="text"
+                    type="email"
+                    name="login_email_no_autofill"
+                    autoComplete="off"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     className="pl-9 h-9 text-xs bg-background/60 border-border text-foreground focus:border-primary placeholder:text-muted-foreground/40 rounded-lg"
@@ -152,6 +154,8 @@ const LoginPage = () => {
                   </span>
                   <Input
                     type="password"
+                    name="login_password_no_autofill"
+                    autoComplete="new-password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     className="pl-9 h-9 text-xs bg-background/60 border-border text-foreground focus:border-primary placeholder:text-muted-foreground/40 rounded-lg"

@@ -3,7 +3,9 @@
 ## [2026-08-27]
 - **Dashboard Version**: `v0.4.2`
 
-### 1. Client Dashboard Overview, Task Management & Real-Time Notifications (NC01 - NC16)
+### 1. Client Dashboard Overview, Task Management & Real-Time Notifications (NC01 - NC17)
+- **NC17 - Block Browser Autofill on Login Form**:
+  - Added `autoComplete="off"` and `autoComplete="new-password"` to prevent browser password managers from auto-filling saved Owner credentials.
 - **NC16 - Clear Default Credentials in Login Forms**:
   - Removed prefilled `md.ikr4m@gmail.com` and `ihkhan2027@gmail.com` from `LoginPage.jsx`.
   - Set default state to blank inputs for both email and password.
