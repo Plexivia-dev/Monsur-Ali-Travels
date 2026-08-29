@@ -26,7 +26,7 @@ export function ClientGuardianPreview({ data }) {
 
   return (
     <div className="w-full flex flex-col items-center select-none space-y-6">
-      <PrintablePaper id="printable-client-form-canvas">
+      <PrintablePaper id="client-guardian-canvas">
         <div className="flex-1 flex flex-col justify-between text-slate-900 font-sans min-h-[990px] print:min-h-0 print:h-auto">
           
           <div className="space-y-3">

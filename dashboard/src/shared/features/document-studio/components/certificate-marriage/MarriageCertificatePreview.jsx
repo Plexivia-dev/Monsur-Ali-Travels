@@ -1,7 +1,7 @@
 import React from 'react';
 import { PrintablePaper } from '../common/PrintablePaper';
 import { Printer, Heart } from 'lucide-react';
-import { formatToDdMmYyyy } from '@shared/lib/utils';
+import { formatToDdMmYyyy, printDocument } from '@shared/lib/utils';
 
 export function MarriageCertificatePreview({ data = {}, onPrint }) {
   const {
@@ -20,7 +20,14 @@ export function MarriageCertificatePreview({ data = {}, onPrint }) {
     declaration = {},
   } = data || {};
 
-  const handlePrint = onPrint || (() => window.print());
+  const handlePrint = onPrint || (() => {
+    printDocument({
+      docId: memoNo || data.certificateNo,
+      docType: 'Marriage_Certificate',
+      clientName: groom.fullName ? `${groom.fullName}_and_${bride.fullName || ''}` : 'Marriage',
+      elementId: 'marriage-certificate-canvas',
+    });
+  });
 
   return (
     <div className="w-full flex flex-col items-center">
@@ -44,7 +51,7 @@ export function MarriageCertificatePreview({ data = {}, onPrint }) {
       </div>
 
       {/* Printable A4 Paper */}
-      <PrintablePaper id="printable-marriage-certificate" className="font-serif">
+      <PrintablePaper id="marriage-certificate-canvas" className="font-serif">
         
         {/* Single Clean Certificate Border Frame */}
         <div className="border-2 border-slate-900 p-6 sm:p-7 flex flex-col justify-between bg-white text-slate-900 flex-1 min-h-[960px] print:min-h-0 print:p-5">

@@ -126,6 +126,10 @@ function printElementInIsolatedFrame(targetEl, pdfFileName, originalTitle) {
         -webkit-print-color-adjust: exact !important;
         print-color-adjust: exact !important;
         font-family: 'Plus Jakarta Sans', 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Hind Siliguri', sans-serif;
+        visibility: visible !important;
+      }
+      body * {
+        visibility: visible !important;
       }
       /* Remove any external scale or transform that came from UI containers */
       * {
@@ -133,18 +137,26 @@ function printElementInIsolatedFrame(targetEl, pdfFileName, originalTitle) {
       }
       .printable-a4-paper,
       .printable-money-receipt,
+      [id*="canvas"],
+      [id*="printable"],
       #job-verification-canvas,
       #printable-invoice-canvas,
       #printable-receipt-canvas,
       #printable-money-receipt,
       #salary-slip-canvas,
       #employment-agreement-canvas,
+      #client-guardian-canvas,
+      #printable-client-form-canvas,
+      #customer-guardian-canvas,
       #cash-voucher-canvas,
       #printable-indian-visa-canvas,
       #printable-passport-canvas,
       #experience-certificate-canvas,
+      #printable-experience-certificate,
       #character-certificate-canvas,
-      #marriage-certificate-canvas {
+      #printable-character-certificate,
+      #marriage-certificate-canvas,
+      #printable-marriage-certificate {
         width: 210mm !important;
         max-width: 210mm !important;
         min-height: 296mm !important;
@@ -160,6 +172,11 @@ function printElementInIsolatedFrame(targetEl, pdfFileName, originalTitle) {
         justify-content: space-between !important;
         page-break-inside: avoid !important;
         break-inside: avoid !important;
+        position: relative !important;
+        left: auto !important;
+        top: auto !important;
+        right: auto !important;
+        visibility: visible !important;
       }
       .no-print, .no-print * {
         display: none !important;
@@ -168,8 +185,15 @@ function printElementInIsolatedFrame(targetEl, pdfFileName, originalTitle) {
     </style>
   `;
 
-  // Deep clone target element
+  // Deep clone target element and ensure it is fully visible
   const clone = targetEl.cloneNode(true);
+  if (clone.classList) {
+    clone.classList.remove('hidden');
+  }
+  if (clone.style) {
+    clone.style.display = '';
+    clone.style.visibility = 'visible';
+  }
 
   frameDoc.open();
   frameDoc.write(`<!DOCTYPE html>
@@ -281,13 +305,20 @@ export function printDocument({
       '#printable-money-receipt',
       '#salary-slip-canvas',
       '#employment-agreement-canvas',
+      '#client-guardian-canvas',
+      '#printable-client-form-canvas',
+      '#customer-guardian-canvas',
       '#cash-voucher-canvas',
       '#printable-indian-visa-canvas',
       '#printable-passport-canvas',
       '#experience-certificate-canvas',
+      '#printable-experience-certificate',
       '#character-certificate-canvas',
+      '#printable-character-certificate',
       '#marriage-certificate-canvas',
+      '#printable-marriage-certificate',
       '.printable-a4-paper',
+      '.printable-money-receipt',
     ];
     for (const selector of knownIds) {
       const found = document.querySelector(selector);

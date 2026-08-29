@@ -92,6 +92,7 @@ export function ClientGuardian({ initialData = null, onSavedSuccess = null }) {
       docId: data.applicationNo || data.receiptNo,
       docType: 'Client_Guardian_Form',
       clientName: data.client?.fullName,
+      elementId: 'client-guardian-canvas',
     });
   };
 
@@ -173,6 +174,9 @@ export function ClientGuardian({ initialData = null, onSavedSuccess = null }) {
             onPreview={() => setViewMode('preview')}
             isSubmitting={isSubmitting}
           />
+          <div className="hidden print:block w-full">
+            <ClientGuardianPreview data={data} />
+          </div>
         </div>
       )}
 

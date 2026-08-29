@@ -14,7 +14,7 @@ export function CashVoucherPreview({ data }) {
     Number(n || 0).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
   return (
-    <PrintablePaper>
+    <PrintablePaper id="cash-voucher-canvas">
       {/* ─── Outer border box ───────────────────────────────────────────── */}
       <div
         style={{

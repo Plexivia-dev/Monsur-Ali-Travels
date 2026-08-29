@@ -1,7 +1,7 @@
 import React from 'react';
 import { PrintablePaper } from '../common/PrintablePaper';
 import { Printer } from 'lucide-react';
-import { formatToDdMmYyyy } from '@shared/lib/utils';
+import { formatToDdMmYyyy, printDocument } from '@shared/lib/utils';
 
 export function ExperienceCertificatePreview({ data = {}, onPrint }) {
   const {
@@ -15,7 +15,14 @@ export function ExperienceCertificatePreview({ data = {}, onPrint }) {
     signatory = {},
   } = data || {};
 
-  const handlePrint = onPrint || (() => window.print());
+  const handlePrint = onPrint || (() => {
+    printDocument({
+      docId: memoNo || data.certificateNo,
+      docType: 'Experience_Certificate',
+      clientName: employee.fullName || data.employeeName,
+      elementId: 'experience-certificate-canvas',
+    });
+  });
 
   return (
     <div className="w-full flex flex-col items-center">
@@ -39,7 +46,7 @@ export function ExperienceCertificatePreview({ data = {}, onPrint }) {
       </div>
 
       {/* Printable A4 Paper */}
-      <PrintablePaper id="printable-experience-certificate" className="font-serif">
+      <PrintablePaper id="experience-certificate-canvas" className="font-serif">
         
         {/* Single Clean Certificate Border Frame */}
         <div className="border-2 border-slate-900 p-6 sm:p-8 flex flex-col justify-between bg-white text-slate-900 flex-1 min-h-[960px] print:min-h-0 print:p-5">

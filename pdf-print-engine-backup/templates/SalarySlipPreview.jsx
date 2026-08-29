@@ -26,7 +26,7 @@ export function SalarySlipPreview({ data, formData }) {
   return (
     <div 
       id="salary-slip-canvas"
-      className="w-[210mm] min-h-[297mm] bg-white text-slate-900 p-5 print:p-4 flex flex-col justify-between font-sans shadow-xl border border-slate-400 relative rounded-xs print:p-4 print:shadow-none print:border-0 print:m-0"
+      className="printable-a4-paper w-[210mm] min-h-[297mm] bg-white text-slate-900 p-5 print:p-4 flex flex-col justify-between font-sans shadow-xl border border-slate-400 relative rounded-xs print:p-4 print:shadow-none print:border-0 print:m-0"
       style={{ fontFamily: "'Montserrat', 'Plus Jakarta Sans', sans-serif" }}
     >
       <div>

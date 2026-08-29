@@ -73,6 +73,7 @@ export function MoneyReceipt() {
       docId: data.receiptNo,
       docType: 'Money_Receipt',
       clientName: data.clientName,
+      elementId: 'printable-receipt-canvas',
     });
   };
 

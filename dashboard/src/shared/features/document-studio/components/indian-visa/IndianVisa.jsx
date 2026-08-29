@@ -84,6 +84,7 @@ export function IndianVisa({ initialData = null, onSavedSuccess = null, isLocked
       docId: data.trackingNo,
       docType: 'Indian_Visa_Receipt',
       clientName: data.applicantName,
+      elementId: 'printable-indian-visa-canvas',
     });
   };
 
@@ -156,6 +157,9 @@ export function IndianVisa({ initialData = null, onSavedSuccess = null, isLocked
             onReset={handleReset}
             isSubmitting={isSubmitting}
           />
+          <div className="hidden print:block w-full">
+            <IndianVisaPreview data={data} />
+          </div>
         </div>
       )}
 

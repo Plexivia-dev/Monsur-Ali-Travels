@@ -162,6 +162,7 @@ export function EmploymentAgreement({ initialData = null, onSavedSuccess = null,
       docId: formData.agreementId,
       docType: 'Employment_Agreement',
       clientName: formData.parties?.employeeName,
+      elementId: 'employment-agreement-canvas',
     });
   };
 

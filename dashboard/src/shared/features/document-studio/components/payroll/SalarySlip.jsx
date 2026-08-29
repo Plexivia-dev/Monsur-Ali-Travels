@@ -124,6 +124,7 @@ export function SalarySlip() {
       docId: formData.slipNo,
       docType: 'Salary_Slip',
       clientName: formData.employeeName,
+      elementId: 'salary-slip-canvas',
     });
   };
 
