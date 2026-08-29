@@ -1,5 +1,12 @@
 # Commit Log / Change Log
 
+## [2026-08-29]
+- **Backend Version**: `v1.2.0`
+- **MB35 - Master Common Email Template System & Centralized Email Delivery Integration**:
+  - Implemented `commonEmailTemplate.js` luxury dark/gold responsive email template with text-based branding (`Monsur Ali Travels`) and official Sunamganj office address.
+  - Implemented `emailService.js` singleton delivery service with support for 2FA OTP, QR Code setup with inline attachment, Staff Invitations, Task Assignments (linking to Client Dashboard), Case Milestones, Payment Receipts, Invoices, and Payroll slips.
+  - Upgraded `AuthController`, `TwoFactorController`, `SettingsController`, `UsersController`, `caseController`, `caseFile.controller`, `MoneyReceiptController`, `InvoiceController`, and `EmailRoute`.
+
 ## [2026-08-27]
 - **Dashboard Version**: `v0.4.2`
 

@@ -2,33 +2,13 @@ import crypto from "node:crypto";
 import jwt from "jsonwebtoken";
 import { authenticator } from "otplib";
 import QRCode from "qrcode";
-import nodemailer from "nodemailer";
 import { UserModel } from "../../models/user.model.js";
 import { comparePassword } from "../../utils/password.js";
 import { createAccessToken, createRefreshToken } from "./AuthController.js";
 import { env } from "../../config/env.js";
 import { logger } from "../../config/logger.js";
-import { buildTwoFactorQrEmailHtml } from "../../templates/twoFactorEmailTemplate.js";
-import { sendOtpEmail } from "../../utils/otpDelivery.js";
+import { sendOtpEmail, send2faQrEmail } from "../../services/emailService.js";
 
-// Cached SMTP transport connection instance
-let defaultTransport;
-
-// Helper to initialize/retrieve SMTP transport
-const getTransport = () => {
-  if (!defaultTransport) {
-    defaultTransport = nodemailer.createTransport({
-      host: env.SMTP_HOST,
-      port: env.SMTP_PORT,
-      secure: String(env.SMTP_ENCRYPTION).toUpperCase() === "SSL",
-      auth: {
-        user: env.SMTP_USER,
-        pass: env.SMTP_PASSWORD,
-      },
-    });
-  }
-  return defaultTransport;
-};
 
 // Helper to extract user from a short-lived 2FA session token
 const resolveUserFromTwoFactorToken = async (twoFactorToken) => {
@@ -306,37 +286,16 @@ export const sendQrCodeEmail = async (req, res, next) => {
       await user.save();
     }
 
-    // Generate OTPAuth URI for the TOTP app
-    const otpauth = authenticator.keyuri(user.email, "Monsur Ali Travels BD", secret);
-
-    // Render QR Code as PNG buffer for inline email attachment
-    const qrCodeBuffer = await QRCode.toBuffer(otpauth, { width: 220, margin: 2 });
-
-    // Build SMTP transport and sender address
-    const transport = getTransport();
-    const fromName = env.SMTP_FROM_NAME || "Monsur Ali Travels BD";
-    const fromEmail = env.SMTP_FROM || env.SMTP_USER;
-    const fromAddress = `"${fromName}" <${fromEmail}>`;
-
-    // Build branded HTML email from template
-    const htmlContent = buildTwoFactorQrEmailHtml({ name: user.name, secret });
-
-    await transport.sendMail({
-      from: fromAddress,
-      to: user.email,
-      subject: "Set Up Two-Factor Authentication — Monsur Ali Travels Dashboard",
-      text: `Hello ${user.name},\n\nScan the QR code in your Google Authenticator app to set up 2FA.\nCan't scan? Enter this key manually: ${secret}\n\nIf you did not request this, change your password immediately.`,
-      html: htmlContent,
-      attachments: [
-        {
-          filename: "qrcode.png",
-          content: qrCodeBuffer,
-          cid: "qrcode",
-        },
-      ],
+    // Dispatch 2FA QR code email
+    const emailResult = await send2faQrEmail({
+      toEmail: user.email,
+      name: user.name,
+      secret,
     });
 
-    logger.info({ email: user.email }, "Dispatched 2FA QR code email successfully");
+    if (!emailResult.delivered) {
+      logger.warn({ email: user.email, reason: emailResult.reason }, "Failed to send 2FA QR code email");
+    }
 
     res.json({
       status: "success",

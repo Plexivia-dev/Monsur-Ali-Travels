@@ -5,6 +5,7 @@ import {
   createInvoice,
   updateInvoice,
   deleteInvoice,
+  sendInvoiceByEmail,
 } from "../../controllers/client/InvoiceController.js";
 
 const invoiceRouter = Router();
@@ -14,6 +15,9 @@ invoiceRouter
   .route("/")
   .get(getInvoices)
   .post(createInvoice);
+
+// POST /api/v1/invoices/:id/send-email
+invoiceRouter.post("/:id/send-email", sendInvoiceByEmail);
 
 // GET /api/v1/invoices/:id & PUT/DELETE /api/v1/invoices/:id
 invoiceRouter

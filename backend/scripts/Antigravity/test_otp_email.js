@@ -1,108 +1,145 @@
-import path from "node:path";
+﻿import path from "node:path";
 import { fileURLToPath } from "node:url";
 import dotenv from "dotenv";
-import nodemailer from "nodemailer";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 dotenv.config({ path: path.resolve(__dirname, "../../.env") });
 
-import { env } from "../../src/config/env.js";
-import { sendOtpEmail } from "../../src/utils/otpDelivery.js";
-import { buildTwoFactorQrEmailHtml } from "../../src/templates/twoFactorEmailTemplate.js";
-import QRCode from "qrcode";
-import { authenticator } from "otplib";
+import {
+  sendOtpEmail,
+  send2faQrEmail,
+  sendStaffInvitationEmail,
+  sendTaskAssignmentEmail,
+  sendCaseStatusUpdateEmail,
+  sendPaymentReceiptEmail,
+  sendInvoiceEmail,
+  sendPayrollSlipEmail,
+} from "../../src/services/emailService.js";
 
 const targetEmail = process.argv[2]?.trim() || "md.ikr4m@gmail.com";
 
-async function run() {
-  console.log("==========================================");
-  console.log("📧 MONSUR ALI TRAVELS — EMAIL SYSTEM TEST");
-  console.log("==========================================");
-  console.log(`Target:      ${targetEmail}`);
-  console.log(`SMTP Host:   ${env.SMTP_HOST}`);
-  console.log(`SMTP Port:   ${env.SMTP_PORT}`);
-  console.log(`SMTP User:   ${env.SMTP_USER}`);
-  console.log("------------------------------------------\n");
+async function testAllEmailTemplates() {
+  console.log("=================================================");
+  console.log("🌟 MONSUR ALI TRAVELS — MASTER EMAIL SUITE TEST");
+  console.log("=================================================");
+  console.log(`Target Recipient: ${targetEmail}\n`);
 
-  const transporter = nodemailer.createTransport({
-    host: env.SMTP_HOST,
-    port: env.SMTP_PORT,
-    secure: String(env.SMTP_ENCRYPTION).toLowerCase() === "ssl" || Number(env.SMTP_PORT) === 465,
-    auth: {
-      user: env.SMTP_USER,
-      pass: env.SMTP_PASSWORD,
-    },
-  });
-
-  console.log("1️⃣ Verifying SMTP connection...");
-  await transporter.verify();
-  console.log("   ✅ Connection verified successfully!\n");
-
-  console.log("2️⃣ Sending General Test Email...");
-  const info1 = await transporter.sendMail({
-    from: `"${env.SMTP_FROM_NAME || 'Monsur Ali Travels'}" <${env.SMTP_FROM || env.SMTP_USER}>`,
-    to: targetEmail,
-    subject: "✅ Test Email — Monsur Ali Travels ERP System",
-    text: `Hello,\n\nThis is a verified test email from Monsur Ali Travels backend server.\nTime: ${new Date().toISOString()}`,
-    html: `
-      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 24px; border: 1px solid #e5e7eb; border-radius: 8px; background-color: #ffffff;">
-        <h2 style="color: #0284c7; margin-top: 0;">Monsur Ali Travels ERP</h2>
-        <p style="font-size: 16px; color: #1f2937;">Hello <strong>Ikramul</strong>,</p>
-        <p style="color: #4b5563;">This is a test email confirming that the <strong>Monsur Ali Travels Email Delivery System</strong> is 100% active and functioning properly.</p>
-        <div style="background-color: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 6px; padding: 12px; margin: 16px 0; color: #166534;">
-          ✔ <strong>SMTP Host:</strong> ${env.SMTP_HOST}:${env.SMTP_PORT}<br/>
-          ✔ <strong>Sender:</strong> ${env.SMTP_USER}<br/>
-          ✔ <strong>Status:</strong> Active & Connected<br/>
-          ✔ <strong>Timestamp:</strong> ${new Date().toLocaleString()}
-        </div>
-      </div>
-    `,
-  });
-  console.log(`   ✅ General Email delivered! ID: ${info1.messageId}\n`);
-
-  console.log("3️⃣ Sending 2FA Verification OTP Email (Branded Template)...");
-  const otpResult = await sendOtpEmail({
+  // 1. 2FA Login OTP
+  console.log("1️⃣ Testing 2FA Login OTP Email...");
+  const res1 = await sendOtpEmail({
     toEmail: targetEmail,
-    otp: "749201",
     name: "Md Ikramul",
+    otp: "842915",
     type: "two-factor",
   });
-  if (otpResult.delivered) {
-    console.log("   ✅ 2FA OTP Email delivered successfully!\n");
-  } else {
-    console.error("   ❌ 2FA OTP Email delivery failed:", otpResult.reason);
-  }
+  console.log(`   Result: ${res1.delivered ? "✅ DELIVERED" : "❌ FAILED: " + res1.reason}`);
 
-  console.log("4️⃣ Sending Google Authenticator QR Code Setup Email...");
-  const mockSecret = authenticator.generateSecret();
-  const otpauth = authenticator.keyuri(targetEmail, "Monsur Ali Travels BD", mockSecret);
-  const qrCodeBuffer = await QRCode.toBuffer(otpauth, { width: 220, margin: 2 });
-  const htmlContent = buildTwoFactorQrEmailHtml({ name: "Md Ikramul", secret: mockSecret });
-
-  const info4 = await transporter.sendMail({
-    from: `"${env.SMTP_FROM_NAME || 'Monsur Ali Travels'}" <${env.SMTP_FROM || env.SMTP_USER}>`,
-    to: targetEmail,
-    subject: "Set Up Two-Factor Authentication — Monsur Ali Travels Dashboard",
-    text: `Hello Md Ikramul,\n\nScan the QR code in your Google Authenticator app to set up 2FA.\nCan't scan? Enter this key manually: ${mockSecret}`,
-    html: htmlContent,
-    attachments: [
-      {
-        filename: "qrcode.png",
-        content: qrCodeBuffer,
-        cid: "qrcode",
-      },
-    ],
+  // 2. Staff Invitation Email
+  console.log("2️⃣ Testing Staff Invitation & Credentials Email...");
+  const res2 = await sendStaffInvitationEmail({
+    toEmail: targetEmail,
+    name: "Ikramul Hoque",
+    role: "Staff",
+    subRole: "Visa_Processor",
+    tempPassword: "Pass@" + Math.floor(1000 + Math.random() * 9000),
+    invitedBy: "Managing Director",
   });
-  console.log(`   ✅ 2FA QR Code Setup Email delivered! ID: ${info4.messageId}\n`);
+  console.log(`   Result: ${res2.delivered ? "✅ DELIVERED" : "❌ FAILED: " + res2.reason}`);
 
-  console.log("==========================================");
-  console.log("🎉 ALL EMAIL SYSTEM TESTS PASSED SUCCESSFULLY!");
-  console.log("==========================================");
+  // 3. 2FA QR Code Setup Email
+  console.log("3️⃣ Testing Google Authenticator QR Setup Email...");
+  const res3 = await send2faQrEmail({
+    toEmail: targetEmail,
+    name: "Md Ikramul",
+  });
+  console.log(`   Result: ${res3.delivered ? "✅ DELIVERED" : "❌ FAILED: " + res3.reason}`);
+
+  // 4. Task Assignment Email
+  console.log("4️⃣ Testing Workflow Task Assignment Email...");
+  const res4 = await sendTaskAssignmentEmail({
+    toEmail: targetEmail,
+    staffName: "Ikramul Hoque",
+    taskTitle: "Greek Work Permit Online Application Submission",
+    description: "Please verify client passport, photo scan, and submit to Greek immigration portal.",
+    stepNumber: 2,
+    caseNumber: "GRC-2026-9281",
+    caseTitle: "Greece Work Permit Processing",
+    clientName: "Rahim Uddin",
+    serviceType: "Greece Work Permit",
+    deadline: "September 05, 2026",
+    assignedBy: "Admin Ikram",
+  });
+  console.log(`   Result: ${res4.delivered ? "✅ DELIVERED" : "❌ FAILED: " + res4.reason}`);
+
+  // 5. Case Status Update Email
+  console.log("5️⃣ Testing Case Status Update Email...");
+  const res5 = await sendCaseStatusUpdateEmail({
+    toEmail: targetEmail,
+    clientName: "Rahim Uddin",
+    caseNumber: "GRC-2026-9281",
+    serviceType: "Greece Work Permit",
+    newStatus: "Government Offer Letter Approved",
+    remarks: "Your offer letter has been approved by the Greek authorities. Secondary visa processing initiated.",
+    updatedBy: "Monsur Ali Travels Visa Department",
+  });
+  console.log(`   Result: ${res5.delivered ? "✅ DELIVERED" : "❌ FAILED: " + res5.reason}`);
+
+  // 6. Payment Receipt Email
+  console.log("6️⃣ Testing Money Receipt Confirmation Email...");
+  const res6 = await sendPaymentReceiptEmail({
+    toEmail: targetEmail,
+    clientName: "Rahim Uddin",
+    receiptNo: "REC-2026-8812",
+    amount: 150000,
+    serviceType: "Greece Work Permit",
+    purpose: "Step 2 Milestone (Offer Letter Approval)",
+    paymentMethod: "Bank Transfer",
+    paymentDate: new Date().toLocaleDateString(),
+    receivedBy: "Accounts Dept. (Monsur Ali Travels)",
+    remainingDue: 100000,
+  });
+  console.log(`   Result: ${res6.delivered ? "✅ DELIVERED" : "❌ FAILED: " + res6.reason}`);
+
+  // 7. Invoice Delivery Email
+  console.log("7️⃣ Testing Invoice Delivery Email...");
+  const res7 = await sendInvoiceEmail({
+    toEmail: targetEmail,
+    buyerName: "Rahim Uddin",
+    invoiceNumber: "INV-MAT-9921",
+    createdDate: new Date().toLocaleDateString(),
+    dueDate: "September 10, 2026",
+    items: [
+      { description: "Greece Work Permit Processing Fee", quantity: 1, total: 200000 },
+      { description: "Embassy Document Translation & Legalization", quantity: 1, total: 35000 },
+      { description: "VFS Global Appointment & Biometric Booking", quantity: 1, total: 15000 },
+    ],
+    total: 250000,
+    subtotal: 250000,
+    paymentMethod: "Bank Deposit",
+    invoiceUrl: "https://admin.monsuralitravels.com/invoices/INV-MAT-9921",
+  });
+  console.log(`   Result: ${res7.delivered ? "✅ DELIVERED" : "❌ FAILED: " + res7.reason}`);
+
+  // 8. Payroll Salary Slip Email
+  console.log("8️⃣ Testing Employee Salary Slip Email...");
+  const res8 = await sendPayrollSlipEmail({
+    toEmail: targetEmail,
+    employeeName: "Ikramul Hoque",
+    employeeCode: "EMP-1092",
+    designation: "Senior Visa Processor",
+    monthYear: "August 2026",
+    netSalary: 65000,
+    basicSalary: 50000,
+    allowances: 18000,
+    deductions: 3000,
+    paymentDate: new Date().toLocaleDateString(),
+  });
+  console.log(`   Result: ${res8.delivered ? "✅ DELIVERED" : "❌ FAILED: " + res8.reason}`);
+
+  console.log("\n=================================================");
+  console.log("🎉 MASTER EMAIL SUITE TESTING COMPLETE!");
+  console.log("=================================================");
 }
 
-run().catch((err) => {
-  console.error("❌ Test Failed:", err);
-  process.exit(1);
-});
-
+testAllEmailTemplates().catch(console.error);

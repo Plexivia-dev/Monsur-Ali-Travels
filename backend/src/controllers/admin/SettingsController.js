@@ -1,66 +1,10 @@
-import nodemailer from "nodemailer";
 import { UserModel } from "../../models/user.model.js";
 import { EmployeeModel } from "../../models/employee.model.js";
 import { hashPassword } from "../../utils/password.js";
 import { generateDid } from "../../utils/generateDid.js";
 import { env } from "../../config/env.js";
+import { sendStaffInvitationEmail } from "../../services/emailService.js";
 
-async function sendStaffInvitationEmail({ toEmail, name, subRole, tempPassword }) {
-  if (!env.SMTP_USER || !env.SMTP_PASSWORD) {
-    console.warn("SMTP credentials not configured, skipping invitation email delivery");
-    return { delivered: false, reason: "SMTP not configured" };
-  }
-
-  const transporter = nodemailer.createTransport({
-    host: env.SMTP_HOST || "smtp.gmail.com",
-    port: Number(env.SMTP_PORT) || 465,
-    secure: String(env.SMTP_ENCRYPTION || "ssl").toLowerCase() === "ssl" || Number(env.SMTP_PORT) === 465,
-    auth: {
-      user: env.SMTP_USER,
-      pass: env.SMTP_PASSWORD,
-    },
-  });
-
-  const fromName = env.SMTP_FROM_NAME || "Monsur Ali Travels";
-  const fromEmail = env.SMTP_FROM || env.SMTP_USER;
-  const loginUrl = env.CLIENT_URL || env.ADMIN_URL || "https://monsuralitravels.com/login";
-
-  const subject = `Welcome to Monsur Ali Travels ERP - Staff Invitation (${subRole.replace('_', ' ')})`;
-  const text = `Hello ${name},\n\nYou have been invited to join the Monsur Ali Travels team as ${subRole.replace('_', ' ')}.\n\nLogin Portal: ${loginUrl}\nEmail: ${toEmail}\nTemporary Password: ${tempPassword}\n\nPlease login and change your password upon first access.\n\nThank you,\nMonsur Ali Travels Administration`;
-
-  const html = `
-    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 24px; border: 1px solid #e5e7eb; border-radius: 8px; background-color: #ffffff;">
-      <div style="text-align: center; margin-bottom: 24px;">
-        <h2 style="color: #0284c7; margin: 0;">Monsur Ali Travels</h2>
-        <p style="color: #6b7280; font-size: 14px; margin-top: 4px;">Staff Invitation & System Access</p>
-      </div>
-      <p style="font-size: 16px; color: #1f2937;">Hello <strong>${name}</strong>,</p>
-      <p style="color: #4b5563; line-height: 1.6;">You have been invited to join the Monsur Ali Travels ERP system as <strong>${subRole.replace('_', ' ')}</strong>.</p>
-      <div style="background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 16px; margin: 20px 0;">
-        <p style="margin: 0 0 8px 0; color: #334155; font-size: 14px;"><strong>Login Portal:</strong> <a href="${loginUrl}" style="color: #0284c7;">${loginUrl}</a></p>
-        <p style="margin: 0 0 8px 0; color: #334155; font-size: 14px;"><strong>Email:</strong> ${toEmail}</p>
-        <p style="margin: 0; color: #334155; font-size: 14px;"><strong>Temporary Password:</strong> <code style="background-color: #e2e8f0; padding: 2px 6px; border-radius: 4px; font-weight: bold; color: #0f172a;">${tempPassword}</code></p>
-      </div>
-      <p style="color: #64748b; font-size: 13px;">Please log in using your temporary credentials and update your password immediately upon first access.</p>
-      <hr style="border: none; border-top: 1px solid #e2e8f0; margin: 24px 0;" />
-      <p style="color: #94a3b8; font-size: 12px; text-align: center; margin: 0;">© ${new Date().getFullYear()} Monsur Ali Travels. All rights reserved.</p>
-    </div>
-  `;
-
-  try {
-    await transporter.sendMail({
-      from: `"${fromName}" <${fromEmail}>`,
-      to: toEmail,
-      subject,
-      text,
-      html,
-    });
-    return { delivered: true };
-  } catch (error) {
-    console.error("Staff invitation email delivery error:", error);
-    return { delivered: false, reason: error.message };
-  }
-}
 
 // GET /api/v1/admin/settings/core-team
 export const getCoreTeam = async (req, res, next) => {

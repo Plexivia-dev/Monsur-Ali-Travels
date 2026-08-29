@@ -197,3 +197,45 @@ export const deleteInvoice = async (req, res, next) => {
     next(error);
   }
 };
+
+// @desc    Send Invoice via Email
+// @route   POST /api/v1/docs/invoices/:id/send-email
+export const sendInvoiceByEmail = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const isMongoId = id.match(/^[0-9a-fA-F]{24}$/);
+    const query = isMongoId ? { _id: id, isActive: { $ne: false } } : { invoiceNo: id, isActive: { $ne: false } };
+
+    const invoice = await InvoiceModel.findOne(query);
+    if (!invoice) {
+      return res.status(404).json({ status: "error", message: "Invoice not found" });
+    }
+
+    const targetEmail = (req.body?.email || invoice.client?.email || "").trim();
+    if (!targetEmail || !targetEmail.includes("@")) {
+      return res.status(400).json({ status: "error", message: "A valid recipient email is required" });
+    }
+
+    const { sendInvoiceEmail } = await import("../../services/emailService.js");
+    const emailResult = await sendInvoiceEmail({
+      toEmail: targetEmail,
+      buyerName: invoice.client?.name || "Valued Client",
+      invoiceNumber: invoice.invoiceNo,
+      createdDate: invoice.invoiceDate ? new Date(invoice.invoiceDate).toLocaleDateString() : new Date().toLocaleDateString(),
+      dueDate: invoice.dueDate ? new Date(invoice.dueDate).toLocaleDateString() : "Upon Receipt",
+      items: invoice.items || [],
+      total: invoice.grandTotal || invoice.totalAmount || 0,
+      subtotal: invoice.subTotal || 0,
+      paymentMethod: invoice.paymentMethod || "Standard",
+    });
+
+    return res.status(200).json({
+      status: emailResult.delivered ? "success" : "error",
+      message: emailResult.delivered ? `Invoice sent successfully to ${targetEmail}` : `Failed to send email: ${emailResult.reason}`,
+      data: { emailDelivered: emailResult.delivered, recipient: targetEmail },
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
