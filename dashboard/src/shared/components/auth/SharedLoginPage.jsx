@@ -278,7 +278,6 @@ export function SharedLoginPage({
                 exit={{ opacity: 0, x: 10 }}
                 onSubmit={handleSubmit}
                 className="flex flex-col gap-4"
-                autoComplete="off"
               >
                 {/* Email Field */}
                 <div className="space-y-1.5 text-left">
@@ -291,8 +290,9 @@ export function SharedLoginPage({
                     </span>
                     <input
                       type="email"
-                      name="user_login_email"
-                      autoComplete="off"
+                      id="email"
+                      name="email"
+                      autoComplete="username email"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                       className="w-full pl-10 pr-3.5 h-10 text-xs bg-white border border-zinc-300 rounded-xl text-zinc-900 placeholder:text-zinc-500 focus:outline-hidden focus:bg-white focus:border-zinc-400 focus:ring-2 focus:ring-zinc-400/20 transition-all font-medium"
@@ -325,8 +325,9 @@ export function SharedLoginPage({
                     </span>
                     <input
                       type={showPassword ? 'text' : 'password'}
-                      name="user_login_password"
-                      autoComplete="new-password"
+                      id="password"
+                      name="password"
+                      autoComplete="current-password"
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
                       className="w-full pl-10 pr-10 h-10 text-xs bg-white border border-zinc-300 rounded-xl text-zinc-900 placeholder:text-zinc-500 focus:outline-hidden focus:bg-white focus:border-zinc-400 focus:ring-2 focus:ring-zinc-400/20 transition-all font-medium"
