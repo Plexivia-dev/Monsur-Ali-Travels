@@ -1,5 +1,9 @@
 import { InvoiceModel, generateUniqueInvoiceNo } from "../../models/invoice.model.js";
 import { formatInvoiceQrText, generateQrDataUrl } from "../../utils/qrHelper.js";
+import {
+  sendPaymentDocCreatedEmailToAccountants,
+  sendPaymentOrBillCreatedEmailToOwners,
+} from "../../services/emailNotification.service.js";
 
 // @desc    Get all invoices
 // @route   GET /api/v1/docs/invoices
@@ -123,6 +127,27 @@ export const createInvoice = async (req, res, next) => {
     }
 
     const newInvoice = await InvoiceModel.create(body);
+
+    const creatorName = req.user?.name || "Staff Member";
+    const invoiceGrandTotal = newInvoice.items?.reduce((acc, it) => acc + (Number(it.quantity || 1) * Number(it.unitPrice || 0)), 0) || 0;
+
+    // Action 3: Email Accountant
+    sendPaymentDocCreatedEmailToAccountants({
+      createdByUserName: creatorName,
+      docType: "Invoice",
+      docNumber: newInvoice.invoiceNo,
+      amount: invoiceGrandTotal,
+      clientName: newInvoice.client?.name || "",
+    }).catch((err) => console.error("[EmailTrigger] sendPaymentDocCreatedEmailToAccountants (Invoice) error:", err.message));
+
+    // Action 4: Email Owners for new bill/invoice
+    sendPaymentOrBillCreatedEmailToOwners({
+      createdByUserName: creatorName,
+      type: "Invoice / Bill",
+      refNumber: newInvoice.invoiceNo,
+      amount: invoiceGrandTotal,
+      notes: `Invoice billed to ${newInvoice.client?.name || "Client"}`,
+    }).catch((err) => console.error("[EmailTrigger] sendPaymentOrBillCreatedEmailToOwners (Invoice) error:", err.message));
 
     return res.status(201).json({
       status: "success",

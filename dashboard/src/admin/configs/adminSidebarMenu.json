@@ -44,6 +44,14 @@
             "path": "/admin/users",
             "icon": "User",
             "roles": ["owner", "superadmin", "admin"]
+          },
+          {
+            "id": "employees",
+            "name": "Employees",
+            "nameBn": "",
+            "path": "/admin/employees",
+            "icon": "UserCheck",
+            "roles": ["owner", "superadmin", "admin", "accountant", "accounts"]
           }
         ]
       }

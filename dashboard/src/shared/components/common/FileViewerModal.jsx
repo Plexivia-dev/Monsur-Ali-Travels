@@ -22,10 +22,7 @@ import {
 } from 'lucide-react';
 
 export const API_BASE_URL =
-  (typeof import.meta !== 'undefined' && import.meta.env?.VITE_API_BASE_URL) ||
-  (typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
-    ? 'http://localhost:5092'
-    : 'https://api.monsuralitravels.com');
+  (typeof import.meta !== 'undefined' && import.meta.env?.VITE_API_BASE_URL) || 'https://api.monsuralitravels.com';
 
 /**
  * Normalizes file URLs to handle relative paths, legacy dev server hosts, and Cloudflare R2 endpoints
@@ -33,33 +30,29 @@ export const API_BASE_URL =
 export function normalizeFileUrl(fileUrl = '') {
   if (!fileUrl || typeof fileUrl !== 'string') return '';
   const trimmed = fileUrl.trim();
-  const isLocalDev = typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1');
 
-  if (
-    trimmed.startsWith('http://') ||
-    trimmed.startsWith('https://') ||
-    trimmed.startsWith('data:') ||
-    trimmed.startsWith('blob:')
-  ) {
-    // When in local development, if URL points to live domain with /uploads, route to local server
-    if (isLocalDev && (trimmed.startsWith('https://api.monsuralitravels.com/uploads') || trimmed.startsWith('http://api.monsuralitravels.com/uploads'))) {
-      return trimmed.replace(/^https?:\/\/api\.monsuralitravels\.com/, 'http://localhost:5092');
-    }
-
-    // In production, if it points to a localhost port, replace with production API_BASE_URL
-    if (!isLocalDev && (trimmed.includes('localhost:') || trimmed.includes('127.0.0.1:'))) {
-      return trimmed.replace(/^https?:\/\/[^/]+/, API_BASE_URL.replace(/\/+$/, ''));
-    }
-
-    // In production, upgrade http to https for api domain
-    if (!isLocalDev && typeof window !== 'undefined' && window.location.protocol === 'https:' && trimmed.startsWith('http://api.monsuralitravels.com')) {
-      return trimmed.replace('http://', 'https://');
-    }
-
+  // 1. Data URLs and Blobs
+  if (trimmed.startsWith('data:') || trimmed.startsWith('blob:')) {
     return trimmed;
   }
 
-  const cleanBase = API_BASE_URL.replace(/\/+$/, '');
+  // 2. Localhost URLs stored in database -> Redirect to live API domain
+  if (trimmed.startsWith('http://localhost:') || trimmed.startsWith('http://127.0.0.1:')) {
+    return trimmed.replace(/^https?:\/\/[^/]+/, 'https://api.monsuralitravels.com');
+  }
+
+  // 3. HTTP live domain -> Upgrade to HTTPS
+  if (trimmed.startsWith('http://api.monsuralitravels.com')) {
+    return trimmed.replace('http://', 'https://');
+  }
+
+  // 4. Absolute URLs (Cloudflare R2 or HTTPS)
+  if (trimmed.startsWith('http://') || trimmed.startsWith('https://')) {
+    return trimmed;
+  }
+
+  // 5. Relative paths (/uploads/...) -> prepend live API_BASE_URL
+  const cleanBase = 'https://api.monsuralitravels.com';
   const cleanPath = trimmed.startsWith('/') ? trimmed : `/${trimmed}`;
   return `${cleanBase}${cleanPath}`;
 }

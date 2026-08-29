@@ -334,7 +334,6 @@ export default function CaseWorkflow() {
         title="Case Files & Overseas Pipeline"
         subtitle="5-Column card grid and column views. Track client stages, passport files, assigned officers, and open full 360° dossiers instantly."
         icon={FolderOpen}
-        badge={`${totalCases} Active Files`}
         actions={
           <>
             <Button
@@ -342,7 +341,7 @@ export default function CaseWorkflow() {
               className="h-10 px-4 bg-sky-500 hover:bg-sky-400 text-slate-950 rounded-xl font-bold text-xs transition shadow-lg cursor-pointer gap-2"
             >
               <Plus className="size-4" />
-              <span>New Client Case</span>
+              <span>New Client File</span>
             </Button>
 
             <Button
@@ -366,26 +365,6 @@ export default function CaseWorkflow() {
           </>
         }
       />
-
-      {/* 4 Pipeline Stat Pills */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
-        <div className="bg-card border border-border rounded-2xl p-4 shadow-xs">
-          <span className="text-[10px] text-muted-foreground uppercase font-bold block">Total Active Cases</span>
-          <span className="text-xl font-black text-foreground mt-0.5 block">{totalCases} Files</span>
-        </div>
-        <div className="bg-card border border-border rounded-2xl p-4 shadow-xs">
-          <span className="text-[10px] text-sky-600 dark:text-sky-400 uppercase font-bold block">In Document Processing</span>
-          <span className="text-xl font-black text-sky-600 dark:text-sky-400 mt-0.5 block">{inProcessing} Files</span>
-        </div>
-        <div className="bg-card border border-border rounded-2xl p-4 shadow-xs">
-          <span className="text-[10px] text-amber-600 dark:text-amber-400 uppercase font-bold block">Embassy & VFS Stage</span>
-          <span className="text-xl font-black text-amber-600 dark:text-amber-400 mt-0.5 block">{inEmbassy} Files</span>
-        </div>
-        <div className="bg-card border border-border rounded-2xl p-4 shadow-xs">
-          <span className="text-[10px] text-emerald-600 dark:text-emerald-400 uppercase font-bold block">Delivered & Closed</span>
-          <span className="text-xl font-black text-emerald-600 dark:text-emerald-400 mt-0.5 block">{delivered} Files</span>
-        </div>
-      </div>
 
       {/* Filter & View Switcher Bar */}
       <div className="bg-card border border-border p-4 rounded-2xl shadow-xs space-y-4">

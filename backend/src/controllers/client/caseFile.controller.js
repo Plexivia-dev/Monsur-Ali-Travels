@@ -4,6 +4,8 @@ import Client from "../../models/client.model.js";
 import TaskModel from "../../models/task.model.js";
 import DocumentVaultModel from "../../models/documentVault.model.js";
 import { UserModel } from "../../models/user.model.js";
+import { NotificationModel } from "../../models/notification.model.js";
+import { sendNewCaseEmailToAdmins } from "../../services/emailNotification.service.js";
 import { generateDid } from "../../utils/generateDid.js";
 
 export const buildCaseIdentifierQuery = (identifier) => {
@@ -420,6 +422,25 @@ export const createCase = async (req, res) => {
         },
       }
     ).catch(() => {});
+
+    // Broadcast new case creation notification
+    await NotificationModel.create({
+      title: "New Case Created",
+      message: `Case ${newCase.caseNumber} opened for ${newCase.applicantName || "Client"} (${newCase.caseType}).`,
+      module: "visa",
+      type: "info",
+      refDid: newCase.did,
+      createdBy: creatorName,
+    }).catch(() => {});
+
+    // Action 1: Email all Owners & Admins
+    sendNewCaseEmailToAdmins({
+      userName: creatorName,
+      caseNumber: newCase.caseNumber || newCase.did,
+      caseDid: newCase.did,
+      clientName: newCase.applicantName || "Client",
+      destinationCountry: newCase.destinationCountry || "",
+    }).catch((err) => console.error("[EmailTrigger] sendNewCaseEmailToAdmins error:", err.message));
 
     return res.status(201).json({
       success: true,

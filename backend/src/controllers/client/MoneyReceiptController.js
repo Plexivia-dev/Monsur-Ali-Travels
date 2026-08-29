@@ -5,6 +5,10 @@ import {
   generateReceiptQrText,
 } from "../../models/moneyReceipt.model.js";
 import Client from "../../models/client.model.js";
+import {
+  sendPaymentDocCreatedEmailToAccountants,
+  sendPaymentOrBillCreatedEmailToOwners,
+} from "../../services/emailNotification.service.js";
 
 // @desc    Get all money receipts / tokens with pagination and search
 // @route   GET /api/v1/receipts

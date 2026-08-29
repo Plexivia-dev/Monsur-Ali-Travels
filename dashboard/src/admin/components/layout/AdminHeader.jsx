@@ -9,6 +9,7 @@ import {
 import { useSidebar } from '@/components/ui/sidebar';
 import { useAuth } from '@/store/useAuthStore';
 import { ProfileDropdown } from '@/components/blocks/dropdown-profile';
+import { NotificationBell } from './NotificationBell';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { cn } from '@/lib/utils';
 
@@ -86,16 +87,8 @@ export function AdminHeader({ lang, setLang }) {
           </span>
         </div>
 
-        {/* Notifications */}
-        <button
-          type="button"
-          onClick={() => navigate('/admin/system/activity-logs')}
-          className="relative flex h-9 w-9 items-center justify-center rounded-lg text-white hover:bg-white/10 transition-colors cursor-pointer"
-          title="Activity & Notifications"
-        >
-          <Bell className="h-4.5 w-4.5 text-white" />
-          <span className="absolute top-2 right-2 h-2 w-2 rounded-full bg-sky-400 ring-2 ring-sidebar animate-pulse" />
-        </button>
+        {/* Real-time Notifications Bell Dropdown */}
+        <NotificationBell />
 
         <div className="h-4 w-px bg-white/20 mx-0.5" />
 
