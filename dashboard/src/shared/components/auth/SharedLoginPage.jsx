@@ -50,10 +50,11 @@ export function SharedLoginPage({
   // 2FA Verification State
   const [twoFactorToken, setTwoFactorToken] = useState('');
   const [twoFactorEmail, setTwoFactorEmail] = useState('');
-  const [twoFactorMethod, setTwoFactorMethod] = useState('email'); // 'email' | 'authenticator'
+  const [twoFactorMethod, setTwoFactorMethod] = useState('authenticator'); // Default: 'authenticator'
   const [twoFactorCode, setTwoFactorCode] = useState('');
   const [is2faSubmitting, setIs2faSubmitting] = useState(false);
   const [isSendingQr, setIsSendingQr] = useState(false);
+  const [isSendingOtp, setIsSendingOtp] = useState(false);
   const [resendCooldown, setResendCooldown] = useState(0);
 
   // Forgot Password State
@@ -93,11 +94,10 @@ export function SharedLoginPage({
       if (res?.requires2fa) {
         setTwoFactorToken(res.twoFactorToken || '');
         setTwoFactorEmail(res.email || email.trim());
-        setTwoFactorMethod(res.defaultMethod || 'email');
+        setTwoFactorMethod('authenticator'); // Default to authenticator
         setTwoFactorCode('');
         setViewMode('2fa_verify');
-        setResendCooldown(60);
-        toast.info(res.message || 'Verification code sent to your email.');
+        toast.info('Please enter the 6-digit code from your Authenticator app.');
         return;
       }
 
@@ -133,19 +133,22 @@ export function SharedLoginPage({
     }
   };
 
-  // Resend Email 2FA OTP
-  const handleResend2faOtp = async () => {
-    if (resendCooldown > 0 || is2faSubmitting) return;
+  // Action: Send OTP Email on demand
+  const handleSendEmailOtp = async () => {
+    if (resendCooldown > 0 || isSendingOtp) return;
+    setIsSendingOtp(true);
     try {
       await resendEmailOtp(twoFactorToken);
-      toast.success('A fresh 6-digit verification code has been sent to your email.');
+      toast.success('A 6-digit verification code has been sent to your email.');
       setResendCooldown(60);
     } catch (err) {
       handleGlobalError(err);
+    } finally {
+      setIsSendingOtp(false);
     }
   };
 
-  // Action 3: Send QR Code directly to user's registered email
+  // Action: Send QR Code directly to user's registered email
   const handleGetQrCodeEmail = async () => {
     if (isSendingQr) return;
     setIsSendingQr(true);
@@ -374,23 +377,8 @@ export function SharedLoginPage({
                 autoComplete="off"
               >
                 {/* 2FA Method Selector Tabs */}
+                {/* Method Switcher Tabs (Authenticator first, Email OTP second) */}
                 <div className="grid grid-cols-2 gap-1.5 p-1 bg-[#09090b] border border-zinc-800 rounded-xl">
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setTwoFactorMethod('email');
-                      setTwoFactorCode('');
-                    }}
-                    className={`h-8 flex items-center justify-center gap-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
-                      twoFactorMethod === 'email'
-                        ? 'bg-sky-500 text-white shadow-xs'
-                        : 'text-zinc-400 hover:text-zinc-200'
-                    }`}
-                  >
-                    <Mail className="size-3.5" />
-                    <span>Email OTP</span>
-                  </button>
-
                   <button
                     type="button"
                     onClick={() => {
@@ -406,50 +394,25 @@ export function SharedLoginPage({
                     <Smartphone className="size-3.5" />
                     <span>Authenticator</span>
                   </button>
+
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setTwoFactorMethod('email');
+                      setTwoFactorCode('');
+                    }}
+                    className={`h-8 flex items-center justify-center gap-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
+                      twoFactorMethod === 'email'
+                        ? 'bg-sky-500 text-white shadow-xs'
+                        : 'text-zinc-400 hover:text-zinc-200'
+                    }`}
+                  >
+                    <Mail className="size-3.5" />
+                    <span>Email OTP</span>
+                  </button>
                 </div>
 
-                {/* EMAIL 2FA TAB */}
-                {twoFactorMethod === 'email' && (
-                  <div className="space-y-4">
-                    <div className="text-left bg-[#09090b] border border-sky-900/40 rounded-xl p-3 text-xs text-sky-400 font-medium shadow-inner">
-                      <span>We sent a 6-digit verification code to: </span>
-                      <span className="font-bold text-sky-200 block mt-0.5">{twoFactorEmail}</span>
-                    </div>
-
-                    <div className="space-y-1.5 text-left">
-                      <div className="flex items-center justify-between">
-                        <label className="block text-xs font-semibold text-zinc-300">
-                          6-Digit Email Code
-                        </label>
-                        <button
-                          type="button"
-                          disabled={resendCooldown > 0 || is2faSubmitting}
-                          onClick={handleResend2faOtp}
-                          className="text-[11px] text-zinc-400 hover:text-white disabled:opacity-50 transition cursor-pointer"
-                        >
-                          {resendCooldown > 0 ? `Resend code (${resendCooldown}s)` : 'Resend code'}
-                        </button>
-                      </div>
-                      <div className="relative">
-                        <span className="absolute inset-y-0 left-0 flex items-center pl-3.5 text-zinc-600 pointer-events-none">
-                          <KeyRound className="h-4 w-4" />
-                        </span>
-                        <input
-                          type="text"
-                          maxLength={6}
-                          value={twoFactorCode}
-                          onChange={(e) => setTwoFactorCode(e.target.value.replace(/\D/g, ''))}
-                          className="w-full pl-10 pr-3.5 h-10 text-sm font-mono tracking-widest bg-white border border-zinc-300 rounded-xl text-zinc-900 placeholder:text-zinc-500 focus:outline-hidden focus:bg-white focus:border-zinc-400 focus:ring-2 focus:ring-zinc-400/20 transition-all text-center font-bold"
-                          placeholder="123456"
-                          autoFocus
-                          required
-                        />
-                      </div>
-                    </div>
-                  </div>
-                )}
-
-                {/* GOOGLE AUTHENTICATOR TAB */}
+                {/* GOOGLE AUTHENTICATOR TAB (Default) */}
                 {twoFactorMethod === 'authenticator' && (
                   <div className="space-y-3">
                     <div className="text-left bg-[#09090b] border border-sky-900/40 rounded-xl p-3 text-xs text-sky-400 font-medium shadow-inner">
@@ -476,11 +439,41 @@ export function SharedLoginPage({
                         />
                       </div>
                     </div>
-
                   </div>
                 )}
 
-                {/* Vertical 3 Action Buttons (Verify -> Cancel -> Get QR Code) */}
+                {/* EMAIL 2FA TAB */}
+                {twoFactorMethod === 'email' && (
+                  <div className="space-y-3.5">
+                    <div className="text-left bg-[#09090b] border border-sky-900/40 rounded-xl p-3 text-xs text-zinc-300 font-medium shadow-inner">
+                      <span>Click <strong className="text-sky-400">"Send OTP"</strong> below to receive a 6-digit code at:</span>
+                      <span className="font-bold text-sky-200 block mt-0.5">{twoFactorEmail}</span>
+                    </div>
+
+                    <div className="space-y-1.5 text-left">
+                      <label className="block text-xs font-semibold text-zinc-300">
+                        6-Digit Email Code
+                      </label>
+                      <div className="relative">
+                        <span className="absolute inset-y-0 left-0 flex items-center pl-3.5 text-zinc-600 pointer-events-none">
+                          <KeyRound className="h-4 w-4" />
+                        </span>
+                        <input
+                          type="text"
+                          maxLength={6}
+                          value={twoFactorCode}
+                          onChange={(e) => setTwoFactorCode(e.target.value.replace(/\D/g, ''))}
+                          className="w-full pl-10 pr-3.5 h-10 text-sm font-mono tracking-widest bg-white border border-zinc-300 rounded-xl text-zinc-900 placeholder:text-zinc-500 focus:outline-hidden focus:bg-white focus:border-zinc-400 focus:ring-2 focus:ring-zinc-400/20 transition-all text-center font-bold"
+                          placeholder="123456"
+                          autoFocus
+                          required
+                        />
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* Vertical 3 Action Buttons (Verify -> Cancel -> Send OTP / Get QR Code) */}
                 <div className="flex flex-col gap-2.5 pt-2">
                   {/* Button 1: Verify */}
                   <button
@@ -510,21 +503,44 @@ export function SharedLoginPage({
                     <span>Cancel</span>
                   </button>
 
-                  {/* Button 3: Get QR Code (Sends email with QR code) */}
-                  <button
-                    type="button"
-                    disabled={isSendingQr}
-                    onClick={handleGetQrCodeEmail}
-                    className="w-full h-10 flex items-center justify-center font-bold text-xs bg-zinc-800 hover:bg-zinc-700 text-zinc-100 border border-zinc-700/80 rounded-xl transition-all cursor-pointer shadow-sm active:scale-[0.99] disabled:opacity-60"
-                    title="Send Authenticator QR Code to your registered email"
-                  >
-                    {isSendingQr ? (
-                      <Loader2 className="h-4 w-4 mr-1.5 animate-spin text-sky-400" />
-                    ) : (
-                      <QrCode className="h-4 w-4 mr-1.5 text-sky-400" />
-                    )}
-                    <span>{isSendingQr ? 'Sending QR Code to Email…' : 'Get QR Code'}</span>
-                  </button>
+                  {/* Button 3: Contextual Action (Send OTP when in Email tab, Get QR Code when in Authenticator tab) */}
+                  {twoFactorMethod === 'email' ? (
+                    <button
+                      type="button"
+                      disabled={isSendingOtp || resendCooldown > 0}
+                      onClick={handleSendEmailOtp}
+                      className="w-full h-10 flex items-center justify-center font-bold text-xs bg-gradient-to-r from-sky-600/30 to-indigo-600/30 hover:from-sky-600/45 hover:to-indigo-600/45 text-sky-200 border border-sky-500/40 hover:border-sky-400/60 rounded-xl transition-all cursor-pointer shadow-md active:scale-[0.99] disabled:opacity-50"
+                      title="Send 6-digit OTP code to your registered email"
+                    >
+                      {isSendingOtp ? (
+                        <Loader2 className="h-4 w-4 mr-1.5 animate-spin text-sky-300" />
+                      ) : (
+                        <Mail className="h-4 w-4 mr-1.5 text-sky-300" />
+                      )}
+                      <span>
+                        {isSendingOtp
+                          ? 'Sending OTP…'
+                          : resendCooldown > 0
+                          ? `Resend OTP (${resendCooldown}s)`
+                          : 'Send OTP'}
+                      </span>
+                    </button>
+                  ) : (
+                    <button
+                      type="button"
+                      disabled={isSendingQr}
+                      onClick={handleGetQrCodeEmail}
+                      className="w-full h-10 flex items-center justify-center font-bold text-xs bg-gradient-to-r from-sky-600/30 to-indigo-600/30 hover:from-sky-600/45 hover:to-indigo-600/45 text-sky-200 border border-sky-500/40 hover:border-sky-400/60 rounded-xl transition-all cursor-pointer shadow-md active:scale-[0.99] disabled:opacity-50"
+                      title="Send Authenticator QR Code to your registered email"
+                    >
+                      {isSendingQr ? (
+                        <Loader2 className="h-4 w-4 mr-1.5 animate-spin text-sky-300" />
+                      ) : (
+                        <QrCode className="h-4 w-4 mr-1.5 text-sky-300" />
+                      )}
+                      <span>{isSendingQr ? 'Sending QR Code to Email…' : 'Get QR Code'}</span>
+                    </button>
+                  )}
                 </div>
               </motion.form>
             )}

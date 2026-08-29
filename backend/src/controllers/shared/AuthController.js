@@ -69,25 +69,6 @@ export const login = async (req, res, next) => {
       return res.status(401).json({ status: "error", message: "Invalid credentials" });
     }
 
-    // Generate 6-digit numeric OTP for Email 2FA
-    const otp = crypto.randomInt(100000, 999999).toString();
-    const emailOtpExpiresAt = new Date(Date.now() + 3 * 60 * 1000); // 3 minutes
-
-    await UserModel.updateOne(
-      { did: user.did },
-      { $set: { emailOtp: otp, emailOtpExpiresAt } },
-    );
-
-    // Dispatch 2FA OTP Email
-    sendOtpEmail({
-      toEmail: user.email,
-      otp,
-      name: user.name,
-      type: "two-factor",
-    }).catch((err) => {
-      logger.warn({ error: err.message, email: user.email }, "Failed to send 2FA email OTP during login");
-    });
-
     const twoFactorToken = createTwoFactorToken(user);
 
     logger.info({ userId: user.id, email: user.email }, "User password validated; 2FA challenge initiated");
@@ -97,11 +78,11 @@ export const login = async (req, res, next) => {
       status: "success",
       requires2fa: true,
       twoFactorToken,
-      availableMethods: ["email", "authenticator"],
-      defaultMethod: user.twoFactorMethod || "email",
+      availableMethods: ["authenticator", "email"],
+      defaultMethod: "authenticator",
       email: user.email,
       hasAuthenticatorConfigured: !!user.twoFactorSecret,
-      message: "Password verified. Please enter the 6-digit verification code sent to your email or from your Authenticator app.",
+      message: "Please enter the 6-digit code from your Google Authenticator app or request an Email OTP.",
     });
   } catch (error) {
     next(error);
