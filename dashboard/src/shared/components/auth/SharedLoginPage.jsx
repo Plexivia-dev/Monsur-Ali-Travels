@@ -75,9 +75,10 @@ export function SharedLoginPage({
 
   useEffect(() => {
     if (!isAuthLoading && user) {
-      navigate('/dashboard');
+      const targetPath = portalType === 'admin' ? '/admin' : '/dashboard/agency/tasks';
+      navigate(targetPath, { replace: true });
     }
-  }, [user, isAuthLoading, navigate]);
+  }, [user, isAuthLoading, navigate, portalType]);
 
   // Step 1: Handle primary login submission (initiates 2FA)
   const handleSubmit = async (e) => {
