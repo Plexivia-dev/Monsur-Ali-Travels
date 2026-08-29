@@ -5,6 +5,7 @@ import DocumentVaultModel from "../../models/documentVault.model.js";
 import { NotificationModel } from "../../models/notification.model.js";
 import { UserModel } from "../../models/user.model.js";
 import { sendTaskAssignmentEmail } from "../../services/emailService.js";
+import { sendPaymentOrBillCreatedEmailToOwners } from "../../services/emailNotification.service.js";
 
 
 export const buildCaseIdentifierQuery = (identifier) => {
