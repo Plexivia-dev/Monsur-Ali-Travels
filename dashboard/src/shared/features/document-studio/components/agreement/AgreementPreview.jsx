@@ -15,7 +15,10 @@ export function AgreementPreview({ data = {} }) {
   const witnesses = safeData.witnesses || {};
 
   return (
-    <div className="bg-white text-slate-900 font-sans p-4 sm:p-6 text-[11px] leading-relaxed space-y-4 print:text-[10px] print:p-2 print:space-y-3">
+    <div
+      id="employment-agreement-canvas"
+      className="printable-a4-paper w-[210mm] max-w-full bg-white text-slate-900 font-sans p-6 sm:p-8 text-[11px] leading-relaxed space-y-4 print:text-[10px] print:p-2 print:space-y-3 print:m-0 print:border-0 print:shadow-none box-border shadow-xl border border-slate-300"
+    >
       {/* 0. Top Header */}
       <div className="border-b-2 border-slate-900 pb-3">
         <div className="flex items-center justify-between gap-3 mb-2">

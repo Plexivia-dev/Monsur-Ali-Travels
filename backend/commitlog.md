@@ -1,9 +1,24 @@
 # Commit Log / Change Log
 
+## [2026-08-29]
+- **Backend Version**: `v1.2.0`
+- **MB35 - Master Common Email Template System & Centralized Email Delivery Integration**:
+  - Implemented `commonEmailTemplate.js` luxury dark/gold responsive email template with text-based branding (`Monsur Ali Travels`) and official Sunamganj office address.
+  - Implemented `emailService.js` singleton delivery service with support for 2FA OTP, QR Code setup with inline attachment, Staff Invitations, Task Assignments (linking to Client Dashboard), Case Milestones, Payment Receipts, Invoices, and Payroll slips.
+  - Upgraded `AuthController`, `TwoFactorController`, `SettingsController`, `UsersController`, `caseController`, `caseFile.controller`, `MoneyReceiptController`, `InvoiceController`, and `EmailRoute`.
+
 ## [2026-08-27]
 - **Dashboard Version**: `v0.4.2`
 
-### 1. Client Dashboard Overview, Task Management & Real-Time Notifications (NC01 - NC14)
+### 1. Client Dashboard Overview, Task Management & Real-Time Notifications (NC01 - NC17)
+- **NC17 - Block Browser Autofill on Login Form**:
+  - Added `autoComplete="off"` and `autoComplete="new-password"` to prevent browser password managers from auto-filling saved Owner credentials.
+- **NC16 - Clear Default Credentials in Login Forms**:
+  - Removed prefilled `md.ikr4m@gmail.com` and `ihkhan2027@gmail.com` from `LoginPage.jsx`.
+  - Set default state to blank inputs for both email and password.
+- **NC15 - Sync User Profile on App Mount & Sanitize GET /auth/me**:
+  - Implemented automatic `fetchProfile()` in `AuthGuard` on app initialization.
+  - Sanitized return schema in `getProfile` (`/api/v1/auth/me`).
 - **NC14 - Fix Auth Role Fallback & Remove Hardcoded Avatars**:
   - Removed `{ role: "Owner" }` fallback from `AuthController.js` login.
   - Removed Unsplash placeholder avatars from `useAuthStore.js` and profile forms.

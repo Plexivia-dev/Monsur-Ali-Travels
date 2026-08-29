@@ -75,6 +75,7 @@ export function CashVoucher() {
       docId: data.voucherNo,
       docType: 'Cash_Voucher',
       clientName: data.paidTo || data.receivedBy,
+      elementId: 'cash-voucher-canvas',
     });
   };
 
@@ -149,6 +150,9 @@ export function CashVoucher() {
             onPreview={() => setViewMode('preview')}
             isSubmitting={isSubmitting}
           />
+          <div className="hidden print:block w-full">
+            <CashVoucherPreview data={data} />
+          </div>
         </div>
       )}
 

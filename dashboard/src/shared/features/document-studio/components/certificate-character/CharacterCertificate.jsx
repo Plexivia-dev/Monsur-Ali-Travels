@@ -20,6 +20,7 @@ export function CharacterCertificate() {
       docId: data.certificateNo,
       docType: 'Character_Certificate',
       clientName: data.candidateName,
+      elementId: 'character-certificate-canvas',
     });
   };
 
@@ -56,6 +57,9 @@ export function CharacterCertificate() {
       {viewMode === 'edit' && (
         <div className="w-full pb-16">
           <CharacterCertificateForm data={data} onChange={setData} />
+          <div className="hidden print:block w-full">
+            <CharacterCertificatePreview data={data} onPrint={handlePrint} />
+          </div>
         </div>
       )}
 

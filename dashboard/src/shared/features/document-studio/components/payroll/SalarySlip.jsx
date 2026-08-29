@@ -124,6 +124,7 @@ export function SalarySlip() {
       docId: formData.slipNo,
       docType: 'Salary_Slip',
       clientName: formData.employeeName,
+      elementId: 'salary-slip-canvas',
     });
   };
 
@@ -201,6 +202,9 @@ export function SalarySlip() {
             onReset={handleReset}
             isSubmitting={isSubmitting}
           />
+          <div className="hidden print:block w-full">
+            <SalarySlipPreview data={formData} formData={formData} />
+          </div>
         </div>
       )}
 

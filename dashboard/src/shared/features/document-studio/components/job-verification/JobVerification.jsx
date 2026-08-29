@@ -60,6 +60,8 @@ export function JobVerification({ initialData = null, onSavedSuccess = null, isL
             ? `Job verification updated successfully! (ID: ${returnedId})`
             : `Job verification saved to database! (ID: ${returnedId})`
         );
+        setViewMode('preview');
+        window.scrollTo({ top: 0, behavior: 'smooth' });
         if (onSavedSuccess) onSavedSuccess(savedDoc);
       } else {
         throw new Error(res.data?.message || 'Failed to save to database.');
@@ -72,6 +74,8 @@ export function JobVerification({ initialData = null, onSavedSuccess = null, isL
         verificationId: fallbackId,
       }));
       toast.info(`Job verification document ready! (ID: ${fallbackId})`);
+      setViewMode('preview');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
       if (onSavedSuccess) onSavedSuccess({ verificationId: fallbackId });
     } finally {
       setIsSubmitting(false);
@@ -80,9 +84,10 @@ export function JobVerification({ initialData = null, onSavedSuccess = null, isL
 
   const handlePrint = () => {
     printDocument({
-      docId: data.verificationId,
+      docId: data?.verificationId,
       docType: 'Job_Verification',
-      clientName: data.employeeName,
+      clientName: data?.clientInfo?.clientName || data?.employeeName,
+      elementId: 'job-verification-canvas',
     });
   };
 
@@ -153,13 +158,15 @@ export function JobVerification({ initialData = null, onSavedSuccess = null, isL
       {viewMode === 'edit' && (
         <div className="w-full pb-16">
           <JobVerificationForm
-
             formData={data}
             setFormData={setData}
             onSubmit={handleFormSubmit}
             onReset={handleReset}
             isSubmitting={isSubmitting}
           />
+          <div className="hidden print:block w-full">
+            <JobVerificationPreview data={data} />
+          </div>
         </div>
       )}
 

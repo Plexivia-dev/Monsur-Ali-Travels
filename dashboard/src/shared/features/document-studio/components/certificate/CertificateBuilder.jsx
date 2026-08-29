@@ -49,6 +49,9 @@ export function CertificateBuilder() {
       {viewMode === 'edit' && (
         <div className="w-full pb-16">
           <CertificateForm data={data} onChange={setData} />
+          <div className="hidden print:block w-full">
+            <CertificatePreview data={data} onPrint={() => setIsExportOpen(true)} />
+          </div>
         </div>
       )}
 

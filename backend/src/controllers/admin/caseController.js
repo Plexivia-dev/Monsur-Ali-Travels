@@ -4,10 +4,8 @@ import TaskModel from "../../models/task.model.js";
 import DocumentVaultModel from "../../models/documentVault.model.js";
 import { NotificationModel } from "../../models/notification.model.js";
 import { UserModel } from "../../models/user.model.js";
-import {
-  sendTaskAssignedEmailToStaff,
-  sendPaymentOrBillCreatedEmailToOwners,
-} from "../../services/emailNotification.service.js";
+import { sendTaskAssignmentEmail } from "../../services/emailService.js";
+
 
 export const buildCaseIdentifierQuery = (identifier) => {
   if (!identifier) return { _id: null };
@@ -173,13 +171,21 @@ export const assignTaskStep = async (req, res) => {
       createdBy: req.user?.name || "Admin",
     }).catch(() => {});
 
-    // Action 2: Email staff member
-    sendTaskAssignedEmailToStaff({
-      assignedByUserName: req.user?.name || "Management",
-      assignedToDid: canonicalAssignedToDid,
-      taskTitle: title,
-      caseNumber: caseDoc.caseNumber || caseDoc.did,
-    }).catch((err) => console.error("[EmailTrigger] sendTaskAssignedEmailToStaff error:", err.message));
+    // Asynchronously send email notification to assigned staff
+    if (assignedUser?.email) {
+      sendTaskAssignmentEmail({
+        toEmail: assignedUser.email,
+        staffName: assignedUserName,
+        taskTitle: title,
+        description: description || "",
+        stepNumber: newTask.stepNumber,
+        caseNumber: caseDoc.caseNumber,
+        caseTitle: caseDoc.title || `Visa Case #${caseDoc.caseNumber}`,
+        clientName: caseDoc.applicantName || caseDoc.clientName || "",
+        serviceType: caseDoc.caseType || caseDoc.visaType || "Visa Processing",
+        assignedBy: req.user?.name || "Administration",
+      }).catch(() => {});
+    }
 
     return res.status(201).json({
       status: "success",

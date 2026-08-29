@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { X, Printer, FileCode, FileText, Check, Copy, Download, ExternalLink } from 'lucide-react';
+import { printDocument } from '@shared/lib/utils';
 
 export function ExportModal({ isOpen, onClose, documentTitle = 'Document', data = {}, elementId = 'printable-document-canvas' }) {
   const [copiedText, setCopiedText] = useState(false);
@@ -11,7 +12,11 @@ export function ExportModal({ isOpen, onClose, documentTitle = 'Document', data 
   const handlePrint = () => {
     onClose();
     setTimeout(() => {
-      window.print();
+      printDocument({
+        docType: documentTitle,
+        data,
+        elementId,
+      });
     }, 150);
   };
 

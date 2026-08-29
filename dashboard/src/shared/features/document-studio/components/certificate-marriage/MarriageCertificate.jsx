@@ -20,6 +20,7 @@ export function MarriageCertificate() {
       docId: data.certificateNo,
       docType: 'Marriage_Certificate',
       clientName: data.groomName ? `${data.groomName}_and_${data.brideName || ''}` : 'Marriage',
+      elementId: 'marriage-certificate-canvas',
     });
   };
 
@@ -56,6 +57,9 @@ export function MarriageCertificate() {
       {viewMode === 'edit' && (
         <div className="w-full pb-16">
           <MarriageCertificateForm data={data} onChange={setData} />
+          <div className="hidden print:block w-full">
+            <MarriageCertificatePreview data={data} onPrint={handlePrint} />
+          </div>
         </div>
       )}
 

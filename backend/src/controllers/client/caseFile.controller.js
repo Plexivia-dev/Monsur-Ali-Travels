@@ -743,6 +743,42 @@ export const updateWorkflowStatus = async (req, res) => {
       createdBy: req.user?.name || "System"
     });
 
+    // Asynchronously dispatch email notification
+    (async () => {
+      try {
+        const { sendCaseStatusUpdateEmail, sendTaskAssignmentEmail } = await import("../../services/emailService.js");
+        if (assignedTo && assignedTo !== previousAssignedToDid) {
+          const assignedUser = await UserModel.findOne({ did: assignedTo }).lean();
+          if (assignedUser?.email) {
+            await sendTaskAssignmentEmail({
+              toEmail: assignedUser.email,
+              staffName: assignedUser.name,
+              taskTitle: `Case Handoff: ${targetStatus || 'Processing'}`,
+              caseNumber: caseDoc.caseNumber,
+              clientName: caseDoc.applicantName || "",
+              serviceType: caseDoc.caseType || "Visa Processing",
+              assignedBy: req.user?.name || "Administration",
+            });
+          }
+        } else if (caseDoc.clientDid) {
+          const client = await Client.findOne({ did: caseDoc.clientDid }).lean();
+          if (client?.email) {
+            await sendCaseStatusUpdateEmail({
+              toEmail: client.email,
+              clientName: client.fullName || caseDoc.applicantName || "Valued Client",
+              caseNumber: caseDoc.caseNumber,
+              serviceType: caseDoc.caseType || "Visa Processing",
+              newStatus: targetStatus || workflowStatus,
+              remarks: remarks || "",
+              updatedBy: req.user?.name || "Monsur Ali Travels Team",
+            });
+          }
+        }
+      } catch (err) {
+        // Silent error for email notification
+      }
+    })();
+
     return res.status(200).json({
       success: true,
       message: "Workflow updated successfully",

@@ -90,8 +90,9 @@ export function CustomerGuardian({ initialData = null, onSavedSuccess = null }) 
   const handlePrint = () => {
     printDocument({
       docId: data.applicationNo || data.receiptNo,
-      docType: 'Client_Guardian_Form',
+      docType: 'Customer_Guardian_Form',
       clientName: data.client?.fullName,
+      elementId: 'customer-guardian-canvas',
     });
   };
 
@@ -173,6 +174,9 @@ export function CustomerGuardian({ initialData = null, onSavedSuccess = null }) 
             onPreview={() => setViewMode('preview')}
             isSubmitting={isSubmitting}
           />
+          <div className="hidden print:block w-full">
+            <CustomerGuardianPreview data={data} />
+          </div>
         </div>
       )}
 

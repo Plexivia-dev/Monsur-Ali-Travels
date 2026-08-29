@@ -83,6 +83,7 @@ export function PassportSubmission({ initialData = null, onSavedSuccess = null, 
       docId: data.trackingNo || data.submissionNo || data.barcode,
       docType: 'Passport_Submission',
       clientName: data.applicantName,
+      elementId: 'printable-passport-canvas',
     });
   };
 
@@ -149,13 +150,15 @@ export function PassportSubmission({ initialData = null, onSavedSuccess = null, 
       {viewMode === 'edit' && (
         <div className="w-full pb-16">
           <PassportSubmissionForm
-
             data={data}
             onChange={setData}
             onSubmit={handleFormSubmit}
             onReset={handleReset}
             isSubmitting={isSubmitting}
           />
+          <div className="hidden print:block w-full">
+            <PassportSubmissionPreview data={data} />
+          </div>
         </div>
       )}
 

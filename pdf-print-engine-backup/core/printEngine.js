@@ -1,26 +1,22 @@
-import { clsx } from 'clsx';
-import { twMerge } from 'tailwind-merge';
-
-export function cn(...inputs) {
-  return twMerge(clsx(inputs));
-}
-
-export function formatToBengaliDate(dateInput) {
-  if (!dateInput) return '';
-  const d = new Date(dateInput);
-  if (isNaN(d.getTime())) return dateInput;
-  return d.toLocaleDateString('bn-BD', { day: 'numeric', month: 'long', year: 'numeric' });
-}
-
-export function formatToDdMmYyyy(dateInput) {
-  if (!dateInput) return '';
-  const d = new Date(dateInput);
-  if (isNaN(d.getTime())) return dateInput;
-  const day = String(d.getDate()).padStart(2, '0');
-  const month = String(d.getMonth() + 1).padStart(2, '0');
-  const year = d.getFullYear();
-  return `${day}-${month}-${year}`;
-}
+/**
+ * ============================================================================
+ * UNIVERSAL ISOLATED A4 PRINT ENGINE FOR REACT / VITE / NEXT.JS
+ * ============================================================================
+ * 
+ * Developed for Monsur Ali Travels ERP (Document Studio & Invoicing).
+ * 
+ * KEY FEATURES:
+ * 1. Isolated Iframe Printing: Clones only the target printable canvas into an
+ *    invisible iframe. Completely eliminates parent layout offsets (sidebars,
+ *    navbars, fixed overlays, and split-view scale-[0.88] container transforms).
+ * 2. Automatic Unique ID & Metadata PDF Filename: Generates clear filenames like:
+ *    "JVF-89356_Job_Verification_Md_Rafiqul_Islam.pdf"
+ *    "INV-2608001_Invoice_Md_Rahman.pdf"
+ * 3. Resource Pre-loading: Waits for document fonts and all image assets to
+ *    finish rendering before triggering browser print dialog.
+ * 4. Fallback Support: Automatically falls back to standard window.print() if
+ *    iframe manipulation is restricted.
+ */
 
 /**
  * Extract document ID from any standard document data object
@@ -73,8 +69,12 @@ export function getDocumentRecipientName(data) {
  * Prints a target DOM element inside an isolated, invisible iframe.
  * This guarantees 100% precision: zero sidebar offset, no split-view scale distortion,
  * no modal interference, full A4 width alignment, and clean PDF document naming.
+ *
+ * @param {HTMLElement} targetEl - The DOM element to clone and print
+ * @param {string} pdfFileName - Formatted file name for PDF save dialog
+ * @param {string} originalTitle - Original browser document title to restore
  */
-function printElementInIsolatedFrame(targetEl, pdfFileName, originalTitle) {
+export function printElementInIsolatedFrame(targetEl, pdfFileName, originalTitle = document.title) {
   // Remove any previous print iframes
   const existingFrame = document.getElementById('__mat_print_frame__');
   if (existingFrame) {
@@ -125,7 +125,6 @@ function printElementInIsolatedFrame(targetEl, pdfFileName, originalTitle) {
         height: auto !important;
         -webkit-print-color-adjust: exact !important;
         print-color-adjust: exact !important;
-        font-family: 'Plus Jakarta Sans', 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Hind Siliguri', sans-serif;
         visibility: visible !important;
       }
       body * {
@@ -248,7 +247,7 @@ function printElementInIsolatedFrame(targetEl, pdfFileName, originalTitle) {
 }
 
 /**
- * Common utility to print or save PDF with the backend unique ID at the very beginning of the filename.
+ * Common, robust utility to print or save PDF with the backend unique ID at the very beginning of the filename.
  * Supports isolated iframe printing for 100% precision (prevents sidebar offset,
  * removes split-view scale interference, eliminates modal overlay issues)
  * while providing seamless fallback to standard window.print().
@@ -350,4 +349,4 @@ export function printDocument({
   }
 }
 
-
+export default printDocument;

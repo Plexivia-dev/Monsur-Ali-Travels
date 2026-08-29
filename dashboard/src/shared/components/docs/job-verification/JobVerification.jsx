@@ -67,9 +67,10 @@ export function JobVerification() {
 
   const handlePrint = () => {
     printDocument({
-      docId: data.verificationId,
-      docType: 'Job_Verification_Form',
-      clientName: data.clientInfo?.clientName,
+      docId: data?.verificationId,
+      docType: 'Job_Verification',
+      clientName: data?.clientInfo?.clientName || data?.employeeName,
+      elementId: 'job-verification-canvas',
     });
   };
 

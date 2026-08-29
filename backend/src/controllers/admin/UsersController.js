@@ -4,6 +4,7 @@ import {
   validateCreateUserPayload,
   validateUpdateUserPayload,
 } from "../../helper/userControllerHelper.js";
+import { sendStaffInvitationEmail } from "../../services/emailService.js";
 
 // List all users in the system.
 export const listUsers = async (req, res, next) => {
@@ -52,8 +53,19 @@ export const createUser = async (req, res, next) => {
       email: payload.email.toLowerCase().trim(),
       phone: payload.phone.trim(),
       role: payload.role,
+      subRole: payload.subRole || undefined,
       passwordHash: await hashPassword(payload.password),
     });
+
+    // Send welcome/credentials email asynchronously
+    sendStaffInvitationEmail({
+      toEmail: user.email,
+      name: user.name,
+      role: user.role,
+      subRole: user.subRole || "",
+      tempPassword: payload.password,
+      invitedBy: req.user?.name || "Administrator",
+    }).catch(() => {});
 
     res.status(201).json({ status: "success", data: user });
   } catch (error) {

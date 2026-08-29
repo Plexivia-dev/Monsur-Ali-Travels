@@ -43,6 +43,7 @@ export function MoneyReceiptDataTable() {
   // Modals
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [confirmModalItem, setConfirmModalItem] = useState(null);
+  const [previewItem, setPreviewItem] = useState(null);
   const [bankDepositTarget, setBankDepositTarget] = useState(null);
   const [deleteTarget, setDeleteTarget] = useState(null);
   const [isDeleting, setIsDeleting] = useState(false);

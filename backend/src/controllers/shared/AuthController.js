@@ -4,6 +4,7 @@ import { UserModel } from "../../models/user.model.js";
 import { env } from "../../config/env.js";
 import { logger } from "../../config/logger.js";
 import { comparePassword, hashPassword } from "../../utils/password.js";
+import { sendOtpEmail } from "../../utils/otpDelivery.js";
 
 export const createAccessToken = (user) => {
   return jwt.sign(
@@ -17,7 +18,15 @@ export const createRefreshToken = () => {
   return crypto.randomBytes(48).toString("hex");
 };
 
-// POST /auth/login - Validates credentials and logs in directly or prompts 2FA if enabled
+export const createTwoFactorToken = (user) => {
+  return jwt.sign(
+    { did: user.did, email: user.email, purpose: "2fa_login" },
+    env.ACCESS_TOKEN_SECRET,
+    { expiresIn: "10m" },
+  );
+};
+
+// POST /auth/login - Validates credentials, generates 2FA token and dispatches Email OTP
 export const login = async (req, res, next) => {
   try {
     const { email, username, login: loginInput, password } = req.body ?? {};
@@ -35,7 +44,7 @@ export const login = async (req, res, next) => {
       { did: normalizedInput },
     ];
 
-    let user = await UserModel.findOne({ $or: searchConditions }).select("+passwordHash");
+    let user = await UserModel.findOne({ $or: searchConditions }).select("+passwordHash +twoFactorSecret");
     if (!user) {
       // Case-insensitive exact match by email or username
       user = await UserModel.findOne({
@@ -43,7 +52,7 @@ export const login = async (req, res, next) => {
           { email: new RegExp(`^${normalizedInput.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&')}$`, 'i') },
           { username: new RegExp(`^${normalizedInput.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&')}$`, 'i') },
         ],
-      }).select("+passwordHash");
+      }).select("+passwordHash +twoFactorSecret");
     }
 
     if (!user || !user.passwordHash) {
@@ -60,47 +69,36 @@ export const login = async (req, res, next) => {
       return res.status(401).json({ status: "error", message: "Invalid credentials" });
     }
 
-    // If user has explicitly enabled 2FA, require 2FA OTP verification
-    if (user.twoFactorEnabled) {
-      return res.json({
-        status: "success",
-        requires2fa: true,
-        email: user.email,
-      });
-    }
-
-    // Direct Login without 2FA
-    const accessToken = createAccessToken(user);
-    const refreshToken = createRefreshToken();
-    const refreshTokenExpiresAt = new Date(Date.now() + env.REFRESH_TOKEN_EXPIRES_MS);
-
-    user.lastLogin = new Date();
-    user.refreshToken = refreshToken;
-    user.refreshTokenExpiresAt = refreshTokenExpiresAt;
+    // Generate 6-digit numeric OTP for Email 2FA
+    const otp = crypto.randomInt(100000, 999999).toString();
+    user.emailOtp = otp;
+    user.emailOtpExpiresAt = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
     await user.save();
 
-    logger.info({ userId: user.id }, "Successfully logged in directly (2FA disabled)");
+    // Dispatch 2FA OTP Email
+    sendOtpEmail({
+      toEmail: user.email,
+      otp,
+      name: user.name,
+      type: "two-factor",
+    }).catch((err) => {
+      logger.warn({ error: err.message, email: user.email }, "Failed to send 2FA email OTP during login");
+    });
 
-    res.json({
+    const twoFactorToken = createTwoFactorToken(user);
+
+    logger.info({ userId: user.id, email: user.email }, "User password validated; 2FA challenge initiated");
+
+    // Do NOT issue access or refresh tokens here; require 2FA completion
+    return res.json({
       status: "success",
-      data: {
-        user: {
-          id: user.did,
-          did: user.did,
-          name: user.name,
-          email: user.email,
-          avatar: user.avatar || "",
-          role: user.role,
-          subRole: user.subRole || "",
-          department: user.department || "",
-          designation: user.designation || "",
-          lastLogin: user.lastLogin,
-        },
-        accessToken,
-        accessTokenExpiresIn: env.ACCESS_TOKEN_EXPIRES_IN,
-        refreshToken,
-        refreshTokenExpiresAt: refreshTokenExpiresAt.toISOString(),
-      },
+      requires2fa: true,
+      twoFactorToken,
+      availableMethods: ["email", "authenticator"],
+      defaultMethod: user.twoFactorMethod || "email",
+      email: user.email,
+      hasAuthenticatorConfigured: !!user.twoFactorSecret,
+      message: "Password verified. Please enter the 6-digit verification code sent to your email or from your Authenticator app.",
     });
   } catch (error) {
     next(error);
@@ -337,7 +335,23 @@ export const getProfile = async (req, res, next) => {
     if (!user) {
       return res.status(404).json({ status: "error", message: "User not found" });
     }
-    res.json({ status: "success", data: user });
+    res.json({
+      status: "success",
+      data: {
+        id: user.did,
+        did: user.did,
+        name: user.name,
+        email: user.email,
+        phone: user.phone || "",
+        address: user.address || "",
+        role: user.role,
+        subRole: user.subRole || "",
+        department: user.department || "",
+        designation: user.designation || "",
+        avatar: user.avatar || "",
+        lastLogin: user.lastLogin,
+      },
+    });
   } catch (error) {
     next(error);
   }
@@ -402,6 +416,134 @@ export const changePassword = async (req, res, next) => {
     res.json({
       status: "success",
       message: "Password changed successfully",
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// POST /auth/forgot-password - Request password reset OTP code
+export const forgotPassword = async (req, res, next) => {
+  try {
+    const { email } = req.body ?? {};
+    const normalizedEmail = typeof email === "string" ? email.toLowerCase().trim() : "";
+
+    if (!normalizedEmail) {
+      return res.status(400).json({ status: "error", message: "Email address is required" });
+    }
+
+    const user = await UserModel.findOne({ email: normalizedEmail }).select("+emailOtp +emailOtpExpiresAt");
+    if (!user) {
+      // Return generic success message to prevent user enumeration
+      return res.json({
+        status: "success",
+        message: "If an account exists with this email, a verification code has been sent.",
+      });
+    }
+
+    if (!user.isActive) {
+      return res.status(403).json({ status: "error", message: "This user account is currently deactivated." });
+    }
+
+    // Generate 6-digit numeric OTP
+    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+    const expiresAt = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes expiry
+
+    user.emailOtp = otp;
+    user.emailOtpExpiresAt = expiresAt;
+    await user.save();
+
+    // Send OTP email
+    const deliveryResult = await sendOtpEmail({
+      toEmail: user.email,
+      otp,
+      name: user.name,
+      type: "forgot-password",
+      log: logger,
+    });
+
+    if (!deliveryResult.delivered) {
+      logger.warn({ email: user.email, reason: deliveryResult.reason }, "Failed to deliver forgot password OTP email");
+    }
+
+    logger.info({ userId: user.id, email: user.email }, "Issued forgot password OTP successfully");
+
+    res.json({
+      status: "success",
+      message: "A 6-digit verification code has been sent to your email.",
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// POST /auth/verify-reset-otp - Validate OTP before resetting password
+export const verifyResetOtp = async (req, res, next) => {
+  try {
+    const { email, otp } = req.body ?? {};
+    const normalizedEmail = typeof email === "string" ? email.toLowerCase().trim() : "";
+    const trimmedOtp = typeof otp === "string" ? otp.trim() : "";
+
+    if (!normalizedEmail || !trimmedOtp) {
+      return res.status(400).json({ status: "error", message: "Email and 6-digit OTP code are required" });
+    }
+
+    const user = await UserModel.findOne({ email: normalizedEmail }).select("+emailOtp +emailOtpExpiresAt");
+    if (!user || !user.emailOtp || user.emailOtp !== trimmedOtp) {
+      return res.status(400).json({ status: "error", message: "Invalid or expired verification code" });
+    }
+
+    if (!user.emailOtpExpiresAt || user.emailOtpExpiresAt < new Date()) {
+      return res.status(400).json({ status: "error", message: "Verification code has expired. Please request a new one." });
+    }
+
+    res.json({
+      status: "success",
+      message: "Verification code validated successfully.",
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+// POST /auth/reset-password - Reset password using verified OTP
+export const resetPassword = async (req, res, next) => {
+  try {
+    const { email, otp, newPassword } = req.body ?? {};
+    const normalizedEmail = typeof email === "string" ? email.toLowerCase().trim() : "";
+    const trimmedOtp = typeof otp === "string" ? otp.trim() : "";
+    const rawNewPassword = typeof newPassword === "string" ? newPassword : "";
+
+    if (!normalizedEmail || !trimmedOtp || !rawNewPassword) {
+      return res.status(400).json({ status: "error", message: "Email, OTP code, and new password are required" });
+    }
+
+    if (rawNewPassword.length < 6) {
+      return res.status(400).json({ status: "error", message: "Password must be at least 6 characters long" });
+    }
+
+    const user = await UserModel.findOne({ email: normalizedEmail }).select("+emailOtp +emailOtpExpiresAt +passwordHash");
+    if (!user || !user.emailOtp || user.emailOtp !== trimmedOtp) {
+      return res.status(400).json({ status: "error", message: "Invalid or expired verification code" });
+    }
+
+    if (!user.emailOtpExpiresAt || user.emailOtpExpiresAt < new Date()) {
+      return res.status(400).json({ status: "error", message: "Verification code has expired. Please request a new one." });
+    }
+
+    // Set new password
+    user.passwordHash = await hashPassword(rawNewPassword);
+    user.emailOtp = undefined;
+    user.emailOtpExpiresAt = undefined;
+    user.refreshToken = undefined;
+    user.refreshTokenExpiresAt = undefined;
+    await user.save();
+
+    logger.info({ userId: user.id, email: user.email }, "User successfully reset their password via OTP");
+
+    res.json({
+      status: "success",
+      message: "Password reset successfully. You can now sign in with your new password.",
     });
   } catch (error) {
     next(error);

@@ -229,26 +229,38 @@ export const createReceipt = async (req, res, next) => {
 
     const newReceipt = await MoneyReceiptModel.create(body);
 
-    const creatorName = req.user?.name || body.createdByName || "Staff Member";
-    const receiptAmount = Number(newReceipt.amount || 0);
+    // Asynchronously dispatch payment receipt email
+    (async () => {
+      try {
+        const { sendPaymentReceiptEmail } = await import("../../services/emailService.js");
+        let clientEmail = body.clientEmail;
+        let clientName = body.clientName;
+        if (!clientEmail && newReceipt.clientDid) {
+          const client = await Client.findOne({ did: newReceipt.clientDid }).lean();
+          if (client?.email) {
+            clientEmail = client.email;
+            clientName = clientName || client.fullName;
+          }
+        }
 
-    // Action 3: Email Accountant
-    sendPaymentDocCreatedEmailToAccountants({
-      createdByUserName: creatorName,
-      docType: "Money Receipt / Payment Token",
-      docNumber: newReceipt.receiptNo,
-      amount: receiptAmount,
-      clientName: newReceipt.clientName || "",
-    }).catch((err) => console.error("[EmailTrigger] sendPaymentDocCreatedEmailToAccountants (Receipt) error:", err.message));
-
-    // Action 4: Email Owners for payment entry
-    sendPaymentOrBillCreatedEmailToOwners({
-      createdByUserName: creatorName,
-      type: "Money Receipt",
-      refNumber: newReceipt.receiptNo,
-      amount: receiptAmount,
-      notes: `Purpose: ${newReceipt.purpose || newReceipt.serviceType || "Visa Service"} (Client: ${newReceipt.clientName || "N/A"})`,
-    }).catch((err) => console.error("[EmailTrigger] sendPaymentOrBillCreatedEmailToOwners (Receipt) error:", err.message));
+        if (clientEmail) {
+          await sendPaymentReceiptEmail({
+            toEmail: clientEmail,
+            clientName: clientName || "Valued Client",
+            receiptNo: newReceipt.receiptNo,
+            amount: newReceipt.amount || newReceipt.netReceivedBDT || 0,
+            serviceType: newReceipt.serviceType || "Visa & Travel Services",
+            purpose: newReceipt.purpose || "Payment Settlement",
+            paymentMethod: newReceipt.paymentMethod || "Cash",
+            paymentDate: newReceipt.date ? new Date(newReceipt.date).toLocaleDateString() : new Date().toLocaleDateString(),
+            receivedBy: newReceipt.createdByName || "Monsur Ali Travels Accounts",
+            remainingDue: newReceipt.dueAmount || 0,
+          });
+        }
+      } catch (err) {
+        // Silent error for email notification
+      }
+    })();
 
     return res.status(201).json({
       status: "success",

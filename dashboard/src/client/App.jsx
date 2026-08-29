@@ -31,6 +31,14 @@ const queryClient = new QueryClient({
 function AuthGuard({ children }) {
   const user = useAuthStore((state) => state.user);
   const isLoading = useAuthStore((state) => state.isLoading);
+  const fetchProfile = useAuthStore((state) => state.fetchProfile);
+
+  useEffect(() => {
+    const token = typeof window !== 'undefined' ? localStorage.getItem('accessToken') : null;
+    if (token) {
+      fetchProfile();
+    }
+  }, [fetchProfile]);
 
   if (isLoading) {
     return (
