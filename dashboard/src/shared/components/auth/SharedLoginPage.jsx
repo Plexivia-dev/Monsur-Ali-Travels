@@ -772,6 +772,6 @@ export function SharedLoginPage({
       </div>
     </div>
   );
-};
+}
 
-export default LoginPage;
+export default SharedLoginPage;

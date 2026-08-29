@@ -84,8 +84,8 @@ export default defineConfig({
     },
   },
   server: {
-    port: 5201,
-    strictPort: false,
+    port: 8005,
+    strictPort: true,
     host: '127.0.0.1',
     open: false,
     proxy: {
