@@ -116,6 +116,15 @@ export const useAuthStore = create((set, get) => ({
     }
   },
 
+  sendQrCodeEmail: async (twoFactorToken) => {
+    try {
+      const { data } = await apiClient.post('/api/v1/auth/2fa/send-qr', { twoFactorToken });
+      return data;
+    } catch (err) {
+      throw new Error(err.message || getErrorMessage(err, 'Failed to send QR code email.'));
+    }
+  },
+
   fetchProfile: async () => {
     try {
       const { data } = await apiClient.get('/api/v1/auth/me');
