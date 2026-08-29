@@ -751,8 +751,8 @@ export function SharedLoginPage({
         </p>
       </motion.div>
 
-      {/* Powered by Plexivia badge at bottom right */}
-      <div className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-[999] flex items-center">
+      {/* Powered by Plexivia badge: Centered on mobile, Bottom-Right on sm+ desktop */}
+      <div className="fixed bottom-4 left-1/2 -translate-x-1/2 sm:left-auto sm:translate-x-0 sm:right-6 sm:bottom-6 z-[999] flex items-center justify-center pointer-events-auto">
         <a
           href="https://plexivia.com"
           target="_blank"
@@ -760,13 +760,13 @@ export function SharedLoginPage({
           className="flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-zinc-900/90 hover:bg-zinc-800 border border-zinc-700/80 shadow-2xl backdrop-blur-md transition-all group"
           title="Developed by Plexivia"
         >
-          <span className="text-[11px] font-semibold tracking-wider text-zinc-400 group-hover:text-zinc-200">
+          <span className="text-[11px] font-semibold tracking-wider text-zinc-400 group-hover:text-zinc-200 whitespace-nowrap">
             Powered by
           </span>
           <img
             src="https://api.monsuralitravels.com/uploads/assets/plexivia.webp"
             alt="Plexivia"
-            className="h-6 w-auto object-contain transition-transform group-hover:scale-105"
+            className="h-5 sm:h-6 w-auto object-contain transition-transform group-hover:scale-105"
           />
         </a>
       </div>
