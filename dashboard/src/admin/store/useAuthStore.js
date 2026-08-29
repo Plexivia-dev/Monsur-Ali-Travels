@@ -71,15 +71,16 @@ export const useAuthStore = create((set, get) => ({
     }
   },
 
-  verify2fa: async (params) => {
+  verify2fa: async (params, password, code, method = 'authenticator') => {
     try {
+      set({ isLoading: true });
       const payload = typeof params === 'string'
-        ? { email: arguments[0], password: arguments[1], code: arguments[2] }
+        ? { email: params, password, code, method: method || 'authenticator' }
         : params;
 
       const { data } = await apiClient.post('/api/v1/auth/2fa/verify', payload);
       const { user: apiUser, accessToken, refreshToken } = data.data;
-      const loggedUser = mapApiUser(apiUser, payload.email);
+      const loggedUser = mapApiUser(apiUser, payload?.email || (typeof params === 'string' ? params : ''));
 
       if (!ROLES_ADMIN.includes(loggedUser.role)) {
         throw new Error('Access denied. Only Owners and Admins are allowed to access this portal.');
@@ -88,9 +89,10 @@ export const useAuthStore = create((set, get) => ({
       localStorage.setItem('accessToken', accessToken);
       localStorage.setItem('refreshToken', refreshToken);
       localStorage.setItem('user', JSON.stringify(loggedUser));
-      set({ user: loggedUser });
+      set({ user: loggedUser, isLoading: false });
       return { success: true, user: loggedUser };
     } catch (err) {
+      set({ isLoading: false });
       throw new Error(err.message || getErrorMessage(err, '2FA verification failed.'));
     }
   },

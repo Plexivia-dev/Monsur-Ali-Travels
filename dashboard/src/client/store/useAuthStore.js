@@ -68,21 +68,21 @@ export const useAuthStore = create((set, get) => ({
     }
   },
 
-  verify2fa: async ({ twoFactorToken, code, method = 'email' }) => {
+  verify2fa: async (params, password, code, method = 'authenticator') => {
     try {
-      const response = await apiClient.post('/api/v1/auth/2fa/verify', {
-        twoFactorToken,
-        code,
-        method,
-      });
+      set({ isLoading: true });
+      const payload = typeof params === 'string'
+        ? { email: params, password, code, method: method || 'authenticator' }
+        : params;
 
+      const response = await apiClient.post('/api/v1/auth/2fa/verify', payload);
       const { user: apiUser, accessToken, refreshToken } = response.data.data;
 
       const loggedUser = {
         id: apiUser.id || apiUser._id || apiUser.did,
         did: apiUser.did,
-        email: apiUser.email,
-        name: apiUser.name || apiUser.email.split('@')[0].replace('.', ' ').replace(/\b\w/g, (l) => l.toUpperCase()),
+        email: apiUser.email || (typeof params === 'string' ? params : params?.email) || '',
+        name: apiUser.name || (apiUser.email || '').split('@')[0].replace('.', ' ').replace(/\b\w/g, (l) => l.toUpperCase()),
         username: apiUser.username || '',
         phone: apiUser.phone || '',
         address: apiUser.address || '',
@@ -216,40 +216,6 @@ export const useAuthStore = create((set, get) => ({
     }
   },
 
-  verify2fa: async (email, password, code) => {
-    try {
-      set({ isLoading: true });
-      const response = await apiClient.post('/api/v1/auth/2fa/verify', { email, password, code });
-      const { user: apiUser, accessToken, refreshToken } = response.data.data;
-
-      const loggedUser = {
-        id: apiUser.id || apiUser._id,
-        did: apiUser.did,
-        email: apiUser.email || email,
-        name: apiUser.name || email.split('@')[0].replace('.', ' ').replace(/\b\w/g, (l) => l.toUpperCase()),
-        username: apiUser.username || '',
-        phone: apiUser.phone || '',
-        address: apiUser.address || '',
-        role: apiUser.role || 'Employee',
-        subRole: apiUser.subRole || apiUser.sub_role || '',
-        department: apiUser.department || '',
-        designation: apiUser.designation || '',
-        avatar: apiUser.avatar || '',
-      };
-
-      if (typeof window !== 'undefined') {
-        localStorage.setItem('accessToken', accessToken);
-        localStorage.setItem('refreshToken', refreshToken);
-        localStorage.setItem('user', JSON.stringify(loggedUser));
-      }
-
-      set({ user: loggedUser, isLoading: false });
-      return { success: true, user: loggedUser };
-    } catch (err) {
-      set({ isLoading: false });
-      throw new Error(getGenericErrorMessage(err, '2FA verification failed. Please check the code.'));
-    }
-  },
 
   loginWithGoogle: async (code, redirectUri) => {
     try {

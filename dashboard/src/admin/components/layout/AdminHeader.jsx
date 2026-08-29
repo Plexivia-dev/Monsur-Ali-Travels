@@ -7,17 +7,13 @@ import {
   PanelLeft,
 } from 'lucide-react';
 import { useSidebar } from '@/components/ui/sidebar';
-import { useAuth } from '@/store/useAuthStore';
-import { ProfileDropdown } from '@/components/blocks/dropdown-profile';
 import { NotificationBell } from './NotificationBell';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { cn } from '@/lib/utils';
 
 export function AdminHeader({ lang, setLang }) {
   const navigate = useNavigate();
   const location = useLocation();
   const { toggleSidebar, isMobile } = useSidebar();
-  const { user } = useAuth();
 
   const handleBack = () => {
     if (location.pathname !== '/admin') {
@@ -89,24 +85,6 @@ export function AdminHeader({ lang, setLang }) {
 
         {/* Real-time Notifications Bell Dropdown */}
         <NotificationBell />
-
-        <div className="h-4 w-px bg-white/20 mx-0.5" />
-
-        {/* Profile Dropdown */}
-        <ProfileDropdown
-          align="end"
-          trigger={
-            <button className="rounded-full relative border border-white/30 hover:border-white/60 transition-colors cursor-pointer p-0.5">
-              <Avatar className="h-7 w-7 cursor-pointer">
-                <AvatarImage src={user?.avatar} alt={user?.name} />
-                <AvatarFallback className="bg-sky-500/40 text-white font-bold text-xs">
-                  {user?.name?.slice(0, 2).toUpperCase() || 'AD'}
-                </AvatarFallback>
-              </Avatar>
-              <span className="absolute right-0 bottom-0 block size-2 rounded-full bg-emerald-400 ring-1.5 ring-sidebar" />
-            </button>
-          }
-        />
       </div>
     </header>
   );
