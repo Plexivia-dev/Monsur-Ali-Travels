@@ -356,7 +356,7 @@ export function buildOtpEmailHtml({ name, otp, type = "two-factor", logoUrl }) {
     ? "We received a request to reset your Monsur Ali Travels account password. Use the verification code below to authorize this request."
     : "Thank you for joining Monsur Ali Travels. Please use the verification code below to confirm your email and complete your registration.";
 
-  const note = "Valid for 10 minutes. Do not share this code with anyone.";
+  const note = "Valid for 3 minutes. Do not share this code with anyone.";
   const securityNote =
     "If you did not request this code, please ignore this email or change your password immediately if you suspect unauthorized activity.";
 

@@ -185,7 +185,7 @@ export const resendEmailOtp = async (req, res, next) => {
     }
 
     const otp = crypto.randomInt(100000, 999999).toString();
-    const emailOtpExpiresAt = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
+    const emailOtpExpiresAt = new Date(Date.now() + 3 * 60 * 1000); // 3 minutes
 
     await UserModel.updateOne(
       { did: user.did },

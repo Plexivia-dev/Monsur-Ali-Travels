@@ -22,7 +22,7 @@ export const createTwoFactorToken = (user) => {
   return jwt.sign(
     { did: user.did, email: user.email, purpose: "2fa_login" },
     env.ACCESS_TOKEN_SECRET,
-    { expiresIn: "10m" },
+    { expiresIn: "3m" },
   );
 };
 
@@ -71,7 +71,7 @@ export const login = async (req, res, next) => {
 
     // Generate 6-digit numeric OTP for Email 2FA
     const otp = crypto.randomInt(100000, 999999).toString();
-    const emailOtpExpiresAt = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
+    const emailOtpExpiresAt = new Date(Date.now() + 3 * 60 * 1000); // 3 minutes
 
     await UserModel.updateOne(
       { did: user.did },
@@ -450,7 +450,7 @@ export const forgotPassword = async (req, res, next) => {
 
     // Generate 6-digit numeric OTP
     const otp = Math.floor(100000 + Math.random() * 900000).toString();
-    const expiresAt = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes expiry
+    const expiresAt = new Date(Date.now() + 3 * 60 * 1000); // 3 minutes expiry
 
     user.emailOtp = otp;
     user.emailOtpExpiresAt = expiresAt;
