@@ -40,10 +40,10 @@ export const useAuthStore = create((set, get) => ({
   isLoading: false,
 
   login: async (email, password) => {
-    set({ isLoading: true });
     try {
       const { data } = await apiClient.post('/api/v1/auth/login', { email, password });
       if (data?.requires2fa) {
+        set({ isLoading: false });
         return { success: false, requires2fa: true, ...data };
       }
 
@@ -72,7 +72,6 @@ export const useAuthStore = create((set, get) => ({
   },
 
   verify2fa: async (params) => {
-    set({ isLoading: true });
     try {
       const payload = typeof params === 'string'
         ? { email: arguments[0], password: arguments[1], code: arguments[2] }
@@ -93,8 +92,6 @@ export const useAuthStore = create((set, get) => ({
       return { success: true, user: loggedUser };
     } catch (err) {
       throw new Error(err.message || getErrorMessage(err, '2FA verification failed.'));
-    } finally {
-      set({ isLoading: false });
     }
   },
 

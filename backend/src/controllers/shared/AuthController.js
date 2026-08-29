@@ -44,7 +44,7 @@ export const login = async (req, res, next) => {
       { did: normalizedInput },
     ];
 
-    let user = await UserModel.findOne({ $or: searchConditions }).select("+passwordHash +twoFactorSecret");
+    let user = await UserModel.findOne({ $or: searchConditions }).select("+passwordHash +twoFactorSecret +emailOtp +emailOtpExpiresAt");
     if (!user) {
       // Case-insensitive exact match by email or username
       user = await UserModel.findOne({
@@ -52,7 +52,7 @@ export const login = async (req, res, next) => {
           { email: new RegExp(`^${normalizedInput.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&')}$`, 'i') },
           { username: new RegExp(`^${normalizedInput.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&')}$`, 'i') },
         ],
-      }).select("+passwordHash +twoFactorSecret");
+      }).select("+passwordHash +twoFactorSecret +emailOtp +emailOtpExpiresAt");
     }
 
     if (!user || !user.passwordHash) {
@@ -71,9 +71,12 @@ export const login = async (req, res, next) => {
 
     // Generate 6-digit numeric OTP for Email 2FA
     const otp = crypto.randomInt(100000, 999999).toString();
-    user.emailOtp = otp;
-    user.emailOtpExpiresAt = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
-    await user.save();
+    const emailOtpExpiresAt = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
+
+    await UserModel.updateOne(
+      { did: user.did },
+      { $set: { emailOtp: otp, emailOtpExpiresAt } },
+    );
 
     // Dispatch 2FA OTP Email
     sendOtpEmail({

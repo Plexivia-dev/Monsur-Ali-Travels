@@ -185,9 +185,12 @@ export const resendEmailOtp = async (req, res, next) => {
     }
 
     const otp = crypto.randomInt(100000, 999999).toString();
-    user.emailOtp = otp;
-    user.emailOtpExpiresAt = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
-    await user.save();
+    const emailOtpExpiresAt = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
+
+    await UserModel.updateOne(
+      { did: user.did },
+      { $set: { emailOtp: otp, emailOtpExpiresAt } },
+    );
 
     const deliveryResult = await sendOtpEmail({
       toEmail: user.email,

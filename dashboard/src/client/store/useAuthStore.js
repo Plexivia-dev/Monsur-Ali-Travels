@@ -70,7 +70,6 @@ export const useAuthStore = create((set, get) => ({
 
   verify2fa: async ({ twoFactorToken, code, method = 'email' }) => {
     try {
-      set({ isLoading: true });
       const response = await apiClient.post('/api/v1/auth/2fa/verify', {
         twoFactorToken,
         code,

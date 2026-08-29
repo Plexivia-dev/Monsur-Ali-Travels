@@ -217,7 +217,7 @@ export function SharedLoginPage({
     }
   };
 
-  if (isAuthLoading) {
+  if (isAuthLoading && user) {
     return (
       <div className="dark min-h-screen w-screen bg-[#09090b] flex flex-col items-center justify-center gap-3 text-zinc-400">
         <div className="h-9 w-9 border-2 border-zinc-700 border-t-white rounded-full animate-spin" />
