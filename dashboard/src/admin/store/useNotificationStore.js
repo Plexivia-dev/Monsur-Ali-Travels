@@ -1,4 +1,4 @@
-﻿import { create } from 'zustand';
+import { create } from 'zustand';
 import { apiClient } from '@/lib/api-client';
 import { getSocket, joinUserRoom } from '@shared/lib/socket';
 import { toast } from 'sonner';
@@ -23,16 +23,41 @@ export const useNotificationStore = create((set, get) => ({
     // Listen for live broadcasted notifications
     socket.off('new_notification');
     socket.on('new_notification', (newNotif) => {
-      // Audio or toast alert
-      toast.info(newNotif.title || 'New Notification', {
-        description: newNotif.message,
-      });
+      if (!newNotif) return;
+
+      const notifType = newNotif.type === 'danger' || newNotif.type === 'error'
+        ? 'error'
+        : newNotif.type === 'warning'
+        ? 'warning'
+        : 'info';
+
+      if (notifType === 'error') {
+        toast.error(newNotif.title || 'System Alert', {
+          description: newNotif.message,
+        });
+      } else if (notifType === 'warning') {
+        toast.warning(newNotif.title || 'System Warning', {
+          description: newNotif.message,
+        });
+      } else {
+        toast.info(newNotif.title || 'New Notification', {
+          description: newNotif.message,
+        });
+      }
 
       set((state) => {
-        const exists = state.notifications.some((n) => (n.did || n._id) === (newNotif.did || newNotif._id));
+        const notifId = newNotif.did || newNotif._id || newNotif.id;
+        const exists = state.notifications.some((n) => (n.did || n._id || n.id) === notifId);
         if (exists) return state;
 
-        const updated = [newNotif, ...state.notifications];
+        const formatted = {
+          ...newNotif,
+          id: notifId,
+          did: newNotif.did || notifId,
+          isRead: Boolean(newNotif.isRead),
+        };
+
+        const updated = [formatted, ...state.notifications];
         const unread = updated.filter((n) => !n.isRead).length;
         return {
           notifications: updated,
@@ -42,15 +67,22 @@ export const useNotificationStore = create((set, get) => ({
     });
 
     set({ isInitialized: true });
-    get().fetchNotifications();
+    get().fetchNotifications(userDid);
   },
 
-  fetchNotifications: async () => {
+  fetchNotifications: async (userDid) => {
     set({ isLoading: true });
     try {
-      const res = await apiClient.get('/api/v1/notifications?limit=25');
+      const url = userDid
+        ? `/api/v1/notifications?limit=30&userDid=${encodeURIComponent(userDid)}`
+        : '/api/v1/notifications?limit=30';
+      const res = await apiClient.get(url);
       if (res.data?.success || res.data?.status === 'success') {
-        const list = res.data.data || [];
+        const list = (res.data.data || []).map((n) => ({
+          ...n,
+          id: n.did || n._id || n.id,
+          did: n.did || n._id || n.id,
+        }));
         const unread = list.filter((n) => !n.isRead).length;
         set({ notifications: list, unreadCount: unread });
       }

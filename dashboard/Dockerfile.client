@@ -1,4 +1,4 @@
-﻿# Build Stage
+# Build Stage
 FROM node:22-alpine AS builder
 WORKDIR /app
 
@@ -8,7 +8,7 @@ RUN npm install
 COPY . .
 
 ARG VITE_API_BASE_URL=https://api.monsuralitravels.com
-ENV VITE_API_BASE_URL=
+ENV VITE_API_BASE_URL=$VITE_API_BASE_URL
 
 RUN npm run build:client
 

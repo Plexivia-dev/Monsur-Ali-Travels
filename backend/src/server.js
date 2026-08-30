@@ -13,15 +13,19 @@ async function bootstrap() {
   await connectDatabase();
 
   const app = await createApp();
-  const port = Number.parseInt(process.env.PORT ?? process.env.BACKEND_PORT ?? "4000", 10);
+  const port = Number.parseInt(process.env.PORT ?? process.env.BACKEND_PORT ?? String(env.PORT || 5092), 10);
 
   const server = createServer(app);
   const io = new SocketIOServer(server, {
     cors: {
-      origin: "*",
+      origin: (origin, callback) => {
+        // Dynamically reflect origin to support credentials across local and production origins
+        callback(null, true);
+      },
       methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
       credentials: true,
     },
+    transports: ["websocket", "polling"],
   });
 
   global.io = io;
