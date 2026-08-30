@@ -39,6 +39,16 @@ const notificationSchema = new mongoose.Schema(
       default: null,
       index: true,
     },
+    recipientRole: {
+      type: String,
+      enum: ["Owner", "Admin", "Manager", "Staff", "All", null],
+      default: null,
+      index: true,
+    },
+    createdByDid: {
+      type: String,
+      default: null,
+    },
     isRead: {
       type: Boolean,
       default: false,
@@ -83,6 +93,11 @@ notificationSchema.post("save", function (doc) {
       if (doc.recipientUserDid) {
         global.io.to(`user:${doc.recipientUserDid}`).emit("new_notification", payload);
         global.io.to(doc.recipientUserDid).emit("new_notification", payload);
+      } else if (doc.recipientRole && doc.recipientRole !== "All") {
+        global.io.to(`role:${doc.recipientRole}`).emit("new_notification", payload);
+        if (doc.recipientRole === "Admin" || doc.recipientRole === "Owner") {
+          global.io.to("admin_room").emit("new_notification", payload);
+        }
       } else {
         global.io.emit("new_notification", payload);
       }

@@ -99,25 +99,6 @@ export async function logSystemAction({
     });
 
     await logEntry.save();
-
-    // Auto-create notification for real-time broadcast to Admin Dashboard
-    try {
-      const actionTitle = getNotificationTitle(targetCollection, action);
-      const actionMsg = summary || `${userName} (${userRole}) updated ${targetCollection}`;
-      const notifType = action === 'SOFT_DELETE' ? 'danger' : action === 'CREATE' ? 'success' : 'info';
-
-      await NotificationModel.create({
-        title: actionTitle,
-        message: actionMsg,
-        module: targetCollection === 'caseFiles' || targetCollection === 'indianVisas' || targetCollection === 'passports' ? 'visa' : 'general',
-        type: notifType,
-        refDid: logEntry.did,
-        createdBy: userName,
-      });
-    } catch (notifErr) {
-      logger.warn(`[AuditLogger] Notification creation notice: ${notifErr.message}`);
-    }
-
     return logEntry;
   } catch (error) {
     logger.error(`[AuditLogger] Failed to write system log: ${error.message}`);

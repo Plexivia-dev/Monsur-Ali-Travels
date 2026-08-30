@@ -31,20 +31,7 @@ export const useNotificationStore = create((set, get) => ({
         ? 'warning'
         : 'info';
 
-      if (notifType === 'error') {
-        toast.error(newNotif.title || 'System Alert', {
-          description: newNotif.message,
-        });
-      } else if (notifType === 'warning') {
-        toast.warning(newNotif.title || 'System Warning', {
-          description: newNotif.message,
-        });
-      } else {
-        toast.info(newNotif.title || 'New Notification', {
-          description: newNotif.message,
-        });
-      }
-
+      // Always update store list and unread count
       set((state) => {
         const notifId = newNotif.did || newNotif._id || newNotif.id;
         const exists = state.notifications.some((n) => (n.did || n._id || n.id) === notifId);
@@ -64,6 +51,25 @@ export const useNotificationStore = create((set, get) => ({
           unreadCount: unread,
         };
       });
+
+      // Suppress toast if self-action
+      if (newNotif.createdByDid && newNotif.createdByDid === userDid) {
+        return;
+      }
+
+      if (notifType === 'error') {
+        toast.error(newNotif.title || 'System Alert', {
+          description: newNotif.message,
+        });
+      } else if (notifType === 'warning') {
+        toast.warning(newNotif.title || 'System Warning', {
+          description: newNotif.message,
+        });
+      } else {
+        toast.info(newNotif.title || 'New Notification', {
+          description: newNotif.message,
+        });
+      }
     });
 
     set({ isInitialized: true });

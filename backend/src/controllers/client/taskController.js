@@ -63,12 +63,14 @@ export const markTaskDone = async (req, res) => {
 
     await task.save();
 
-    // Trigger Admin notification
+    // Trigger Admin notification (targeted to Admin/Owner only)
     await NotificationModel.create({
       title: "Task Marked as Done",
       message: `Task "${task.title}" for Case ${task.caseDid} was marked Done by ${req.user?.name || "Staff"}.`,
       module: "visa",
       type: "success",
+      recipientRole: "Admin",
+      createdByDid: userDid,
       createdBy: req.user?.name || "Staff",
     }).catch(() => {});
 
