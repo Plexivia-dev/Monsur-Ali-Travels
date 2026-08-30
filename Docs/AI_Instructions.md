@@ -1,6 +1,14 @@
 # 🤖 AI Prompting & System Architecture Instructions
 
-> **IMPORTANT:** This document defines mandatory architectural constraints, domain knowledge, and system rules that MUST be strictly maintained by any AI model or developer working on the **Monsur Ali Travels ERP** codebase.
+> [!IMPORTANT]
+> **MANDATORY SCOPE PREFIX RULES FOR ALL AI ASSISTANTS:**
+> - **`backend/`** ➔ `MB-` (Express API, Mongoose Models, Controllers)
+> - **`frontend/`** ➔ `MF-` (Public Portal, React/Next components)
+> - **`dashboard/src/shared`** ➔ `MD-` (Shared Components & Stores)
+> - **`dashboard/src/admin`** ➔ `AD-` (Admin Portal, RBAC, Operations)
+> - **`dashboard/src/client`** ➔ `CD-` (Client & Staff Workspace)
+> - **`Docs/`** ➔ `MA-` (Architecture, Specs, Docs)
+> - **`scripts/` / Infra** ➔ `DEP-` (Deployment, Nginx, Docker)
 
 ---
 
