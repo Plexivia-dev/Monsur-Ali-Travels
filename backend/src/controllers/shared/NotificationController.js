@@ -1,3 +1,4 @@
+import mongoose from "mongoose";
 import { NotificationModel } from "../../models/notification.model.js";
 
 export class NotificationController {
@@ -46,8 +47,12 @@ export class NotificationController {
   // PATCH /api/v1/notifications/:id/read
   static async markAsRead(req, res) {
     try {
-      const doc = await NotificationModel.findByIdAndUpdate(
-        req.params.id,
+      const idStr = String(req.params.id || "").trim();
+      const isObjectId = mongoose.Types.ObjectId.isValid(idStr) && idStr.length === 24;
+      const query = isObjectId ? { $or: [{ _id: idStr }, { did: idStr }] } : { did: idStr };
+
+      const doc = await NotificationModel.findOneAndUpdate(
+        query,
         { isRead: true },
         { new: true }
       );
