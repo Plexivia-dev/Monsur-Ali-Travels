@@ -717,10 +717,10 @@ export default function CaseDetailPage() {
       />
 
       {/* Case Identity & Creator Banner */}
-      <div className="bg-card border border-border rounded-2xl p-6 shadow-xs space-y-4">
+      <div className="bg-card border border-border rounded-2xl p-5 sm:p-6 shadow-xs space-y-4">
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 border-b border-border pb-4">
-          <div className="space-y-2">
-            <div className="flex flex-wrap items-center gap-3">
+          <div className="space-y-2 min-w-0 flex-1">
+            <div className="flex flex-wrap items-center gap-2.5">
               <span className="text-xl font-black text-foreground">
                 {caseData.applicantName || caseData.clientInfo?.fullName}
               </span>
@@ -810,15 +810,20 @@ export default function CaseDetailPage() {
           </div>
 
           {/* Current Processing Stage Dropdown */}
-          <div className="flex items-center gap-3 bg-muted/40 p-2.5 rounded-xl border border-border shrink-0">
-            <div className="text-right">
+          <div className="flex items-center gap-3 bg-muted/40 p-2.5 rounded-xl border border-border shrink-0 max-w-full lg:max-w-md w-full lg:w-auto justify-between lg:justify-end">
+            <div className="text-left lg:text-right min-w-0 flex-1">
               <span className="text-[10px] font-bold uppercase text-muted-foreground block">Processing Stage</span>
-              <span className="text-xs font-black text-primary block">{caseData.workflowStatus || caseData.status}</span>
+              <span
+                className="text-xs font-black text-primary block truncate max-w-[200px] sm:max-w-[280px]"
+                title={caseData.workflowStatus || caseData.status}
+              >
+                {caseData.workflowStatus || caseData.status}
+              </span>
             </div>
             <select
               value={caseData.status || 'ENTRY'}
               onChange={(e) => handleStageChange(e.target.value)}
-              className="px-3 py-1.5 text-xs font-bold rounded-lg border border-input bg-background text-foreground focus:outline-none cursor-pointer"
+              className="px-3 py-1.5 text-xs font-bold rounded-lg border border-input bg-background text-foreground focus:outline-none cursor-pointer shrink-0 min-w-[140px] max-w-[170px]"
             >
               {PIPELINE_STAGES.map((st) => (
                 <option key={st.id} value={st.id}>
