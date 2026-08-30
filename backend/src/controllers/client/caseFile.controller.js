@@ -982,7 +982,39 @@ export const completeTaskStep = async (req, res) => {
 
     task.status = "Done";
     task.notes = remarks || task.notes;
+    task.completedAt = new Date();
     await task.save();
+
+    // Synchronize Case File: Update status & history and reset active assignment
+    try {
+      const caseDoc = await CaseFile.findOne(buildCaseIdentifierQuery(task.caseDid));
+      if (caseDoc) {
+        const staffName = req.user?.name || "Staff Member";
+        const stepNum = task.stepNumber || 1;
+
+        caseDoc.workflowStatus = `Step ${stepNum} Done (${task.title}) — Awaiting Admin Review`;
+        caseDoc.assignedToDid = null;
+        caseDoc.assignedToName = "";
+        caseDoc.assignedOfficer = "";
+
+        if (!Array.isArray(caseDoc.statusHistory)) {
+          caseDoc.statusHistory = [];
+        }
+
+        caseDoc.statusHistory.push({
+          status: `Step ${stepNum} Done`,
+          remarks: `Step "${task.title}" completed by ${staffName}: ${remarks || "Work submitted"}`,
+          updatedByDid: req.user?.did || req.user?.id,
+          updatedByName: staffName,
+          assignedToDid: req.user?.did || req.user?.id,
+          date: new Date(),
+        });
+
+        await caseDoc.save();
+      }
+    } catch (caseSyncErr) {
+      console.warn("[completeTaskStep] CaseFile sync notice:", caseSyncErr.message);
+    }
 
     return res.status(200).json({
       success: true,

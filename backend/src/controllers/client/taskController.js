@@ -63,6 +63,41 @@ export const markTaskDone = async (req, res) => {
 
     await task.save();
 
+    // Synchronize Case File: Record step completion in history and reset active assignment
+    try {
+      const isCaseMongoId = mongoose.isValidObjectId(task.caseDid);
+      const caseConditions = [{ did: task.caseDid }, { caseNumber: task.caseDid }];
+      if (isCaseMongoId) caseConditions.push({ _id: task.caseDid });
+
+      const caseDoc = await CaseFile.findOne({ $or: caseConditions });
+      if (caseDoc) {
+        const staffName = req.user?.name || "Staff Member";
+        const stepNum = task.stepNumber || 1;
+
+        caseDoc.workflowStatus = `Step ${stepNum} Done (${task.title}) — Awaiting Admin Review`;
+        caseDoc.assignedToDid = null;
+        caseDoc.assignedToName = "";
+        caseDoc.assignedOfficer = "";
+
+        if (!Array.isArray(caseDoc.statusHistory)) {
+          caseDoc.statusHistory = [];
+        }
+
+        caseDoc.statusHistory.push({
+          status: `Step ${stepNum} Done`,
+          remarks: `Step "${task.title}" completed by ${staffName}: ${completionNotes || "Work submitted"}`,
+          updatedByDid: userDid,
+          updatedByName: staffName,
+          assignedToDid: userDid,
+          date: new Date(),
+        });
+
+        await caseDoc.save();
+      }
+    } catch (caseSyncErr) {
+      console.warn("[taskController] CaseFile sync notice:", caseSyncErr.message);
+    }
+
     // Trigger Admin notification (targeted to Admin/Owner only)
     await NotificationModel.create({
       title: "Task Marked as Done",

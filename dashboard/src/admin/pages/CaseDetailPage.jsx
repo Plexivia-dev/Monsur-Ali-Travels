@@ -629,9 +629,11 @@ export default function CaseDetailPage() {
   activityTimeline.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
 
   const workflowTasks = caseData.workflowTasks || [];
-  // Find active task: first task that is Pending, In Progress, or Done; fallback to the latest step
-  const activeTask = workflowTasks.find((t) => t.status === 'Pending' || t.status === 'In Progress' || t.status === 'Processing' || t.status === 'Done') || workflowTasks[workflowTasks.length - 1];
-  const activeHandlerName = activeTask?.assignedToName || activeTask?.assignedTo?.name || caseData.assignedToName || caseData.assignedTo?.name || caseData.assignedOfficer || null;
+  const pendingOrActiveTask = workflowTasks.find((t) => t.status === 'Pending' || t.status === 'In Progress' || t.status === 'Processing');
+  const latestTask = workflowTasks[workflowTasks.length - 1];
+  const activeTask = pendingOrActiveTask || latestTask;
+  const isLatestTaskDone = !pendingOrActiveTask && latestTask?.status === 'Done';
+  const activeHandlerName = pendingOrActiveTask ? (pendingOrActiveTask.assignedToName || pendingOrActiveTask.assignedTo?.name || caseData.assignedToName || caseData.assignedTo?.name || caseData.assignedOfficer) : null;
   const activeTaskStatusCfg = activeTask ? getTaskStatusConfig(activeTask.status) : null;
 
   const client = caseData.clientInfo || caseData.clientId || {};
@@ -728,20 +730,39 @@ export default function CaseDetailPage() {
             {/* Active Handler & Current Task Status Pill Bar */}
             <div className="flex flex-wrap items-center gap-2 pt-0.5">
               {/* Handler Pill */}
-              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-muted/40 border border-border">
-                <UserCheck className="w-3.5 h-3.5 text-sky-500 shrink-0" />
-                <span className="text-muted-foreground font-medium">Currently Handling:</span>
-                {activeHandlerName ? (
-                  <strong className="text-foreground font-bold">{activeHandlerName}</strong>
-                ) : (
+              {isLatestTaskDone ? (
+                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-amber-500/10 border border-amber-500/30 text-amber-600 dark:text-amber-400">
+                  <CheckCircle2 className="w-3.5 h-3.5 text-amber-500 shrink-0" />
+                  <span className="font-semibold">Step {latestTask.stepNumber || 1} Done by {latestTask.assignedToName || 'Staff'}</span>
+                  <span className="text-[10px] bg-amber-500/20 px-2 py-0.5 rounded-full font-bold uppercase ml-1">
+                    Ready for Next Step
+                  </span>
                   <button
                     onClick={() => setIsAssignModalOpen(true)}
-                    className="text-primary font-bold hover:underline cursor-pointer flex items-center gap-1"
+                    className="ml-1 px-2 py-0.5 rounded bg-primary text-primary-foreground font-bold hover:bg-primary/90 cursor-pointer text-[10px]"
                   >
-                    Unassigned (+ Assign Staff)
+                    + Assign Step {(latestTask.stepNumber || 1) + 1}
                   </button>
-                )}
-              </div>
+                </div>
+              ) : activeHandlerName ? (
+                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-muted/40 border border-border">
+                  <UserCheck className="w-3.5 h-3.5 text-sky-500 shrink-0" />
+                  <span className="text-muted-foreground font-medium">Currently Handling:</span>
+                  <strong className="text-foreground font-bold">{activeHandlerName}</strong>
+                </div>
+              ) : (
+                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-muted/40 border border-border">
+                  <UserCheck className="w-3.5 h-3.5 text-muted-foreground/60 shrink-0" />
+                  <span className="text-muted-foreground font-medium">Assigned Staff:</span>
+                  <span className="text-muted-foreground">Unassigned</span>
+                  <button
+                    onClick={() => setIsAssignModalOpen(true)}
+                    className="text-primary font-bold hover:underline cursor-pointer flex items-center gap-0.5 ml-1"
+                  >
+                    (+ Assign Step)
+                  </button>
+                </div>
+              )}
 
               {/* Task Status Pill */}
               {activeTask ? (
@@ -761,12 +782,6 @@ export default function CaseDetailPage() {
                     <span className="w-1.5 h-1.5 rounded-full bg-slate-400" />
                     Unassigned
                   </span>
-                  <button
-                    onClick={() => setIsAssignModalOpen(true)}
-                    className="text-primary font-bold hover:underline cursor-pointer ml-1"
-                  >
-                    (+ Assign Step)
-                  </button>
                 </div>
               )}
             </div>
@@ -1283,12 +1298,20 @@ export default function CaseDetailPage() {
                         <strong className="text-foreground">{t.assignedToName || t.assignedTo?.name || t.assignedToDid || 'Unassigned'}</strong>
                       </span>
                       {t.status === 'Done' && (
-                        <button
-                          onClick={() => handleApproveTask(t.did || t._id)}
-                          className="px-2.5 py-1 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-lg text-[11px] cursor-pointer shadow-xs"
-                        >
-                          Approve Step ✓
-                        </button>
+                        <div className="flex items-center gap-2">
+                          <button
+                            onClick={() => handleApproveTask(t.did || t._id)}
+                            className="px-2.5 py-1 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-lg text-[11px] cursor-pointer shadow-xs"
+                          >
+                            Approve Step ✓
+                          </button>
+                          <button
+                            onClick={() => setIsAssignModalOpen(true)}
+                            className="px-2.5 py-1 bg-sky-600 hover:bg-sky-500 text-white font-bold rounded-lg text-[11px] cursor-pointer shadow-xs"
+                          >
+                            + Assign Next Step
+                          </button>
+                        </div>
                       )}
                     </div>
                   </div>
