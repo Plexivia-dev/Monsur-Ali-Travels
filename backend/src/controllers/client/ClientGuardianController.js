@@ -1,5 +1,15 @@
+import mongoose from "mongoose";
 import { ClientGuardianModel } from "../../models/clientGuardianApplication.model.js";
 import { syncClientProfile } from "../../helper/clientSyncHelper.js";
+
+// Helper to query client application by either MongoDB _id, did, or applicationNo
+const findApplicationByIdOrDid = async (id, extraQuery = {}) => {
+  if (!id) return null;
+  const isObjectId = mongoose.isValidObjectId(id);
+  const conditions = [{ did: id }, { applicationNo: id }];
+  if (isObjectId) conditions.push({ _id: id });
+  return ClientGuardianModel.findOne({ $or: conditions, ...extraQuery });
+};
 
 /**
  * Controller for Client & Guardian Application Form Submissions
@@ -72,7 +82,7 @@ export class ClientGuardianController {
   // GET /api/v1/docs/client-guardians/:id
   static async getById(req, res) {
     try {
-      const doc = await ClientGuardianModel.findOne({ did: req.params.id, isActive: { $ne: false } });
+      const doc = await findApplicationByIdOrDid(req.params.id, { isActive: { $ne: false } });
       if (!doc) {
         return res.status(404).json({
           status: "fail",
@@ -174,7 +184,7 @@ export class ClientGuardianController {
   // PUT /api/v1/docs/client-guardians/:id
   static async update(req, res) {
     try {
-      const existing = await ClientGuardianModel.findOne({ did: req.params.id });
+      const existing = await findApplicationByIdOrDid(req.params.id);
       if (!existing) {
         return res.status(404).json({
           status: "fail",
@@ -203,7 +213,7 @@ export class ClientGuardianController {
       }
 
       const updatedDoc = await ClientGuardianModel.findOneAndUpdate(
-        { did: req.params.id },
+        { _id: existing._id },
         updateData,
         { new: true, runValidators: true }
       );
@@ -236,7 +246,7 @@ export class ClientGuardianController {
         });
       }
 
-      const existing = await ClientGuardianModel.findOne({ did: req.params.id });
+      const existing = await findApplicationByIdOrDid(req.params.id);
       if (!existing) {
         return res.status(404).json({
           status: "fail",
@@ -275,18 +285,21 @@ export class ClientGuardianController {
   // DELETE /api/v1/docs/client-guardians/:id
   static async delete(req, res) {
     try {
-      const doc = await ClientGuardianModel.findOneAndUpdate(
-        { did: req.params.id },
-        { isActive: false },
-        { new: true }
-      );
-      if (!doc) {
+      const existing = await findApplicationByIdOrDid(req.params.id);
+      if (!existing) {
         return res.status(404).json({
           status: "fail",
           success: false,
           message: "Client application not found.",
         });
       }
+
+      const doc = await ClientGuardianModel.findOneAndUpdate(
+        { _id: existing._id },
+        { isActive: false },
+        { new: true }
+      );
+
       return res.status(200).json({
         status: "success",
         success: true,

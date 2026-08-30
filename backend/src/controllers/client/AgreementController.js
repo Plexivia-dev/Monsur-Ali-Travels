@@ -127,17 +127,20 @@ export const getEmploymentAgreements = async (req, res, next) => {
   }
 };
 
+// Helper to query agreement by either MongoDB _id, did, or agreementId
+const findAgreementByIdOrCustomId = async (id, extraQuery = {}) => {
+  if (!id) return null;
+  const isMongoId = mongoose.isValidObjectId(id);
+  const conditions = [{ did: id }, { agreementId: id }];
+  if (isMongoId) conditions.push({ _id: id });
+  return EmploymentAgreementModel.findOne({ $or: conditions, ...extraQuery });
+};
+
 // GET /api/v1/docs/employment-agreement/:id - Get single agreement
 export const getEmploymentAgreementById = async (req, res, next) => {
   try {
     const { id } = req.params;
-
-    const isMongoId = mongoose.isValidObjectId(id);
-    const query = isMongoId
-      ? { _id: id, isActive: { $ne: false } }
-      : { agreementId: id, isActive: { $ne: false } };
-
-    const agreement = await EmploymentAgreementModel.findOne(query);
+    const agreement = await findAgreementByIdOrCustomId(id, { isActive: { $ne: false } });
     if (!agreement) {
       return res.status(404).json({ status: "error", message: "Employment agreement not found" });
     }
@@ -183,21 +186,22 @@ export const createEmploymentAgreement = async (req, res, next) => {
 export const updateEmploymentAgreement = async (req, res, next) => {
   try {
     const { id } = req.params;
-
-    const isMongoId = mongoose.isValidObjectId(id);
-    const query = isMongoId ? { _id: id } : { agreementId: id };
+    const existing = await findAgreementByIdOrCustomId(id);
+    if (!existing) {
+      return res.status(404).json({ status: "error", message: "Employment agreement not found" });
+    }
 
     const body = req.body ?? {};
     const mappedData = mapPayloadToEnglishSchema(body);
 
-    const agreement = await EmploymentAgreementModel.findOneAndUpdate(query, mappedData, {
-      new: true,
-      runValidators: true,
-    });
-
-    if (!agreement) {
-      return res.status(404).json({ status: "error", message: "Employment agreement not found" });
-    }
+    const agreement = await EmploymentAgreementModel.findOneAndUpdate(
+      { _id: existing._id },
+      mappedData,
+      {
+        new: true,
+        runValidators: true,
+      }
+    );
 
     res.json({
       status: "success",
@@ -213,19 +217,16 @@ export const updateEmploymentAgreement = async (req, res, next) => {
 export const deleteEmploymentAgreement = async (req, res, next) => {
   try {
     const { id } = req.params;
-
-    const isMongoId = mongoose.isValidObjectId(id);
-    const query = isMongoId ? { _id: id } : { agreementId: id };
+    const existing = await findAgreementByIdOrCustomId(id);
+    if (!existing) {
+      return res.status(404).json({ status: "error", message: "Employment agreement not found" });
+    }
 
     const agreement = await EmploymentAgreementModel.findOneAndUpdate(
-      query,
+      { _id: existing._id },
       { isActive: false },
       { new: true }
     );
-
-    if (!agreement) {
-      return res.status(404).json({ status: "error", message: "Employment agreement not found" });
-    }
 
     res.json({
       status: "success",

@@ -49,7 +49,7 @@ export function useClientLookup({ onClientFound }) {
             let activeCaseFile = null;
             if (matched._id || matched.did) {
               try {
-                const caseRes = await apiClient.get('/api/v1/admin/cases', {
+                const caseRes = await apiClient.get('/api/v1/client/cases', {
                   params: {
                     clientId: matched._id,
                     status: 'active,processing,new,pending',

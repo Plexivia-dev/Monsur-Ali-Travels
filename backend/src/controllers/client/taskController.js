@@ -1,3 +1,4 @@
+import mongoose from "mongoose";
 import TaskModel from "../../models/task.model.js";
 import CaseFile from "../../models/caseFile.model.js";
 import { NotificationModel } from "../../models/notification.model.js";
@@ -43,7 +44,10 @@ export const markTaskDone = async (req, res) => {
     const { completionNotes } = req.body;
     const userDid = req.user?.did;
 
-    const task = await TaskModel.findOne({ did: taskId });
+    const isMongoId = mongoose.isValidObjectId(taskId);
+    const conditions = [{ did: taskId }];
+    if (isMongoId) conditions.push({ _id: taskId });
+    const task = await TaskModel.findOne({ $or: conditions });
     if (!task) {
       return res.status(404).json({ status: "error", message: "Task not found" });
     }

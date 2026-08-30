@@ -125,6 +125,13 @@ class ClientController {
       delete clientData._id;
       delete clientData.id;
 
+      if (!clientData.fullName && clientData.name) {
+        clientData.fullName = clientData.name;
+      }
+      if (!clientData.phone && clientData.mobile) {
+        clientData.phone = clientData.mobile;
+      }
+
       if (!clientData.email || !String(clientData.email).trim()) delete clientData.email;
       if (!clientData.passportNumber || !String(clientData.passportNumber).trim()) delete clientData.passportNumber;
       if (!clientData.nidNumber || !String(clientData.nidNumber).trim()) delete clientData.nidNumber;
@@ -151,12 +158,21 @@ class ClientController {
   async update(req, res) {
     try {
       const query = buildIdQuery(req.params.id);
+      const updateData = {
+        ...req.body,
+        updatedByDid: req.user?.did || null,
+      };
+
+      if (updateData.name && !updateData.fullName) {
+        updateData.fullName = updateData.name;
+      }
+      if (updateData.mobile && !updateData.phone) {
+        updateData.phone = updateData.mobile;
+      }
+
       const client = await Client.findOneAndUpdate(
         query,
-        {
-          ...req.body,
-          updatedByDid: req.user?.did || null,
-        },
+        updateData,
         { new: true, runValidators: true }
       );
 
