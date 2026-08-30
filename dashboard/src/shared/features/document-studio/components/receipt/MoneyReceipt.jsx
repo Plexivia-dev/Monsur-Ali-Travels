@@ -73,6 +73,7 @@ export function MoneyReceipt() {
       docId: data.receiptNo,
       docType: 'Money_Receipt',
       clientName: data.clientName,
+      elementId: 'printable-receipt-canvas',
     });
   };
 
@@ -149,6 +150,10 @@ export function MoneyReceipt() {
             onPreview={() => setViewMode('preview')}
             isSubmitting={isSubmitting}
           />
+          {/* Always mount printable canvas for instant print in edit mode */}
+          <div className="hidden print:block w-full">
+            <MoneyReceiptPreview data={data} />
+          </div>
         </div>
       )}
 

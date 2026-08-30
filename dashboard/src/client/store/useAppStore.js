@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 
 export const useAppStore = create((set) => ({
-  activePortal: 'factory',
+  activePortal: 'overview',
   setActivePortal: (portal) => set({ activePortal: portal }),
   isSidebarOpen: true,
   toggleSidebar: () => set((state) => ({ isSidebarOpen: !state.isSidebarOpen })),

@@ -84,9 +84,22 @@ export default defineConfig({
     },
   },
   server: {
-    port: 5174,
+    port: 8005,
+    strictPort: true,
     host: '127.0.0.1',
     open: false,
+    proxy: {
+      '/uploads': {
+        target: 'https://api.monsuralitravels.com',
+        changeOrigin: true,
+        secure: false,
+      },
+      '/documents': {
+        target: 'https://api.monsuralitravels.com',
+        changeOrigin: true,
+        secure: false,
+      },
+    },
   },
   build: {
     outDir: 'dist/admin',

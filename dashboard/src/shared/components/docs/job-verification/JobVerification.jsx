@@ -67,9 +67,10 @@ export function JobVerification() {
 
   const handlePrint = () => {
     printDocument({
-      docId: data.verificationId,
-      docType: 'Job_Verification_Form',
-      clientName: data.clientInfo?.clientName,
+      docId: data?.verificationId,
+      docType: 'Job_Verification',
+      clientName: data?.clientInfo?.clientName || data?.employeeName,
+      elementId: 'job-verification-canvas',
     });
   };
 
@@ -165,7 +166,7 @@ export function JobVerification() {
 
       {/* Main Studio Views */}
       {viewMode === 'edit' && (
-        <div className="max-w-4xl mx-auto">
+        <div className="w-full pb-16">
           <JobVerificationForm
             formData={data}
             setFormData={setData}

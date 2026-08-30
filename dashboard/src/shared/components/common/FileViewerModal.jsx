@@ -18,13 +18,52 @@ import {
   RefreshCw,
   Eye,
   File,
+  Image as ImageIcon,
 } from 'lucide-react';
+
+export const API_BASE_URL =
+  (typeof import.meta !== 'undefined' && import.meta.env?.VITE_API_BASE_URL) || 'https://api.monsuralitravels.com';
+
+/**
+ * Normalizes file URLs to handle relative paths, legacy dev server hosts, and Cloudflare R2 endpoints
+ */
+export function normalizeFileUrl(fileUrl = '') {
+  if (!fileUrl || typeof fileUrl !== 'string') return '';
+  const trimmed = fileUrl.trim();
+
+  // 1. Data URLs and Blobs
+  if (trimmed.startsWith('data:') || trimmed.startsWith('blob:')) {
+    return trimmed;
+  }
+
+  // 2. Localhost URLs stored in database -> Redirect to live API domain
+  if (trimmed.startsWith('http://localhost:') || trimmed.startsWith('http://127.0.0.1:')) {
+    return trimmed.replace(/^https?:\/\/[^/]+/, 'https://api.monsuralitravels.com');
+  }
+
+  // 3. HTTP live domain -> Upgrade to HTTPS
+  if (trimmed.startsWith('http://api.monsuralitravels.com')) {
+    return trimmed.replace('http://', 'https://');
+  }
+
+  // 4. Absolute URLs (Cloudflare R2 or HTTPS)
+  if (trimmed.startsWith('http://') || trimmed.startsWith('https://')) {
+    return trimmed;
+  }
+
+  // 5. Relative paths (/uploads/...) -> prepend live API_BASE_URL
+  const cleanBase = 'https://api.monsuralitravels.com';
+  const cleanPath = trimmed.startsWith('/') ? trimmed : `/${trimmed}`;
+  return `${cleanBase}${cleanPath}`;
+}
 
 /**
  * Helper to determine file category based on URL or mime type
  */
 export function getFileTypeInfo(fileUrl = '', mimeType = '', fileName = '') {
   const urlLower = String(fileUrl || '').toLowerCase();
+  // Strip query string for extension matching
+  const urlPath = urlLower.split('?')[0].split('#')[0];
   const nameLower = String(fileName || '').toLowerCase();
   const mimeLower = String(mimeType || '').toLowerCase();
 
@@ -34,7 +73,7 @@ export function getFileTypeInfo(fileUrl = '', mimeType = '', fileName = '') {
   if (
     isDataImage ||
     mimeLower.startsWith('image/') ||
-    /\.(jpg|jpeg|png|webp|gif|svg|avif|bmp|ico)$/i.test(urlLower) ||
+    /\.(jpg|jpeg|png|webp|gif|svg|avif|bmp|ico)$/i.test(urlPath) ||
     /\.(jpg|jpeg|png|webp|gif|svg|avif|bmp|ico)$/i.test(nameLower)
   ) {
     return { type: 'image', label: 'Image Scan', isImage: true, isPdf: false };
@@ -43,22 +82,22 @@ export function getFileTypeInfo(fileUrl = '', mimeType = '', fileName = '') {
   if (
     isDataPdf ||
     mimeLower.includes('pdf') ||
-    urlLower.endsWith('.pdf') ||
+    urlPath.endsWith('.pdf') ||
     nameLower.endsWith('.pdf') ||
-    urlLower.includes('/pdf')
+    urlPath.includes('/pdf')
   ) {
     return { type: 'pdf', label: 'PDF Document', isImage: false, isPdf: true };
   }
 
   if (
     mimeLower.includes('text') ||
-    /\.(txt|md|csv|json|log)$/i.test(urlLower) ||
+    /\.(txt|md|csv|json|log)$/i.test(urlPath) ||
     /\.(txt|md|csv|json|log)$/i.test(nameLower)
   ) {
     return { type: 'text', label: 'Text Document', isImage: false, isPdf: false };
   }
 
-  return { type: 'other', label: 'Document File', isImage: false, isPdf: false };
+  return { type: 'other', label: 'Other Document', isImage: false, isPdf: false };
 }
 
 /**
@@ -66,7 +105,8 @@ export function getFileTypeInfo(fileUrl = '', mimeType = '', fileName = '') {
  * Core visual rendering container for a file
  */
 export function FileViewer({ file, className = '' }) {
-  const resolvedUrl = file?.fileUrl || file?.url || file?.fileData || file?.src || (typeof file === 'string' ? file : '');
+  const rawUrl = file?.fileUrl || file?.url || file?.fileData || file?.src || (typeof file === 'string' ? file : '');
+  const resolvedUrl = normalizeFileUrl(rawUrl);
   const resolvedName = file?.documentName || file?.fileName || file?.name || file?.title || 'Document Preview';
   const resolvedType = file?.fileType || file?.mimeType || '';
 
@@ -86,26 +126,38 @@ export function FileViewer({ file, className = '' }) {
 
   if (!resolvedUrl || hasError) {
     return (
-      <div className={`flex flex-col items-center justify-center p-12 text-center text-muted-foreground space-y-3 ${className}`}>
-        <div className="size-14 rounded-2xl bg-muted flex items-center justify-center">
-          <AlertCircle className="size-7 text-rose-500 opacity-80" />
+      <div className={`flex flex-col items-center justify-center p-8 text-center text-muted-foreground space-y-3 bg-muted/20 border border-border rounded-2xl ${className}`}>
+        <div className="size-14 rounded-2xl bg-amber-500/10 text-amber-600 dark:text-amber-400 flex items-center justify-center border border-amber-500/20 shadow-xs">
+          <AlertCircle className="size-7 opacity-90" />
         </div>
         <div>
-          <h4 className="font-bold text-sm text-foreground">Unable to load file preview</h4>
-          <p className="text-xs text-muted-foreground mt-0.5">
-            The document URL may be invalid, missing, or blocked by CORS restrictions.
+          <h4 className="font-bold text-sm text-foreground">{resolvedName}</h4>
+          <p className="text-xs text-muted-foreground mt-0.5 max-w-sm">
+            Unable to load preview directly from storage. The file may be in local storage or require direct download.
           </p>
         </div>
         {resolvedUrl && (
-          <a
-            href={resolvedUrl}
-            target="_blank"
-            rel="noreferrer"
-            className="inline-flex items-center gap-1.5 px-3.5 py-1.5 bg-primary/10 text-primary font-bold text-xs rounded-xl hover:bg-primary/20 transition cursor-pointer"
-          >
-            <ExternalLink className="size-3.5" />
-            <span>Open in External Tab</span>
-          </a>
+          <div className="flex items-center gap-2 pt-2">
+            <a
+              href={resolvedUrl}
+              target="_blank"
+              rel="noreferrer"
+              className="inline-flex items-center gap-1.5 px-3.5 py-1.5 bg-primary/10 text-primary font-bold text-xs rounded-xl hover:bg-primary/20 transition cursor-pointer"
+            >
+              <ExternalLink className="size-3.5" />
+              <span>Open in New Tab</span>
+            </a>
+            <a
+              href={resolvedUrl}
+              download={resolvedName}
+              target="_blank"
+              rel="noreferrer"
+              className="inline-flex items-center gap-1.5 px-3.5 py-1.5 bg-muted hover:bg-muted/80 text-foreground font-bold text-xs rounded-xl transition cursor-pointer border border-border"
+            >
+              <Download className="size-3.5" />
+              <span>Download</span>
+            </a>
+          </div>
         )}
       </div>
     );
@@ -116,13 +168,15 @@ export function FileViewer({ file, className = '' }) {
     return (
       <div className={`relative flex items-center justify-center overflow-auto p-4 select-none min-h-[360px] max-h-[70vh] bg-neutral-900/90 rounded-xl ${className}`}>
         {loading && (
-          <div className="absolute inset-0 flex items-center justify-center bg-neutral-900/70 z-10">
+          <div className="absolute inset-0 flex flex-col items-center justify-center bg-neutral-900/70 z-10 space-y-2">
             <RefreshCw className="size-6 text-sky-400 animate-spin" />
+            <span className="text-xs text-neutral-300">Loading image...</span>
           </div>
         )}
         <img
           src={resolvedUrl}
           alt={resolvedName}
+          referrerPolicy="no-referrer"
           onLoad={() => setLoading(false)}
           onError={() => {
             setLoading(false);
@@ -201,8 +255,12 @@ export function FileViewerModal({
   const [zoom, setZoom] = useState(1);
   const [rotation, setRotation] = useState(0);
   const [isFullscreen, setIsFullscreen] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [hasError, setHasError] = useState(false);
+  const [retryIndex, setRetryIndex] = useState(0);
 
-  const resolvedUrl = file?.fileUrl || file?.url || file?.fileData || file?.src || (typeof file === 'string' ? file : '');
+  const rawUrl = file?.fileUrl || file?.url || file?.fileData || file?.src || (typeof file === 'string' ? file : '');
+  const resolvedUrl = normalizeFileUrl(rawUrl);
   const resolvedName = file?.documentName || file?.fileName || file?.name || file?.title || 'Document File';
   const resolvedType = file?.fileType || file?.mimeType || '';
   const resolvedSize = file?.fileSize || file?.size || '';
@@ -232,14 +290,17 @@ export function FileViewerModal({
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [isOpen, onClose, isImage]);
 
-  // Reset controls on modal open
+  // Reset controls on modal open or file change
   useEffect(() => {
     if (isOpen) {
       setZoom(1);
       setRotation(0);
       setIsFullscreen(false);
+      setLoading(true);
+      setHasError(!resolvedUrl);
+      setRetryIndex(0);
     }
-  }, [isOpen, file]);
+  }, [isOpen, file, resolvedUrl]);
 
   if (!isOpen || !file) return null;
 
@@ -252,7 +313,7 @@ export function FileViewerModal({
   };
 
   const handlePrint = () => {
-    if (isImage) {
+    if (isImage && !hasError && resolvedUrl) {
       const printWindow = window.open('', '_blank');
       if (printWindow) {
         printWindow.document.write(`
@@ -306,7 +367,7 @@ export function FileViewerModal({
 
           {/* Quick Action Toolbar */}
           <div className="flex items-center gap-1.5">
-            {isImage && (
+            {isImage && !hasError && (
               <div className="flex items-center gap-1 bg-background border border-border p-1 rounded-xl shadow-2xs mr-1">
                 <button
                   type="button"
@@ -398,25 +459,101 @@ export function FileViewerModal({
         </div>
 
         {/* MODAL BODY (PREVIEW CANVAS) */}
-        <div className="flex-1 overflow-auto p-4 bg-muted/10 flex items-center justify-center">
+        <div className="flex-1 overflow-auto p-4 bg-muted/10 flex items-center justify-center min-h-[380px]">
           {isImage ? (
-            <div className="relative flex items-center justify-center overflow-auto w-full h-full min-h-[380px] select-none">
-              <img
-                src={resolvedUrl}
-                alt={resolvedName}
-                style={{
-                  transform: `scale(${zoom}) rotate(${rotation}deg)`,
-                  transition: 'transform 0.2s cubic-bezier(0.2, 0, 0, 1)',
-                }}
-                className="max-w-full max-h-[70vh] object-contain shadow-2xl rounded-xl border border-border/40"
-              />
-            </div>
+            hasError ? (
+              <div className="flex flex-col items-center justify-center p-8 max-w-md w-full bg-card border border-border rounded-2xl text-center space-y-4 shadow-md my-auto">
+                <div className="size-16 rounded-2xl bg-amber-500/10 text-amber-600 dark:text-amber-400 flex items-center justify-center border border-amber-500/20 shadow-xs">
+                  <AlertCircle className="size-8" />
+                </div>
+                <div className="space-y-1">
+                  <h4 className="font-bold text-base text-foreground">Image Preview Unavailable</h4>
+                  <p className="text-xs text-muted-foreground max-w-xs mx-auto">
+                    The document file could not be rendered inline directly from the server.
+                  </p>
+                  {resolvedUrl && (
+                    <div className="text-[10px] font-mono text-muted-foreground break-all bg-muted/40 p-2 rounded-lg mt-2 border border-border select-all max-h-16 overflow-y-auto">
+                      {resolvedUrl}
+                    </div>
+                  )}
+                </div>
+                <div className="flex flex-wrap items-center justify-center gap-2 pt-2">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setHasError(false);
+                      setLoading(true);
+                      setRetryIndex((prev) => prev + 1);
+                    }}
+                    className="inline-flex items-center gap-1.5 px-4 py-2 bg-primary text-primary-foreground font-bold text-xs rounded-xl shadow-xs hover:bg-primary/90 transition cursor-pointer"
+                  >
+                    <RefreshCw className="size-3.5" />
+                    <span>Retry Load</span>
+                  </button>
+                  {resolvedUrl && (
+                    <a
+                      href={resolvedUrl}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="inline-flex items-center gap-1.5 px-4 py-2 bg-muted hover:bg-muted/80 text-foreground font-bold text-xs rounded-xl transition cursor-pointer border border-border"
+                    >
+                      <ExternalLink className="size-3.5" />
+                      <span>Open Link</span>
+                    </a>
+                  )}
+                  {resolvedUrl && (
+                    <a
+                      href={resolvedUrl}
+                      download={resolvedName}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="inline-flex items-center gap-1.5 px-4 py-2 bg-muted hover:bg-muted/80 text-foreground font-bold text-xs rounded-xl transition cursor-pointer border border-border"
+                    >
+                      <Download className="size-3.5" />
+                      <span>Download</span>
+                    </a>
+                  )}
+                </div>
+              </div>
+            ) : (
+              <div className="relative flex items-center justify-center overflow-auto w-full h-full min-h-[380px] select-none">
+                {loading && (
+                  <div className="absolute inset-0 flex flex-col items-center justify-center bg-muted/40 backdrop-blur-2xs z-10 space-y-2 rounded-xl">
+                    <RefreshCw className="size-6 text-sky-500 animate-spin" />
+                    <span className="text-xs font-semibold text-muted-foreground">Loading preview...</span>
+                  </div>
+                )}
+                <img
+                  key={retryIndex}
+                  src={resolvedUrl}
+                  alt={resolvedName}
+                  referrerPolicy="no-referrer"
+                  onLoad={() => setLoading(false)}
+                  onError={() => {
+                    setLoading(false);
+                    setHasError(true);
+                  }}
+                  style={{
+                    transform: `scale(${zoom}) rotate(${rotation}deg)`,
+                    transition: 'transform 0.2s cubic-bezier(0.2, 0, 0, 1)',
+                  }}
+                  className={`max-w-full max-h-[70vh] object-contain shadow-2xl rounded-xl border border-border/40 transition-opacity duration-200 ${
+                    loading ? 'opacity-0' : 'opacity-100'
+                  }`}
+                />
+              </div>
+            )
           ) : isPdf ? (
             <div className="w-full h-full min-h-[68vh] rounded-xl overflow-hidden border border-border shadow-inner bg-white">
               <iframe
                 src={`${resolvedUrl}#toolbar=1&navpanes=0`}
                 title={resolvedName}
                 className="w-full h-full border-0"
+                onLoad={() => setLoading(false)}
+                onError={() => {
+                  setLoading(false);
+                  setHasError(true);
+                }}
               />
             </div>
           ) : (

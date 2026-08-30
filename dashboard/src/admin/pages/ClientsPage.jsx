@@ -259,7 +259,7 @@ export function ClientsPage() {
   ];
 
   const filterTabs = [
-    { id: 'all', label: 'All Clients', count: meta.totalCount },
+    { id: 'all', label: 'All', count: meta.totalCount },
     { id: 'Active', label: 'Active' },
     { id: 'Inactive', label: 'Inactive' },
     { id: 'Individual', label: 'Individual' },
@@ -272,8 +272,7 @@ export function ClientsPage() {
       <HeaderTitle
         variant="general"
         icon={Users}
-        title="Client Directory & CRM"
-        badge={`${meta.totalCount} Registered Clients`}
+        title="All Clients"
         subtitle="Centralized database of visa candidates, pilgrimage groups, and corporate representatives with full 360° milestone records."
         actions={
           <>
@@ -289,95 +288,16 @@ export function ClientsPage() {
               className="flex items-center justify-center gap-2 px-4 py-2.5 bg-primary hover:bg-primary/90 text-primary-foreground font-bold text-xs rounded-xl shadow-md transition-all cursor-pointer shrink-0"
             >
               <UserPlus className="size-4" />
-              <span>Register New Client</span>
+              <span>Add New Client</span>
             </button>
           </>
         }
       />
 
-      {/* KPI Stats Overview */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        {/* Card 1: Total Directory */}
-        <Card className="rounded-2xl border border-border bg-card shadow-xs hover:border-primary/40 hover:shadow-md transition-all">
-          <CardContent className="p-5 flex items-center justify-between gap-3">
-            <div className="min-w-0">
-              <span className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground block truncate">
-                Total Directory
-              </span>
-              <div className="text-2xl font-black text-foreground mt-1">
-                {meta.totalCount}
-              </div>
-              <span className="text-[11px] text-muted-foreground font-medium">All registered clients</span>
-            </div>
-            <div className="size-12 rounded-xl bg-blue-500/10 border border-blue-500/20 text-blue-600 dark:text-blue-400 flex items-center justify-center shrink-0 shadow-2xs">
-              <Users className="size-5" />
-            </div>
-          </CardContent>
-        </Card>
 
-        {/* Card 2: This Page */}
-        <Card className="rounded-2xl border border-border bg-card shadow-xs hover:border-primary/40 hover:shadow-md transition-all">
-          <CardContent className="p-5 flex items-center justify-between gap-3">
-            <div className="min-w-0">
-              <span className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground block truncate">
-                This Page
-              </span>
-              <div className="text-2xl font-black text-foreground mt-1">
-                {clients.length}
-              </div>
-              <span className="text-[11px] text-muted-foreground font-medium">Displayed in table</span>
-            </div>
-            <div className="size-12 rounded-xl bg-purple-500/10 border border-purple-500/20 text-purple-600 dark:text-purple-400 flex items-center justify-center shrink-0 shadow-2xs">
-              <FolderOpen className="size-5" />
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Card 3: Active Clients */}
-        <Card className="rounded-2xl border border-emerald-500/20 bg-card shadow-xs hover:border-emerald-500/40 hover:shadow-md transition-all">
-          <CardContent className="p-5 flex items-center justify-between gap-3">
-            <div className="min-w-0">
-              <span className="text-[11px] font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400 block truncate">
-                Active Clients
-              </span>
-              <div className="text-2xl font-black text-emerald-600 dark:text-emerald-400 mt-1">
-                {clients.filter((c) => c.status === 'Active' || !c.status).length}
-              </div>
-              <span className="text-[11px] text-emerald-600/80 dark:text-emerald-400/80 font-semibold">Active CRM accounts</span>
-            </div>
-            <div className="size-12 rounded-xl bg-emerald-500/10 border border-emerald-500/25 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0 shadow-2xs">
-              <CheckCircle2 className="size-5" />
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Card 4: Quick Action */}
-        <Card
-          onClick={() => setCreateModalOpen(true)}
-          className="rounded-2xl border border-sky-500/30 bg-gradient-to-br from-sky-500/10 via-primary/5 to-transparent shadow-xs hover:border-primary hover:shadow-md transition-all cursor-pointer group"
-        >
-          <CardContent className="p-5 flex items-center justify-between gap-3">
-            <div className="min-w-0">
-              <span className="text-[11px] font-bold uppercase tracking-wider text-primary block truncate">
-                Quick Action
-              </span>
-              <div className="text-sm font-black text-foreground mt-1.5 group-hover:text-primary transition-colors flex items-center gap-1.5">
-                <UserPlus className="size-4 text-primary shrink-0" />
-                <span>Register Client</span>
-              </div>
-              <span className="text-[11px] text-primary/80 font-semibold group-hover:underline">Click to add new</span>
-            </div>
-            <div className="size-12 rounded-xl bg-primary text-primary-foreground group-hover:scale-105 transition-transform flex items-center justify-center shrink-0 shadow-md">
-              <UserPlus className="size-5" />
-            </div>
-          </CardContent>
-        </Card>
-      </div>
 
       {/* Unified Data Table */}
       <UnifiedDataTable
-        title="All Registered Clients"
-        subtitle="Full CRM client records with contact info, passports, and 360° profile access"
         columns={columns}
         data={clients}
         loading={loading}
@@ -400,7 +320,6 @@ export function ClientsPage() {
           setActiveTab(tab);
           setPage(1);
         }}
-        onRefresh={fetchClients}
         exportFileName="monsur-ali-travels-clients.csv"
         emptyMessage="No client records found. Click '+ Register New Client' to create one."
       />
@@ -409,8 +328,16 @@ export function ClientsPage() {
       <CreateClientModal
         isOpen={createModalOpen}
         onClose={() => setCreateModalOpen(false)}
-        onSuccess={() => {
-          fetchClients();
+        onSuccess={(newClient) => {
+          if (newClient) {
+            setClients((prev) => [newClient, ...prev.filter((c) => (c.did || c._id) !== (newClient.did || newClient._id))]);
+            setMeta((prev) => ({ ...prev, totalCount: prev.totalCount + 1 }));
+          }
+          if (page !== 1) {
+            setPage(1);
+          } else {
+            fetchClients();
+          }
         }}
       />
     </div>

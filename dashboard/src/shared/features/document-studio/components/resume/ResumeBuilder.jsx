@@ -47,8 +47,11 @@ export function ResumeBuilder() {
 
       {/* Main Content */}
       {viewMode === 'edit' && (
-        <div className="max-w-3xl mx-auto pb-16">
+        <div className="w-full pb-16">
           <ResumeForm data={data} onChange={setData} />
+          <div className="hidden print:block w-full">
+            <ResumePreview data={data} onPrint={() => setIsExportOpen(true)} />
+          </div>
         </div>
       )}
 

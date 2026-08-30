@@ -20,6 +20,7 @@ import {
   RefreshCw,
   Clock,
   IdCard,
+  Users,
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { apiClient } from '@/lib/api-client';
@@ -27,6 +28,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
+import UsersPage from '@/admin/pages/UsersPage';
 
 // Pre-curated professional avatar collection
 const AVATAR_PRESETS = [
@@ -40,11 +42,17 @@ const AVATAR_PRESETS = [
   'https://images.unsplash.com/photo-1522075469751-3a6694fb2f61?auto=format&fit=crop&w=256&q=80',
 ];
 
-export function UserProfileSettingsPage({ onProfileUpdated = null }) {
-  const [activeTab, setActiveTab] = useState('profile'); // 'profile' | 'security' | 'account'
+export function UserProfileSettingsPage({ initialTab = 'profile', onProfileUpdated = null }) {
+  const [activeTab, setActiveTab] = useState(initialTab); // 'profile' | 'security' | 'account' | 'users'
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [changingPass, setChangingPass] = useState(false);
+
+  useEffect(() => {
+    if (initialTab) {
+      setActiveTab(initialTab);
+    }
+  }, [initialTab]);
 
   // Form Profile State
   const [formData, setFormData] = useState({
@@ -85,7 +93,7 @@ export function UserProfileSettingsPage({ onProfileUpdated = null }) {
         department: user.department || '',
         address: user.address || '',
         bio: user.bio || '',
-        avatar: user.avatar || AVATAR_PRESETS[0],
+        avatar: user.avatar || '',
         role: user.role || 'Staff',
         subRole: user.subRole || '',
         did: user.did || user.id || '',
@@ -343,6 +351,21 @@ export function UserProfileSettingsPage({ onProfileUpdated = null }) {
             <ShieldCheck className="size-4" />
             <span>Account Verification</span>
           </button>
+
+          {['Owner', 'Admin', 'Superadmin', 'superadmin', 'owner', 'admin'].includes(formData.role) && (
+            <button
+              type="button"
+              onClick={() => setActiveTab('users')}
+              className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition cursor-pointer ${
+                activeTab === 'users'
+                  ? 'bg-primary text-primary-foreground shadow-xs'
+                  : 'bg-muted/40 text-muted-foreground hover:text-foreground hover:bg-muted'
+              }`}
+            >
+              <Users className="size-4" />
+              <span>User & Role Management</span>
+            </button>
+          )}
         </div>
       </div>
 
@@ -645,6 +668,13 @@ export function UserProfileSettingsPage({ onProfileUpdated = null }) {
               </p>
             </div>
           </div>
+        </div>
+      )}
+
+      {/* TAB 4: SYSTEM USERS & ROLE MANAGEMENT */}
+      {activeTab === 'users' && (
+        <div className="space-y-4 animate-in fade-in duration-200">
+          <UsersPage />
         </div>
       )}
     </div>

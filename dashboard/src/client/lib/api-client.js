@@ -72,7 +72,7 @@ apiClient.interceptors.response.use(
         const refreshToken = localStorage.getItem('refreshToken');
         if (!refreshToken) throw new Error('Session expired. Please sign in again.');
 
-        const res = await axios.post(`${baseURL}/api/v1/auth/refresh-token`, {
+        const res = await axios.post(`${API_BASE_URL}/api/v1/auth/refresh-token`, {
           refreshToken,
         });
 

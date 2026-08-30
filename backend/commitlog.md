@@ -1,8 +1,68 @@
 # Commit Log / Change Log
 
-## [2026-08-19]
-- **Backend Version**: `v0.4.1`
-- **Dashboard Version**: `v0.4.1`
+## [2026-08-29]
+- **Backend Version**: `v1.2.0`
+- **MB35 - Master Common Email Template System & Centralized Email Delivery Integration**:
+  - Implemented `commonEmailTemplate.js` luxury dark/gold responsive email template with text-based branding (`Monsur Ali Travels`) and official Sunamganj office address.
+  - Implemented `emailService.js` singleton delivery service with support for 2FA OTP, QR Code setup with inline attachment, Staff Invitations, Task Assignments (linking to Client Dashboard), Case Milestones, Payment Receipts, Invoices, and Payroll slips.
+  - Upgraded `AuthController`, `TwoFactorController`, `SettingsController`, `UsersController`, `caseController`, `caseFile.controller`, `MoneyReceiptController`, `InvoiceController`, and `EmailRoute`.
+
+## [2026-08-27]
+- **Dashboard Version**: `v0.4.2`
+
+### 1. Client Dashboard Overview, Task Management & Real-Time Notifications (NC01 - NC17)
+- **NC17 - Block Browser Autofill on Login Form**:
+  - Added `autoComplete="off"` and `autoComplete="new-password"` to prevent browser password managers from auto-filling saved Owner credentials.
+- **NC16 - Clear Default Credentials in Login Forms**:
+  - Removed prefilled `md.ikr4m@gmail.com` and `ihkhan2027@gmail.com` from `LoginPage.jsx`.
+  - Set default state to blank inputs for both email and password.
+- **NC15 - Sync User Profile on App Mount & Sanitize GET /auth/me**:
+  - Implemented automatic `fetchProfile()` in `AuthGuard` on app initialization.
+  - Sanitized return schema in `getProfile` (`/api/v1/auth/me`).
+- **NC14 - Fix Auth Role Fallback & Remove Hardcoded Avatars**:
+  - Removed `{ role: "Owner" }` fallback from `AuthController.js` login.
+  - Removed Unsplash placeholder avatars from `useAuthStore.js` and profile forms.
+  - Dynamically render user's real `name` and `subRole` / `role` in the sidebar footer.
+- **NC13 - Fix Agency Router Imports**:
+  - Resolved component import references in `Agency.jsx`.
+- **NC12 - Strict Direct Real-Time API Data Fetching**:
+  - Removed all fallback logic from `AgencyClientList.jsx` and `AgencyEmployeeList.jsx`.
+  - Bound direct real-time data flow to `/api/v1/client/clients` and `/api/v1/client/users`.
+- **NC11 - Fix Agency API Route Mounting & Fallbacks**:
+  - Mounted `/users` and `/clients` under `clientScopeRouter` (`/api/v1/client/users`, `/api/v1/client/clients`) and root `coreRouter`.
+  - Updated `AgencyClientList.jsx` and `AgencyEmployeeList.jsx` endpoints with robust multi-endpoint fallbacks.
+- **NC10 - Agency Module with Read-Only Client & Employee Lists**:
+  - Added Agency portal to client dashboard for Accountant & Admin roles.
+  - Built read-only Client List and Employee List directories with search, filter, and detail modal viewers.
+  - Authorized Accountant for `GET /api/v1/users` read endpoints on the backend.
+- **NC09 - Data Records Center RBAC for Accountant Role**:
+  - Added financial records (Salary Slips, Invoices, Money Receipts) to Records Management.
+  - Excluded non-financial records (Agreements, Client Applications, Indian Visas, Passports) from Accountant role.
+- **NC08 - RBAC Restrictions for Accountant Role**:
+  - Excluded non-financial document generators (Agreement, Client Form, Visa, Passport, Certificates, ID Card) from Accountant sidebar and direct routes.
+- **NC07 - Permanent Factory & Mock Asset Elimination**:
+  - Permanently deleted all `components/factory/`, `pages/Factory.jsx`, `components/admin/`, `components/agency/`, `Navbar.jsx`, and `client/api/` mock simulators.
+  - Removed factory keys from all translation locale files (`en.json`, `bn.json`).
+  - Purged factory references from `TopBreadcrumbBar.jsx` and `useAppStore.js`.
+- **NC06 - Full Mock Data & Legacy Portal Purge**:
+  - Eliminated mock notification lists (`usePortalStore.js`).
+  - Purged mock members, payments, and users fallbacks from client query hooks.
+  - Removed legacy unused portal routes (`Factory`, `Agency`, `Admin`) from client application bundle.
+- **NC05 - Purge Dummy Content & Clean English UI**:
+  - Removed `SAMPLE_TASKS` fallback; strictly bound overview to `/api/v1/client/tasks/my-tasks`.
+  - Removed redundant "Start" action button (tasks only require "Mark Done" / "Details").
+  - Standardized overview and task modals to clean, consistent English.
+- **NC04 - WebSocket Live Notification Fix & Popover**:
+  - Integrated `useSocketNotification.js` into Client Dashboard Header.
+  - Added interactive real-time notification popover dropdown with live toast banners.
+- **NC03 - Pure Monochrome Grayscale System**:
+  - Eliminated tinted/muddy grays in favor of pure shades of black (`#000000`, `#09090b`, `#18181b`, `#fcfcfc`, `#ffffff`).
+  - High-contrast badge tokens for Light and Dark modes.
+- **NC02 - Overview Landing Page & Task Management**:
+  - Implemented `/dashboard/overview` as the default landing route with interactive KPI metrics.
+  - Created high-density `TasksOverviewList.jsx` and `TaskDetailModal.jsx` for assigned staff tasks.
+- **NC01 - Menu Streamlining**:
+  - Removed obsolete `Agency` group (`Clients & Billing` -> `Client Files`, `All Clients`) from `clientSidebarMenu.json`.
 
 ### 1. Dynamic QR Code API & Agency Branding Engine (MB22 & MD99)
 - **Backend Dynamic QR Generation API**:

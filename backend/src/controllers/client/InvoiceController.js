@@ -1,5 +1,9 @@
 import { InvoiceModel, generateUniqueInvoiceNo } from "../../models/invoice.model.js";
 import { formatInvoiceQrText, generateQrDataUrl } from "../../utils/qrHelper.js";
+import {
+  sendPaymentDocCreatedEmailToAccountants,
+  sendPaymentOrBillCreatedEmailToOwners,
+} from "../../services/emailNotification.service.js";
 
 // @desc    Get all invoices
 // @route   GET /api/v1/docs/invoices
@@ -124,6 +128,27 @@ export const createInvoice = async (req, res, next) => {
 
     const newInvoice = await InvoiceModel.create(body);
 
+    const creatorName = req.user?.name || "Staff Member";
+    const invoiceGrandTotal = newInvoice.items?.reduce((acc, it) => acc + (Number(it.quantity || 1) * Number(it.unitPrice || 0)), 0) || 0;
+
+    // Action 3: Email Accountant
+    sendPaymentDocCreatedEmailToAccountants({
+      createdByUserName: creatorName,
+      docType: "Invoice",
+      docNumber: newInvoice.invoiceNo,
+      amount: invoiceGrandTotal,
+      clientName: newInvoice.client?.name || "",
+    }).catch((err) => console.error("[EmailTrigger] sendPaymentDocCreatedEmailToAccountants (Invoice) error:", err.message));
+
+    // Action 4: Email Owners for new bill/invoice
+    sendPaymentOrBillCreatedEmailToOwners({
+      createdByUserName: creatorName,
+      type: "Invoice / Bill",
+      refNumber: newInvoice.invoiceNo,
+      amount: invoiceGrandTotal,
+      notes: `Invoice billed to ${newInvoice.client?.name || "Client"}`,
+    }).catch((err) => console.error("[EmailTrigger] sendPaymentOrBillCreatedEmailToOwners (Invoice) error:", err.message));
+
     return res.status(201).json({
       status: "success",
       message: "Invoice created successfully",
@@ -197,3 +222,45 @@ export const deleteInvoice = async (req, res, next) => {
     next(error);
   }
 };
+
+// @desc    Send Invoice via Email
+// @route   POST /api/v1/docs/invoices/:id/send-email
+export const sendInvoiceByEmail = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const isMongoId = id.match(/^[0-9a-fA-F]{24}$/);
+    const query = isMongoId ? { _id: id, isActive: { $ne: false } } : { invoiceNo: id, isActive: { $ne: false } };
+
+    const invoice = await InvoiceModel.findOne(query);
+    if (!invoice) {
+      return res.status(404).json({ status: "error", message: "Invoice not found" });
+    }
+
+    const targetEmail = (req.body?.email || invoice.client?.email || "").trim();
+    if (!targetEmail || !targetEmail.includes("@")) {
+      return res.status(400).json({ status: "error", message: "A valid recipient email is required" });
+    }
+
+    const { sendInvoiceEmail } = await import("../../services/emailService.js");
+    const emailResult = await sendInvoiceEmail({
+      toEmail: targetEmail,
+      buyerName: invoice.client?.name || "Valued Client",
+      invoiceNumber: invoice.invoiceNo,
+      createdDate: invoice.invoiceDate ? new Date(invoice.invoiceDate).toLocaleDateString() : new Date().toLocaleDateString(),
+      dueDate: invoice.dueDate ? new Date(invoice.dueDate).toLocaleDateString() : "Upon Receipt",
+      items: invoice.items || [],
+      total: invoice.grandTotal || invoice.totalAmount || 0,
+      subtotal: invoice.subTotal || 0,
+      paymentMethod: invoice.paymentMethod || "Standard",
+    });
+
+    return res.status(200).json({
+      status: emailResult.delivered ? "success" : "error",
+      message: emailResult.delivered ? `Invoice sent successfully to ${targetEmail}` : `Failed to send email: ${emailResult.reason}`,
+      data: { emailDelivered: emailResult.delivered, recipient: targetEmail },
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+

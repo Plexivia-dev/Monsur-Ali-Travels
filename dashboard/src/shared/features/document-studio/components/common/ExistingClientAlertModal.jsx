@@ -1,142 +1,162 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import {
+  AlertTriangle,
   UserCheck,
   Phone,
+  Mail,
   CreditCard,
-  FileCheck,
-  CopyCheck,
-  UserPlus,
-  RefreshCw,
-  AlertTriangle,
+  X,
+  CheckCircle2,
+  Folder,
   Lock,
-  ArrowRight
 } from 'lucide-react';
 
 /**
- * Modal dialog that freezes the screen when an existing client matches by phone/passport/NID.
- * User MUST make a conscious choice before proceeding:
- * 1. Auto-fill from existing client
- * 2. Update existing client data with current form entries
- * 3. Ignore & create new document unlinked
+ * ExistingClientAlertModal
+ *
+ * Strict Yes/No un-dismissible blocking modal shown when a phone
+ * matches an existing client record in the database.
+ *
+ * Behavior:
+ * - Backdrop clicks / clicks outside do NOTHING (modal will not close)
+ * - Esc key is intercepted and disabled
+ * - Only Yes and No buttons can close/resolve the modal
+ * - "Yes" -> auto-fill form with client data
+ * - "No"  -> reset the phone field so user can enter a new number
  */
-export function ExistingClientAlertModal({
-  client,
-  onAutoFill,
-  onUpdateExisting,
-  onProceedAsNew
-}) {
+export function ExistingClientAlertModal({ client, caseFile = null, onYes, onNo }) {
+  // Prevent Escape key from closing the modal
+  useEffect(() => {
+    if (!client) return;
+    const blockEscape = (e) => {
+      if (e.key === 'Escape') {
+        e.preventDefault();
+        e.stopPropagation();
+      }
+    };
+    window.addEventListener('keydown', blockEscape, true);
+    return () => window.removeEventListener('keydown', blockEscape, true);
+  }, [client]);
+
   if (!client) return null;
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4 select-none animate-in fade-in duration-200">
-      <div className="bg-card border-2 border-amber-500/50 shadow-2xl rounded-2xl max-w-xl w-full p-6 text-foreground space-y-5 relative">
-        
-        {/* Header with warning icon & Lock badge */}
-        <div className="flex items-start justify-between gap-4 border-b border-border pb-4">
-          <div className="flex items-center gap-3">
-            <div className="p-3 bg-amber-500/15 text-amber-600 rounded-xl shrink-0">
-              <AlertTriangle className="w-6 h-6" />
+    <div
+      className="fixed inset-0 z-[99999] bg-black/85 backdrop-blur-md flex items-center justify-center p-4 select-none animate-in fade-in duration-200"
+      onMouseDown={(e) => e.stopPropagation()}
+      onClick={(e) => e.stopPropagation()}
+    >
+      <div
+        className="bg-card border-2 border-amber-500/80 shadow-2xl rounded-2xl max-w-lg w-full p-6 text-foreground space-y-5 relative animate-in zoom-in-95 duration-200"
+        onMouseDown={(e) => e.stopPropagation()}
+        onClick={(e) => e.stopPropagation()}
+      >
+        {/* Header */}
+        <div className="flex items-start gap-4 border-b border-border pb-4">
+          <div className="p-3 bg-amber-500/15 text-amber-600 dark:text-amber-400 rounded-xl shrink-0 border border-amber-500/30">
+            <AlertTriangle className="w-6 h-6" />
+          </div>
+          <div className="min-w-0 flex-1">
+            <div className="flex items-center gap-2 flex-wrap">
+              <h3 className="text-base font-bold text-foreground">
+                There is an existing client with this number!
+              </h3>
+              <span className="inline-flex items-center gap-1 text-[10px] font-bold bg-amber-500/15 text-amber-700 dark:text-amber-300 px-2 py-0.5 rounded-full border border-amber-500/30">
+                <Lock className="w-3 h-3" />
+                Action Required
+              </span>
+            </div>
+            <p className="text-xs text-muted-foreground mt-1 leading-relaxed">
+              We found an existing client registered with this mobile number. Do you want to use this client's info to create the document, or provide a different number?
+            </p>
+          </div>
+        </div>
+
+        {/* Existing Client Profile Card */}
+        <div className="bg-muted/40 border border-border p-4 rounded-xl space-y-3 text-xs">
+          <div className="flex items-center gap-2.5">
+            <div className="size-9 rounded-xl bg-primary/10 text-primary flex items-center justify-center shrink-0 border border-primary/20">
+              <UserCheck className="w-5 h-5" />
             </div>
             <div>
-              <h3 className="text-base font-bold text-foreground">
-                Client Match Found!
-              </h3>
-              <p className="text-xs text-muted-foreground mt-0.5">
-                An existing client record matching this phone number or passport was found in the database.
+              <p className="font-bold text-sm text-foreground">{client.fullName || client.name || '—'}</p>
+              <p className="text-[10px] font-mono text-muted-foreground">
+                ID: {client.clientCode || client.did || client._id || ''}
               </p>
             </div>
           </div>
 
-          <span className="flex items-center gap-1 text-[11px] font-bold bg-amber-500/15 text-amber-600 px-2.5 py-1 rounded-full shrink-0">
-            <Lock className="w-3.5 h-3.5" />
-            <span>Warning</span>
-          </span>
-        </div>
-
-        {/* Existing Client Profile Card */}
-        <div className="bg-muted/40 border border-border p-4 rounded-xl space-y-2.5 text-xs">
-          <div className="flex items-center justify-between">
-            <span className="font-mono text-primary font-bold text-[11px]">
-              {client.clientCode || 'CUST-RECORD'}
-            </span>
-            <span className="font-semibold text-foreground">
-              {client.applications?.length || 0}  Linked Service Records
-            </span>
-          </div>
-
-          <div className="grid grid-cols-2 gap-2 text-foreground font-medium pt-1">
-            <div>
-              <span className="text-muted-foreground block text-[10.5px]">Full Name:</span>
-              <span className="font-bold text-sm">{client.fullName}</span>
-            </div>
-            <div>
-              <span className="text-muted-foreground block text-[10.5px]">Phone Number:</span>
-              <span className="font-mono font-bold">{client.phone}</span>
-            </div>
-            <div>
-              <span className="text-muted-foreground block text-[10.5px]">Passport Number:</span>
-              <span className="font-mono font-bold">{client.passportNumber || 'N/A'}</span>
-            </div>
-            <div>
-              <span className="text-muted-foreground block text-[10.5px]">National ID (NID):</span>
-              <span className="font-mono font-bold">{client.nidNumber || 'N/A'}</span>
-            </div>
-          </div>
-        </div>
-
-        {/* Action Choices Required */}
-        <div className="space-y-2.5 pt-1">
-          <p className="text-xs font-bold text-foreground">
-            How would you like to proceed? Select an option below:
-          </p>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
-            {/* Option 1: Auto Fill */}
-            <button
-              type="button"
-              onClick={onAutoFill}
-              className="flex items-center justify-between p-3 rounded-xl bg-primary/10 hover:bg-primary/20 border border-primary/30 text-primary font-bold text-xs transition-all cursor-pointer group"
-            >
-              <div className="flex items-center gap-2 text-left">
-                <CopyCheck className="w-4 h-4 shrink-0" />
-                <div>
-                  <p>Auto-Fill Form</p>
-                  <p className="text-[10px] font-normal opacity-80">Populate form fields with saved client profile</p>
-                </div>
+          <div className="grid grid-cols-2 gap-2.5 pt-1">
+            <div className="flex items-center gap-1.5 bg-background/80 p-2 rounded-lg border border-border">
+              <Phone className="w-3.5 h-3.5 text-primary shrink-0" />
+              <div className="min-w-0">
+                <p className="text-[10px] text-muted-foreground">Phone Number</p>
+                <p className="font-mono font-bold text-foreground truncate">{client.phone || client.mobileNumber || '—'}</p>
               </div>
-              <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
-            </button>
-
-            {/* Option 2: Update Existing Profile */}
-            <button
-              type="button"
-              onClick={onUpdateExisting}
-              className="flex items-center justify-between p-3 rounded-xl bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/30 text-emerald-600 font-bold text-xs transition-all cursor-pointer group"
-            >
-              <div className="flex items-center gap-2 text-left">
-                <RefreshCw className="w-4 h-4 shrink-0" />
-                <div>
-                  <p>Update Profile Record</p>
-                  <p className="text-[10px] font-normal opacity-80">Update client database record with current form data</p>
-                </div>
+            </div>
+            <div className="flex items-center gap-1.5 bg-background/80 p-2 rounded-lg border border-border">
+              <Mail className="w-3.5 h-3.5 text-primary shrink-0" />
+              <div className="min-w-0">
+                <p className="text-[10px] text-muted-foreground">Email</p>
+                <p className="font-mono font-bold text-foreground truncate">{client.email || '—'}</p>
               </div>
-              <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
-            </button>
+            </div>
+            <div className="flex items-center gap-1.5 bg-background/80 p-2 rounded-lg border border-border">
+              <CreditCard className="w-3.5 h-3.5 text-primary shrink-0" />
+              <div className="min-w-0">
+                <p className="text-[10px] text-muted-foreground">NID Number</p>
+                <p className="font-mono font-bold text-foreground truncate">{client.nidNumber || '—'}</p>
+              </div>
+            </div>
+            <div className="flex items-center gap-1.5 bg-background/80 p-2 rounded-lg border border-border">
+              <CreditCard className="w-3.5 h-3.5 text-primary shrink-0" />
+              <div className="min-w-0">
+                <p className="text-[10px] text-muted-foreground">Passport Number</p>
+                <p className="font-mono font-bold text-foreground truncate">{client.passportNumber || '—'}</p>
+              </div>
+            </div>
           </div>
 
-          {/* Option 3: Create as New / Skip Link */}
-          <div className="pt-2 text-center">
-            <button
-              type="button"
-              onClick={onProceedAsNew}
-              className="text-[11.5px] text-muted-foreground hover:text-foreground underline transition-colors cursor-pointer"
-            >
-              Save as a standalone document without linking to database record
-            </button>
-          </div>
+          {/* Open Case File (if exists) */}
+          {caseFile && (
+            <div className="mt-2 pt-2 border-t border-border flex items-center gap-2 bg-sky-500/5 border border-sky-500/20 p-2.5 rounded-lg">
+              <Folder className="w-4 h-4 text-sky-500 shrink-0" />
+              <div>
+                <p className="text-[10px] text-muted-foreground font-semibold">Active Case File</p>
+                <p className="font-bold text-sky-600 dark:text-sky-400 text-xs">
+                  #{caseFile.caseNumber || caseFile._id} — {caseFile.destinationCountry || caseFile.caseType || 'Active Case'}
+                </p>
+              </div>
+            </div>
+          )}
         </div>
 
+        {/* Action Buttons */}
+        <div className="grid grid-cols-2 gap-3 pt-1">
+          {/* NO */}
+          <button
+            type="button"
+            onClick={onNo}
+            className="flex items-center justify-center gap-2 p-3 rounded-xl bg-rose-500/10 hover:bg-rose-500/20 border border-rose-500/30 text-rose-600 dark:text-rose-400 font-bold text-xs sm:text-sm transition-all cursor-pointer shadow-xs"
+          >
+            <X className="w-4 h-4" />
+            <span>No, Enter Different Number</span>
+          </button>
+
+          {/* YES */}
+          <button
+            type="button"
+            onClick={onYes}
+            className="flex items-center justify-center gap-2 p-3 rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground font-bold text-xs sm:text-sm transition-all cursor-pointer shadow-xs"
+          >
+            <CheckCircle2 className="w-4 h-4" />
+            <span>Yes, Use This Client</span>
+          </button>
+        </div>
       </div>
     </div>
   );
 }
+
+export default ExistingClientAlertModal;
+

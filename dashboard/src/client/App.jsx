@@ -6,13 +6,12 @@ import { usePortalStore } from './store/usePortalStore';
 import { DashboardLayout } from '@shared/components/layout/DashboardLayout';
 import { Sidebar } from './components/layout/Sidebar';
 import { Header } from './components/layout/Header';
-import Factory from './pages/Factory';
-import Agency from './pages/Agency';
-import Admin from './pages/Admin';
 import DocumentStudio from './pages/DocumentStudio';
 import DocumentData from './pages/DocumentData';
 import Accounts from './pages/Accounts';
 import Settings from './pages/Settings';
+import Overview from './pages/Overview';
+import Agency from './pages/Agency';
 import NotFoundPage from './pages/NotFoundPage';
 import { GlobalErrorBoundary } from './components/common/GlobalErrorBoundary';
 import { ToastContainer } from './components/common/ToastContainer';
@@ -32,6 +31,14 @@ const queryClient = new QueryClient({
 function AuthGuard({ children }) {
   const user = useAuthStore((state) => state.user);
   const isLoading = useAuthStore((state) => state.isLoading);
+  const fetchProfile = useAuthStore((state) => state.fetchProfile);
+
+  useEffect(() => {
+    const token = typeof window !== 'undefined' ? localStorage.getItem('accessToken') : null;
+    if (token) {
+      fetchProfile();
+    }
+  }, [fetchProfile]);
 
   if (isLoading) {
     return (
@@ -71,7 +78,7 @@ function MainLayout() {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [setSearchOpen]);
 
-  const isKnownPortal = ['factory', 'agency', 'admin', 'docs', 'data', 'accounts', 'settings'].includes(activePortal);
+  const isKnownPortal = ['overview', 'agency', 'docs', 'data', 'accounts', 'settings'].includes(activePortal);
 
   return (
     <DashboardLayout
@@ -85,9 +92,8 @@ function MainLayout() {
       }
       modals={<GlobalSearchModal />}
     >
-      {activePortal === 'factory' && <Factory />}
+      {activePortal === 'overview' && <Overview />}
       {activePortal === 'agency' && <Agency />}
-      {activePortal === 'admin' && <Admin />}
       {activePortal === 'docs' && <DocumentStudio />}
       {activePortal === 'data' && <DocumentData />}
       {activePortal === 'accounts' && <Accounts />}

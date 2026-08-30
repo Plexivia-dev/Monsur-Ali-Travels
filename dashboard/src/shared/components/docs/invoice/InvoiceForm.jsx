@@ -242,7 +242,7 @@ export function InvoiceForm({ data, onChange, onSubmit, onReset, isSubmitting = 
               type="text"
               required
               value={data.client?.name || ''}
-              placeholder="e.g. Md. Abdul Karim"
+              placeholder="Enter recipient / client name"
               onChange={(e) => handleClientChange('name', e.target.value)}
               className="w-full px-3 py-2 bg-background border border-border rounded-xl text-foreground font-semibold text-xs focus:ring-2 focus:ring-sky-400/40 outline-none"
             />
@@ -253,7 +253,7 @@ export function InvoiceForm({ data, onChange, onSubmit, onReset, isSubmitting = 
             <input
               type="text"
               value={data.client?.contactPerson || ''}
-              placeholder="e.g. Managing Director"
+              placeholder="Enter designation / company name"
               onChange={(e) => handleClientChange('contactPerson', e.target.value)}
               className="w-full px-3 py-2 bg-background border border-border rounded-xl text-foreground text-xs focus:ring-2 focus:ring-sky-400/40 outline-none"
             />
@@ -272,7 +272,7 @@ export function InvoiceForm({ data, onChange, onSubmit, onReset, isSubmitting = 
             <input
               type="email"
               value={data.client?.email || ''}
-              placeholder="e.g. client@example.com"
+              placeholder="Enter client email address"
               onChange={(e) => handleClientChange('email', e.target.value)}
               className="w-full px-3 py-2 bg-background border border-border rounded-xl text-foreground text-xs focus:ring-2 focus:ring-sky-400/40 outline-none"
             />
@@ -283,7 +283,7 @@ export function InvoiceForm({ data, onChange, onSubmit, onReset, isSubmitting = 
             <input
               type="text"
               value={data.client?.address || ''}
-              placeholder="e.g. 120/A Motijheel C/A, Dhaka - 1000"
+              placeholder="Enter client billing address"
               onChange={(e) => handleClientChange('address', e.target.value)}
               className="w-full px-3 py-2 bg-background border border-border rounded-xl text-foreground text-xs focus:ring-2 focus:ring-sky-400/40 outline-none"
             />
@@ -341,7 +341,7 @@ export function InvoiceForm({ data, onChange, onSubmit, onReset, isSubmitting = 
                     type="text"
                     required
                     value={item.title || ''}
-                    placeholder="e.g. Saudi Work Visa Processing"
+                    placeholder="Enter item description"
                     onChange={(e) => handleUpdateItem(item.id, 'title', e.target.value)}
                     className="w-full bg-background border border-border rounded-lg px-3 py-1.5 text-foreground font-semibold text-xs focus:ring-2 focus:ring-sky-400/40 outline-none"
                   />
@@ -352,7 +352,7 @@ export function InvoiceForm({ data, onChange, onSubmit, onReset, isSubmitting = 
                   <input
                     type="text"
                     value={item.description || ''}
-                    placeholder="e.g. Embassy fee and biometric included"
+                    placeholder="Enter item notes / specifications"
                     onChange={(e) => handleUpdateItem(item.id, 'description', e.target.value)}
                     className="w-full bg-background border border-border rounded-lg px-3 py-1.5 text-foreground text-xs focus:ring-2 focus:ring-sky-400/40 outline-none"
                   />
@@ -414,7 +414,7 @@ export function InvoiceForm({ data, onChange, onSubmit, onReset, isSubmitting = 
               <textarea
                 rows={3}
                 value={data.paymentTerms || ''}
-                placeholder="Payment is due within 15 days. Please make payment via Cash or Bank Transfer..."
+                placeholder="Enter payment terms & instructions..."
                 onChange={(e) => onChange({ ...data, paymentTerms: e.target.value })}
                 className="w-full px-3 py-2 bg-background border border-border rounded-xl text-foreground text-xs focus:ring-2 focus:ring-sky-400/40 outline-none resize-none"
               />

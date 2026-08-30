@@ -141,6 +141,7 @@ export function EmploymentAgreement() {
       docId: formData.agreementId,
       docType: 'Employment_Agreement',
       clientName: formData.parties?.employeeName,
+      elementId: 'employment-agreement-canvas',
     });
   };
 
@@ -232,7 +233,7 @@ export function EmploymentAgreement() {
 
       {/* Main Studio Views */}
       {viewMode === 'edit' && (
-        <div className="max-w-4xl mx-auto">
+        <div className="w-full pb-16">
           <AgreementForm
             formData={formData}
             setFormData={setFormData}

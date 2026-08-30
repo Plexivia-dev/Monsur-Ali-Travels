@@ -5,11 +5,11 @@ export const parsePortalFromPath = (pathname) => {
     .replace(/^\/client\.html\/?/i, '/')
     .replace(/^\/client\/?/i, '/');
   const parts = cleanPath.split('/').filter(Boolean);
-  let portal = 'agency';
+  let portal = 'overview';
   let submodule = 'tasks';
 
   if (parts.length === 0) {
-    return { portal: 'agency', submodule: 'tasks' };
+    return { portal: 'overview', submodule: 'tasks' };
   }
 
   if (parts[0] === 'dashboard') {
@@ -20,16 +20,16 @@ export const parsePortalFromPath = (pathname) => {
     if (parts[1]) submodule = parts[1] === 'dashboard' ? 'tasks' : parts[1];
   }
 
-  const validPortals = ['factory', 'agency', 'admin', 'docs', 'data'];
+  const validPortals = ['overview', 'agency', 'accounts', 'docs', 'data', 'settings'];
   if (!validPortals.includes(portal)) {
-    portal = 'agency';
+    portal = 'overview';
     submodule = 'tasks';
   }
 
   return { portal, submodule };
 };
 
-const initialPath = typeof window !== 'undefined' ? window.location.pathname : '/dashboard/agency/tasks';
+const initialPath = typeof window !== 'undefined' ? window.location.pathname : '/dashboard/overview';
 const initialParsed = parsePortalFromPath(initialPath);
 
 export const usePortalStore = create((set, get) => ({
@@ -40,13 +40,7 @@ export const usePortalStore = create((set, get) => ({
   searchOpen: false,
   searchQuery: '',
   toasts: [],
-  notifications: [
-    { id: 1, portal: 'factory', title: 'Coal Stock Alert', message: 'Coal level dropped below 20 Tons threshold (Currently 18.4 Tons).', time: '10 mins ago', unread: true, type: 'warning' },
-    { id: 2, portal: 'factory', title: 'Batch #892 Complete', message: 'Daily molded brick batch #892 completed with 42,500 units.', time: '1 hour ago', unread: true, type: 'success' },
-    { id: 3, portal: 'agency', title: 'Timesheet Approved', message: 'Client Apex Tech approved 12 contractor timesheets for Week 32.', time: '2 hours ago', unread: false, type: 'info' },
-    { id: 4, portal: 'agency', title: 'Pending Placement', message: '3 clients awaiting client confirmation for Logistics Hub.', time: '4 hours ago', unread: true, type: 'warning' },
-    { id: 5, portal: 'admin', title: 'System Backup Complete', message: 'Automated database snapshot created successfully.', time: '12 hours ago', unread: false, type: 'info' }
-  ],
+  notifications: [],
 
   setLanguage: (lang) => {
     if (typeof window !== 'undefined') localStorage.setItem('app_language', lang);
@@ -109,9 +103,27 @@ export const usePortalStore = create((set, get) => ({
     set((state) => ({ toasts: state.toasts.filter((t) => t.id !== id) }));
   },
 
+  addNotification: (notification) => {
+    set((state) => {
+      const exists = state.notifications.some((n) => n.id === notification.id || (n.did && n.did === notification.did));
+      if (exists) return state;
+      return {
+        notifications: [notification, ...state.notifications].slice(0, 50),
+      };
+    });
+  },
+
+  markNotificationRead: async (id) => {
+    set((state) => ({
+      notifications: state.notifications.map((n) =>
+        n.id === id || n.did === id ? { ...n, unread: false, isRead: true } : n
+      ),
+    }));
+  },
+
   markAllNotificationsRead: () => {
     set((state) => ({
-      notifications: state.notifications.map((n) => ({ ...n, unread: false })),
+      notifications: state.notifications.map((n) => ({ ...n, unread: false, isRead: true })),
     }));
   },
 }));

@@ -60,13 +60,19 @@ export function ProfileDropdown({ defaultOpen, align, trigger }) {
         <DropdownMenuSeparator />
 
         <DropdownMenuGroup>
-          <DropdownMenuItem onClick={() => navigate('/admin/settings')}>
+          <DropdownMenuItem onClick={() => navigate('/admin/settings?tab=profile')}>
             <UserIcon className="size-4" />
-            <span>My Account</span>
+            <span>My Profile</span>
           </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => navigate('/admin/settings')}>
+          {['Owner', 'Admin', 'Superadmin', 'superadmin', 'owner', 'admin'].includes(user?.role) && (
+            <DropdownMenuItem onClick={() => navigate('/admin/settings?tab=users')}>
+              <SettingsIcon className="size-4" />
+              <span>User & Role Settings</span>
+            </DropdownMenuItem>
+          )}
+          <DropdownMenuItem onClick={() => navigate('/admin/settings?tab=security')}>
             <SettingsIcon className="size-4" />
-            <span>Settings</span>
+            <span>Security Settings</span>
           </DropdownMenuItem>
         </DropdownMenuGroup>
 

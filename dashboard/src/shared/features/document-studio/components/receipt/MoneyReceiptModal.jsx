@@ -6,6 +6,10 @@ import { toast } from 'sonner';
 import { MoneyReceiptPrintSlip } from './MoneyReceiptPrintSlip';
 import { useAuth } from '@shared/lib/auth-context';
 import { Button } from '@/components/ui/button';
+import { BdPhoneInput } from '@/components/common/BdPhoneInput';
+import { useClientLookup } from '../common/useClientLookup';
+import { ExistingClientAlertModal } from '../common/ExistingClientAlertModal';
+import { validateBdPhone } from '../common/phoneValidator';
 
 const SERVICE_OPTIONS = [
   'Indian Visa Processing',
@@ -27,6 +31,13 @@ export function MoneyReceiptModal({
 }) {
   const user = useAuth((state) => state.user);
   const [loading, setLoading] = useState(false);
+  const [detectedMatch, setDetectedMatch] = useState(null);
+  const [phoneTouched, setPhoneTouched] = useState(false);
+
+  const { triggerLookup, resetLookup } = useClientLookup({
+    onClientFound: (client, caseFile) => setDetectedMatch({ client, caseFile }),
+  });
+
   const [formData, setFormData] = useState({
     clientName: initialData.clientName || '',
     clientPhone: initialData.clientPhone || '',
@@ -38,6 +49,31 @@ export function MoneyReceiptModal({
     purpose: initialData.purpose || '',
     createdByName: user?.name || 'Manager',
   });
+
+  const handleYes = () => {
+    if (!detectedMatch?.client) return;
+    const c = detectedMatch.client;
+    setFormData((prev) => ({
+      ...prev,
+      clientName: c.fullName || c.name || prev.clientName,
+      clientPhone: c.phone || c.mobileNumber || prev.clientPhone,
+      passportNumber: c.passportNumber || c.nidNumber || prev.passportNumber,
+      clientId: c._id || c.did || prev.clientId,
+      clientDid: c.did || c._id || prev.clientDid,
+    }));
+    toast.success(`"${c.fullName || c.name}" info auto-filled!`);
+    setDetectedMatch(null);
+  };
+
+  const handleNo = () => {
+    const val = detectedMatch?.client?.phone || formData.clientPhone || '';
+    setFormData((prev) => ({ ...prev, clientPhone: '' }));
+    resetLookup(val);
+    setPhoneTouched(false);
+    toast.info('Please enter a different phone number.');
+    setDetectedMatch(null);
+  };
+
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [createdReceipt, setCreatedReceipt] = useState(null);
@@ -70,16 +106,31 @@ export function MoneyReceiptModal({
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
+  const handlePhoneChange = (val) => {
+    setFormData((prev) => ({ ...prev, clientPhone: val }));
+    triggerLookup(val);
+    if (phoneTouched) setPhoneTouched(true);
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!formData.clientName.trim()) {
       toast.error('Please provide client name.');
       return;
     }
+
+    const check = validateBdPhone(formData.clientPhone);
+    if (!check.isValid) {
+      setPhoneTouched(true);
+      toast.error(`Client Phone: ${check.error}`);
+      return;
+    }
+
     if (!formData.amount || Number(formData.amount) <= 0) {
       toast.error('Please provide a valid received amount.');
       return;
     }
+
 
     try {
       setIsSubmitting(true);
@@ -202,7 +253,7 @@ export function MoneyReceiptModal({
                       name="clientName"
                       value={formData.clientName}
                       onChange={handleChange}
-                      placeholder="e.g. Md. Karim Hossain"
+                      placeholder="Enter passenger / client name"
                       required
                       className="w-full px-3 py-2 text-xs rounded-lg border border-input bg-background focus:ring-2 focus:ring-primary/20 focus:border-primary outline-hidden"
                     />
@@ -210,16 +261,19 @@ export function MoneyReceiptModal({
 
                   <div>
                     <label className="block text-xs font-semibold text-foreground mb-1">
-                      Phone Number
+                      Phone Number <span className="text-rose-500">*</span>
                     </label>
-                    <input
-                      type="text"
-                      name="clientPhone"
+                    <BdPhoneInput
                       value={formData.clientPhone}
-                      onChange={handleChange}
-                      placeholder="e.g. 01711223344"
-                      className="w-full px-3 py-2 text-xs rounded-lg border border-input bg-background focus:ring-2 focus:ring-primary/20 focus:border-primary outline-hidden"
+                      required
+                      onBlur={() => setPhoneTouched(true)}
+                      onChange={handlePhoneChange}
                     />
+                    {((phoneTouched || Boolean(formData.clientPhone)) && !validateBdPhone(formData.clientPhone || '').isValid) && (
+                      <p className="text-[10px] text-rose-500 font-bold mt-1">
+                        {validateBdPhone(formData.clientPhone || '').error}
+                      </p>
+                    )}
                   </div>
 
                   <div>
@@ -231,7 +285,7 @@ export function MoneyReceiptModal({
                       name="passportNumber"
                       value={formData.passportNumber}
                       onChange={handleChange}
-                      placeholder="e.g. A01234567"
+                      placeholder="Enter passport number"
                       className="w-full px-3 py-2 text-xs font-mono uppercase rounded-lg border border-input bg-background focus:ring-2 focus:ring-primary/20 focus:border-primary outline-hidden"
                     />
                   </div>
@@ -275,7 +329,7 @@ export function MoneyReceiptModal({
                         name="amount"
                         value={formData.amount}
                         onChange={handleChange}
-                        placeholder="e.g. 5000"
+                        placeholder="0.00"
                         min="0"
                         required
                         className="w-full pl-7 pr-3 py-2 text-xs font-mono font-bold text-foreground rounded-lg border border-input bg-background focus:ring-2 focus:ring-primary/20 focus:border-primary outline-hidden"
@@ -292,7 +346,7 @@ export function MoneyReceiptModal({
                       name="amountInWords"
                       value={formData.amountInWords}
                       onChange={handleChange}
-                      placeholder="e.g. Five Thousand BDT Only"
+                      placeholder="Enter amount in words"
                       className="w-full px-3 py-2 text-xs rounded-lg border border-input bg-background focus:ring-2 focus:ring-primary/20 focus:border-primary outline-hidden"
                     />
                   </div>
@@ -323,7 +377,7 @@ export function MoneyReceiptModal({
                       name="purpose"
                       value={formData.purpose}
                       onChange={handleChange}
-                      placeholder="e.g. Advance deposit for visa dossier processing"
+                      placeholder="Enter payment purpose / notes"
                       className="w-full px-3 py-2 text-xs rounded-lg border border-input bg-background focus:ring-2 focus:ring-primary/20 focus:border-primary outline-hidden"
                     />
                   </div>
@@ -368,6 +422,14 @@ export function MoneyReceiptModal({
           )}
         </div>
 
+        {detectedMatch && (
+          <ExistingClientAlertModal
+            client={detectedMatch.client}
+            caseFile={detectedMatch.caseFile}
+            onYes={handleYes}
+            onNo={handleNo}
+          />
+        )}
       </div>
     </div>
   );

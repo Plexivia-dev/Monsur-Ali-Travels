@@ -51,7 +51,7 @@ export const useAuthStore = create((set, get) => ({
         subRole: apiUser.subRole || apiUser.sub_role || '',
         department: apiUser.department || '',
         designation: apiUser.designation || '',
-        avatar: apiUser.avatar || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=256&q=80',
+        avatar: apiUser.avatar || '',
       };
 
       if (typeof window !== 'undefined') {
@@ -65,6 +65,72 @@ export const useAuthStore = create((set, get) => ({
     } catch (err) {
       set({ isLoading: false });
       throw new Error(getGenericErrorMessage(err, 'Sign in failed. Please check your credentials.'));
+    }
+  },
+
+  verify2fa: async (params, password, code, method = 'authenticator') => {
+    try {
+      set({ isLoading: true });
+      const payload = typeof params === 'string'
+        ? { email: params, password, code, method: method || 'authenticator' }
+        : params;
+
+      const response = await apiClient.post('/api/v1/auth/2fa/verify', payload);
+      const { user: apiUser, accessToken, refreshToken } = response.data.data;
+
+      const loggedUser = {
+        id: apiUser.id || apiUser._id || apiUser.did,
+        did: apiUser.did,
+        email: apiUser.email || (typeof params === 'string' ? params : params?.email) || '',
+        name: apiUser.name || (apiUser.email || '').split('@')[0].replace('.', ' ').replace(/\b\w/g, (l) => l.toUpperCase()),
+        username: apiUser.username || '',
+        phone: apiUser.phone || '',
+        address: apiUser.address || '',
+        role: apiUser.role || 'Employee',
+        subRole: apiUser.subRole || apiUser.sub_role || '',
+        department: apiUser.department || '',
+        designation: apiUser.designation || '',
+        avatar: apiUser.avatar || '',
+      };
+
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('accessToken', accessToken);
+        localStorage.setItem('refreshToken', refreshToken);
+        localStorage.setItem('user', JSON.stringify(loggedUser));
+      }
+
+      set({ user: loggedUser, isLoading: false });
+      return { success: true, user: loggedUser };
+    } catch (err) {
+      set({ isLoading: false });
+      throw new Error(getGenericErrorMessage(err, '2FA verification failed. Please try again.'));
+    }
+  },
+
+  resendEmailOtp: async (twoFactorToken) => {
+    try {
+      const response = await apiClient.post('/api/v1/auth/2fa/resend-email-otp', { twoFactorToken });
+      return response.data;
+    } catch (err) {
+      throw new Error(getGenericErrorMessage(err, 'Failed to resend verification code.'));
+    }
+  },
+
+  setupAuthenticator: async (twoFactorToken) => {
+    try {
+      const response = await apiClient.post('/api/v1/auth/2fa/setup-authenticator', { twoFactorToken });
+      return response.data?.data;
+    } catch (err) {
+      throw new Error(getGenericErrorMessage(err, 'Failed to load Authenticator QR setup.'));
+    }
+  },
+
+  sendQrCodeEmail: async (twoFactorToken) => {
+    try {
+      const response = await apiClient.post('/api/v1/auth/2fa/send-qr', { twoFactorToken });
+      return response.data;
+    } catch (err) {
+      throw new Error(getGenericErrorMessage(err, 'Failed to send QR code email.'));
     }
   },
 
@@ -150,40 +216,6 @@ export const useAuthStore = create((set, get) => ({
     }
   },
 
-  verify2fa: async (email, password, code) => {
-    try {
-      set({ isLoading: true });
-      const response = await apiClient.post('/api/v1/auth/2fa/verify', { email, password, code });
-      const { user: apiUser, accessToken, refreshToken } = response.data.data;
-
-      const loggedUser = {
-        id: apiUser.id || apiUser._id,
-        did: apiUser.did,
-        email: apiUser.email || email,
-        name: apiUser.name || email.split('@')[0].replace('.', ' ').replace(/\b\w/g, (l) => l.toUpperCase()),
-        username: apiUser.username || '',
-        phone: apiUser.phone || '',
-        address: apiUser.address || '',
-        role: apiUser.role || 'Employee',
-        subRole: apiUser.subRole || apiUser.sub_role || '',
-        department: apiUser.department || '',
-        designation: apiUser.designation || '',
-        avatar: apiUser.avatar || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=256&q=80',
-      };
-
-      if (typeof window !== 'undefined') {
-        localStorage.setItem('accessToken', accessToken);
-        localStorage.setItem('refreshToken', refreshToken);
-        localStorage.setItem('user', JSON.stringify(loggedUser));
-      }
-
-      set({ user: loggedUser, isLoading: false });
-      return { success: true, user: loggedUser };
-    } catch (err) {
-      set({ isLoading: false });
-      throw new Error(getGenericErrorMessage(err, '2FA verification failed. Please check the code.'));
-    }
-  },
 
   loginWithGoogle: async (code, redirectUri) => {
     try {
@@ -203,7 +235,7 @@ export const useAuthStore = create((set, get) => ({
         subRole: apiUser.subRole || apiUser.sub_role || '',
         department: apiUser.department || '',
         designation: apiUser.designation || '',
-        avatar: apiUser.avatar || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=256&q=80',
+        avatar: apiUser.avatar || '',
       };
 
       if (typeof window !== 'undefined') {

@@ -1,7 +1,52 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Building2, User, Heart, FileText, Calendar, DollarSign } from 'lucide-react';
+import { BdPhoneInput } from '@/components/common/BdPhoneInput';
+import { useClientLookup } from '../common/useClientLookup';
+import { ExistingClientAlertModal } from '../common/ExistingClientAlertModal';
+import { validateBdPhone } from '../common/phoneValidator';
+import { toast } from 'sonner';
 
 export function MarriageCertificateForm({ data = {}, onChange }) {
+  const [detectedMatch, setDetectedMatch] = useState(null);
+  const { triggerLookup, resetLookup } = useClientLookup({
+    onClientFound: (client, caseFile) => setDetectedMatch({ client, caseFile }),
+  });
+
+  const handleYes = () => {
+    if (!detectedMatch?.client) return;
+    const c = detectedMatch.client;
+    onChange((prev) => ({
+      ...prev,
+      clientId: c._id,
+      clientDid: c.did,
+      linkedCaseId: detectedMatch.caseFile?._id || null,
+      linkedCaseDid: detectedMatch.caseFile?.did || null,
+      groom: {
+        ...prev.groom,
+        name: c.fullName || prev.groom?.name,
+        phone: c.phone || prev.groom?.phone,
+        passportNo: c.passportNumber || prev.groom?.passportNo,
+        nidNo: c.nidNumber || prev.groom?.nidNo,
+        fatherName: c.fatherName || prev.groom?.fatherName,
+        motherName: c.motherName || prev.groom?.motherName,
+        address: c.presentAddress || c.address || prev.groom?.address,
+      },
+    }));
+    toast.success(`"${c.fullName}" info auto-filled!`);
+    setDetectedMatch(null);
+  };
+
+  const handleNo = () => {
+    const val = detectedMatch?.client?.phone || '';
+    onChange((prev) => ({
+      ...prev,
+      groom: { ...prev.groom, phone: '' },
+    }));
+    resetLookup(val);
+    toast.info('Please enter a different phone number.');
+    setDetectedMatch(null);
+  };
+
   const handleChange = (section, field, value) => {
     if (section) {
       onChange((prev) => ({
@@ -96,7 +141,7 @@ export function MarriageCertificateForm({ data = {}, onChange }) {
               type="text"
               value={data.volumeNo || ''}
               onChange={(e) => handleChange(null, 'volumeNo', e.target.value)}
-              placeholder="e.g. Vol-IV/2021 (Page #48)"
+              placeholder="Enter volume & page reference"
               className="w-full px-3 py-2 text-xs font-mono rounded-lg border border-input bg-background focus:ring-1 focus:ring-primary outline-hidden"
             />
           </div>
@@ -127,7 +172,7 @@ export function MarriageCertificateForm({ data = {}, onChange }) {
               type="text"
               value={data.marriagePlace || ''}
               onChange={(e) => handleChange(null, 'marriagePlace', e.target.value)}
-              placeholder="e.g. Mominpur, Jagannathpur, Sunamganj"
+              placeholder="Enter marriage / registration location"
               className="w-full px-3 py-2 text-xs rounded-lg border border-input bg-background focus:ring-1 focus:ring-primary outline-hidden"
             />
           </div>
@@ -150,6 +195,22 @@ export function MarriageCertificateForm({ data = {}, onChange }) {
               onChange={(e) => handleChange('groom', 'name', e.target.value)}
               className="w-full px-3 py-2 text-xs rounded-lg border border-input bg-background font-bold focus:ring-1 focus:ring-primary outline-hidden uppercase"
             />
+          </div>
+
+          <div>
+            <label className="block text-xs font-semibold mb-1">Groom Phone Number</label>
+            <BdPhoneInput
+              value={data.groom?.phone || ''}
+              onChange={(val) => {
+                handleChange('groom', 'phone', val);
+                triggerLookup(val);
+              }}
+            />
+            {data.groom?.phone && !validateBdPhone(data.groom.phone).isValid && (
+              <p className="text-[10px] text-rose-500 font-bold mt-1">
+                {validateBdPhone(data.groom.phone).error}
+              </p>
+            )}
           </div>
 
           <div>
@@ -288,7 +349,7 @@ export function MarriageCertificateForm({ data = {}, onChange }) {
               type="text"
               value={data.marriageTerms?.dowerAmount || ''}
               onChange={(e) => handleChange('marriageTerms', 'dowerAmount', e.target.value)}
-              placeholder="e.g. 500,000"
+              placeholder="Enter dower / mahr amount"
               className="w-full px-3 py-2 text-xs font-mono rounded-lg border border-input bg-background focus:ring-1 focus:ring-primary outline-hidden"
             />
           </div>
@@ -299,7 +360,7 @@ export function MarriageCertificateForm({ data = {}, onChange }) {
               type="text"
               value={data.marriageTerms?.wakilName || ''}
               onChange={(e) => handleChange('marriageTerms', 'wakilName', e.target.value)}
-              placeholder="e.g. MD. DELWAR HOSSAIN (Father of Bride)"
+              placeholder="Enter bride representative name & relation"
               className="w-full px-3 py-2 text-xs rounded-lg border border-input bg-background focus:ring-1 focus:ring-primary outline-hidden"
             />
           </div>
@@ -310,7 +371,7 @@ export function MarriageCertificateForm({ data = {}, onChange }) {
               type="text"
               value={data.marriageTerms?.witness1 || ''}
               onChange={(e) => handleChange('marriageTerms', 'witness1', e.target.value)}
-              placeholder="e.g. MD. ANWARUL HOQUE, NID: 1980..."
+              placeholder="Enter 1st witness name, NID & address"
               className="w-full px-3 py-2 text-xs rounded-lg border border-input bg-background focus:ring-1 focus:ring-primary outline-hidden"
             />
           </div>
@@ -321,13 +382,21 @@ export function MarriageCertificateForm({ data = {}, onChange }) {
               type="text"
               value={data.marriageTerms?.witness2 || ''}
               onChange={(e) => handleChange('marriageTerms', 'witness2', e.target.value)}
-              placeholder="e.g. MD. SHAHJAHAN MIAH, NID: 1985..."
+              placeholder="Enter 2nd witness name, NID & address"
               className="w-full px-3 py-2 text-xs rounded-lg border border-input bg-background focus:ring-1 focus:ring-primary outline-hidden"
             />
           </div>
         </div>
       </div>
 
+      {detectedMatch && (
+        <ExistingClientAlertModal
+          client={detectedMatch.client}
+          caseFile={detectedMatch.caseFile}
+          onYes={handleYes}
+          onNo={handleNo}
+        />
+      )}
     </div>
   );
 }

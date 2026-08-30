@@ -11,6 +11,7 @@ import notificationRouter from "./routes/shared/NotificationRoute.js";
 import dashboardRouter from "./routes/admin/DashboardRoute.js";
 import systemRouter from "./routes/admin/SystemRoute.js";
 import usersRouter from "./routes/admin/UsersRoute.js";
+import employeeRouter from "./routes/admin/EmployeeRoute.js";
 import settingsRouter from "./routes/admin/SettingsRoute.js";
 import storageMaintenanceRouter from "./routes/admin/StorageMaintenanceRoute.js";
 
@@ -47,6 +48,8 @@ coreRouter.use("/upload", uploadRouter);
 coreRouter.use("/uploads", uploadRouter);
 coreRouter.use("/notifications", notificationRouter);
 coreRouter.use("/accounts", authenticateToken, auditLog, accountsRouter);
+coreRouter.use("/users", authenticateToken, auditLog, usersRouter);
+coreRouter.use("/clients", authenticateToken, auditLog, clientRoute);
 // coreRouter.use("/developer", developerRouter);
 
 // ==========================================
@@ -62,6 +65,7 @@ adminRouter.use(auditLog);
 adminRouter.use("/dashboard", dashboardRouter);
 adminRouter.use("/system", systemRouter);
 adminRouter.use("/users", usersRouter);
+adminRouter.use("/employees", employeeRouter);
 adminRouter.use("/clients", clientRoute);
 adminRouter.use("/cases", adminCaseRouter);
 adminRouter.use("/tasks", taskRouter);
@@ -90,6 +94,8 @@ clientScopeRouter.use("/accounts", accountsRouter);
 clientScopeRouter.use("/tasks", taskRouter);
 clientScopeRouter.use("/cases", caseFileRouter);
 clientScopeRouter.use("/clients", clientRoute);
+clientScopeRouter.use("/users", usersRouter);
+clientScopeRouter.use("/employees", employeeRouter);
 clientScopeRouter.use("/agreements", agreementRouter);
 clientScopeRouter.use("/indian-visas", indianVisaRouter);
 clientScopeRouter.use("/passports", passportRouter);

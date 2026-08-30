@@ -1,62 +1,61 @@
 [
   {
-    "groupLabel": "Workspace",
-    "groupLabelBn": "",
+    "groupLabel": "Overview",
+    "groupLabelBn": "ওভারভিউ",
     "items": [
       {
-        "id": "my-tasks",
-        "name": "My Tasks",
-        "nameBn": "",
-        "portal": "agency",
+        "id": "overview-tasks",
+        "name": "Overview & Tasks",
+        "nameBn": "টাস্ক ওভারভিউ",
+        "portal": "overview",
         "submodule": "tasks",
-        "path": "/dashboard/agency/tasks",
-        "icon": "CheckSquare"
+        "path": "/dashboard/overview",
+        "icon": "LayoutDashboard"
       }
     ]
   },
   {
-    "groupLabel": "Client Operations",
+    "groupLabel": "Agency",
     "groupLabelBn": "",
+    "roles": ["admin", "owner", "superadmin", "accountant", "accounts"],
     "items": [
       {
-        "id": "clients-group",
-        "name": "Client Files",
+        "id": "agency-group",
+        "name": "Agency",
         "nameBn": "",
         "icon": "Building2",
         "childItems": [
           {
-            "id": "cases",
-            "name": "Client Files",
+            "id": "agency-clients",
+            "name": "Client List",
             "nameBn": "",
             "portal": "agency",
-            "submodule": "cases",
-            "path": "/dashboard/agency/cases",
-            "icon": "FolderOpen",
-            "roles": ["admin", "owner", "superadmin", "manager", "frontdesk", "visa_processor", "lawyer", "representative", "clientmanager"]
+            "submodule": "clients",
+            "path": "/dashboard/agency/clients",
+            "icon": "Users"
           },
           {
-            "id": "clients-all",
-            "name": "All Clients Directory",
+            "id": "agency-employees",
+            "name": "Employee List",
             "nameBn": "",
             "portal": "agency",
-            "submodule": "clients-all",
-            "path": "/dashboard/agency/clients-all",
-            "icon": "Users",
-            "roles": ["admin", "owner", "superadmin", "manager", "frontdesk", "clientmanager", "representative"]
+            "submodule": "employees",
+            "path": "/dashboard/agency/employees",
+            "icon": "UserCheck"
           }
         ]
       }
     ]
   },
   {
-    "groupLabel": "Financial Accounts",
+    "groupLabel": "Accounts",
     "groupLabelBn": "",
     "roles": ["admin", "owner", "superadmin", "manager", "accountant", "accounts"],
-    "excludeRoles": ["staff_frontdesk", "frontdesk", "visa_processor", "lawyer", "representative"],
+    "excludeRoles": ["staff", "frontdesk", "visa_processor", "lawyer", "representative"],
     "items": [
       {
         "id": "accounts-group",
-        "name": "Accounts Hub",
+        "name": "Accounts",
         "nameBn": "",
         "icon": "Wallet",
         "childItems": [
@@ -120,24 +119,13 @@
         "icon": "FileSpreadsheet",
         "childItems": [
           {
-            "id": "doc-money-receipt",
-            "name": "Money Receipt Voucher",
+            "id": "doc-payroll",
+            "name": "Salary Slip",
             "nameBn": "",
             "portal": "docs",
-            "submodule": "money-receipt",
-            "path": "/dashboard/docs/money-receipt",
-            "icon": "Receipt",
-            "roles": ["admin", "owner", "superadmin", "manager", "accountant", "frontdesk", "clientmanager"]
-          },
-          {
-            "id": "doc-cash-voucher",
-            "name": "Cash Money Voucher",
-            "nameBn": "",
-            "portal": "docs",
-            "submodule": "cash-voucher",
-            "path": "/dashboard/docs/cash-voucher",
-            "icon": "Wallet",
-            "roles": ["admin", "owner", "superadmin", "manager", "accountant"]
+            "submodule": "payroll",
+            "path": "/dashboard/docs/payroll",
+            "icon": "Banknote"
           },
           {
             "id": "doc-invoice",
@@ -146,18 +134,25 @@
             "portal": "docs",
             "submodule": "invoice",
             "path": "/dashboard/docs/invoice",
-            "icon": "ReceiptText",
-            "roles": ["admin", "owner", "superadmin", "manager", "accountant"]
+            "icon": "ReceiptText"
           },
           {
-            "id": "doc-payroll",
-            "name": "Salary Slip",
+            "id": "doc-money-receipt",
+            "name": "Money Receipt Voucher",
             "nameBn": "",
             "portal": "docs",
-            "submodule": "payroll",
-            "path": "/dashboard/docs/payroll",
-            "icon": "Banknote",
-            "roles": ["admin", "owner", "superadmin", "manager", "accountant"]
+            "submodule": "money-receipt",
+            "path": "/dashboard/docs/money-receipt",
+            "icon": "Receipt"
+          },
+          {
+            "id": "doc-cash-voucher",
+            "name": "Cash Money Voucher",
+            "nameBn": "",
+            "portal": "docs",
+            "submodule": "cash-voucher",
+            "path": "/dashboard/docs/cash-voucher",
+            "icon": "Wallet"
           },
           {
             "id": "doc-agreement",
@@ -167,7 +162,7 @@
             "submodule": "agreement",
             "path": "/dashboard/docs/agreement",
             "icon": "FileSignature",
-            "roles": ["admin", "owner", "superadmin", "manager", "lawyer", "clientmanager"]
+            "excludeRoles": ["accountant", "accounts"]
           },
           {
             "id": "doc-client-form",
@@ -177,7 +172,7 @@
             "submodule": "client-form",
             "path": "/dashboard/docs/client-form",
             "icon": "UserCheck",
-            "roles": ["admin", "owner", "superadmin", "manager", "frontdesk", "representative", "clientmanager"]
+            "excludeRoles": ["accountant", "accounts"]
           },
           {
             "id": "doc-indian-visa",
@@ -187,7 +182,7 @@
             "submodule": "indian-visa",
             "path": "/dashboard/docs/indian-visa",
             "icon": "Stamp",
-            "roles": ["admin", "owner", "superadmin", "manager", "visa_processor", "frontdesk"]
+            "excludeRoles": ["accountant", "accounts"]
           },
           {
             "id": "doc-passport-sub",
@@ -197,7 +192,7 @@
             "submodule": "passport-sub",
             "path": "/dashboard/docs/passport-sub",
             "icon": "BookOpen",
-            "roles": ["admin", "owner", "superadmin", "manager", "visa_processor", "frontdesk"]
+            "excludeRoles": ["accountant", "accounts"]
           },
           {
             "id": "doc-exp-cert",
@@ -207,7 +202,7 @@
             "submodule": "experience-certificate",
             "path": "/dashboard/docs/experience-certificate",
             "icon": "Award",
-            "roles": ["admin", "owner", "superadmin", "manager", "lawyer", "clientmanager"]
+            "excludeRoles": ["accountant", "accounts"]
           },
           {
             "id": "doc-marr-cert",
@@ -217,7 +212,7 @@
             "submodule": "marriage-certificate",
             "path": "/dashboard/docs/marriage-certificate",
             "icon": "Heart",
-            "roles": ["admin", "owner", "superadmin", "manager", "lawyer", "clientmanager"]
+            "excludeRoles": ["accountant", "accounts"]
           },
           {
             "id": "doc-char-cert",
@@ -227,7 +222,7 @@
             "submodule": "character-certificate",
             "path": "/dashboard/docs/character-certificate",
             "icon": "ShieldCheck",
-            "roles": ["admin", "owner", "superadmin", "manager", "lawyer", "clientmanager"]
+            "excludeRoles": ["accountant", "accounts"]
           },
           {
             "id": "doc-job-verification",
@@ -237,7 +232,7 @@
             "submodule": "job-verification",
             "path": "/dashboard/docs/job-verification",
             "icon": "FileCheck2",
-            "roles": ["admin", "owner", "superadmin", "manager", "visa_processor", "clientmanager"]
+            "excludeRoles": ["accountant", "accounts"]
           },
           {
             "id": "doc-idcard",
@@ -247,23 +242,49 @@
             "submodule": "idcard",
             "path": "/dashboard/docs/idcard",
             "icon": "Contact",
-            "roles": ["admin", "owner", "superadmin", "manager", "frontdesk"]
+            "excludeRoles": ["accountant", "accounts"]
           }
         ]
       }
     ]
   },
   {
-    "groupLabel": "Records Center",
+    "groupLabel": "Data Records Center",
     "groupLabelBn": "",
-    "roles": ["admin", "owner", "superadmin", "manager", "frontdesk", "visa_processor", "lawyer", "clientmanager"],
     "items": [
       {
         "id": "data-group",
-        "name": "Records Archive",
+        "name": "Records Management",
         "nameBn": "",
         "icon": "Database",
         "childItems": [
+          {
+            "id": "data-salary-slips",
+            "name": "Salary Slip Records",
+            "nameBn": "",
+            "portal": "data",
+            "submodule": "salary-slips",
+            "path": "/dashboard/data/salary-slips",
+            "icon": "Banknote"
+          },
+          {
+            "id": "data-invoices",
+            "name": "Invoice Records",
+            "nameBn": "",
+            "portal": "data",
+            "submodule": "invoices",
+            "path": "/dashboard/data/invoices",
+            "icon": "ReceiptText"
+          },
+          {
+            "id": "data-money-receipts",
+            "name": "Money Receipt Records",
+            "nameBn": "",
+            "portal": "data",
+            "submodule": "money-receipts",
+            "path": "/dashboard/data/money-receipts",
+            "icon": "Receipt"
+          },
           {
             "id": "data-agreements",
             "name": "Agreement Records",
@@ -272,7 +293,7 @@
             "submodule": "agreements",
             "path": "/dashboard/data/agreements",
             "icon": "FileSignature",
-            "roles": ["admin", "owner", "superadmin", "manager", "lawyer", "clientmanager"]
+            "excludeRoles": ["accountant", "accounts"]
           },
           {
             "id": "data-applications",
@@ -282,7 +303,7 @@
             "submodule": "client-applications",
             "path": "/dashboard/data/client-applications",
             "icon": "UserCheck",
-            "roles": ["admin", "owner", "superadmin", "manager", "frontdesk", "clientmanager"]
+            "excludeRoles": ["accountant", "accounts"]
           },
           {
             "id": "data-indian-visas",
@@ -292,7 +313,7 @@
             "submodule": "indian-visas",
             "path": "/dashboard/data/indian-visas",
             "icon": "Stamp",
-            "roles": ["admin", "owner", "superadmin", "manager", "visa_processor"]
+            "excludeRoles": ["accountant", "accounts"]
           },
           {
             "id": "data-passports",
@@ -302,7 +323,7 @@
             "submodule": "passports",
             "path": "/dashboard/data/passports",
             "icon": "BookOpen",
-            "roles": ["admin", "owner", "superadmin", "manager", "visa_processor", "frontdesk"]
+            "excludeRoles": ["accountant", "accounts"]
           }
         ]
       }

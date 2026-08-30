@@ -30,9 +30,7 @@ const mapApiUser = (apiUser, email) => ({
   department: apiUser.department || '',
   designation: apiUser.designation || '',
   subRole: apiUser.subRole || '',
-  avatar:
-    apiUser.avatar ||
-    'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=256&q=80',
+  avatar: apiUser.avatar || '',
 });
 
 // ── store ─────────────────────────────────────────────────────────────────────
@@ -42,24 +40,30 @@ export const useAuthStore = create((set, get) => ({
   isLoading: false,
 
   login: async (email, password) => {
-    set({ isLoading: true });
     try {
       const { data } = await apiClient.post('/api/v1/auth/login', { email, password });
-      if (data?.requires2fa) return { success: false, requires2fa: true };
-
-      const { user: apiUser, accessToken, refreshToken } = data.data;
-      const loggedUser = mapApiUser(apiUser, email);
-
-      if (!ROLES_ADMIN.includes(loggedUser.role)) {
-        throw new Error('Access denied. Only Owners and Admins are allowed to access this portal.');
+      if (data?.requires2fa) {
+        set({ isLoading: false });
+        return { success: false, requires2fa: true, ...data };
       }
 
-      localStorage.setItem('accessToken', accessToken);
-      localStorage.setItem('refreshToken', refreshToken);
-      localStorage.setItem('user', JSON.stringify(loggedUser));
+      if (data?.data) {
+        const { user: apiUser, accessToken, refreshToken } = data.data;
+        const loggedUser = mapApiUser(apiUser, email);
 
-      set({ user: loggedUser });
-      return { success: true };
+        if (!ROLES_ADMIN.includes(loggedUser.role)) {
+          throw new Error('Access denied. Only Owners and Admins are allowed to access this portal.');
+        }
+
+        localStorage.setItem('accessToken', accessToken);
+        localStorage.setItem('refreshToken', refreshToken);
+        localStorage.setItem('user', JSON.stringify(loggedUser));
+
+        set({ user: loggedUser });
+        return { success: true };
+      }
+
+      return data;
     } catch (err) {
       throw new Error(err.message || getErrorMessage(err, 'Sign in failed. Please check your credentials.'));
     } finally {
@@ -67,12 +71,16 @@ export const useAuthStore = create((set, get) => ({
     }
   },
 
-  verify2fa: async (email, password, code) => {
-    set({ isLoading: true });
+  verify2fa: async (params, password, code, method = 'authenticator') => {
     try {
-      const { data } = await apiClient.post('/api/v1/auth/2fa/verify', { email, password, code });
+      set({ isLoading: true });
+      const payload = typeof params === 'string'
+        ? { email: params, password, code, method: method || 'authenticator' }
+        : params;
+
+      const { data } = await apiClient.post('/api/v1/auth/2fa/verify', payload);
       const { user: apiUser, accessToken, refreshToken } = data.data;
-      const loggedUser = mapApiUser(apiUser, email);
+      const loggedUser = mapApiUser(apiUser, payload?.email || (typeof params === 'string' ? params : ''));
 
       if (!ROLES_ADMIN.includes(loggedUser.role)) {
         throw new Error('Access denied. Only Owners and Admins are allowed to access this portal.');
@@ -81,11 +89,38 @@ export const useAuthStore = create((set, get) => ({
       localStorage.setItem('accessToken', accessToken);
       localStorage.setItem('refreshToken', refreshToken);
       localStorage.setItem('user', JSON.stringify(loggedUser));
-      set({ user: loggedUser });
+      set({ user: loggedUser, isLoading: false });
+      return { success: true, user: loggedUser };
     } catch (err) {
-      throw new Error(err.message || getErrorMessage(err, '2FA verification failed.'));
-    } finally {
       set({ isLoading: false });
+      throw new Error(err.message || getErrorMessage(err, '2FA verification failed.'));
+    }
+  },
+
+  resendEmailOtp: async (twoFactorToken) => {
+    try {
+      const { data } = await apiClient.post('/api/v1/auth/2fa/resend-email-otp', { twoFactorToken });
+      return data;
+    } catch (err) {
+      throw new Error(err.message || getErrorMessage(err, 'Failed to resend verification code.'));
+    }
+  },
+
+  setupAuthenticator: async (twoFactorToken) => {
+    try {
+      const { data } = await apiClient.post('/api/v1/auth/2fa/setup-authenticator', { twoFactorToken });
+      return data?.data;
+    } catch (err) {
+      throw new Error(err.message || getErrorMessage(err, 'Failed to load Authenticator QR setup.'));
+    }
+  },
+
+  sendQrCodeEmail: async (twoFactorToken) => {
+    try {
+      const { data } = await apiClient.post('/api/v1/auth/2fa/send-qr', { twoFactorToken });
+      return data;
+    } catch (err) {
+      throw new Error(err.message || getErrorMessage(err, 'Failed to send QR code email.'));
     }
   },
 

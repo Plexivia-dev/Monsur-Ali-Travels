@@ -113,9 +113,10 @@ export function InvoiceBuilder() {
 
   const handlePrint = () => {
     printDocument({
-      docId: data.invoiceNo,
+      docId: data?.invoiceNo,
       docType: 'Invoice',
-      clientName: data.client?.name,
+      clientName: data?.client?.name,
+      elementId: 'printable-invoice-canvas',
     });
   };
 
@@ -183,7 +184,7 @@ export function InvoiceBuilder() {
 
       {/* Main Studio Views */}
       {viewMode === 'edit' && (
-        <div className="max-w-4xl mx-auto pb-16">
+        <div className="w-full pb-16">
           <InvoiceForm
             data={data}
             onChange={setData}
@@ -191,6 +192,9 @@ export function InvoiceBuilder() {
             onReset={handleReset}
             isSubmitting={isSubmitting}
           />
+          <div className="hidden print:block w-full">
+            <InvoicePreview data={data} />
+          </div>
         </div>
       )}
 

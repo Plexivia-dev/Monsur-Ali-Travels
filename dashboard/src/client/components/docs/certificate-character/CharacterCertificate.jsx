@@ -79,7 +79,7 @@ export function CharacterCertificate() {
 
       {/* Main Studio Views */}
       {viewMode === 'edit' && (
-        <div className="max-w-3xl mx-auto">
+        <div className="w-full pb-16">
           <CharacterCertificateForm data={data} onChange={setData} />
         </div>
       )}

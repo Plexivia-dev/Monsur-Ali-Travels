@@ -4,6 +4,8 @@ import TaskModel from "../../models/task.model.js";
 import DocumentVaultModel from "../../models/documentVault.model.js";
 import { NotificationModel } from "../../models/notification.model.js";
 import { UserModel } from "../../models/user.model.js";
+import { sendTaskAssignmentEmail } from "../../services/emailService.js";
+
 
 export const buildCaseIdentifierQuery = (identifier) => {
   if (!identifier) return { _id: null };
@@ -161,13 +163,29 @@ export const assignTaskStep = async (req, res) => {
     // Trigger Notification for Staff
     await NotificationModel.create({
       title: "New Task Assigned",
-      message: `You have been assigned task "${title}" for Case ${caseDoc.caseNumber}.`,
+      message: `You have been assigned task "${title}" for Case ${caseDoc.caseNumber || caseDoc.did}.`,
       module: "visa",
       type: "info",
-      refId: caseDoc._id,
-      recipientId: canonicalAssignedToDid,
+      refDid: caseDoc.did || String(caseDoc._id),
+      recipientUserDid: canonicalAssignedToDid,
       createdBy: req.user?.name || "Admin",
     }).catch(() => {});
+
+    // Asynchronously send email notification to assigned staff
+    if (assignedUser?.email) {
+      sendTaskAssignmentEmail({
+        toEmail: assignedUser.email,
+        staffName: assignedUserName,
+        taskTitle: title,
+        description: description || "",
+        stepNumber: newTask.stepNumber,
+        caseNumber: caseDoc.caseNumber,
+        caseTitle: caseDoc.title || `Visa Case #${caseDoc.caseNumber}`,
+        clientName: caseDoc.applicantName || caseDoc.clientName || "",
+        serviceType: caseDoc.caseType || caseDoc.visaType || "Visa Processing",
+        assignedBy: req.user?.name || "Administration",
+      }).catch(() => {});
+    }
 
     return res.status(201).json({
       status: "success",
@@ -219,6 +237,19 @@ export const approveTaskStep = async (req, res) => {
         date: new Date(),
       });
       await caseDoc.save();
+
+      // Trigger notification to staff / assignee
+      if (task.assignedToDid) {
+        await NotificationModel.create({
+          title: "Task Approved",
+          message: `Your task "${task.title}" for Case ${caseDoc.caseNumber || caseDoc.did} has been approved by admin.`,
+          module: "visa",
+          type: "success",
+          refDid: caseDoc.did,
+          recipientUserDid: task.assignedToDid,
+          createdBy: req.user?.name || "Admin",
+        }).catch(() => {});
+      }
     }
 
     return res.status(200).json({
@@ -284,7 +315,27 @@ export const addPayment = async (req, res) => {
     
     await caseDoc.save();
 
-    return res.status(201).json({
+    // Trigger global / assigned officer notification
+    await NotificationModel.create({
+      title: "Payment Received",
+      message: `Received BDT ${paymentAmount.toLocaleString()} (${paymentType}) for Case ${caseDoc.caseNumber || caseDoc.did}.`,
+      module: "invoice",
+      type: "success",
+      refDid: caseDoc.did,
+      recipientUserDid: caseDoc.assignedToDid || null,
+      createdBy: req.user?.name || "Admin",
+    }).catch(() => {});
+
+    // Action 4: Email Owners for payment entry
+    sendPaymentOrBillCreatedEmailToOwners({
+      createdByUserName: req.user?.name || "Accounts / Admin",
+      type: `Payment (${paymentType})`,
+      refNumber: `Case #${caseDoc.caseNumber || caseDoc.did}`,
+      amount: paymentAmount,
+      notes: notes || `Payment method: ${paymentMethod}`,
+    }).catch((err) => console.error("[EmailTrigger] sendPaymentOrBillCreatedEmailToOwners error:", err.message));
+
+    return res.status(200).json({
       status: "success",
       message: "Payment recorded successfully",
       data: caseDoc.paymentLedger,

@@ -20,6 +20,7 @@ export function ExperienceCertificate() {
       docId: data.certificateNo,
       docType: 'Experience_Certificate',
       clientName: data.employeeName,
+      elementId: 'experience-certificate-canvas',
     });
   };
 
@@ -54,8 +55,11 @@ export function ExperienceCertificate() {
 
       {/* Main Studio Views */}
       {viewMode === 'edit' && (
-        <div className="max-w-3xl mx-auto pb-16">
+        <div className="w-full pb-16">
           <ExperienceCertificateForm data={data} onChange={setData} />
+          <div className="hidden print:block w-full">
+            <ExperienceCertificatePreview data={data} onPrint={handlePrint} />
+          </div>
         </div>
       )}
 

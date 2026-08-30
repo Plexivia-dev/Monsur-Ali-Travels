@@ -58,7 +58,7 @@ export function IdCardForm({ cardData, setCardData, onResetSample }) {
               <User className="w-3.5 h-3.5 absolute left-3 top-2.5 text-muted-foreground" />
               <input
                 type="text"
-                placeholder="e.g. MD. HAKIMUL ISLAM"
+                placeholder="Enter employee / holder name"
                 value={cardData.fullName}
                 onChange={(e) => handleChange('fullName', e.target.value)}
                 className="w-full pl-9 pr-3 py-1.5 bg-muted/50 border border-border rounded-lg text-foreground text-xs focus:outline-hidden focus:ring-1 focus:ring-primary font-bold"
@@ -72,7 +72,7 @@ export function IdCardForm({ cardData, setCardData, onResetSample }) {
             </label>
             <input
               type="text"
-              placeholder="e.g. EMPLOYEE / MANAGER"
+              placeholder="Enter role / designation"
               value={cardData.role}
               onChange={(e) => handleChange('role', e.target.value)}
               className="w-full px-3 py-1.5 bg-muted/50 border border-border rounded-lg text-foreground text-xs focus:outline-hidden focus:ring-1 focus:ring-primary font-bold uppercase"
@@ -88,7 +88,7 @@ export function IdCardForm({ cardData, setCardData, onResetSample }) {
             </label>
             <input
               type="text"
-              placeholder="e.g. MAT-0123"
+              placeholder="Enter employee / ID card number"
               value={cardData.idNumber}
               onChange={(e) => handleChange('idNumber', e.target.value)}
               className="w-full px-3 py-1.5 bg-muted/50 border border-border rounded-lg text-foreground text-xs focus:outline-hidden focus:ring-1 focus:ring-primary font-mono font-bold"
@@ -116,7 +116,7 @@ export function IdCardForm({ cardData, setCardData, onResetSample }) {
               <Droplets className="w-3.5 h-3.5 absolute left-3 top-2.5 text-muted-foreground" />
               <input
                 type="text"
-                placeholder="e.g. B+, A+, O+"
+                placeholder="Enter blood group"
                 value={cardData.bloodGroup}
                 onChange={(e) => handleChange('bloodGroup', e.target.value)}
                 className="w-full pl-9 pr-3 py-1.5 bg-muted/50 border border-border rounded-lg text-foreground text-xs focus:outline-hidden focus:ring-1 focus:ring-primary font-bold"
@@ -144,7 +144,7 @@ export function IdCardForm({ cardData, setCardData, onResetSample }) {
             <Mail className="w-3.5 h-3.5 absolute left-3 top-2.5 text-muted-foreground" />
             <input
               type="email"
-              placeholder="example@mail.com"
+              placeholder="Enter email address"
               value={cardData.email}
               onChange={(e) => handleChange('email', e.target.value)}
               className="w-full pl-9 pr-3 py-1.5 bg-muted/50 border border-border rounded-lg text-foreground text-xs focus:outline-hidden focus:ring-1 focus:ring-primary"
@@ -161,7 +161,7 @@ export function IdCardForm({ cardData, setCardData, onResetSample }) {
             <MapPin className="w-3.5 h-3.5 absolute left-3 top-2.5 text-muted-foreground" />
             <input
               type="text"
-              placeholder="Office full address"
+              placeholder="Enter office address"
               value={cardData.address}
               onChange={(e) => handleChange('address', e.target.value)}
               className="w-full pl-9 pr-3 py-1.5 bg-muted/50 border border-border rounded-lg text-foreground text-xs focus:outline-hidden focus:ring-1 focus:ring-primary"
@@ -179,7 +179,7 @@ export function IdCardForm({ cardData, setCardData, onResetSample }) {
               <Globe className="w-3.5 h-3.5 absolute left-3 top-2.5 text-muted-foreground" />
               <input
                 type="text"
-                placeholder="www.monsuralitravels.com"
+                placeholder="Enter website URL"
                 value={cardData.website}
                 onChange={(e) => handleChange('website', e.target.value)}
                 className="w-full pl-9 pr-3 py-1.5 bg-muted/50 border border-border rounded-lg text-foreground text-xs focus:outline-hidden focus:ring-1 focus:ring-primary font-mono text-[11px]"
@@ -195,7 +195,7 @@ export function IdCardForm({ cardData, setCardData, onResetSample }) {
               <PenTool className="w-3.5 h-3.5 absolute left-3 top-2.5 text-muted-foreground" />
               <input
                 type="text"
-                placeholder="Authorized Signatory Name"
+                placeholder="Enter authorized signatory name"
                 value={cardData.signatureName}
                 onChange={(e) => handleChange('signatureName', e.target.value)}
                 className="w-full pl-9 pr-3 py-1.5 bg-muted/50 border border-border rounded-lg text-foreground text-xs focus:outline-hidden focus:ring-1 focus:ring-primary font-bold"

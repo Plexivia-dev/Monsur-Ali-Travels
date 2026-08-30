@@ -162,6 +162,7 @@ export function EmploymentAgreement({ initialData = null, onSavedSuccess = null,
       docId: formData.agreementId,
       docType: 'Employment_Agreement',
       clientName: formData.parties?.employeeName,
+      elementId: 'employment-agreement-canvas',
     });
   };
 
@@ -227,7 +228,7 @@ export function EmploymentAgreement({ initialData = null, onSavedSuccess = null,
 
       {/* Main Studio Views */}
       {viewMode === 'edit' && (
-        <div className="max-w-4xl mx-auto pb-16">
+        <div className="w-full pb-16">
           <AgreementForm
             formData={formData}
             setFormData={setFormData}
@@ -235,6 +236,9 @@ export function EmploymentAgreement({ initialData = null, onSavedSuccess = null,
             onReset={handleReset}
             isSubmitting={isSubmitting}
           />
+          <div className="hidden print:block w-full">
+            <AgreementPreview data={formData} formData={formData} />
+          </div>
         </div>
       )}
 

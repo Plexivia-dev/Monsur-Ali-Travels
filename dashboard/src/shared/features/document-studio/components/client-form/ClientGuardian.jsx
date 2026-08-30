@@ -9,6 +9,7 @@ import { apiClient } from '@shared/lib/api-client';
 import { printDocument } from '@shared/lib/utils';
 import { HeaderTitle } from '@shared/components/common/HeaderTitle';
 import { StudioFloatingViewSwitcher } from '../common/StudioFloatingViewSwitcher';
+import { validateBdPhone } from '../common/phoneValidator';
 
 export function ClientGuardian({ initialData = null, onSavedSuccess = null }) {
   const { t } = useTranslation();
@@ -31,6 +32,24 @@ export function ClientGuardian({ initialData = null, onSavedSuccess = null }) {
     if (!data.client?.fullName?.trim()) {
       toast.error(t('clientForm.fullNamePlaceholder', 'Client full name is required'));
       return;
+    }
+
+    const phone = data.client?.mobileNumber || '';
+    if (phone) {
+      const check = validateBdPhone(phone);
+      if (!check.isValid) {
+        toast.error(`Client Phone: ${check.error}`);
+        return;
+      }
+    }
+
+    const gPhone = data.guardian?.mobileNumber || '';
+    if (gPhone) {
+      const check = validateBdPhone(gPhone);
+      if (!check.isValid) {
+        toast.error(`Guardian Phone: ${check.error}`);
+        return;
+      }
     }
 
     const payload = { ...data };
@@ -73,6 +92,7 @@ export function ClientGuardian({ initialData = null, onSavedSuccess = null }) {
       docId: data.applicationNo || data.receiptNo,
       docType: 'Client_Guardian_Form',
       clientName: data.client?.fullName,
+      elementId: 'client-guardian-canvas',
     });
   };
 
@@ -145,7 +165,7 @@ export function ClientGuardian({ initialData = null, onSavedSuccess = null }) {
 
       {/* Main Studio Views */}
       {viewMode === 'edit' && (
-        <div className="max-w-4xl mx-auto pb-16">
+        <div className="w-full pb-16">
           <ClientGuardianForm
             data={data}
             onChange={setData}
@@ -154,6 +174,9 @@ export function ClientGuardian({ initialData = null, onSavedSuccess = null }) {
             onPreview={() => setViewMode('preview')}
             isSubmitting={isSubmitting}
           />
+          <div className="hidden print:block w-full">
+            <ClientGuardianPreview data={data} />
+          </div>
         </div>
       )}
 

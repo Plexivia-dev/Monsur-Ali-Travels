@@ -5,6 +5,10 @@ import {
   generateReceiptQrText,
 } from "../../models/moneyReceipt.model.js";
 import Client from "../../models/client.model.js";
+import {
+  sendPaymentDocCreatedEmailToAccountants,
+  sendPaymentOrBillCreatedEmailToOwners,
+} from "../../services/emailNotification.service.js";
 
 // @desc    Get all money receipts / tokens with pagination and search
 // @route   GET /api/v1/receipts
@@ -224,6 +228,39 @@ export const createReceipt = async (req, res, next) => {
     }
 
     const newReceipt = await MoneyReceiptModel.create(body);
+
+    // Asynchronously dispatch payment receipt email
+    (async () => {
+      try {
+        const { sendPaymentReceiptEmail } = await import("../../services/emailService.js");
+        let clientEmail = body.clientEmail;
+        let clientName = body.clientName;
+        if (!clientEmail && newReceipt.clientDid) {
+          const client = await Client.findOne({ did: newReceipt.clientDid }).lean();
+          if (client?.email) {
+            clientEmail = client.email;
+            clientName = clientName || client.fullName;
+          }
+        }
+
+        if (clientEmail) {
+          await sendPaymentReceiptEmail({
+            toEmail: clientEmail,
+            clientName: clientName || "Valued Client",
+            receiptNo: newReceipt.receiptNo,
+            amount: newReceipt.amount || newReceipt.netReceivedBDT || 0,
+            serviceType: newReceipt.serviceType || "Visa & Travel Services",
+            purpose: newReceipt.purpose || "Payment Settlement",
+            paymentMethod: newReceipt.paymentMethod || "Cash",
+            paymentDate: newReceipt.date ? new Date(newReceipt.date).toLocaleDateString() : new Date().toLocaleDateString(),
+            receivedBy: newReceipt.createdByName || "Monsur Ali Travels Accounts",
+            remainingDue: newReceipt.dueAmount || 0,
+          });
+        }
+      } catch (err) {
+        // Silent error for email notification
+      }
+    })();
 
     return res.status(201).json({
       status: "success",

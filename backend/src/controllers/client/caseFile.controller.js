@@ -4,6 +4,8 @@ import Client from "../../models/client.model.js";
 import TaskModel from "../../models/task.model.js";
 import DocumentVaultModel from "../../models/documentVault.model.js";
 import { UserModel } from "../../models/user.model.js";
+import { NotificationModel } from "../../models/notification.model.js";
+import { sendNewCaseEmailToAdmins } from "../../services/emailNotification.service.js";
 import { generateDid } from "../../utils/generateDid.js";
 
 export const buildCaseIdentifierQuery = (identifier) => {
@@ -421,6 +423,25 @@ export const createCase = async (req, res) => {
       }
     ).catch(() => {});
 
+    // Broadcast new case creation notification
+    await NotificationModel.create({
+      title: "New Case Created",
+      message: `Case ${newCase.caseNumber} opened for ${newCase.applicantName || "Client"} (${newCase.caseType}).`,
+      module: "visa",
+      type: "info",
+      refDid: newCase.did,
+      createdBy: creatorName,
+    }).catch(() => {});
+
+    // Action 1: Email all Owners & Admins
+    sendNewCaseEmailToAdmins({
+      userName: creatorName,
+      caseNumber: newCase.caseNumber || newCase.did,
+      caseDid: newCase.did,
+      clientName: newCase.applicantName || "Client",
+      destinationCountry: newCase.destinationCountry || "",
+    }).catch((err) => console.error("[EmailTrigger] sendNewCaseEmailToAdmins error:", err.message));
+
     return res.status(201).json({
       success: true,
       status: "success",
@@ -722,6 +743,42 @@ export const updateWorkflowStatus = async (req, res) => {
       createdBy: req.user?.name || "System"
     });
 
+    // Asynchronously dispatch email notification
+    (async () => {
+      try {
+        const { sendCaseStatusUpdateEmail, sendTaskAssignmentEmail } = await import("../../services/emailService.js");
+        if (assignedTo && assignedTo !== previousAssignedToDid) {
+          const assignedUser = await UserModel.findOne({ did: assignedTo }).lean();
+          if (assignedUser?.email) {
+            await sendTaskAssignmentEmail({
+              toEmail: assignedUser.email,
+              staffName: assignedUser.name,
+              taskTitle: `Case Handoff: ${targetStatus || 'Processing'}`,
+              caseNumber: caseDoc.caseNumber,
+              clientName: caseDoc.applicantName || "",
+              serviceType: caseDoc.caseType || "Visa Processing",
+              assignedBy: req.user?.name || "Administration",
+            });
+          }
+        } else if (caseDoc.clientDid) {
+          const client = await Client.findOne({ did: caseDoc.clientDid }).lean();
+          if (client?.email) {
+            await sendCaseStatusUpdateEmail({
+              toEmail: client.email,
+              clientName: client.fullName || caseDoc.applicantName || "Valued Client",
+              caseNumber: caseDoc.caseNumber,
+              serviceType: caseDoc.caseType || "Visa Processing",
+              newStatus: targetStatus || workflowStatus,
+              remarks: remarks || "",
+              updatedBy: req.user?.name || "Monsur Ali Travels Team",
+            });
+          }
+        }
+      } catch (err) {
+        // Silent error for email notification
+      }
+    })();
+
     return res.status(200).json({
       success: true,
       message: "Workflow updated successfully",
@@ -811,13 +868,40 @@ export const uploadCaseDocument = async (req, res) => {
       });
     }
 
+    // Resolve clientDid: from case doc, or fallback to client lookup by clientId/_id
+    let resolvedClientDid = caseDoc.clientDid;
+    if (!resolvedClientDid && (caseDoc.clientId || caseDoc.clientInfo)) {
+      const clientRef = caseDoc.clientId || caseDoc.clientInfo;
+      const clientDoc = await Client.findOne({ $or: [{ _id: clientRef }, { did: clientRef }] }).lean();
+      resolvedClientDid = clientDoc?.did || String(clientRef);
+    }
+
+    if (!resolvedClientDid) {
+      return res.status(400).json({
+        success: false,
+        message: "Unable to resolve client reference for this case",
+      });
+    }
+
+    // Detect fileType from URL if not provided
+    let resolvedFileType = fileType;
+    if (!resolvedFileType || resolvedFileType === "application/octet-stream") {
+      const urlLower = String(fileUrl).toLowerCase();
+      if (/\.(jpg|jpeg)$/i.test(urlLower)) resolvedFileType = "image/jpeg";
+      else if (/\.png$/i.test(urlLower)) resolvedFileType = "image/png";
+      else if (/\.webp$/i.test(urlLower)) resolvedFileType = "image/webp";
+      else if (/\.gif$/i.test(urlLower)) resolvedFileType = "image/gif";
+      else if (/\.pdf$/i.test(urlLower)) resolvedFileType = "application/pdf";
+      else resolvedFileType = "application/octet-stream";
+    }
+
     const newDoc = await DocumentVaultModel.create({
-      clientDid: caseDoc.clientDid,
+      clientDid: resolvedClientDid,
       caseDid: caseDoc.did,
       documentName: documentName.trim(),
       fileName: fileName || documentName.trim(),
       fileUrl: fileUrl.trim(),
-      fileType: fileType || "application/octet-stream",
+      fileType: resolvedFileType,
       fileSize: fileSize || "1.2 MB",
       accessLevel: accessLevel || "Restricted",
       uploadedByDid: req.user?.did || req.user?.id || null,
@@ -833,6 +917,49 @@ export const uploadCaseDocument = async (req, res) => {
     return res.status(500).json({
       success: false,
       message: error.message || "Failed to upload document",
+    });
+  }
+};
+
+/**
+ * 11b. Rename / Relabel a Case Document
+ * PATCH /api/v1/client/cases/:id/documents/:docDid/rename
+ */
+export const renameCaseDocument = async (req, res) => {
+  try {
+    const { docDid } = req.params;
+    const { documentName } = req.body;
+
+    if (!documentName || !documentName.trim()) {
+      return res.status(400).json({
+        success: false,
+        message: "New document name is required",
+      });
+    }
+
+    const doc = await DocumentVaultModel.findOne({
+      $or: [{ did: docDid }, { _id: mongoose.Types.ObjectId.isValid(docDid) ? docDid : null }],
+    });
+
+    if (!doc) {
+      return res.status(404).json({
+        success: false,
+        message: "Document not found",
+      });
+    }
+
+    doc.documentName = documentName.trim();
+    await doc.save();
+
+    return res.status(200).json({
+      success: true,
+      message: "Document renamed successfully",
+      data: doc,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: error.message || "Failed to rename document",
     });
   }
 };

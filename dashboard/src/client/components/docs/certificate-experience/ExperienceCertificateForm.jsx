@@ -143,7 +143,7 @@ export function ExperienceCertificateForm({ data = {}, onChange }) {
               type="text"
               value={data.company?.name || ''}
               onChange={(e) => handleChange('company', 'name', e.target.value)}
-              placeholder="e.g. AL-MADINA CONSTRUCTION & ENGINEERING LTD."
+              placeholder="Enter company / organization name"
               className="w-full px-3 py-2 text-xs rounded-lg border border-input bg-background font-bold focus:ring-1 focus:ring-primary outline-hidden uppercase"
             />
           </div>
@@ -154,7 +154,7 @@ export function ExperienceCertificateForm({ data = {}, onChange }) {
               type="text"
               value={data.company?.subtitle || ''}
               onChange={(e) => handleChange('company', 'subtitle', e.target.value)}
-              placeholder="e.g. Civil Construction & Heavy Engineering"
+              placeholder="Enter industry / business nature"
               className="w-full px-3 py-2 text-xs rounded-lg border border-input bg-background focus:ring-1 focus:ring-primary outline-hidden"
             />
           </div>
@@ -165,7 +165,7 @@ export function ExperienceCertificateForm({ data = {}, onChange }) {
               type="text"
               value={data.company?.registrationNo || ''}
               onChange={(e) => handleChange('company', 'registrationNo', e.target.value)}
-              placeholder="e.g. REG-C-89241/2018"
+              placeholder="Enter company registration / license number"
               className="w-full px-3 py-2 text-xs font-mono rounded-lg border border-input bg-background focus:ring-1 focus:ring-primary outline-hidden"
             />
           </div>
@@ -176,7 +176,7 @@ export function ExperienceCertificateForm({ data = {}, onChange }) {
               type="text"
               value={data.company?.address || ''}
               onChange={(e) => handleChange('company', 'address', e.target.value)}
-              placeholder="e.g. Plot #42, Industrial Area, Tejgaon, Dhaka-1208, Bangladesh"
+              placeholder="Enter company / office address"
               className="w-full px-3 py-2 text-xs rounded-lg border border-input bg-background focus:ring-1 focus:ring-primary outline-hidden"
             />
           </div>
@@ -187,7 +187,7 @@ export function ExperienceCertificateForm({ data = {}, onChange }) {
               type="text"
               value={data.company?.phone || ''}
               onChange={(e) => handleChange('company', 'phone', e.target.value)}
-              placeholder="e.g. +880 2-9887766"
+              placeholder="Enter contact phone number"
               className="w-full px-3 py-2 text-xs font-mono rounded-lg border border-input bg-background focus:ring-1 focus:ring-primary outline-hidden"
             />
           </div>
@@ -198,7 +198,7 @@ export function ExperienceCertificateForm({ data = {}, onChange }) {
               type="text"
               value={data.company?.email || ''}
               onChange={(e) => handleChange('company', 'email', e.target.value)}
-              placeholder="e.g. info@almadinaconstruction.com"
+              placeholder="Enter company email address"
               className="w-full px-3 py-2 text-xs rounded-lg border border-input bg-background focus:ring-1 focus:ring-primary outline-hidden"
             />
           </div>
@@ -219,7 +219,7 @@ export function ExperienceCertificateForm({ data = {}, onChange }) {
               type="text"
               value={data.certificateTitle || ''}
               onChange={(e) => handleChange(null, 'certificateTitle', e.target.value)}
-              placeholder="e.g. TO WHOM IT MAY CONCERN"
+              placeholder="Enter certificate subject / headline"
               className="w-full px-3 py-2 text-xs rounded-lg border border-input bg-background font-bold focus:ring-1 focus:ring-primary outline-hidden uppercase"
             />
           </div>
@@ -230,7 +230,7 @@ export function ExperienceCertificateForm({ data = {}, onChange }) {
               type="text"
               value={data.memoNo || ''}
               onChange={(e) => handleChange(null, 'memoNo', e.target.value)}
-              placeholder="e.g. EXP/2026/0482"
+              placeholder="Enter certificate reference number"
               className="w-full px-3 py-2 text-xs font-mono rounded-lg border border-input bg-background focus:ring-1 focus:ring-primary outline-hidden"
             />
           </div>
@@ -261,7 +261,7 @@ export function ExperienceCertificateForm({ data = {}, onChange }) {
               type="text"
               value={data.employee?.fullName || ''}
               onChange={(e) => handleChange('employee', 'fullName', e.target.value)}
-              placeholder="e.g. MD. JAHIDUL ISLAM"
+              placeholder="Enter employee full name"
               className="w-full px-3 py-2 text-xs rounded-lg border border-input bg-background font-bold focus:ring-1 focus:ring-primary outline-hidden uppercase"
             />
           </div>
@@ -272,7 +272,7 @@ export function ExperienceCertificateForm({ data = {}, onChange }) {
               type="text"
               value={data.employee?.fatherName || ''}
               onChange={(e) => handleChange('employee', 'fatherName', e.target.value)}
-              placeholder="e.g. MD. ABDUL MALEK"
+              placeholder="Enter father's name"
               className="w-full px-3 py-2 text-xs rounded-lg border border-input bg-background focus:ring-1 focus:ring-primary outline-hidden uppercase"
             />
           </div>
@@ -283,7 +283,7 @@ export function ExperienceCertificateForm({ data = {}, onChange }) {
               type="text"
               value={data.employee?.passportNo || ''}
               onChange={(e) => handleChange('employee', 'passportNo', e.target.value)}
-              placeholder="e.g. A08924182"
+              placeholder="Enter passport number"
               className="w-full px-3 py-2 text-xs font-mono rounded-lg border border-input bg-background uppercase focus:ring-1 focus:ring-primary outline-hidden"
             />
           </div>
@@ -294,7 +294,7 @@ export function ExperienceCertificateForm({ data = {}, onChange }) {
               type="text"
               value={data.employee?.designation || ''}
               onChange={(e) => handleChange('employee', 'designation', e.target.value)}
-              placeholder="e.g. Senior Construction Carpenter"
+              placeholder="Enter job designation / trade"
               className="w-full px-3 py-2 text-xs font-bold rounded-lg border border-input bg-background focus:ring-1 focus:ring-primary outline-hidden"
             />
           </div>
@@ -325,7 +325,7 @@ export function ExperienceCertificateForm({ data = {}, onChange }) {
               type="text"
               value={data.employee?.totalDuration || ''}
               onChange={(e) => handleChange('employee', 'totalDuration', e.target.value)}
-              placeholder="e.g. 5 Years 5 Months"
+              placeholder="Enter service duration / period"
               className="w-full px-3 py-2 text-xs rounded-lg border border-input bg-background focus:ring-1 focus:ring-primary outline-hidden"
             />
           </div>
@@ -336,7 +336,7 @@ export function ExperienceCertificateForm({ data = {}, onChange }) {
               type="text"
               value={data.employee?.department || ''}
               onChange={(e) => handleChange('employee', 'department', e.target.value)}
-              placeholder="e.g. Civil & Structural Engineering"
+              placeholder="Enter department / work scope"
               className="w-full px-3 py-2 text-xs rounded-lg border border-input bg-background focus:ring-1 focus:ring-primary outline-hidden"
             />
           </div>
@@ -397,7 +397,7 @@ export function ExperienceCertificateForm({ data = {}, onChange }) {
               type="text"
               value={data.signatory?.name || ''}
               onChange={(e) => handleChange('signatory', 'name', e.target.value)}
-              placeholder="e.g. ENGR. TARIQUL ISLAM"
+              placeholder="Enter authorized signatory name"
               className="w-full px-3 py-2 text-xs rounded-lg border border-input bg-background font-bold focus:ring-1 focus:ring-primary outline-hidden uppercase"
             />
           </div>
@@ -408,7 +408,7 @@ export function ExperienceCertificateForm({ data = {}, onChange }) {
               type="text"
               value={data.signatory?.designation || ''}
               onChange={(e) => handleChange('signatory', 'designation', e.target.value)}
-              placeholder="e.g. Head of Human Resources & Operations"
+              placeholder="Enter signatory designation"
               className="w-full px-3 py-2 text-xs rounded-lg border border-input bg-background focus:ring-1 focus:ring-primary outline-hidden"
             />
           </div>
