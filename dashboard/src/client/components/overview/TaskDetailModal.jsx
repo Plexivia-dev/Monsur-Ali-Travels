@@ -48,6 +48,31 @@ const DOCUMENT_NAME_PRESETS = [
   'Other Supporting Document',
 ];
 
+const DOC_TYPE_LABEL_MAP = {
+  passport: 'Passport Copy (Bio-Page)',
+  nid: 'National ID (NID Front & Back)',
+  photo: 'Passport Size Photograph (White BG)',
+  agreement: 'Employment Agreement',
+  'police-clearance': 'Police Clearance Certificate (PCC)',
+  medical: 'Medical Fitness Report (GAMCA/Fit)',
+  'bank-solvency': 'Bank Statement & Solvency Certificate',
+  'utility-bill': 'Electricity / Utility Bill Copy',
+  'land-doc': 'Land / Property Asset Document',
+  'client-form': 'Client Bio-Data & Guardian Form',
+  'indian-visa': 'Indian Visa / IVAC Application Slip',
+  other: 'Other Supporting Document',
+};
+
+const resolveDocTitle = (docKey) => {
+  if (!docKey) return 'Passport Copy (Bio-Page)';
+  if (DOC_TYPE_LABEL_MAP[docKey]) return DOC_TYPE_LABEL_MAP[docKey];
+  const matchingPreset = DOCUMENT_NAME_PRESETS.find((preset) =>
+    preset.toLowerCase().includes(docKey.toLowerCase())
+  );
+  if (matchingPreset) return matchingPreset;
+  return docKey.charAt(0).toUpperCase() + docKey.slice(1);
+};
+
 const STUDIO_GENERATORS = [
   { id: 'agreement', title: 'Employment Agreement', icon: FileSignature, color: 'text-blue-600 bg-blue-50 dark:bg-blue-950/50' },
   { id: 'client-form', title: 'Client & Guardian Form', icon: UserCheck, color: 'text-sky-600 bg-sky-50 dark:bg-sky-950/50' },
@@ -75,20 +100,15 @@ export function TaskDetailModal({
   // Multi-Row Document Upload State
   const [uploadRows, setUploadRows] = useState(() => {
     if (task?.requiredDocTypes && Array.isArray(task.requiredDocTypes) && task.requiredDocTypes.length > 0) {
-      return task.requiredDocTypes.map((docKey, i) => {
-        const matchingDoc = DOCUMENT_CATEGORIES.find((cat) =>
-          cat.toLowerCase().includes(docKey.toLowerCase())
-        );
-        return {
-          id: `row-${i + 1}`,
-          title: matchingDoc || (docKey.charAt(0).toUpperCase() + docKey.slice(1)),
-          file: null,
-          accessLevel: 'Restricted',
-        };
-      });
+      return task.requiredDocTypes.map((docKey, i) => ({
+        id: `row-${i + 1}`,
+        title: resolveDocTitle(docKey),
+        file: null,
+        accessLevel: 'Restricted',
+      }));
     }
     return [
-      { id: 'row-1', title: 'Passport Bio-Page Copy', file: null, accessLevel: 'Restricted' },
+      { id: 'row-1', title: 'Passport Copy (Bio-Page)', file: null, accessLevel: 'Restricted' },
     ];
   });
   const [isBatchUploading, setIsBatchUploading] = useState(false);
@@ -106,17 +126,12 @@ export function TaskDetailModal({
 
       if (task.requiredDocTypes && Array.isArray(task.requiredDocTypes) && task.requiredDocTypes.length > 0) {
         setUploadRows(
-          task.requiredDocTypes.map((docKey, i) => {
-            const matchingDoc = DOCUMENT_CATEGORIES.find((cat) =>
-              cat.toLowerCase().includes(docKey.toLowerCase())
-            );
-            return {
-              id: `row-${i + 1}`,
-              title: matchingDoc || (docKey.charAt(0).toUpperCase() + docKey.slice(1)),
-              file: null,
-              accessLevel: 'Restricted',
-            };
-          })
+          task.requiredDocTypes.map((docKey, i) => ({
+            id: `row-${i + 1}`,
+            title: resolveDocTitle(docKey),
+            file: null,
+            accessLevel: 'Restricted',
+          }))
         );
       }
     }
