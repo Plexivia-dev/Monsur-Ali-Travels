@@ -421,7 +421,11 @@ export const EmployeesPage = () => {
       {/* Create Employee Modal */}
       {createModalOpen && (
         <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4">
-          <div className="bg-zinc-950 rounded-2xl border border-zinc-800 text-zinc-100 shadow-2xl max-w-lg w-full flex flex-col overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+          <div className="bg-linear-to-r from-sky-950 via-indigo-950 to-slate-950 rounded-2xl sm:rounded-3xl border border-sky-800/40 text-white shadow-2xl max-w-lg w-full flex flex-col overflow-hidden relative animate-in fade-in zoom-in-95 duration-200">
+            {/* Decorative ambient background glows */}
+            <div className="absolute -top-24 -right-24 w-72 h-72 bg-sky-500/15 rounded-full blur-3xl pointer-events-none" />
+            <div className="absolute -bottom-24 -left-24 w-72 h-72 bg-indigo-500/15 rounded-full blur-3xl pointer-events-none" />
+
             <UnifiedModalHeader
               icon={UserPlus}
               title="Add New Employee"
@@ -429,11 +433,11 @@ export const EmployeesPage = () => {
               onClose={() => setCreateModalOpen(false)}
             />
 
-            <form onSubmit={handleCreateEmployee} className="flex flex-col flex-grow">
+            <form onSubmit={handleCreateEmployee} className="flex flex-col flex-grow relative z-10">
               <div className="p-6 space-y-4 text-xs text-zinc-100 max-h-[75vh] overflow-y-auto">
                 <div>
-                  <label className="text-xs font-semibold text-zinc-300 block mb-1.5">
-                    Full Name <span className="text-rose-500">*</span>
+                  <label className="text-xs font-semibold text-sky-200/90 block mb-1.5">
+                    Full Name <span className="text-rose-400">*</span>
                   </label>
                   <input
                     type="text"
@@ -441,14 +445,14 @@ export const EmployeesPage = () => {
                     placeholder="e.g. John Doe"
                     value={createForm.fullName}
                     onChange={(e) => setCreateForm({ ...createForm, fullName: e.target.value })}
-                    className="w-full h-10 px-3 rounded-xl bg-zinc-900 border border-zinc-800 text-zinc-100 placeholder:text-zinc-500 focus:outline-none focus:border-primary text-xs"
+                    className="w-full h-10 px-3.5 rounded-xl border border-sky-800/50 bg-sky-950/40 text-white placeholder:text-sky-300/40 focus:outline-none focus:ring-2 focus:ring-sky-400/30 focus:border-sky-400 transition-all text-xs"
                   />
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
-                    <label className="text-xs font-semibold text-zinc-300 block mb-1.5">
-                      Phone Number <span className="text-rose-500">*</span>
+                    <label className="text-xs font-semibold text-sky-200/90 block mb-1.5">
+                      Phone Number <span className="text-rose-400">*</span>
                     </label>
                     <input
                       type="tel"
@@ -456,11 +460,11 @@ export const EmployeesPage = () => {
                       placeholder="017XXXXXXXX"
                       value={createForm.phone}
                       onChange={(e) => setCreateForm({ ...createForm, phone: e.target.value })}
-                      className="w-full h-10 px-3 rounded-xl bg-zinc-900 border border-zinc-800 text-zinc-100 placeholder:text-zinc-500 focus:outline-none focus:border-primary text-xs"
+                      className="w-full h-10 px-3.5 rounded-xl border border-sky-800/50 bg-sky-950/40 text-white placeholder:text-sky-300/40 focus:outline-none focus:ring-2 focus:ring-sky-400/30 focus:border-sky-400 transition-all text-xs"
                     />
                   </div>
                   <div>
-                    <label className="text-xs font-semibold text-zinc-300 block mb-1.5">
+                    <label className="text-xs font-semibold text-sky-200/90 block mb-1.5">
                       Email Address
                     </label>
                     <input
@@ -468,15 +472,15 @@ export const EmployeesPage = () => {
                       placeholder="employee@domain.com"
                       value={createForm.email}
                       onChange={(e) => setCreateForm({ ...createForm, email: e.target.value })}
-                      className="w-full h-10 px-3 rounded-xl bg-zinc-900 border border-zinc-800 text-zinc-100 placeholder:text-zinc-500 focus:outline-none focus:border-primary text-xs"
+                      className="w-full h-10 px-3.5 rounded-xl border border-sky-800/50 bg-sky-950/40 text-white placeholder:text-sky-300/40 focus:outline-none focus:ring-2 focus:ring-sky-400/30 focus:border-sky-400 transition-all text-xs"
                     />
                   </div>
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
-                    <label className="text-xs font-semibold text-zinc-300 block mb-1.5">
-                      Designation <span className="text-rose-500">*</span>
+                    <label className="text-xs font-semibold text-sky-200/90 block mb-1.5">
+                      Designation <span className="text-rose-400">*</span>
                     </label>
                     <input
                       type="text"
@@ -484,11 +488,11 @@ export const EmployeesPage = () => {
                       placeholder="e.g. Visa Executive"
                       value={createForm.designation}
                       onChange={(e) => setCreateForm({ ...createForm, designation: e.target.value })}
-                      className="w-full h-10 px-3 rounded-xl bg-zinc-900 border border-zinc-800 text-zinc-100 placeholder:text-zinc-500 focus:outline-none focus:border-primary text-xs"
+                      className="w-full h-10 px-3.5 rounded-xl border border-sky-800/50 bg-sky-950/40 text-white placeholder:text-sky-300/40 focus:outline-none focus:ring-2 focus:ring-sky-400/30 focus:border-sky-400 transition-all text-xs"
                     />
                   </div>
                   <div>
-                    <label className="text-xs font-semibold text-zinc-300 block mb-1.5">
+                    <label className="text-xs font-semibold text-sky-200/90 block mb-1.5">
                       Department
                     </label>
                     <input
@@ -496,14 +500,14 @@ export const EmployeesPage = () => {
                       placeholder="e.g. Processing, Accounts"
                       value={createForm.department}
                       onChange={(e) => setCreateForm({ ...createForm, department: e.target.value })}
-                      className="w-full h-10 px-3 rounded-xl bg-zinc-900 border border-zinc-800 text-zinc-100 placeholder:text-zinc-500 focus:outline-none focus:border-primary text-xs"
+                      className="w-full h-10 px-3.5 rounded-xl border border-sky-800/50 bg-sky-950/40 text-white placeholder:text-sky-300/40 focus:outline-none focus:ring-2 focus:ring-sky-400/30 focus:border-sky-400 transition-all text-xs"
                     />
                   </div>
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
-                    <label className="text-xs font-semibold text-zinc-300 block mb-1.5">
+                    <label className="text-xs font-semibold text-sky-200/90 block mb-1.5">
                       Base Salary (BDT)
                     </label>
                     <input
@@ -511,52 +515,52 @@ export const EmployeesPage = () => {
                       placeholder="e.g. 25000"
                       value={createForm.baseSalary}
                       onChange={(e) => setCreateForm({ ...createForm, baseSalary: e.target.value })}
-                      className="w-full h-10 px-3 rounded-xl bg-zinc-900 border border-zinc-800 text-zinc-100 placeholder:text-zinc-500 focus:outline-none focus:border-primary text-xs"
+                      className="w-full h-10 px-3.5 rounded-xl border border-sky-800/50 bg-sky-950/40 text-white placeholder:text-sky-300/40 focus:outline-none focus:ring-2 focus:ring-sky-400/30 focus:border-sky-400 transition-all text-xs"
                     />
                   </div>
                   <div>
-                    <label className="text-xs font-semibold text-zinc-300 block mb-1.5">
+                    <label className="text-xs font-semibold text-sky-200/90 block mb-1.5">
                       Joining Date
                     </label>
                     <input
                       type="date"
                       value={createForm.joiningDate}
                       onChange={(e) => setCreateForm({ ...createForm, joiningDate: e.target.value })}
-                      className="w-full h-10 px-3 rounded-xl bg-zinc-900 border border-zinc-800 text-zinc-100 focus:outline-none focus:border-primary text-xs"
+                      className="w-full h-10 px-3.5 rounded-xl border border-sky-800/50 bg-sky-950/40 text-white focus:outline-none focus:ring-2 focus:ring-sky-400/30 focus:border-sky-400 transition-all text-xs"
                     />
                   </div>
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
-                    <label className="text-xs font-semibold text-zinc-300 block mb-1.5">
+                    <label className="text-xs font-semibold text-sky-200/90 block mb-1.5">
                       Status
                     </label>
                     <select
                       value={createForm.status}
                       onChange={(e) => setCreateForm({ ...createForm, status: e.target.value })}
-                      className="w-full h-10 px-3 rounded-xl bg-zinc-900 border border-zinc-800 text-zinc-100 focus:outline-none focus:border-primary text-xs cursor-pointer"
+                      className="w-full h-10 px-3.5 rounded-xl border border-sky-800/50 bg-sky-950/40 text-white focus:outline-none focus:ring-2 focus:ring-sky-400/30 focus:border-sky-400 transition-all text-xs cursor-pointer"
                     >
-                      <option value="Active">Active</option>
-                      <option value="On_Leave">On Leave</option>
-                      <option value="Resigned">Resigned</option>
-                      <option value="Terminated">Terminated</option>
+                      <option value="Active" className="bg-slate-950 text-white">Active</option>
+                      <option value="On_Leave" className="bg-slate-950 text-white">On Leave</option>
+                      <option value="Resigned" className="bg-slate-950 text-white">Resigned</option>
+                      <option value="Terminated" className="bg-slate-950 text-white">Terminated</option>
                     </select>
                   </div>
                   <div>
-                    <label className="text-xs font-semibold text-zinc-300 block mb-1.5">
+                    <label className="text-xs font-semibold text-sky-200/90 block mb-1.5">
                       Access Level
                     </label>
                     <select
                       value={createForm.accessLevel}
                       onChange={(e) => setCreateForm({ ...createForm, accessLevel: e.target.value })}
-                      className="w-full h-10 px-3 rounded-xl bg-zinc-900 border border-zinc-800 text-zinc-100 focus:outline-none focus:border-primary text-xs cursor-pointer"
+                      className="w-full h-10 px-3.5 rounded-xl border border-sky-800/50 bg-sky-950/40 text-white focus:outline-none focus:ring-2 focus:ring-sky-400/30 focus:border-sky-400 transition-all text-xs cursor-pointer"
                     >
-                      <option value="Level_1">Level 1 (Standard)</option>
-                      <option value="Level_2">Level 2 (Senior)</option>
-                      <option value="Level_3">Level 3 (Lead)</option>
-                      <option value="Manager">Manager</option>
-                      <option value="Full_Staff">Full Staff Access</option>
+                      <option value="Level_1" className="bg-slate-950 text-white">Level 1 (Standard)</option>
+                      <option value="Level_2" className="bg-slate-950 text-white">Level 2 (Senior)</option>
+                      <option value="Level_3" className="bg-slate-950 text-white">Level 3 (Lead)</option>
+                      <option value="Manager" className="bg-slate-950 text-white">Manager</option>
+                      <option value="Full_Staff" className="bg-slate-950 text-white">Full Staff Access</option>
                     </select>
                   </div>
                 </div>
@@ -564,8 +568,8 @@ export const EmployeesPage = () => {
 
               <UnifiedModalFooter
                 onCancel={() => setCreateModalOpen(false)}
-                submitLabel="Save Employee"
-                isSubmitting={createLoading}
+                submitText="Save Employee"
+                loading={createLoading}
               />
             </form>
           </div>
@@ -575,7 +579,11 @@ export const EmployeesPage = () => {
       {/* Edit Employee Modal */}
       {editModalOpen && (
         <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4">
-          <div className="bg-zinc-950 rounded-2xl border border-zinc-800 text-zinc-100 shadow-2xl max-w-lg w-full flex flex-col overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+          <div className="bg-linear-to-r from-sky-950 via-indigo-950 to-slate-950 rounded-2xl sm:rounded-3xl border border-sky-800/40 text-white shadow-2xl max-w-lg w-full flex flex-col overflow-hidden relative animate-in fade-in zoom-in-95 duration-200">
+            {/* Decorative ambient background glows */}
+            <div className="absolute -top-24 -right-24 w-72 h-72 bg-sky-500/15 rounded-full blur-3xl pointer-events-none" />
+            <div className="absolute -bottom-24 -left-24 w-72 h-72 bg-indigo-500/15 rounded-full blur-3xl pointer-events-none" />
+
             <UnifiedModalHeader
               icon={Pencil}
               title="Edit Employee Profile"
@@ -583,98 +591,98 @@ export const EmployeesPage = () => {
               onClose={() => setEditModalOpen(false)}
             />
 
-            <form onSubmit={handleUpdateEmployee} className="flex flex-col flex-grow">
+            <form onSubmit={handleUpdateEmployee} className="flex flex-col flex-grow relative z-10">
               <div className="p-6 space-y-4 text-xs text-zinc-100 max-h-[75vh] overflow-y-auto">
                 <div>
-                  <label className="text-xs font-semibold text-zinc-300 block mb-1.5">
-                    Full Name <span className="text-rose-500">*</span>
+                  <label className="text-xs font-semibold text-sky-200/90 block mb-1.5">
+                    Full Name <span className="text-rose-400">*</span>
                   </label>
                   <input
                     type="text"
                     required
                     value={editForm.fullName}
                     onChange={(e) => setEditForm({ ...editForm, fullName: e.target.value })}
-                    className="w-full h-10 px-3 rounded-xl bg-zinc-900 border border-zinc-800 text-zinc-100 focus:outline-none focus:border-primary text-xs"
+                    className="w-full h-10 px-3.5 rounded-xl border border-sky-800/50 bg-sky-950/40 text-white placeholder:text-sky-300/40 focus:outline-none focus:ring-2 focus:ring-sky-400/30 focus:border-sky-400 transition-all text-xs"
                   />
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
-                    <label className="text-xs font-semibold text-zinc-300 block mb-1.5">
-                      Phone Number <span className="text-rose-500">*</span>
+                    <label className="text-xs font-semibold text-sky-200/90 block mb-1.5">
+                      Phone Number <span className="text-rose-400">*</span>
                     </label>
                     <input
                       type="tel"
                       required
                       value={editForm.phone}
                       onChange={(e) => setEditForm({ ...editForm, phone: e.target.value })}
-                      className="w-full h-10 px-3 rounded-xl bg-zinc-900 border border-zinc-800 text-zinc-100 focus:outline-none focus:border-primary text-xs"
+                      className="w-full h-10 px-3.5 rounded-xl border border-sky-800/50 bg-sky-950/40 text-white placeholder:text-sky-300/40 focus:outline-none focus:ring-2 focus:ring-sky-400/30 focus:border-sky-400 transition-all text-xs"
                     />
                   </div>
                   <div>
-                    <label className="text-xs font-semibold text-zinc-300 block mb-1.5">
+                    <label className="text-xs font-semibold text-sky-200/90 block mb-1.5">
                       Email Address
                     </label>
                     <input
                       type="email"
                       value={editForm.email}
                       onChange={(e) => setEditForm({ ...editForm, email: e.target.value })}
-                      className="w-full h-10 px-3 rounded-xl bg-zinc-900 border border-zinc-800 text-zinc-100 focus:outline-none focus:border-primary text-xs"
+                      className="w-full h-10 px-3.5 rounded-xl border border-sky-800/50 bg-sky-950/40 text-white placeholder:text-sky-300/40 focus:outline-none focus:ring-2 focus:ring-sky-400/30 focus:border-sky-400 transition-all text-xs"
                     />
                   </div>
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
-                    <label className="text-xs font-semibold text-zinc-300 block mb-1.5">
-                      Designation <span className="text-rose-500">*</span>
+                    <label className="text-xs font-semibold text-sky-200/90 block mb-1.5">
+                      Designation <span className="text-rose-400">*</span>
                     </label>
                     <input
                       type="text"
                       required
                       value={editForm.designation}
                       onChange={(e) => setEditForm({ ...editForm, designation: e.target.value })}
-                      className="w-full h-10 px-3 rounded-xl bg-zinc-900 border border-zinc-800 text-zinc-100 focus:outline-none focus:border-primary text-xs"
+                      className="w-full h-10 px-3.5 rounded-xl border border-sky-800/50 bg-sky-950/40 text-white placeholder:text-sky-300/40 focus:outline-none focus:ring-2 focus:ring-sky-400/30 focus:border-sky-400 transition-all text-xs"
                     />
                   </div>
                   <div>
-                    <label className="text-xs font-semibold text-zinc-300 block mb-1.5">
+                    <label className="text-xs font-semibold text-sky-200/90 block mb-1.5">
                       Department
                     </label>
                     <input
                       type="text"
                       value={editForm.department}
                       onChange={(e) => setEditForm({ ...editForm, department: e.target.value })}
-                      className="w-full h-10 px-3 rounded-xl bg-zinc-900 border border-zinc-800 text-zinc-100 focus:outline-none focus:border-primary text-xs"
+                      className="w-full h-10 px-3.5 rounded-xl border border-sky-800/50 bg-sky-950/40 text-white placeholder:text-sky-300/40 focus:outline-none focus:ring-2 focus:ring-sky-400/30 focus:border-sky-400 transition-all text-xs"
                     />
                   </div>
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
-                    <label className="text-xs font-semibold text-zinc-300 block mb-1.5">
+                    <label className="text-xs font-semibold text-sky-200/90 block mb-1.5">
                       Base Salary (BDT)
                     </label>
                     <input
                       type="number"
                       value={editForm.baseSalary}
                       onChange={(e) => setEditForm({ ...editForm, baseSalary: e.target.value })}
-                      className="w-full h-10 px-3 rounded-xl bg-zinc-900 border border-zinc-800 text-zinc-100 focus:outline-none focus:border-primary text-xs"
+                      className="w-full h-10 px-3.5 rounded-xl border border-sky-800/50 bg-sky-950/40 text-white placeholder:text-sky-300/40 focus:outline-none focus:ring-2 focus:ring-sky-400/30 focus:border-sky-400 transition-all text-xs"
                     />
                   </div>
                   <div>
-                    <label className="text-xs font-semibold text-zinc-300 block mb-1.5">
+                    <label className="text-xs font-semibold text-sky-200/90 block mb-1.5">
                       Status
                     </label>
                     <select
                       value={editForm.status}
                       onChange={(e) => setEditForm({ ...editForm, status: e.target.value })}
-                      className="w-full h-10 px-3 rounded-xl bg-zinc-900 border border-zinc-800 text-zinc-100 focus:outline-none focus:border-primary text-xs cursor-pointer"
+                      className="w-full h-10 px-3.5 rounded-xl border border-sky-800/50 bg-sky-950/40 text-white focus:outline-none focus:ring-2 focus:ring-sky-400/30 focus:border-sky-400 transition-all text-xs cursor-pointer"
                     >
-                      <option value="Active">Active</option>
-                      <option value="On_Leave">On Leave</option>
-                      <option value="Resigned">Resigned</option>
-                      <option value="Terminated">Terminated</option>
+                      <option value="Active" className="bg-slate-950 text-white">Active</option>
+                      <option value="On_Leave" className="bg-slate-950 text-white">On Leave</option>
+                      <option value="Resigned" className="bg-slate-950 text-white">Resigned</option>
+                      <option value="Terminated" className="bg-slate-950 text-white">Terminated</option>
                     </select>
                   </div>
                 </div>
@@ -682,8 +690,8 @@ export const EmployeesPage = () => {
 
               <UnifiedModalFooter
                 onCancel={() => setEditModalOpen(false)}
-                submitLabel="Update Employee"
-                isSubmitting={editLoading}
+                submitText="Update Employee"
+                loading={editLoading}
               />
             </form>
           </div>

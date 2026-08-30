@@ -24,6 +24,7 @@ import { toast } from 'sonner';
 import { useAuthStore } from '../../store/useAuthStore';
 import { HeaderTitle } from '@shared/components/common/HeaderTitle';
 import { CaseWorkspaceDrawer } from './CaseWorkspaceDrawer';
+import { TaskDetailModal } from '../overview/TaskDetailModal';
 
 const FALLBACK_TASKS = [
   {
@@ -486,70 +487,19 @@ export function MyTasks() {
         </div>
       )}
 
-      {/* Complete Task Modal */}
+      {/* Enhanced Task Execution Modal */}
       {activeCompletingTask && (
-        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-xs flex items-center justify-center p-4">
-          <form
-            onSubmit={handleMarkDone}
-            className="bg-card border border-border rounded-2xl max-w-md w-full p-6 space-y-4 shadow-2xl animate-in fade-in zoom-in-95 duration-200"
-          >
-            <div className="flex items-center justify-between border-b border-border pb-3">
-              <h3 className="text-sm font-bold text-foreground flex items-center gap-2">
-                <CheckSquare className="size-4 text-primary" />
-                Submit Task Completion
-              </h3>
-              <button
-                type="button"
-                onClick={() => setActiveCompletingTask(null)}
-                className="p-1 rounded text-muted-foreground hover:text-foreground cursor-pointer"
-              >
-                ✕
-              </button>
-            </div>
-
-            <div className="space-y-3 text-xs">
-              <div className="bg-muted/40 p-3 rounded-xl space-y-1">
-                <span className="text-[10px] font-mono font-bold text-primary uppercase">
-                  Step {activeCompletingTask.stepNumber || 1}: {activeCompletingTask.title}
-                </span>
-                <p className="text-xs text-foreground font-semibold">
-                  Client: {activeCompletingTask.applicantName} ({activeCompletingTask.caseNumber})
-                </p>
-              </div>
-
-              <div>
-                <label className="block font-semibold text-muted-foreground mb-1">
-                  Completion Notes / Remarks (Optional)
-                </label>
-                <textarea
-                  rows={3}
-                  placeholder="e.g. Verified passport validity and uploaded medical copy to vault..."
-                  value={completionNotes}
-                  onChange={(e) => setCompletionNotes(e.target.value)}
-                  className="w-full px-3 py-2 bg-muted/40 border border-border rounded-xl text-foreground text-xs focus:outline-none focus:ring-1 focus:ring-primary resize-none"
-                />
-              </div>
-            </div>
-
-            <div className="flex items-center justify-end gap-2 pt-3 border-t border-border text-xs">
-              <button
-                type="button"
-                onClick={() => setActiveCompletingTask(null)}
-                className="px-4 py-2 rounded-xl border border-border text-muted-foreground hover:bg-muted font-medium cursor-pointer"
-              >
-                Cancel
-              </button>
-              <button
-                type="submit"
-                disabled={submittingDone}
-                className="flex items-center gap-1.5 px-5 py-2 bg-primary text-primary-foreground font-bold rounded-xl shadow-xs disabled:opacity-50 hover:bg-primary/90 transition cursor-pointer"
-              >
-                {submittingDone ? <Loader2 className="size-3.5 animate-spin" /> : <Send className="size-3.5" />}
-                <span>{submittingDone ? 'Submitting...' : 'Mark as Done'}</span>
-              </button>
-            </div>
-          </form>
-        </div>
+        <TaskDetailModal
+          task={activeCompletingTask}
+          isOpen={Boolean(activeCompletingTask)}
+          onClose={() => setActiveCompletingTask(null)}
+          onOpenCaseWorkspace={(caseDid) => handleOpenCaseDrawer(caseDid)}
+          onRefreshTasks={fetchTasks}
+          onMarkDone={() => {
+            setActiveCompletingTask(null);
+            fetchTasks();
+          }}
+        />
       )}
 
       {/* Case Workspace Drawer */}
