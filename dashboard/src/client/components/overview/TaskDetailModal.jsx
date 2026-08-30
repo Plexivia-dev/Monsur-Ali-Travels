@@ -24,6 +24,8 @@ import {
   Receipt,
   Layers,
   ChevronRight,
+  CreditCard,
+  DollarSign,
 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -74,9 +76,10 @@ const resolveDocTitle = (docKey) => {
 };
 
 const STUDIO_GENERATORS = [
+  { id: 'money-receipt', title: 'Money Receipt / Pay Slip', icon: Receipt, color: 'text-emerald-600 bg-emerald-50 dark:bg-emerald-950/50' },
+  { id: 'invoice', title: 'Client Invoice Bill', icon: FileText, color: 'text-indigo-600 bg-indigo-50 dark:bg-indigo-950/50' },
   { id: 'agreement', title: 'Employment Agreement', icon: FileSignature, color: 'text-blue-600 bg-blue-50 dark:bg-blue-950/50' },
   { id: 'client-form', title: 'Client & Guardian Form', icon: UserCheck, color: 'text-sky-600 bg-sky-50 dark:bg-sky-950/50' },
-  { id: 'money-receipt', title: 'Money Receipt Voucher', icon: Receipt, color: 'text-emerald-600 bg-emerald-50 dark:bg-emerald-950/50' },
   { id: 'indian-visa', title: 'Indian Visa File', icon: Stamp, color: 'text-amber-600 bg-amber-50 dark:bg-amber-950/50' },
   { id: 'passport-sub', title: 'Passport Custody Slip', icon: BookOpen, color: 'text-purple-600 bg-purple-50 dark:bg-purple-950/50' },
   { id: 'job-verification', title: 'Job Verification Form', icon: FileCheck2, color: 'text-cyan-600 bg-cyan-50 dark:bg-cyan-950/50' },
@@ -91,9 +94,18 @@ export function TaskDetailModal({
 }) {
   const switchPortal = usePortalStore((state) => state.switchPortal);
   const [activeTab, setActiveTab] = useState(
-    task?.requiresDocument === false ? 'notes' : 'upload'
+    task?.requiresPayment
+      ? 'payment'
+      : task?.requiresDocument === false
+      ? 'notes'
+      : 'upload'
   );
   const [completionNotes, setCompletionNotes] = useState(task?.completionNotes || '');
+  const [paymentCollected, setPaymentCollected] = useState(
+    task?.paymentCollectedAmount || task?.paymentAmount || ''
+  );
+  const [paymentMethod, setPaymentMethod] = useState(task?.paymentMethod || 'Cash');
+  const [generateMoneyReceipt, setGenerateMoneyReceipt] = useState(true);
   const [isSubmittingDone, setIsSubmittingDone] = useState(false);
   const [isSavingProgress, setIsSavingProgress] = useState(false);
 
@@ -282,17 +294,22 @@ export function TaskDetailModal({
 
   // Separate explicit action: Mark Task as Completed
   const handleMarkAsDone = async () => {
-    // If this is an action task (no document required), work remarks/notes are mandatory
-    if (task.requiresDocument === false && !completionNotes.trim()) {
+    // If this is an action task (no document required and no payment), work remarks/notes are mandatory
+    if (task.requiresDocument === false && !task.requiresPayment && !completionNotes.trim()) {
       toast.error('Work remarks / notes are mandatory for this action step.');
       setActiveTab('notes');
       return;
     }
 
+    const collectedNum = paymentCollected !== '' ? Number(paymentCollected) : (task.requiresPayment ? Number(task.paymentAmount) : 0);
+
     setIsSubmittingDone(true);
     try {
       await apiClient.patch(`/api/v1/client/tasks/${task.did || task._id}/done`, {
         completionNotes: completionNotes.trim() || 'Task completed with attached documents/verifications.',
+        paymentCollectedAmount: collectedNum,
+        paymentMethod,
+        generateMoneyReceipt,
       });
 
       toast.success(`Task "${task.title}" marked as Completed!`);
@@ -336,6 +353,13 @@ export function TaskDetailModal({
                   <span className="text-xs font-mono text-foreground flex items-center gap-1 bg-muted px-2 py-0.5 rounded border border-border">
                     <FolderOpen className="w-3.5 h-3.5 text-muted-foreground" />
                     Case: {task.caseDid}
+                  </span>
+                )}
+
+                {task.requiresPayment && (
+                  <span className="text-[10px] font-bold px-2 py-0.5 rounded-full border bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20 flex items-center gap-1">
+                    <CreditCard className="w-3 h-3" />
+                    Payment: ৳{Number(task.paymentAmount || 0).toLocaleString()}
                   </span>
                 )}
 
@@ -401,6 +425,36 @@ export function TaskDetailModal({
           {/* 2. Scrollable Body Container (Guaranteed within 90vh) */}
           <div className="flex-1 min-h-0 overflow-y-auto p-4 sm:p-5 space-y-5">
             
+            {/* Payment & Invoice Overview Banner (if payment required) */}
+            {(task.requiresPayment || task.paymentAmount > 0) && (
+              <div className="p-3.5 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 text-xs space-y-2">
+                <div className="flex items-center justify-between">
+                  <span className="font-bold text-emerald-700 dark:text-emerald-300 flex items-center gap-1.5 text-xs uppercase tracking-wider">
+                    <CreditCard className="w-4 h-4" />
+                    Payment Collection Requirement
+                  </span>
+                  <span className="font-mono font-bold text-base text-emerald-600 dark:text-emerald-400">
+                    ৳ {Number(task.paymentAmount || 0).toLocaleString()} {task.paymentCurrency || 'BDT'}
+                  </span>
+                </div>
+                <div className="flex items-center justify-between text-[11px] text-muted-foreground pt-1 border-t border-emerald-500/20 flex-wrap gap-2">
+                  <span>Purpose: <strong className="text-foreground">{task.paymentPurpose || task.title}</strong></span>
+                  <div className="flex items-center gap-3">
+                    {task.invoiceNumber ? (
+                      <span className="text-primary font-mono font-semibold">Invoice: #{task.invoiceNumber}</span>
+                    ) : (
+                      <span className="text-muted-foreground">Invoice: Standard</span>
+                    )}
+                    {task.moneyReceiptNumber ? (
+                      <span className="text-emerald-600 font-mono font-semibold">Receipt: #{task.moneyReceiptNumber}</span>
+                    ) : (
+                      <span className="text-amber-600 font-medium">Receipt: Pending Issue</span>
+                    )}
+                  </div>
+                </div>
+              </div>
+            )}
+
             {/* Instructions & Directives */}
             <div className="space-y-1.5">
               <div className="flex items-center justify-between">
@@ -430,8 +484,23 @@ export function TaskDetailModal({
                 }`}
               >
                 <UploadCloud className="w-4 h-4 text-primary" />
-                <span>Upload Documents (Batch)</span>
+                <span>Upload Documents</span>
               </button>
+
+              {(task.requiresPayment || task.paymentAmount > 0) && (
+                <button
+                  type="button"
+                  onClick={() => setActiveTab('payment')}
+                  className={`flex-1 py-1.5 px-3 rounded-lg font-bold flex items-center justify-center gap-1.5 transition-all cursor-pointer ${
+                    activeTab === 'payment'
+                      ? 'bg-card text-emerald-600 dark:text-emerald-400 shadow-xs'
+                      : 'text-muted-foreground hover:text-foreground'
+                  }`}
+                >
+                  <CreditCard className="w-4 h-4 text-emerald-500" />
+                  <span>Payment & Pay Slip</span>
+                </button>
+              )}
 
               <button
                 type="button"
@@ -588,7 +657,98 @@ export function TaskDetailModal({
               </div>
             )}
 
-            {/* TAB 2: Document Studio Generators */}
+            {/* TAB 2: Payment Collection & Pay Slip Issuance */}
+            {activeTab === 'payment' && (
+              <div className="space-y-4 bg-muted/30 border border-emerald-500/30 rounded-xl p-3.5 sm:p-4">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h4 className="text-xs font-bold text-emerald-700 dark:text-emerald-300 flex items-center gap-1.5 uppercase tracking-wider">
+                      <CreditCard className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
+                      Client Payment Intake & Money Receipt / Pay Slip
+                    </h4>
+                    <p className="text-[11px] text-muted-foreground mt-0.5">
+                      Record collected payment and automatically generate official Money Receipt / Pay Slip for this step.
+                    </p>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
+                  <div>
+                    <label className="block font-semibold text-foreground mb-1 text-xs">
+                      Amount Collected (৳ BDT) *
+                    </label>
+                    <input
+                      type="number"
+                      min="0"
+                      step="1"
+                      placeholder="e.g. 50000"
+                      value={paymentCollected}
+                      onChange={(e) => setPaymentCollected(e.target.value)}
+                      className="w-full px-3 py-2 bg-card border border-emerald-500/40 rounded-xl text-foreground font-bold focus:outline-none focus:border-emerald-500 text-xs"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block font-semibold text-foreground mb-1 text-xs">
+                      Payment Method
+                    </label>
+                    <select
+                      value={paymentMethod}
+                      onChange={(e) => setPaymentMethod(e.target.value)}
+                      className="w-full px-3 py-2 bg-card border border-border rounded-xl text-foreground focus:outline-none focus:border-primary text-xs cursor-pointer"
+                    >
+                      <option value="Cash">Cash Payment</option>
+                      <option value="Bank Transfer">Bank Transfer (Deposit / EFT / RTGS)</option>
+                      <option value="bKash">bKash Mobile Banking</option>
+                      <option value="Nagad">Nagad Mobile Banking</option>
+                      <option value="Cheque">Cheque Payment</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div className="space-y-2 pt-1 border-t border-border/80">
+                  <label className="flex items-center gap-2 text-foreground font-medium text-xs cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={generateMoneyReceipt}
+                      onChange={(e) => setGenerateMoneyReceipt(e.target.checked)}
+                      className="rounded border-border text-emerald-600 h-3.5 w-3.5 accent-emerald-600 cursor-pointer"
+                    />
+                    <span className="flex items-center gap-1.5">
+                      <Receipt className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+                      Auto-issue official <strong>Money Receipt / Pay Slip (MA#####)</strong> on marking this step Completed
+                    </span>
+                  </label>
+                </div>
+
+                {/* Direct Studio Launch Buttons */}
+                <div className="pt-2 flex flex-wrap gap-2 border-t border-border/80">
+                  <Button
+                    type="button"
+                    size="sm"
+                    variant="outline"
+                    onClick={() => handleLaunchGenerator('money-receipt')}
+                    className="h-8 text-xs px-3 font-semibold border-emerald-500/30 hover:bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 flex items-center gap-1.5 cursor-pointer"
+                  >
+                    <Receipt className="w-3.5 h-3.5 text-emerald-600" />
+                    <span>Open Money Receipt Studio</span>
+                  </Button>
+
+                  <Button
+                    type="button"
+                    size="sm"
+                    variant="outline"
+                    onClick={() => handleLaunchGenerator('invoice')}
+                    className="h-8 text-xs px-3 font-semibold border-indigo-500/30 hover:bg-indigo-500/10 text-indigo-700 dark:text-indigo-300 flex items-center gap-1.5 cursor-pointer"
+                  >
+                    <FileText className="w-3.5 h-3.5 text-indigo-600" />
+                    <span>Open Client Invoice Studio</span>
+                  </Button>
+                </div>
+              </div>
+            )}
+
+            {/* TAB 3: Document Studio Generators */}
             {activeTab === 'studio' && (
               <div className="space-y-3 bg-muted/30 border border-border rounded-xl p-3.5 sm:p-4">
                 <div>

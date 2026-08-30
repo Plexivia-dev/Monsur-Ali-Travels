@@ -1,19 +1,12 @@
 import React from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import {
-  ArrowLeft,
-  Search,
-  Bell,
-  PanelLeft,
-} from 'lucide-react';
-import { useSidebar } from '@/components/ui/sidebar';
+import { ArrowLeft } from 'lucide-react';
 import { NotificationBell } from './NotificationBell';
 import { cn } from '@/lib/utils';
 
 export function AdminHeader({ lang, setLang }) {
   const navigate = useNavigate();
   const location = useLocation();
-  const { toggleSidebar, isMobile } = useSidebar();
 
   const handleBack = () => {
     if (location.pathname !== '/admin') {
@@ -29,17 +22,8 @@ export function AdminHeader({ lang, setLang }) {
 
   return (
     <header className="sticky top-0 z-30 flex h-14 w-full shrink-0 items-center justify-between border-b border-sidebar-border bg-sidebar px-4 md:px-6 shadow-xs select-none">
-      {/* Left: Sidebar Toggle & Back Navigation */}
+      {/* Left: Back Navigation */}
       <div className="flex items-center gap-2 md:gap-3">
-        <button
-          type="button"
-          onClick={toggleSidebar}
-          className="flex h-9 w-9 items-center justify-center rounded-lg text-white hover:bg-white/10 transition-colors cursor-pointer"
-          title={isMobile ? 'Open menu' : 'Toggle sidebar'}
-        >
-          <PanelLeft className="h-5 w-5 text-white" />
-        </button>
-
         {showBackButton && (
           <button
             type="button"

@@ -60,6 +60,60 @@ const taskSchema = new Schema(
       type: [String],
       default: [],
     },
+    // Payment & Invoicing Configuration
+    requiresPayment: {
+      type: Boolean,
+      default: false,
+      index: true,
+    },
+    paymentAmount: {
+      type: Number,
+      default: 0,
+    },
+    paymentCurrency: {
+      type: String,
+      default: "BDT",
+    },
+    paymentPurpose: {
+      type: String,
+      default: "",
+    },
+    sendInvoiceToClient: {
+      type: Boolean,
+      default: false,
+    },
+    invoiceDid: {
+      type: String,
+      default: null,
+    },
+    invoiceNumber: {
+      type: String,
+      default: "",
+    },
+    requirePaySlip: {
+      type: Boolean,
+      default: false,
+    },
+    moneyReceiptDid: {
+      type: String,
+      default: null,
+    },
+    moneyReceiptNumber: {
+      type: String,
+      default: "",
+    },
+    paymentCollectedAmount: {
+      type: Number,
+      default: 0,
+    },
+    paymentMethod: {
+      type: String,
+      default: "Cash",
+    },
+    paymentSlipUrl: {
+      type: String,
+      default: "",
+    },
     status: {
       type: String,
       enum: ["Pending", "In_Progress", "Done", "Approved", "Rejected"],

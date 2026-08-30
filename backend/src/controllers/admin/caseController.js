@@ -2,8 +2,10 @@ import mongoose from "mongoose";
 import CaseFile from "../../models/caseFile.model.js";
 import TaskModel from "../../models/task.model.js";
 import DocumentVaultModel from "../../models/documentVault.model.js";
+import { InvoiceModel, generateUniqueInvoiceNo } from "../../models/invoice.model.js";
 import { NotificationModel } from "../../models/notification.model.js";
 import { UserModel } from "../../models/user.model.js";
+import { generateDid } from "../../utils/generateDid.js";
 import { sendTaskAssignmentEmail } from "../../services/emailService.js";
 import { sendPaymentOrBillCreatedEmailToOwners } from "../../services/emailNotification.service.js";
 
@@ -120,6 +122,12 @@ export const assignTaskStep = async (req, res) => {
       taskTypeNames,
       requiresDocument,
       requiredDocTypes,
+      requiresPayment,
+      paymentAmount,
+      paymentCurrency,
+      paymentPurpose,
+      sendInvoiceToClient,
+      requirePaySlip,
     } = req.body;
     const adminDid = req.user?.did;
 
@@ -145,6 +153,49 @@ export const assignTaskStep = async (req, res) => {
     const assignedUserName = assignedUser?.name || "Staff Member";
     const canonicalAssignedToDid = assignedUser?.did || assignedToDid;
 
+    const parsedPaymentAmount = Number(paymentAmount) || 0;
+    const isPaymentRequired = Boolean(requiresPayment) || parsedPaymentAmount > 0;
+
+    let createdInvoiceDid = null;
+    let createdInvoiceNo = "";
+
+    // If Admin requested auto-generation and sending of Invoice to client
+    if (isPaymentRequired && sendInvoiceToClient && parsedPaymentAmount > 0) {
+      try {
+        const invoiceNo = generateUniqueInvoiceNo();
+        const clientName = caseDoc.applicantName || caseDoc.clientInfo?.fullName || "Valued Client";
+        const newInvoice = await InvoiceModel.create({
+          did: generateDid(),
+          invoiceNo,
+          issueDate: new Date().toISOString().split("T")[0],
+          dueDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().split("T")[0],
+          paymentStatus: "Pending",
+          currency: paymentCurrency || "BDT",
+          client: {
+            name: clientName,
+            phone: caseDoc.phone || "",
+            address: caseDoc.destinationCountry ? `Case File: ${caseDoc.caseNumber || caseDoc.did} (Destination: ${caseDoc.destinationCountry})` : "",
+          },
+          items: [
+            {
+              id: "item-1",
+              title: paymentPurpose || title,
+              description: `Case ${caseDoc.caseNumber || caseDoc.did} — ${title}`,
+              quantity: 1,
+              unitPrice: parsedPaymentAmount,
+            },
+          ],
+          subtotal: parsedPaymentAmount,
+          grandTotal: parsedPaymentAmount,
+        });
+
+        createdInvoiceDid = newInvoice.did;
+        createdInvoiceNo = newInvoice.invoiceNo;
+      } catch (invErr) {
+        console.warn("[assignTaskStep] Auto-invoice generation notice:", invErr.message);
+      }
+    }
+
     const newTask = await TaskModel.create({
       caseDid: caseDoc.did,
       title,
@@ -157,6 +208,14 @@ export const assignTaskStep = async (req, res) => {
       taskTypeNames: Array.isArray(taskTypeNames) ? taskTypeNames : [],
       requiresDocument: requiresDocument !== false,
       requiredDocTypes: Array.isArray(requiredDocTypes) ? requiredDocTypes : [],
+      requiresPayment: isPaymentRequired,
+      paymentAmount: parsedPaymentAmount,
+      paymentCurrency: paymentCurrency || "BDT",
+      paymentPurpose: paymentPurpose || title,
+      sendInvoiceToClient: Boolean(sendInvoiceToClient),
+      invoiceDid: createdInvoiceDid,
+      invoiceNumber: createdInvoiceNo,
+      requirePaySlip: Boolean(requirePaySlip),
       status: "Pending",
       createdByDid: adminDid,
     });

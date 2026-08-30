@@ -13,6 +13,9 @@ import {
   UploadCloud,
   CheckCircle2,
   Info,
+  CreditCard,
+  Receipt,
+  DollarSign,
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { apiClient } from '../../lib/api-client';
@@ -27,6 +30,14 @@ export function StepAssignModal({ isOpen = true, caseDoc = {}, caseDid, caseNumb
   const [selectedDocDids, setSelectedDocDids] = useState([]);
   const [requiresDocument, setRequiresDocument] = useState(true);
   const [requiredDocTypes, setRequiredDocTypes] = useState([]);
+
+  // Payment & Invoicing State
+  const [requiresPayment, setRequiresPayment] = useState(false);
+  const [paymentAmount, setPaymentAmount] = useState('');
+  const [paymentCurrency, setPaymentCurrency] = useState('BDT');
+  const [paymentPurpose, setPaymentPurpose] = useState('');
+  const [sendInvoiceToClient, setSendInvoiceToClient] = useState(true);
+  const [requirePaySlip, setRequirePaySlip] = useState(true);
 
   const [users, setUsers] = useState([]);
   const [vaultDocs, setVaultDocs] = useState([]);
@@ -87,6 +98,12 @@ export function StepAssignModal({ isOpen = true, caseDoc = {}, caseDid, caseNumb
     const anyDocRequired = selectedObjs.some((t) => t.requiresDocument !== false);
     setRequiresDocument(anyDocRequired);
 
+    // Auto-detect financial / payment category
+    const hasFinancialTask = selectedObjs.some((t) => t.category === 'FINANCIAL');
+    if (hasFinancialTask) {
+      setRequiresPayment(true);
+    }
+
     // Collect all required document preset keys
     const docTypes = selectedObjs
       .map((t) => t.defaultDocumentType || (t.requiresDocument ? 'other' : null))
@@ -98,8 +115,10 @@ export function StepAssignModal({ isOpen = true, caseDoc = {}, caseDid, caseNumb
       const names = selectedObjs.map((t) => t.name);
       if (names.length === 1) {
         setTitle(names[0]);
+        if (!paymentPurpose) setPaymentPurpose(names[0]);
       } else {
         setTitle(`Collect ${names.join(' & ')}`);
+        if (!paymentPurpose) setPaymentPurpose(`Payment for ${names.join(' & ')}`);
       }
     }
   };
@@ -132,6 +151,12 @@ export function StepAssignModal({ isOpen = true, caseDoc = {}, caseDid, caseNumb
         taskTypeNames,
         requiresDocument,
         requiredDocTypes,
+        requiresPayment,
+        paymentAmount: requiresPayment ? Number(paymentAmount) || 0 : 0,
+        paymentCurrency,
+        paymentPurpose: paymentPurpose || title,
+        sendInvoiceToClient: requiresPayment && sendInvoiceToClient,
+        requirePaySlip: requiresPayment && requirePaySlip,
         stepNumber: (caseDoc?.workflowTasks || []).length + 1,
       });
 
@@ -298,6 +323,86 @@ export function StepAssignModal({ isOpen = true, caseDoc = {}, caseDid, caseNumb
             >
               {requiresDocument ? 'File Intake' : 'Action Step'}
             </span>
+          </div>
+
+          {/* Section 4: Payment Intake, Client Invoicing & Pay Slip */}
+          <div className="p-3.5 rounded-2xl border border-emerald-500/30 bg-emerald-500/5 space-y-3">
+            <div className="flex items-center justify-between">
+              <label
+                onClick={() => setRequiresPayment(!requiresPayment)}
+                className="font-bold text-emerald-800 dark:text-emerald-300 flex items-center gap-2 cursor-pointer select-none"
+              >
+                <CreditCard className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
+                <span>Require Client Payment / Service Fee Intake</span>
+              </label>
+              <input
+                type="checkbox"
+                checked={requiresPayment}
+                onChange={(e) => setRequiresPayment(e.target.checked)}
+                className="rounded border-emerald-400 text-emerald-600 focus:ring-emerald-500 h-4 w-4 accent-emerald-600 cursor-pointer"
+              />
+            </div>
+
+            {requiresPayment && (
+              <div className="space-y-3 pt-2 border-t border-emerald-500/20 text-xs animate-in fade-in-50 duration-150">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div>
+                    <label className="block font-semibold text-foreground mb-1">
+                      Payment Amount (৳ BDT) *
+                    </label>
+                    <input
+                      type="number"
+                      min="0"
+                      step="1"
+                      required={requiresPayment}
+                      placeholder="e.g. 50000"
+                      value={paymentAmount}
+                      onChange={(e) => setPaymentAmount(e.target.value)}
+                      className="w-full px-3 py-2 bg-card border border-emerald-500/40 rounded-xl text-foreground font-bold focus:outline-none focus:border-emerald-500"
+                    />
+                  </div>
+                  <div>
+                    <label className="block font-semibold text-foreground mb-1">
+                      Payment Purpose / Installment Label
+                    </label>
+                    <input
+                      type="text"
+                      placeholder="e.g. 1st Booking Deposit / Embassy Fee"
+                      value={paymentPurpose}
+                      onChange={(e) => setPaymentPurpose(e.target.value)}
+                      className="w-full px-3 py-2 bg-card border border-border rounded-xl text-foreground focus:outline-none focus:border-primary"
+                    />
+                  </div>
+                </div>
+
+                <div className="space-y-2 pt-1">
+                  <label className="flex items-center gap-2 text-foreground font-medium cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={sendInvoiceToClient}
+                      onChange={(e) => setSendInvoiceToClient(e.target.checked)}
+                      className="rounded border-border text-primary h-3.5 w-3.5 accent-primary cursor-pointer"
+                    />
+                    <span className="flex items-center gap-1.5">
+                      <FileText className="w-3.5 h-3.5 text-primary shrink-0" />
+                      Auto-generate official <strong>Client Invoice (I-#####)</strong> and link to case
+                    </span>
+                  </label>
+                  <label className="flex items-center gap-2 text-foreground font-medium cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={requirePaySlip}
+                      onChange={(e) => setRequirePaySlip(e.target.checked)}
+                      className="rounded border-border text-emerald-600 h-3.5 w-3.5 accent-emerald-600 cursor-pointer"
+                    />
+                    <span className="flex items-center gap-1.5">
+                      <Receipt className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+                      Require staff to issue <strong>Money Receipt / Pay Slip (MA#####)</strong> on collection
+                    </span>
+                  </label>
+                </div>
+              </div>
+            )}
           </div>
 
           {/* Section 4: Task Instructions */}

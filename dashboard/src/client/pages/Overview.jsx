@@ -54,21 +54,21 @@ export default function Overview() {
         {/* All Tasks */}
         <div
           onClick={() => setFilter('all')}
-          className={`p-3.5 rounded-xl border transition-all cursor-pointer flex items-center justify-between gap-3 shadow-xs ${
+          className={`p-3.5 rounded-2xl border transition-all duration-200 cursor-pointer flex items-center justify-between gap-3 ${
             filter === 'all'
-              ? 'bg-black text-white dark:bg-white dark:text-black border-black dark:border-white ring-1 ring-black/20 dark:ring-white/20'
-              : 'bg-card border-border hover:bg-neutral-100/70 dark:hover:bg-neutral-900/50'
+              ? 'bg-linear-to-r from-sky-950 via-indigo-950 to-slate-950 text-white border-sky-600/50 shadow-lg shadow-sky-950/25 ring-1 ring-sky-400/30'
+              : 'bg-card border-border hover:bg-neutral-100/70 dark:hover:bg-neutral-900/50 shadow-xs'
           }`}
         >
           <div className="space-y-0.5 min-w-0">
-            <span className={`text-[11px] font-bold uppercase tracking-wider block ${filter === 'all' ? 'text-white/80 dark:text-black/70' : 'text-muted-foreground'}`}>
+            <span className={`text-[11px] font-bold uppercase tracking-wider block ${filter === 'all' ? 'text-sky-300' : 'text-muted-foreground'}`}>
               Total Tasks
             </span>
-            <span className={`text-xl font-extrabold tracking-tight ${filter === 'all' ? 'text-white dark:text-black' : 'text-foreground'}`}>
+            <span className={`text-xl font-extrabold tracking-tight ${filter === 'all' ? 'text-white' : 'text-foreground'}`}>
               All Assigned
             </span>
           </div>
-          <div className={`p-2 rounded-lg border shrink-0 ${filter === 'all' ? 'bg-white/10 dark:bg-black/10 border-white/20 dark:border-black/20 text-white dark:text-black' : 'bg-black/5 dark:bg-white/10 border-border text-foreground'}`}>
+          <div className={`p-2 rounded-xl border shrink-0 ${filter === 'all' ? 'bg-white/10 border-white/20 text-sky-300 shadow-inner' : 'bg-muted/60 border-border text-foreground'}`}>
             <ListTodo className="w-5 h-5" />
           </div>
         </div>
@@ -76,21 +76,21 @@ export default function Overview() {
         {/* Pending */}
         <div
           onClick={() => setFilter('pending')}
-          className={`p-3.5 rounded-xl border transition-all cursor-pointer flex items-center justify-between gap-3 shadow-xs ${
+          className={`p-3.5 rounded-2xl border transition-all duration-200 cursor-pointer flex items-center justify-between gap-3 ${
             filter === 'pending'
-              ? 'bg-black text-white dark:bg-white dark:text-black border-black dark:border-white ring-1 ring-black/20 dark:ring-white/20'
-              : 'bg-card border-border hover:bg-neutral-100/70 dark:hover:bg-neutral-900/50'
+              ? 'bg-linear-to-r from-sky-950 via-indigo-950 to-slate-950 text-white border-sky-600/50 shadow-lg shadow-sky-950/25 ring-1 ring-sky-400/30'
+              : 'bg-card border-border hover:bg-neutral-100/70 dark:hover:bg-neutral-900/50 shadow-xs'
           }`}
         >
           <div className="space-y-0.5 min-w-0">
-            <span className={`text-[11px] font-bold uppercase tracking-wider block ${filter === 'pending' ? 'text-white/80 dark:text-black/70' : 'text-muted-foreground'}`}>
+            <span className={`text-[11px] font-bold uppercase tracking-wider block ${filter === 'pending' ? 'text-amber-300' : 'text-muted-foreground'}`}>
               Pending Tasks
             </span>
-            <span className={`text-xl font-extrabold tracking-tight ${filter === 'pending' ? 'text-white dark:text-black' : 'text-foreground'}`}>
+            <span className={`text-xl font-extrabold tracking-tight ${filter === 'pending' ? 'text-white' : 'text-foreground'}`}>
               Action Required
             </span>
           </div>
-          <div className={`p-2 rounded-lg border shrink-0 ${filter === 'pending' ? 'bg-white/10 dark:bg-black/10 border-white/20 dark:border-black/20 text-white dark:text-black' : 'bg-black/5 dark:bg-white/10 border-border text-foreground'}`}>
+          <div className={`p-2 rounded-xl border shrink-0 ${filter === 'pending' ? 'bg-white/10 border-white/20 text-amber-300 shadow-inner' : 'bg-muted/60 border-border text-foreground'}`}>
             <Clock className="w-5 h-5" />
           </div>
         </div>
@@ -98,21 +98,21 @@ export default function Overview() {
         {/* In Progress */}
         <div
           onClick={() => setFilter('in_progress')}
-          className={`p-3.5 rounded-xl border transition-all cursor-pointer flex items-center justify-between gap-3 shadow-xs ${
+          className={`p-3.5 rounded-2xl border transition-all duration-200 cursor-pointer flex items-center justify-between gap-3 ${
             filter === 'in_progress'
-              ? 'bg-black text-white dark:bg-white dark:text-black border-black dark:border-white ring-1 ring-black/20 dark:ring-white/20'
-              : 'bg-card border-border hover:bg-neutral-100/70 dark:hover:bg-neutral-900/50'
+              ? 'bg-linear-to-r from-sky-950 via-indigo-950 to-slate-950 text-white border-sky-600/50 shadow-lg shadow-sky-950/25 ring-1 ring-sky-400/30'
+              : 'bg-card border-border hover:bg-neutral-100/70 dark:hover:bg-neutral-900/50 shadow-xs'
           }`}
         >
           <div className="space-y-0.5 min-w-0">
-            <span className={`text-[11px] font-bold uppercase tracking-wider block ${filter === 'in_progress' ? 'text-white/80 dark:text-black/70' : 'text-muted-foreground'}`}>
+            <span className={`text-[11px] font-bold uppercase tracking-wider block ${filter === 'in_progress' ? 'text-sky-300' : 'text-muted-foreground'}`}>
               In Progress
             </span>
-            <span className={`text-xl font-extrabold tracking-tight ${filter === 'in_progress' ? 'text-white dark:text-black' : 'text-foreground'}`}>
+            <span className={`text-xl font-extrabold tracking-tight ${filter === 'in_progress' ? 'text-white' : 'text-foreground'}`}>
               In Workflow
             </span>
           </div>
-          <div className={`p-2 rounded-lg border shrink-0 ${filter === 'in_progress' ? 'bg-white/10 dark:bg-black/10 border-white/20 dark:border-black/20 text-white dark:text-black' : 'bg-black/5 dark:bg-white/10 border-border text-foreground'}`}>
+          <div className={`p-2 rounded-xl border shrink-0 ${filter === 'in_progress' ? 'bg-white/10 border-white/20 text-sky-300 shadow-inner' : 'bg-muted/60 border-border text-foreground'}`}>
             <Sparkles className="w-5 h-5" />
           </div>
         </div>
@@ -120,21 +120,21 @@ export default function Overview() {
         {/* Completed */}
         <div
           onClick={() => setFilter('completed')}
-          className={`p-3.5 rounded-xl border transition-all cursor-pointer flex items-center justify-between gap-3 shadow-xs ${
+          className={`p-3.5 rounded-2xl border transition-all duration-200 cursor-pointer flex items-center justify-between gap-3 ${
             filter === 'completed'
-              ? 'bg-black text-white dark:bg-white dark:text-black border-black dark:border-white ring-1 ring-black/20 dark:ring-white/20'
-              : 'bg-card border-border hover:bg-neutral-100/70 dark:hover:bg-neutral-900/50'
+              ? 'bg-linear-to-r from-sky-950 via-indigo-950 to-slate-950 text-white border-sky-600/50 shadow-lg shadow-sky-950/25 ring-1 ring-sky-400/30'
+              : 'bg-card border-border hover:bg-neutral-100/70 dark:hover:bg-neutral-900/50 shadow-xs'
           }`}
         >
           <div className="space-y-0.5 min-w-0">
-            <span className={`text-[11px] font-bold uppercase tracking-wider block ${filter === 'completed' ? 'text-white/80 dark:text-black/70' : 'text-muted-foreground'}`}>
+            <span className={`text-[11px] font-bold uppercase tracking-wider block ${filter === 'completed' ? 'text-emerald-300' : 'text-muted-foreground'}`}>
               Completed
             </span>
-            <span className={`text-xl font-extrabold tracking-tight ${filter === 'completed' ? 'text-white dark:text-black' : 'text-foreground'}`}>
+            <span className={`text-xl font-extrabold tracking-tight ${filter === 'completed' ? 'text-white' : 'text-foreground'}`}>
               Done & Verified
             </span>
           </div>
-          <div className={`p-2 rounded-lg border shrink-0 ${filter === 'completed' ? 'bg-white/10 dark:bg-black/10 border-white/20 dark:border-black/20 text-white dark:text-black' : 'bg-black/5 dark:bg-white/10 border-border text-foreground'}`}>
+          <div className={`p-2 rounded-xl border shrink-0 ${filter === 'completed' ? 'bg-white/10 border-white/20 text-emerald-300 shadow-inner' : 'bg-muted/60 border-border text-foreground'}`}>
             <CheckCircle2 className="w-5 h-5" />
           </div>
         </div>
