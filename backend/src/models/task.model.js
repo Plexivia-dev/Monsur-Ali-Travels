@@ -44,6 +44,22 @@ const taskSchema = new Schema(
       type: [String],
       default: [],
     },
+    taskTypeDids: {
+      type: [String],
+      default: [],
+    },
+    taskTypeNames: {
+      type: [String],
+      default: [],
+    },
+    requiresDocument: {
+      type: Boolean,
+      default: true,
+    },
+    requiredDocTypes: {
+      type: [String],
+      default: [],
+    },
     status: {
       type: String,
       enum: ["Pending", "In_Progress", "Done", "Approved", "Rejected"],

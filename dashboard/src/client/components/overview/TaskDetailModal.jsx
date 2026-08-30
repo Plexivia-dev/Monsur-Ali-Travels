@@ -65,17 +65,62 @@ export function TaskDetailModal({
   onRefreshTasks,
 }) {
   const switchPortal = usePortalStore((state) => state.switchPortal);
-  const [activeTab, setActiveTab] = useState('upload'); // 'upload' | 'studio' | 'notes'
+  const [activeTab, setActiveTab] = useState(
+    task?.requiresDocument === false ? 'notes' : 'upload'
+  );
   const [completionNotes, setCompletionNotes] = useState(task?.completionNotes || '');
   const [isSubmittingDone, setIsSubmittingDone] = useState(false);
   const [isSavingProgress, setIsSavingProgress] = useState(false);
 
   // Multi-Row Document Upload State
-  const [uploadRows, setUploadRows] = useState([
-    { id: 'row-1', title: 'National ID (NID Front & Back)', file: null, accessLevel: 'Restricted' },
-  ]);
+  const [uploadRows, setUploadRows] = useState(() => {
+    if (task?.requiredDocTypes && Array.isArray(task.requiredDocTypes) && task.requiredDocTypes.length > 0) {
+      return task.requiredDocTypes.map((docKey, i) => {
+        const matchingDoc = DOCUMENT_CATEGORIES.find((cat) =>
+          cat.toLowerCase().includes(docKey.toLowerCase())
+        );
+        return {
+          id: `row-${i + 1}`,
+          title: matchingDoc || (docKey.charAt(0).toUpperCase() + docKey.slice(1)),
+          file: null,
+          accessLevel: 'Restricted',
+        };
+      });
+    }
+    return [
+      { id: 'row-1', title: 'Passport Bio-Page Copy', file: null, accessLevel: 'Restricted' },
+    ];
+  });
   const [isBatchUploading, setIsBatchUploading] = useState(false);
   const [uploadedDocsList, setUploadedDocsList] = useState([]);
+
+  // Sync state if task changes
+  useEffect(() => {
+    if (task) {
+      setCompletionNotes(task.completionNotes || '');
+      if (task.requiresDocument === false) {
+        setActiveTab('notes');
+      } else {
+        setActiveTab('upload');
+      }
+
+      if (task.requiredDocTypes && Array.isArray(task.requiredDocTypes) && task.requiredDocTypes.length > 0) {
+        setUploadRows(
+          task.requiredDocTypes.map((docKey, i) => {
+            const matchingDoc = DOCUMENT_CATEGORIES.find((cat) =>
+              cat.toLowerCase().includes(docKey.toLowerCase())
+            );
+            return {
+              id: `row-${i + 1}`,
+              title: matchingDoc || (docKey.charAt(0).toUpperCase() + docKey.slice(1)),
+              file: null,
+              accessLevel: 'Restricted',
+            };
+          })
+        );
+      }
+    }
+  }, [task]);
 
   // File Preview Modal State (View only, no download)
   const [viewingFile, setViewingFile] = useState(null);
@@ -222,6 +267,13 @@ export function TaskDetailModal({
 
   // Separate explicit action: Mark Task as Completed
   const handleMarkAsDone = async () => {
+    // If this is an action task (no document required), work remarks/notes are mandatory
+    if (task.requiresDocument === false && !completionNotes.trim()) {
+      toast.error('Work remarks / notes are mandatory for this action step.');
+      setActiveTab('notes');
+      return;
+    }
+
     setIsSubmittingDone(true);
     try {
       await apiClient.patch(`/api/v1/client/tasks/${task.did || task._id}/done`, {
@@ -271,11 +323,35 @@ export function TaskDetailModal({
                     Case: {task.caseDid}
                   </span>
                 )}
+
+                <span
+                  className={`text-[10px] font-bold px-2 py-0.5 rounded-full border ${
+                    task.requiresDocument !== false
+                      ? 'bg-sky-500/10 text-sky-600 dark:text-sky-400 border-sky-500/20'
+                      : 'bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/20'
+                  }`}
+                >
+                  {task.requiresDocument !== false ? '📄 Document Intake' : '💬 Action / Notes Only'}
+                </span>
               </div>
 
               <h2 className="text-base sm:text-lg font-bold text-foreground leading-snug break-words">
                 {task.title}
               </h2>
+
+              {task.taskTypeNames && Array.isArray(task.taskTypeNames) && task.taskTypeNames.length > 0 && (
+                <div className="flex items-center gap-1.5 flex-wrap pt-0.5">
+                  <span className="text-[10px] font-bold text-muted-foreground uppercase">Sub-Types:</span>
+                  {task.taskTypeNames.map((name, i) => (
+                    <span
+                      key={i}
+                      className="text-[10px] font-semibold px-2 py-0.2 rounded-md bg-muted border border-border text-foreground"
+                    >
+                      {name}
+                    </span>
+                  ))}
+                </div>
+              )}
             </div>
 
             <div className="flex items-center gap-2 shrink-0">
@@ -543,16 +619,25 @@ export function TaskDetailModal({
               <div className="space-y-2 bg-muted/30 border border-border rounded-xl p-3.5 sm:p-4">
                 <label className="text-xs font-bold text-foreground uppercase tracking-wider flex items-center gap-1.5">
                   <FileCheck2 className="w-4 h-4 text-emerald-500" />
-                  Staff Progress & Completion Remarks
+                  {task.requiresDocument === false
+                    ? 'Staff Action Remarks / Work Notes * (Mandatory)'
+                    : 'Staff Progress & Completion Remarks (Optional)'}
                 </label>
                 <p className="text-[11px] text-muted-foreground">
-                  Record verification details, token slips, embassy remarks, or work logs.
+                  {task.requiresDocument === false
+                    ? 'Mandatory: Describe the actions completed, client consultation details, or appointment results.'
+                    : 'Optional: Record any additional verification notes, token slips, or remarks regarding uploaded documents.'}
                 </p>
                 <textarea
                   rows={4}
+                  required={task.requiresDocument === false}
                   value={completionNotes}
                   onChange={(e) => setCompletionNotes(e.target.value)}
-                  placeholder="e.g. Collected original passport & 4 photos. Generated employment agreement and uploaded medical fit report..."
+                  placeholder={
+                    task.requiresDocument === false
+                      ? 'Describe what actions were taken for this step (Mandatory)...'
+                      : '(Optional) Add any notes regarding attached files...'
+                  }
                   className="w-full px-3 py-2 text-xs bg-card border border-border rounded-xl text-foreground focus:outline-none focus:border-primary resize-none placeholder:text-muted-foreground/60"
                 />
               </div>

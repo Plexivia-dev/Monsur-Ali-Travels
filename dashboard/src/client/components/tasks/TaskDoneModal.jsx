@@ -121,14 +121,20 @@ export function TaskDoneModal({ task, onClose, onSuccess }) {
             {/* Completion Remarks */}
             <div className="space-y-1">
               <label className="block text-xs font-semibold text-muted-foreground">
-                Completion Remarks / Notes *
+                {task.requiresDocument === false
+                  ? 'Completion Remarks / Action Notes * (Mandatory)'
+                  : 'Completion Remarks / Notes (Optional)'}
               </label>
               <textarea
-                required
+                required={task.requiresDocument === false}
                 rows={3}
                 value={notes}
                 onChange={(e) => setNotes(e.target.value)}
-                placeholder="Describe what work was completed for this step..."
+                placeholder={
+                  task.requiresDocument === false
+                    ? 'Mandatory: Describe what work or action was completed for this step...'
+                    : '(Optional) Describe what work was completed for this step...'
+                }
                 className="w-full px-3 py-2 text-xs bg-muted/40 border border-border rounded-lg text-foreground focus:outline-none focus:border-primary resize-none"
               />
             </div>

@@ -37,6 +37,7 @@ const coreRouter = Router();
 import accountsRouter from "./routes/shared/AccountsRoute.js";
 import adminCaseRouter from "./routes/admin/AdminCaseRoute.js";
 import taskRouter from "./routes/client/TaskRoute.js";
+import taskTypeRouter from "./routes/admin/taskType.route.js";
 
 // ==========================================
 // 1. SHARED ROUTES (Mounted directly at /api/v1/)
@@ -47,6 +48,7 @@ coreRouter.use("/qrcode", qrRouter);
 coreRouter.use("/upload", uploadRouter);
 coreRouter.use("/uploads", uploadRouter);
 coreRouter.use("/notifications", notificationRouter);
+coreRouter.use("/task-types", taskTypeRouter);
 coreRouter.use("/accounts", authenticateToken, auditLog, accountsRouter);
 coreRouter.use("/users", authenticateToken, auditLog, usersRouter);
 coreRouter.use("/clients", authenticateToken, auditLog, clientRoute);
@@ -71,6 +73,7 @@ adminRouter.use("/cases", adminCaseRouter);
 adminRouter.use("/tasks", taskRouter);
 adminRouter.use("/settings", settingsRouter);
 adminRouter.use("/storage", storageMaintenanceRouter);
+adminRouter.use("/task-types", taskTypeRouter);
 adminRouter.use("/accounts", accountsRouter);
 adminRouter.use("/agreements", agreementRouter);
 adminRouter.use("/indian-visas", indianVisaRouter);
@@ -90,6 +93,7 @@ coreRouter.use("/admin", adminRouter);
 const clientScopeRouter = Router();
 clientScopeRouter.use(authenticateToken);
 clientScopeRouter.use(auditLog);
+clientScopeRouter.use("/task-types", taskTypeRouter);
 clientScopeRouter.use("/accounts", accountsRouter);
 clientScopeRouter.use("/tasks", taskRouter);
 clientScopeRouter.use("/cases", caseFileRouter);

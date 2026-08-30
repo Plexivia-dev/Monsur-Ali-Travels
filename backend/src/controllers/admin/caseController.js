@@ -109,7 +109,18 @@ export const assignTaskStep = async (req, res) => {
       return res.status(403).json({ status: "error", message: "Forbidden: Only Admin or Manager can assign tasks." });
     }
 
-    const { caseDid, title, description, assignedToDid, allowedDocumentDids, stepNumber } = req.body;
+    const {
+      caseDid,
+      title,
+      description,
+      assignedToDid,
+      allowedDocumentDids,
+      stepNumber,
+      taskTypeDids,
+      taskTypeNames,
+      requiresDocument,
+      requiredDocTypes,
+    } = req.body;
     const adminDid = req.user?.did;
 
     if (!caseDid || !title || !assignedToDid) {
@@ -142,6 +153,10 @@ export const assignTaskStep = async (req, res) => {
       assignedToDid: canonicalAssignedToDid,
       assignedToName: assignedUserName,
       allowedDocumentDids: Array.isArray(allowedDocumentDids) ? allowedDocumentDids : [],
+      taskTypeDids: Array.isArray(taskTypeDids) ? taskTypeDids : [],
+      taskTypeNames: Array.isArray(taskTypeNames) ? taskTypeNames : [],
+      requiresDocument: requiresDocument !== false,
+      requiredDocTypes: Array.isArray(requiredDocTypes) ? requiredDocTypes : [],
       status: "Pending",
       createdByDid: adminDid,
     });
