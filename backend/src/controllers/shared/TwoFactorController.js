@@ -13,40 +13,50 @@ import { sendOtpEmail, send2faQrEmail } from "../../services/emailService.js";
 // Configure TOTP window to allow +/- 1 step (30 seconds) tolerance for clock drift
 authenticator.options = { window: 1 };
 
-// Helper to extract user from a short-lived 2FA session token (supports Authorization Bearer header, X-Two-Factor-Token header, body, or query)
+// Helper to extract user from a short-lived 2FA session token (supports body, headers, or query)
 const resolveUserFromTwoFactorToken = async (req, bodyToken) => {
   const authHeader = req?.headers?.authorization;
-  const headerToken =
+  const bearerToken =
     authHeader && authHeader.startsWith("Bearer ")
       ? authHeader.slice(7).trim()
-      : req?.headers?.["x-two-factor-token"] || req?.headers?.["twofactortoken"];
+      : null;
+  const customHeaderToken = req?.headers?.["x-two-factor-token"] || req?.headers?.["twofactortoken"];
 
-  const twoFactorToken =
-    headerToken ||
-    bodyToken ||
-    req?.body?.twoFactorToken ||
-    req?.body?.token ||
-    req?.query?.twoFactorToken;
+  const candidates = [
+    bodyToken,
+    req?.body?.twoFactorToken,
+    req?.body?.token,
+    customHeaderToken,
+    bearerToken,
+    req?.query?.twoFactorToken,
+  ].filter(Boolean);
 
-  if (!twoFactorToken) {
+  if (candidates.length === 0) {
     const err = new Error("2FA session token is missing");
     err.status = 400;
     throw err;
   }
 
-  let decoded;
-  try {
-    decoded = jwt.verify(twoFactorToken, env.ACCESS_TOKEN_SECRET);
-  } catch (err) {
+  let decoded = null;
+  let hasValidToken = false;
+
+  for (const token of candidates) {
+    try {
+      const payload = jwt.verify(token, env.ACCESS_TOKEN_SECRET);
+      if (payload.purpose === "2fa_login" && payload.did) {
+        decoded = payload;
+        hasValidToken = true;
+        break;
+      }
+    } catch {
+      // Continue to test next candidate token
+    }
+  }
+
+  if (!hasValidToken || !decoded) {
     const error = new Error("Your 2FA verification session has expired. Please log in again.");
     error.status = 401;
     throw error;
-  }
-
-  if (decoded.purpose !== "2fa_login" || !decoded.did) {
-    const err = new Error("Invalid 2FA verification session token.");
-    err.status = 401;
-    throw err;
   }
 
   const user = await UserModel.findOne({ did: decoded.did }).select(

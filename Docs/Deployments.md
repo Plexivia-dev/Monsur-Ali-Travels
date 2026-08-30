@@ -2,7 +2,11 @@
 
 ## 🔑 SSH Login Command
 ```bash
-ssh -i C:\Users\mdikr\.ssh\id_ed25519_ikramul root@144.79.218.241
+ssh root@144.79.218.241
+# or
+ssh mat-vps
+# or
+ssh -i C:\Users\dev\.ssh\id_ed25519_ikramul root@144.79.218.241
 ```
 
 ---
