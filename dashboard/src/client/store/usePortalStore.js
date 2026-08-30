@@ -1,4 +1,5 @@
 import { create } from 'zustand';
+import { apiClient } from '../lib/api-client';
 
 export const parsePortalFromPath = (pathname) => {
   const cleanPath = (pathname || '')
@@ -103,12 +104,40 @@ export const usePortalStore = create((set, get) => ({
     set((state) => ({ toasts: state.toasts.filter((t) => t.id !== id) }));
   },
 
+  fetchNotifications: async (userDid) => {
+    try {
+      const url = userDid
+        ? `/api/v1/notifications?limit=30&userDid=${encodeURIComponent(userDid)}`
+        : '/api/v1/notifications?limit=30';
+      const res = await apiClient.get(url);
+      if (res.data?.success || res.data?.status === 'success') {
+        const list = (res.data.data || []).map((n) => ({
+          ...n,
+          id: n.did || n._id || n.id,
+          did: n.did || n._id || n.id,
+          unread: !n.isRead,
+          isRead: Boolean(n.isRead),
+        }));
+        set({ notifications: list });
+      }
+    } catch (err) {
+      console.warn('[PortalStore] fetchNotifications failed:', err.message);
+    }
+  },
+
   addNotification: (notification) => {
     set((state) => {
-      const exists = state.notifications.some((n) => n.id === notification.id || (n.did && n.did === notification.did));
+      const notifId = notification.id || notification.did || notification._id;
+      const exists = state.notifications.some((n) => n.id === notifId || (n.did && n.did === notifId));
       if (exists) return state;
       return {
-        notifications: [notification, ...state.notifications].slice(0, 50),
+        notifications: [{
+          ...notification,
+          id: notifId,
+          did: notification.did || notifId,
+          unread: notification.unread !== undefined ? notification.unread : !notification.isRead,
+          isRead: notification.isRead !== undefined ? Boolean(notification.isRead) : false,
+        }, ...state.notifications].slice(0, 50),
       };
     });
   },
@@ -119,12 +148,25 @@ export const usePortalStore = create((set, get) => ({
         n.id === id || n.did === id ? { ...n, unread: false, isRead: true } : n
       ),
     }));
+    try {
+      await apiClient.patch(`/api/v1/notifications/${id}/read`);
+    } catch (err) {
+      console.warn('[PortalStore] markNotificationRead API failed:', err.message);
+    }
   },
 
-  markAllNotificationsRead: () => {
+  markAllNotificationsRead: async (userDid) => {
     set((state) => ({
       notifications: state.notifications.map((n) => ({ ...n, unread: false, isRead: true })),
     }));
+    try {
+      const url = userDid
+        ? `/api/v1/notifications/read-all?userDid=${encodeURIComponent(userDid)}`
+        : '/api/v1/notifications/read-all';
+      await apiClient.patch(url);
+    } catch (err) {
+      console.warn('[PortalStore] markAllNotificationsRead API failed:', err.message);
+    }
   },
 }));
 
