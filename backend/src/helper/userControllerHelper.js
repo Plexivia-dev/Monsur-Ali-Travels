@@ -3,8 +3,9 @@ import { USER_ROLES } from "../models/user.model.js";
 // Validate the payload for creating a new user account.
 export const validateCreateUserPayload = (payload) => {
   const errors = [];
+  const name = payload.name || payload.fullName;
 
-  if (!payload.name || typeof payload.name !== "string" || !payload.name.trim()) {
+  if (!name || typeof name !== "string" || !name.trim()) {
     errors.push("name is required");
   }
 
@@ -38,17 +39,18 @@ export const validateCreateUserPayload = (payload) => {
 // Validate the payload for updating an existing user account.
 export const validateUpdateUserPayload = (payload) => {
   const errors = [];
+  const name = payload.name || payload.fullName;
 
-  if (!payload.name || typeof payload.name !== "string" || !payload.name.trim()) {
-    errors.push("name is required");
+  if (name !== undefined && (typeof name !== "string" || !name.trim())) {
+    errors.push("name cannot be empty when provided");
   }
 
-  if (!payload.email || typeof payload.email !== "string" || !payload.email.trim()) {
-    errors.push("email is required");
+  if (payload.email !== undefined && (typeof payload.email !== "string" || !payload.email.trim())) {
+    errors.push("email cannot be empty when provided");
   }
 
-  if (!payload.phone || typeof payload.phone !== "string" || !payload.phone.trim()) {
-    errors.push("phone is required");
+  if (payload.phone !== undefined && (typeof payload.phone !== "string" || !payload.phone.trim())) {
+    errors.push("phone cannot be empty when provided");
   }
 
   if (payload.role && !USER_ROLES.includes(payload.role)) {

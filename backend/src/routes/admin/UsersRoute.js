@@ -1,6 +1,13 @@
 import { Router } from "express";
 
-import { createUser, deleteUser, getUserById, listUsers, updateUser } from "../../controllers/admin/UsersController.js";
+import {
+  createUser,
+  deleteUser,
+  getUserById,
+  listUsers,
+  updateUser,
+  toggleUserStatus,
+} from "../../controllers/admin/UsersController.js";
 import { authenticateToken, authorizeRoles } from "../../middlewares/auth.middleware.js";
 
 const usersRouter = Router();
@@ -13,6 +20,8 @@ usersRouter.get("/", authorizeRoles("Owner", "Admin", "Superadmin", "Accountant"
 usersRouter.get("/:userId", authorizeRoles("Owner", "Admin", "Superadmin", "Accountant", "accounts", "Staff", "frontdesk"), getUserById);
 usersRouter.post("/", authorizeRoles("Owner", "Admin"), createUser);
 usersRouter.put("/:userId", authorizeRoles("Owner", "Admin"), updateUser);
+usersRouter.patch("/:userId", authorizeRoles("Owner", "Admin"), updateUser);
+usersRouter.patch("/:userId/status", authorizeRoles("Owner", "Admin"), toggleUserStatus);
 usersRouter.delete("/:userId", authorizeRoles("Owner", "Admin"), deleteUser);
 
 export default usersRouter;

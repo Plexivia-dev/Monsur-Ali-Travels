@@ -36,7 +36,7 @@ const UsersPage = () => {
   const [editingUser, setEditingUser] = useState(null);
   const [togglingId, setTogglingId] = useState(null);
   const [createForm, setCreateForm] = useState({
-    fullName: '',
+    name: '',
     email: '',
     phone: '',
     password: '',
@@ -88,27 +88,30 @@ const UsersPage = () => {
   // Creates a new system user
   const handleCreateUser = async (e) => {
     e.preventDefault();
-    if (!createForm.fullName.trim()) return toast.error('Full name is required.');
+    const userName = (createForm.name || createForm.fullName || '').trim();
+    if (!userName) return toast.error('Full name is required.');
     if (!createForm.email.trim()) return toast.error('Email is required.');
+    if (!createForm.phone.trim()) return toast.error('Phone number is required.');
     if (!createForm.password.trim() || createForm.password.length < 6)
       return toast.error('Password must be at least 6 characters.');
 
     setCreateLoading(true);
     try {
       await apiClient.post('/api/v1/admin/users', {
-        fullName: createForm.fullName.trim(),
+        name: userName,
+        fullName: userName,
         email: createForm.email.trim(),
-        phone: createForm.phone.trim() || undefined,
+        phone: createForm.phone.trim(),
         password: createForm.password,
         role: createForm.role,
         subRole: createForm.role === 'Staff' ? createForm.subRole : undefined,
       });
-      toast.success(`User "${createForm.fullName}" created successfully!`);
+      toast.success(`User "${userName}" created successfully!`);
       setCreateModalOpen(false);
-      setCreateForm({ fullName: '', email: '', phone: '', password: '', role: 'Staff', subRole: 'Frontdesk' });
+      setCreateForm({ name: '', email: '', phone: '', password: '', role: 'Staff', subRole: 'Frontdesk' });
       fetchUsers();
     } catch (err) {
-      toast.error(err.response?.data?.message || 'Failed to create user.');
+      toast.error(err.response?.data?.message || err.response?.data?.errors?.[0] || 'Failed to create user.');
     } finally {
       setCreateLoading(false);
     }
@@ -443,8 +446,8 @@ const UsersPage = () => {
                     </label>
                     <input
                       type="text"
-                      value={createForm.fullName}
-                      onChange={(e) => setCreateForm((p) => ({ ...p, fullName: e.target.value }))}
+                      value={createForm.name}
+                      onChange={(e) => setCreateForm((p) => ({ ...p, name: e.target.value }))}
                       placeholder="e.g. Md. Rafiqul Islam"
                       required
                       className="w-full px-3.5 py-2.5 text-xs rounded-xl border border-input bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring/20 focus:border-ring"
