@@ -74,8 +74,8 @@ export const useNotificationStore = create((set, get) => ({
     set({ isLoading: true });
     try {
       const url = userDid
-        ? `/api/v1/notifications?limit=30&userDid=${encodeURIComponent(userDid)}`
-        : '/api/v1/notifications?limit=30';
+        ? `/api/v1/notifications?limit=10&userDid=${encodeURIComponent(userDid)}`
+        : '/api/v1/notifications?limit=10';
       const res = await apiClient.get(url);
       if (res.data?.success || res.data?.status === 'success') {
         const list = (res.data.data || []).map((n) => ({
