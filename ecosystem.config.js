@@ -9,7 +9,7 @@ module.exports = {
       env: {
         NODE_ENV: 'production',
         PORT: 5092,
-        CORS_ORIGINS: 'https://app.monsuralitravels.com,https://admin.monsuralitravels.com,https://dashboard.monsuralitravels.com'
+        ALLOWED_ORIGINS: 'https://app.monsuralitravels.com,https://admin.monsuralitravels.com,https://dashboard.monsuralitravels.com,http://localhost:8005,http://127.0.0.1:8005'
       },
       log_date_format: 'YYYY-MM-DD HH:mm Z',
       error_file: '../logs/pm2-backend-error.log',
