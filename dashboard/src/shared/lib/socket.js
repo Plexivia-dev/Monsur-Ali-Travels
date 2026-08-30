@@ -4,20 +4,23 @@ import { API_BASE_URL } from '@/lib/api-client';
 let socketInstance = null;
 
 export function getSocketUrl() {
-  if (import.meta.env?.VITE_SOCKET_URL) {
-    const customUrl = String(import.meta.env.VITE_SOCKET_URL).trim();
-    if (customUrl.startsWith('http://') || customUrl.startsWith('https://')) {
-      return customUrl;
+  if (typeof window !== 'undefined') {
+    const isLocalhost =
+      window.location.hostname === 'localhost' ||
+      window.location.hostname === '127.0.0.1';
+
+    if (isLocalhost) {
+      return `http://${window.location.hostname}:5092`;
     }
   }
 
-  if (API_BASE_URL && typeof API_BASE_URL === 'string') {
+  if (API_BASE_URL) {
     try {
       const parsed = new URL(API_BASE_URL);
-      if (parsed.hostname !== 'localhost' && parsed.hostname !== '127.0.0.1') {
-        return parsed.origin;
-      }
-    } catch (_) {}
+      return parsed.origin;
+    } catch {
+      return API_BASE_URL.replace(/\/api\/v1\/?$/, '');
+    }
   }
 
   return 'https://api.monsuralitravels.com';

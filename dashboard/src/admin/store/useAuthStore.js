@@ -78,10 +78,7 @@ export const useAuthStore = create((set, get) => ({
         ? { email: params, password, code, method: method || 'authenticator' }
         : params;
 
-      const token = payload?.twoFactorToken;
-      const headers = token ? { Authorization: `Bearer ${token}`, 'X-Two-Factor-Token': token } : {};
-
-      const { data } = await apiClient.post('/api/v1/auth/2fa/verify', payload, { headers });
+      const { data } = await apiClient.post('/api/v1/auth/2fa/verify', payload);
       const { user: apiUser, accessToken, refreshToken } = data.data;
       const loggedUser = mapApiUser(apiUser, payload?.email || (typeof params === 'string' ? params : ''));
 
@@ -102,8 +99,7 @@ export const useAuthStore = create((set, get) => ({
 
   resendEmailOtp: async (twoFactorToken) => {
     try {
-      const headers = twoFactorToken ? { Authorization: `Bearer ${twoFactorToken}`, 'X-Two-Factor-Token': twoFactorToken } : {};
-      const { data } = await apiClient.post('/api/v1/auth/2fa/resend-email-otp', { twoFactorToken }, { headers });
+      const { data } = await apiClient.post('/api/v1/auth/2fa/resend-email-otp', { twoFactorToken });
       return data;
     } catch (err) {
       throw new Error(err.message || getErrorMessage(err, 'Failed to resend verification code.'));
@@ -112,8 +108,7 @@ export const useAuthStore = create((set, get) => ({
 
   setupAuthenticator: async (twoFactorToken) => {
     try {
-      const headers = twoFactorToken ? { Authorization: `Bearer ${twoFactorToken}`, 'X-Two-Factor-Token': twoFactorToken } : {};
-      const { data } = await apiClient.post('/api/v1/auth/2fa/setup-authenticator', { twoFactorToken }, { headers });
+      const { data } = await apiClient.post('/api/v1/auth/2fa/setup-authenticator', { twoFactorToken });
       return data?.data;
     } catch (err) {
       throw new Error(err.message || getErrorMessage(err, 'Failed to load Authenticator QR setup.'));
@@ -122,8 +117,7 @@ export const useAuthStore = create((set, get) => ({
 
   sendQrCodeEmail: async (twoFactorToken) => {
     try {
-      const headers = twoFactorToken ? { Authorization: `Bearer ${twoFactorToken}`, 'X-Two-Factor-Token': twoFactorToken } : {};
-      const { data } = await apiClient.post('/api/v1/auth/2fa/send-qr', { twoFactorToken }, { headers });
+      const { data } = await apiClient.post('/api/v1/auth/2fa/send-qr', { twoFactorToken });
       return data;
     } catch (err) {
       throw new Error(err.message || getErrorMessage(err, 'Failed to send QR code email.'));
