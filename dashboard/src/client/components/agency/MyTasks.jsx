@@ -420,28 +420,6 @@ export function MyTasks() {
                     )}
                   </div>
 
-                  {/* Case & Applicant Reference Card */}
-                  <div
-                    onClick={() => handleOpenCaseDrawer(task.caseDid || task.caseNumber)}
-                    className="bg-muted/30 hover:bg-muted/60 border border-border/80 rounded-xl p-2.5 flex items-center justify-between gap-2 cursor-pointer transition group/case"
-                  >
-                    <div className="min-w-0">
-                      <div className="flex items-center gap-1.5">
-                        <User className="size-3 text-primary shrink-0" />
-                        <span className="font-bold text-xs text-foreground truncate">
-                          {task.applicantName || 'Client Applicant'}
-                        </span>
-                      </div>
-                      <p className="text-[11px] text-muted-foreground mt-0.5 truncate">
-                        {task.caseNumber} • {task.destinationCountry} • Passport: {task.passportNumber}
-                      </p>
-                    </div>
-                    <div className="flex items-center gap-1 text-[11px] font-bold text-primary shrink-0 group-hover/case:underline">
-                      <span>View File</span>
-                      <ChevronRight className="size-3.5" />
-                    </div>
-                  </div>
-
                   {/* Completion Notes if already done */}
                   {task.completionNotes && (
                     <div className="bg-sky-500/5 border border-sky-500/15 rounded-xl p-2.5 text-xs text-foreground space-y-0.5">
