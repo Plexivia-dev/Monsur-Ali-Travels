@@ -145,40 +145,43 @@ const PIPELINE_STAGES = [
 ];
 
 export const getTaskStatusConfig = (status) => {
-  switch (status) {
-    case 'Approved':
-      return {
-        label: 'Approved ✓',
-        badgeClass: 'bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 border-emerald-500/30',
-        dotClass: 'bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]',
-      };
-    case 'Done':
-      return {
-        label: 'Done',
-        badgeClass: 'bg-blue-500/15 text-blue-700 dark:text-blue-300 border-blue-500/30',
-        dotClass: 'bg-blue-500 shadow-[0_0_8px_rgba(59,130,246,0.5)]',
-      };
-    case 'In Progress':
-    case 'Processing':
-      return {
-        label: 'In Progress',
-        badgeClass: 'bg-sky-500/15 text-sky-700 dark:text-sky-300 border-sky-500/30',
-        dotClass: 'bg-sky-500 animate-pulse shadow-[0_0_8px_rgba(14,165,233,0.5)]',
-      };
-    case 'Rejected':
-      return {
-        label: 'Rejected ✗',
-        badgeClass: 'bg-rose-500/15 text-rose-700 dark:text-rose-300 border-rose-500/30',
-        dotClass: 'bg-rose-500 shadow-[0_0_8px_rgba(244,63,94,0.5)]',
-      };
-    case 'Pending':
-    default:
-      return {
-        label: 'Pending',
-        badgeClass: 'bg-slate-500/10 text-slate-700 dark:text-slate-300 border-slate-300 dark:border-slate-700',
-        dotClass: 'bg-slate-400 shadow-[0_0_8px_rgba(148,163,184,0.5)]',
-      };
+  const normStatus = (status || '').trim().toLowerCase();
+
+  if (normStatus === 'approved' || normStatus === 'completed' || normStatus === 'complete') {
+    return {
+      label: 'Approved ✓',
+      badgeClass: 'bg-emerald-500/15 text-emerald-800 dark:text-emerald-300 border-emerald-500/40 shadow-xs shadow-emerald-500/10 font-bold',
+      dotClass: 'bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.8)]',
+    };
   }
+  if (normStatus === 'done' || normStatus === 'submitted') {
+    return {
+      label: 'Done',
+      badgeClass: 'bg-blue-500/15 text-blue-800 dark:text-blue-300 border-blue-500/40 shadow-xs shadow-blue-500/10 font-bold',
+      dotClass: 'bg-blue-500 shadow-[0_0_8px_rgba(59,130,246,0.8)]',
+    };
+  }
+  if (normStatus === 'in progress' || normStatus === 'processing' || normStatus === 'in_progress') {
+    return {
+      label: 'In Progress',
+      badgeClass: 'bg-sky-500/15 text-sky-800 dark:text-sky-300 border-sky-500/40 shadow-xs shadow-sky-500/10 font-bold',
+      dotClass: 'bg-sky-500 animate-pulse shadow-[0_0_8px_rgba(14,165,233,0.8)]',
+    };
+  }
+  if (normStatus === 'rejected' || normStatus === 'cancelled' || normStatus === 'failed') {
+    return {
+      label: 'Rejected ✗',
+      badgeClass: 'bg-rose-500/15 text-rose-800 dark:text-rose-300 border-rose-500/40 shadow-xs shadow-rose-500/10 font-bold',
+      dotClass: 'bg-rose-500 shadow-[0_0_8px_rgba(244,63,94,0.8)]',
+    };
+  }
+
+  // Default / Pending - Vibrant Amber Gold
+  return {
+    label: 'Pending',
+    badgeClass: 'bg-amber-500/15 text-amber-800 dark:text-amber-300 border-amber-500/40 shadow-xs shadow-amber-500/10 font-bold',
+    dotClass: 'bg-amber-500 animate-pulse shadow-[0_0_8px_rgba(245,158,11,0.8)]',
+  };
 };
 
 export default function CaseDetailPage() {
@@ -302,11 +305,13 @@ export default function CaseDetailPage() {
 
   const handleApproveTask = async (taskDid) => {
     try {
-      await apiClient.patch(`/api/v1/admin/cases/tasks/${taskDid}/approve`);
+      await apiClient.patch(`/api/v1/admin/cases/tasks/${taskDid}/approve`, {
+        approvalNotes: 'Approved by Administrator',
+      });
       toast.success('Task approved and next step unlocked!');
       fetchCaseDetails();
     } catch (err) {
-      toast.error('Failed to approve task.');
+      toast.error(err.response?.data?.message || 'Failed to approve task.');
     }
   };
 
@@ -766,21 +771,21 @@ export default function CaseDetailPage() {
 
               {/* Task Status Pill */}
               {activeTask ? (
-                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-muted/40 border border-border">
+                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-muted/40 border border-border shadow-2xs">
                   <Layers className="w-3.5 h-3.5 text-primary shrink-0" />
-                  <span className="text-muted-foreground font-medium">Status:</span>
+                  <span className="text-muted-foreground font-semibold">Status:</span>
                   <span className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-bold border ${activeTaskStatusCfg.badgeClass}`}>
                     <span className={`w-1.5 h-1.5 rounded-full ${activeTaskStatusCfg.dotClass}`} />
                     {activeTask.status || 'Pending'}
                   </span>
                 </div>
               ) : (
-                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-muted/40 border border-border text-muted-foreground">
+                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-muted/40 border border-border shadow-2xs">
                   <Layers className="w-3.5 h-3.5 text-muted-foreground/60 shrink-0" />
-                  <span className="text-muted-foreground font-medium">Status:</span>
-                  <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold border bg-slate-500/10 text-slate-600 dark:text-slate-400 border-slate-500/20">
-                    <span className="w-1.5 h-1.5 rounded-full bg-slate-400" />
-                    Unassigned
+                  <span className="text-muted-foreground font-semibold">Status:</span>
+                  <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-bold border bg-amber-500/15 text-amber-800 dark:text-amber-300 border-amber-500/40 shadow-xs shadow-amber-500/10">
+                    <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse shadow-[0_0_8px_rgba(245,158,11,0.8)]" />
+                    Pending
                   </span>
                 </div>
               )}

@@ -228,8 +228,8 @@ export const approveTaskStep = async (req, res) => {
     }
 
     const { taskDid } = req.params;
-    const { approvalNotes, nextStatus } = req.body;
-    const adminDid = req.user?.did;
+    const { approvalNotes, nextStatus } = req.body || {};
+    const adminDid = req.user?.did || req.user?.id;
 
     const task = await TaskModel.findOne(buildTaskIdentifierQuery(taskDid));
     if (!task) {
@@ -243,13 +243,18 @@ export const approveTaskStep = async (req, res) => {
     await task.save();
 
     // Update Case Workflow
-    const caseDoc = await CaseFile.findOne({ did: task.caseDid });
+    const caseDoc = await CaseFile.findOne(buildCaseIdentifierQuery(task.caseDid));
     if (caseDoc) {
-      caseDoc.workflowStatus = nextStatus || `Approved Step: ${task.title}`;
+      const stepNum = task.stepNumber || 1;
+      caseDoc.workflowStatus = nextStatus || `Step ${stepNum} Approved: ${task.title}`;
+      if (!Array.isArray(caseDoc.statusHistory)) {
+        caseDoc.statusHistory = [];
+      }
       caseDoc.statusHistory.push({
-        status: `Approved Step: ${task.title}`,
+        status: `Approved Step ${stepNum}: ${task.title}`,
         remarks: approvalNotes || "Task approved by admin",
         updatedByDid: adminDid,
+        updatedByName: req.user?.name || "Admin",
         date: new Date(),
       });
       await caseDoc.save();
@@ -263,6 +268,7 @@ export const approveTaskStep = async (req, res) => {
           type: "success",
           refDid: caseDoc.did,
           recipientUserDid: task.assignedToDid,
+          createdByDid: adminDid,
           createdBy: req.user?.name || "Admin",
         }).catch(() => {});
       }
