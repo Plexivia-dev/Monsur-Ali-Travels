@@ -75,10 +75,19 @@ notificationSchema.virtual("recipientUser", {
 // Post-save hook to emit real-time WebSockets notification
 notificationSchema.post("save", function (doc) {
   if (global.io) {
-    if (doc.recipientUserDid) {
-      global.io.to(`user:${doc.recipientUserDid}`).emit("new_notification", doc);
-    } else {
-      global.io.emit("new_notification", doc);
+    try {
+      const payload = typeof doc.toJSON === "function" ? doc.toJSON() : { ...doc._doc };
+      payload.id = doc.did || String(doc._id);
+      payload.did = doc.did || payload.id;
+
+      if (doc.recipientUserDid) {
+        global.io.to(`user:${doc.recipientUserDid}`).emit("new_notification", payload);
+        global.io.to(doc.recipientUserDid).emit("new_notification", payload);
+      } else {
+        global.io.emit("new_notification", payload);
+      }
+    } catch (err) {
+      console.warn("[NotificationModel] Socket emit error:", err.message);
     }
   }
 });

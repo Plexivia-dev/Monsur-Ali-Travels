@@ -6,12 +6,25 @@ export class NotificationController {
   static async getAll(req, res) {
     try {
       const page = Math.max(1, parseInt(req.query.page, 10) || 1);
-      const limit = Math.max(1, parseInt(req.query.limit, 10) || 10);
+      const limit = Math.max(1, parseInt(req.query.limit, 10) || 25);
       const skip = (page - 1) * limit;
 
       const query = {};
       if (req.query.isRead !== undefined) {
         query.isRead = req.query.isRead === "true";
+      }
+      if (req.query.module) {
+        query.module = req.query.module;
+      }
+
+      // If userDid is provided or authenticated, filter for user or broadcast notifications
+      const userDid = req.query.userDid || req.user?.did;
+      if (userDid) {
+        query.$or = [
+          { recipientUserDid: userDid },
+          { recipientUserDid: null },
+          { recipientUserDid: { $exists: false } },
+        ];
       }
 
       // Fetch notifications sorted by unread first, then by createdAt desc
@@ -83,7 +96,17 @@ export class NotificationController {
   // PATCH /api/v1/notifications/read-all
   static async markAllAsRead(req, res) {
     try {
-      await NotificationModel.updateMany({ isRead: false }, { isRead: true });
+      const userDid = req.query.userDid || req.user?.did;
+      const query = { isRead: false };
+      if (userDid) {
+        query.$or = [
+          { recipientUserDid: userDid },
+          { recipientUserDid: null },
+          { recipientUserDid: { $exists: false } },
+        ];
+      }
+
+      await NotificationModel.updateMany(query, { isRead: true });
       return res.status(200).json({
         status: "success",
         success: true,
