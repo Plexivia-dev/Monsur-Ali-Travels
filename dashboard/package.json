@@ -1,7 +1,7 @@
 {
   "name": "ERP-Dash",
   "private": true,
-  "version": "3.4.03",
+  "version": "3.4.04",
   "type": "module",
   "scripts": {
     "dev": "npx concurrently -n \"ADMIN,CLIENT\" -c \"bgBlue.bold,bgMagenta.bold\" \"npm run dev:admin\" \"npm run dev:client\"",
