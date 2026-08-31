@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { CharacterCertificateForm } from './CharacterCertificateForm';
 import { CharacterCertificatePreview } from './CharacterCertificatePreview';
 import { SAMPLE_CHARACTER_CERTIFICATE } from './sampleData';
@@ -7,9 +7,23 @@ import { printDocument } from '@shared/lib/utils';
 import { HeaderTitle } from '@shared/components/common/HeaderTitle';
 import { StudioFloatingViewSwitcher } from '../common/StudioFloatingViewSwitcher';
 
-export function CharacterCertificate() {
-  const [data, setData] = useState(SAMPLE_CHARACTER_CERTIFICATE);
+export function CharacterCertificate({ initialData = null, isLocked = false, onSavedSuccess = null }) {
+  const [data, setData] = useState(() => ({
+    ...SAMPLE_CHARACTER_CERTIFICATE,
+    ...(initialData || {}),
+    candidateName: initialData?.candidateName || initialData?.clientName || SAMPLE_CHARACTER_CERTIFICATE.candidateName,
+  }));
   const [viewMode, setViewMode] = useState('edit');
+
+  useEffect(() => {
+    if (initialData) {
+      setData((prev) => ({
+        ...prev,
+        ...initialData,
+        candidateName: initialData.candidateName || initialData.clientName || prev.candidateName,
+      }));
+    }
+  }, [initialData]);
 
   const handleResetSample = () => {
     setData(SAMPLE_CHARACTER_CERTIFICATE);

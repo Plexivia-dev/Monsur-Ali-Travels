@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { ExperienceCertificateForm } from './ExperienceCertificateForm';
 import { ExperienceCertificatePreview } from './ExperienceCertificatePreview';
 import { SAMPLE_EXPERIENCE_CERTIFICATE } from './sampleData';
@@ -7,9 +7,23 @@ import { printDocument } from '@shared/lib/utils';
 import { HeaderTitle } from '@shared/components/common/HeaderTitle';
 import { StudioFloatingViewSwitcher } from '../common/StudioFloatingViewSwitcher';
 
-export function ExperienceCertificate() {
-  const [data, setData] = useState(SAMPLE_EXPERIENCE_CERTIFICATE);
+export function ExperienceCertificate({ initialData = null, isLocked = false, onSavedSuccess = null }) {
+  const [data, setData] = useState(() => ({
+    ...SAMPLE_EXPERIENCE_CERTIFICATE,
+    ...(initialData || {}),
+    employeeName: initialData?.employeeName || initialData?.clientName || SAMPLE_EXPERIENCE_CERTIFICATE.employeeName,
+  }));
   const [viewMode, setViewMode] = useState('edit');
+
+  useEffect(() => {
+    if (initialData) {
+      setData((prev) => ({
+        ...prev,
+        ...initialData,
+        employeeName: initialData.employeeName || initialData.clientName || prev.employeeName,
+      }));
+    }
+  }, [initialData]);
 
   const handleResetSample = () => {
     setData(SAMPLE_EXPERIENCE_CERTIFICATE);

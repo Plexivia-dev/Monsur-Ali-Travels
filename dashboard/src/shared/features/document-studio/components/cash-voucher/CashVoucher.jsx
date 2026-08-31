@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { CashVoucherForm } from './CashVoucherForm';
 import { CashVoucherPreview } from './CashVoucherPreview';
 import { getDefaultCashVoucherData, generateVoucherNo } from './sampleData';
@@ -9,10 +9,24 @@ import { printDocument } from '@shared/lib/utils';
 import { HeaderTitle } from '@shared/components/common/HeaderTitle';
 import { StudioFloatingViewSwitcher } from '../common/StudioFloatingViewSwitcher';
 
-export function CashVoucher() {
-  const [data, setData] = useState(getDefaultCashVoucherData());
+export function CashVoucher({ initialData = null, isLocked = false, onSavedSuccess = null }) {
+  const [data, setData] = useState(() => ({
+    ...getDefaultCashVoucherData(),
+    ...(initialData || {}),
+  }));
   const [viewMode, setViewMode] = useState('edit'); // 'edit' | 'split' | 'preview'
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  useEffect(() => {
+    if (initialData) {
+      setData((prev) => ({
+        ...prev,
+        ...initialData,
+        paidTo: initialData.paidTo || initialData.clientName || prev.paidTo,
+        purpose: initialData.purpose || prev.purpose,
+      }));
+    }
+  }, [initialData]);
 
   const handleReset = () => {
     setData(getDefaultCashVoucherData());
