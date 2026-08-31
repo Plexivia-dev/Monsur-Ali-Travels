@@ -76,7 +76,7 @@ export function ExportModal({ isOpen, onClose, documentTitle = 'Document', data 
 
   return (
     <div className="no-print fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-5 bg-black/60 backdrop-blur-xs animate-in fade-in duration-200 overflow-hidden">
-      <div className="bg-white text-zinc-900 border border-black/10 rounded-2xl max-w-lg w-full h-[70vh] shadow-2xl relative flex flex-col overflow-hidden animate-in zoom-in-95 duration-200">
+      <div className="bg-white text-black border border-black/10 rounded-2xl max-w-lg w-full h-[70vh] shadow-2xl relative flex flex-col overflow-hidden animate-in zoom-in-95 duration-200">
         
         {/* Modal Header */}
         <div className="flex items-center justify-between border-b border-black/10 px-6 py-4 bg-black/[0.02] shrink-0">
@@ -85,10 +85,10 @@ export function ExportModal({ isOpen, onClose, documentTitle = 'Document', data 
               <Download className="w-5 h-5" />
             </div>
             <div>
-              <h2 className="text-base font-bold text-zinc-900">
+              <h2 className="text-base font-bold text-black">
                 Export & Download Options
               </h2>
-              <p className="text-xs text-zinc-500">
+              <p className="text-xs text-black/60">
                 Select export format for "{documentTitle}"
               </p>
             </div>
@@ -117,11 +117,11 @@ export function ExportModal({ isOpen, onClose, documentTitle = 'Document', data 
                 <Printer className="w-4 h-4" />
               </div>
               <div>
-                <div className="font-bold text-zinc-900 flex items-center gap-1">
+                <div className="font-bold text-black flex items-center gap-1">
                   Save to PDF / Print (A4)
                   <ExternalLink className="w-3 h-3 text-primary" />
                 </div>
-                <p className="text-[11px] text-zinc-500 mt-0.5">
+                <p className="text-[11px] text-black/60 mt-0.5">
                   Crisp vector PDF output using browser A4 print engine.
                 </p>
               </div>
@@ -136,8 +136,8 @@ export function ExportModal({ isOpen, onClose, documentTitle = 'Document', data 
                 <FileText className="w-4 h-4" />
               </div>
               <div>
-                <div className="font-bold text-zinc-900">Download HTML File</div>
-                <p className="text-[11px] text-zinc-500 mt-0.5">
+                <div className="font-bold text-black">Download HTML File</div>
+                <p className="text-[11px] text-black/60 mt-0.5">
                   Self-contained printable webpage file.
                 </p>
               </div>
@@ -152,8 +152,8 @@ export function ExportModal({ isOpen, onClose, documentTitle = 'Document', data 
                 <FileCode className="w-4 h-4" />
               </div>
               <div>
-                <div className="font-bold text-zinc-900">Download JSON Data</div>
-                <p className="text-[11px] text-zinc-500 mt-0.5">
+                <div className="font-bold text-black">Download JSON Data</div>
+                <p className="text-[11px] text-black/60 mt-0.5">
                   Raw JSON format for backup & REST APIs.
                 </p>
               </div>
@@ -168,10 +168,10 @@ export function ExportModal({ isOpen, onClose, documentTitle = 'Document', data 
                 {copiedText ? <Check className="w-4 h-4 text-emerald-600" /> : <Copy className="w-4 h-4" />}
               </div>
               <div>
-                <div className="font-bold text-zinc-900">
+                <div className="font-bold text-black">
                   {copiedText ? 'Copied Data!' : 'Copy Data Payload'}
                 </div>
-                <p className="text-[11px] text-zinc-500 mt-0.5">
+                <p className="text-[11px] text-black/60 mt-0.5">
                   Copy JSON payload to clipboard.
                 </p>
               </div>

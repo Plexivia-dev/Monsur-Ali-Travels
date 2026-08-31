@@ -53,7 +53,7 @@ export function HeaderTitle({
   return (
     <div
       className={cn(
-        'no-print bg-linear-to-r from-sky-950 via-indigo-950 to-slate-950 rounded-2xl sm:rounded-3xl p-5 sm:p-6 text-white shadow-xl border border-sky-800/40 relative overflow-hidden transition-all select-none',
+        'no-print bg-linear-to-r from-sky-950 via-indigo-950 to-black rounded-2xl sm:rounded-3xl p-5 sm:p-6 text-white shadow-xl border border-sky-800/40 relative overflow-hidden transition-all select-none',
         className
       )}
     >
@@ -124,7 +124,7 @@ export function HeaderModeSwitcher({
         onClick={() => onModeChange('form')}
         className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
           viewMode === 'form'
-            ? 'bg-white text-slate-900 shadow-md font-bold'
+            ? 'bg-white text-black shadow-md font-bold'
             : 'text-sky-100/80 hover:text-white hover:bg-white/10'
         }`}
       >
@@ -136,7 +136,7 @@ export function HeaderModeSwitcher({
         onClick={() => onModeChange('preview')}
         className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
           viewMode === 'preview'
-            ? 'bg-white text-slate-900 shadow-md font-bold'
+            ? 'bg-white text-black shadow-md font-bold'
             : 'text-sky-100/80 hover:text-white hover:bg-white/10'
         }`}
       >

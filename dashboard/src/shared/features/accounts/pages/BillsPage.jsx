@@ -103,7 +103,7 @@ export function BillsPage() {
       accessorKey: 'paidAmount',
       header: 'Paid (BDT)',
       cell: ({ row }) => (
-        <span className="font-semibold text-xs text-emerald-600 dark:text-emerald-400 font-mono">
+        <span className="font-semibold text-xs text-emerald-600 font-mono">
           BDT {Number(row.paidAmount || 0).toLocaleString('en-BD')}
         </span>
       ),
@@ -116,7 +116,7 @@ export function BillsPage() {
         return (
           <span
             className={`font-semibold text-xs font-mono ${
-              due > 0 ? 'text-rose-600 dark:text-rose-400 font-bold' : 'text-muted-foreground'
+              due > 0 ? 'text-rose-600 font-bold' : 'text-muted-foreground'
             }`}
           >
             BDT {Number(due).toLocaleString('en-BD')}
@@ -183,7 +183,7 @@ export function BillsPage() {
             <span className="text-xs font-bold uppercase tracking-wider">Collected on Bills</span>
             <CheckCircle2 className="w-4 h-4 text-emerald-500" />
           </div>
-          <p className="text-2xl font-black text-emerald-600 dark:text-emerald-400 font-mono">
+          <p className="text-2xl font-black text-emerald-600 font-mono">
             BDT {Number(meta.totalPaid || 0).toLocaleString('en-BD')}
           </p>
           <p className="text-[11px] text-muted-foreground">Settled payments</p>
@@ -194,7 +194,7 @@ export function BillsPage() {
             <span className="text-xs font-bold uppercase tracking-wider">Total Outstanding Due</span>
             <AlertTriangle className="w-4 h-4 text-rose-500" />
           </div>
-          <p className="text-2xl font-black text-rose-600 dark:text-rose-400 font-mono">
+          <p className="text-2xl font-black text-rose-600 font-mono">
             BDT {Number(meta.totalDue || 0).toLocaleString('en-BD')}
           </p>
           <p className="text-[11px] text-muted-foreground">Pending receivables</p>

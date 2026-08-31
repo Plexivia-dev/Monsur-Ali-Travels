@@ -47,28 +47,28 @@ const getTaskStatusConfig = (status) => {
   if (normStatus === 'approved' || normStatus === 'completed' || normStatus === 'complete') {
     return {
       label: 'Approved ✓',
-      badgeClass: 'bg-emerald-500/15 text-emerald-800 dark:text-emerald-300 border-emerald-500/40 shadow-xs shadow-emerald-500/10 font-bold',
+      badgeClass: 'bg-emerald-500/15 text-emerald-800 border-emerald-500/40 shadow-xs shadow-emerald-500/10 font-bold',
       dotClass: 'bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.8)]',
     };
   }
   if (normStatus === 'done' || normStatus === 'submitted') {
     return {
       label: 'Done',
-      badgeClass: 'bg-blue-500/15 text-blue-800 dark:text-blue-300 border-blue-500/40 shadow-xs shadow-blue-500/10 font-bold',
+      badgeClass: 'bg-blue-500/15 text-blue-800 border-blue-500/40 shadow-xs shadow-blue-500/10 font-bold',
       dotClass: 'bg-blue-500 shadow-[0_0_8px_rgba(59,130,246,0.8)]',
     };
   }
   if (normStatus === 'in progress' || normStatus === 'processing' || normStatus === 'in_progress') {
     return {
       label: 'In Progress',
-      badgeClass: 'bg-sky-500/15 text-sky-800 dark:text-sky-300 border-sky-500/40 shadow-xs shadow-sky-500/10 font-bold',
+      badgeClass: 'bg-sky-500/15 text-sky-800 border-sky-500/40 shadow-xs shadow-sky-500/10 font-bold',
       dotClass: 'bg-sky-500 animate-pulse shadow-[0_0_8px_rgba(14,165,233,0.8)]',
     };
   }
   if (normStatus === 'rejected' || normStatus === 'cancelled' || normStatus === 'failed') {
     return {
       label: 'Rejected ✗',
-      badgeClass: 'bg-rose-500/15 text-rose-800 dark:text-rose-300 border-rose-500/40 shadow-xs shadow-rose-500/10 font-bold',
+      badgeClass: 'bg-rose-500/15 text-rose-800 border-rose-500/40 shadow-xs shadow-rose-500/10 font-bold',
       dotClass: 'bg-rose-500 shadow-[0_0_8px_rgba(244,63,94,0.8)]',
     };
   }
@@ -76,7 +76,7 @@ const getTaskStatusConfig = (status) => {
   // Default / Pending - Vibrant Amber Gold
   return {
     label: 'Pending',
-    badgeClass: 'bg-amber-500/15 text-amber-800 dark:text-amber-300 border-amber-500/40 shadow-xs shadow-amber-500/10 font-bold',
+    badgeClass: 'bg-amber-500/15 text-amber-800 border-amber-500/40 shadow-xs shadow-amber-500/10 font-bold',
     dotClass: 'bg-amber-500 animate-pulse shadow-[0_0_8px_rgba(245,158,11,0.8)]',
   };
 };
@@ -319,7 +319,7 @@ export function CaseDetailDrawer({ caseDid, isOpen, onClose, onRefresh }) {
                     </span>
                   )}
                   {caseData.passportNumber && (
-                    <span className="flex items-center gap-1 font-mono text-sky-600 dark:text-sky-400">
+                    <span className="flex items-center gap-1 font-mono text-sky-600">
                       <FileText className="size-3" />
                       Passport: {caseData.passportNumber}
                     </span>
@@ -336,7 +336,7 @@ export function CaseDetailDrawer({ caseDid, isOpen, onClose, onRefresh }) {
 
           <button
             onClick={onClose}
-            className="p-2 rounded-xl border border-border hover:bg-muted text-muted-foreground transition-all cursor-pointer shrink-0"
+            className="p-2 rounded-xl text-red-500 hover:text-red-600 hover:bg-red-500/10 border border-red-500/30 transition-all cursor-pointer shrink-0"
           >
             <X className="size-5" />
           </button>
@@ -365,7 +365,7 @@ export function CaseDetailDrawer({ caseDid, isOpen, onClose, onRefresh }) {
             <div className="flex items-center gap-2">
               <button
                 onClick={() => setPaymentModalOpen(true)}
-                className="flex items-center gap-1 px-3 py-1.5 bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-bold text-xs rounded-lg transition-all cursor-pointer shadow-xs"
+                className="flex items-center gap-1 px-3.5 py-1.5 bg-primary hover:bg-primary/90 text-primary-foreground font-bold text-xs rounded-lg transition-all cursor-pointer shadow-xs"
               >
                 <CreditCard className="size-3.5" />
                 <span>+ Add Payment</span>
@@ -373,7 +373,7 @@ export function CaseDetailDrawer({ caseDid, isOpen, onClose, onRefresh }) {
 
               <button
                 onClick={() => setAssignModalOpen(true)}
-                className="flex items-center gap-1 px-3 py-1.5 bg-sky-500 hover:bg-sky-600 text-slate-950 font-bold text-xs rounded-lg transition-all cursor-pointer shadow-xs"
+                className="flex items-center gap-1 px-3.5 py-1.5 bg-primary hover:bg-primary/90 text-primary-foreground font-bold text-xs rounded-lg transition-all cursor-pointer shadow-xs"
               >
                 <Send className="size-3.5" />
                 <span>Assign Step</span>
@@ -624,7 +624,7 @@ export function CaseDetailDrawer({ caseDid, isOpen, onClose, onRefresh }) {
                                 <button
                                   onClick={() => handleApproveTask(t.did || t._id)}
                                   disabled={approvingTaskId === (t.did || t._id)}
-                                  className="inline-flex items-center gap-1 px-3 py-1 bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-bold text-xs rounded-lg transition-all cursor-pointer shadow-xs disabled:opacity-50"
+                                  className="inline-flex items-center gap-1 px-3 py-1 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-lg transition-all cursor-pointer shadow-xs disabled:opacity-50"
                                 >
                                   {approvingTaskId === (t.did || t._id) ? (
                                     <Loader2 className="size-3 animate-spin" />
@@ -653,7 +653,7 @@ export function CaseDetailDrawer({ caseDid, isOpen, onClose, onRefresh }) {
                     </h3>
                     <button
                       onClick={() => setPaymentModalOpen(true)}
-                      className="inline-flex items-center gap-1 px-3 py-1.5 text-xs font-bold rounded-lg bg-emerald-500 hover:bg-emerald-600 text-slate-950 transition-all cursor-pointer shadow-xs"
+                      className="inline-flex items-center gap-1 px-3 py-1.5 text-xs font-bold rounded-lg bg-primary hover:bg-primary/90 text-primary-foreground transition-all cursor-pointer shadow-xs"
                     >
                       <Plus className="size-3.5" />
                       <span>Record Payment</span>
@@ -727,7 +727,7 @@ export function CaseDetailDrawer({ caseDid, isOpen, onClose, onRefresh }) {
                           key={item.key}
                           className={`p-3 rounded-xl border flex flex-col justify-between gap-2 text-xs transition-all ${
                             isChecked
-                              ? 'bg-emerald-500/10 border-emerald-500 text-emerald-950 dark:text-emerald-200 font-semibold shadow-xs ring-1 ring-emerald-500/20'
+                              ? 'bg-emerald-500/10 border-emerald-500 text-emerald-950 font-semibold shadow-xs ring-1 ring-emerald-500/20'
                               : 'bg-muted/30 border-border text-muted-foreground hover:border-border/80'
                           }`}
                         >
@@ -739,13 +739,13 @@ export function CaseDetailDrawer({ caseDid, isOpen, onClose, onRefresh }) {
                                 onChange={() => handleToggleChecklist(item.key)}
                                 className="size-3.5 rounded text-emerald-600 focus:ring-emerald-500 border-border cursor-pointer accent-emerald-600"
                               />
-                              <span className={`truncate ${isChecked ? 'text-emerald-950 dark:text-emerald-100 font-bold' : ''}`}>
+                              <span className={`truncate ${isChecked ? 'text-emerald-950 font-bold' : ''}`}>
                                 {item.label}
                               </span>
                             </label>
                             <span
                               className={`px-2 py-0.5 rounded text-[10px] font-bold shrink-0 ${
-                                isChecked ? 'bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 border border-emerald-500/30' : 'bg-muted text-muted-foreground border border-border/50'
+                                isChecked ? 'bg-emerald-500/20 text-emerald-700 border border-emerald-500/30' : 'bg-muted text-muted-foreground border border-border/50'
                               }`}
                             >
                               {status.isUploaded ? 'Uploaded ✓' : isChecked ? 'Received ✓' : 'Pending'}
@@ -754,14 +754,14 @@ export function CaseDetailDrawer({ caseDid, isOpen, onClose, onRefresh }) {
 
                           {status.matchedDoc?.url && (
                             <div className="flex items-center justify-between pt-1 border-t border-emerald-500/20 text-[10px]">
-                              <span className="text-emerald-700 dark:text-emerald-300 truncate max-w-[180px]">
+                              <span className="text-emerald-700 truncate max-w-[180px]">
                                 📎 {status.matchedDoc.name}
                               </span>
                               <a
                                 href={status.matchedDoc.url}
                                 target="_blank"
                                 rel="noreferrer"
-                                className="font-bold text-emerald-700 hover:text-emerald-900 dark:text-emerald-300 dark:hover:text-emerald-100 underline cursor-pointer"
+                                className="font-bold text-emerald-700 hover:text-emerald-900 underline cursor-pointer"
                               >
                                 View File ↗
                               </a>

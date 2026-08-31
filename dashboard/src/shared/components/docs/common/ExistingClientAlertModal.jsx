@@ -29,7 +29,7 @@ export function ExistingClientAlertModal({
 
   return (
     <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-3 sm:p-5 select-none animate-in fade-in duration-200 overflow-hidden">
-      <div className="bg-white text-zinc-900 border border-black/10 shadow-2xl rounded-2xl max-w-xl w-full h-[70vh] flex flex-col overflow-hidden relative animate-in zoom-in-95 duration-200">
+      <div className="bg-white text-black border border-black/10 shadow-2xl rounded-2xl max-w-xl w-full h-[70vh] flex flex-col overflow-hidden relative animate-in zoom-in-95 duration-200">
         
         {/* Header with warning icon & Lock badge */}
         <div className="flex items-start justify-between gap-4 border-b border-black/10 p-6 pb-4 bg-black/[0.02] shrink-0">
@@ -38,10 +38,10 @@ export function ExistingClientAlertModal({
               <AlertTriangle className="w-6 h-6" />
             </div>
             <div>
-              <h3 className="text-base font-bold text-zinc-900">
+              <h3 className="text-base font-bold text-black">
                 Client Match Found!
               </h3>
-              <p className="text-xs text-zinc-500 mt-0.5">
+              <p className="text-xs text-black/60 mt-0.5">
                 An existing client record matching this phone number or passport was found in the database.
               </p>
             </div>
@@ -130,7 +130,7 @@ export function ExistingClientAlertModal({
             <button
               type="button"
               onClick={onProceedAsNew}
-              className="text-[11.5px] text-zinc-500 hover:text-zinc-900 underline transition-colors cursor-pointer"
+              className="text-[11.5px] text-black/60 hover:text-black underline transition-colors cursor-pointer"
             >
               Save as a standalone document without linking to database record
             </button>

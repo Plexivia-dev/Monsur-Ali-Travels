@@ -68,7 +68,7 @@ export function BankLedgerPage() {
       <div className="bg-card border border-border p-6 rounded-2xl shadow-xs space-y-4">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
-            <div className="inline-flex items-center gap-2 px-2.5 py-0.5 rounded-full bg-sky-500/10 text-sky-600 dark:text-sky-400 border border-sky-500/20 text-xs font-bold mb-1.5">
+            <div className="inline-flex items-center gap-2 px-2.5 py-0.5 rounded-full bg-sky-500/10 text-sky-600 border border-sky-500/20 text-xs font-bold mb-1.5">
               <Building2 className="w-3.5 h-3.5" />
               <span>Bank & Digital Payment Accounts</span>
             </div>
@@ -122,7 +122,7 @@ export function BankLedgerPage() {
             <span className="text-xs font-bold uppercase tracking-wider">Total Bank / Digital Inflows</span>
             <TrendingUp className="w-4 h-4 text-sky-500" />
           </div>
-          <p className="text-2xl font-black text-sky-600 dark:text-sky-400 font-mono">
+          <p className="text-2xl font-black text-sky-600 font-mono">
             BDT {Number(summary.totalBankIn || 0).toLocaleString('en-BD')}
           </p>
           <p className="text-[11px] text-muted-foreground">{summary.totalTransactions || 0} Electronic Deposits</p>
@@ -220,7 +220,7 @@ export function BankLedgerPage() {
                       {t.refNo}
                     </td>
                     <td className="py-2.5 px-3">
-                      <span className="inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-bold bg-sky-500/10 text-sky-600 dark:text-sky-400 border border-sky-500/20 uppercase">
+                      <span className="inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-bold bg-sky-500/10 text-sky-600 border border-sky-500/20 uppercase">
                         {t.method || 'Bank'}
                       </span>
                     </td>
@@ -238,11 +238,11 @@ export function BankLedgerPage() {
                         <span className="text-muted-foreground/60">—</span>
                       )}
                     </td>
-                    <td className="py-2.5 px-3 text-right font-mono font-bold text-sky-600 dark:text-sky-400">
+                    <td className="py-2.5 px-3 text-right font-mono font-bold text-sky-600">
                       BDT {Number(t.amount || 0).toLocaleString('en-BD')}
                     </td>
                     <td className="py-2.5 px-3 text-center">
-                      <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 capitalize">
+                      <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/10 text-emerald-600 border border-emerald-500/20 capitalize">
                         <CheckCircle2 className="w-3 h-3 mr-1" />
                         {t.status || 'Confirmed'}
                       </span>

@@ -156,25 +156,25 @@ function renderStatusBadge(status) {
   switch (status) {
     case 'Issued':
       return (
-        <Badge className="bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 border-emerald-500/30 gap-1">
+        <Badge className="bg-emerald-500/15 text-emerald-700 border-emerald-500/30 gap-1">
           <CheckCircle2 className="size-3" /> Issued
         </Badge>
       );
     case 'Processing':
       return (
-        <Badge className="bg-blue-500/15 text-blue-700 dark:text-blue-300 border-blue-500/30 gap-1">
+        <Badge className="bg-blue-500/15 text-blue-700 border-blue-500/30 gap-1">
           <Clock className="size-3" /> Processing
         </Badge>
       );
     case 'Submitted':
       return (
-        <Badge className="bg-amber-500/15 text-amber-700 dark:text-amber-300 border-amber-500/30 gap-1">
+        <Badge className="bg-amber-500/15 text-amber-700 border-amber-500/30 gap-1">
           <Clock className="size-3" /> Submitted
         </Badge>
       );
     case 'In Review':
       return (
-        <Badge className="bg-purple-500/15 text-purple-700 dark:text-purple-300 border-purple-500/30 gap-1">
+        <Badge className="bg-purple-500/15 text-purple-700 border-purple-500/30 gap-1">
           <Clock className="size-3" /> In Review
         </Badge>
       );
@@ -195,7 +195,7 @@ function renderPaymentBadge(status) {
     case 'Paid':
       return <Badge className="bg-emerald-600 text-white">Full Paid</Badge>;
     case 'Partial':
-      return <Badge variant="secondary" className="bg-amber-500/20 text-amber-600 dark:text-amber-400">Partial</Badge>;
+      return <Badge variant="secondary" className="bg-amber-500/20 text-amber-600">Partial</Badge>;
     case 'Unpaid':
       return <Badge variant="destructive">Unpaid</Badge>;
     default:
@@ -246,7 +246,7 @@ export default function UnifiedTableShowcasePage() {
         accessorKey: 'passportNumber',
         header: ({ column }) => <DataTableColumnHeader column={column} title="Passport No." />,
         cell: ({ row }) => (
-          <span className="font-mono font-semibold text-sky-600 dark:text-sky-400 text-xs">
+          <span className="font-mono font-semibold text-primary text-xs">
             {row.getValue('passportNumber')}
           </span>
         ),
@@ -455,7 +455,7 @@ export default function UnifiedTableShowcasePage() {
               variant={simulateLoading ? 'default' : 'outline'}
               size="sm"
               onClick={() => setSimulateLoading(!simulateLoading)}
-              className="text-xs font-semibold cursor-pointer h-8 bg-slate-800/80 hover:bg-slate-800 text-sky-400 border-sky-500/20"
+              className="text-xs font-semibold cursor-pointer h-8"
             >
               <RefreshCw className={`size-3.5 mr-1.5 ${simulateLoading ? 'animate-spin' : ''}`} />
               {simulateLoading ? 'Loading Mode (ON)' : 'Simulate Loading'}
@@ -465,7 +465,7 @@ export default function UnifiedTableShowcasePage() {
               variant={simulateEmpty ? 'default' : 'outline'}
               size="sm"
               onClick={() => setSimulateEmpty(!simulateEmpty)}
-              className="text-xs font-semibold cursor-pointer h-8 bg-slate-800/80 hover:bg-slate-800 text-sky-400 border-sky-500/20"
+              className="text-xs font-semibold cursor-pointer h-8"
             >
               {simulateEmpty ? 'Empty State (ON)' : 'Simulate Empty'}
             </Button>

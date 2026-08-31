@@ -9,7 +9,7 @@ const Input = React.forwardRef(
         ref={ref}
         data-slot="input"
         className={cn(
-          "flex h-9 w-full min-w-0 rounded-lg border border-input bg-background/60 dark:bg-input/30 px-3 py-1 text-sm text-foreground shadow-2xs transition-all outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-primary/20 disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-2 aria-invalid:ring-destructive/20 md:text-sm",
+          "flex h-9 w-full min-w-0 rounded-lg border border-input bg-background/60 px-3 py-1 text-sm text-foreground shadow-2xs transition-all outline-none file:inline-flex file:h-7 file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-primary/20 disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-2 aria-invalid:ring-destructive/20 md:text-sm",
           error && "border-destructive focus-visible:border-destructive focus-visible:ring-destructive/20",
           className
         )}
@@ -42,7 +42,7 @@ function Select({ className, label, error, children, ...props }) {
   const selectElement = (
     <select
       className={cn(
-        "flex h-9 w-full rounded-lg border border-input bg-background/60 dark:bg-input/30 px-3 py-1 text-sm text-foreground transition-all outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer",
+        "flex h-9 w-full rounded-lg border border-input bg-background/60 px-3 py-1 text-sm text-foreground transition-all outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer",
         error && "border-destructive focus:border-destructive focus:ring-destructive/20",
         className
       )}

@@ -23,7 +23,7 @@ export function UnifiedModalHeader({
   return (
     <div
       className={cn(
-        'px-6 py-4 border-b border-black/10 dark:border-zinc-800 bg-white dark:bg-zinc-950 flex items-center justify-between shrink-0 select-none',
+        'px-6 py-4 border-b border-black/10 bg-white flex items-center justify-between shrink-0 select-none',
         className
       )}
     >
@@ -41,7 +41,7 @@ export function UnifiedModalHeader({
           <div className="flex items-center gap-2 flex-wrap">
             <h2
               className={cn(
-                'text-base sm:text-lg font-bold text-zinc-900 dark:text-white tracking-tight',
+                'text-base sm:text-lg font-bold text-black tracking-tight',
                 titleClassName
               )}
             >
@@ -56,7 +56,7 @@ export function UnifiedModalHeader({
           {resolvedSubtitle && (
             <p
               className={cn(
-                'text-xs text-zinc-500 dark:text-zinc-400 mt-0.5 font-medium truncate max-w-xl',
+                'text-xs text-black/60 mt-0.5 font-medium truncate max-w-xl',
                 subtitleClassName
               )}
             >
@@ -112,7 +112,7 @@ export function UnifiedModalFooter({
   return (
     <div
       className={cn(
-        'px-6 py-3.5 border-t border-black/10 dark:border-zinc-800 bg-white dark:bg-zinc-950 flex items-center justify-between shrink-0 gap-3',
+        'px-6 py-3.5 border-t border-black/10 bg-white flex items-center justify-between shrink-0 gap-3',
         className
       )}
     >
@@ -233,7 +233,7 @@ export function UnifiedModal({
       <div className="fixed inset-0" onClick={onClose} />
       <div
         className={cn(
-          'relative bg-white text-zinc-900 border border-black/10 rounded-2xl shadow-2xl w-full flex flex-col overflow-hidden z-10 my-auto animate-in zoom-in-95 duration-200 dark:bg-zinc-950 dark:text-white dark:border-zinc-800',
+          'relative bg-white text-black border border-black/10 rounded-2xl shadow-2xl w-full flex flex-col overflow-hidden z-10 my-auto animate-in zoom-in-95 duration-200',
           height,
           maxWidth,
           className
@@ -253,7 +253,7 @@ export function UnifiedModal({
         {stepper && <div className="shrink-0">{stepper}</div>}
 
         {/* Internal Scrollable Content Body */}
-        <div className={cn('flex-1 min-h-0 overflow-y-auto p-6 space-y-4 text-zinc-900 dark:text-zinc-100', bodyClassName)}>
+        <div className={cn('flex-1 min-h-0 overflow-y-auto p-6 space-y-4 text-black', bodyClassName)}>
           {children}
         </div>
 

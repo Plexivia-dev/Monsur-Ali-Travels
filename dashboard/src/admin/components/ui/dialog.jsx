@@ -49,7 +49,7 @@ function DialogContent({
       <DialogPrimitive.Popup
         data-slot="dialog-content"
         className={cn(
-          "fixed top-1/2 left-1/2 z-50 grid w-full max-w-[calc(100%-2rem)] -translate-x-1/2 -translate-y-1/2 gap-4 rounded-2xl bg-zinc-950 p-6 text-sm text-zinc-100 border border-zinc-800 shadow-2xl duration-100 outline-none sm:max-w-md data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95",
+          "fixed top-1/2 left-1/2 z-50 grid w-full max-w-[calc(100%-2rem)] -translate-x-1/2 -translate-y-1/2 gap-4 rounded-2xl bg-white p-6 text-sm text-black border border-black/10 shadow-2xl duration-100 outline-none sm:max-w-md data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95",
           className
         )}
         {...props}
@@ -61,7 +61,7 @@ function DialogContent({
             render={
               <button
                 type="button"
-                className="absolute top-4 right-4 p-1.5 rounded-xl bg-rose-500/10 hover:bg-rose-500/20 text-rose-500 hover:text-rose-400 border border-rose-500/40 hover:border-rose-500/80 shadow-xs transition-all cursor-pointer flex items-center justify-center"
+                className="absolute top-4 right-4 p-1.5 rounded-xl bg-red-500/10 hover:bg-red-500/20 text-red-500 hover:text-red-600 border border-red-500/30 hover:border-red-500/60 shadow-xs transition-all cursor-pointer flex items-center justify-center"
               />
             }
           >
@@ -94,14 +94,14 @@ function DialogFooter({
     <div
       data-slot="dialog-footer"
       className={cn(
-        "-mx-6 -mb-6 flex flex-col-reverse gap-2 rounded-b-2xl border-t border-zinc-800 bg-zinc-950 p-4 sm:flex-row sm:justify-end",
+        "-mx-6 -mb-6 flex flex-col-reverse gap-2 rounded-b-2xl border-t border-black/10 bg-white p-4 sm:flex-row sm:justify-end",
         className
       )}
       {...props}
     >
       {children}
       {showCloseButton && (
-        <DialogPrimitive.Close render={<Button variant="outline" className="border-rose-500/40 text-rose-500 hover:bg-rose-500/10" />}>
+        <DialogPrimitive.Close render={<Button variant="cancel" />}>
           Close
         </DialogPrimitive.Close>
       )}

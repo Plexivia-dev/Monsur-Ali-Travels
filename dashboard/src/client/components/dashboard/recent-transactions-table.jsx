@@ -21,12 +21,12 @@ export function RecentTransactionsTable() {
     switch (s) {
       case 'paid':
       case 'completed':
-        return <Badge className="bg-emerald-500/20 text-emerald-600 hover:bg-emerald-500/30 dark:text-emerald-400 border-0">Completed</Badge>;
+        return <Badge className="bg-emerald-500/20 text-emerald-600 hover:bg-emerald-500/30 border-0">Completed</Badge>;
       case 'processing':
       case 'pending':
-        return <Badge variant="secondary" className="bg-amber-500/20 text-amber-600 hover:bg-amber-500/30 dark:text-amber-400 border-0">Processing</Badge>;
+        return <Badge variant="secondary" className="bg-amber-500/20 text-amber-600 hover:bg-amber-500/30 border-0">Processing</Badge>;
       case 'shipped':
-        return <Badge className="bg-blue-500/20 text-blue-600 hover:bg-blue-500/30 dark:text-blue-400 border-0">Shipped</Badge>;
+        return <Badge className="bg-blue-500/20 text-blue-600 hover:bg-blue-500/30 border-0">Shipped</Badge>;
       case 'failed':
       case 'cancelled':
         return <Badge variant="destructive" className="border-0">Cancelled</Badge>;

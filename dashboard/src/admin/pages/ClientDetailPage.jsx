@@ -44,28 +44,28 @@ const getTaskStatusConfig = (status) => {
   if (normStatus === 'approved' || normStatus === 'completed' || normStatus === 'complete') {
     return {
       label: 'Approved ✓',
-      badgeClass: 'bg-emerald-500/15 text-emerald-800 dark:text-emerald-300 border-emerald-500/40 shadow-xs shadow-emerald-500/10 font-bold',
+      badgeClass: 'bg-emerald-500/15 text-emerald-800 border-emerald-500/40 shadow-xs shadow-emerald-500/10 font-bold',
       dotClass: 'bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.8)]',
     };
   }
   if (normStatus === 'done' || normStatus === 'submitted') {
     return {
       label: 'Done',
-      badgeClass: 'bg-blue-500/15 text-blue-800 dark:text-blue-300 border-blue-500/40 shadow-xs shadow-blue-500/10 font-bold',
+      badgeClass: 'bg-blue-500/15 text-blue-800 border-blue-500/40 shadow-xs shadow-blue-500/10 font-bold',
       dotClass: 'bg-blue-500 shadow-[0_0_8px_rgba(59,130,246,0.8)]',
     };
   }
   if (normStatus === 'in progress' || normStatus === 'processing' || normStatus === 'in_progress') {
     return {
       label: 'In Progress',
-      badgeClass: 'bg-sky-500/15 text-sky-800 dark:text-sky-300 border-sky-500/40 shadow-xs shadow-sky-500/10 font-bold',
+      badgeClass: 'bg-sky-500/15 text-sky-800 border-sky-500/40 shadow-xs shadow-sky-500/10 font-bold',
       dotClass: 'bg-sky-500 animate-pulse shadow-[0_0_8px_rgba(14,165,233,0.8)]',
     };
   }
   if (normStatus === 'rejected' || normStatus === 'cancelled' || normStatus === 'failed') {
     return {
       label: 'Rejected ✗',
-      badgeClass: 'bg-rose-500/15 text-rose-800 dark:text-rose-300 border-rose-500/40 shadow-xs shadow-rose-500/10 font-bold',
+      badgeClass: 'bg-rose-500/15 text-rose-800 border-rose-500/40 shadow-xs shadow-rose-500/10 font-bold',
       dotClass: 'bg-rose-500 shadow-[0_0_8px_rgba(244,63,94,0.8)]',
     };
   }
@@ -73,7 +73,7 @@ const getTaskStatusConfig = (status) => {
   // Default / Pending - Vibrant Amber Gold
   return {
     label: 'Pending',
-    badgeClass: 'bg-amber-500/15 text-amber-800 dark:text-amber-300 border-amber-500/40 shadow-xs shadow-amber-500/10 font-bold',
+    badgeClass: 'bg-amber-500/15 text-amber-800 border-amber-500/40 shadow-xs shadow-amber-500/10 font-bold',
     dotClass: 'bg-amber-500 animate-pulse shadow-[0_0_8px_rgba(245,158,11,0.8)]',
   };
 };
@@ -195,11 +195,11 @@ export default function ClientDetailPage() {
             <span
               className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-bold border ${
                 (client.status || 'Active') === 'Active'
-                  ? 'bg-emerald-500/20 text-emerald-300 border-emerald-400/30'
-                  : 'bg-slate-800 text-slate-300 border-slate-700'
+                  ? 'bg-emerald-500/10 text-emerald-600 border-emerald-500/20'
+                  : 'bg-black/[0.04] text-black/70 border-black/15'
               }`}
             >
-              <CheckCircle2 className="w-3.5 h-3.5 mr-1 text-emerald-400" />
+              <CheckCircle2 className="w-3.5 h-3.5 mr-1 text-emerald-600" />
               {client.status || 'Active'}
             </span>
 
@@ -207,7 +207,7 @@ export default function ClientDetailPage() {
               variant="outline"
               size="sm"
               onClick={fetchClientProfile}
-              className="h-8 px-3 text-xs gap-1.5 cursor-pointer bg-white/10 hover:bg-white/20 border-white/20 text-white shadow-xs"
+              className="h-8 px-3 text-xs gap-1.5 cursor-pointer shadow-xs"
             >
               <RefreshCw className="size-3.5" />
               <span>Refresh</span>
@@ -229,7 +229,7 @@ export default function ClientDetailPage() {
               </div>
               <span className="text-[11px] text-muted-foreground">{cases.length} Total Case Files</span>
             </div>
-            <div className="p-3 rounded-2xl bg-blue-50 dark:bg-blue-950/40 text-blue-600">
+            <div className="p-3 rounded-2xl bg-blue-50 text-blue-600">
               <FolderOpen className="size-6" />
             </div>
           </CardContent>
@@ -246,7 +246,7 @@ export default function ClientDetailPage() {
               </div>
               <span className="text-[11px] text-muted-foreground">{receipts.length} Payment Receipts</span>
             </div>
-            <div className="p-3 rounded-2xl bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600">
+            <div className="p-3 rounded-2xl bg-emerald-50 text-emerald-600">
               <CreditCard className="size-6" />
             </div>
           </CardContent>
@@ -265,7 +265,7 @@ export default function ClientDetailPage() {
                 {totalDue > 0 ? 'Pending Collection' : 'Fully Settled'}
               </span>
             </div>
-            <div className="p-3 rounded-2xl bg-rose-50 dark:bg-rose-950/40 text-rose-600">
+            <div className="p-3 rounded-2xl bg-rose-50 text-rose-600">
               <DollarSign className="size-6" />
             </div>
           </CardContent>
@@ -374,7 +374,7 @@ export default function ClientDetailPage() {
 
                   <div className="p-3.5 rounded-xl bg-muted/40 border border-border/60">
                     <span className="text-muted-foreground block text-[11px]">Passport Number</span>
-                    <span className="font-mono font-bold text-sky-600 dark:text-sky-400 text-sm mt-0.5 block">
+                    <span className="font-mono font-bold text-primary text-sm mt-0.5 block">
                       {client.passportNumber || '—'}
                     </span>
                   </div>
@@ -596,12 +596,12 @@ export default function ClientDetailPage() {
                                     ? 'border-emerald-500 text-emerald-500'
                                     : isDone
                                     ? 'border-blue-500'
-                                    : 'border-slate-400'
+                                    : 'border-black/30'
                                 }`}
                               >
                                 <div
                                   className={`size-1.5 rounded-full ${
-                                    isApproved ? 'bg-emerald-500' : isDone ? 'bg-blue-500' : 'bg-slate-400'
+                                    isApproved ? 'bg-emerald-500' : isDone ? 'bg-blue-500' : 'bg-black/40'
                                   }`}
                                 />
                               </div>
@@ -824,7 +824,7 @@ export default function ClientDetailPage() {
                     <FileText className="size-4 text-amber-500 shrink-0" />
                     <span className="truncate">Employment Agreement</span>
                   </span>
-                  <span className="text-[10px] px-2 py-0.5 rounded bg-amber-500/10 text-amber-700 dark:text-amber-300 font-bold border border-amber-500/20 shrink-0">
+                  <span className="text-[10px] px-2 py-0.5 rounded bg-amber-500/10 text-amber-700 font-bold border border-amber-500/20 shrink-0">
                     Legal Contract
                   </span>
                 </div>

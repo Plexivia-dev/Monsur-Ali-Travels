@@ -33,28 +33,28 @@ const getTaskStatusConfig = (status) => {
   if (normStatus === 'approved' || normStatus === 'completed' || normStatus === 'complete') {
     return {
       label: 'Approved ✓',
-      badgeClass: 'bg-emerald-500/15 text-emerald-800 dark:text-emerald-300 border-emerald-500/40 shadow-xs shadow-emerald-500/10 font-bold',
+      badgeClass: 'bg-emerald-500/15 text-emerald-800 border-emerald-500/40 shadow-xs shadow-emerald-500/10 font-bold',
       dotClass: 'bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.8)]',
     };
   }
   if (normStatus === 'done' || normStatus === 'submitted') {
     return {
       label: 'Done',
-      badgeClass: 'bg-blue-500/15 text-blue-800 dark:text-blue-300 border-blue-500/40 shadow-xs shadow-blue-500/10 font-bold',
+      badgeClass: 'bg-blue-500/15 text-blue-800 border-blue-500/40 shadow-xs shadow-blue-500/10 font-bold',
       dotClass: 'bg-blue-500 shadow-[0_0_8px_rgba(59,130,246,0.8)]',
     };
   }
   if (normStatus === 'in progress' || normStatus === 'processing' || normStatus === 'in_progress') {
     return {
       label: 'In Progress',
-      badgeClass: 'bg-sky-500/15 text-sky-800 dark:text-sky-300 border-sky-500/40 shadow-xs shadow-sky-500/10 font-bold',
+      badgeClass: 'bg-sky-500/15 text-sky-800 border-sky-500/40 shadow-xs shadow-sky-500/10 font-bold',
       dotClass: 'bg-sky-500 animate-pulse shadow-[0_0_8px_rgba(14,165,233,0.8)]',
     };
   }
   if (normStatus === 'rejected' || normStatus === 'cancelled' || normStatus === 'failed') {
     return {
       label: 'Rejected ✗',
-      badgeClass: 'bg-rose-500/15 text-rose-800 dark:text-rose-300 border-rose-500/40 shadow-xs shadow-rose-500/10 font-bold',
+      badgeClass: 'bg-rose-500/15 text-rose-800 border-rose-500/40 shadow-xs shadow-rose-500/10 font-bold',
       dotClass: 'bg-rose-500 shadow-[0_0_8px_rgba(244,63,94,0.8)]',
     };
   }
@@ -62,7 +62,7 @@ const getTaskStatusConfig = (status) => {
   // Default / Pending - Vibrant Amber Gold
   return {
     label: 'Pending',
-    badgeClass: 'bg-amber-500/15 text-amber-800 dark:text-amber-300 border-amber-500/40 shadow-xs shadow-amber-500/10 font-bold',
+    badgeClass: 'bg-amber-500/15 text-amber-800 border-amber-500/40 shadow-xs shadow-amber-500/10 font-bold',
     dotClass: 'bg-amber-500 animate-pulse shadow-[0_0_8px_rgba(245,158,11,0.8)]',
   };
 };
@@ -170,7 +170,7 @@ const ClientProfileDrawer = ({ clientDid, isOpen, onClose, onRefresh }) => {
                     {client.clientType || 'Individual'}
                   </span>
                   <span className={`px-2 py-0.5 rounded-full text-[11px] font-bold ${
-                    client.status === 'Active' ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300' : 'bg-muted text-muted-foreground'
+                    client.status === 'Active' ? 'bg-emerald-100 text-emerald-700' : 'bg-muted text-muted-foreground'
                   }`}>
                     {client.status || 'Active'}
                   </span>
@@ -199,7 +199,7 @@ const ClientProfileDrawer = ({ clientDid, isOpen, onClose, onRefresh }) => {
 
           <button
             onClick={onClose}
-            className="p-2 rounded-xl border border-border hover:bg-muted text-muted-foreground transition-all cursor-pointer"
+            className="p-2 rounded-xl text-red-500 hover:text-red-600 hover:bg-red-500/10 border border-red-500/30 transition-all cursor-pointer"
           >
             <X className="size-5" />
           </button>
@@ -417,10 +417,10 @@ const ClientProfileDrawer = ({ clientDid, isOpen, onClose, onRefresh }) => {
                               return (
                                 <div key={task.did || idx} className="relative flex items-start gap-3">
                                   <div className={`absolute -left-6 size-4 rounded-full border-2 bg-background flex items-center justify-center ${
-                                    isApproved ? 'border-emerald-500 text-emerald-500' : isDone ? 'border-blue-500' : 'border-slate-400'
+                                    isApproved ? 'border-emerald-500 text-emerald-500' : isDone ? 'border-blue-500' : 'border-black/30'
                                   }`}>
                                     <div className={`size-1.5 rounded-full ${
-                                      isApproved ? 'bg-emerald-500' : isDone ? 'bg-blue-500' : 'bg-slate-400'
+                                      isApproved ? 'bg-emerald-500' : isDone ? 'bg-blue-500' : 'bg-black/40'
                                     }`} />
                                   </div>
                                   <div className="p-3 rounded-xl bg-background border border-border w-full space-y-1 shadow-xs">

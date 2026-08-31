@@ -159,7 +159,7 @@ export function ClientsPage() {
       cell: ({ row }) => (
         <div className="font-mono text-xs">
           {row.passportNumber ? (
-            <span className="font-bold text-sky-600 dark:text-sky-400 block">
+            <span className="font-bold text-sky-600 block">
               {row.passportNumber}
             </span>
           ) : (
@@ -192,7 +192,7 @@ export function ClientsPage() {
           <span
             className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-bold border ${
               isActive
-                ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20'
+                ? 'bg-emerald-500/10 text-emerald-600 border-emerald-500/20'
                 : 'bg-muted text-muted-foreground border-border'
             }`}
           >

@@ -306,15 +306,15 @@ export function DocumentStudioPage({
       {dossierContext && (
         <div className="bg-sky-500/10 border border-sky-500/30 rounded-2xl p-4 flex flex-wrap items-center justify-between gap-4 shadow-xs">
           <div className="flex items-center gap-3">
-            <div className="size-10 rounded-xl bg-sky-500/20 text-sky-600 dark:text-sky-400 flex items-center justify-center font-bold shrink-0">
+            <div className="size-10 rounded-xl bg-sky-500/20 text-sky-600 flex items-center justify-center font-bold shrink-0">
               <ShieldCheck className="size-5" />
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <span className="text-xs font-bold text-sky-700 dark:text-sky-300 uppercase tracking-wider">
+                <span className="text-xs font-bold text-sky-700 uppercase tracking-wider">
                   Linked Case File #{dossierContext.caseFile?.caseNumber || caseNumberParam || 'CASE-DOSSIER'}
                 </span>
-                <span className="inline-flex items-center gap-1 px-2 py-0.2 rounded-full text-[10px] font-bold bg-amber-500/20 text-amber-800 dark:text-amber-300 border border-amber-500/30">
+                <span className="inline-flex items-center gap-1 px-2 py-0.2 rounded-full text-[10px] font-bold bg-amber-500/20 text-amber-800 border border-amber-500/30">
                   <Lock className="size-2.5" />
                   Client Bio Locked
                 </span>
@@ -322,7 +322,7 @@ export function DocumentStudioPage({
               <p className="text-xs text-foreground font-semibold mt-0.5">
                 Applicant: <strong className="text-primary">{dossierContext.client?.fullName || dossierContext.caseFile?.applicantName || 'Client'}</strong>
                 {' • '}Phone: {dossierContext.client?.phone || dossierContext.caseFile?.phone || '—'}
-                {' • '}Passport: <span className="font-mono font-bold text-sky-600 dark:text-sky-400">{dossierContext.caseFile?.passportNumber || dossierContext.client?.passportNumber || '—'}</span>
+                {' • '}Passport: <span className="font-mono font-bold text-sky-600">{dossierContext.caseFile?.passportNumber || dossierContext.client?.passportNumber || '—'}</span>
                 {' • '}NID: <span className="font-mono">{dossierContext.client?.nidNumber || dossierContext.caseFile?.nidNumber || '—'}</span>
               </p>
             </div>

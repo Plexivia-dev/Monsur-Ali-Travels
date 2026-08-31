@@ -81,49 +81,49 @@ const STUDIO_GENERATORS = [
     id: 'client-form',
     title: 'Client & Guardian Form',
     icon: UserCheck,
-    color: 'text-sky-600 bg-sky-50 dark:bg-sky-950/50',
+    color: 'text-sky-600 bg-sky-50',
     keywords: ['bio-data', 'guardian', 'client form', 'client-form', 'intake', 'client bio', 'bio data'],
   },
   {
     id: 'agreement',
     title: 'Employment Agreement',
     icon: FileSignature,
-    color: 'text-blue-600 bg-blue-50 dark:bg-blue-950/50',
+    color: 'text-blue-600 bg-blue-50',
     keywords: ['agreement', 'contract', 'deed', 'employment agreement', 'employment contract'],
   },
   {
     id: 'money-receipt',
     title: 'Money Receipt / Pay Slip',
     icon: Receipt,
-    color: 'text-emerald-600 bg-emerald-50 dark:bg-emerald-950/50',
+    color: 'text-emerald-600 bg-emerald-50',
     keywords: ['receipt', 'payment', 'money-receipt', 'payslip', 'money receipt', 'advance', 'fee collection'],
   },
   {
     id: 'invoice',
     title: 'Client Invoice Bill',
     icon: FileText,
-    color: 'text-indigo-600 bg-indigo-50 dark:bg-indigo-950/50',
+    color: 'text-indigo-600 bg-indigo-50',
     keywords: ['invoice', 'bill', 'billing', 'charge', 'client invoice'],
   },
   {
     id: 'indian-visa',
     title: 'Indian Visa File',
     icon: Stamp,
-    color: 'text-amber-600 bg-amber-50 dark:bg-amber-950/50',
+    color: 'text-amber-600 bg-amber-50',
     keywords: ['indian visa', 'ivac', 'indian-visa', 'delhi', 'vfs india', 'india visa', 'new delhi'],
   },
   {
     id: 'passport-sub',
     title: 'Passport Custody Slip',
     icon: BookOpen,
-    color: 'text-purple-600 bg-purple-50 dark:bg-purple-950/50',
+    color: 'text-purple-600 bg-purple-50',
     keywords: ['passport custody', 'passport submission', 'passport-sub', 'passport handover', 'passport receipt'],
   },
   {
     id: 'job-verification',
     title: 'Job Verification Form',
     icon: FileCheck2,
-    color: 'text-cyan-600 bg-cyan-50 dark:bg-cyan-950/50',
+    color: 'text-cyan-600 bg-cyan-50',
     keywords: ['job verification', 'job-verification', 'job letter', 'employment verification', 'job cert'],
   },
 ];
@@ -571,7 +571,7 @@ export function TaskDetailModal({
                 )}
 
                 {task.requiresPayment && (
-                  <span className="text-[10px] font-bold px-2 py-0.5 rounded-full border bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20 flex items-center gap-1">
+                  <span className="text-[10px] font-bold px-2 py-0.5 rounded-full border bg-emerald-500/10 text-emerald-600 border-emerald-500/20 flex items-center gap-1">
                     <CreditCard className="w-3 h-3" />
                     Payment: ৳{Number(task.paymentAmount || 0).toLocaleString()}
                   </span>
@@ -580,8 +580,8 @@ export function TaskDetailModal({
                 <span
                   className={`text-[10px] font-bold px-2 py-0.5 rounded-full border ${
                     task.requiresDocument !== false
-                      ? 'bg-sky-500/10 text-sky-600 dark:text-sky-400 border-sky-500/20'
-                      : 'bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/20'
+                      ? 'bg-sky-500/10 text-sky-600 border-sky-500/20'
+                      : 'bg-amber-500/10 text-amber-600 border-amber-500/20'
                   }`}
                 >
                   {task.requiresDocument !== false ? '📄 Document Intake' : '💬 Action / Notes Only'}
@@ -643,11 +643,11 @@ export function TaskDetailModal({
             {(task.requiresPayment || task.paymentAmount > 0) && (
               <div className="p-3.5 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 text-xs space-y-2">
                 <div className="flex items-center justify-between">
-                  <span className="font-bold text-emerald-700 dark:text-emerald-300 flex items-center gap-1.5 text-xs uppercase tracking-wider">
+                  <span className="font-bold text-emerald-700 flex items-center gap-1.5 text-xs uppercase tracking-wider">
                     <CreditCard className="w-4 h-4" />
                     Payment Collection Requirement
                   </span>
-                  <span className="font-mono font-bold text-base text-emerald-600 dark:text-emerald-400">
+                  <span className="font-mono font-bold text-base text-emerald-600">
                     ৳ {Number(task.paymentAmount || 0).toLocaleString()} {task.paymentCurrency || 'BDT'}
                   </span>
                 </div>
@@ -879,8 +879,8 @@ export function TaskDetailModal({
               <div className="space-y-4 bg-muted/30 border border-emerald-500/30 rounded-xl p-3.5 sm:p-4">
                 <div className="flex items-center justify-between">
                   <div>
-                    <h4 className="text-xs font-bold text-emerald-700 dark:text-emerald-300 flex items-center gap-1.5 uppercase tracking-wider">
-                      <CreditCard className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
+                    <h4 className="text-xs font-bold text-emerald-700 flex items-center gap-1.5 uppercase tracking-wider">
+                      <CreditCard className="w-4 h-4 text-emerald-600" />
                       Client Payment Intake & Money Receipt / Pay Slip
                     </h4>
                     <p className="text-[11px] text-muted-foreground mt-0.5">
@@ -945,7 +945,7 @@ export function TaskDetailModal({
                     size="sm"
                     variant="outline"
                     onClick={() => handleLaunchGenerator('money-receipt')}
-                    className="h-8 text-xs px-3 font-semibold border-emerald-500/30 hover:bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 flex items-center gap-1.5 cursor-pointer"
+                    className="h-8 text-xs px-3 font-semibold border-emerald-500/30 hover:bg-emerald-500/10 text-emerald-700 flex items-center gap-1.5 cursor-pointer"
                   >
                     <Receipt className="w-3.5 h-3.5 text-emerald-600" />
                     <span>Open Money Receipt Studio</span>
@@ -956,7 +956,7 @@ export function TaskDetailModal({
                     size="sm"
                     variant="outline"
                     onClick={() => handleLaunchGenerator('invoice')}
-                    className="h-8 text-xs px-3 font-semibold border-indigo-500/30 hover:bg-indigo-500/10 text-indigo-700 dark:text-indigo-300 flex items-center gap-1.5 cursor-pointer"
+                    className="h-8 text-xs px-3 font-semibold border-indigo-500/30 hover:bg-indigo-500/10 text-indigo-700 flex items-center gap-1.5 cursor-pointer"
                   >
                     <FileText className="w-3.5 h-3.5 text-indigo-600" />
                     <span>Open Client Invoice Studio</span>

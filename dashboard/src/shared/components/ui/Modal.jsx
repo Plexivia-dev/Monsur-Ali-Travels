@@ -37,17 +37,17 @@ export const Modal = ({
       {/* Universal Modal Frame */}
       <div
         className={cn(
-          'relative w-full bg-white text-zinc-900 border border-black/10 rounded-2xl shadow-2xl overflow-hidden z-10 flex flex-col my-auto transition-all transform animate-in zoom-in-95 duration-200 dark:bg-zinc-950 dark:text-white dark:border-zinc-800',
+          'relative w-full bg-white text-black border border-black/10 rounded-2xl shadow-2xl overflow-hidden z-10 flex flex-col my-auto transition-all transform animate-in zoom-in-95 duration-200',
           height,
           maxWidth,
           className
         )}
       >
         {/* Fixed Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-black/10 dark:border-zinc-800 bg-white dark:bg-zinc-950 shrink-0 select-none">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-black/10 bg-white shrink-0 select-none">
           <div>
-            <h3 className="text-base sm:text-lg font-bold text-zinc-900 dark:text-white tracking-tight">{title}</h3>
-            {subtitle && <p className="text-xs text-zinc-500 dark:text-zinc-400 font-medium mt-0.5">{subtitle}</p>}
+            <h3 className="text-base sm:text-lg font-bold text-black tracking-tight">{title}</h3>
+            {subtitle && <p className="text-xs text-black/60 font-medium mt-0.5">{subtitle}</p>}
           </div>
           {onClose && (
             <button
@@ -62,13 +62,13 @@ export const Modal = ({
         </div>
 
         {/* Scrollable Content Body */}
-        <div className="p-6 flex-1 min-h-0 overflow-y-auto space-y-4 text-zinc-900 dark:text-zinc-100">
+        <div className="p-6 flex-1 min-h-0 overflow-y-auto space-y-4 text-black">
           {children}
         </div>
 
         {/* Fixed Footer */}
         {footer && (
-          <div className="flex items-center justify-end gap-3 px-6 py-3.5 bg-white dark:bg-zinc-950 border-t border-black/10 dark:border-zinc-800 shrink-0">
+          <div className="flex items-center justify-end gap-3 px-6 py-3.5 bg-white border-t border-black/10 shrink-0">
             {footer}
           </div>
         )}

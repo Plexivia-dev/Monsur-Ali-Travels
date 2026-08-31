@@ -232,8 +232,8 @@ export function AgencyEmployeeList() {
                         <span
                           className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10.5px] font-bold border ${
                             isActive
-                              ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-600 dark:text-emerald-400'
-                              : 'bg-muted border-border text-muted-foreground'
+                              ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-600'
+                              : 'bg-black/[0.04] border-black/10 text-black/60'
                           }`}
                         >
                           <span

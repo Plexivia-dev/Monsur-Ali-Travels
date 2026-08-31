@@ -178,7 +178,7 @@ export function SalarySlipDataTable() {
                     <td className="p-3 font-medium text-foreground">
                       {item.salaryMonth || '—'}
                     </td>
-                    <td className="p-3 font-mono font-bold text-emerald-700 dark:text-emerald-400">
+                    <td className="p-3 font-mono font-bold text-emerald-700">
                       {item.netSalaryPayable?.toLocaleString('en-IN') || item.netSalaryPayable || 0} BDT 
                     </td>
                     <td className="p-3 font-mono text-muted-foreground">

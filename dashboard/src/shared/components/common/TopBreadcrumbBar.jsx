@@ -87,7 +87,7 @@ export function TopBreadcrumbBar() {
       <div className="flex items-center gap-2.5 flex-wrap min-w-0">
         <Button
           type="button"
-          variant="secondary"
+          variant="previous"
           size="sm"
           onClick={handleBack}
           className="gap-1.5 font-medium cursor-pointer shadow-2xs group"

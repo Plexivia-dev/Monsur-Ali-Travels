@@ -70,17 +70,17 @@ export const GlobalSearchModal = () => {
         onClick={() => setSearchOpen(false)}
       />
 
-      <div className="relative w-full max-w-xl bg-white text-zinc-900 border border-black/10 rounded-2xl shadow-2xl overflow-hidden z-10 animate-in zoom-in-95 duration-150">
+      <div className="relative w-full max-w-xl bg-white text-black border border-black/10 rounded-2xl shadow-2xl overflow-hidden z-10 animate-in zoom-in-95 duration-150">
         {/* Input Bar */}
         <div className="flex items-center px-4 border-b border-black/10 bg-black/[0.02]">
-          <Search className="w-5 h-5 text-zinc-400 shrink-0 mr-3" />
+          <Search className="w-5 h-5 text-black/40 shrink-0 mr-3" />
           <input
             autoFocus
             type="text"
             placeholder={t('header.searchPlaceholder', 'Search modules, portals, records...')}
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full py-4 bg-transparent text-sm text-zinc-900 placeholder-zinc-400 focus:outline-none"
+            className="w-full py-4 bg-transparent text-sm text-black placeholder:text-black/40 focus:outline-none"
           />
           <button
             onClick={() => setSearchOpen(false)}

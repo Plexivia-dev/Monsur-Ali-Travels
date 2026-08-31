@@ -15,7 +15,7 @@ const statusColors = {
   'Application Submitted': 'bg-purple-100 text-purple-700',
   'Medical Checkup Done': 'bg-cyan-100 text-cyan-700',
   'Police Clearance Received': 'bg-indigo-100 text-indigo-700',
-  'ENTRY': 'bg-slate-100 text-slate-700',
+  'ENTRY': 'bg-black/[0.04] text-black',
   'PROCESSING': 'bg-sky-100 text-sky-700',
   'APPROVED_OFFER_LETTER': 'bg-emerald-100 text-emerald-700',
   'SUBMITTED_EMBASSY_BSF': 'bg-amber-100 text-amber-700',
@@ -54,7 +54,7 @@ export default function VisaWorkflowsPage() {
         subtitle="Client status updates, dossier records, and visa processing pipeline."
       />
 
-      <Card className="bg-white border border-gray-200 shadow-md">
+      <Card className="bg-white border border-black/10 shadow-md">
         <CardHeader>
           <CardTitle className="text-base font-semibold">Client Status Updates & Case Dossiers</CardTitle>
         </CardHeader>

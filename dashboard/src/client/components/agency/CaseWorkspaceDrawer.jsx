@@ -148,28 +148,28 @@ const getTaskStatusConfig = (status) => {
   if (normStatus === 'approved' || normStatus === 'completed' || normStatus === 'complete') {
     return {
       label: 'Approved ✓',
-      badgeClass: 'bg-emerald-500/15 text-emerald-800 dark:text-emerald-300 border-emerald-500/40 shadow-xs shadow-emerald-500/10 font-bold',
+      badgeClass: 'bg-emerald-500/15 text-emerald-800 border-emerald-500/40 shadow-xs font-bold',
       dotClass: 'bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.8)]',
     };
   }
   if (normStatus === 'done' || normStatus === 'submitted') {
     return {
       label: 'Done',
-      badgeClass: 'bg-blue-500/15 text-blue-800 dark:text-blue-300 border-blue-500/40 shadow-xs shadow-blue-500/10 font-bold',
+      badgeClass: 'bg-blue-500/15 text-blue-800 border-blue-500/40 shadow-xs font-bold',
       dotClass: 'bg-blue-500 shadow-[0_0_8px_rgba(59,130,246,0.8)]',
     };
   }
   if (normStatus === 'in progress' || normStatus === 'processing' || normStatus === 'in_progress') {
     return {
       label: 'In Progress',
-      badgeClass: 'bg-sky-500/15 text-sky-800 dark:text-sky-300 border-sky-500/40 shadow-xs shadow-sky-500/10 font-bold',
+      badgeClass: 'bg-sky-500/15 text-sky-800 border-sky-500/40 shadow-xs font-bold',
       dotClass: 'bg-sky-500 animate-pulse shadow-[0_0_8px_rgba(14,165,233,0.8)]',
     };
   }
   if (normStatus === 'rejected' || normStatus === 'cancelled' || normStatus === 'failed') {
     return {
       label: 'Rejected ✗',
-      badgeClass: 'bg-rose-500/15 text-rose-800 dark:text-rose-300 border-rose-500/40 shadow-xs shadow-rose-500/10 font-bold',
+      badgeClass: 'bg-rose-500/15 text-rose-800 border-rose-500/40 shadow-xs font-bold',
       dotClass: 'bg-rose-500 shadow-[0_0_8px_rgba(244,63,94,0.8)]',
     };
   }
@@ -177,7 +177,7 @@ const getTaskStatusConfig = (status) => {
   // Default / Pending - Vibrant Amber Gold
   return {
     label: 'Pending',
-    badgeClass: 'bg-amber-500/15 text-amber-800 dark:text-amber-300 border-amber-500/40 shadow-xs shadow-amber-500/10 font-bold',
+    badgeClass: 'bg-amber-500/15 text-amber-800 border-amber-500/40 shadow-xs font-bold',
     dotClass: 'bg-amber-500 animate-pulse shadow-[0_0_8px_rgba(245,158,11,0.8)]',
   };
 };
@@ -554,7 +554,7 @@ export function CaseWorkspaceDrawer({ caseId, isOpen, onClose, onRefresh }) {
   const totalDue = ledger.dueAmount !== undefined ? ledger.dueAmount : Math.max(0, totalAgreed - totalPaid);
 
   return (
-    <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex justify-end animate-in fade-in duration-200">
+    <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex justify-end animate-in fade-in duration-200">
       <div className="bg-background w-full max-w-4xl h-full shadow-2xl flex flex-col overflow-hidden border-l border-border">
         {/* Header Bar */}
         <div className="p-5 border-b border-border bg-muted/40 flex items-start justify-between gap-4">
@@ -586,7 +586,7 @@ export function CaseWorkspaceDrawer({ caseId, isOpen, onClose, onRefresh }) {
                     </span>
                   )}
                   {caseData.passportNumber && (
-                    <span className="flex items-center gap-1 font-mono text-sky-600 dark:text-sky-400">
+                    <span className="flex items-center gap-1 font-mono text-sky-600">
                       <FileText className="size-3" />
                       Passport: {caseData.passportNumber}
                     </span>
@@ -821,8 +821,8 @@ export function CaseWorkspaceDrawer({ caseId, isOpen, onClose, onRefresh }) {
                             key={item.key}
                             className={`p-3 rounded-xl border flex flex-col justify-between gap-2 transition-all ${
                               isChecked
-                                ? 'bg-emerald-500/10 border-emerald-500 text-emerald-950 dark:text-emerald-200 font-semibold shadow-xs ring-1 ring-emerald-500/20'
-                                : 'bg-muted/30 border-border text-muted-foreground hover:border-border/80'
+                                ? 'bg-emerald-500/10 border-emerald-500 text-emerald-950 font-semibold shadow-xs ring-1 ring-emerald-500/20'
+                                : 'bg-black/[0.02] border-black/10 text-black/60 hover:border-black/20'
                             }`}
                           >
                             <div className="flex items-center justify-between gap-2">
@@ -831,15 +831,15 @@ export function CaseWorkspaceDrawer({ caseId, isOpen, onClose, onRefresh }) {
                                   type="checkbox"
                                   checked={isChecked}
                                   onChange={() => handleToggleChecklist(item.key)}
-                                  className="size-3.5 rounded text-emerald-600 focus:ring-emerald-500 border-border cursor-pointer accent-emerald-600"
+                                  className="size-3.5 rounded text-emerald-600 focus:ring-emerald-500 border-black/20 cursor-pointer accent-emerald-600"
                                 />
-                                <span className={`truncate ${isChecked ? 'text-emerald-950 dark:text-emerald-100 font-bold' : ''}`}>
+                                <span className={`truncate ${isChecked ? 'text-emerald-950 font-bold' : ''}`}>
                                   {item.label}
                                 </span>
                               </label>
                               <span
                                 className={`px-2 py-0.5 rounded text-[10px] font-bold shrink-0 ${
-                                  isChecked ? 'bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 border border-emerald-500/30' : 'bg-muted text-muted-foreground border border-border/50'
+                                  isChecked ? 'bg-emerald-500/20 text-emerald-700 border border-emerald-500/30' : 'bg-black/[0.04] text-black/60 border border-black/10'
                                 }`}
                               >
                                 {status.isUploaded ? 'Uploaded ✓' : isChecked ? 'Received ✓' : 'Pending'}
@@ -848,14 +848,14 @@ export function CaseWorkspaceDrawer({ caseId, isOpen, onClose, onRefresh }) {
 
                             {status.matchedDoc?.url && (
                               <div className="flex items-center justify-between pt-1 border-t border-emerald-500/20 text-[10px]">
-                                <span className="text-emerald-700 dark:text-emerald-300 truncate max-w-[180px]">
+                                <span className="text-emerald-700 truncate max-w-[180px]">
                                   📎 {status.matchedDoc.name}
                                 </span>
                                 <a
                                   href={status.matchedDoc.url}
                                   target="_blank"
                                   rel="noreferrer"
-                                  className="font-bold text-emerald-700 hover:text-emerald-900 dark:text-emerald-300 dark:hover:text-emerald-100 underline cursor-pointer"
+                                  className="font-bold text-emerald-700 hover:text-emerald-900 underline cursor-pointer"
                                 >
                                   View File ↗
                                 </a>
@@ -927,7 +927,7 @@ export function CaseWorkspaceDrawer({ caseId, isOpen, onClose, onRefresh }) {
                                 <button
                                   onClick={() => handleCompleteTask(t.did || t._id)}
                                   disabled={completingTaskId === (t.did || t._id)}
-                                  className="flex items-center gap-1 px-3 py-1.5 bg-sky-500 hover:bg-sky-600 text-slate-950 font-bold text-xs rounded-lg transition-all cursor-pointer shadow-xs disabled:opacity-50"
+                                  className="flex items-center gap-1 px-3 py-1.5 bg-primary hover:bg-primary/90 text-primary-foreground font-bold text-xs rounded-lg transition-all cursor-pointer shadow-xs disabled:opacity-50"
                                 >
                                   {completingTaskId === (t.did || t._id) ? (
                                     <Loader2 className="size-3.5 animate-spin" />
@@ -961,9 +961,9 @@ export function CaseWorkspaceDrawer({ caseId, isOpen, onClose, onRefresh }) {
                           setSelectedDocId(permittedStudioGenerators[0]?.id || 'agreement');
                           setShowCreateDocModal(true);
                         }}
-                        className="flex items-center gap-1.5 px-3 py-1.5 bg-sky-500/10 hover:bg-sky-500/20 text-sky-700 dark:text-sky-300 border border-sky-500/30 font-bold text-xs rounded-xl shadow-2xs transition-all cursor-pointer"
+                        className="flex items-center gap-1.5 px-3 py-1.5 bg-sky-500/10 hover:bg-sky-500/20 text-sky-700 border border-sky-500/30 font-bold text-xs rounded-xl shadow-2xs transition-all cursor-pointer"
                       >
-                        <FilePlus2 className="size-3.5 text-sky-600 dark:text-sky-400" />
+                        <FilePlus2 className="size-3.5 text-sky-600" />
                         <span>+ Generate Document</span>
                       </button>
 
@@ -1020,7 +1020,7 @@ export function CaseWorkspaceDrawer({ caseId, isOpen, onClose, onRefresh }) {
                                   {canViewDoc ? (
                                     <FileText className="size-4" />
                                   ) : (
-                                    <Lock className="size-4 text-amber-600 dark:text-amber-400" />
+                                    <Lock className="size-4 text-amber-600" />
                                   )}
                                 </div>
                                 <div className="min-w-0">
@@ -1044,7 +1044,7 @@ export function CaseWorkspaceDrawer({ caseId, isOpen, onClose, onRefresh }) {
                                   {isOwnUpload ? 'My Upload ✓' : 'Verified'}
                                 </span>
                               ) : (
-                                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-bold bg-amber-500/10 text-amber-700 dark:text-amber-400 border border-amber-500/20 shrink-0">
+                                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-bold bg-amber-500/10 text-amber-700 border border-amber-500/20 shrink-0">
                                   <Lock className="size-2.5" />
                                   Restricted
                                 </span>
@@ -1174,7 +1174,7 @@ export function CaseWorkspaceDrawer({ caseId, isOpen, onClose, onRefresh }) {
 
       {/* Upload Document Modal */}
       {showUploadModal && (
-        <div className="fixed inset-0 z-60 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
+        <div className="fixed inset-0 z-60 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
           <form
             onSubmit={handleUploadDocument}
             className="bg-card border border-border rounded-2xl max-w-md w-full p-6 space-y-4 shadow-2xl animate-in fade-in zoom-in-95 duration-200"
@@ -1276,7 +1276,7 @@ export function CaseWorkspaceDrawer({ caseId, isOpen, onClose, onRefresh }) {
                   setShowUploadModal(false);
                   handleRemoveSelectedFile();
                 }}
-                className="px-4 py-2 rounded-xl border border-red-500/30 text-red-600 dark:text-red-400 hover:bg-red-500/10 font-semibold text-xs cursor-pointer"
+                className="px-4 py-2 rounded-xl border border-red-500/30 text-red-600 hover:bg-red-500/10 font-semibold text-xs cursor-pointer"
               >
                 Cancel
               </button>
@@ -1358,11 +1358,11 @@ export function CaseWorkspaceDrawer({ caseId, isOpen, onClose, onRefresh }) {
 
               {/* Autofill Audit Notice */}
               <div className="p-3 bg-sky-500/10 border border-sky-500/25 rounded-xl flex items-start gap-2.5">
-                <ShieldCheck className="size-4 text-sky-600 dark:text-sky-400 shrink-0 mt-0.5" />
-                <div className="text-[11px] text-muted-foreground leading-relaxed">
-                  Client particulars (<strong className="text-foreground">{caseData?.applicantName}</strong>, Passport:{' '}
-                  <strong className="text-foreground font-mono">{caseData?.passportNumber || 'N/A'}</strong>, Phone:{' '}
-                  <strong className="text-foreground">{caseData?.phone || 'N/A'}</strong>) will be <strong>auto-filled and locked</strong>.
+                <ShieldCheck className="size-4 text-sky-600 shrink-0 mt-0.5" />
+                <div className="text-[11px] text-black/70 leading-relaxed">
+                  Client particulars (<strong className="text-black">{caseData?.applicantName}</strong>, Passport:{' '}
+                  <strong className="text-black font-mono">{caseData?.passportNumber || 'N/A'}</strong>, Phone:{' '}
+                  <strong className="text-black">{caseData?.phone || 'N/A'}</strong>) will be <strong>auto-filled and locked</strong>.
                   After saving in Document Studio, you will automatically return to this Case File.
                 </div>
               </div>
@@ -1372,7 +1372,7 @@ export function CaseWorkspaceDrawer({ caseId, isOpen, onClose, onRefresh }) {
               <button
                 type="button"
                 onClick={() => setShowCreateDocModal(false)}
-                className="px-4 py-2 rounded-xl border border-red-500/30 text-red-600 dark:text-red-400 hover:bg-red-500/10 font-semibold cursor-pointer"
+                className="px-4 py-2 rounded-xl border border-red-500/30 text-red-600 hover:bg-red-500/10 font-semibold cursor-pointer"
               >
                 Cancel
               </button>

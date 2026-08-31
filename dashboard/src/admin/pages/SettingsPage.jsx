@@ -31,12 +31,12 @@ import { PageTitle } from '@shared/components/layout/PageTitle';
 import { UserProfileSettingsPage } from '@shared/features/profile';
 
 const CATEGORY_MAP = {
-  DOCUMENT_UPLOAD: { label: 'Document Upload', color: 'bg-sky-500/10 text-sky-600 dark:text-sky-400 border-sky-500/20' },
-  LEGAL: { label: 'Legal & Contract', color: 'bg-purple-500/10 text-purple-600 dark:text-purple-400 border-purple-500/20' },
-  FINANCIAL: { label: 'Financial & Accounts', color: 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20' },
-  EMBASSY_PROCESS: { label: 'Embassy & Visa', color: 'bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border-indigo-500/20' },
-  VERIFICATION: { label: 'Verification & Scrutiny', color: 'bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/20' },
-  GENERAL_ACTION: { label: 'Operational Action', color: 'bg-slate-500/10 text-slate-600 dark:text-slate-400 border-slate-500/20' },
+  DOCUMENT_UPLOAD: { label: 'Document Upload', color: 'bg-sky-500/10 text-sky-600 border-sky-500/20' },
+  LEGAL: { label: 'Legal & Contract', color: 'bg-purple-500/10 text-purple-600 border-purple-500/20' },
+  FINANCIAL: { label: 'Financial & Accounts', color: 'bg-emerald-500/10 text-emerald-600 border-emerald-500/20' },
+  EMBASSY_PROCESS: { label: 'Embassy & Visa', color: 'bg-indigo-500/10 text-indigo-600 border-indigo-500/20' },
+  VERIFICATION: { label: 'Verification & Scrutiny', color: 'bg-amber-500/10 text-amber-600 border-amber-500/20' },
+  GENERAL_ACTION: { label: 'Operational Action', color: 'bg-black/[0.04] text-black/70 border-black/15' },
 };
 
 const DOC_PRESETS = [
@@ -395,8 +395,8 @@ export function SettingsPage() {
                         onClick={() => handleToggleStatus(item)}
                         className={`px-2.5 py-1 rounded-full text-[10px] font-bold transition cursor-pointer shrink-0 flex items-center gap-1 ${
                           item.isActive
-                            ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20'
-                            : 'bg-rose-500/10 text-rose-600 dark:text-rose-400 border border-rose-500/20'
+                            ? 'bg-emerald-500/10 text-emerald-600 border border-emerald-500/20'
+                            : 'bg-rose-500/10 text-rose-600 border border-rose-500/20'
                         }`}
                         title="Click to toggle active status"
                       >

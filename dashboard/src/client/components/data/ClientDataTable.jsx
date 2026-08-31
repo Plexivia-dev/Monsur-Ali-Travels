@@ -157,7 +157,7 @@ export function ClientDataTable({ activeSubmodule }) {
     const map = {
       Active: 'bg-emerald-500/10 text-emerald-600 border-emerald-500/20',
       Lead: 'bg-sky-500/10 text-sky-600 border-sky-500/20',
-      Inactive: 'bg-slate-500/10 text-slate-500 border-slate-500/20',
+      Inactive: 'bg-black/[0.04] text-black/60 border-black/15',
       Blacklisted: 'bg-rose-500/10 text-rose-600 border-rose-500/20',
       Archived: 'bg-amber-500/10 text-amber-600 border-amber-500/20',
     };

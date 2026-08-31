@@ -290,7 +290,7 @@ export function UnifiedSidebar({
                                         className={cn(
                                           'group cursor-pointer text-[13px] rounded-lg py-2 px-2.5 flex items-center gap-2 transition-all duration-200',
                                           isSubActive
-                                            ? '!bg-white !text-slate-900 font-bold shadow-xs hover:!bg-white hover:!text-slate-900 focus:!text-slate-900 focus:!bg-white active:!bg-white active:!text-slate-900'
+                                            ? '!bg-white !text-black font-bold shadow-xs hover:!bg-white hover:!text-black focus:!text-black focus:!bg-white active:!bg-white active:!text-black'
                                             : 'text-sidebar-foreground/85 hover:text-white hover:bg-sidebar-accent font-medium'
                                         )}
                                       >
@@ -300,7 +300,7 @@ export function UnifiedSidebar({
                                             cn(
                                               'w-4 h-4 shrink-0 transition-colors',
                                               isSubActive
-                                                ? '!text-slate-900 group-hover:!text-slate-900'
+                                                ? '!text-black group-hover:!text-black'
                                                 : 'text-sky-300 group-hover:text-white'
                                             )
                                           )}
@@ -308,7 +308,7 @@ export function UnifiedSidebar({
                                           className={cn(
                                             'truncate transition-colors',
                                             isSubActive
-                                              ? '!text-slate-900 group-hover:!text-slate-900 font-bold'
+                                              ? '!text-black group-hover:!text-black font-bold'
                                               : 'group-hover:text-white'
                                           )}
                                         >
@@ -336,7 +336,7 @@ export function UnifiedSidebar({
                           className={cn(
                             'group cursor-pointer text-sm font-medium py-2 px-3 rounded-xl transition-all duration-200',
                             isActive
-                              ? '!bg-white !text-slate-900 font-bold shadow-xs hover:!bg-white hover:!text-slate-900 focus:!text-slate-900 focus:!bg-white active:!bg-white active:!text-slate-900'
+                              ? '!bg-white !text-black font-bold shadow-xs hover:!bg-white hover:!text-black focus:!text-black focus:!bg-white active:!bg-white active:!text-black'
                               : 'text-sidebar-foreground hover:bg-sidebar-accent hover:text-white'
                           )}
                         >
@@ -345,7 +345,7 @@ export function UnifiedSidebar({
                             cn(
                               'w-4.5 h-4.5 shrink-0 transition-colors',
                               isActive
-                                ? '!text-slate-900 group-hover:!text-slate-900'
+                                ? '!text-black group-hover:!text-black'
                                 : 'text-sky-300 group-hover:text-white'
                             )
                           )}
@@ -353,7 +353,7 @@ export function UnifiedSidebar({
                             className={cn(
                               'truncate transition-colors',
                               isActive
-                                ? '!text-slate-900 group-hover:!text-slate-900 font-bold'
+                                ? '!text-black group-hover:!text-black font-bold'
                                 : 'group-hover:text-white'
                             )}
                           >

@@ -268,7 +268,7 @@ export function IndianVisaDataTable() {
                         </div>
                       )}
                     </td>
-                    <td className="p-3 font-mono font-bold text-slate-800 dark:text-slate-200">
+                    <td className="p-3 font-mono font-bold text-black">
                       {item.passportNo || '—'}
                     </td>
                     <td className="p-3">

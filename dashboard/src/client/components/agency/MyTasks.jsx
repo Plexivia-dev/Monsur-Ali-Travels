@@ -329,7 +329,7 @@ export function MyTasks() {
                           ? 'bg-emerald-500/10 text-emerald-600 border border-emerald-500/20'
                           : isDone
                           ? 'bg-sky-500/10 text-sky-600 border border-sky-500/20'
-                          : 'bg-slate-500/10 text-slate-600 dark:text-slate-400 border border-slate-500/20'
+                          : 'bg-amber-500/10 text-amber-700 border border-amber-500/20'
                       }`}
                     >
                       {isApproved ? (

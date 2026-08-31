@@ -314,11 +314,11 @@ export function ClientGuardianDataTable({ onEditItem }) {
                       <td className="py-3 px-4">
                         <div className="font-bold text-foreground">BDT  {total.toLocaleString('en-IN')}</div>
                         <div className="text-[10.5px] flex items-center gap-2 mt-0.5">
-                          <span className="text-emerald-600 dark:text-emerald-400 font-semibold">
+                          <span className="text-emerald-600 font-semibold">
                             Adv: BDT {advance.toLocaleString('en-IN')}
                           </span>
                           {due > 0 && (
-                            <span className="text-rose-600 dark:text-rose-400 font-semibold">
+                            <span className="text-rose-600 font-semibold">
                               Due: BDT {due.toLocaleString('en-IN')}
                             </span>
                           )}
@@ -398,13 +398,13 @@ export function ClientGuardianDataTable({ onEditItem }) {
       {/* Fullscreen Print / Preview Modal */}
       {previewItem && (
         <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-3 sm:p-5 overflow-hidden animate-in fade-in duration-150">
-          <div className="bg-white text-zinc-900 border border-black/10 rounded-2xl max-w-4xl w-full h-[70vh] flex flex-col overflow-hidden shadow-2xl relative animate-in zoom-in-95 duration-200">
+          <div className="bg-white text-black border border-black/10 rounded-2xl max-w-4xl w-full h-[70vh] flex flex-col overflow-hidden shadow-2xl relative animate-in zoom-in-95 duration-200">
             <div className="no-print flex items-center justify-between border-b border-black/10 px-6 py-4 bg-black/[0.02] shrink-0">
               <div>
-                <h3 className="font-bold text-sm text-zinc-900">
+                <h3 className="font-bold text-sm text-black">
                   Printable Application Form ({previewItem.applicationNo})
                 </h3>
-                <p className="text-xs text-zinc-500">
+                <p className="text-xs text-black/60">
                   Client: {previewItem.client?.fullName} | Service: {previewItem.serviceType}
                 </p>
               </div>

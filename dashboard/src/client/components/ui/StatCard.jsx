@@ -15,20 +15,20 @@ export const StatCard = ({
   className = '',
 }) => {
   const iconBgClasses = {
-    blue: 'bg-blue-500/10 text-blue-600 dark:text-blue-400 border-blue-500/20',
-    amber: 'bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/20',
-    emerald: 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20',
-    purple: 'bg-purple-500/10 text-purple-600 dark:text-purple-400 border-purple-500/20',
-    rose: 'bg-rose-500/10 text-rose-600 dark:text-rose-400 border-rose-500/20',
-    indigo: 'bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border-indigo-500/20',
+    blue: 'bg-blue-500/10 text-blue-600 border-blue-500/20',
+    amber: 'bg-amber-500/10 text-amber-600 border-amber-500/20',
+    emerald: 'bg-emerald-500/10 text-emerald-600 border-emerald-500/20',
+    purple: 'bg-purple-500/10 text-purple-600 border-purple-500/20',
+    rose: 'bg-rose-500/10 text-rose-600 border-rose-500/20',
+    indigo: 'bg-indigo-500/10 text-indigo-600 border-indigo-500/20',
   };
 
   return (
-    <Card className={cn('p-5 border border-border/80 shadow-xs hover:border-border transition-all group', className)}>
+    <Card className={cn('p-5 border border-black/10 shadow-xs hover:border-black/20 transition-all group bg-white', className)}>
       <div className="flex items-start justify-between gap-3">
         <div className="space-y-1">
-          <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{title}</p>
-          <h4 className="text-2xl font-bold text-foreground tracking-tight">{value}</h4>
+          <p className="text-xs font-semibold uppercase tracking-wider text-black/60">{title}</p>
+          <h4 className="text-2xl font-bold text-black tracking-tight">{value}</h4>
         </div>
         {Icon && (
           <div
@@ -46,25 +46,25 @@ export const StatCard = ({
         {trend && (
           <div className="flex items-center gap-1 font-medium">
             {trendType === 'up' && (
-              <span className="inline-flex items-center text-emerald-800 dark:text-emerald-300 bg-emerald-50 dark:bg-emerald-950/60 px-2 py-0.5 rounded-full text-[11px] font-semibold border border-emerald-300 dark:border-emerald-800">
+              <span className="inline-flex items-center text-emerald-800 bg-emerald-50 px-2 py-0.5 rounded-full text-[11px] font-semibold border border-emerald-300">
                 <TrendingUp className="w-3 h-3 mr-1" />
                 {trend}
               </span>
             )}
             {trendType === 'down' && (
-              <span className="inline-flex items-center text-rose-800 dark:text-rose-300 bg-rose-50 dark:bg-rose-950/60 px-2 py-0.5 rounded-full text-[11px] font-semibold border border-rose-300 dark:border-rose-800">
+              <span className="inline-flex items-center text-rose-800 bg-rose-50 px-2 py-0.5 rounded-full text-[11px] font-semibold border border-rose-300">
                 <TrendingDown className="w-3 h-3 mr-1" />
                 {trend}
               </span>
             )}
             {trendType === 'neutral' && (
-              <span className="inline-flex items-center text-slate-700 dark:text-slate-300 bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded-full text-[11px] font-semibold border border-slate-300 dark:border-slate-700">
+              <span className="inline-flex items-center text-black/70 bg-black/[0.04] px-2 py-0.5 rounded-full text-[11px] font-semibold border border-black/15">
                 {trend}
               </span>
             )}
           </div>
         )}
-        {subtitle && <span className="text-muted-foreground text-[11px] truncate max-w-[180px]">{subtitle}</span>}
+        {subtitle && <span className="text-black/60 text-[11px] truncate max-w-[180px]">{subtitle}</span>}
       </div>
 
       {typeof progress === 'number' && (

@@ -424,7 +424,7 @@ export function SalarySlipForm({ formData, setFormData, onSubmit, onReset, isSub
       </div>
 
       {/* Section 4: Net Salary Payable Card */}
-      <div className="bg-gradient-to-br from-sky-50 via-white to-sky-100/50 dark:from-sky-950/30 dark:via-background dark:to-slate-900/40 border border-sky-300 dark:border-sky-800/50 p-5 rounded-2xl shadow-xs space-y-3">
+      <div className="bg-sky-50/60 border border-sky-200 p-5 rounded-2xl shadow-xs space-y-3">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div>
             <span className="font-bold text-xs uppercase tracking-wider text-muted-foreground block">
@@ -439,7 +439,7 @@ export function SalarySlipForm({ formData, setFormData, onSubmit, onReset, isSub
             <span className="text-[11px] font-semibold text-muted-foreground block">
               Gross: BDT {Number(formData.grossEarnings || 0).toLocaleString('en-BD')} | Deductions: -BDT {Number(formData.totalDeduction || 0).toLocaleString('en-BD')}
             </span>
-            <span className="text-xs font-bold text-sky-700 dark:text-sky-300 mt-1 inline-block">
+            <span className="text-xs font-bold text-primary mt-1 inline-block">
               {formData.netSalaryInWords || 'Zero Taka Only'}
             </span>
           </div>
@@ -450,33 +450,33 @@ export function SalarySlipForm({ formData, setFormData, onSubmit, onReset, isSub
       <div className="flex flex-col sm:flex-row items-center justify-end gap-3 pt-4 border-t border-border">
         <button
           type="button"
-          onClick={onSubmit}
-          className="w-full sm:w-auto flex items-center justify-center gap-2 bg-muted hover:bg-muted/80 text-foreground px-5 py-2.5 rounded-xl font-bold text-xs transition-all cursor-pointer shadow-xs"
+          onClick={() => setResetDialogOpen(true)}
+          className="w-full sm:w-auto px-4 py-2.5 rounded-xl text-xs font-semibold bg-red-500/10 text-red-600 border border-red-500/30 hover:bg-red-500/20 hover:border-red-500/50 transition-colors cursor-pointer flex items-center justify-center gap-2"
         >
-          <Eye className="w-4 h-4 text-primary" />
-          <span>Preview Salary Slip</span>
+          <RotateCcw className="w-3.5 h-3.5" />
+          <span>Reset Form</span>
         </button>
 
         <button
           type="button"
           onClick={onSubmit}
           disabled={isSubmitting}
-          className="w-full sm:w-auto flex items-center justify-center gap-2 bg-primary hover:bg-primary/90 text-primary-foreground px-6 py-2.5 rounded-xl font-bold text-xs transition-all cursor-pointer shadow-xs disabled:opacity-50"
+          className="w-full sm:w-auto px-6 py-2.5 rounded-xl text-xs font-bold bg-primary text-primary-foreground hover:bg-primary/90 transition-all cursor-pointer flex items-center justify-center gap-2 shadow-sm disabled:opacity-50"
         >
           <Save className="w-4 h-4" />
           <span>{isSubmitting ? 'Saving...' : 'Save & Generate Salary Slip'}</span>
         </button>
       </div>
 
-      {/* Shadcn UI Confirm Reset Dialog */}
+      {/* Reset Confirmation Dialog */}
       <Dialog open={resetDialogOpen} onOpenChange={setResetDialogOpen}>
-        <DialogContent className="sm:max-w-md rounded-2xl">
+        <DialogContent className="max-w-md rounded-2xl bg-white border border-black/10">
           <DialogHeader>
-            <div className="flex items-center gap-2 text-rose-500 mb-1">
-              <AlertTriangle className="w-5 h-5" />
-              <DialogTitle className="text-base font-bold">Confirm Form Reset</DialogTitle>
-            </div>
-            <DialogDescription className="text-xs text-muted-foreground">
+            <DialogTitle className="text-base font-bold text-foreground flex items-center gap-2">
+              <RotateCcw className="w-4 h-4 text-red-500" />
+              Reset Salary Slip Data?
+            </DialogTitle>
+            <DialogDescription className="text-xs text-muted-foreground mt-1.5">
               Are you sure you want to clear all input data and reset the salary slip form?
             </DialogDescription>
           </DialogHeader>
@@ -484,7 +484,7 @@ export function SalarySlipForm({ formData, setFormData, onSubmit, onReset, isSub
             <button
               type="button"
               onClick={() => setResetDialogOpen(false)}
-              className="px-4 py-2 rounded-xl text-xs font-semibold bg-red-500/10 text-red-600 dark:text-red-400 border border-red-500/30 hover:bg-red-500/20 hover:border-red-500/50 transition-colors cursor-pointer"
+              className="px-4 py-2 rounded-xl text-xs font-semibold bg-red-500/10 text-red-600 border border-red-500/30 hover:bg-red-500/20 hover:border-red-500/50 transition-colors cursor-pointer"
             >
               Cancel
             </button>

@@ -127,7 +127,7 @@ export function FileViewer({ file, className = '' }) {
   if (!resolvedUrl || hasError) {
     return (
       <div className={`flex flex-col items-center justify-center p-8 text-center text-muted-foreground space-y-3 bg-muted/20 border border-border rounded-2xl ${className}`}>
-        <div className="size-14 rounded-2xl bg-amber-500/10 text-amber-600 dark:text-amber-400 flex items-center justify-center border border-amber-500/20 shadow-xs">
+        <div className="size-14 rounded-2xl bg-amber-500/10 text-amber-600 flex items-center justify-center border border-amber-500/20 shadow-xs">
           <AlertCircle className="size-7 opacity-90" />
         </div>
         <div>
@@ -342,7 +342,7 @@ export function FileViewerModal({
         <div className="flex flex-wrap items-center justify-between gap-3 p-4 border-b border-border bg-muted/30 select-none">
           {/* Title & Document Badge */}
           <div className="flex items-center gap-3 min-w-0">
-            <div className="size-10 rounded-xl bg-sky-500/15 text-sky-600 dark:text-sky-400 flex items-center justify-center font-bold shrink-0 border border-sky-500/30">
+            <div className="size-10 rounded-xl bg-sky-500/15 text-sky-600 flex items-center justify-center font-bold shrink-0 border border-sky-500/30">
               {isImage ? <Eye className="size-5" /> : isPdf ? <FileText className="size-5" /> : <FileCheck className="size-5" />}
             </div>
             <div className="min-w-0">
@@ -350,11 +350,11 @@ export function FileViewerModal({
                 <h3 className="text-sm sm:text-base font-bold text-foreground truncate max-w-md" title={resolvedName}>
                   {resolvedName}
                 </h3>
-                <span className="px-2 py-0.2 rounded-full text-[10px] font-bold bg-sky-500/15 text-sky-700 dark:text-sky-300 border border-sky-500/30">
+                <span className="px-2 py-0.2 rounded-full text-[10px] font-bold bg-sky-500/15 text-sky-700 border border-sky-500/30">
                   {label}
                 </span>
                 {isVerified && (
-                  <span className="px-2 py-0.2 rounded-full text-[10px] font-bold bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 border border-emerald-500/30">
+                  <span className="px-2 py-0.2 rounded-full text-[10px] font-bold bg-emerald-500/15 text-emerald-700 border border-emerald-500/30">
                     Verified ✓
                   </span>
                 )}
@@ -463,7 +463,7 @@ export function FileViewerModal({
           {isImage ? (
             hasError ? (
               <div className="flex flex-col items-center justify-center p-8 max-w-md w-full bg-card border border-border rounded-2xl text-center space-y-4 shadow-md my-auto">
-                <div className="size-16 rounded-2xl bg-amber-500/10 text-amber-600 dark:text-amber-400 flex items-center justify-center border border-amber-500/20 shadow-xs">
+                <div className="size-16 rounded-2xl bg-amber-500/10 text-amber-600 flex items-center justify-center border border-amber-500/20 shadow-xs">
                   <AlertCircle className="size-8" />
                 </div>
                 <div className="space-y-1">

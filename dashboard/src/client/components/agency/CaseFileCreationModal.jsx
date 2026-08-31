@@ -350,8 +350,8 @@ export function CaseFileCreationModal({ isOpen, onClose, onSuccess }) {
                   currentStep === s.num
                     ? 'border-primary text-primary bg-primary/5 font-bold'
                     : currentStep > s.num
-                    ? 'border-emerald-500/80 text-emerald-600 dark:text-emerald-400'
-                    : 'border-transparent text-muted-foreground opacity-60'
+                    ? 'border-emerald-500/80 text-emerald-600'
+                    : 'border-transparent text-black/40 opacity-60'
                 }`}
               >
                 <span
@@ -447,7 +447,7 @@ export function CaseFileCreationModal({ isOpen, onClose, onSuccess }) {
                       <div className="bg-emerald-500/10 border border-emerald-500/30 p-3 rounded-xl flex items-center justify-between">
                         <div className="flex items-center gap-2.5">
                           <CheckCircle2 className="size-4 text-emerald-500 shrink-0" />
-                          <span className="text-xs font-semibold text-emerald-700 dark:text-emerald-300">
+                          <span className="text-xs font-semibold text-emerald-700">
                             Selected: <strong>{selectedClient.fullName || selectedClient.name}</strong> ({selectedClient.passportNumber || selectedClient.phone})
                           </span>
                         </div>
@@ -665,8 +665,8 @@ export function CaseFileCreationModal({ isOpen, onClose, onSuccess }) {
             {/* STEP 3: DOCUMENT VAULT UPLOADS */}
             {currentStep === 3 && (
               <div className="space-y-4">
-                <div className="bg-sky-500/10 border border-sky-500/30 p-3 rounded-xl flex items-center gap-3 text-xs text-sky-800 dark:text-sky-300">
-                  <UploadCloud className="size-5 shrink-0 text-sky-600 dark:text-sky-400" />
+                <div className="bg-sky-500/10 border border-sky-500/30 p-3 rounded-xl flex items-center gap-3 text-xs text-sky-800">
+                  <UploadCloud className="size-5 shrink-0 text-sky-600" />
                   <span>
                     Upload scanned passport copies and candidate bio-photos. Files are securely encrypted and streamed directly to Cloudflare R2 Document Vault.
                   </span>
@@ -768,7 +768,7 @@ export function CaseFileCreationModal({ isOpen, onClose, onSuccess }) {
                       placeholder="e.g. 50000"
                       value={paymentData.advanceAmount}
                       onChange={(e) => setPaymentData({ ...paymentData, advanceAmount: e.target.value })}
-                      className="w-full px-3 py-2 text-xs bg-background border border-border rounded-lg focus:border-primary outline-hidden font-bold text-emerald-600 dark:text-emerald-400"
+                      className="w-full px-3 py-2 text-xs bg-white border border-black/15 rounded-lg focus:border-primary outline-hidden font-bold text-emerald-600"
                     />
                   </div>
 
@@ -845,28 +845,28 @@ export function CaseFileCreationModal({ isOpen, onClose, onSuccess }) {
                       <p className="font-bold text-foreground">{caseDetails.tradeSkill}</p>
                     </div>
                     <div>
-                      <span className="text-muted-foreground">Priority:</span>
-                      <span className="inline-block font-bold text-amber-600 dark:text-amber-400">{caseDetails.priority}</span>
+                      <span className="text-black/60">Priority:</span>
+                      <span className="inline-block font-bold text-amber-600">{caseDetails.priority}</span>
                     </div>
                   </div>
 
-                  <div className="border-t border-border pt-2 grid grid-cols-3 gap-2 text-xs">
+                  <div className="border-t border-black/10 pt-2 grid grid-cols-3 gap-2 text-xs">
                     <div>
-                      <span className="text-muted-foreground text-[10px]">Total Package:</span>
-                      <p className="font-bold text-foreground">৳{totalPkg.toLocaleString()}</p>
+                      <span className="text-black/60 text-[10px]">Total Package:</span>
+                      <p className="font-bold text-black">৳{totalPkg.toLocaleString()}</p>
                     </div>
                     <div>
-                      <span className="text-muted-foreground text-[10px]">Advance Deposit:</span>
-                      <p className="font-bold text-emerald-600 dark:text-emerald-400">৳{advPaid.toLocaleString()}</p>
+                      <span className="text-black/60 text-[10px]">Advance Deposit:</span>
+                      <p className="font-bold text-emerald-600">৳{advPaid.toLocaleString()}</p>
                     </div>
                     <div>
-                      <span className="text-muted-foreground text-[10px]">Remaining Due:</span>
-                      <p className="font-bold text-foreground">৳{remainingDue.toLocaleString()}</p>
+                      <span className="text-black/60 text-[10px]">Remaining Due:</span>
+                      <p className="font-bold text-black">৳{remainingDue.toLocaleString()}</p>
                     </div>
                   </div>
                 </div>
 
-                <p className="text-xs text-muted-foreground leading-relaxed">
+                <p className="text-xs text-black/60 leading-relaxed">
                   Clicking <strong>"Submit & Dispatch to Admin Board"</strong> will create the Master Case File, attach all Document Vault scans, issue the Money Receipt, and alert the Admin Board for processor assignment.
                 </p>
               </div>
@@ -879,7 +879,7 @@ export function CaseFileCreationModal({ isOpen, onClose, onSuccess }) {
               <button
                 type="button"
                 onClick={() => setCurrentStep((prev) => prev - 1)}
-                className="flex items-center gap-1.5 px-4 h-9 bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-200 dark:hover:bg-zinc-700 border border-zinc-300 dark:border-zinc-700 text-xs font-semibold rounded-xl transition cursor-pointer shadow-xs"
+                className="flex items-center gap-1.5 px-4 h-9 bg-black/[0.04] hover:bg-black/[0.08] text-black border border-black/15 text-xs font-semibold rounded-xl transition cursor-pointer shadow-xs"
               >
                 <ChevronLeft className="size-4" />
                 <span>Previous Step</span>
@@ -892,7 +892,7 @@ export function CaseFileCreationModal({ isOpen, onClose, onSuccess }) {
               <button
                 type="button"
                 onClick={onClose}
-                className="px-4 h-9 bg-red-500/10 text-red-600 dark:text-red-400 border border-red-500/30 hover:bg-red-500/20 hover:border-red-500/50 text-xs font-semibold rounded-xl transition cursor-pointer flex items-center justify-center"
+                className="px-4 h-9 bg-red-500/10 text-red-600 border border-red-500/30 hover:bg-red-500/20 hover:border-red-500/50 text-xs font-semibold rounded-xl transition cursor-pointer flex items-center justify-center"
               >
                 Cancel
               </button>
@@ -960,7 +960,7 @@ export function CaseFileCreationModal({ isOpen, onClose, onSuccess }) {
               </div>
             </div>
 
-            <div className="p-6 overflow-y-auto grow bg-white dark:bg-zinc-950">
+            <div className="p-6 overflow-y-auto grow bg-white">
               <MoneyReceiptPrintSlip receipt={createdReceipt} />
             </div>
           </div>

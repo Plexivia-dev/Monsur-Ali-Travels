@@ -10,15 +10,15 @@ const alertVariants = cva(
       variant: {
         default: "bg-card text-card-foreground",
         destructive:
-          "border-rose-500/30 bg-rose-500/10 text-rose-600 dark:text-rose-400 *:data-[slot=alert-description]:text-rose-600/90 dark:*:data-[slot=alert-description]:text-rose-400/90 *:[svg]:text-rose-500",
+          "border-rose-500/30 bg-rose-500/10 text-rose-600 *:data-[slot=alert-description]:text-rose-600/90 *:[svg]:text-rose-500",
         error:
-          "border-rose-500/30 bg-rose-500/10 text-rose-600 dark:text-rose-400 *:data-[slot=alert-description]:text-rose-600/90 dark:*:data-[slot=alert-description]:text-rose-400/90 *:[svg]:text-rose-500",
+          "border-rose-500/30 bg-rose-500/10 text-rose-600 *:data-[slot=alert-description]:text-rose-600/90 *:[svg]:text-rose-500",
         warning:
-          "border-rose-500/30 bg-rose-500/10 text-rose-600 dark:text-rose-400 *:data-[slot=alert-description]:text-rose-600/90 dark:*:data-[slot=alert-description]:text-rose-400/90 *:[svg]:text-rose-500",
+          "border-amber-500/30 bg-amber-500/10 text-amber-600 *:data-[slot=alert-description]:text-amber-600/90 *:[svg]:text-amber-500",
         success:
-          "border-emerald-500/30 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 *:data-[slot=alert-description]:text-emerald-600/90 dark:*:data-[slot=alert-description]:text-emerald-400/90 *:[svg]:text-emerald-500",
+          "border-emerald-500/30 bg-emerald-500/10 text-emerald-600 *:data-[slot=alert-description]:text-emerald-600/90 *:[svg]:text-emerald-500",
         info:
-          "border-amber-500/30 bg-amber-500/10 text-amber-600 dark:text-amber-400 *:data-[slot=alert-description]:text-amber-600/90 dark:*:data-[slot=alert-description]:text-amber-400/90 *:[svg]:text-amber-500",
+          "border-blue-500/30 bg-blue-500/10 text-blue-600 *:data-[slot=alert-description]:text-blue-600/90 *:[svg]:text-blue-500",
       },
     },
     defaultVariants: {

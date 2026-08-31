@@ -318,8 +318,8 @@ export function StepAssignModal({ isOpen = true, caseDoc = {}, caseDid, caseNumb
             <span
               className={`text-[10px] font-bold px-2 py-0.5 rounded-full border ${
                 requiresDocument
-                  ? 'bg-sky-500/10 text-sky-600 dark:text-sky-400 border-sky-500/20'
-                  : 'bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/20'
+                  ? 'bg-sky-500/10 text-sky-600 border-sky-500/20'
+                  : 'bg-amber-500/10 text-amber-600 border-amber-500/20'
               }`}
             >
               {requiresDocument ? 'File Intake' : 'Action Step'}
@@ -331,9 +331,9 @@ export function StepAssignModal({ isOpen = true, caseDoc = {}, caseDid, caseNumb
             <div className="flex items-center justify-between">
               <label
                 onClick={() => setRequiresPayment(!requiresPayment)}
-                className="font-bold text-emerald-800 dark:text-emerald-300 flex items-center gap-2 cursor-pointer select-none"
+                className="font-bold text-emerald-800 flex items-center gap-2 cursor-pointer select-none"
               >
-                <CreditCard className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
+                <CreditCard className="w-4 h-4 text-emerald-600" />
                 <span>Require Client Payment / Service Fee Intake</span>
               </label>
               <input

@@ -9,6 +9,7 @@ import {
   CheckCircle2,
   Folder,
   Lock,
+  MapPin,
 } from 'lucide-react';
 
 /**
@@ -47,7 +48,7 @@ export function ExistingClientAlertModal({ client, caseFile = null, onYes, onNo 
       onClick={(e) => e.stopPropagation()}
     >
       <div
-        className="bg-white text-zinc-900 border border-black/10 shadow-2xl rounded-2xl max-w-lg w-full h-[70vh] flex flex-col overflow-hidden relative animate-in zoom-in-95 duration-200"
+        className="bg-white text-black border border-black/10 shadow-2xl rounded-2xl max-w-lg w-full h-[70vh] flex flex-col overflow-hidden relative animate-in zoom-in-95 duration-200"
         onMouseDown={(e) => e.stopPropagation()}
         onClick={(e) => e.stopPropagation()}
       >
@@ -58,7 +59,7 @@ export function ExistingClientAlertModal({ client, caseFile = null, onYes, onNo 
           </div>
           <div className="min-w-0 flex-1">
             <div className="flex items-center gap-2 flex-wrap">
-              <h3 className="text-base font-bold text-zinc-900">
+              <h3 className="text-base font-bold text-black">
                 There is an existing client with this number!
               </h3>
               <span className="inline-flex items-center gap-1 text-[10px] font-bold bg-amber-500/15 text-amber-700 px-2 py-0.5 rounded-full border border-amber-500/30">
@@ -66,7 +67,7 @@ export function ExistingClientAlertModal({ client, caseFile = null, onYes, onNo 
                 Match Found
               </span>
             </div>
-            <p className="text-xs text-zinc-500 mt-1">
+            <p className="text-xs text-black/60 mt-1">
               Do you want to use this client's information?
             </p>
           </div>
@@ -82,11 +83,11 @@ export function ExistingClientAlertModal({ client, caseFile = null, onYes, onNo 
                   <UserCheck className="size-4" />
                 </div>
                 <div>
-                  <h4 className="font-bold text-sm text-zinc-900 leading-tight">
+                  <h4 className="font-bold text-sm text-black leading-tight">
                     {client.name || client.fullName || 'Client'}
                   </h4>
                   {client.clientCode && (
-                    <span className="text-[10px] font-mono text-zinc-500">
+                    <span className="text-[10px] font-mono text-black/60">
                       Code: {client.clientCode}
                     </span>
                   )}
@@ -99,25 +100,25 @@ export function ExistingClientAlertModal({ client, caseFile = null, onYes, onNo 
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-2 border-t border-black/10 text-xs">
               {client.phone && (
-                <div className="flex items-center gap-2 text-zinc-700 font-mono">
+                <div className="flex items-center gap-2 text-black/80 font-mono">
                   <Phone className="size-3.5 text-primary shrink-0" />
                   <span>{client.phone}</span>
                 </div>
               )}
               {client.passportNumber && (
-                <div className="flex items-center gap-2 text-zinc-700 font-mono">
+                <div className="flex items-center gap-2 text-black/80 font-mono">
                   <CreditCard className="size-3.5 text-primary shrink-0" />
                   <span>{client.passportNumber}</span>
                 </div>
               )}
               {client.email && (
-                <div className="flex items-center gap-2 text-zinc-700 truncate col-span-full">
+                <div className="flex items-center gap-2 text-black/80 truncate col-span-full">
                   <Mail className="size-3.5 text-primary shrink-0" />
                   <span className="truncate">{client.email}</span>
                 </div>
               )}
               {client.presentAddress && (
-                <div className="flex items-start gap-2 text-zinc-700 col-span-full">
+                <div className="flex items-start gap-2 text-black/80 col-span-full">
                   <MapPin className="size-3.5 text-primary shrink-0 mt-0.5" />
                   <span className="line-clamp-2">{client.presentAddress}</span>
                 </div>
@@ -130,7 +131,7 @@ export function ExistingClientAlertModal({ client, caseFile = null, onYes, onNo 
             <div className="mt-2 pt-2 border-t border-black/10 flex items-center gap-2 bg-sky-500/5 border border-sky-500/20 p-2.5 rounded-lg">
               <Folder className="w-4 h-4 text-sky-500 shrink-0" />
               <div>
-                <p className="text-[10px] text-zinc-500 font-semibold">Active Case File</p>
+                <p className="text-[10px] text-black/60 font-semibold">Active Case File</p>
                 <p className="font-bold text-sky-600 text-xs">
                   #{caseFile.caseNumber || caseFile._id} — {caseFile.destinationCountry || caseFile.caseType || 'Active Case'}
                 </p>
