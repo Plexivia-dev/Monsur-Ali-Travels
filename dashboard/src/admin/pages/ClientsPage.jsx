@@ -20,6 +20,7 @@ import { UnifiedDataTable } from '@shared/components/tables/UnifiedDataTable';
 import { HeaderTitle } from '@shared/components/common/HeaderTitle';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { ConfirmDeleteDialog } from '@/components/ui/confirm-delete-dialog';
 
 export function ClientsPage() {
   const navigate = useNavigate();
@@ -33,7 +34,8 @@ export function ClientsPage() {
 
   // Modal State
   const [createModalOpen, setCreateModalOpen] = useState(false);
-  const [deletingId, setDeletingId] = useState(null);
+  const [clientToDelete, setClientToDelete] = useState(null);
+  const [isDeletingClient, setIsDeletingClient] = useState(false);
 
   // Fetches paginated client records with filters
   const fetchClients = useCallback(async () => {
@@ -94,23 +96,27 @@ export function ClientsPage() {
     });
   };
 
+  // Opens delete confirmation modal
+  const handleDeleteClient = (client) => {
+    setClientToDelete(client);
+  };
 
-
-  // Deletes a client record after confirmation
-  const handleDeleteClient = useCallback(async (client) => {
-    if (!window.confirm(`Are you sure you want to permanently delete "${client.fullName}"? This action cannot be undone.`)) return;
-    const clientId = client.did || client._id;
-    setDeletingId(clientId);
+  // Executes confirmed deletion
+  const executeDeleteClient = async () => {
+    if (!clientToDelete) return;
+    const clientId = clientToDelete.did || clientToDelete._id;
+    setIsDeletingClient(true);
     try {
       await apiClient.delete(`/api/v1/client/clients/${clientId}`);
-      toast.success(`Client "${client.fullName}" deleted successfully.`);
+      toast.success(`Client "${clientToDelete.fullName}" deleted successfully.`);
+      setClientToDelete(null);
       fetchClients();
     } catch (err) {
       toast.error(err.response?.data?.message || 'Failed to delete client record.');
     } finally {
-      setDeletingId(null);
+      setIsDeletingClient(false);
     }
-  }, [fetchClients]);
+  };
 
   // Column Definitions for UnifiedDataTable (custom table — row = raw data object)
   const columns = [
@@ -339,6 +345,20 @@ export function ClientsPage() {
             fetchClients();
           }
         }}
+      />
+
+      {/* Confirm Delete Client Dialog */}
+      <ConfirmDeleteDialog
+        open={Boolean(clientToDelete)}
+        onOpenChange={(open) => {
+          if (!open && !isDeletingClient) setClientToDelete(null);
+        }}
+        title={`Delete Client Record?`}
+        description={`Are you sure you want to permanently delete "${clientToDelete?.fullName || 'this client'}"? All associated dossier references and profile records will be permanently removed.`}
+        confirmText="Yes, Delete"
+        cancelText="Cancel"
+        isDeleting={isDeletingClient}
+        onConfirm={executeDeleteClient}
       />
     </div>
   );

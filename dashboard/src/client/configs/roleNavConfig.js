@@ -260,18 +260,26 @@ export const ROLE_NAVIGATION_PRESETS = {
     defaultSubmodule: 'tasks',
     navGroups: [
       {
-        groupLabel: '',
-        groupKey: '',
+        groupLabel: 'Agency Workspace',
+        groupKey: 'nav.agency',
         portal: 'agency',
         items: [
           MASTER_ITEMS.myTasks,
           {
-            icon: 'FilePlus2',
-            label: 'Client Intake',
-            key: 'nav.clients',
+            icon: 'FolderOpen',
+            label: 'Client Files',
+            key: 'nav.caseFiles',
             portal: 'agency',
             submodule: 'cases',
             href: '/dashboard/agency/cases',
+          },
+          {
+            icon: 'Users',
+            label: 'Client List',
+            key: 'nav.clients',
+            portal: 'agency',
+            submodule: 'clients',
+            href: '/dashboard/agency/clients',
           },
           {
             icon: 'FileText',

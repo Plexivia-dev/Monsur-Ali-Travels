@@ -455,8 +455,10 @@ export function TaskDetailModal({
 
   // Separate explicit action: Mark Task as Completed
   const handleMarkAsDone = async () => {
-    // 1. Mandatory Work Notes Validation:
-    if (!completionNotes.trim()) {
+    const isDocTask = task.requiresDocument !== false && assignedFormOptions.length > 0;
+
+    // 1. Work Notes Validation (Mandatory ONLY for tasks without file uploads):
+    if (!isDocTask && !completionNotes.trim()) {
       toast.error('Work Notes are Mandatory: Please enter your progress/completion remarks before completing this step.');
       setActiveTab('notes');
       return;
@@ -1023,17 +1025,22 @@ export function TaskDetailModal({
               <div className="space-y-2 bg-muted/30 border border-border rounded-xl p-3.5 sm:p-4">
                 <label className="text-xs font-bold text-foreground uppercase tracking-wider flex items-center gap-1.5">
                   <FileCheck2 className="w-4 h-4 text-emerald-500" />
-                  Staff Progress & Work Notes * (Mandatory)
+                  Staff Progress & Work Notes {task?.requiresDocument === false || assignedFormOptions.length === 0 ? '* (Mandatory)' : '(Optional)'}
                 </label>
                 <p className="text-[11px] text-muted-foreground">
-                  Mandatory: Describe the actions completed, client consultation details, verification findings, or notes regarding attached files.
+                  {task?.requiresDocument === false || assignedFormOptions.length === 0
+                    ? 'Mandatory: Describe the actions completed, client consultation details, or verification findings.'
+                    : 'Optional: Add any supplementary work notes, client remarks, or additional observations for this task.'}
                 </p>
                 <textarea
                   rows={4}
-                  required
                   value={completionNotes}
                   onChange={(e) => setCompletionNotes(e.target.value)}
-                  placeholder="Enter required work details and remarks before completing this step (Mandatory)..."
+                  placeholder={
+                    task?.requiresDocument === false || assignedFormOptions.length === 0
+                      ? 'Enter required work details and remarks before completing this step (Mandatory)...'
+                      : 'Enter any additional work notes or remarks (Optional)...'
+                  }
                   className="w-full px-3 py-2 text-xs bg-card border border-border rounded-xl text-foreground focus:outline-none focus:border-primary resize-none placeholder:text-muted-foreground/60 font-normal"
                 />
               </div>

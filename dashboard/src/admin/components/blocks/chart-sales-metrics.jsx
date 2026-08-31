@@ -126,7 +126,7 @@ export const SalesMetricsCard = ({ className }) => {
             <CardHeader className='gap-1 flex flex-row items-center justify-between pb-2'>
               <CardTitle className='text-base font-semibold text-black'>Latest Updates</CardTitle>
               <Link
-                to="/admin/visa-workflows"
+                to="/admin/cases"
                 className="text-xs font-medium text-primary hover:underline shrink-0"
               >
                 View More →

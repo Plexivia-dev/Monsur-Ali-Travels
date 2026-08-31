@@ -61,7 +61,7 @@ export function NotificationBell() {
     setIsOpen(false);
 
     if (item.module === 'visa' && item.refDid) {
-      navigate(`/admin/visa-workflows/${item.refDid}`);
+      navigate(`/admin/cases/${item.refDid}`);
     } else if (item.module === 'invoice' || item.module === 'agreement') {
       navigate(`/admin/docs`);
     } else if (item.module === 'client' && item.refDid) {

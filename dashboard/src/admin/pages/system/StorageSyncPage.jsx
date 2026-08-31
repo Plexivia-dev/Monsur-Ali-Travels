@@ -144,11 +144,16 @@ const StorageSyncPage = () => {
     }
   };
 
+  const [batchToPurge, setBatchToPurge] = useState(null);
+
   // Approve & Purge Orphan Batch
-  const handleApprovePurge = async (batchDid) => {
-    if (!window.confirm('Are you sure you want to permanently delete these unused files from local disk and Cloudflare R2? This action cannot be undone.')) {
-      return;
-    }
+  const handleApprovePurge = (batchDid) => {
+    setBatchToPurge(batchDid);
+  };
+
+  const executeApprovePurge = async () => {
+    if (!batchToPurge) return;
+    const batchDid = batchToPurge;
 
     setPurgingBatchDid(batchDid);
     try {
@@ -157,6 +162,7 @@ const StorageSyncPage = () => {
         const d = res.data.data;
         toast.success(`Purge completed! Removed ${d.deletedFromDiskCount} files from disk and ${d.deletedFromR2Count} from R2.`);
         setSelectedBatch(null);
+        setBatchToPurge(null);
         await loadAllData();
       }
     } catch (err) {
@@ -673,6 +679,19 @@ const StorageSyncPage = () => {
           </div>
         </UnifiedModal>
       )}
+      {/* Confirm Purge Dialog */}
+      <ConfirmDeleteDialog
+        open={Boolean(batchToPurge)}
+        onOpenChange={(open) => {
+          if (!open && !purgingBatchDid) setBatchToPurge(null);
+        }}
+        title="Approve & Purge Orphan Files?"
+        description="Are you sure you want to permanently delete these unused files from local disk and Cloudflare R2? This action cannot be undone."
+        confirmText="Yes, Purge Files"
+        cancelText="Cancel"
+        isDeleting={Boolean(purgingBatchDid)}
+        onConfirm={executeApprovePurge}
+      />
     </div>
   );
 };

@@ -25,6 +25,7 @@ import { HeaderTitle } from '@shared/components/common/HeaderTitle';
 import { UnifiedModalHeader, UnifiedModalFooter } from '@shared/components/common/UnifiedModal';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { ConfirmDeleteDialog } from '@/components/ui/confirm-delete-dialog';
 
 // Renders the Agency Employees & Staff Directory page for Admin Dashboard
 export const EmployeesPage = () => {
@@ -200,21 +201,30 @@ export const EmployeesPage = () => {
     }
   };
 
-  // Deletes an employee
-  const handleDeleteEmployee = async (emp) => {
-    const empId = emp.did || emp._id || emp.id;
-    if (!empId) return;
-    if (!window.confirm(`Are you sure you want to delete employee "${emp.fullName}"?`)) return;
+  const [employeeToDelete, setEmployeeToDelete] = useState(null);
+  const [isDeletingEmployee, setIsDeletingEmployee] = useState(false);
 
-    setDeletingId(empId);
+  // Opens delete confirmation modal
+  const handleDeleteEmployee = (emp) => {
+    setEmployeeToDelete(emp);
+  };
+
+  // Executes confirmed deletion
+  const executeDeleteEmployee = async () => {
+    if (!employeeToDelete) return;
+    const empId = employeeToDelete.did || employeeToDelete._id || employeeToDelete.id;
+    if (!empId) return;
+
+    setIsDeletingEmployee(true);
     try {
       await apiClient.delete(`/api/v1/admin/employees/${empId}`);
-      toast.success(`Employee "${emp.fullName}" removed.`);
+      toast.success(`Employee "${employeeToDelete.fullName}" removed.`);
       setEmployees((prev) => prev.filter((item) => (item.did || item._id) !== empId));
+      setEmployeeToDelete(null);
     } catch (err) {
       toast.error(err.response?.data?.message || 'Failed to delete employee.');
     } finally {
-      setDeletingId(null);
+      setIsDeletingEmployee(false);
     }
   };
 
@@ -689,6 +699,19 @@ export const EmployeesPage = () => {
           </div>
         </div>
       )}
+      {/* Confirm Delete Employee Dialog */}
+      <ConfirmDeleteDialog
+        open={Boolean(employeeToDelete)}
+        onOpenChange={(open) => {
+          if (!open && !isDeletingEmployee) setEmployeeToDelete(null);
+        }}
+        title={`Delete Employee Record?`}
+        description={`Are you sure you want to delete employee "${employeeToDelete?.fullName || 'this employee'}"? They will lose all portal access and staff directory assignments.`}
+        confirmText="Yes, Delete"
+        cancelText="Cancel"
+        isDeleting={isDeletingEmployee}
+        onConfirm={executeDeleteEmployee}
+      />
     </div>
   );
 };
