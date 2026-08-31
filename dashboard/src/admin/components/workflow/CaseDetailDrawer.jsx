@@ -368,7 +368,7 @@ export function CaseDetailDrawer({ caseDid, isOpen, onClose, onRefresh }) {
                 className="flex items-center gap-1 px-3.5 py-1.5 bg-primary hover:bg-primary/90 text-primary-foreground font-bold text-xs rounded-lg transition-all cursor-pointer shadow-xs"
               >
                 <CreditCard className="size-3.5" />
-                <span>+ Add Payment</span>
+                <span>Add Payment</span>
               </button>
 
               <button

@@ -1596,7 +1596,7 @@ export default function CaseDetailPage() {
                   className="flex items-center gap-1.5 px-3.5 py-2 bg-sky-500/10 hover:bg-sky-500/20 text-sky-700 border border-sky-500/30 font-bold text-xs rounded-xl shadow-xs transition cursor-pointer"
                 >
                   <Plus className="w-3.5 h-3.5 text-sky-500" />
-                  <span>+ Add New Document</span>
+                  <span>Add New Document</span>
                 </button>
                 <button
                   type="button"
@@ -1604,7 +1604,7 @@ export default function CaseDetailPage() {
                   className="flex items-center gap-1.5 px-3.5 py-2 bg-primary text-primary-foreground font-bold text-xs rounded-xl shadow-xs hover:bg-primary/90 transition cursor-pointer"
                 >
                   <UploadCloud className="w-3.5 h-3.5" />
-                  <span>+ Upload New File</span>
+                  <span>Upload New File</span>
                 </button>
               </div>
             </div>
@@ -1623,7 +1623,7 @@ export default function CaseDetailPage() {
                     className="flex items-center gap-1.5 px-4 py-2 bg-sky-500/10 hover:bg-sky-500/20 text-sky-700 border border-sky-500/30 font-bold text-xs rounded-xl cursor-pointer"
                   >
                     <Plus className="w-3.5 h-3.5" />
-                    <span>+ Generate Official Document</span>
+                    <span>Generate Official Document</span>
                   </button>
                   <button
                     type="button"
@@ -1631,7 +1631,7 @@ export default function CaseDetailPage() {
                     className="flex items-center gap-1.5 px-4 py-2 bg-primary text-primary-foreground font-bold text-xs rounded-xl cursor-pointer"
                   >
                     <UploadCloud className="w-3.5 h-3.5" />
-                    <span>+ Upload File Scan</span>
+                    <span>Upload File Scan</span>
                   </button>
                 </div>
               </div>

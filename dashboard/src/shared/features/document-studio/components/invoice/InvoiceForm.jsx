@@ -279,7 +279,7 @@ export function InvoiceForm({ data, onChange, onSubmit, onReset, isSubmitting = 
             className="flex items-center gap-1 bg-white/20 hover:bg-white/30 text-white font-bold text-[11px] px-3 py-1 rounded-lg transition-all cursor-pointer shadow-xs"
           >
             <Plus className="w-3.5 h-3.5" />
-            <span>+ Add Item</span>
+            <span>Add Item</span>
           </button>
         </div>
 

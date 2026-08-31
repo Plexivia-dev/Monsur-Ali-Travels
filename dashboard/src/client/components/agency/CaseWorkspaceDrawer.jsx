@@ -634,7 +634,7 @@ export function CaseWorkspaceDrawer({ caseId, isOpen, onClose, onRefresh }) {
                 className="flex items-center gap-1.5 px-3 py-1.5 bg-primary/10 hover:bg-primary/20 text-primary font-bold rounded-xl transition-all cursor-pointer"
               >
                 <UploadCloud className="size-4" />
-                <span>+ Upload File</span>
+                <span>Upload File</span>
               </button>
               <button
                 onClick={() => setActiveTab('communication')}
@@ -963,7 +963,7 @@ export function CaseWorkspaceDrawer({ caseId, isOpen, onClose, onRefresh }) {
                         className="flex items-center gap-1.5 px-3 py-1.5 bg-sky-500/10 hover:bg-sky-500/20 text-sky-700 border border-sky-500/30 font-bold text-xs rounded-xl shadow-2xs transition-all cursor-pointer"
                       >
                         <FilePlus2 className="size-3.5 text-sky-600" />
-                        <span>+ Generate Document</span>
+                        <span>Generate Document</span>
                       </button>
 
                       <button
@@ -971,7 +971,7 @@ export function CaseWorkspaceDrawer({ caseId, isOpen, onClose, onRefresh }) {
                         className="flex items-center gap-1 px-3 py-1.5 bg-primary text-primary-foreground font-bold text-xs rounded-xl shadow-xs hover:bg-primary/90 transition-all cursor-pointer"
                       >
                         <Plus className="size-3.5" />
-                        <span>+ Upload Document</span>
+                        <span>Upload Document</span>
                       </button>
                     </div>
                   </div>
