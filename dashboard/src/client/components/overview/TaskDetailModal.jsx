@@ -77,13 +77,55 @@ const resolveDocTitle = (docKey) => {
 };
 
 const STUDIO_GENERATORS = [
-  { id: 'client-form', title: 'Client & Guardian Form', icon: UserCheck, color: 'text-sky-600 bg-sky-50 dark:bg-sky-950/50' },
-  { id: 'agreement', title: 'Employment Agreement', icon: FileSignature, color: 'text-blue-600 bg-blue-50 dark:bg-blue-950/50' },
-  { id: 'money-receipt', title: 'Money Receipt / Pay Slip', icon: Receipt, color: 'text-emerald-600 bg-emerald-50 dark:bg-emerald-950/50' },
-  { id: 'invoice', title: 'Client Invoice Bill', icon: FileText, color: 'text-indigo-600 bg-indigo-50 dark:bg-indigo-950/50' },
-  { id: 'indian-visa', title: 'Indian Visa File', icon: Stamp, color: 'text-amber-600 bg-amber-50 dark:bg-amber-950/50' },
-  { id: 'passport-sub', title: 'Passport Custody Slip', icon: BookOpen, color: 'text-purple-600 bg-purple-50 dark:bg-purple-950/50' },
-  { id: 'job-verification', title: 'Job Verification Form', icon: FileCheck2, color: 'text-cyan-600 bg-cyan-50 dark:bg-cyan-950/50' },
+  {
+    id: 'client-form',
+    title: 'Client & Guardian Form',
+    icon: UserCheck,
+    color: 'text-sky-600 bg-sky-50 dark:bg-sky-950/50',
+    keywords: ['bio-data', 'guardian', 'client form', 'client-form', 'intake', 'client bio', 'bio data'],
+  },
+  {
+    id: 'agreement',
+    title: 'Employment Agreement',
+    icon: FileSignature,
+    color: 'text-blue-600 bg-blue-50 dark:bg-blue-950/50',
+    keywords: ['agreement', 'contract', 'deed', 'employment agreement', 'employment contract'],
+  },
+  {
+    id: 'money-receipt',
+    title: 'Money Receipt / Pay Slip',
+    icon: Receipt,
+    color: 'text-emerald-600 bg-emerald-50 dark:bg-emerald-950/50',
+    keywords: ['receipt', 'payment', 'money-receipt', 'payslip', 'money receipt', 'advance', 'fee collection'],
+  },
+  {
+    id: 'invoice',
+    title: 'Client Invoice Bill',
+    icon: FileText,
+    color: 'text-indigo-600 bg-indigo-50 dark:bg-indigo-950/50',
+    keywords: ['invoice', 'bill', 'billing', 'charge', 'client invoice'],
+  },
+  {
+    id: 'indian-visa',
+    title: 'Indian Visa File',
+    icon: Stamp,
+    color: 'text-amber-600 bg-amber-50 dark:bg-amber-950/50',
+    keywords: ['indian visa', 'ivac', 'indian-visa', 'delhi', 'vfs india', 'india visa', 'new delhi'],
+  },
+  {
+    id: 'passport-sub',
+    title: 'Passport Custody Slip',
+    icon: BookOpen,
+    color: 'text-purple-600 bg-purple-50 dark:bg-purple-950/50',
+    keywords: ['passport custody', 'passport submission', 'passport-sub', 'passport handover', 'passport receipt'],
+  },
+  {
+    id: 'job-verification',
+    title: 'Job Verification Form',
+    icon: FileCheck2,
+    color: 'text-cyan-600 bg-cyan-50 dark:bg-cyan-950/50',
+    keywords: ['job verification', 'job-verification', 'job letter', 'employment verification', 'job cert'],
+  },
 ];
 
 export function TaskDetailModal({
@@ -180,11 +222,11 @@ export function TaskDetailModal({
     return DOCUMENT_NAME_PRESETS;
   }, [task]);
 
-  // Compute matched studio generators for assigned task types
+  // Compute strictly the matched studio generators for assigned task types
   const assignedStudioGenerators = useMemo(() => {
-    if (!task) return STUDIO_GENERATORS;
+    if (!task) return [];
 
-    const keywords = [
+    const taskTokens = [
       ...(task.taskTypeNames || []),
       ...(task.requiredDocTypes || []),
       task.title || '',
@@ -192,35 +234,12 @@ export function TaskDetailModal({
     ].map((s) => String(s).toLowerCase());
 
     const matched = STUDIO_GENERATORS.filter((gen) => {
-      const gId = gen.id.toLowerCase();
-
-      return keywords.some((kw) => {
-        if (kw.includes('bio-data') || kw.includes('guardian') || kw.includes('client form') || kw.includes('client-form') || kw.includes('intake')) {
-          return gId === 'client-form';
-        }
-        if (kw.includes('agreement') || kw.includes('contract') || kw.includes('deed')) {
-          return gId === 'agreement';
-        }
-        if (kw.includes('indian visa') || kw.includes('ivac') || kw.includes('indian-visa') || kw.includes('delhi')) {
-          return gId === 'indian-visa';
-        }
-        if (kw.includes('passport custody') || kw.includes('passport submission') || kw.includes('passport-sub')) {
-          return gId === 'passport-sub';
-        }
-        if (kw.includes('job verification') || kw.includes('job-verification') || kw.includes('experience')) {
-          return gId === 'job-verification';
-        }
-        if (kw.includes('receipt') || kw.includes('payment') || kw.includes('money-receipt') || kw.includes('payslip')) {
-          return gId === 'money-receipt';
-        }
-        if (kw.includes('invoice') || kw.includes('bill')) {
-          return gId === 'invoice';
-        }
-        return false;
-      });
+      return gen.keywords.some((kw) =>
+        taskTokens.some((token) => token.includes(kw))
+      );
     });
 
-    return matched.length > 0 ? matched : STUDIO_GENERATORS;
+    return matched;
   }, [task]);
 
   // Multi-Row Document Upload State (Pre-populated strictly with assigned forms)
@@ -434,11 +453,66 @@ export function TaskDetailModal({
 
   // Separate explicit action: Mark Task as Completed
   const handleMarkAsDone = async () => {
-    // If this is an action task (no document required and no payment), work remarks/notes are mandatory
-    if (task.requiresDocument === false && !task.requiresPayment && !completionNotes.trim()) {
-      toast.error('Work remarks / notes are mandatory for this action step.');
+    // 1. Mandatory Work Notes Validation:
+    if (!completionNotes.trim()) {
+      toast.error('Work Notes are Mandatory: Please enter your progress/completion remarks before completing this step.');
       setActiveTab('notes');
       return;
+    }
+
+    // 2. Mandatory Payment Collection Validation (if payment task):
+    if (task.requiresPayment && (paymentCollected === '' || Number(paymentCollected) < 0)) {
+      toast.error('Payment Collection is Mandatory: Please record the collected payment amount.');
+      setActiveTab('payment');
+      return;
+    }
+
+    // 3. Mandatory Document Upload Validation:
+    if (task.requiresDocument !== false && assignedFormOptions.length > 0) {
+      // Auto-upload any pending selected file rows first
+      const pendingRowsWithFiles = uploadRows.filter((r) => r.file);
+      if (pendingRowsWithFiles.length > 0) {
+        setIsBatchUploading(true);
+        for (const row of pendingRowsWithFiles) {
+          try {
+            const formData = new FormData();
+            formData.append('file', row.file);
+            const queryParams = new URLSearchParams();
+            if (task.caseDid) queryParams.append('clientId', task.caseDid);
+            const categorySlug = (row.title || 'document').toLowerCase().replace(/[^a-z0-9]+/g, '-');
+            queryParams.append('documentType', `task-${categorySlug}`);
+
+            const uploadRes = await apiClient.post(`/api/v1/upload/single?${queryParams.toString()}`, formData, {
+              headers: { 'Content-Type': 'multipart/form-data' },
+            });
+            const uploadedUrl = uploadRes.data?.data?.url || uploadRes.data?.url || uploadRes.data?.fileUrl;
+            if (uploadedUrl && task.caseDid) {
+              const sizeInMb = (row.file.size / (1024 * 1024)).toFixed(2) + ' MB';
+              const attachRes = await apiClient.post(`/api/v1/client/cases/${task.caseDid}/documents`, {
+                documentName: row.title?.trim() || 'Task Document',
+                fileName: row.file.name,
+                fileUrl: uploadedUrl,
+                fileType: row.file.type || 'application/pdf',
+                fileSize: sizeInMb,
+                accessLevel: row.accessLevel || 'Restricted',
+              });
+              if (attachRes.data?.data) {
+                setUploadedDocsList((prev) => [attachRes.data.data, ...prev]);
+              }
+            }
+          } catch (uploadErr) {
+            console.warn('Auto-upload error on complete:', uploadErr.message);
+          }
+        }
+        setIsBatchUploading(false);
+      }
+
+      const totalDocsAvailable = (task.permittedDocs?.length || 0) + uploadedDocsList.length + pendingRowsWithFiles.length;
+      if (totalDocsAvailable === 0) {
+        toast.error('Document Upload is Mandatory: You must select and upload the assigned file(s) before completing this step.');
+        setActiveTab('upload');
+        return;
+      }
     }
 
     const collectedNum = paymentCollected !== '' ? Number(paymentCollected) : (task.requiresPayment ? Number(task.paymentAmount) : 0);
@@ -446,7 +520,7 @@ export function TaskDetailModal({
     setIsSubmittingDone(true);
     try {
       await apiClient.patch(`/api/v1/client/tasks/${task.did || task._id}/done`, {
-        completionNotes: completionNotes.trim() || 'Task completed with attached documents/verifications.',
+        completionNotes: completionNotes.trim(),
         paymentCollectedAmount: collectedNum,
         paymentMethod,
         generateMoneyReceipt,
@@ -898,66 +972,70 @@ export function TaskDetailModal({
                 <div>
                   <h4 className="text-xs font-bold text-foreground flex items-center gap-1.5 uppercase tracking-wider">
                     <Sparkles className="w-4 h-4 text-amber-500" />
-                    Create Legal / Official Document in Studio
+                    Assigned Document Studio Generators ({assignedStudioGenerators.length})
                   </h4>
                   <p className="text-[11px] text-muted-foreground mt-0.5">
-                    If this step requires generating an agreement, money receipt, or visa file, launch the generator directly.
+                    Launch the official legal / verification document generators assigned specifically for this task step.
                   </p>
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 pt-1">
-                  {assignedStudioGenerators.map((gen) => {
-                    const Icon = gen.icon;
-                    return (
-                      <div
-                        key={gen.id}
-                        onClick={() => handleLaunchGenerator(gen.id)}
-                        className="p-3 rounded-xl bg-card border border-border hover:border-primary/50 hover:bg-muted/40 transition-all cursor-pointer flex items-center justify-between gap-3 shadow-2xs group"
-                      >
-                        <div className="flex items-center gap-2.5 min-w-0">
-                          <div className={`p-2 rounded-lg ${gen.color} shrink-0`}>
-                            <Icon className="w-4 h-4" />
+                {assignedStudioGenerators.length === 0 ? (
+                  <div className="bg-card border border-border rounded-xl p-4 text-center space-y-2 shadow-2xs">
+                    <AlertCircle className="w-6 h-6 mx-auto text-amber-500/80" />
+                    <p className="text-xs font-semibold text-foreground">
+                      No Document Studio templates assigned for this step.
+                    </p>
+                    <p className="text-[11px] text-muted-foreground max-w-sm mx-auto">
+                      Please use the <strong>Document Intake (Upload)</strong> tab to attach physical scans/files for this task.
+                    </p>
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 pt-1">
+                    {assignedStudioGenerators.map((gen) => {
+                      const Icon = gen.icon;
+                      return (
+                        <div
+                          key={gen.id}
+                          onClick={() => handleLaunchGenerator(gen.id)}
+                          className="p-3 rounded-xl bg-card border border-border hover:border-primary/50 hover:bg-muted/40 transition-all cursor-pointer flex items-center justify-between gap-3 shadow-2xs group"
+                        >
+                          <div className="flex items-center gap-2.5 min-w-0">
+                            <div className={`p-2 rounded-lg ${gen.color} shrink-0`}>
+                              <Icon className="w-4 h-4" />
+                            </div>
+                            <div className="min-w-0">
+                              <h5 className="font-bold text-xs text-foreground group-hover:text-primary transition-colors truncate">
+                                {gen.title}
+                              </h5>
+                              <span className="text-[10px] text-muted-foreground">Document Studio Engine</span>
+                            </div>
                           </div>
-                          <div className="min-w-0">
-                            <h5 className="font-bold text-xs text-foreground group-hover:text-primary transition-colors truncate">
-                              {gen.title}
-                            </h5>
-                            <span className="text-[10px] text-muted-foreground">Document Studio Engine</span>
-                          </div>
+                          <ChevronRight className="w-4 h-4 text-muted-foreground group-hover:text-foreground group-hover:translate-x-0.5 transition-all shrink-0" />
                         </div>
-                        <ChevronRight className="w-4 h-4 text-muted-foreground group-hover:text-foreground group-hover:translate-x-0.5 transition-all shrink-0" />
-                      </div>
-                    );
-                  })}
-                </div>
+                      );
+                    })}
+                  </div>
+                )}
               </div>
             )}
 
-            {/* TAB 3: Completion Remarks & Work Notes */}
+            {/* TAB: Completion Remarks & Work Notes */}
             {activeTab === 'notes' && (
               <div className="space-y-2 bg-muted/30 border border-border rounded-xl p-3.5 sm:p-4">
                 <label className="text-xs font-bold text-foreground uppercase tracking-wider flex items-center gap-1.5">
                   <FileCheck2 className="w-4 h-4 text-emerald-500" />
-                  {task.requiresDocument === false
-                    ? 'Staff Action Remarks / Work Notes * (Mandatory)'
-                    : 'Staff Progress & Completion Remarks (Optional)'}
+                  Staff Progress & Work Notes * (Mandatory)
                 </label>
                 <p className="text-[11px] text-muted-foreground">
-                  {task.requiresDocument === false
-                    ? 'Mandatory: Describe the actions completed, client consultation details, or appointment results.'
-                    : 'Optional: Record any additional verification notes, token slips, or remarks regarding uploaded documents.'}
+                  Mandatory: Describe the actions completed, client consultation details, verification findings, or notes regarding attached files.
                 </p>
                 <textarea
                   rows={4}
-                  required={task.requiresDocument === false}
+                  required
                   value={completionNotes}
                   onChange={(e) => setCompletionNotes(e.target.value)}
-                  placeholder={
-                    task.requiresDocument === false
-                      ? 'Describe what actions were taken for this step (Mandatory)...'
-                      : '(Optional) Add any notes regarding attached files...'
-                  }
-                  className="w-full px-3 py-2 text-xs bg-card border border-border rounded-xl text-foreground focus:outline-none focus:border-primary resize-none placeholder:text-muted-foreground/60"
+                  placeholder="Enter required work details and remarks before completing this step (Mandatory)..."
+                  className="w-full px-3 py-2 text-xs bg-card border border-border rounded-xl text-foreground focus:outline-none focus:border-primary resize-none placeholder:text-muted-foreground/60 font-normal"
                 />
               </div>
             )}
