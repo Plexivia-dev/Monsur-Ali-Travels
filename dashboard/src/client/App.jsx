@@ -105,6 +105,13 @@ function MainLayout() {
 
 
 export default function App() {
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      document.documentElement.classList.remove('dark');
+      localStorage.setItem('smart_erp_theme', 'light');
+    }
+  }, []);
+
   return (
     <GlobalErrorBoundary>
       <QueryClientProvider client={queryClient}>
