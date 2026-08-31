@@ -750,21 +750,12 @@ export function TaskDetailModal({
                   <div>
                     <h4 className="text-xs font-bold text-foreground flex items-center gap-1.5 uppercase tracking-wider">
                       <UploadCloud className="w-4 h-4 text-primary" />
-                      Client Document Intake (Multi-Row)
+                      Assigned Document Intake
                     </h4>
                     <p className="text-[11px] text-muted-foreground mt-0.5">
-                      Select or add multiple document rows to upload and register directly into Case Vault.
+                      Upload the required documents for this task step directly into Case Vault.
                     </p>
                   </div>
-                  <Button
-                    type="button"
-                    size="sm"
-                    onClick={handleAddRow}
-                    className="h-7 text-xs px-2.5 font-semibold bg-primary/10 text-primary border border-primary/30 hover:bg-primary/20 hover:border-primary/50 flex items-center gap-1 cursor-pointer"
-                  >
-                    <Plus className="w-3.5 h-3.5" />
-                    <span>Add Row</span>
-                  </Button>
                 </div>
 
                 {/* Rows List */}
@@ -772,38 +763,26 @@ export function TaskDetailModal({
                   {uploadRows.map((row, idx) => (
                     <div
                       key={row.id}
-                      className="bg-card border border-border rounded-xl p-2.5 sm:p-3 flex flex-col sm:flex-row items-stretch sm:items-center gap-2 text-xs shadow-2xs"
+                      className="bg-card border border-border rounded-xl p-3 flex flex-col sm:flex-row items-stretch sm:items-center gap-3 text-xs shadow-2xs"
                     >
                       {/* Row Index */}
-                      <span className="w-5 text-center font-mono font-bold text-muted-foreground shrink-0 hidden sm:inline">
+                      <span className="w-6 text-center font-mono font-bold text-muted-foreground shrink-0 hidden sm:inline">
                         #{idx + 1}
                       </span>
 
-                      {/* Preset Select & Custom Title */}
-                      <div className="flex-1 min-w-[200px] space-y-1">
-                        <select
-                          value={row.title}
-                          onChange={(e) => handleUpdateRow(row.id, 'title', e.target.value)}
-                          className="w-full h-8 px-2 text-xs bg-muted/40 border border-border rounded-md text-foreground focus:outline-none focus:border-primary cursor-pointer font-semibold"
-                        >
-                          <option value="">
-                            {assignedFormOptions !== DOCUMENT_NAME_PRESETS
-                              ? `Select Assigned Form (${assignedFormOptions.length} available)...`
-                              : 'Select Document Type / Preset...'}
-                          </option>
-                          {assignedFormOptions.map((formName) => (
-                            <option key={formName} value={formName}>
-                              {formName}
-                            </option>
-                          ))}
-                        </select>
-
-                        <Input
-                          value={row.title}
-                          onChange={(e) => handleUpdateRow(row.id, 'title', e.target.value)}
-                          placeholder="Or type custom title (e.g. Greek Visa Stamped Slip)..."
-                          className="h-7 text-[11px] bg-background border-border"
-                        />
+                      {/* Fixed Document Name (Non-editable) */}
+                      <div className="flex-1 min-w-[200px] flex items-center gap-2.5 p-2.5 rounded-xl bg-black/[0.02] border border-black/10">
+                        <div className="size-8 rounded-lg bg-primary/10 text-primary flex items-center justify-center shrink-0">
+                          <FileText className="size-4" />
+                        </div>
+                        <div className="min-w-0">
+                          <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider block">
+                            Required Document
+                          </span>
+                          <h4 className="text-xs font-bold text-foreground truncate" title={row.title || 'Required Document'}>
+                            {row.title || 'Required Document'}
+                          </h4>
+                        </div>
                       </div>
 
                       {/* File Selector */}
@@ -820,27 +799,33 @@ export function TaskDetailModal({
                         />
                         <label
                           htmlFor={`file-input-${row.id}`}
-                          className="w-full h-[58px] border border-dashed border-border hover:border-primary/60 bg-muted/20 hover:bg-muted/40 rounded-lg px-2.5 py-1.5 flex items-center justify-center gap-2 cursor-pointer transition-colors text-xs text-muted-foreground hover:text-foreground text-center"
+                          className={`w-full h-[52px] border border-dashed rounded-lg px-3 py-1.5 flex items-center justify-center gap-2 cursor-pointer transition-colors text-xs text-center ${
+                            row.file
+                              ? 'border-emerald-500/50 bg-emerald-500/5 text-emerald-700'
+                              : 'border-border hover:border-primary/60 bg-muted/20 hover:bg-muted/40 text-muted-foreground hover:text-foreground'
+                          }`}
                         >
                           {row.file ? (
-                            <span className="font-semibold text-foreground truncate max-w-[160px]">
-                              📁 {row.file.name} ({((row.file.size) / (1024 * 1024)).toFixed(2)} MB)
+                            <span className="font-semibold text-emerald-700 truncate max-w-[180px]">
+                              ✓ {row.file.name} ({((row.file.size) / (1024 * 1024)).toFixed(2)} MB)
                             </span>
                           ) : (
-                            <span className="text-[11px]">📎 Choose PDF / Image</span>
+                            <span className="text-[11px] font-medium">📎 Choose PDF / Image</span>
                           )}
                         </label>
                       </div>
 
-                      {/* Remove Row Button */}
-                      <button
-                        type="button"
-                        onClick={() => handleRemoveRow(row.id)}
-                        className="p-1.5 text-muted-foreground hover:text-destructive rounded-lg hover:bg-muted transition-colors cursor-pointer shrink-0 self-center"
-                        title="Remove row"
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </button>
+                      {/* Clear File / Remove Button */}
+                      {row.file ? (
+                        <button
+                          type="button"
+                          onClick={() => handleUpdateRow(row.id, 'file', null)}
+                          className="p-1.5 text-red-500 hover:text-red-600 rounded-lg hover:bg-red-500/10 transition-colors cursor-pointer shrink-0 self-center"
+                          title="Clear attached file"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      ) : null}
                     </div>
                   ))}
                 </div>
