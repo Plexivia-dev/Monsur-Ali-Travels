@@ -117,7 +117,6 @@ export default defineConfig({
       '@base-ui/react/menu',
       '@base-ui/react/select',
       '@base-ui/react/toast',
-      '@base-ui/react/tooltip',
     ],
   },
   server: {
