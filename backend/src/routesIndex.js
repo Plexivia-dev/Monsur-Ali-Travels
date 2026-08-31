@@ -38,6 +38,7 @@ import accountsRouter from "./routes/shared/AccountsRoute.js";
 import adminCaseRouter from "./routes/admin/AdminCaseRoute.js";
 import taskRouter from "./routes/client/TaskRoute.js";
 import taskTypeRouter from "./routes/admin/taskType.route.js";
+import inquiryRouter from "./routes/shared/InquiryRoute.js";
 
 // ==========================================
 // 1. SHARED ROUTES (Mounted directly at /api/v1/)
@@ -48,6 +49,9 @@ coreRouter.use("/qrcode", qrRouter);
 coreRouter.use("/upload", uploadRouter);
 coreRouter.use("/uploads", uploadRouter);
 coreRouter.use("/notifications", notificationRouter);
+coreRouter.use("/inquiries", inquiryRouter);
+coreRouter.use("/public/inquiries", inquiryRouter);
+coreRouter.use("/contact", inquiryRouter);
 coreRouter.use("/task-types", taskTypeRouter);
 coreRouter.use("/accounts", authenticateToken, auditLog, accountsRouter);
 coreRouter.use("/users", authenticateToken, auditLog, usersRouter);
