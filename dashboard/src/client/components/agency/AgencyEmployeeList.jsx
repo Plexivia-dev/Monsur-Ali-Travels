@@ -299,19 +299,19 @@ export function AgencyEmployeeList() {
 
       {/* Employee Details Modal (Strict Read-Only) */}
       {selectedEmployee && (
-        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white border border-black/10 rounded-2xl w-full max-w-xl shadow-2xl overflow-hidden animate-in zoom-in-95 duration-150 text-black">
+        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-3 sm:p-5 overflow-hidden animate-in fade-in duration-200">
+          <div className="bg-white border border-black/10 rounded-2xl w-full max-w-xl h-[70vh] flex flex-col shadow-2xl overflow-hidden animate-in zoom-in-95 duration-150 text-zinc-900">
             {/* Modal Header */}
-            <div className="flex items-center justify-between px-6 py-4 border-b border-black/10 bg-black/[0.02]">
+            <div className="flex items-center justify-between px-6 py-4 border-b border-black/10 bg-black/[0.02] shrink-0">
               <div className="flex items-center gap-3">
                 <div className="size-9 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center">
                   <UserCheck className="size-4 text-primary" />
                 </div>
                 <div>
-                  <h3 className="text-sm font-bold tracking-tight text-foreground">
+                  <h3 className="text-sm font-bold tracking-tight text-zinc-900">
                     Employee Details
                   </h3>
-                  <p className="text-[11px] text-muted-foreground font-medium">
+                  <p className="text-[11px] text-zinc-500 font-medium">
                     Verified Staff Profile (Read-Only)
                   </p>
                 </div>
@@ -327,64 +327,58 @@ export function AgencyEmployeeList() {
             </div>
 
             {/* Modal Body */}
-            <div className="p-6 space-y-5 max-h-[75vh] overflow-y-auto">
-              <div className="flex items-center justify-between p-4 rounded-xl bg-muted/40 border border-border">
-                <div className="flex items-center gap-3.5">
-                  <div className="size-11 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center font-bold text-primary text-base">
-                    {(selectedEmployee.name || selectedEmployee.fullName || 'S').charAt(0).toUpperCase()}
+            <div className="p-6 space-y-5 flex-1 min-h-0 overflow-y-auto">
+              <div className="flex items-center justify-between p-4 rounded-xl bg-black/[0.02] border border-black/10">
+                <div className="space-y-1">
+                  <div className="text-base font-bold text-zinc-900">
+                    {selectedEmployee.fullName || selectedEmployee.name || 'Staff Member'}
                   </div>
-                  <div>
-                    <div className="text-base font-bold text-foreground">
-                      {selectedEmployee.name || selectedEmployee.fullName || 'Staff Member'}
-                    </div>
-                    <div className="text-xs font-mono text-muted-foreground">
-                      DID: {selectedEmployee.did || selectedEmployee._id || selectedEmployee.id}
-                    </div>
+                  <div className="text-xs font-mono text-zinc-500">
+                    Code: {selectedEmployee.employeeCode || selectedEmployee.code || selectedEmployee._id || selectedEmployee.id}
                   </div>
                 </div>
-                <span className="px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-muted border border-border text-foreground">
-                  {selectedEmployee.designation || selectedEmployee.role || 'Staff'}
+                <span className="px-3 py-1 bg-emerald-500/10 text-emerald-600 border border-emerald-500/20 rounded-full text-xs font-semibold">
+                  {selectedEmployee.status || 'Active'}
                 </span>
               </div>
 
-              {/* Information Grid */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div className="p-3.5 rounded-xl bg-muted/30 border border-border/80 space-y-1">
-                  <div className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground flex items-center gap-1.5">
-                    <Phone className="size-3.5 text-muted-foreground" />
-                    <span>Phone Number</span>
+                <div className="p-3.5 rounded-xl bg-black/[0.02] border border-black/10 space-y-1">
+                  <div className="text-[11px] font-semibold text-zinc-500 flex items-center gap-1.5">
+                    <Briefcase className="size-3.5 text-zinc-400" />
+                    <span>Designation</span>
                   </div>
-                  <div className="text-xs font-semibold text-foreground">
-                    {selectedEmployee.phone || 'Not provided'}
-                  </div>
-                </div>
-
-                <div className="p-3.5 rounded-xl bg-muted/30 border border-border/80 space-y-1">
-                  <div className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground flex items-center gap-1.5">
-                    <Mail className="size-3.5 text-muted-foreground" />
-                    <span>Email Address</span>
-                  </div>
-                  <div className="text-xs font-semibold text-foreground font-mono">
-                    {selectedEmployee.email || 'Not provided'}
+                  <div className="text-xs font-bold text-zinc-900">
+                    {selectedEmployee.designation || selectedEmployee.role || 'Staff'}
                   </div>
                 </div>
 
-                <div className="p-3.5 rounded-xl bg-muted/30 border border-border/80 space-y-1">
-                  <div className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground flex items-center gap-1.5">
-                    <Shield className="size-3.5 text-muted-foreground" />
-                    <span>Assigned Role</span>
+                <div className="p-3.5 rounded-xl bg-black/[0.02] border border-black/10 space-y-1">
+                  <div className="text-[11px] font-semibold text-zinc-500 flex items-center gap-1.5">
+                    <Phone className="size-3.5 text-zinc-400" />
+                    <span>Phone</span>
                   </div>
-                  <div className="text-xs font-semibold text-foreground">
-                    {selectedEmployee.designation || selectedEmployee.role || 'Staff Member'}
+                  <div className="text-xs font-mono font-medium text-zinc-900">
+                    {selectedEmployee.phone || '—'}
                   </div>
                 </div>
 
-                <div className="p-3.5 rounded-xl bg-muted/30 border border-border/80 space-y-1">
-                  <div className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground flex items-center gap-1.5">
-                    <Calendar className="size-3.5 text-muted-foreground" />
+                <div className="p-3.5 rounded-xl bg-black/[0.02] border border-black/10 space-y-1">
+                  <div className="text-[11px] font-semibold text-zinc-500 flex items-center gap-1.5">
+                    <Mail className="size-3.5 text-zinc-400" />
+                    <span>Email</span>
+                  </div>
+                  <div className="text-xs font-medium text-zinc-900 truncate">
+                    {selectedEmployee.email || '—'}
+                  </div>
+                </div>
+
+                <div className="p-3.5 rounded-xl bg-black/[0.02] border border-black/10 space-y-1">
+                  <div className="text-[11px] font-semibold text-zinc-500 flex items-center gap-1.5">
+                    <Calendar className="size-3.5 text-zinc-400" />
                     <span>Joined On</span>
                   </div>
-                  <div className="text-xs font-mono font-semibold text-foreground">
+                  <div className="text-xs font-mono font-semibold text-zinc-900">
                     {selectedEmployee.joiningDate || selectedEmployee.createdAt
                       ? new Date(selectedEmployee.joiningDate || selectedEmployee.createdAt).toLocaleDateString('en-GB')
                       : '—'}
@@ -394,11 +388,11 @@ export function AgencyEmployeeList() {
             </div>
 
             {/* Modal Footer */}
-            <div className="px-6 py-3.5 border-t border-border bg-muted/20 flex items-center justify-end">
+            <div className="px-6 py-3.5 border-t border-black/10 bg-white flex items-center justify-end shrink-0">
               <button
                 type="button"
                 onClick={() => setSelectedEmployee(null)}
-                className="px-4 py-2 border border-red-500/30 text-red-600 dark:text-red-400 hover:bg-red-500/10 rounded-xl text-xs font-semibold transition-colors cursor-pointer"
+                className="px-4 h-9 border border-red-500/30 text-red-600 bg-red-500/10 hover:bg-red-500/20 rounded-xl text-xs font-semibold transition-colors cursor-pointer flex items-center justify-center"
               >
                 Close View
               </button>

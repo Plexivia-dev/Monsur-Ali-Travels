@@ -226,15 +226,15 @@ export function SalarySlipDataTable() {
 
       {/* Full Preview & Download Modal */}
       {previewItem && (
-        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 overflow-y-auto">
-          <div className="bg-background border border-border rounded-xl shadow-2xl max-w-4xl w-full max-h-[90vh] flex flex-col overflow-hidden">
+        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-3 sm:p-5 overflow-hidden animate-in fade-in duration-200">
+          <div className="bg-white text-zinc-900 border border-black/10 rounded-2xl shadow-2xl max-w-4xl w-full h-[70vh] flex flex-col overflow-hidden animate-in zoom-in-95 duration-200">
             {/* Modal Header */}
-            <div className="px-5 py-3.5 border-b border-border bg-card flex items-center justify-between gap-3">
+            <div className="px-6 py-4 border-b border-black/10 bg-black/[0.02] flex items-center justify-between gap-3 shrink-0">
               <div>
-                <h3 className="text-sm font-bold text-foreground">
+                <h3 className="text-sm font-bold text-zinc-900">
                   Salary Payslip — {previewItem.slipNo || ''}
                 </h3>
-                <p className="text-[11px] text-muted-foreground">
+                <p className="text-[11px] text-zinc-500">
                   Employee: {previewItem.employeeName || '—'} | Month: {previewItem.salaryMonth || '—'}
                 </p>
               </div>
@@ -243,7 +243,7 @@ export function SalarySlipDataTable() {
                 <button
                   type="button"
                   onClick={handlePrint}
-                  className="flex items-center gap-1.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-4 py-2 rounded-lg shadow-xs transition-all cursor-pointer"
+                  className="flex items-center gap-1.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-4 h-9 rounded-xl shadow-xs transition-all cursor-pointer"
                 >
                   <Printer className="w-4 h-4" />
                   <span>Download / Print PDF</span>
@@ -251,7 +251,8 @@ export function SalarySlipDataTable() {
                 <button
                   type="button"
                   onClick={() => setPreviewItem(null)}
-                  className="p-2 rounded-lg hover:bg-muted text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
+                  className="p-1.5 rounded-lg text-red-500 hover:text-red-600 hover:bg-red-500/10 transition-colors cursor-pointer"
+                  title="Close"
                 >
                   <X className="w-4 h-4" />
                 </button>
@@ -259,7 +260,7 @@ export function SalarySlipDataTable() {
             </div>
 
             {/* Modal Body */}
-            <div className="flex-1 overflow-y-auto p-4 sm:p-6 bg-muted/40 flex justify-center">
+            <div className="flex-1 min-h-0 overflow-y-auto p-4 sm:p-6 bg-black/[0.02] flex justify-center">
               <SalarySlipPreview data={previewItem} />
             </div>
           </div>

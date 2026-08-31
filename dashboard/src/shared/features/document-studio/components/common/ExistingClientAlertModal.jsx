@@ -42,88 +42,96 @@ export function ExistingClientAlertModal({ client, caseFile = null, onYes, onNo 
 
   return (
     <div
-      className="fixed inset-0 z-[99999] bg-black/85 backdrop-blur-md flex items-center justify-center p-4 select-none animate-in fade-in duration-200"
+      className="fixed inset-0 z-[99999] bg-black/60 backdrop-blur-xs flex items-center justify-center p-3 sm:p-5 select-none animate-in fade-in duration-200 overflow-hidden"
       onMouseDown={(e) => e.stopPropagation()}
       onClick={(e) => e.stopPropagation()}
     >
       <div
-        className="bg-card border-2 border-amber-500/80 shadow-2xl rounded-2xl max-w-lg w-full p-6 text-foreground space-y-5 relative animate-in zoom-in-95 duration-200"
+        className="bg-white text-zinc-900 border border-black/10 shadow-2xl rounded-2xl max-w-lg w-full h-[70vh] flex flex-col overflow-hidden relative animate-in zoom-in-95 duration-200"
         onMouseDown={(e) => e.stopPropagation()}
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
-        <div className="flex items-start gap-4 border-b border-border pb-4">
-          <div className="p-3 bg-amber-500/15 text-amber-600 dark:text-amber-400 rounded-xl shrink-0 border border-amber-500/30">
+        <div className="flex items-start gap-4 border-b border-black/10 px-6 py-4 bg-black/[0.02] shrink-0">
+          <div className="p-3 bg-amber-500/15 text-amber-600 rounded-xl shrink-0 border border-amber-500/30">
             <AlertTriangle className="w-6 h-6" />
           </div>
           <div className="min-w-0 flex-1">
             <div className="flex items-center gap-2 flex-wrap">
-              <h3 className="text-base font-bold text-foreground">
+              <h3 className="text-base font-bold text-zinc-900">
                 There is an existing client with this number!
               </h3>
-              <span className="inline-flex items-center gap-1 text-[10px] font-bold bg-amber-500/15 text-amber-700 dark:text-amber-300 px-2 py-0.5 rounded-full border border-amber-500/30">
+              <span className="inline-flex items-center gap-1 text-[10px] font-bold bg-amber-500/15 text-amber-700 px-2 py-0.5 rounded-full border border-amber-500/30">
                 <Lock className="w-3 h-3" />
-                Action Required
+                Match Found
               </span>
             </div>
-            <p className="text-xs text-muted-foreground mt-1 leading-relaxed">
-              We found an existing client registered with this mobile number. Do you want to use this client's info to create the document, or provide a different number?
+            <p className="text-xs text-zinc-500 mt-1">
+              Do you want to use this client's information?
             </p>
           </div>
         </div>
 
-        {/* Existing Client Profile Card */}
-        <div className="bg-muted/40 border border-border p-4 rounded-xl space-y-3 text-xs">
-          <div className="flex items-center gap-2.5">
-            <div className="size-9 rounded-xl bg-primary/10 text-primary flex items-center justify-center shrink-0 border border-primary/20">
-              <UserCheck className="w-5 h-5" />
+        {/* Body Container */}
+        <div className="p-6 flex-1 min-h-0 overflow-y-auto space-y-4">
+          {/* Matched Client Card */}
+          <div className="bg-black/[0.02] border border-black/10 rounded-xl p-4 space-y-3">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <div className="size-8 rounded-full bg-emerald-500/15 text-emerald-600 flex items-center justify-center font-bold text-xs border border-emerald-500/30">
+                  <UserCheck className="size-4" />
+                </div>
+                <div>
+                  <h4 className="font-bold text-sm text-zinc-900 leading-tight">
+                    {client.name || client.fullName || 'Client'}
+                  </h4>
+                  {client.clientCode && (
+                    <span className="text-[10px] font-mono text-zinc-500">
+                      Code: {client.clientCode}
+                    </span>
+                  )}
+                </div>
+              </div>
+              <span className="text-[11px] font-semibold text-emerald-600 bg-emerald-500/10 border border-emerald-500/20 px-2 py-0.5 rounded-md">
+                Verified Record
+              </span>
             </div>
-            <div>
-              <p className="font-bold text-sm text-foreground">{client.fullName || client.name || '—'}</p>
-              <p className="text-[10px] font-mono text-muted-foreground">
-                ID: {client.clientCode || client.did || client._id || ''}
-              </p>
-            </div>
-          </div>
 
-          <div className="grid grid-cols-2 gap-2.5 pt-1">
-            <div className="flex items-center gap-1.5 bg-background/80 p-2 rounded-lg border border-border">
-              <Phone className="w-3.5 h-3.5 text-primary shrink-0" />
-              <div className="min-w-0">
-                <p className="text-[10px] text-muted-foreground">Phone Number</p>
-                <p className="font-mono font-bold text-foreground truncate">{client.phone || client.mobileNumber || '—'}</p>
-              </div>
-            </div>
-            <div className="flex items-center gap-1.5 bg-background/80 p-2 rounded-lg border border-border">
-              <Mail className="w-3.5 h-3.5 text-primary shrink-0" />
-              <div className="min-w-0">
-                <p className="text-[10px] text-muted-foreground">Email</p>
-                <p className="font-mono font-bold text-foreground truncate">{client.email || '—'}</p>
-              </div>
-            </div>
-            <div className="flex items-center gap-1.5 bg-background/80 p-2 rounded-lg border border-border">
-              <CreditCard className="w-3.5 h-3.5 text-primary shrink-0" />
-              <div className="min-w-0">
-                <p className="text-[10px] text-muted-foreground">NID Number</p>
-                <p className="font-mono font-bold text-foreground truncate">{client.nidNumber || '—'}</p>
-              </div>
-            </div>
-            <div className="flex items-center gap-1.5 bg-background/80 p-2 rounded-lg border border-border">
-              <CreditCard className="w-3.5 h-3.5 text-primary shrink-0" />
-              <div className="min-w-0">
-                <p className="text-[10px] text-muted-foreground">Passport Number</p>
-                <p className="font-mono font-bold text-foreground truncate">{client.passportNumber || '—'}</p>
-              </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-2 border-t border-black/10 text-xs">
+              {client.phone && (
+                <div className="flex items-center gap-2 text-zinc-700 font-mono">
+                  <Phone className="size-3.5 text-primary shrink-0" />
+                  <span>{client.phone}</span>
+                </div>
+              )}
+              {client.passportNumber && (
+                <div className="flex items-center gap-2 text-zinc-700 font-mono">
+                  <CreditCard className="size-3.5 text-primary shrink-0" />
+                  <span>{client.passportNumber}</span>
+                </div>
+              )}
+              {client.email && (
+                <div className="flex items-center gap-2 text-zinc-700 truncate col-span-full">
+                  <Mail className="size-3.5 text-primary shrink-0" />
+                  <span className="truncate">{client.email}</span>
+                </div>
+              )}
+              {client.presentAddress && (
+                <div className="flex items-start gap-2 text-zinc-700 col-span-full">
+                  <MapPin className="size-3.5 text-primary shrink-0 mt-0.5" />
+                  <span className="line-clamp-2">{client.presentAddress}</span>
+                </div>
+              )}
             </div>
           </div>
 
           {/* Open Case File (if exists) */}
           {caseFile && (
-            <div className="mt-2 pt-2 border-t border-border flex items-center gap-2 bg-sky-500/5 border border-sky-500/20 p-2.5 rounded-lg">
+            <div className="mt-2 pt-2 border-t border-black/10 flex items-center gap-2 bg-sky-500/5 border border-sky-500/20 p-2.5 rounded-lg">
               <Folder className="w-4 h-4 text-sky-500 shrink-0" />
               <div>
-                <p className="text-[10px] text-muted-foreground font-semibold">Active Case File</p>
-                <p className="font-bold text-sky-600 dark:text-sky-400 text-xs">
+                <p className="text-[10px] text-zinc-500 font-semibold">Active Case File</p>
+                <p className="font-bold text-sky-600 text-xs">
                   #{caseFile.caseNumber || caseFile._id} — {caseFile.destinationCountry || caseFile.caseType || 'Active Case'}
                 </p>
               </div>
@@ -132,22 +140,22 @@ export function ExistingClientAlertModal({ client, caseFile = null, onYes, onNo 
         </div>
 
         {/* Action Buttons */}
-        <div className="grid grid-cols-2 gap-3 pt-1">
+        <div className="grid grid-cols-2 gap-3 px-6 py-3.5 border-t border-black/10 bg-white shrink-0">
           {/* NO */}
           <button
             type="button"
             onClick={onNo}
-            className="flex items-center justify-center gap-2 p-3 rounded-xl bg-rose-500/10 hover:bg-rose-500/20 border border-rose-500/30 text-rose-600 dark:text-rose-400 font-bold text-xs sm:text-sm transition-all cursor-pointer shadow-xs"
+            className="flex items-center justify-center gap-2 h-9 rounded-xl bg-red-500/10 hover:bg-red-500/20 border border-red-500/30 text-red-600 font-bold text-xs transition-all cursor-pointer shadow-xs"
           >
             <X className="w-4 h-4" />
-            <span>No, Enter Different Number</span>
+            <span>No, Different Number</span>
           </button>
 
           {/* YES */}
           <button
             type="button"
             onClick={onYes}
-            className="flex items-center justify-center gap-2 p-3 rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground font-bold text-xs sm:text-sm transition-all cursor-pointer shadow-xs"
+            className="flex items-center justify-center gap-2 h-9 rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground font-bold text-xs transition-all cursor-pointer shadow-xs"
           >
             <CheckCircle2 className="w-4 h-4" />
             <span>Yes, Use This Client</span>

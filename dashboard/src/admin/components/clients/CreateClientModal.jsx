@@ -260,13 +260,8 @@ const CreateClientModal = ({ isOpen, onClose, onSuccess }) => {
   const isUmrah = formData.serviceType === 'UMRAH_HAJJ';
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4">
-      <div className="bg-linear-to-r from-sky-950 via-indigo-950 to-slate-950 rounded-2xl sm:rounded-3xl border border-sky-800/40 text-white shadow-2xl max-w-2xl w-full max-h-[92vh] flex flex-col overflow-hidden relative animate-in fade-in zoom-in-95 duration-200">
-        {/* Decorative ambient background glows */}
-        <div className="absolute -top-24 -right-24 w-72 h-72 bg-sky-500/15 rounded-full blur-3xl pointer-events-none" />
-        <div className="absolute -bottom-24 -left-24 w-72 h-72 bg-indigo-500/15 rounded-full blur-3xl pointer-events-none" />
-
-        {/* Unified Brand Navy-Blue Gradient Header */}
+    <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-3 sm:p-5 overflow-hidden animate-in fade-in duration-200">
+      <div className="bg-white text-zinc-900 rounded-2xl border border-black/10 shadow-2xl max-w-2xl w-full h-[70vh] flex flex-col overflow-hidden relative animate-in zoom-in-95 duration-200">
         <UnifiedModalHeader
           icon={UserPlus}
           title="New Client & Case File"
@@ -275,10 +270,10 @@ const CreateClientModal = ({ isOpen, onClose, onSuccess }) => {
         />
 
         {/* Form Body */}
-        <form onSubmit={handleSubmit} className="flex flex-col overflow-hidden flex-grow relative z-10">
-          <div className="p-6 overflow-y-auto space-y-5 flex-grow text-xs text-zinc-100">
+        <form onSubmit={handleSubmit} className="flex flex-col overflow-hidden flex-1 min-h-0 relative z-10">
+          <div className="p-6 overflow-y-auto space-y-5 flex-1 min-h-0 text-xs text-zinc-900">
             {/* ── TOP SECTION 1: SERVICE & DESTINATION ────────────────── */}
-            <div className="p-4 rounded-xl bg-zinc-900/50 border border-zinc-800 space-y-4 shadow-2xs">
+            <div className="p-4 rounded-xl bg-black/[0.02] border border-black/10 space-y-4 shadow-2xs">
               <div className="flex items-center gap-2 text-primary font-bold text-xs uppercase tracking-wider">
                 <Briefcase className="size-4" />
                 <span>1. Service & Category Selection</span>

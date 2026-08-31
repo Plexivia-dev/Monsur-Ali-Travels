@@ -175,7 +175,7 @@ export function StepAssignModal({ isOpen = true, caseDoc = {}, caseDid, caseNumb
       <div className="fixed inset-0" onClick={onClose} />
       <form
         onSubmit={handleSubmit}
-        className="relative bg-white border border-black/10 text-black rounded-2xl max-w-xl w-full max-h-[90vh] flex flex-col shadow-2xl z-10 my-auto animate-in zoom-in-95 duration-150 overflow-hidden"
+        className="relative bg-white border border-black/10 text-black rounded-2xl max-w-xl w-full h-[70vh] flex flex-col shadow-2xl z-10 my-auto animate-in zoom-in-95 duration-150 overflow-hidden"
       >
         {/* Header */}
         <div className="shrink-0 border-b border-black/10 p-4 sm:p-5 flex items-center justify-between bg-black/[0.02]">

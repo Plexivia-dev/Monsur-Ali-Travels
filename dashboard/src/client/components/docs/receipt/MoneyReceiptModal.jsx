@@ -116,11 +116,11 @@ export function MoneyReceiptModal({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs overflow-y-auto">
-      <div className="bg-white text-black border border-black/10 rounded-2xl shadow-2xl w-full max-w-4xl max-h-[92vh] flex flex-col overflow-hidden my-auto">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs overflow-hidden">
+      <div className="bg-white text-black border border-black/10 rounded-2xl shadow-2xl w-full max-w-4xl h-[70vh] flex flex-col overflow-hidden my-auto">
         
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-black/10 bg-black/[0.02]">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-black/10 bg-black/[0.02] shrink-0">
           <div className="flex items-center space-x-3">
             <div className="p-2.5 rounded-xl bg-primary/10 text-primary border border-primary/20">
               <Receipt className="w-5 h-5" />
@@ -150,7 +150,7 @@ export function MoneyReceiptModal({
         </div>
 
         {/* Content Body */}
-        <div className="flex-1 overflow-y-auto p-6">
+        <div className="flex-1 min-h-0 overflow-y-auto p-6">
           {createdReceipt ? (
             /* Print Preview Screen */
             <div className="space-y-4">

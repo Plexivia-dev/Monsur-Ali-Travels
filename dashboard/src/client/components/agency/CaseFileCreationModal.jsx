@@ -298,8 +298,8 @@ export function CaseFileCreationModal({ isOpen, onClose, onSuccess }) {
 
   return (
     <>
-      <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-3 sm:p-5 overflow-y-auto animate-in fade-in duration-200">
-        <div className="bg-white text-black border border-black/10 w-full max-w-3xl rounded-2xl shadow-2xl overflow-hidden flex flex-col my-auto max-h-[92vh]">
+      <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-3 sm:p-5 overflow-hidden animate-in fade-in duration-200">
+        <div className="bg-white text-zinc-900 border border-black/10 w-full max-w-3xl h-[70vh] rounded-2xl shadow-2xl overflow-hidden flex flex-col my-auto">
           {/* Modal Header */}
           <div className="p-5 border-b border-black/10 bg-black/[0.02] flex items-center justify-between shrink-0">
             <div className="flex items-center gap-3">
@@ -307,13 +307,13 @@ export function CaseFileCreationModal({ isOpen, onClose, onSuccess }) {
                 <FolderOpen className="size-5" />
               </div>
               <div>
-                <h2 className="text-base sm:text-lg font-bold text-black flex items-center gap-2">
+                <h2 className="text-base sm:text-lg font-bold text-zinc-900 flex items-center gap-2">
                   5-Step Case Intake Wizard
                   <span className="text-[11px] font-semibold px-2 py-0.5 rounded-full bg-primary/10 text-primary border border-primary/20">
                     Frontdesk
                   </span>
                 </h2>
-                <p className="text-xs text-black/60 font-medium">
+                <p className="text-xs text-zinc-500 font-medium">
                   Step {currentStep} of 5 — {
                     currentStep === 1 ? 'Client Information & Bio' :
                     currentStep === 2 ? 'Destination Country & Trade' :
@@ -334,7 +334,7 @@ export function CaseFileCreationModal({ isOpen, onClose, onSuccess }) {
           </div>
 
           {/* Stepper Progress Bar */}
-          <div className="grid grid-cols-5 border-b border-border text-[11px] font-semibold bg-muted/20 shrink-0">
+          <div className="grid grid-cols-5 border-b border-black/10 text-[11px] font-semibold bg-black/[0.02] shrink-0">
             {[
               { num: 1, label: 'Client' },
               { num: 2, label: 'Destination' },
@@ -363,15 +363,15 @@ export function CaseFileCreationModal({ isOpen, onClose, onSuccess }) {
                       : 'bg-muted text-muted-foreground'
                   }`}
                 >
-                  {currentStep > s.num ? <Check className="size-2.5" /> : s.num}
+                  {currentStep > s.num ? '✓' : s.num}
                 </span>
-                <span className="hidden sm:inline truncate">{s.label}</span>
+                <span className="hidden sm:inline">{s.label}</span>
               </button>
             ))}
           </div>
 
           {/* Modal Body / Steps Content */}
-          <div className="p-5 sm:p-6 overflow-y-auto space-y-5 grow text-foreground">
+          <div className="p-5 sm:p-6 flex-1 min-h-0 overflow-y-auto space-y-5 text-zinc-900">
             {/* STEP 1: CLIENT SELECTION / ONBOARDING */}
             {currentStep === 1 && (
               <div className="space-y-4">
@@ -874,12 +874,12 @@ export function CaseFileCreationModal({ isOpen, onClose, onSuccess }) {
           </div>
 
           {/* Modal Footer Controls */}
-          <div className="p-4 border-t border-border bg-muted/30 flex items-center justify-between shrink-0">
+          <div className="px-6 py-3.5 border-t border-black/10 bg-white flex items-center justify-between shrink-0">
             {currentStep > 1 ? (
               <button
                 type="button"
                 onClick={() => setCurrentStep((prev) => prev - 1)}
-                className="flex items-center gap-1.5 px-4 py-2 bg-background border border-border hover:bg-muted text-foreground text-xs font-bold rounded-xl transition cursor-pointer shadow-xs"
+                className="flex items-center gap-1.5 px-4 h-9 bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-200 dark:hover:bg-zinc-700 border border-zinc-300 dark:border-zinc-700 text-xs font-semibold rounded-xl transition cursor-pointer shadow-xs"
               >
                 <ChevronLeft className="size-4" />
                 <span>Previous Step</span>
@@ -892,7 +892,7 @@ export function CaseFileCreationModal({ isOpen, onClose, onSuccess }) {
               <button
                 type="button"
                 onClick={onClose}
-                className="px-4 py-2 bg-red-500/10 text-red-600 dark:text-red-400 border border-red-500/30 hover:bg-red-500/20 hover:border-red-500/50 text-xs font-semibold rounded-xl transition cursor-pointer"
+                className="px-4 h-9 bg-red-500/10 text-red-600 dark:text-red-400 border border-red-500/30 hover:bg-red-500/20 hover:border-red-500/50 text-xs font-semibold rounded-xl transition cursor-pointer flex items-center justify-center"
               >
                 Cancel
               </button>
@@ -901,7 +901,7 @@ export function CaseFileCreationModal({ isOpen, onClose, onSuccess }) {
                 <button
                   type="button"
                   onClick={() => setCurrentStep((prev) => prev + 1)}
-                  className="flex items-center gap-1.5 px-5 py-2.5 bg-primary hover:bg-primary/90 text-primary-foreground text-xs font-bold rounded-xl transition cursor-pointer shadow-md"
+                  className="flex items-center gap-1.5 px-5 h-9 bg-primary hover:bg-primary/90 text-primary-foreground text-xs font-bold rounded-xl transition cursor-pointer shadow-xs"
                 >
                   <span>Next Step</span>
                   <ChevronRight className="size-4" />
@@ -911,7 +911,7 @@ export function CaseFileCreationModal({ isOpen, onClose, onSuccess }) {
                   type="button"
                   disabled={loading}
                   onClick={handleSubmitCase}
-                  className="flex items-center gap-2 px-6 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-black rounded-xl transition cursor-pointer shadow-lg disabled:opacity-50"
+                  className="flex items-center gap-2 px-6 h-9 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-xl transition cursor-pointer shadow-xs disabled:opacity-50"
                 >
                   {loading ? (
                     <>

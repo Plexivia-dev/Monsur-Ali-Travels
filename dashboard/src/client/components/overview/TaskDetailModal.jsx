@@ -548,8 +548,8 @@ export function TaskDetailModal({
       <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4 animate-in fade-in duration-150 overflow-y-auto">
         <div className="fixed inset-0" onClick={onClose} />
 
-        {/* Modal Container with strict 90vh max-height */}
-        <div className="relative bg-white border border-black/10 rounded-2xl max-w-3xl w-full max-h-[90vh] flex flex-col shadow-2xl z-10 my-auto text-black overflow-hidden animate-in zoom-in-95 duration-150">
+        {/* Modal Container with strict 70vh fixed height */}
+        <div className="relative bg-white border border-black/10 rounded-2xl max-w-3xl w-full h-[70vh] flex flex-col shadow-2xl z-10 my-auto text-black overflow-hidden animate-in zoom-in-95 duration-150">
           
           {/* 1. Header (Fixed Height / Sticky) */}
           <div className="shrink-0 border-b border-black/10 p-4 sm:p-5 flex items-start justify-between gap-4 bg-white">

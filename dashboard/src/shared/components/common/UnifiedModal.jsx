@@ -1,11 +1,11 @@
 import React, { useEffect } from 'react';
-import * as LucideIcons from 'lucide-react';
-import { X, Loader2, CheckCircle2 } from 'lucide-react';
+import { X, Loader2, CheckCircle2, ChevronLeft } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import Button from '@/components/ui/button';
 
 /**
  * UnifiedModalHeader
- * Renders the signature Dark Blue / Sky Indigo gradient modal header matching HeaderTitle.
+ * Clean, standardized light/dark modal header with red close button.
  */
 export function UnifiedModalHeader({
   title,
@@ -20,100 +20,99 @@ export function UnifiedModalHeader({
 }) {
   const resolvedSubtitle = subtitle || description;
 
-  const renderIcon = (iconClass) => {
-    if (!Icon) return null;
-    if (React.isValidElement(Icon)) return Icon;
-    if (typeof Icon === 'string') {
-      const IconComponent = LucideIcons[Icon] || LucideIcons.Layers;
-      return <IconComponent className={cn(iconClass, 'shrink-0')} />;
-    }
-    const IconComponent = Icon;
-    return <IconComponent className={cn(iconClass, 'shrink-0')} />;
-  };
-
   return (
     <div
       className={cn(
-        'p-5 sm:p-6 border-b border-sky-800/40 relative z-10 select-none bg-transparent',
+        'px-6 py-4 border-b border-black/10 dark:border-zinc-800 bg-white dark:bg-zinc-950 flex items-center justify-between shrink-0 select-none',
         className
       )}
     >
-      <div className="flex items-center justify-between gap-4">
-        {/* Left: Icon & Title/Subtitle */}
-        <div className="flex items-center gap-3 min-w-0">
-          {Icon && (
-            <div className="size-10 rounded-xl bg-sky-500/20 text-sky-400 border border-sky-500/40 flex items-center justify-center shrink-0 shadow-xs">
-              {renderIcon('size-5 text-sky-400')}
-            </div>
-          )}
-          <div className="min-w-0">
-            <div className="flex items-center gap-2 flex-wrap">
-              <h2
-                className={cn(
-                  'text-base sm:text-lg font-bold text-white tracking-tight',
-                  titleClassName
-                )}
-              >
-                {title}
-              </h2>
-              {badge && (
-                <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-sky-500/20 text-sky-300 border border-sky-400/30">
-                  {badge}
-                </span>
+      <div className="flex items-center gap-3 min-w-0">
+        {Icon && (
+          <div className="size-9 rounded-xl bg-primary/10 text-primary border border-primary/20 flex items-center justify-center shrink-0">
+            {React.isValidElement(Icon) ? (
+              Icon
+            ) : typeof Icon === 'function' ? (
+              <Icon className="size-4.5" />
+            ) : null}
+          </div>
+        )}
+        <div className="min-w-0">
+          <div className="flex items-center gap-2 flex-wrap">
+            <h2
+              className={cn(
+                'text-base sm:text-lg font-bold text-zinc-900 dark:text-white tracking-tight',
+                titleClassName
               )}
-            </div>
-            {resolvedSubtitle && (
-              <p
-                className={cn(
-                  'text-xs text-sky-200/70 mt-0.5 leading-relaxed truncate max-w-xl',
-                  subtitleClassName
-                )}
-              >
-                {resolvedSubtitle}
-              </p>
+            >
+              {title}
+            </h2>
+            {badge && (
+              <span className="text-[11px] font-semibold px-2 py-0.5 rounded-full bg-primary/10 text-primary border border-primary/20">
+                {badge}
+              </span>
             )}
           </div>
+          {resolvedSubtitle && (
+            <p
+              className={cn(
+                'text-xs text-zinc-500 dark:text-zinc-400 mt-0.5 font-medium truncate max-w-xl',
+                subtitleClassName
+              )}
+            >
+              {resolvedSubtitle}
+            </p>
+          )}
         </div>
-
-        {/* Right: Close Button */}
-        {onClose && (
-          <button
-            type="button"
-            onClick={onClose}
-            className="p-1.5 rounded-xl bg-rose-500/15 hover:bg-rose-500/25 text-rose-400 hover:text-rose-300 border border-rose-500/40 shadow-xs transition-all cursor-pointer shrink-0 flex items-center justify-center"
-            aria-label="Close modal"
-          >
-            <X className="size-4 text-rose-400 stroke-[2.5]" />
-          </button>
-        )}
       </div>
+
+      {onClose && (
+        <button
+          type="button"
+          onClick={onClose}
+          className="p-1.5 rounded-lg text-red-500 hover:text-red-600 hover:bg-red-500/10 border border-transparent hover:border-red-500/20 transition-colors cursor-pointer shrink-0 flex items-center justify-center"
+          aria-label="Close modal"
+          title="Close"
+        >
+          <X className="size-4.5 stroke-[2.5]" />
+        </button>
+      )}
     </div>
   );
 }
 
 /**
  * UnifiedModalFooter
- * Renders the modal action bar with cohesive dark glass aesthetics.
+ * Clean, standardized action footer with Previous, Cancel and Action buttons.
  */
 export function UnifiedModalFooter({
+  // Previous step action
+  onPrevious,
+  previousText = 'Previous Step',
+  previousIcon = ChevronLeft,
+  showPrevious = false,
+  previousButton = null,
+  // Cancel action
   onCancel,
   cancelText = 'Cancel',
   cancelButton = null,
   showCancel = true,
+  // Submit / Primary action
   onSubmit,
   submitText = 'Confirm',
   loadingText,
-  submitIcon: SubmitIcon = CheckCircle2,
+  submitIcon = CheckCircle2,
   loading = false,
   disabled = false,
   submitButton = null,
+  submitVariant = 'primary',
   children,
   className = '',
 }) {
   return (
     <div
       className={cn(
-        'p-4 sm:px-6 sm:py-4 border-t border-sky-800/40 flex items-center justify-end gap-2.5 bg-slate-950/60 backdrop-blur-md relative z-10',
+        'px-6 py-3.5 border-t border-black/10 dark:border-zinc-800 bg-white dark:bg-zinc-950 flex items-center justify-between shrink-0 gap-3',
         className
       )}
     >
@@ -121,37 +120,51 @@ export function UnifiedModalFooter({
         children
       ) : (
         <>
-          {showCancel &&
-            (cancelButton || (
-              <button
-                type="button"
-                onClick={onCancel}
-                disabled={loading}
-                className="px-4 py-2 text-xs font-bold rounded-xl bg-rose-500/15 hover:bg-rose-500/25 text-rose-400 hover:text-rose-300 border border-rose-500/40 transition-all cursor-pointer disabled:opacity-50"
-              >
-                {cancelText}
-              </button>
-            ))}
+          {/* Left Side: Previous Step / Secondary slot */}
+          <div>
+            {showPrevious &&
+              (previousButton || (
+                <Button
+                  type="button"
+                  variant="previous"
+                  onClick={onPrevious}
+                  disabled={loading}
+                  icon={previousIcon}
+                  className="cursor-pointer"
+                >
+                  {previousText}
+                </Button>
+              ))}
+          </div>
 
-          {submitButton || (
-            <button
-              type={onSubmit ? 'button' : 'submit'}
-              onClick={onSubmit}
-              disabled={loading || disabled}
-              className="flex items-center gap-2 px-5 py-2 text-xs font-bold rounded-xl bg-sky-500 hover:bg-sky-400 text-slate-950 hover:text-black transition-all cursor-pointer shadow-md shadow-sky-500/20 disabled:opacity-50 select-none"
-            >
-              {loading ? (
-                <Loader2 className="size-4 animate-spin" />
-              ) : SubmitIcon ? (
-                React.isValidElement(SubmitIcon) ? (
-                  SubmitIcon
-                ) : (
-                  <SubmitIcon className="size-4 shrink-0" />
-                )
-              ) : null}
-              <span>{loading ? loadingText || submitText : submitText}</span>
-            </button>
-          )}
+          {/* Right Side: Cancel & Submit buttons */}
+          <div className="flex items-center gap-2.5">
+            {showCancel &&
+              (cancelButton || (
+                <Button
+                  type="button"
+                  variant="cancel"
+                  onClick={onCancel}
+                  disabled={loading}
+                  className="cursor-pointer"
+                >
+                  {cancelText}
+                </Button>
+              ))}
+
+            {submitButton || (
+              <Button
+                type={onSubmit ? 'button' : 'submit'}
+                onClick={onSubmit}
+                disabled={loading || disabled}
+                variant={submitVariant}
+                icon={loading ? Loader2 : submitIcon}
+                className={cn('cursor-pointer font-bold', loading && '[&_svg]:animate-spin')}
+              >
+                {loading ? loadingText || submitText : submitText}
+              </Button>
+            )}
+          </div>
         </>
       )}
     </div>
@@ -159,8 +172,9 @@ export function UnifiedModalFooter({
 }
 
 /**
- * UnifiedModal
- * Standardized, signature gradient modal for Monsur Ali Travels ERP.
+ * UnifiedModal / Universal Modal Component
+ * Fixed 70% viewport height (h-[70vh]), fixed width, scrollable content body,
+ * and unified color scheme across both Client and Admin dashboards.
  */
 export function UnifiedModal({
   isOpen,
@@ -171,10 +185,14 @@ export function UnifiedModal({
   icon,
   badge,
   children,
-  maxWidth = 'max-w-2xl',
-  maxHeight = 'max-h-[92vh]',
+  stepper = null,
+  maxWidth = 'max-w-3xl',
+  height = 'h-[70vh]',
   // Footer Props
   footer = null,
+  onPrevious,
+  previousText = 'Previous Step',
+  showPrevious = false,
   onCancel,
   cancelText = 'Cancel',
   showCancel = true,
@@ -182,6 +200,7 @@ export function UnifiedModal({
   submitText = 'Confirm',
   loadingText,
   submitIcon = CheckCircle2,
+  submitVariant = 'primary',
   loading = false,
   disabled = false,
   showFooter = true,
@@ -189,6 +208,7 @@ export function UnifiedModal({
   className = '',
   headerClassName = '',
   bodyClassName = '',
+  footerClassName = '',
 }) {
   useEffect(() => {
     const handleKeyDown = (e) => {
@@ -209,20 +229,17 @@ export function UnifiedModal({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4">
+    <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-3 sm:p-5 overflow-hidden animate-in fade-in duration-200">
+      <div className="fixed inset-0" onClick={onClose} />
       <div
         className={cn(
-          'bg-linear-to-r from-sky-950 via-indigo-950 to-slate-950 rounded-2xl sm:rounded-3xl border border-sky-800/40 text-white shadow-2xl w-full flex flex-col overflow-hidden relative animate-in fade-in zoom-in-95 duration-200',
+          'relative bg-white text-zinc-900 border border-black/10 rounded-2xl shadow-2xl w-full flex flex-col overflow-hidden z-10 my-auto animate-in zoom-in-95 duration-200 dark:bg-zinc-950 dark:text-white dark:border-zinc-800',
+          height,
           maxWidth,
-          maxHeight,
           className
         )}
       >
-        {/* Decorative ambient background glows matching HeaderTitle */}
-        <div className="absolute -top-24 -right-24 w-72 h-72 bg-sky-500/15 rounded-full blur-3xl pointer-events-none" />
-        <div className="absolute -bottom-24 -left-24 w-72 h-72 bg-indigo-500/15 rounded-full blur-3xl pointer-events-none" />
-
-        {/* Header */}
+        {/* Fixed Header */}
         <UnifiedModalHeader
           title={title}
           subtitle={subtitle || description}
@@ -232,15 +249,21 @@ export function UnifiedModal({
           className={headerClassName}
         />
 
-        {/* Content Body */}
-        <div className={cn('p-6 overflow-y-auto flex-grow space-y-5 relative z-10', bodyClassName)}>
+        {/* Optional Stepper / Progress Bar (Fixed) */}
+        {stepper && <div className="shrink-0">{stepper}</div>}
+
+        {/* Internal Scrollable Content Body */}
+        <div className={cn('flex-1 min-h-0 overflow-y-auto p-6 space-y-4 text-zinc-900 dark:text-zinc-100', bodyClassName)}>
           {children}
         </div>
 
-        {/* Footer */}
-        {showFooter && (
-          footer || (
+        {/* Fixed Action Footer */}
+        {showFooter &&
+          (footer || (
             <UnifiedModalFooter
+              onPrevious={onPrevious}
+              previousText={previousText}
+              showPrevious={showPrevious}
               onCancel={onCancel || onClose}
               cancelText={cancelText}
               showCancel={showCancel}
@@ -248,11 +271,12 @@ export function UnifiedModal({
               submitText={submitText}
               loadingText={loadingText}
               submitIcon={submitIcon}
+              submitVariant={submitVariant}
               loading={loading}
               disabled={disabled}
+              className={footerClassName}
             />
-          )
-        )}
+          ))}
       </div>
     </div>
   );

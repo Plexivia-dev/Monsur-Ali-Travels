@@ -70,20 +70,20 @@ export function ExportModal({ isOpen, onClose, documentTitle = 'Document', data 
   };
 
   return (
-    <div className="no-print fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-xs animate-in fade-in duration-200">
-      <div className="bg-card border border-border rounded-2xl max-w-lg w-full p-6 shadow-2xl relative text-foreground space-y-6">
+    <div className="no-print fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-5 bg-black/60 backdrop-blur-xs animate-in fade-in duration-200 overflow-hidden">
+      <div className="bg-white text-zinc-900 border border-black/10 rounded-2xl max-w-lg w-full h-[70vh] shadow-2xl relative flex flex-col overflow-hidden animate-in zoom-in-95 duration-200">
         
         {/* Modal Header */}
-        <div className="flex items-center justify-between border-b border-border pb-4">
+        <div className="flex items-center justify-between border-b border-black/10 px-6 py-4 bg-black/[0.02] shrink-0">
           <div className="flex items-center space-x-2.5">
             <div className="p-2 bg-primary/10 text-primary rounded-xl">
               <Download className="w-5 h-5" />
             </div>
             <div>
-              <h2 className="text-base font-bold text-foreground">
+              <h2 className="text-base font-bold text-zinc-900">
                 Export & Download Options
               </h2>
-              <p className="text-xs text-muted-foreground">
+              <p className="text-xs text-zinc-500">
                 Select export format for "{documentTitle}"
               </p>
             </div>
@@ -91,91 +91,95 @@ export function ExportModal({ isOpen, onClose, documentTitle = 'Document', data 
 
           <button
             onClick={onClose}
-            className="text-muted-foreground hover:text-foreground p-1 rounded-lg hover:bg-muted transition-colors cursor-pointer"
+            className="text-red-500 hover:text-red-600 p-1.5 rounded-lg hover:bg-red-500/10 transition-colors cursor-pointer"
+            title="Close"
           >
             <X className="w-5 h-5" />
           </button>
         </div>
 
-        {/* Export Cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
-          
-          {/* Option 1: Native Vector PDF Print */}
-          <button
-            onClick={handlePrint}
-            className="flex items-start space-x-3 p-3.5 bg-primary/10 hover:bg-primary/20 border border-primary/30 rounded-xl text-left transition-all cursor-pointer group"
-          >
-            <div className="p-2 bg-primary text-primary-foreground rounded-lg shadow-xs">
-              <Printer className="w-4 h-4" />
-            </div>
-            <div>
-              <div className="font-bold text-foreground flex items-center gap-1">
-                Save to PDF / Print (A4)
-                <ExternalLink className="w-3 h-3 text-primary" />
+        {/* Content Body */}
+        <div className="p-6 flex-1 min-h-0 overflow-y-auto space-y-4">
+          {/* Export Cards */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+            
+            {/* Option 1: Native Vector PDF Print */}
+            <button
+              onClick={handlePrint}
+              className="flex items-start space-x-3 p-3.5 bg-primary/10 hover:bg-primary/20 border border-primary/30 rounded-xl text-left transition-all cursor-pointer group"
+            >
+              <div className="p-2 bg-primary text-primary-foreground rounded-lg shadow-xs">
+                <Printer className="w-4 h-4" />
               </div>
-              <p className="text-[11px] text-muted-foreground mt-0.5">
-                Crisp vector PDF output using browser A4 print engine.
-              </p>
-            </div>
-          </button>
-
-          {/* Option 2: Standalone HTML File */}
-          <button
-            onClick={handleDownloadHtml}
-            className="flex items-start space-x-3 p-3.5 bg-muted/50 hover:bg-muted border border-border rounded-xl text-left transition-all cursor-pointer"
-          >
-            <div className="p-2 bg-purple-500/20 text-purple-500 rounded-lg">
-              <FileText className="w-4 h-4" />
-            </div>
-            <div>
-              <div className="font-bold text-foreground">Download HTML File</div>
-              <p className="text-[11px] text-muted-foreground mt-0.5">
-                Self-contained printable webpage file.
-              </p>
-            </div>
-          </button>
-
-          {/* Option 3: JSON Data Schema */}
-          <button
-            onClick={handleDownloadJson}
-            className="flex items-start space-x-3 p-3.5 bg-muted/50 hover:bg-muted border border-border rounded-xl text-left transition-all cursor-pointer"
-          >
-            <div className="p-2 bg-emerald-500/20 text-emerald-500 rounded-lg">
-              <FileCode className="w-4 h-4" />
-            </div>
-            <div>
-              <div className="font-bold text-foreground">Download JSON Data</div>
-              <p className="text-[11px] text-muted-foreground mt-0.5">
-                Raw JSON format for backup & REST APIs.
-              </p>
-            </div>
-          </button>
-
-          {/* Option 4: Copy Plain Text */}
-          <button
-            onClick={handleCopyText}
-            className="flex items-start space-x-3 p-3.5 bg-muted/50 hover:bg-muted border border-border rounded-xl text-left transition-all cursor-pointer"
-          >
-            <div className="p-2 bg-amber-500/20 text-amber-500 rounded-lg">
-              {copiedText ? <Check className="w-4 h-4 text-emerald-500" /> : <Copy className="w-4 h-4" />}
-            </div>
-            <div>
-              <div className="font-bold text-foreground">
-                {copiedText ? 'Copied Data!' : 'Copy Data Payload'}
+              <div>
+                <div className="font-bold text-zinc-900 flex items-center gap-1">
+                  Save to PDF / Print (A4)
+                  <ExternalLink className="w-3 h-3 text-primary" />
+                </div>
+                <p className="text-[11px] text-zinc-500 mt-0.5">
+                  Crisp vector PDF output using browser A4 print engine.
+                </p>
               </div>
-              <p className="text-[11px] text-muted-foreground mt-0.5">
-                Copy JSON payload to clipboard.
-              </p>
-            </div>
-          </button>
+            </button>
 
+            {/* Option 2: Standalone HTML File */}
+            <button
+              onClick={handleDownloadHtml}
+              className="flex items-start space-x-3 p-3.5 bg-black/[0.02] hover:bg-black/[0.05] border border-black/10 rounded-xl text-left transition-all cursor-pointer"
+            >
+              <div className="p-2 bg-indigo-500/10 text-indigo-600 rounded-lg">
+                <FileText className="w-4 h-4" />
+              </div>
+              <div>
+                <div className="font-bold text-zinc-900">Download HTML File</div>
+                <p className="text-[11px] text-zinc-500 mt-0.5">
+                  Self-contained printable webpage file.
+                </p>
+              </div>
+            </button>
+
+            {/* Option 3: JSON Data Schema */}
+            <button
+              onClick={handleDownloadJson}
+              className="flex items-start space-x-3 p-3.5 bg-black/[0.02] hover:bg-black/[0.05] border border-black/10 rounded-xl text-left transition-all cursor-pointer"
+            >
+              <div className="p-2 bg-emerald-500/10 text-emerald-600 rounded-lg">
+                <FileCode className="w-4 h-4" />
+              </div>
+              <div>
+                <div className="font-bold text-zinc-900">Download JSON Data</div>
+                <p className="text-[11px] text-zinc-500 mt-0.5">
+                  Raw JSON format for backup & REST APIs.
+                </p>
+              </div>
+            </button>
+
+            {/* Option 4: Copy Plain Text */}
+            <button
+              onClick={handleCopyText}
+              className="flex items-start space-x-3 p-3.5 bg-black/[0.02] hover:bg-black/[0.05] border border-black/10 rounded-xl text-left transition-all cursor-pointer"
+            >
+              <div className="p-2 bg-amber-500/10 text-amber-600 rounded-lg">
+                {copiedText ? <Check className="w-4 h-4 text-emerald-600" /> : <Copy className="w-4 h-4" />}
+              </div>
+              <div>
+                <div className="font-bold text-zinc-900">
+                  {copiedText ? 'Copied Data!' : 'Copy Data Payload'}
+                </div>
+                <p className="text-[11px] text-zinc-500 mt-0.5">
+                  Copy JSON payload to clipboard.
+                </p>
+              </div>
+            </button>
+
+          </div>
         </div>
 
         {/* Modal Footer */}
-        <div className="flex justify-end pt-2 border-t border-border">
+        <div className="flex justify-end px-6 py-3.5 border-t border-black/10 bg-white shrink-0">
           <button
             onClick={onClose}
-            className="px-4 py-2 bg-muted hover:bg-muted/80 text-foreground text-xs font-semibold rounded-lg cursor-pointer transition-colors"
+            className="px-4 h-9 bg-red-500/10 hover:bg-red-500/20 text-red-600 border border-red-500/30 text-xs font-semibold rounded-xl cursor-pointer transition-colors flex items-center justify-center"
           >
             Close Window
           </button>

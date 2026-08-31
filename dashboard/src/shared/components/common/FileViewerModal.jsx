@@ -335,7 +335,7 @@ export function FileViewerModal({
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 backdrop-blur-xs p-3 sm:p-5 animate-in fade-in duration-150">
       <div
         className={`bg-card border border-border rounded-2xl w-full shadow-2xl overflow-hidden flex flex-col transition-all duration-200 ${
-          isFullscreen ? 'max-w-[98vw] h-[96vh]' : 'max-w-4xl max-h-[92vh]'
+          isFullscreen ? 'max-w-[98vw] h-[96vh]' : 'max-w-4xl h-[70vh]'
         }`}
       >
         {/* MODAL HEADER */}
@@ -589,7 +589,7 @@ export function FileViewerModal({
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-1.5 bg-background border border-border hover:bg-muted text-foreground font-bold text-xs rounded-xl shadow-xs transition cursor-pointer"
+              className="px-4 h-9 bg-red-500/10 hover:bg-red-500/20 text-red-600 border border-red-500/30 font-bold text-xs rounded-xl shadow-xs transition cursor-pointer flex items-center justify-center"
             >
               Close
             </button>

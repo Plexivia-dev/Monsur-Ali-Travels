@@ -28,20 +28,20 @@ export function ExistingClientAlertModal({
   if (!client) return null;
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4 select-none animate-in fade-in duration-200">
-      <div className="bg-card border-2 border-amber-500/50 shadow-2xl rounded-2xl max-w-xl w-full p-6 text-foreground space-y-5 relative">
+    <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-3 sm:p-5 select-none animate-in fade-in duration-200 overflow-hidden">
+      <div className="bg-white text-zinc-900 border border-black/10 shadow-2xl rounded-2xl max-w-xl w-full h-[70vh] flex flex-col overflow-hidden relative animate-in zoom-in-95 duration-200">
         
         {/* Header with warning icon & Lock badge */}
-        <div className="flex items-start justify-between gap-4 border-b border-border pb-4">
+        <div className="flex items-start justify-between gap-4 border-b border-black/10 p-6 pb-4 bg-black/[0.02] shrink-0">
           <div className="flex items-center gap-3">
             <div className="p-3 bg-amber-500/15 text-amber-600 rounded-xl shrink-0">
               <AlertTriangle className="w-6 h-6" />
             </div>
             <div>
-              <h3 className="text-base font-bold text-foreground">
+              <h3 className="text-base font-bold text-zinc-900">
                 Client Match Found!
               </h3>
-              <p className="text-xs text-muted-foreground mt-0.5">
+              <p className="text-xs text-zinc-500 mt-0.5">
                 An existing client record matching this phone number or passport was found in the database.
               </p>
             </div>
@@ -53,8 +53,9 @@ export function ExistingClientAlertModal({
           </span>
         </div>
 
+        <div className="p-6 flex-1 min-h-0 overflow-y-auto space-y-5">
         {/* Existing Client Profile Card */}
-        <div className="bg-muted/40 border border-border p-4 rounded-xl space-y-2.5 text-xs">
+        <div className="bg-black/[0.02] border border-black/10 p-4 rounded-xl space-y-2.5 text-xs">
           <div className="flex items-center justify-between">
             <span className="font-mono text-primary font-bold text-[11px]">
               {client.clientCode || 'CUST-RECORD'}
@@ -129,13 +130,14 @@ export function ExistingClientAlertModal({
             <button
               type="button"
               onClick={onProceedAsNew}
-              className="text-[11.5px] text-muted-foreground hover:text-foreground underline transition-colors cursor-pointer"
+              className="text-[11.5px] text-zinc-500 hover:text-zinc-900 underline transition-colors cursor-pointer"
             >
               Save as a standalone document without linking to database record
             </button>
           </div>
         </div>
 
+        </div>
       </div>
     </div>
   );

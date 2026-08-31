@@ -420,12 +420,8 @@ export const EmployeesPage = () => {
 
       {/* Create Employee Modal */}
       {createModalOpen && (
-        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4">
-          <div className="bg-linear-to-r from-sky-950 via-indigo-950 to-slate-950 rounded-2xl sm:rounded-3xl border border-sky-800/40 text-white shadow-2xl max-w-lg w-full flex flex-col overflow-hidden relative animate-in fade-in zoom-in-95 duration-200">
-            {/* Decorative ambient background glows */}
-            <div className="absolute -top-24 -right-24 w-72 h-72 bg-sky-500/15 rounded-full blur-3xl pointer-events-none" />
-            <div className="absolute -bottom-24 -left-24 w-72 h-72 bg-indigo-500/15 rounded-full blur-3xl pointer-events-none" />
-
+        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-3 sm:p-5 overflow-hidden animate-in fade-in duration-200">
+          <div className="bg-white text-zinc-900 rounded-2xl border border-black/10 shadow-2xl max-w-lg w-full h-[70vh] flex flex-col overflow-hidden relative animate-in zoom-in-95 duration-200">
             <UnifiedModalHeader
               icon={UserPlus}
               title="Add New Employee"
@@ -433,8 +429,8 @@ export const EmployeesPage = () => {
               onClose={() => setCreateModalOpen(false)}
             />
 
-            <form onSubmit={handleCreateEmployee} className="flex flex-col flex-grow relative z-10">
-              <div className="p-6 space-y-4 text-xs text-zinc-100 max-h-[75vh] overflow-y-auto">
+            <form onSubmit={handleCreateEmployee} className="flex flex-col flex-1 min-h-0 relative z-10">
+              <div className="p-6 space-y-4 text-xs text-zinc-900 flex-1 min-h-0 overflow-y-auto">
                 <div>
                   <label className="text-xs font-semibold text-sky-200/90 block mb-1.5">
                     Full Name <span className="text-rose-400">*</span>
@@ -578,12 +574,8 @@ export const EmployeesPage = () => {
 
       {/* Edit Employee Modal */}
       {editModalOpen && (
-        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4">
-          <div className="bg-linear-to-r from-sky-950 via-indigo-950 to-slate-950 rounded-2xl sm:rounded-3xl border border-sky-800/40 text-white shadow-2xl max-w-lg w-full flex flex-col overflow-hidden relative animate-in fade-in zoom-in-95 duration-200">
-            {/* Decorative ambient background glows */}
-            <div className="absolute -top-24 -right-24 w-72 h-72 bg-sky-500/15 rounded-full blur-3xl pointer-events-none" />
-            <div className="absolute -bottom-24 -left-24 w-72 h-72 bg-indigo-500/15 rounded-full blur-3xl pointer-events-none" />
-
+        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-3 sm:p-5 overflow-hidden animate-in fade-in duration-200">
+          <div className="bg-white text-zinc-900 rounded-2xl border border-black/10 shadow-2xl max-w-lg w-full h-[70vh] flex flex-col overflow-hidden relative animate-in zoom-in-95 duration-200">
             <UnifiedModalHeader
               icon={Pencil}
               title="Edit Employee Profile"
@@ -591,8 +583,8 @@ export const EmployeesPage = () => {
               onClose={() => setEditModalOpen(false)}
             />
 
-            <form onSubmit={handleUpdateEmployee} className="flex flex-col flex-grow relative z-10">
-              <div className="p-6 space-y-4 text-xs text-zinc-100 max-h-[75vh] overflow-y-auto">
+            <form onSubmit={handleUpdateEmployee} className="flex flex-col flex-1 min-h-0 relative z-10">
+              <div className="p-6 space-y-4 text-xs text-zinc-900 flex-1 min-h-0 overflow-y-auto">
                 <div>
                   <label className="text-xs font-semibold text-sky-200/90 block mb-1.5">
                     Full Name <span className="text-rose-400">*</span>

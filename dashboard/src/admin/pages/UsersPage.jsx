@@ -426,12 +426,8 @@ const UsersPage = () => {
 
       {/* Create User Modal */}
       {createModalOpen && (
-        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4">
-          <div className="bg-linear-to-r from-sky-950 via-indigo-950 to-slate-950 rounded-2xl sm:rounded-3xl border border-sky-800/40 text-white shadow-2xl max-w-lg w-full flex flex-col overflow-hidden relative animate-in fade-in zoom-in-95 duration-200">
-            {/* Decorative ambient background glows */}
-            <div className="absolute -top-24 -right-24 w-72 h-72 bg-sky-500/15 rounded-full blur-3xl pointer-events-none" />
-            <div className="absolute -bottom-24 -left-24 w-72 h-72 bg-indigo-500/15 rounded-full blur-3xl pointer-events-none" />
-
+        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-3 sm:p-5 overflow-hidden animate-in fade-in duration-200">
+          <div className="bg-white text-zinc-900 rounded-2xl border border-black/10 shadow-2xl max-w-lg w-full h-[70vh] flex flex-col overflow-hidden relative animate-in zoom-in-95 duration-200">
             {/* Unified Modal Header */}
             <UnifiedModalHeader
               icon={UserPlus}
@@ -441,8 +437,8 @@ const UsersPage = () => {
             />
 
             {/* Modal Form */}
-            <form onSubmit={handleCreateUser} className="flex flex-col flex-grow overflow-hidden text-xs relative z-10">
-              <div className="p-6 space-y-4 overflow-y-auto">
+            <form onSubmit={handleCreateUser} className="flex flex-col flex-1 min-h-0 overflow-hidden text-xs relative z-10">
+              <div className="p-6 space-y-4 flex-1 min-h-0 overflow-y-auto">
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
                     <label className="text-xs font-semibold text-sky-200/90 block mb-1.5">
@@ -551,12 +547,8 @@ const UsersPage = () => {
 
       {/* Edit User & Role Assignment Modal */}
       {editModalOpen && editingUser && (
-        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4">
-          <div className="bg-linear-to-r from-sky-950 via-indigo-950 to-slate-950 rounded-2xl sm:rounded-3xl border border-sky-800/40 text-white shadow-2xl max-w-lg w-full flex flex-col overflow-hidden relative animate-in fade-in zoom-in-95 duration-200">
-            {/* Decorative ambient background glows */}
-            <div className="absolute -top-24 -right-24 w-72 h-72 bg-sky-500/15 rounded-full blur-3xl pointer-events-none" />
-            <div className="absolute -bottom-24 -left-24 w-72 h-72 bg-indigo-500/15 rounded-full blur-3xl pointer-events-none" />
-
+        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-3 sm:p-5 overflow-hidden animate-in fade-in duration-200">
+          <div className="bg-white text-zinc-900 rounded-2xl border border-black/10 shadow-2xl max-w-lg w-full h-[70vh] flex flex-col overflow-hidden relative animate-in zoom-in-95 duration-200">
             {/* Unified Modal Header */}
             <UnifiedModalHeader
               icon={Pencil}
@@ -569,8 +561,8 @@ const UsersPage = () => {
             />
 
             {/* Modal Form */}
-            <form onSubmit={handleUpdateUser} className="flex flex-col flex-grow overflow-hidden text-xs relative z-10">
-              <div className="p-6 space-y-4 overflow-y-auto">
+            <form onSubmit={handleUpdateUser} className="flex flex-col flex-1 min-h-0 overflow-hidden text-xs relative z-10">
+              <div className="p-6 space-y-4 flex-1 min-h-0 overflow-y-auto">
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div className="sm:col-span-2">
                     <label className="text-xs font-semibold text-sky-200/90 block mb-1.5">

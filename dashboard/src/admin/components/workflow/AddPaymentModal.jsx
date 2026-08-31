@@ -282,49 +282,49 @@ export const AddPaymentModal = ({
         </div>
       ) : (
         /* Form View */
-        <div className="bg-zinc-950 border border-zinc-800 text-zinc-100 rounded-2xl shadow-2xl w-full max-w-md overflow-hidden animate-in zoom-in-95 duration-200">
-          <div className="flex items-center justify-between p-5 border-b border-zinc-800 bg-linear-to-r from-zinc-950 via-slate-950 to-black">
-            <h2 className="font-bold text-white text-base flex items-center gap-2">
-              <CreditCard className="w-5 h-5 text-emerald-400" />
+        <div className="bg-white border border-black/10 text-zinc-900 rounded-2xl shadow-2xl w-full max-w-md h-[70vh] flex flex-col overflow-hidden animate-in zoom-in-95 duration-200">
+          <div className="flex items-center justify-between px-6 py-4 border-b border-black/10 bg-black/[0.02] shrink-0">
+            <h2 className="font-bold text-zinc-900 text-base flex items-center gap-2">
+              <CreditCard className="w-5 h-5 text-primary" />
               Add Payment
             </h2>
             <button
               onClick={onClose}
-              className="p-1.5 rounded-xl bg-rose-500/10 hover:bg-rose-500/20 text-rose-500 hover:text-rose-400 border border-rose-500/40 hover:border-rose-500/80 shadow-xs transition-all cursor-pointer"
-              aria-label="Close modal"
+              className="p-1.5 rounded-lg text-red-500 hover:text-red-600 hover:bg-red-500/10 transition-colors cursor-pointer"
+              title="Close"
             >
               <X className="w-4 h-4 stroke-[2.5]" />
             </button>
           </div>
 
-          <div className="p-4 bg-zinc-900/60 border-b border-zinc-800 flex justify-between items-center text-xs px-6">
+          <div className="p-4 bg-black/[0.02] border-b border-black/10 flex justify-between items-center text-xs px-6 shrink-0">
             <div>
-              <span className="text-zinc-400 block text-[11px]">Total Bill</span>
-              <span className="font-mono font-bold text-zinc-100 text-sm">BDT {totalAgreed.toLocaleString('en-IN')}</span>
+              <span className="text-zinc-500 block text-[11px]">Total Bill</span>
+              <span className="font-mono font-bold text-zinc-900 text-sm">BDT {totalAgreed.toLocaleString('en-IN')}</span>
             </div>
             <div className="text-right">
-              <span className="text-zinc-400 block text-[11px]">Current Due</span>
-              <span className="font-mono font-bold text-rose-400 text-sm">BDT {due.toLocaleString('en-IN')}</span>
+              <span className="text-zinc-500 block text-[11px]">Current Due</span>
+              <span className="font-mono font-bold text-red-600 text-sm">BDT {due.toLocaleString('en-IN')}</span>
             </div>
           </div>
 
-          <form onSubmit={handleSubmit} className="p-6 space-y-4 text-xs">
+          <form onSubmit={handleSubmit} className="p-6 space-y-4 text-xs flex-1 min-h-0 overflow-y-auto">
             <div>
-              <label className="block font-semibold text-zinc-300 mb-1.5">Payment Type</label>
+              <label className="block font-semibold text-zinc-700 mb-1.5">Payment Type</label>
               <select
                 value={formData.paymentType}
                 onChange={(e) => setFormData({ ...formData, paymentType: e.target.value })}
-                className="w-full px-3.5 py-2.5 bg-zinc-900/80 border border-zinc-800 rounded-xl text-zinc-100 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary cursor-pointer"
+                className="w-full px-3.5 py-2.5 bg-black/[0.03] border border-black/10 rounded-xl text-zinc-900 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary cursor-pointer"
               >
-                <option value="Advance Payment" className="bg-zinc-950 text-zinc-100">Advance Payment</option>
-                <option value="Offer Letter Approval" className="bg-zinc-950 text-zinc-100">Offer Letter Approval</option>
-                <option value="Final Delivery Payment" className="bg-zinc-950 text-zinc-100">Final Delivery Payment</option>
-                <option value="Additional Fee / Service" className="bg-zinc-950 text-zinc-100">Additional Fee / Service</option>
+                <option value="Advance Payment">Advance Payment</option>
+                <option value="Offer Letter Approval">Offer Letter Approval</option>
+                <option value="Final Delivery Payment">Final Delivery Payment</option>
+                <option value="Additional Fee / Service">Additional Fee / Service</option>
               </select>
             </div>
 
             <div>
-              <label className="block font-semibold text-zinc-300 mb-1.5">Amount (BDT) *</label>
+              <label className="block font-semibold text-zinc-700 mb-1.5">Amount (BDT) *</label>
               <input
                 type="number"
                 required
@@ -332,53 +332,54 @@ export const AddPaymentModal = ({
                 placeholder="e.g. 50000"
                 value={formData.amount}
                 onChange={(e) => setFormData({ ...formData, amount: e.target.value })}
-                className="w-full px-3.5 py-2.5 bg-zinc-900/80 border border-zinc-800 rounded-xl text-zinc-100 placeholder:text-zinc-500 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary font-mono text-sm"
+                className="w-full px-3.5 py-2.5 bg-black/[0.03] border border-black/10 rounded-xl text-zinc-900 placeholder:text-zinc-400 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary font-mono text-sm"
               />
             </div>
 
             <div>
-              <label className="block font-semibold text-zinc-300 mb-1.5">Payment Method</label>
+              <label className="block font-semibold text-zinc-700 mb-1.5">Payment Method</label>
               <select
                 value={formData.paymentMethod}
                 onChange={(e) => setFormData({ ...formData, paymentMethod: e.target.value })}
-                className="w-full px-3.5 py-2.5 bg-zinc-900/80 border border-zinc-800 rounded-xl text-zinc-100 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary cursor-pointer"
+                className="w-full px-3.5 py-2.5 bg-black/[0.03] border border-black/10 rounded-xl text-zinc-900 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary cursor-pointer"
               >
-                <option value="Cash" className="bg-zinc-950 text-zinc-100">Cash</option>
-                <option value="Bank Transfer" className="bg-zinc-950 text-zinc-100">Bank Transfer</option>
-                <option value="bKash / Nagad" className="bg-zinc-950 text-zinc-100">bKash / Nagad (Mobile Banking)</option>
-                <option value="Cheque" className="bg-zinc-950 text-zinc-100">Cheque</option>
+                <option value="Cash">Cash</option>
+                <option value="Bank Transfer">Bank Transfer</option>
+                <option value="bKash / Nagad">bKash / Nagad (Mobile Banking)</option>
+                <option value="Cheque">Cheque</option>
               </select>
             </div>
 
             <div>
-              <label className="block font-semibold text-zinc-300 mb-1.5">Notes (Optional)</label>
+              <label className="block font-semibold text-zinc-700 mb-1.5">Notes (Optional)</label>
               <textarea
                 rows={2}
                 placeholder="Additional notes or payment reference..."
                 value={formData.notes}
                 onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
-                className="w-full px-3.5 py-2.5 bg-zinc-900/80 border border-zinc-800 rounded-xl text-zinc-100 placeholder:text-zinc-500 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary resize-none"
+                className="w-full px-3.5 py-2.5 bg-black/[0.03] border border-black/10 rounded-xl text-zinc-900 placeholder:text-zinc-400 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary resize-none"
               />
             </div>
-
-            <div className="pt-3 border-t border-zinc-800 flex items-center justify-end gap-2.5">
-              <button
-                type="button"
-                onClick={onClose}
-                className="px-4 py-2 font-bold rounded-xl bg-rose-500/10 hover:bg-rose-500/20 text-rose-500 dark:text-rose-400 hover:text-rose-300 border border-rose-500/40 hover:border-rose-500/80 transition-all cursor-pointer"
-              >
-                Cancel
-              </button>
-              <button
-                type="submit"
-                disabled={loading}
-                className="px-5 py-2 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-xl text-xs transition-all shadow-md hover:shadow-lg disabled:opacity-50 flex items-center justify-center gap-2 cursor-pointer"
-              >
-                {loading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Plus className="w-3.5 h-3.5" />}
-                <span>Confirm & Generate Invoice</span>
-              </button>
-            </div>
           </form>
+
+          <div className="px-6 py-3.5 border-t border-black/10 flex items-center justify-end gap-2.5 shrink-0 bg-white">
+            <button
+              type="button"
+              onClick={onClose}
+              className="px-4 h-9 font-semibold text-xs rounded-xl bg-red-500/10 hover:bg-red-500/20 text-red-600 border border-red-500/30 hover:border-red-500/50 transition-all cursor-pointer flex items-center justify-center"
+            >
+              Cancel
+            </button>
+            <button
+              type="button"
+              onClick={handleSubmit}
+              disabled={loading}
+              className="px-5 h-9 bg-primary hover:bg-primary/90 text-primary-foreground font-bold rounded-xl text-xs transition-all shadow-xs disabled:opacity-50 flex items-center justify-center gap-2 cursor-pointer"
+            >
+              {loading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Plus className="w-3.5 h-3.5" />}
+              <span>Confirm & Generate Invoice</span>
+            </button>
+          </div>
         </div>
       )}
     </div>

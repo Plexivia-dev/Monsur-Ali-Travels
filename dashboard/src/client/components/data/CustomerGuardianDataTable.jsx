@@ -397,14 +397,14 @@ export function ClientGuardianDataTable({ onEditItem }) {
 
       {/* Fullscreen Print / Preview Modal */}
       {previewItem && (
-        <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-xs flex items-center justify-center p-4 overflow-y-auto animate-in fade-in duration-150">
-          <div className="bg-card border border-border rounded-2xl max-w-4xl w-full p-4 sm:p-6 shadow-2xl relative space-y-4 max-h-[95vh] overflow-y-auto">
-            <div className="no-print flex items-center justify-between border-b border-border pb-3">
+        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-3 sm:p-5 overflow-hidden animate-in fade-in duration-150">
+          <div className="bg-white text-zinc-900 border border-black/10 rounded-2xl max-w-4xl w-full h-[70vh] flex flex-col overflow-hidden shadow-2xl relative animate-in zoom-in-95 duration-200">
+            <div className="no-print flex items-center justify-between border-b border-black/10 px-6 py-4 bg-black/[0.02] shrink-0">
               <div>
-                <h3 className="font-bold text-sm text-foreground">
+                <h3 className="font-bold text-sm text-zinc-900">
                   Printable Application Form ({previewItem.applicationNo})
                 </h3>
-                <p className="text-xs text-muted-foreground">
+                <p className="text-xs text-zinc-500">
                   Client: {previewItem.client?.fullName} | Service: {previewItem.serviceType}
                 </p>
               </div>
@@ -419,7 +419,7 @@ export function ClientGuardianDataTable({ onEditItem }) {
                       clientName: previewItem?.client?.fullName,
                     })
                   }
-                  className="flex items-center gap-1.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-4 py-2 rounded-xl shadow-xs cursor-pointer"
+                  className="flex items-center gap-1.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-4 h-9 rounded-xl shadow-xs cursor-pointer"
                 >
                   <Printer className="w-4 h-4" />
                   <span>Download PDF / Print</span>
@@ -427,14 +427,15 @@ export function ClientGuardianDataTable({ onEditItem }) {
                 <button
                   type="button"
                   onClick={() => setPreviewItem(null)}
-                  className="p-2 text-muted-foreground hover:text-foreground rounded-xl hover:bg-muted cursor-pointer"
+                  className="p-1.5 text-red-500 hover:text-red-600 rounded-lg hover:bg-red-500/10 transition-colors cursor-pointer"
+                  title="Close"
                 >
-                  <X className="w-5 h-5" />
+                  <X className="w-4 h-4" />
                 </button>
               </div>
             </div>
 
-            <div className="flex justify-center bg-muted/20 p-2 sm:p-4 rounded-xl">
+            <div className="flex-1 min-h-0 overflow-y-auto p-4 sm:p-6 bg-black/[0.02] flex justify-center">
               <ClientGuardianPreview data={previewItem} />
             </div>
           </div>

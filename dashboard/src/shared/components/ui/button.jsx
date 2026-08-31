@@ -24,7 +24,13 @@ const buttonVariants = cva(
         delete:
           'bg-rose-600 hover:bg-rose-700 text-white shadow-xs',
         cancel:
-          'bg-rose-500/15 text-rose-600 dark:text-rose-400 border border-rose-500/25 hover:bg-rose-500/25',
+          'bg-red-500/10 text-red-600 dark:text-red-400 border border-red-500/30 hover:bg-red-500/20 hover:border-red-500/50 shadow-xs cursor-pointer',
+        close:
+          'bg-red-500/10 text-red-600 dark:text-red-400 border border-red-500/30 hover:bg-red-500/20 hover:border-red-500/50 shadow-xs cursor-pointer',
+        previous:
+          'bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-200 dark:hover:bg-zinc-700 border border-zinc-300 dark:border-zinc-700 shadow-xs cursor-pointer',
+        back:
+          'bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-200 dark:hover:bg-zinc-700 border border-zinc-300 dark:border-zinc-700 shadow-xs cursor-pointer',
         warning:
           'bg-rose-600 hover:bg-rose-700 text-white shadow-xs',
         reset:
@@ -36,14 +42,14 @@ const buttonVariants = cva(
         link: 'text-primary underline-offset-4 hover:underline cursor-pointer',
       },
       size: {
-        default: 'h-9 gap-1.5 px-3',
-        xs: 'h-6 gap-1 rounded-md px-2 text-xs',
-        sm: 'h-8 gap-1.5 rounded-md px-2.5 text-xs',
-        lg: 'h-10 gap-2 px-4',
-        icon: 'size-9',
+        default: 'h-9 gap-1.5 px-4 text-xs font-semibold rounded-xl',
+        xs: 'h-6 gap-1 rounded-md px-2 text-[11px]',
+        sm: 'h-8 gap-1.5 rounded-lg px-3 text-xs font-medium',
+        lg: 'h-10 gap-2 rounded-xl px-5 text-sm font-bold',
+        icon: 'size-9 rounded-xl',
         'icon-xs': 'size-6 rounded-md',
-        'icon-sm': 'size-8 rounded-md',
-        'icon-lg': 'size-10',
+        'icon-sm': 'size-8 rounded-lg',
+        'icon-lg': 'size-10 rounded-xl',
       },
     },
     defaultVariants: {

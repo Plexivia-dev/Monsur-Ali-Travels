@@ -282,19 +282,19 @@ export function AgencyClientList({ autoOpenCreate = false }) {
 
       {/* Client Details Modal (Strict Read-Only) */}
       {selectedClient && (
-        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white border border-black/10 rounded-2xl w-full max-w-2xl shadow-2xl overflow-hidden animate-in zoom-in-95 duration-150 text-black">
+        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-3 sm:p-5 overflow-hidden animate-in fade-in duration-200">
+          <div className="bg-white border border-black/10 rounded-2xl w-full max-w-2xl h-[70vh] flex flex-col shadow-2xl overflow-hidden animate-in zoom-in-95 duration-150 text-zinc-900">
             {/* Modal Header */}
-            <div className="flex items-center justify-between px-6 py-4 border-b border-black/10 bg-black/[0.02]">
+            <div className="flex items-center justify-between px-6 py-4 border-b border-black/10 bg-black/[0.02] shrink-0">
               <div className="flex items-center gap-3">
                 <div className="size-9 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center">
                   <Users className="size-4 text-primary" />
                 </div>
                 <div>
-                  <h3 className="text-sm font-bold tracking-tight text-foreground">
+                  <h3 className="text-sm font-bold tracking-tight text-zinc-900">
                     Client Profile Overview
                   </h3>
-                  <p className="text-[11px] text-muted-foreground font-medium">
+                  <p className="text-[11px] text-zinc-500 font-medium">
                     Verified agency records (Read-Only)
                   </p>
                 </div>
@@ -310,22 +310,21 @@ export function AgencyClientList({ autoOpenCreate = false }) {
             </div>
 
             {/* Modal Body */}
-            <div className="p-6 space-y-6 max-h-[75vh] overflow-y-auto">
-              <div className="flex items-center justify-between p-4 rounded-xl bg-muted/40 border border-border">
+            <div className="p-6 space-y-6 flex-1 min-h-0 overflow-y-auto">
+              <div className="flex items-center justify-between p-4 rounded-xl bg-black/[0.02] border border-black/10">
                 <div className="space-y-1">
-                  <div className="text-base font-bold text-foreground">
+                  <div className="text-base font-bold text-zinc-900">
                     {selectedClient.name || selectedClient.fullName || 'Client'}
                   </div>
-                  <div className="text-xs font-mono text-muted-foreground">
+                  <div className="text-xs font-mono text-zinc-500">
                     Code: {selectedClient.clientCode || selectedClient.code || selectedClient._id || selectedClient.id}
                   </div>
                 </div>
-                <span className="px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-muted border border-border text-foreground">
+                <span className="px-3 py-1 bg-emerald-500/10 text-emerald-600 border border-emerald-500/20 rounded-full text-xs font-semibold">
                   {selectedClient.status || 'Active'}
                 </span>
               </div>
 
-              {/* Information Grid */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="p-3.5 rounded-xl bg-muted/30 border border-border/80 space-y-1">
                   <div className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground flex items-center gap-1.5">
@@ -394,11 +393,11 @@ export function AgencyClientList({ autoOpenCreate = false }) {
             </div>
 
             {/* Modal Footer */}
-            <div className="px-6 py-3.5 border-t border-border bg-muted/20 flex items-center justify-end">
+            <div className="px-6 py-3.5 border-t border-black/10 bg-white flex items-center justify-end shrink-0">
               <button
                 type="button"
                 onClick={() => setSelectedClient(null)}
-                className="px-4 py-2 border border-red-500/30 text-red-600 dark:text-red-400 hover:bg-red-500/10 rounded-xl text-xs font-semibold transition-colors cursor-pointer"
+                className="px-4 h-9 border border-red-500/30 text-red-600 bg-red-500/10 hover:bg-red-500/20 rounded-xl text-xs font-semibold transition-colors cursor-pointer flex items-center justify-center"
               >
                 Close View
               </button>
