@@ -67,33 +67,42 @@ export function DocumentStudioPage({
 
         if (caseDid) {
           try {
-            const caseRes = await apiClient.get(`/api/v1/admin/cases/${caseDid}/full-details`);
+            const caseRes = await apiClient.get(`/api/v1/client/cases/${caseDid}`);
             if (caseRes.data?.data) {
               caseData = caseRes.data.data;
-              clientData = caseData.clientInfo || caseData.clientId || null;
+              clientData = (caseData.clientInfo && typeof caseData.clientInfo === 'object')
+                ? caseData.clientInfo
+                : (caseData.clientId && typeof caseData.clientId === 'object')
+                ? caseData.clientId
+                : null;
             }
           } catch (_) {
             try {
-              const fallbackCaseRes = await apiClient.get(`/api/v1/client/cases/${caseDid}`);
-              if (fallbackCaseRes.data?.data) {
-                caseData = fallbackCaseRes.data.data;
-                clientData = caseData.clientInfo || caseData.clientId || null;
+              const adminCaseRes = await apiClient.get(`/api/v1/admin/cases/${caseDid}/full-details`);
+              if (adminCaseRes.data?.data) {
+                caseData = adminCaseRes.data.data;
+                clientData = (caseData.clientInfo && typeof caseData.clientInfo === 'object')
+                  ? caseData.clientInfo
+                  : (caseData.clientId && typeof caseData.clientId === 'object')
+                  ? caseData.clientId
+                  : null;
               }
             } catch (e) {
-              console.warn('Case fetch fallback:', e);
+              console.warn('Case fetch error:', e);
             }
           }
         }
 
-        if (!clientData && clientDid) {
+        const resolvedClientRef = (clientData && typeof clientData === 'string' ? clientData : null) || clientDid || caseData?.clientDid;
+        if (!clientData && resolvedClientRef) {
           try {
-            const clientRes = await apiClient.get(`/api/v1/client/clients/${clientDid}`);
+            const clientRes = await apiClient.get(`/api/v1/client/clients/${resolvedClientRef}`);
             if (clientRes.data?.data) {
               clientData = clientRes.data.data;
             }
           } catch (_) {
             try {
-              const fallbackClientRes = await apiClient.get(`/api/v1/admin/clients/${clientDid}`);
+              const fallbackClientRes = await apiClient.get(`/api/v1/admin/clients/${resolvedClientRef}`);
               if (fallbackClientRes.data?.data) {
                 clientData = fallbackClientRes.data.data;
               }
@@ -107,7 +116,7 @@ export function DocumentStudioPage({
           setDossierContext({
             client: clientData || {},
             caseFile: caseData || {},
-            isLocked: true,
+            isLocked: false,
           });
         }
       } catch (err) {
@@ -127,42 +136,48 @@ export function DocumentStudioPage({
   // Build mapped initialData for each generator based on dossierContext
   const initialData = useMemo(() => {
     if (!dossierContext) return null;
-    const { client, caseFile } = dossierContext;
+    const { client = {}, caseFile = {} } = dossierContext;
 
     const applicantFullName = client.fullName || caseFile.applicantName || '';
-    const phone = client.phone || caseFile.phone || '';
+    const phone = client.phone || client.mobileNumber || caseFile.phone || '';
     const passportNumber = client.passportNumber || caseFile.passportNumber || '';
     const nidNumber = client.nidNumber || caseFile.nidNumber || '';
-    const destination = caseFile.destinationCountry || caseFile.caseType?.toUpperCase() || 'Work Permit / Visa';
+    const destination = caseFile.destinationCountry || caseFile.caseType || 'Work Permit & Job Placement';
     const trade = caseFile.tradeSkill || 'General Worker';
 
     switch (resolvedSubmodule) {
       case 'client-form':
+      case 'customer-form':
         return {
-          clientId: client._id,
-          clientDid: client.did,
-          caseDid: caseFile.did || caseFile._id,
-          caseNumber: caseFile.caseNumber || caseNumberParam,
+          _id: client._id || null,
+          clientId: client._id || client.did || null,
+          clientDid: client.did || client._id || null,
+          caseDid: caseFile.did || caseFile._id || null,
+          caseNumber: caseFile.caseNumber || caseNumberParam || '',
           serviceType: destination,
           client: {
             fullName: applicantFullName,
             mobileNumber: phone,
             nidNumber,
             passportNumber,
-            email: client.email || '',
-            fatherName: client.fatherName || '',
-            motherName: client.motherName || '',
+            email: client.email || caseFile.email || '',
+            fatherName: client.fatherName || caseFile.fatherName || '',
+            motherName: client.motherName || caseFile.motherName || '',
+            countryRejected: client.countryRejected || '',
             presentAddress: client.presentAddress || client.address || '',
             permanentAddress: client.permanentAddress || '',
           },
           guardian: {
-            fullName: client.guardian?.name || '',
+            fullName: client.guardian?.name || client.guardian?.fullName || '',
             relationship: client.guardian?.relationship || 'Father',
-            mobileNumber: client.guardian?.phone || '',
+            mobileNumber: client.guardian?.phone || client.guardian?.mobileNumber || '',
             nidNumber: client.guardian?.nidNumber || '',
+            fatherName: client.guardian?.fatherName || '',
+            motherName: client.guardian?.motherName || '',
+            email: client.guardian?.email || '',
             address: client.guardian?.address || '',
           },
-          isLocked: true,
+          isLocked: false,
         };
 
       case 'agreement':
@@ -177,8 +192,8 @@ export function DocumentStudioPage({
             address: client.presentAddress || client.address || client.permanentAddress || '',
           },
           guardian: {
-            guardianName: client.guardian?.name || '',
-            guardianPhone: client.guardian?.phone || '',
+            guardianName: client.guardian?.name || client.guardian?.fullName || '',
+            guardianPhone: client.guardian?.phone || client.guardian?.mobileNumber || '',
             relationship: client.guardian?.relationship || 'Father',
             emergencyPhone: client.guardian?.phone || client.altPhone || '',
             guardianNid: client.guardian?.nidNumber || '',
@@ -189,7 +204,7 @@ export function DocumentStudioPage({
             department: destination,
             location: 'Head Office / Overseas Placement',
           },
-          isLocked: true,
+          isLocked: false,
         };
 
       case 'indian-visa':
@@ -205,7 +220,7 @@ export function DocumentStudioPage({
             presentAddress: client.presentAddress || client.address || '',
             permanentAddress: client.permanentAddress || '',
           },
-          isLocked: true,
+          isLocked: false,
         };
 
       case 'passport-sub':
@@ -216,7 +231,7 @@ export function DocumentStudioPage({
           nidNumber,
           fatherName: client.fatherName || '',
           destinationCountry: destination,
-          isLocked: true,
+          isLocked: false,
         };
 
       case 'job-verification':
@@ -227,7 +242,7 @@ export function DocumentStudioPage({
           nidNumber,
           designation: trade,
           country: destination,
-          isLocked: true,
+          isLocked: false,
         };
 
       case 'idcard':
@@ -237,7 +252,7 @@ export function DocumentStudioPage({
           idNumber: client.clientCode || (client.did ? `CLNT-${client.did.slice(0, 6)}` : 'ID-001'),
           contactPhone: phone,
           bloodGroup: client.bloodGroup || '',
-          isLocked: true,
+          isLocked: false,
         };
 
       case 'invoice':
@@ -247,7 +262,7 @@ export function DocumentStudioPage({
           phone,
           passportNumber,
           caseNumber: caseFile.caseNumber || caseNumberParam || '',
-          isLocked: true,
+          isLocked: false,
         };
 
       default:
@@ -256,7 +271,7 @@ export function DocumentStudioPage({
           phone,
           passportNumber,
           nidNumber,
-          isLocked: true,
+          isLocked: false,
         };
     }
   }, [dossierContext, resolvedSubmodule, caseNumberParam]);

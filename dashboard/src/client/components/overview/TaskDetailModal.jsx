@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
   X,
   CheckCircle2,
@@ -135,6 +136,7 @@ export function TaskDetailModal({
   onOpenCaseWorkspace,
   onRefreshTasks,
 }) {
+  const navigate = useNavigate();
   const switchPortal = usePortalStore((state) => state.switchPortal);
   const [activeTab, setActiveTab] = useState(
     task?.requiresPayment
@@ -536,11 +538,24 @@ export function TaskDetailModal({
     }
   };
 
-  // Open Document Studio Generator
+  // Open Document Studio Generator with Full Case & Client Dossier Query Params
   const handleLaunchGenerator = (generatorId) => {
-    onClose();
+    if (onClose) onClose();
+
+    const caseRef = task?.caseDid || task?.caseId || task?.caseDetails?.did || task?.caseDetails?._id || '';
+    const clientRef = task?.clientDid || task?.clientId || task?.clientInfo?.did || task?.clientInfo?._id || '';
+    const caseNum = task?.caseNumber || task?.caseDetails?.caseNumber || '';
+
+    const queryParams = new URLSearchParams();
+    if (caseRef) queryParams.set('caseDid', caseRef);
+    if (clientRef) queryParams.set('clientDid', clientRef);
+    if (caseNum) queryParams.set('caseNumber', caseNum);
+    queryParams.set('returnUrl', '/dashboard/overview/tasks');
+
+    const searchStr = queryParams.toString() ? `?${queryParams.toString()}` : '';
     switchPortal('docs', generatorId);
-    toast.info(`Opened ${generatorId} in Document Studio.`);
+    navigate(`/dashboard/docs/${generatorId}${searchStr}`);
+    toast.info(`Opened ${generatorId} with prefilled client particulars.`);
   };
 
   return (
