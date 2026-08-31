@@ -21,6 +21,7 @@ import {
 } from '@/components/ui/unified-table';
 import { HeaderTitle } from '@shared/components/common/HeaderTitle';
 import { PageAvatar } from '@shared/components/common/PageAvatar';
+import { UnifiedModal } from '@shared/components/common/UnifiedModal';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 
@@ -131,7 +132,7 @@ export default function ActivityLogsPage() {
           const role = log.actionDetails?.role || log.role || 'Staff';
           const userName = log.actionDetails?.name || log.userName || log.user || 'User';
           const userDid = log.actionDetails?.did;
-          const badgeClass = ROLE_BADGE_COLORS[role] || 'bg-zinc-700 text-white font-bold';
+          const badgeClass = ROLE_BADGE_COLORS[role] || 'bg-black/60 text-white font-bold';
 
           return (
             <div className="flex items-center gap-3 py-0.5">
@@ -233,9 +234,8 @@ export default function ActivityLogsPage() {
           <Button
             onClick={fetchLogs}
             disabled={loading}
-            variant="outline"
             size="sm"
-            className="flex items-center gap-2 text-xs font-semibold cursor-pointer bg-slate-800/80 hover:bg-slate-800 text-sky-400 border-sky-500/20"
+            className="flex items-center gap-2 text-xs font-semibold cursor-pointer bg-primary text-primary-foreground hover:bg-primary/90 shadow-sm"
             title="Refresh Logs"
           >
             <RefreshCw className={`size-3.5 ${loading ? 'animate-spin' : ''}`} />
@@ -281,36 +281,27 @@ export default function ActivityLogsPage() {
 
       {/* Payload Modal */}
       {selectedPayload && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-fade-in">
-          <div className="bg-card border border-border rounded-2xl p-6 max-w-lg w-full shadow-2xl space-y-4 max-h-[85vh] flex flex-col text-card-foreground">
-            <div className="flex items-center justify-between border-b border-border pb-3">
-              <div className="flex items-center gap-2">
-                <FileJson className="size-5 text-primary" />
-                <h3 className="text-sm font-bold text-foreground">Audit Log Payload Details</h3>
-              </div>
-              <button
-                onClick={() => setSelectedPayload(null)}
-                className="p-1.5 rounded-lg hover:bg-muted text-muted-foreground cursor-pointer"
-              >
-                <X className="size-4" />
-              </button>
-            </div>
-
-            <div className="overflow-y-auto flex-1 bg-slate-950 text-slate-100 rounded-xl p-4 text-xs font-mono">
-              <pre>{JSON.stringify(selectedPayload.payload || selectedPayload, null, 2)}</pre>
-            </div>
-
-            <div className="flex justify-end pt-2">
-              <Button
-                onClick={() => setSelectedPayload(null)}
-                size="sm"
-                className="text-xs font-semibold cursor-pointer"
-              >
-                Close
-              </Button>
-            </div>
+        <UnifiedModal
+          isOpen={Boolean(selectedPayload)}
+          onClose={() => setSelectedPayload(null)}
+          title="Audit Log Payload Details"
+          subtitle="Detailed JSON parameter data recorded for this audit entry."
+          icon={FileJson}
+          maxWidth="max-w-xl"
+          footer={
+            <Button
+              variant="cancel"
+              onClick={() => setSelectedPayload(null)}
+              className="cursor-pointer"
+            >
+              Close
+            </Button>
+          }
+        >
+          <div className="bg-black/[0.03] border border-black/10 text-black rounded-xl p-4 text-xs font-mono overflow-x-auto select-text">
+            <pre>{JSON.stringify(selectedPayload.payload || selectedPayload, null, 2)}</pre>
           </div>
-        </div>
+        </UnifiedModal>
       )}
     </div>
   );

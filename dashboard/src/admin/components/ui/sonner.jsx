@@ -3,12 +3,9 @@ import { Toaster as Sonner } from "sonner"
 import { CircleCheckIcon, InfoIcon, TriangleAlertIcon, OctagonXIcon, Loader2Icon } from "lucide-react"
 
 const Toaster = ({ ...props }) => {
-  const isDark = useThemeStore((state) => state.isDark)
-  const theme = isDark ? "dark" : "light"
-
   return (
     <Sonner
-      theme={theme}
+      theme="light"
       className="toaster group"
       position="bottom-right"
       richColors
@@ -43,7 +40,7 @@ const Toaster = ({ ...props }) => {
       toastOptions={{
         classNames: {
           toast: "cn-toast",
-          closeButton: "!left-auto !right-0 !top-0 !translate-x-[35%] !-translate-y-[35%] !opacity-100 !bg-card !text-foreground !border !border-border hover:!bg-muted shadow-xs",
+          closeButton: "!left-auto !right-0 !top-0 !translate-x-[35%] !-translate-y-[35%] !opacity-100 !bg-card !text-red-500 hover:!text-red-600 !border !border-red-500/30 hover:!bg-red-500/10 shadow-xs",
         },
       }}
       {...props}

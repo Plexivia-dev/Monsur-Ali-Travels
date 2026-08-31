@@ -10,11 +10,15 @@ export function Agency() {
   const location = useLocation();
   const params = useParams();
 
-  let activeSub = params.submodule || storeSubmodule || 'clients';
+  let activeSub = params.submodule || storeSubmodule || 'tasks';
   if (location.pathname.includes('/agency/employees')) {
     activeSub = 'employees';
-  } else if (location.pathname.includes('/agency/clients')) {
+  } else if (location.pathname.includes('/agency/clients-add')) {
+    activeSub = 'clients-add';
+  } else if (location.pathname.includes('/agency/clients-all') || location.pathname.includes('/agency/clients')) {
     activeSub = 'clients';
+  } else if (location.pathname.includes('/agency/cases') || location.pathname.includes('/agency/pipeline')) {
+    activeSub = 'cases';
   } else if (location.pathname.includes('/agency/tasks') || location.pathname.includes('/agency/my-tasks')) {
     activeSub = 'tasks';
   }
@@ -25,7 +29,12 @@ export function Agency() {
       return <MyTasks />;
     case 'employees':
       return <AgencyEmployeeList />;
+    case 'clients-add':
+      return <AgencyClientList autoOpenCreate={true} />;
+    case 'cases':
+    case 'pipeline':
     case 'clients':
+    case 'clients-all':
     default:
       return <AgencyClientList />;
   }

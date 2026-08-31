@@ -8,10 +8,56 @@ import { printDocument } from '@shared/lib/utils';
 import { toast } from 'sonner';
 import { HeaderTitle } from '@shared/components/common/HeaderTitle';
 
-export function InvoiceBuilder() {
-  const [data, setData] = useState(getDefaultInvoiceData());
-  const [viewMode, setViewMode] = useState('split'); // 'split' | 'edit' | 'preview'
+export function InvoiceBuilder({ initialData = null, isLocked = false, onSavedSuccess }) {
+  const [data, setData] = useState(() => {
+    const defaultData = getDefaultInvoiceData();
+    if (!initialData) return defaultData;
+
+    const resolvedClientName = initialData.client?.name || initialData.clientName || initialData.applicantName || '';
+    const resolvedPhone = initialData.client?.phone || initialData.phone || '';
+    const resolvedEmail = initialData.client?.email || initialData.email || '';
+    const resolvedAddress = initialData.client?.address || initialData.address || initialData.presentAddress || '';
+
+    return {
+      ...defaultData,
+      ...initialData,
+      client: {
+        ...defaultData.client,
+        name: resolvedClientName,
+        contactPerson: initialData.client?.contactPerson || resolvedClientName,
+        phone: resolvedPhone,
+        email: resolvedEmail,
+        address: resolvedAddress,
+      },
+      items: initialData.items && initialData.items.length > 0 ? initialData.items : defaultData.items,
+    };
+  });
+
+  const [viewMode, setViewMode] = useState('edit'); // 'split' | 'edit' | 'preview'
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  React.useEffect(() => {
+    if (initialData) {
+      const resolvedClientName = initialData.client?.name || initialData.clientName || initialData.applicantName || '';
+      const resolvedPhone = initialData.client?.phone || initialData.phone || '';
+      const resolvedEmail = initialData.client?.email || initialData.email || '';
+      const resolvedAddress = initialData.client?.address || initialData.address || initialData.presentAddress || '';
+
+      setData((prev) => ({
+        ...prev,
+        ...initialData,
+        client: {
+          ...prev.client,
+          name: resolvedClientName || prev.client.name,
+          contactPerson: initialData.client?.contactPerson || resolvedClientName || prev.client.contactPerson,
+          phone: resolvedPhone || prev.client.phone,
+          email: resolvedEmail || prev.client.email,
+          address: resolvedAddress || prev.client.address,
+        },
+        items: initialData.items && initialData.items.length > 0 ? initialData.items : prev.items,
+      }));
+    }
+  }, [initialData]);
 
   const handleReset = () => {
     setData(getDefaultInvoiceData());

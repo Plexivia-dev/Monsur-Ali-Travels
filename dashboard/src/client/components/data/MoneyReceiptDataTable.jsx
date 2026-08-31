@@ -526,23 +526,24 @@ export function MoneyReceiptDataTable() {
 
       {/* Preview / Print Modal */}
       {previewItem && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs overflow-y-auto">
-          <div className="bg-card border border-border rounded-2xl shadow-2xl w-full max-w-4xl max-h-[92vh] flex flex-col overflow-hidden my-auto">
-            <div className="flex items-center justify-between px-6 py-4 border-b border-border bg-muted/40">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-5 bg-black/60 backdrop-blur-xs overflow-hidden animate-in fade-in duration-200">
+          <div className="bg-white text-zinc-900 border border-black/10 rounded-2xl shadow-2xl w-full max-w-4xl h-[70vh] flex flex-col overflow-hidden my-auto animate-in zoom-in-95 duration-200">
+            <div className="flex items-center justify-between px-6 py-4 border-b border-black/10 bg-black/[0.02] shrink-0">
               <div className="flex items-center space-x-2">
                 <Receipt className="w-5 h-5 text-primary" />
-                <span className="font-bold text-foreground">
-                  Money Receipt  Token Print  (#{previewItem.receiptNo})
+                <span className="font-bold text-zinc-900">
+                  Money Receipt Token Print (#{previewItem.receiptNo})
                 </span>
               </div>
               <button
                 onClick={() => setPreviewItem(null)}
-                className="p-2 rounded-lg hover:bg-muted text-muted-foreground hover:text-foreground cursor-pointer"
+                className="p-1.5 rounded-lg text-red-500 hover:text-red-600 hover:bg-red-500/10 transition-colors cursor-pointer"
+                title="Close"
               >
                 <XCircle className="w-5 h-5" />
               </button>
             </div>
-            <div className="flex-1 overflow-y-auto p-4 sm:p-6">
+            <div className="flex-1 min-h-0 overflow-y-auto p-4 sm:p-6">
               <MoneyReceiptPrintSlip
                 data={previewItem}
                 onPrint={() =>

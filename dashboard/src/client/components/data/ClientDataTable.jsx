@@ -157,7 +157,7 @@ export function ClientDataTable({ activeSubmodule }) {
     const map = {
       Active: 'bg-emerald-500/10 text-emerald-600 border-emerald-500/20',
       Lead: 'bg-sky-500/10 text-sky-600 border-sky-500/20',
-      Inactive: 'bg-slate-500/10 text-slate-500 border-slate-500/20',
+      Inactive: 'bg-black/[0.04] text-black/60 border-black/15',
       Blacklisted: 'bg-rose-500/10 text-rose-600 border-rose-500/20',
       Archived: 'bg-amber-500/10 text-amber-600 border-amber-500/20',
     };
@@ -397,28 +397,29 @@ export function ClientDataTable({ activeSubmodule }) {
 
       {/* Client Profile Modal */}
       {profileItem && (
-        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 overflow-y-auto">
-          <div className="bg-background border border-border rounded-xl shadow-2xl max-w-2xl w-full max-h-[90vh] flex flex-col overflow-hidden">
+        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-3 sm:p-5 overflow-hidden animate-in fade-in duration-200">
+          <div className="bg-white text-zinc-900 border border-black/10 rounded-2xl shadow-2xl max-w-2xl w-full h-[70vh] flex flex-col overflow-hidden animate-in zoom-in-95 duration-200">
             {/* Modal Header */}
-            <div className="px-5 py-3.5 border-b border-border bg-card flex items-center justify-between gap-3">
+            <div className="px-6 py-4 border-b border-black/10 bg-black/[0.02] flex items-center justify-between gap-3 shrink-0">
               <div>
-                <h3 className="text-sm font-bold text-foreground flex items-center gap-2">
-                  <User className="w-4 h-4 text-sky-500" />
+                <h3 className="text-sm font-bold text-zinc-900 flex items-center gap-2">
+                  <User className="w-4 h-4 text-primary" />
                   Client Profile — {profileItem.clientCode}
                 </h3>
-                <p className="text-[11px] text-muted-foreground">{profileItem.fullName}</p>
+                <p className="text-[11px] text-zinc-500">{profileItem.fullName}</p>
               </div>
               <button
                 type="button"
                 onClick={() => setProfileItem(null)}
-                className="p-2 rounded-lg hover:bg-muted text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
+                className="p-1.5 rounded-lg text-red-500 hover:text-red-600 hover:bg-red-500/10 transition-colors cursor-pointer"
+                title="Close"
               >
                 <X className="w-4 h-4" />
               </button>
             </div>
 
             {/* Modal Body */}
-            <div className="flex-1 overflow-y-auto p-5 space-y-5">
+            <div className="flex-1 min-h-0 overflow-y-auto p-6 space-y-5">
               {/* Basic Info */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <InfoBlock label="Full Name" value={profileItem.fullName} />
@@ -540,104 +541,107 @@ export function ClientDataTable({ activeSubmodule }) {
 
       {/* Add New Client Modal */}
       {isCreateClientOpen && (
-        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-card border border-border rounded-xl shadow-2xl w-full max-w-md overflow-hidden animate-in fade-in zoom-in duration-200">
-            <div className="px-5 py-3.5 border-b border-border bg-muted/30 flex items-center justify-between">
-              <h3 className="text-sm font-bold text-foreground flex items-center gap-2">
-                <Users className="w-4 h-4 text-sky-500" />
+        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-3 sm:p-5 overflow-hidden animate-in fade-in duration-200">
+          <div className="bg-white text-zinc-900 border border-black/10 rounded-2xl shadow-2xl w-full max-w-md h-[70vh] flex flex-col overflow-hidden animate-in zoom-in-95 duration-200">
+            <div className="px-6 py-4 border-b border-black/10 bg-black/[0.02] flex items-center justify-between shrink-0">
+              <h3 className="text-sm font-bold text-zinc-900 flex items-center gap-2">
+                <Users className="w-4 h-4 text-primary" />
                 New Client Registration
               </h3>
               <button
                 type="button"
                 onClick={() => setIsCreateClientOpen(false)}
-                className="p-1 rounded-md text-muted-foreground hover:text-foreground"
+                className="p-1.5 rounded-lg text-red-500 hover:text-red-600 hover:bg-red-500/10 transition-colors cursor-pointer"
+                title="Close"
               >
                 <X className="w-4 h-4" />
               </button>
             </div>
-            <form onSubmit={handleCreateClientSubmit} className="p-5 space-y-4">
-              <div>
-                <label className="block text-xs font-semibold text-foreground mb-1">
-                     (Full Name) <span className="text-rose-500">*</span>
-                </label>
-                <input
-                  type="text"
-                  required
-                  placeholder="e.g. Md Ikramul Hasan"
-                  value={newClientForm.fullName}
-                  onChange={(e) => setNewClientForm({ ...newClientForm, fullName: e.target.value })}
-                  className="w-full px-3 py-2 bg-background border border-input rounded-lg text-xs focus:border-sky-500 outline-none"
-                />
-              </div>
-
-              <div className="grid grid-cols-2 gap-3">
+            <form onSubmit={handleCreateClientSubmit} className="flex flex-col flex-1 min-h-0">
+              <div className="p-6 space-y-4 flex-1 min-h-0 overflow-y-auto">
                 <div>
-                  <label className="block text-xs font-semibold text-foreground mb-1">
-                    Mobile Phone Number <span className="text-rose-500">*</span>
+                  <label className="block text-xs font-semibold text-zinc-700 mb-1">
+                    Full Name <span className="text-rose-500">*</span>
                   </label>
                   <input
                     type="text"
                     required
-                    placeholder="017XXXXXXXX"
-                    value={newClientForm.phone}
-                    onChange={(e) => setNewClientForm({ ...newClientForm, phone: e.target.value })}
-                    className="w-full px-3 py-2 bg-background border border-input rounded-lg text-xs font-mono focus:border-sky-500 outline-none"
+                    placeholder="e.g. Md Ikramul Hasan"
+                    value={newClientForm.fullName}
+                    onChange={(e) => setNewClientForm({ ...newClientForm, fullName: e.target.value })}
+                    className="w-full px-3.5 py-2.5 bg-black/[0.03] border border-black/10 rounded-xl text-xs text-zinc-900 focus:border-primary outline-none"
                   />
                 </div>
+
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-xs font-semibold text-zinc-700 mb-1">
+                      Mobile Phone Number <span className="text-rose-500">*</span>
+                    </label>
+                    <input
+                      type="text"
+                      required
+                      placeholder="017XXXXXXXX"
+                      value={newClientForm.phone}
+                      onChange={(e) => setNewClientForm({ ...newClientForm, phone: e.target.value })}
+                      className="w-full px-3.5 py-2.5 bg-black/[0.03] border border-black/10 rounded-xl text-xs font-mono text-zinc-900 focus:border-primary outline-none"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-semibold text-zinc-700 mb-1">
+                      Passport Number
+                    </label>
+                    <input
+                      type="text"
+                      placeholder="e.g. A01234567"
+                      value={newClientForm.passportNumber}
+                      onChange={(e) => setNewClientForm({ ...newClientForm, passportNumber: e.target.value.toUpperCase() })}
+                      className="w-full px-3.5 py-2.5 bg-black/[0.03] border border-black/10 rounded-xl text-xs font-mono uppercase text-zinc-900 focus:border-primary outline-none"
+                    />
+                  </div>
+                </div>
+
                 <div>
-                  <label className="block text-xs font-semibold text-foreground mb-1">
-                    Passport Number (Passport No)
+                  <label className="block text-xs font-semibold text-zinc-700 mb-1">
+                    Email Address
+                  </label>
+                  <input
+                    type="email"
+                    placeholder="client@example.com"
+                    value={newClientForm.email}
+                    onChange={(e) => setNewClientForm({ ...newClientForm, email: e.target.value })}
+                    className="w-full px-3.5 py-2.5 bg-black/[0.03] border border-black/10 rounded-xl text-xs text-zinc-900 focus:border-primary outline-none"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-semibold text-zinc-700 mb-1">
+                    Address / Location
                   </label>
                   <input
                     type="text"
-                    placeholder="e.g. A01234567"
-                    value={newClientForm.passportNumber}
-                    onChange={(e) => setNewClientForm({ ...newClientForm, passportNumber: e.target.value.toUpperCase() })}
-                    className="w-full px-3 py-2 bg-background border border-input rounded-lg text-xs font-mono uppercase focus:border-sky-500 outline-none"
+                    placeholder="e.g. Jagannathpur, Sunamganj"
+                    value={newClientForm.presentAddress}
+                    onChange={(e) => setNewClientForm({ ...newClientForm, presentAddress: e.target.value })}
+                    className="w-full px-3.5 py-2.5 bg-black/[0.03] border border-black/10 rounded-xl text-xs text-zinc-900 focus:border-primary outline-none"
                   />
                 </div>
               </div>
 
-              <div>
-                <label className="block text-xs font-semibold text-foreground mb-1">
-                   (Email Address)
-                </label>
-                <input
-                  type="email"
-                  placeholder="client@example.com"
-                  value={newClientForm.email}
-                  onChange={(e) => setNewClientForm({ ...newClientForm, email: e.target.value })}
-                  className="w-full px-3 py-2 bg-background border border-input rounded-lg text-xs focus:border-sky-500 outline-none"
-                />
-              </div>
-
-              <div>
-                <label className="block text-xs font-semibold text-foreground mb-1">
-                  Address (Address / Location)
-                </label>
-                <input
-                  type="text"
-                  placeholder="e.g. Jagannathpur, Sunamganj"
-                  value={newClientForm.presentAddress}
-                  onChange={(e) => setNewClientForm({ ...newClientForm, presentAddress: e.target.value })}
-                  className="w-full px-3 py-2 bg-background border border-input rounded-lg text-xs focus:border-sky-500 outline-none"
-                />
-              </div>
-
-              <div className="pt-2 flex items-center justify-end gap-2 border-t border-border">
+              <div className="px-6 py-3.5 flex items-center justify-end gap-2.5 border-t border-black/10 bg-white shrink-0">
                 <button
                   type="button"
                   onClick={() => setIsCreateClientOpen(false)}
-                  className="px-3 py-1.5 rounded-lg border border-border text-xs font-semibold hover:bg-muted"
+                  className="px-4 h-9 rounded-xl border border-red-500/30 bg-red-500/10 text-red-600 hover:bg-red-500/20 text-xs font-semibold transition-all cursor-pointer flex items-center justify-center"
                 >
-                  Rejected (Cancel)
+                  Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={isCreatingClient}
-                  className="px-4 py-1.5 rounded-lg bg-sky-600 hover:bg-sky-700 text-white text-xs font-bold transition-all cursor-pointer shadow-xs disabled:opacity-50"
+                  className="px-5 h-9 rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground text-xs font-bold transition-all cursor-pointer shadow-xs disabled:opacity-50 flex items-center justify-center gap-1.5"
                 >
-                  {isCreatingClient ? 'Saving...' : 'Profile  '}
+                  {isCreatingClient ? 'Saving...' : 'Save Profile'}
                 </button>
               </div>
             </form>

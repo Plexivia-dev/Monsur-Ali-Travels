@@ -426,12 +426,8 @@ const UsersPage = () => {
 
       {/* Create User Modal */}
       {createModalOpen && (
-        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4">
-          <div className="bg-linear-to-r from-sky-950 via-indigo-950 to-slate-950 rounded-2xl sm:rounded-3xl border border-sky-800/40 text-white shadow-2xl max-w-lg w-full flex flex-col overflow-hidden relative animate-in fade-in zoom-in-95 duration-200">
-            {/* Decorative ambient background glows */}
-            <div className="absolute -top-24 -right-24 w-72 h-72 bg-sky-500/15 rounded-full blur-3xl pointer-events-none" />
-            <div className="absolute -bottom-24 -left-24 w-72 h-72 bg-indigo-500/15 rounded-full blur-3xl pointer-events-none" />
-
+        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-3 sm:p-5 overflow-hidden animate-in fade-in duration-200">
+          <div className="bg-white text-zinc-900 rounded-2xl border border-black/10 shadow-2xl max-w-lg w-full h-[70vh] flex flex-col overflow-hidden relative animate-in zoom-in-95 duration-200">
             {/* Unified Modal Header */}
             <UnifiedModalHeader
               icon={UserPlus}
@@ -441,12 +437,12 @@ const UsersPage = () => {
             />
 
             {/* Modal Form */}
-            <form onSubmit={handleCreateUser} className="flex flex-col flex-grow overflow-hidden text-xs relative z-10">
-              <div className="p-6 space-y-4 overflow-y-auto">
+            <form onSubmit={handleCreateUser} className="flex flex-col flex-1 min-h-0 overflow-hidden text-xs relative z-10">
+              <div className="p-6 space-y-4 flex-1 min-h-0 overflow-y-auto">
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
-                    <label className="text-xs font-semibold text-sky-200/90 block mb-1.5">
-                      Full Name <span className="text-rose-400">*</span>
+                    <label className="text-xs font-semibold text-black/80 block mb-1.5">
+                      Full Name <span className="text-rose-500">*</span>
                     </label>
                     <input
                       type="text"
@@ -454,48 +450,48 @@ const UsersPage = () => {
                       onChange={(e) => setCreateForm((p) => ({ ...p, name: e.target.value }))}
                       placeholder="e.g. Md. Rafiqul Islam"
                       required
-                      className="w-full px-3.5 py-2.5 text-xs rounded-xl border border-sky-800/50 bg-sky-950/40 text-white placeholder:text-sky-300/40 focus:outline-none focus:ring-2 focus:ring-sky-400/30 focus:border-sky-400 transition-all"
+                      className="w-full px-3.5 py-2.5 text-xs rounded-xl border border-black/15 bg-black/[0.02] text-black placeholder:text-black/40 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
                     />
                   </div>
                   <div>
-                    <label className="text-xs font-semibold text-sky-200/90 block mb-1.5">
-                      Role <span className="text-rose-400">*</span>
+                    <label className="text-xs font-semibold text-black/80 block mb-1.5">
+                      Role <span className="text-rose-500">*</span>
                     </label>
                     <select
                       value={createForm.role}
                       onChange={(e) => setCreateForm((p) => ({ ...p, role: e.target.value }))}
-                      className="w-full px-3.5 py-2.5 text-xs rounded-xl border border-sky-800/50 bg-sky-950/40 text-white focus:outline-none focus:ring-2 focus:ring-sky-400/30 focus:border-sky-400 transition-all cursor-pointer"
+                      className="w-full px-3.5 py-2.5 text-xs rounded-xl border border-black/15 bg-black/[0.02] text-black focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all cursor-pointer"
                     >
-                      <option value="Owner" className="bg-slate-950 text-white">Owner</option>
-                      <option value="Admin" className="bg-slate-950 text-white">Admin</option>
-                      <option value="Staff" className="bg-slate-950 text-white">Staff</option>
-                      <option value="Accountant" className="bg-slate-950 text-white">Accountant</option>
+                      <option value="Owner" className="bg-white text-black">Owner</option>
+                      <option value="Admin" className="bg-white text-black">Admin</option>
+                      <option value="Staff" className="bg-white text-black">Staff</option>
+                      <option value="Accountant" className="bg-white text-black">Accountant</option>
                     </select>
                   </div>
 
                   {createForm.role === 'Staff' && (
                     <div>
-                      <label className="text-xs font-semibold text-sky-200/90 block mb-1.5">
-                        Staff Sub-Role / Designation <span className="text-rose-400">*</span>
+                      <label className="text-xs font-semibold text-black/80 block mb-1.5">
+                        Staff Sub-Role / Designation <span className="text-rose-500">*</span>
                       </label>
                       <select
                         value={createForm.subRole}
                         onChange={(e) => setCreateForm((p) => ({ ...p, subRole: e.target.value }))}
-                        className="w-full px-3.5 py-2.5 text-xs rounded-xl border border-sky-800/50 bg-sky-950/40 text-white focus:outline-none focus:ring-2 focus:ring-sky-400/30 focus:border-sky-400 transition-all cursor-pointer"
+                        className="w-full px-3.5 py-2.5 text-xs rounded-xl border border-black/15 bg-black/[0.02] text-black focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all cursor-pointer"
                       >
-                        <option value="Frontdesk" className="bg-slate-950 text-white">Frontdesk</option>
-                        <option value="Lawyer" className="bg-slate-950 text-white">Lawyer</option>
-                        <option value="Visa_Processor" className="bg-slate-950 text-white">Visa Processor</option>
-                        <option value="Accountant" className="bg-slate-950 text-white">Accountant</option>
-                        <option value="Representative" className="bg-slate-950 text-white">Representative</option>
-                        <option value="ClientManager" className="bg-slate-950 text-white">Client Manager</option>
+                        <option value="Frontdesk" className="bg-white text-black">Frontdesk</option>
+                        <option value="Lawyer" className="bg-white text-black">Lawyer</option>
+                        <option value="Visa_Processor" className="bg-white text-black">Visa Processor</option>
+                        <option value="Accountant" className="bg-white text-black">Accountant</option>
+                        <option value="Representative" className="bg-white text-black">Representative</option>
+                        <option value="ClientManager" className="bg-white text-black">Client Manager</option>
                       </select>
                     </div>
                   )}
 
                   <div>
-                    <label className="text-xs font-semibold text-sky-200/90 block mb-1.5">
-                      Email Address <span className="text-rose-400">*</span>
+                    <label className="text-xs font-semibold text-black/80 block mb-1.5">
+                      Email Address <span className="text-rose-500">*</span>
                     </label>
                     <input
                       type="email"
@@ -503,11 +499,11 @@ const UsersPage = () => {
                       onChange={(e) => setCreateForm((p) => ({ ...p, email: e.target.value }))}
                       placeholder="e.g. user@agency.com"
                       required
-                      className="w-full px-3.5 py-2.5 text-xs rounded-xl border border-sky-800/50 bg-sky-950/40 text-white placeholder:text-sky-300/40 focus:outline-none focus:ring-2 focus:ring-sky-400/30 focus:border-sky-400 transition-all"
+                      className="w-full px-3.5 py-2.5 text-xs rounded-xl border border-black/15 bg-black/[0.02] text-black placeholder:text-black/40 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
                     />
                   </div>
                   <div>
-                    <label className="text-xs font-semibold text-sky-200/90 block mb-1.5">
+                    <label className="text-xs font-semibold text-black/80 block mb-1.5">
                       Phone Number
                     </label>
                     <input
@@ -515,12 +511,12 @@ const UsersPage = () => {
                       value={createForm.phone}
                       onChange={(e) => setCreateForm((p) => ({ ...p, phone: e.target.value }))}
                       placeholder="e.g. +880 1712-345678"
-                      className="w-full px-3.5 py-2.5 text-xs rounded-xl border border-sky-800/50 bg-sky-950/40 text-white placeholder:text-sky-300/40 focus:outline-none focus:ring-2 focus:ring-sky-400/30 focus:border-sky-400 transition-all"
+                      className="w-full px-3.5 py-2.5 text-xs rounded-xl border border-black/15 bg-black/[0.02] text-black placeholder:text-black/40 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
                     />
                   </div>
                   <div className="sm:col-span-2">
-                    <label className="text-xs font-semibold text-sky-200/90 block mb-1.5">
-                      Password <span className="text-rose-400">*</span>
+                    <label className="text-xs font-semibold text-black/80 block mb-1.5">
+                      Password <span className="text-rose-500">*</span>
                     </label>
                     <input
                       type="password"
@@ -529,7 +525,7 @@ const UsersPage = () => {
                       placeholder="Minimum 6 characters"
                       required
                       minLength={6}
-                      className="w-full px-3.5 py-2.5 text-xs rounded-xl border border-sky-800/50 bg-sky-950/40 text-white placeholder:text-sky-300/40 focus:outline-none focus:ring-2 focus:ring-sky-400/30 focus:border-sky-400 transition-all font-mono"
+                      className="w-full px-3.5 py-2.5 text-xs rounded-xl border border-black/15 bg-black/[0.02] text-black placeholder:text-black/40 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all font-mono"
                     />
                   </div>
                 </div>
@@ -551,12 +547,8 @@ const UsersPage = () => {
 
       {/* Edit User & Role Assignment Modal */}
       {editModalOpen && editingUser && (
-        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4">
-          <div className="bg-linear-to-r from-sky-950 via-indigo-950 to-slate-950 rounded-2xl sm:rounded-3xl border border-sky-800/40 text-white shadow-2xl max-w-lg w-full flex flex-col overflow-hidden relative animate-in fade-in zoom-in-95 duration-200">
-            {/* Decorative ambient background glows */}
-            <div className="absolute -top-24 -right-24 w-72 h-72 bg-sky-500/15 rounded-full blur-3xl pointer-events-none" />
-            <div className="absolute -bottom-24 -left-24 w-72 h-72 bg-indigo-500/15 rounded-full blur-3xl pointer-events-none" />
-
+        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-3 sm:p-5 overflow-hidden animate-in fade-in duration-200">
+          <div className="bg-white text-zinc-900 rounded-2xl border border-black/10 shadow-2xl max-w-lg w-full h-[70vh] flex flex-col overflow-hidden relative animate-in zoom-in-95 duration-200">
             {/* Unified Modal Header */}
             <UnifiedModalHeader
               icon={Pencil}
@@ -569,12 +561,12 @@ const UsersPage = () => {
             />
 
             {/* Modal Form */}
-            <form onSubmit={handleUpdateUser} className="flex flex-col flex-grow overflow-hidden text-xs relative z-10">
-              <div className="p-6 space-y-4 overflow-y-auto">
+            <form onSubmit={handleUpdateUser} className="flex flex-col flex-1 min-h-0 overflow-hidden text-xs relative z-10">
+              <div className="p-6 space-y-4 flex-1 min-h-0 overflow-y-auto">
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div className="sm:col-span-2">
-                    <label className="text-xs font-semibold text-sky-200/90 block mb-1.5">
-                      Full Name <span className="text-rose-400">*</span>
+                    <label className="text-xs font-semibold text-black/80 block mb-1.5">
+                      Full Name <span className="text-rose-500">*</span>
                     </label>
                     <input
                       type="text"
@@ -582,47 +574,47 @@ const UsersPage = () => {
                       onChange={(e) => setEditForm((p) => ({ ...p, name: e.target.value }))}
                       placeholder="e.g. Md. Rafiqul Islam"
                       required
-                      className="w-full px-3.5 py-2.5 text-xs rounded-xl border border-sky-800/50 bg-sky-950/40 text-white placeholder:text-sky-300/40 focus:outline-none focus:ring-2 focus:ring-sky-400/30 focus:border-sky-400 transition-all font-medium"
+                      className="w-full px-3.5 py-2.5 text-xs rounded-xl border border-black/15 bg-black/[0.02] text-black placeholder:text-black/40 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all font-medium"
                     />
                   </div>
 
                   <div>
-                    <label className="text-xs font-semibold text-sky-200/90 block mb-1.5">
-                      Assigned Role <span className="text-rose-400">*</span>
+                    <label className="text-xs font-semibold text-black/80 block mb-1.5">
+                      Assigned Role <span className="text-rose-500">*</span>
                     </label>
                     <select
                       value={editForm.role}
                       onChange={(e) => setEditForm((p) => ({ ...p, role: e.target.value }))}
-                      className="w-full px-3.5 py-2.5 text-xs rounded-xl border border-sky-800/50 bg-sky-950/40 text-white focus:outline-none focus:ring-2 focus:ring-sky-400/30 focus:border-sky-400 transition-all cursor-pointer font-bold"
+                      className="w-full px-3.5 py-2.5 text-xs rounded-xl border border-black/15 bg-black/[0.02] text-black focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all cursor-pointer font-bold"
                     >
-                      <option value="Owner" className="bg-slate-950 text-white">Owner (Full Authority)</option>
-                      <option value="Admin" className="bg-slate-950 text-white">Admin (Operations Manager)</option>
-                      <option value="Staff" className="bg-slate-950 text-white">Staff (Standard User)</option>
-                      <option value="Accountant" className="bg-slate-950 text-white">Accountant (Ledgers & Bills)</option>
+                      <option value="Owner" className="bg-white text-black">Owner (Full Authority)</option>
+                      <option value="Admin" className="bg-white text-black">Admin (Operations Manager)</option>
+                      <option value="Staff" className="bg-white text-black">Staff (Standard User)</option>
+                      <option value="Accountant" className="bg-white text-black">Accountant (Ledgers & Bills)</option>
                     </select>
                   </div>
 
                   {editForm.role === 'Staff' ? (
                     <div>
-                      <label className="text-xs font-semibold text-sky-200/90 block mb-1.5">
-                        Staff Sub-Role <span className="text-rose-400">*</span>
+                      <label className="text-xs font-semibold text-black/80 block mb-1.5">
+                        Staff Sub-Role <span className="text-rose-500">*</span>
                       </label>
                       <select
                         value={editForm.subRole}
                         onChange={(e) => setEditForm((p) => ({ ...p, subRole: e.target.value }))}
-                        className="w-full px-3.5 py-2.5 text-xs rounded-xl border border-sky-800/50 bg-sky-950/40 text-white focus:outline-none focus:ring-2 focus:ring-sky-400/30 focus:border-sky-400 transition-all cursor-pointer font-semibold"
+                        className="w-full px-3.5 py-2.5 text-xs rounded-xl border border-black/15 bg-black/[0.02] text-black focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all cursor-pointer font-semibold"
                       >
-                        <option value="Frontdesk" className="bg-slate-950 text-white">Frontdesk</option>
-                        <option value="Lawyer" className="bg-slate-950 text-white">Lawyer</option>
-                        <option value="Visa_Processor" className="bg-slate-950 text-white">Visa Processor</option>
-                        <option value="Accountant" className="bg-slate-950 text-white">Accountant</option>
-                        <option value="Representative" className="bg-slate-950 text-white">Representative</option>
-                        <option value="ClientManager" className="bg-slate-950 text-white">Client Manager</option>
+                        <option value="Frontdesk" className="bg-white text-black">Frontdesk</option>
+                        <option value="Lawyer" className="bg-white text-black">Lawyer</option>
+                        <option value="Visa_Processor" className="bg-white text-black">Visa Processor</option>
+                        <option value="Accountant" className="bg-white text-black">Accountant</option>
+                        <option value="Representative" className="bg-white text-black">Representative</option>
+                        <option value="ClientManager" className="bg-white text-black">Client Manager</option>
                       </select>
                     </div>
                   ) : (
                     <div>
-                      <label className="text-xs font-semibold text-sky-200/90 block mb-1.5">
+                      <label className="text-xs font-semibold text-black/80 block mb-1.5">
                         Phone Number
                       </label>
                       <input
@@ -630,14 +622,14 @@ const UsersPage = () => {
                         value={editForm.phone}
                         onChange={(e) => setEditForm((p) => ({ ...p, phone: e.target.value }))}
                         placeholder="e.g. +880 1712-345678"
-                        className="w-full px-3.5 py-2.5 text-xs rounded-xl border border-sky-800/50 bg-sky-950/40 text-white placeholder:text-sky-300/40 focus:outline-none focus:ring-2 focus:ring-sky-400/30 focus:border-sky-400 transition-all"
+                        className="w-full px-3.5 py-2.5 text-xs rounded-xl border border-black/15 bg-black/[0.02] text-black placeholder:text-black/40 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
                       />
                     </div>
                   )}
 
                   <div>
-                    <label className="text-xs font-semibold text-sky-200/90 block mb-1.5">
-                      Email Address <span className="text-rose-400">*</span>
+                    <label className="text-xs font-semibold text-black/80 block mb-1.5">
+                      Email Address <span className="text-rose-500">*</span>
                     </label>
                     <input
                       type="email"
@@ -645,13 +637,13 @@ const UsersPage = () => {
                       onChange={(e) => setEditForm((p) => ({ ...p, email: e.target.value }))}
                       placeholder="e.g. user@agency.com"
                       required
-                      className="w-full px-3.5 py-2.5 text-xs rounded-xl border border-sky-800/50 bg-sky-950/40 text-white placeholder:text-sky-300/40 focus:outline-none focus:ring-2 focus:ring-sky-400/30 focus:border-sky-400 transition-all"
+                      className="w-full px-3.5 py-2.5 text-xs rounded-xl border border-black/15 bg-black/[0.02] text-black placeholder:text-black/40 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
                     />
                   </div>
 
                   {editForm.role === 'Staff' && (
                     <div>
-                      <label className="text-xs font-semibold text-sky-200/90 block mb-1.5">
+                      <label className="text-xs font-semibold text-black/80 block mb-1.5">
                         Phone Number
                       </label>
                       <input
@@ -659,13 +651,13 @@ const UsersPage = () => {
                         value={editForm.phone}
                         onChange={(e) => setEditForm((p) => ({ ...p, phone: e.target.value }))}
                         placeholder="e.g. +880 1712-345678"
-                        className="w-full px-3.5 py-2.5 text-xs rounded-xl border border-sky-800/50 bg-sky-950/40 text-white placeholder:text-sky-300/40 focus:outline-none focus:ring-2 focus:ring-sky-400/30 focus:border-sky-400 transition-all"
+                        className="w-full px-3.5 py-2.5 text-xs rounded-xl border border-black/15 bg-black/[0.02] text-black placeholder:text-black/40 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
                       />
                     </div>
                   )}
 
                   <div className="sm:col-span-2">
-                    <label className="text-xs font-semibold text-sky-200/90 block mb-1.5">
+                    <label className="text-xs font-semibold text-black/80 block mb-1.5">
                       Reset Password (Leave blank to keep current)
                     </label>
                     <input
@@ -674,7 +666,7 @@ const UsersPage = () => {
                       onChange={(e) => setEditForm((p) => ({ ...p, password: e.target.value }))}
                       placeholder="Enter new password (optional, min 6 chars)"
                       minLength={6}
-                      className="w-full px-3.5 py-2.5 text-xs rounded-xl border border-sky-800/50 bg-sky-950/40 text-white placeholder:text-sky-300/40 focus:outline-none focus:ring-2 focus:ring-sky-400/30 focus:border-sky-400 transition-all font-mono"
+                      className="w-full px-3.5 py-2.5 text-xs rounded-xl border border-black/15 bg-black/[0.02] text-black placeholder:text-black/40 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all font-mono"
                     />
                   </div>
                 </div>

@@ -122,7 +122,7 @@ export function ExpensesPage() {
       cell: ({ row }) => {
         const total = row.grandTotal || row.subtotal || 0;
         return (
-          <span className="font-bold text-xs text-rose-600 dark:text-rose-400 font-mono">
+          <span className="font-bold text-xs text-rose-600 font-mono">
             BDT {Number(total).toLocaleString('en-BD')}
           </span>
         );
@@ -172,7 +172,7 @@ export function ExpensesPage() {
             <span className="text-xs font-bold uppercase tracking-wider">Total Cash Expenses</span>
             <Receipt className="w-4 h-4 text-rose-500" />
           </div>
-          <p className="text-2xl font-black text-rose-600 dark:text-rose-400 font-mono">
+          <p className="text-2xl font-black text-rose-600 font-mono">
             BDT {Number(meta.totalExpenseAmount || 0).toLocaleString('en-BD')}
           </p>
           <p className="text-[11px] text-muted-foreground">Across {meta.total || 0} cash vouchers</p>

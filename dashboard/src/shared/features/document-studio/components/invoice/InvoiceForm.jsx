@@ -137,12 +137,18 @@ export function InvoiceForm({ data, onChange, onSubmit, onReset, isSubmitting = 
       <div className="bg-muted/30 border border-border p-4 rounded-xl space-y-3">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 text-xs">
           <div>
-            <label className="block font-bold text-foreground mb-1">Invoice No.</label>
+            <div className="flex items-center justify-between mb-1">
+              <label className="block font-bold text-foreground">Invoice No.</label>
+              <span className="text-[10px] font-semibold text-muted-foreground bg-muted px-1.5 py-0.5 rounded border border-border">
+                Auto-generated
+              </span>
+            </div>
             <input
               type="text"
-              value={data.invoiceNo || ''}
-              onChange={(e) => onChange({ ...data, invoiceNo: e.target.value })}
-              className="w-full px-3 py-2 bg-background border border-border rounded-xl text-foreground font-mono font-bold text-xs focus:ring-2 focus:ring-sky-400/40 outline-none"
+              value={data.invoiceNo || 'Auto-generated'}
+              readOnly
+              disabled
+              className="w-full px-3 py-2 bg-muted/60 border border-border rounded-xl text-muted-foreground font-mono font-bold text-xs cursor-not-allowed select-none outline-none"
             />
           </div>
 
@@ -279,7 +285,7 @@ export function InvoiceForm({ data, onChange, onSubmit, onReset, isSubmitting = 
             className="flex items-center gap-1 bg-white/20 hover:bg-white/30 text-white font-bold text-[11px] px-3 py-1 rounded-lg transition-all cursor-pointer shadow-xs"
           >
             <Plus className="w-3.5 h-3.5" />
-            <span>+ Add Item</span>
+            <span>Add Item</span>
           </button>
         </div>
 

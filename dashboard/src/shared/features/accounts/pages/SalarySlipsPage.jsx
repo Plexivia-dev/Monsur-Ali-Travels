@@ -130,7 +130,7 @@ export function SalarySlipsPage() {
       accessorKey: 'netSalaryPayable',
       header: 'Net Payable (BDT)',
       cell: ({ row }) => (
-        <span className="font-bold text-xs text-emerald-600 dark:text-emerald-400 font-mono">
+        <span className="font-bold text-xs text-emerald-600 font-mono">
           BDT {Number(row.netSalaryPayable || 0).toLocaleString('en-BD')}
         </span>
       ),
@@ -159,7 +159,7 @@ export function SalarySlipsPage() {
             <span className="text-xs font-bold uppercase tracking-wider">Total Net Salaries</span>
             <Banknote className="w-4 h-4 text-emerald-500" />
           </div>
-          <p className="text-2xl font-black text-emerald-600 dark:text-emerald-400 font-mono">
+          <p className="text-2xl font-black text-emerald-600 font-mono">
             BDT {Number(meta.totalNetPayable || 0).toLocaleString('en-BD')}
           </p>
           <p className="text-[11px] text-muted-foreground">Disbursed salary total</p>
@@ -181,7 +181,7 @@ export function SalarySlipsPage() {
             <span className="text-xs font-bold uppercase tracking-wider">Total Deductions</span>
             <TrendingDown className="w-4 h-4 text-rose-500" />
           </div>
-          <p className="text-2xl font-black text-rose-600 dark:text-rose-400 font-mono">
+          <p className="text-2xl font-black text-rose-600 font-mono">
             BDT {Number(meta.totalDeductions || 0).toLocaleString('en-BD')}
           </p>
           <p className="text-[11px] text-muted-foreground">Advances & statutory cuts</p>

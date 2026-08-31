@@ -35,15 +35,15 @@ export function TaskDoneModal({ task, onClose, onSuccess }) {
         <div className="fixed inset-0" onClick={onClose} />
         <form
           onSubmit={handleSubmit}
-          className="relative bg-card border border-border rounded-2xl max-w-lg w-full max-h-[90vh] flex flex-col shadow-2xl z-10 my-auto animate-in zoom-in-95 duration-150 text-foreground overflow-hidden"
+          className="relative bg-white border border-black/10 rounded-2xl max-w-lg w-full h-[70vh] flex flex-col shadow-2xl z-10 my-auto animate-in zoom-in-95 duration-150 text-black overflow-hidden"
         >
           {/* Header */}
-          <div className="shrink-0 border-b border-border p-4 sm:p-5 flex items-center justify-between">
+          <div className="shrink-0 border-b border-black/10 p-4 sm:p-5 flex items-center justify-between bg-black/[0.02]">
             <div>
-              <span className="text-[10px] font-bold font-mono text-muted-foreground uppercase tracking-wider">
+              <span className="text-[10px] font-bold font-mono text-black/60 uppercase tracking-wider">
                 Step {task.stepNumber || 1} • {task.status?.replace('_', ' ')}
               </span>
-              <h3 className="text-base font-bold text-foreground flex items-center gap-2 mt-0.5">
+              <h3 className="text-base font-bold text-black flex items-center gap-2 mt-0.5">
                 <CheckCircle2 className="w-5 h-5 text-primary" />
                 {task.title}
               </h3>
@@ -51,7 +51,8 @@ export function TaskDoneModal({ task, onClose, onSuccess }) {
             <button
               type="button"
               onClick={onClose}
-              className="p-1 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted cursor-pointer"
+              className="p-1 rounded-lg text-red-500 hover:text-red-600 hover:bg-red-500/10 cursor-pointer"
+              title="Close"
             >
               <X className="w-4 h-4" />
             </button>
@@ -141,13 +142,13 @@ export function TaskDoneModal({ task, onClose, onSuccess }) {
           </div>
 
           {/* Footer */}
-          <div className="shrink-0 border-t border-border p-4 sm:p-5 flex items-center justify-end gap-2 text-xs bg-muted/20">
+          <div className="shrink-0 border-t border-black/10 p-4 sm:p-5 flex items-center justify-end gap-2 text-xs bg-black/[0.02]">
             <Button
               type="button"
-              variant="outline"
+              variant="cancel"
               size="sm"
               onClick={onClose}
-              className="px-3 py-1.5 rounded-lg border border-border text-foreground hover:bg-muted font-semibold cursor-pointer"
+              className="px-3.5 py-1.5 rounded-lg font-semibold cursor-pointer"
             >
               Cancel
             </Button>

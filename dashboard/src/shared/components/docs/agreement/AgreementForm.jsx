@@ -694,7 +694,7 @@ export function AgreementForm({ formData, setFormData, onSubmit, onReset, isSubm
           <DialogFooter className="gap-2 sm:gap-0 mt-2">
             <Button
               type="button"
-              variant="outline"
+              variant="cancel"
               size="sm"
               onClick={() => setResetDialogOpen(false)}
             >

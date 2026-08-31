@@ -272,7 +272,7 @@ export function CouponsTable({
                         {restrictions.map((r, idx) => (
                           <span
                             key={idx}
-                            className="text-[10px] font-medium text-amber-700 bg-amber-50 dark:text-amber-300 dark:bg-amber-950/20 border border-amber-200/50 dark:border-amber-900/30 px-1.5 py-0.5 rounded truncate block"
+                            className="text-[10px] font-medium text-amber-800 bg-amber-50 border border-amber-200 px-1.5 py-0.5 rounded truncate block"
                             title={r}
                           >
                             {r}

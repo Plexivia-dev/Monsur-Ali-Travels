@@ -26,7 +26,7 @@ export const DOCUMENT_GENERATORS = [
     icon: FileSignature,
     color: 'from-blue-600 to-indigo-600',
     badge: 'Legal Contract',
-    badgeStyle: 'bg-blue-50 text-blue-700 dark:bg-blue-950/50 dark:text-blue-300 border-blue-200 dark:border-blue-800',
+    badgeStyle: 'bg-blue-50 text-blue-700 border-blue-200',
   },
   {
     id: 'client-form',
@@ -39,7 +39,7 @@ export const DOCUMENT_GENERATORS = [
     icon: UserCheck,
     color: 'from-sky-600 to-cyan-600',
     badge: 'Application Form',
-    badgeStyle: 'bg-sky-50 text-sky-700 dark:bg-sky-950/50 dark:text-sky-300 border-sky-200 dark:border-sky-800',
+    badgeStyle: 'bg-sky-50 text-sky-700 border-sky-200',
   },
   {
     id: 'indian-visa',
@@ -52,7 +52,7 @@ export const DOCUMENT_GENERATORS = [
     icon: Stamp,
     color: 'from-amber-600 to-orange-600',
     badge: 'Visa File',
-    badgeStyle: 'bg-amber-50 text-amber-700 dark:bg-amber-950/50 dark:text-amber-300 border-amber-200 dark:border-amber-800',
+    badgeStyle: 'bg-amber-50 text-amber-700 border-amber-200',
   },
   {
     id: 'passport-sub',
@@ -65,7 +65,7 @@ export const DOCUMENT_GENERATORS = [
     icon: BookOpen,
     color: 'from-emerald-600 to-teal-600',
     badge: 'Custody Slip',
-    badgeStyle: 'bg-emerald-50 text-emerald-700 dark:bg-emerald-950/50 dark:text-emerald-300 border-emerald-200 dark:border-emerald-800',
+    badgeStyle: 'bg-emerald-50 text-emerald-700 border-emerald-200',
   },
   {
     id: 'job-verification',
@@ -78,7 +78,7 @@ export const DOCUMENT_GENERATORS = [
     icon: FileCheck2,
     color: 'from-blue-600 to-cyan-600',
     badge: 'Verification Form',
-    badgeStyle: 'bg-cyan-50 text-cyan-700 dark:bg-cyan-950/50 dark:text-cyan-300 border-cyan-200 dark:border-cyan-800',
+    badgeStyle: 'bg-cyan-50 text-cyan-700 border-cyan-200',
   },
   {
     id: 'idcard',
@@ -91,7 +91,7 @@ export const DOCUMENT_GENERATORS = [
     icon: Contact,
     color: 'from-indigo-600 to-purple-600',
     badge: 'Identity Card',
-    badgeStyle: 'bg-indigo-50 text-indigo-700 dark:bg-indigo-950/50 dark:text-indigo-300 border-indigo-200 dark:border-indigo-800',
+    badgeStyle: 'bg-indigo-50 text-indigo-700 border-indigo-200',
   },
   {
     id: 'payroll',
@@ -104,7 +104,7 @@ export const DOCUMENT_GENERATORS = [
     icon: Banknote,
     color: 'from-teal-600 to-emerald-600',
     badge: 'Payroll Slip',
-    badgeStyle: 'bg-teal-50 text-teal-700 dark:bg-teal-950/50 dark:text-teal-300 border-teal-200 dark:border-teal-800',
+    badgeStyle: 'bg-teal-50 text-teal-700 border-teal-200',
   },
   {
     id: 'invoice',
@@ -117,7 +117,7 @@ export const DOCUMENT_GENERATORS = [
     icon: ReceiptText,
     color: 'from-violet-600 to-purple-600',
     badge: 'Tax Invoice',
-    badgeStyle: 'bg-violet-50 text-violet-700 dark:bg-violet-950/50 dark:text-violet-300 border-violet-200 dark:border-violet-800',
+    badgeStyle: 'bg-violet-50 text-violet-700 border-violet-200',
   },
   {
     id: 'money-receipt',
@@ -130,7 +130,7 @@ export const DOCUMENT_GENERATORS = [
     icon: Receipt,
     color: 'from-blue-600 to-cyan-600',
     badge: 'Official Receipt',
-    badgeStyle: 'bg-blue-50 text-blue-700 dark:bg-blue-950/50 dark:text-blue-300 border-blue-200 dark:border-blue-800',
+    badgeStyle: 'bg-blue-50 text-blue-700 border-blue-200',
   },
   {
     id: 'cash-voucher',
@@ -143,7 +143,7 @@ export const DOCUMENT_GENERATORS = [
     icon: Wallet,
     color: 'from-cyan-600 to-blue-600',
     badge: 'Cash Voucher',
-    badgeStyle: 'bg-cyan-50 text-cyan-700 dark:bg-cyan-950/50 dark:text-cyan-300 border-cyan-200 dark:border-cyan-800',
+    badgeStyle: 'bg-cyan-50 text-cyan-700 border-cyan-200',
   },
   {
     id: 'experience-certificate',
@@ -156,7 +156,7 @@ export const DOCUMENT_GENERATORS = [
     icon: Award,
     color: 'from-rose-600 to-pink-600',
     badge: 'Certificate',
-    badgeStyle: 'bg-rose-50 text-rose-700 dark:bg-rose-950/50 dark:text-rose-300 border-rose-200 dark:border-rose-800',
+    badgeStyle: 'bg-rose-50 text-rose-700 border-rose-200',
   },
   {
     id: 'character-certificate',
@@ -169,7 +169,7 @@ export const DOCUMENT_GENERATORS = [
     icon: ShieldCheck,
     color: 'from-emerald-600 to-green-600',
     badge: 'Certificate',
-    badgeStyle: 'bg-emerald-50 text-emerald-700 dark:bg-emerald-950/50 dark:text-emerald-300 border-emerald-200 dark:border-emerald-800',
+    badgeStyle: 'bg-emerald-50 text-emerald-700 border-emerald-200',
   },
   {
     id: 'marriage-certificate',
@@ -182,7 +182,7 @@ export const DOCUMENT_GENERATORS = [
     icon: Heart,
     color: 'from-pink-600 to-rose-600',
     badge: 'Certificate',
-    badgeStyle: 'bg-pink-50 text-pink-700 dark:bg-pink-950/50 dark:text-pink-300 border-pink-200 dark:border-pink-800',
+    badgeStyle: 'bg-pink-50 text-pink-700 border-pink-200',
   },
 ];
 

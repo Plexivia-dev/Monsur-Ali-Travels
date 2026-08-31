@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { SalarySlipForm } from './SalarySlipForm';
 import { SalarySlipPreview } from './SalarySlipPreview';
 import { Download, RefreshCw, Share2, Printer, DollarSign } from 'lucide-react';
@@ -27,16 +27,15 @@ export function getDefaultSalarySlipData() {
     companyName: agencyInfo.agencyName?.toUpperCase() || 'MONSUR ALI TOURS & TRAVELS',
     companyAddress: agencyInfo.address?.full || 'Mominpur Jagannathpur Road, Sunamganj, Post Code 3060',
     slipNo: generateUniqueSlipNumber(),
+    monthYear: new Date().toISOString().slice(0, 7), // YYYY-MM
+    issueDate: new Date().toISOString().split('T')[0],
 
-    // Employee Info
+    // Employee Bio
     employeeName: '',
-    employeeId: '',
-    designation: '',
-    department: '',
-    joiningDate: '',
-    salaryMonth: '',
-    payDate: new Date().toISOString().split('T')[0],
-    paymentMode: 'Cash',
+    employeeId: 'EMP-001',
+    designation: 'Staff',
+    department: 'Operations',
+    paymentMethod: 'Bank Transfer',
     bankAccountNo: '',
 
     // Earnings
@@ -44,8 +43,7 @@ export function getDefaultSalarySlipData() {
     houseRentAllowance: "",
     medicalAllowance: "",
     conveyanceAllowance: "",
-    otherAllowance: "",
-    overtimeAmount: "",
+    overtimeBonusAllowance: "",
     grossEarnings: "",
 
     // Deductions
@@ -64,10 +62,26 @@ export function getDefaultSalarySlipData() {
   };
 }
 
-export function SalarySlip() {
-  const [formData, setFormData] = useState(getDefaultSalarySlipData());
+export function SalarySlip({ initialData = null, isLocked = false, onSavedSuccess = null }) {
+  const [formData, setFormData] = useState(() => ({
+    ...getDefaultSalarySlipData(),
+    ...(initialData || {}),
+    employeeName: initialData?.employeeName || initialData?.clientName || '',
+    designation: initialData?.designation || initialData?.trade || 'Staff',
+  }));
   const [viewMode, setViewMode] = useState('edit'); // 'edit' | 'split' | 'preview'
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  useEffect(() => {
+    if (initialData) {
+      setFormData((prev) => ({
+        ...prev,
+        ...initialData,
+        employeeName: initialData.employeeName || initialData.clientName || prev.employeeName,
+        designation: initialData.designation || initialData.trade || prev.designation,
+      }));
+    }
+  }, [initialData]);
 
   const handleReset = () => {
     setFormData(getDefaultSalarySlipData());

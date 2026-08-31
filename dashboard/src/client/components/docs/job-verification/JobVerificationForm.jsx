@@ -738,7 +738,7 @@ export function JobVerificationForm({
             </DialogDescription>
           </DialogHeader>
           <DialogFooter className="flex gap-2 sm:justify-end">
-            <Button variant="outline" onClick={() => setResetDialogOpen(false)}>
+            <Button variant="cancel" onClick={() => setResetDialogOpen(false)}>
               Cancel
             </Button>
             <Button variant="destructive" onClick={confirmReset}>

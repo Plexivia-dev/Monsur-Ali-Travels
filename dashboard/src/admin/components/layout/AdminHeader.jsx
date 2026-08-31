@@ -28,10 +28,10 @@ export function AdminHeader({ lang, setLang }) {
           <button
             type="button"
             onClick={handleBack}
-            className="flex h-9 items-center gap-1.5 px-3 rounded-lg bg-white hover:bg-white/95 text-slate-900 font-bold text-xs shadow-sm cursor-pointer border border-white/40 transition-all group"
+            className="flex h-9 items-center gap-1.5 px-3 rounded-lg bg-white hover:bg-white/95 text-black font-bold text-xs shadow-sm cursor-pointer border border-white/40 transition-all group"
             title={'Go back to previous page'}
           >
-            <ArrowLeft className="h-4 w-4 text-slate-900 group-hover:-translate-x-0.5 transition-transform stroke-[2.5]" />
+            <ArrowLeft className="h-4 w-4 text-black group-hover:-translate-x-0.5 transition-transform stroke-[2.5]" />
             <span className="hidden sm:inline">{'Back'}</span>
           </button>
         )}
@@ -49,7 +49,7 @@ export function AdminHeader({ lang, setLang }) {
             className={cn(
               'text-[10.5px] font-bold uppercase px-2 py-0.5 rounded-full transition-all duration-200',
               lang === 'EN'
-                ? 'bg-white text-slate-900 shadow-xs font-black'
+                ? 'bg-white text-black shadow-xs font-black'
                 : 'text-white/80 hover:text-white'
             )}
           >
@@ -59,7 +59,7 @@ export function AdminHeader({ lang, setLang }) {
             className={cn(
               'text-[10.5px] font-bold uppercase px-2 py-0.5 rounded-full transition-all duration-200',
               lang === 'BN'
-                ? 'bg-white text-slate-900 shadow-xs font-black'
+                ? 'bg-white text-black shadow-xs font-black'
                 : 'text-white/80 hover:text-white'
             )}
           >

@@ -137,41 +137,43 @@ const DOCUMENT_STUDIO_TEMPLATES = [
 ];
 
 const PIPELINE_STAGES = [
-  { id: 'ENTRY', title: '1. File Intake', color: 'bg-slate-100 text-slate-800' },
-  { id: 'PROCESSING', title: '2. Document Processing', color: 'bg-blue-100 text-blue-800' },
-  { id: 'APPROVED_OFFER_LETTER', title: '3. Offer Approved', color: 'bg-indigo-100 text-indigo-800' },
-  { id: 'SUBMITTED_EMBASSY_BSF', title: '4. Embassy / VFS Submitted', color: 'bg-amber-100 text-amber-800' },
-  { id: 'COMPLETED_DELIVERED', title: '5. Completed & Delivered', color: 'bg-emerald-100 text-emerald-800' },
+  { id: 'ENTRY', title: '1. File Intake', color: 'bg-black/[0.04] text-black' },
+  { id: 'PROCESSING', title: '2. Embassy Processing', color: 'bg-sky-500/10 text-sky-700' },
+  { id: 'APPROVED_OFFER_LETTER', title: '3. Approved Offer', color: 'bg-indigo-500/10 text-indigo-700' },
+  { id: 'SUBMITTED_EMBASSY_BSF', title: '4. Submitted Embassy', color: 'bg-purple-500/10 text-purple-700' },
+  { id: 'COMPLETED_DELIVERED', title: '5. Delivered', color: 'bg-emerald-500/10 text-emerald-700' },
+  { id: 'REJECTED', title: 'Rejected', color: 'bg-rose-500/10 text-rose-700' },
+  { id: 'ON_HOLD', title: 'On Hold', color: 'bg-amber-500/10 text-amber-700' },
 ];
 
-export const getTaskStatusConfig = (status) => {
+const getTaskStatusConfig = (status) => {
   const normStatus = (status || '').trim().toLowerCase();
 
   if (normStatus === 'approved' || normStatus === 'completed' || normStatus === 'complete') {
     return {
       label: 'Approved ✓',
-      badgeClass: 'bg-emerald-500/15 text-emerald-800 dark:text-emerald-300 border-emerald-500/40 shadow-xs shadow-emerald-500/10 font-bold',
+      badgeClass: 'bg-emerald-500/15 text-emerald-800 border-emerald-500/40 shadow-xs shadow-emerald-500/10 font-bold',
       dotClass: 'bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.8)]',
     };
   }
   if (normStatus === 'done' || normStatus === 'submitted') {
     return {
       label: 'Done',
-      badgeClass: 'bg-blue-500/15 text-blue-800 dark:text-blue-300 border-blue-500/40 shadow-xs shadow-blue-500/10 font-bold',
+      badgeClass: 'bg-blue-500/15 text-blue-800 border-blue-500/40 shadow-xs shadow-blue-500/10 font-bold',
       dotClass: 'bg-blue-500 shadow-[0_0_8px_rgba(59,130,246,0.8)]',
     };
   }
   if (normStatus === 'in progress' || normStatus === 'processing' || normStatus === 'in_progress') {
     return {
       label: 'In Progress',
-      badgeClass: 'bg-sky-500/15 text-sky-800 dark:text-sky-300 border-sky-500/40 shadow-xs shadow-sky-500/10 font-bold',
+      badgeClass: 'bg-sky-500/15 text-sky-800 border-sky-500/40 shadow-xs shadow-sky-500/10 font-bold',
       dotClass: 'bg-sky-500 animate-pulse shadow-[0_0_8px_rgba(14,165,233,0.8)]',
     };
   }
   if (normStatus === 'rejected' || normStatus === 'cancelled' || normStatus === 'failed') {
     return {
       label: 'Rejected ✗',
-      badgeClass: 'bg-rose-500/15 text-rose-800 dark:text-rose-300 border-rose-500/40 shadow-xs shadow-rose-500/10 font-bold',
+      badgeClass: 'bg-rose-500/15 text-rose-800 border-rose-500/40 shadow-xs shadow-rose-500/10 font-bold',
       dotClass: 'bg-rose-500 shadow-[0_0_8px_rgba(244,63,94,0.8)]',
     };
   }
@@ -179,7 +181,7 @@ export const getTaskStatusConfig = (status) => {
   // Default / Pending - Vibrant Amber Gold
   return {
     label: 'Pending',
-    badgeClass: 'bg-amber-500/15 text-amber-800 dark:text-amber-300 border-amber-500/40 shadow-xs shadow-amber-500/10 font-bold',
+    badgeClass: 'bg-amber-500/15 text-amber-800 border-amber-500/40 shadow-xs shadow-amber-500/10 font-bold',
     dotClass: 'bg-amber-500 animate-pulse shadow-[0_0_8px_rgba(245,158,11,0.8)]',
   };
 };
@@ -511,6 +513,128 @@ export default function CaseDetailPage() {
     }
   };
 
+  const handleTriggerIndianVisa = async () => {
+    if (!caseData) return;
+    try {
+      const res = await apiClient.post(`/api/v1/admin/cases/${caseData.did || caseData._id}/indian-visa-subpipeline`);
+      toast.success(res.data?.message || 'Indian Visa Sub-Pipeline activated!');
+      fetchCaseDetails();
+      if (res.data?.data?.documentStudioUrl) {
+        navigate(res.data.data.documentStudioUrl);
+      }
+    } catch (err) {
+      console.error('Indian visa trigger error:', err);
+      toast.error(err.response?.data?.message || 'Failed to activate Indian Visa sub-pipeline.');
+    }
+  };
+
+  const getChecklistItemStatus = (key, data) => {
+    if (!data) return { isComplete: false, isUploaded: false, isManuallyChecked: false, matchedDoc: null };
+    const isManuallyChecked = Boolean(data.checklist?.[key]);
+    const vaultDocs = Array.isArray(data.vaultDocuments) ? data.vaultDocuments : [];
+    const clientAttachments = data.clientInfo?.attachments || data.attachments || {};
+    let isUploaded = false;
+    let matchedDoc = null;
+
+    if (key === 'photo2x2') {
+      if (clientAttachments.photo) {
+        isUploaded = true;
+        matchedDoc = { name: 'Applicant 2x2 Photo', url: clientAttachments.photo };
+      } else {
+        const found = vaultDocs.find((d) =>
+          /photo|picture|2x2|ছবি|image|portrait/i.test(d.documentName || d.fileName || '')
+        );
+        if (found) {
+          isUploaded = true;
+          matchedDoc = { name: found.documentName || found.fileName, url: found.fileUrl };
+        }
+      }
+    } else if (key === 'electricityBill') {
+      const found = vaultDocs.find((d) =>
+        /electricity|utility|bill|current|বিদ্যুৎ|gas|electric|wasa/i.test(d.documentName || d.fileName || '')
+      );
+      if (found) {
+        isUploaded = true;
+        matchedDoc = { name: found.documentName || found.fileName, url: found.fileUrl };
+      } else {
+        const otherDocs = Array.isArray(clientAttachments.otherDocuments) ? clientAttachments.otherDocuments : [];
+        const foundOther = otherDocs.find((d) => /bill|utility|electricity|gas|wasa/i.test(d.name || ''));
+        if (foundOther) {
+          isUploaded = true;
+          matchedDoc = { name: foundOther.name, url: foundOther.fileUrl };
+        }
+      }
+    } else if (key === 'nidCopy') {
+      if (clientAttachments.nidScan) {
+        isUploaded = true;
+        matchedDoc = { name: 'National ID (NID) Scan', url: clientAttachments.nidScan };
+      } else {
+        const found = vaultDocs.find((d) =>
+          /nid|national\s*id|voter|এনআইডি|পরিচয়পত্র|identity\s*card/i.test(d.documentName || d.fileName || '')
+        );
+        if (found) {
+          isUploaded = true;
+          matchedDoc = { name: found.documentName || found.fileName, url: found.fileUrl };
+        }
+      }
+    } else if (key === 'landDocuments') {
+      const found = vaultDocs.find((d) =>
+        /land|property|দলিল|খতিয়ান|khatian|porcha|deed|jamabandi|mutation|namjari/i.test(d.documentName || d.fileName || '')
+      );
+      if (found) {
+        isUploaded = true;
+        matchedDoc = { name: found.documentName || found.fileName, url: found.fileUrl };
+      } else {
+        const otherDocs = Array.isArray(clientAttachments.otherDocuments) ? clientAttachments.otherDocuments : [];
+        const foundOther = otherDocs.find((d) => /land|property|deed/i.test(d.name || ''));
+        if (foundOther) {
+          isUploaded = true;
+          matchedDoc = { name: foundOther.name, url: foundOther.fileUrl };
+        }
+      }
+    }
+
+    const isComplete = Boolean(isUploaded);
+    return {
+      isComplete,
+      isUploaded,
+      isManuallyChecked: false,
+      matchedDoc,
+    };
+  };
+
+  const handleToggleChecklist = async (key) => {
+    if (!caseData) return;
+    const currentVal = Boolean(caseData.checklist?.[key]);
+    const newVal = !currentVal;
+
+    // Optimistically update local state
+    setCaseData((prev) => ({
+      ...prev,
+      checklist: {
+        ...(prev?.checklist || {}),
+        [key]: newVal,
+      },
+    }));
+
+    try {
+      const caseId = caseData.did || caseData._id;
+      const res = await apiClient.put(`/api/v1/client/cases/${caseId}`, {
+        checklist: {
+          [key]: newVal,
+        },
+      });
+      if (res.data?.success || res.data?.status === 'success') {
+        toast.success(`Checklist updated: ${newVal ? 'Received / Checked' : 'Pending'}`);
+      } else {
+        throw new Error(res.data?.message || 'Failed to update checklist');
+      }
+    } catch (err) {
+      toast.error('Failed to update checklist status.');
+      fetchCaseDetails();
+    }
+  };
+
   if (loading) {
     return (
       <div className="py-32 flex flex-col items-center justify-center space-y-3">
@@ -698,6 +822,14 @@ export default function CaseDetailPage() {
             </button>
 
             <button
+              onClick={handleTriggerIndianVisa}
+              className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-amber-600 hover:bg-amber-500 text-white text-xs font-bold shadow-xs transition cursor-pointer"
+            >
+              <Globe2 className="w-3.5 h-3.5" />
+              <span>🇮🇳 Indian Visa Pipeline</span>
+            </button>
+
+            <button
               onClick={() => setIsPaymentModalOpen(true)}
               className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold shadow-xs transition cursor-pointer"
             >
@@ -724,10 +856,10 @@ export default function CaseDetailPage() {
               <span className="text-xl font-black text-foreground">
                 {caseData.applicantName || caseData.clientInfo?.fullName}
               </span>
-              <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-sky-500/10 text-sky-600 dark:text-sky-400 border border-sky-500/20">
+              <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-sky-500/10 text-sky-600 border border-sky-500/20">
                 Destination: {caseData.destinationCountry || caseData.caseType?.toUpperCase()}
               </span>
-              <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-purple-500/10 text-purple-600 dark:text-purple-400 border border-purple-500/20">
+              <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-purple-500/10 text-purple-600 border border-purple-500/20">
                 Trade: {caseData.tradeSkill || 'General Worker'}
               </span>
             </div>
@@ -736,7 +868,7 @@ export default function CaseDetailPage() {
             <div className="flex flex-wrap items-center gap-2 pt-0.5">
               {/* Handler Pill */}
               {isLatestTaskDone ? (
-                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-amber-500/10 border border-amber-500/30 text-amber-600 dark:text-amber-400">
+                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-amber-500/10 border border-amber-500/30 text-amber-600">
                   <CheckCircle2 className="w-3.5 h-3.5 text-amber-500 shrink-0" />
                   <span className="font-semibold">Step {latestTask.stepNumber || 1} Done by {latestTask.assignedToName || 'Staff'}</span>
                   <span className="text-[10px] bg-amber-500/20 px-2 py-0.5 rounded-full font-bold uppercase ml-1">
@@ -783,7 +915,7 @@ export default function CaseDetailPage() {
                 <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-muted/40 border border-border shadow-2xs">
                   <Layers className="w-3.5 h-3.5 text-muted-foreground/60 shrink-0" />
                   <span className="text-muted-foreground font-semibold">Status:</span>
-                  <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-bold border bg-amber-500/15 text-amber-800 dark:text-amber-300 border-amber-500/40 shadow-xs shadow-amber-500/10">
+                  <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-bold border bg-amber-500/15 text-amber-800 border-amber-500/40 shadow-xs shadow-amber-500/10">
                     <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse shadow-[0_0_8px_rgba(245,158,11,0.8)]" />
                     Pending
                   </span>
@@ -796,7 +928,7 @@ export default function CaseDetailPage() {
                 <Phone className="w-3.5 h-3.5 text-primary" />
                 {caseData.phone || caseData.clientInfo?.phone || '—'}
               </span>
-              <span className="flex items-center gap-1.5 font-mono text-sky-600 dark:text-sky-400 font-semibold">
+              <span className="flex items-center gap-1.5 font-mono text-sky-600 font-semibold">
                 <FileText className="w-3.5 h-3.5" />
                 Passport: {caseData.passportNumber || caseData.clientInfo?.passportNumber || '—'}
               </span>
@@ -1010,7 +1142,7 @@ export default function CaseDetailPage() {
                 {/* 4. Passport Number */}
                 <div className="p-3 rounded-xl bg-muted/30 border border-border">
                   <span className="text-muted-foreground block text-[10px] uppercase font-semibold">Passport Number</span>
-                  <p className="font-mono font-bold text-sky-600 dark:text-sky-400 mt-0.5">{passportNo}</p>
+                  <p className="font-mono font-bold text-sky-600 mt-0.5">{passportNo}</p>
                   {passportExpiry && (
                     <span className="text-[10px] text-muted-foreground block mt-0.5">Exp: {passportExpiry}</span>
                   )}
@@ -1144,10 +1276,15 @@ export default function CaseDetailPage() {
 
             {/* Physical Document Intake Checklist */}
             <div className="lg:col-span-2 bg-card border border-border rounded-2xl p-6 space-y-4 shadow-xs">
-              <h3 className="text-sm font-bold text-foreground uppercase tracking-wider flex items-center gap-2">
-                <FileCheck className="w-4 h-4 text-sky-600" />
-                Physical Document Intake Checklist
-              </h3>
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                <h3 className="text-sm font-bold text-foreground uppercase tracking-wider flex items-center gap-2">
+                  <FileCheck className="w-4 h-4 text-sky-600" />
+                  Physical Document Intake Checklist
+                </h3>
+                <span className="text-[11px] text-muted-foreground font-medium">
+                  Auto-synced with uploaded Case Vault documents
+                </span>
+              </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 text-xs">
                 {[
                   { key: 'photo2x2', label: '2x2 Size Photo (White Background)' },
@@ -1156,24 +1293,59 @@ export default function CaseDetailPage() {
                   { key: 'landDocuments', label: 'Land Property Documents' },
                   { key: 'followUpCallRequired', label: 'Pending Document Follow-up Reminder' },
                 ].map((item) => {
-                  const isChecked = caseData.checklist?.[item.key];
+                  const status = getChecklistItemStatus(item.key, caseData);
+                  const isChecked = status.isComplete;
                   return (
                     <div
                       key={item.key}
-                      className={`p-3.5 rounded-xl border flex items-center justify-between ${
+                      className={`p-3.5 rounded-xl border transition-all flex flex-col justify-between gap-2.5 ${
                         isChecked
-                          ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-800 dark:text-emerald-300 font-semibold'
+                          ? 'bg-emerald-500/10 border-emerald-500 text-emerald-950 font-semibold shadow-xs ring-1 ring-emerald-500/20'
                           : 'bg-muted/30 border-border text-muted-foreground'
                       }`}
                     >
-                      <span>{item.label}</span>
-                      <span
-                        className={`px-2 py-0.5 rounded text-[10px] font-bold ${
-                          isChecked ? 'bg-emerald-500/20 text-emerald-600' : 'bg-muted text-muted-foreground'
-                        }`}
-                      >
-                        {isChecked ? 'Received ✓' : 'Pending'}
-                      </span>
+                      <div className="flex items-center justify-between gap-2">
+                        <div className="flex items-center gap-2 select-none min-w-0">
+                          {isChecked ? (
+                            <CheckCircle2 className="size-4 text-emerald-600 shrink-0" />
+                          ) : (
+                            <div className="size-4 rounded-full border border-black/30 shrink-0" />
+                          )}
+                          <span className={`truncate ${isChecked ? 'text-emerald-950 font-bold' : 'text-foreground/80'}`}>
+                            {item.label}
+                          </span>
+                        </div>
+                        <span
+                          className={`px-2 py-0.5 rounded text-[10px] font-bold shrink-0 inline-flex items-center gap-1 ${
+                            isChecked
+                              ? 'bg-emerald-500/20 text-emerald-700 border border-emerald-500/30'
+                              : 'bg-muted text-muted-foreground border border-border/50'
+                          }`}
+                        >
+                          {isChecked ? 'Uploaded ✓' : 'Pending'}
+                        </span>
+                      </div>
+
+                      {status.matchedDoc?.url && (
+                        <div className="flex items-center justify-between pt-1 border-t border-emerald-500/20 text-[11px]">
+                          <span className="text-emerald-700 truncate max-w-[170px]" title={status.matchedDoc.name}>
+                            📎 {status.matchedDoc.name}
+                          </span>
+                          <button
+                            type="button"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setPreviewFile({
+                                fileUrl: status.matchedDoc.url,
+                                fileName: status.matchedDoc.name,
+                              });
+                            }}
+                            className="inline-flex items-center gap-1 text-[10px] font-bold text-emerald-700 hover:text-emerald-900 underline cursor-pointer"
+                          >
+                            <Eye className="w-3 h-3" /> View
+                          </button>
+                        </div>
+                      )}
                     </div>
                   );
                 })}
@@ -1421,10 +1593,10 @@ export default function CaseDetailPage() {
                 <button
                   type="button"
                   onClick={() => setIsCreateDocModalOpen(true)}
-                  className="flex items-center gap-1.5 px-3.5 py-2 bg-sky-500/10 hover:bg-sky-500/20 text-sky-700 dark:text-sky-300 border border-sky-500/30 font-bold text-xs rounded-xl shadow-xs transition cursor-pointer"
+                  className="flex items-center gap-1.5 px-3.5 py-2 bg-sky-500/10 hover:bg-sky-500/20 text-sky-700 border border-sky-500/30 font-bold text-xs rounded-xl shadow-xs transition cursor-pointer"
                 >
                   <Plus className="w-3.5 h-3.5 text-sky-500" />
-                  <span>+ Add New Document</span>
+                  <span>Add New Document</span>
                 </button>
                 <button
                   type="button"
@@ -1432,7 +1604,7 @@ export default function CaseDetailPage() {
                   className="flex items-center gap-1.5 px-3.5 py-2 bg-primary text-primary-foreground font-bold text-xs rounded-xl shadow-xs hover:bg-primary/90 transition cursor-pointer"
                 >
                   <UploadCloud className="w-3.5 h-3.5" />
-                  <span>+ Upload New File</span>
+                  <span>Upload New File</span>
                 </button>
               </div>
             </div>
@@ -1448,10 +1620,10 @@ export default function CaseDetailPage() {
                   <button
                     type="button"
                     onClick={() => setIsCreateDocModalOpen(true)}
-                    className="flex items-center gap-1.5 px-4 py-2 bg-sky-500/10 hover:bg-sky-500/20 text-sky-700 dark:text-sky-300 border border-sky-500/30 font-bold text-xs rounded-xl cursor-pointer"
+                    className="flex items-center gap-1.5 px-4 py-2 bg-sky-500/10 hover:bg-sky-500/20 text-sky-700 border border-sky-500/30 font-bold text-xs rounded-xl cursor-pointer"
                   >
                     <Plus className="w-3.5 h-3.5" />
-                    <span>+ Generate Official Document</span>
+                    <span>Generate Official Document</span>
                   </button>
                   <button
                     type="button"
@@ -1459,7 +1631,7 @@ export default function CaseDetailPage() {
                     className="flex items-center gap-1.5 px-4 py-2 bg-primary text-primary-foreground font-bold text-xs rounded-xl cursor-pointer"
                   >
                     <UploadCloud className="w-3.5 h-3.5" />
-                    <span>+ Upload File Scan</span>
+                    <span>Upload File Scan</span>
                   </button>
                 </div>
               </div>
@@ -1680,13 +1852,13 @@ export default function CaseDetailPage() {
 
       {/* Upload Document Modal */}
       {isUploadModalOpen && (
-        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-xs flex items-center justify-center p-4">
+        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
           <form
             onSubmit={handleUploadDocument}
-            className="bg-card border border-border rounded-2xl max-w-md w-full p-6 space-y-4 shadow-2xl animate-in fade-in zoom-in-95 duration-200"
+            className="bg-white border border-black/10 rounded-2xl max-w-md w-full p-6 space-y-4 shadow-2xl animate-in fade-in zoom-in-95 duration-200 text-black"
           >
-            <div className="flex items-center justify-between border-b border-border pb-3">
-              <h3 className="text-sm font-bold text-foreground flex items-center gap-2">
+            <div className="flex items-center justify-between border-b border-black/10 pb-3">
+              <h3 className="text-sm font-bold text-black flex items-center gap-2">
                 <UploadCloud className="w-4 h-4 text-primary" />
                 Attach File to Document Vault
               </h3>
@@ -1696,7 +1868,7 @@ export default function CaseDetailPage() {
                   setIsUploadModalOpen(false);
                   handleRemoveSelectedFile();
                 }}
-                className="p-1 rounded text-muted-foreground hover:text-foreground cursor-pointer"
+                className="p-1.5 rounded-lg text-red-500 hover:text-red-600 hover:bg-red-500/10 cursor-pointer"
               >
                 <X className="w-4 h-4" />
               </button>
@@ -1704,11 +1876,11 @@ export default function CaseDetailPage() {
 
             <div className="space-y-4 text-xs">
               <div>
-                <label className="block font-semibold text-muted-foreground mb-1.5">Document Category *</label>
+                <label className="block font-semibold text-black/80 mb-1.5">Document Category *</label>
                 <select
                   value={uploadDocForm.documentName}
                   onChange={(e) => setUploadDocForm({ ...uploadDocForm, documentName: e.target.value })}
-                  className="w-full px-3 py-2.5 bg-muted/40 border border-border rounded-xl text-foreground font-medium focus:outline-none focus:ring-1 focus:ring-primary cursor-pointer"
+                  className="w-full px-3 py-2.5 bg-white border border-black/15 rounded-xl text-black font-medium focus:outline-none focus:ring-1 focus:ring-primary cursor-pointer"
                 >
                   <option value="Passport Scan Copy">Passport Scan Copy</option>
                   <option value="Photo (35x45mm / 2x2 White BG)">Photo (35x45mm / 2x2 White BG)</option>
@@ -1724,7 +1896,7 @@ export default function CaseDetailPage() {
               </div>
 
               <div>
-                <label className="block font-semibold text-muted-foreground mb-1.5">Document File *</label>
+                <label className="block font-semibold text-black/80 mb-1.5">Document File *</label>
                 <input
                   type="file"
                   ref={fileInputRef}
@@ -1736,15 +1908,15 @@ export default function CaseDetailPage() {
                 {!uploadDocForm.fileName ? (
                   <div
                     onClick={() => fileInputRef.current?.click()}
-                    className="border-2 border-dashed border-border hover:border-primary/60 bg-muted/20 hover:bg-muted/40 rounded-2xl p-6 flex flex-col items-center justify-center text-center cursor-pointer transition-all group"
+                    className="border-2 border-dashed border-black/15 hover:border-primary/60 bg-black/[0.02] hover:bg-black/[0.04] rounded-2xl p-6 flex flex-col items-center justify-center text-center cursor-pointer transition-all group"
                   >
                     <div className="size-12 rounded-2xl bg-primary/10 text-primary flex items-center justify-center mb-2 group-hover:scale-110 transition-transform">
                       <UploadCloud className="w-6 h-6" />
                     </div>
-                    <p className="font-bold text-foreground text-xs">
+                    <p className="font-bold text-black text-xs">
                       Click to choose file from device
                     </p>
-                    <p className="text-[11px] text-muted-foreground mt-0.5">
+                    <p className="text-[11px] text-black/60 mt-0.5">
                       PDF, JPG, PNG, DOCX (Max: 10 MB)
                     </p>
                   </div>
@@ -1755,10 +1927,10 @@ export default function CaseDetailPage() {
                         <FileText className="w-5 h-5" />
                       </div>
                       <div className="min-w-0">
-                        <p className="font-bold text-foreground text-xs truncate">
+                        <p className="font-bold text-black text-xs truncate">
                           {uploadDocForm.fileName}
                         </p>
-                        <p className="text-[11px] text-muted-foreground">
+                        <p className="text-[11px] text-black/60">
                           {uploadDocForm.fileSize || 'Selected'} • <span className="text-emerald-600 font-bold">Ready</span>
                         </p>
                       </div>
@@ -1776,14 +1948,14 @@ export default function CaseDetailPage() {
               </div>
             </div>
 
-            <div className="flex items-center justify-end gap-2 pt-3 border-t border-border text-xs">
+            <div className="flex items-center justify-end gap-2 pt-3 border-t border-black/10 text-xs">
               <button
                 type="button"
                 onClick={() => {
                   setIsUploadModalOpen(false);
                   handleRemoveSelectedFile();
                 }}
-                className="px-4 py-2 rounded-xl border border-border text-muted-foreground hover:bg-muted font-medium cursor-pointer"
+                className="px-4 py-2 rounded-xl border border-red-500/30 text-red-600 hover:bg-red-500/10 font-semibold cursor-pointer"
               >
                 Cancel
               </button>
@@ -1802,104 +1974,104 @@ export default function CaseDetailPage() {
 
       {/* Edit Case File Modal */}
       {isEditModalOpen && (
-        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-xs flex items-center justify-center p-4 overflow-y-auto">
+        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
           <form
             onSubmit={handleSaveCaseEdit}
-            className="bg-card border border-border rounded-2xl max-w-2xl w-full p-6 space-y-4 shadow-2xl my-8"
+            className="bg-white border border-black/10 rounded-2xl max-w-2xl w-full h-[70vh] flex flex-col shadow-2xl text-black overflow-hidden"
           >
-            <div className="flex items-center justify-between border-b border-border pb-3">
-              <h3 className="text-base font-bold text-foreground flex items-center gap-2">
+            <div className="flex items-center justify-between border-b border-black/10 p-5 bg-black/[0.02] shrink-0">
+              <h3 className="text-base font-bold text-black flex items-center gap-2">
                 <Edit3 className="w-4 h-4 text-primary" />
                 Edit Case File #{caseData.caseNumber || 'CASE-FILE'}
               </h3>
               <button
                 type="button"
                 onClick={() => setIsEditModalOpen(false)}
-                className="p-1 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted cursor-pointer"
+                className="p-1.5 rounded-lg text-red-500 hover:text-red-600 hover:bg-red-500/10 cursor-pointer"
               >
-                ✕
+                <X className="w-4 h-4" />
               </button>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
+            <div className="flex-1 min-h-0 overflow-y-auto p-6 grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
               <div>
-                <label className="block font-bold text-foreground mb-1">Applicant Full Name *</label>
+                <label className="block font-bold text-black/80 mb-1">Applicant Full Name *</label>
                 <input
                   type="text"
                   required
                   value={editForm.applicantName}
                   onChange={(e) => setEditForm({ ...editForm, applicantName: e.target.value })}
-                  className="w-full px-3 py-2 bg-muted/40 border border-border rounded-xl text-foreground focus:outline-none focus:border-primary text-xs"
+                  className="w-full px-3 py-2 bg-white border border-black/15 rounded-xl text-black focus:outline-none focus:border-primary text-xs"
                 />
               </div>
 
               <div>
-                <label className="block font-bold text-foreground mb-1">Phone Number</label>
+                <label className="block font-bold text-black/80 mb-1">Phone Number</label>
                 <input
                   type="text"
                   value={editForm.phone}
                   onChange={(e) => setEditForm({ ...editForm, phone: e.target.value })}
-                  className="w-full px-3 py-2 bg-muted/40 border border-border rounded-xl text-foreground focus:outline-none focus:border-primary text-xs font-mono"
+                  className="w-full px-3 py-2 bg-white border border-black/15 rounded-xl text-black focus:outline-none focus:border-primary text-xs font-mono"
                 />
               </div>
 
               <div>
-                <label className="block font-bold text-foreground mb-1">Passport Number</label>
+                <label className="block font-bold text-black/80 mb-1">Passport Number</label>
                 <input
                   type="text"
                   value={editForm.passportNumber}
                   onChange={(e) => setEditForm({ ...editForm, passportNumber: e.target.value.toUpperCase() })}
-                  className="w-full px-3 py-2 bg-muted/40 border border-border rounded-xl text-foreground focus:outline-none focus:border-primary text-xs font-mono"
+                  className="w-full px-3 py-2 bg-white border border-black/15 rounded-xl text-black focus:outline-none focus:border-primary text-xs font-mono"
                 />
               </div>
 
               <div>
-                <label className="block font-bold text-foreground mb-1">National ID (NID)</label>
+                <label className="block font-bold text-black/80 mb-1">National ID (NID)</label>
                 <input
                   type="text"
                   value={editForm.nidNumber}
                   onChange={(e) => setEditForm({ ...editForm, nidNumber: e.target.value })}
-                  className="w-full px-3 py-2 bg-muted/40 border border-border rounded-xl text-foreground focus:outline-none focus:border-primary text-xs font-mono"
+                  className="w-full px-3 py-2 bg-white border border-black/15 rounded-xl text-black focus:outline-none focus:border-primary text-xs font-mono"
                 />
               </div>
 
               <div>
-                <label className="block font-bold text-foreground mb-1">Destination Country</label>
+                <label className="block font-bold text-black/80 mb-1">Destination Country</label>
                 <input
                   type="text"
                   value={editForm.destinationCountry}
                   onChange={(e) => setEditForm({ ...editForm, destinationCountry: e.target.value })}
-                  className="w-full px-3 py-2 bg-muted/40 border border-border rounded-xl text-foreground focus:outline-none focus:border-primary text-xs"
+                  className="w-full px-3 py-2 bg-white border border-black/15 rounded-xl text-black focus:outline-none focus:border-primary text-xs"
                 />
               </div>
 
               <div>
-                <label className="block font-bold text-foreground mb-1">Trade / Skill Category</label>
+                <label className="block font-bold text-black/80 mb-1">Trade / Skill Category</label>
                 <input
                   type="text"
                   value={editForm.tradeSkill}
                   onChange={(e) => setEditForm({ ...editForm, tradeSkill: e.target.value })}
-                  className="w-full px-3 py-2 bg-muted/40 border border-border rounded-xl text-foreground focus:outline-none focus:border-primary text-xs"
+                  className="w-full px-3 py-2 bg-white border border-black/15 rounded-xl text-black focus:outline-none focus:border-primary text-xs"
                 />
               </div>
 
               <div>
-                <label className="block font-bold text-foreground mb-1">Total Agreed Package Bill (BDT)</label>
+                <label className="block font-bold text-black/80 mb-1">Total Agreed Package Bill (BDT)</label>
                 <input
                   type="number"
                   min="0"
                   value={editForm.totalAgreedAmount}
                   onChange={(e) => setEditForm({ ...editForm, totalAgreedAmount: e.target.value })}
-                  className="w-full px-3 py-2 bg-muted/40 border border-border rounded-xl text-foreground focus:outline-none focus:border-primary text-xs font-mono"
+                  className="w-full px-3 py-2 bg-white border border-black/15 rounded-xl text-black focus:outline-none focus:border-primary text-xs font-mono"
                 />
               </div>
 
               <div>
-                <label className="block font-bold text-foreground mb-1">Current Processing Stage</label>
+                <label className="block font-bold text-black/80 mb-1">Current Processing Stage</label>
                 <select
                   value={editForm.status}
                   onChange={(e) => setEditForm({ ...editForm, status: e.target.value })}
-                  className="w-full px-3 py-2 bg-muted/40 border border-border rounded-xl text-foreground focus:outline-none focus:border-primary text-xs"
+                  className="w-full px-3 py-2 bg-white border border-black/15 rounded-xl text-black focus:outline-none focus:border-primary text-xs"
                 >
                   {PIPELINE_STAGES.map((st) => (
                     <option key={st.id} value={st.id}>
@@ -1910,22 +2082,22 @@ export default function CaseDetailPage() {
               </div>
 
               <div className="sm:col-span-2">
-                <label className="block font-bold text-foreground mb-1">Remarks & Operational Notes</label>
+                <label className="block font-bold text-black/80 mb-1">Remarks & Operational Notes</label>
                 <textarea
                   rows={3}
                   value={editForm.remarks}
                   onChange={(e) => setEditForm({ ...editForm, remarks: e.target.value })}
                   placeholder="Case notes, sponsor particulars, or timeline updates..."
-                  className="w-full px-3 py-2 bg-muted/40 border border-border rounded-xl text-foreground focus:outline-none focus:border-primary text-xs resize-none"
+                  className="w-full px-3 py-2 bg-white border border-black/15 rounded-xl text-black focus:outline-none focus:border-primary text-xs resize-none"
                 />
               </div>
             </div>
 
-            <div className="flex items-center justify-end gap-2 pt-3 border-t border-border text-xs">
+            <div className="flex items-center justify-end gap-2 p-4 border-t border-black/10 bg-black/[0.02] text-xs shrink-0">
               <button
                 type="button"
                 onClick={() => setIsEditModalOpen(false)}
-                className="px-4 py-2 rounded-xl border border-border text-muted-foreground hover:bg-muted font-semibold cursor-pointer"
+                className="px-4 py-2 rounded-xl border border-red-500/30 text-red-600 hover:bg-red-500/10 font-semibold cursor-pointer"
               >
                 Cancel
               </button>
@@ -1945,16 +2117,16 @@ export default function CaseDetailPage() {
       {/* MODAL: CREATE DOCUMENT STUDIO TEMPLATE SELECTOR */}
       {isCreateDocModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4 animate-in fade-in duration-150">
-          <div className="bg-card border border-border rounded-2xl w-full max-w-2xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
+          <div className="bg-white border border-black/10 rounded-2xl w-full max-w-2xl shadow-2xl overflow-hidden flex flex-col h-[70vh] text-black">
             {/* Header */}
-            <div className="flex items-center justify-between p-5 border-b border-border bg-muted/20">
+            <div className="flex items-center justify-between p-5 border-b border-black/10 bg-black/[0.02] shrink-0">
               <div className="flex items-center gap-2.5">
-                <div className="size-9 rounded-xl bg-sky-500/10 text-sky-600 dark:text-sky-400 flex items-center justify-center font-bold">
+                <div className="size-9 rounded-xl bg-sky-500/10 text-sky-600 flex items-center justify-center font-bold">
                   <FileText className="size-4" />
                 </div>
                 <div>
-                  <h3 className="text-sm font-black text-foreground">Create Official Case Document</h3>
-                  <p className="text-[11px] text-muted-foreground">
+                  <h3 className="text-sm font-black text-black">Create Official Case Document</h3>
+                  <p className="text-[11px] text-black/60">
                     Select a document template to generate. Client particulars will be automatically pre-filled and locked.
                   </p>
                 </div>
@@ -1962,52 +2134,52 @@ export default function CaseDetailPage() {
               <button
                 type="button"
                 onClick={() => setIsCreateDocModalOpen(false)}
-                className="p-1.5 rounded-lg text-muted-foreground hover:bg-muted hover:text-foreground cursor-pointer"
+                className="p-1.5 rounded-lg text-red-500 hover:text-red-600 hover:bg-red-500/10 cursor-pointer"
               >
                 <X className="size-4" />
               </button>
             </div>
 
             {/* Body */}
-            <div className="p-5 overflow-y-auto space-y-4 text-xs">
+            <div className="p-5 overflow-y-auto flex-1 min-h-0 space-y-4 text-xs">
               {/* Autofill Preview & Lock Notice */}
               <div className="p-3.5 rounded-xl bg-sky-500/10 border border-sky-500/30 space-y-2">
                 <div className="flex items-center justify-between">
-                  <span className="font-bold text-sky-700 dark:text-sky-300 uppercase tracking-wider text-[10px] flex items-center gap-1.5">
+                  <span className="font-bold text-sky-700 uppercase tracking-wider text-[10px] flex items-center gap-1.5">
                     <ShieldCheck className="size-3.5" />
                     Auto-Filling From Case Dossier
                   </span>
-                  <span className="px-2 py-0.2 rounded-full text-[9px] font-bold bg-amber-500/20 text-amber-800 dark:text-amber-300 border border-amber-500/30">
+                  <span className="px-2 py-0.2 rounded-full text-[9px] font-bold bg-amber-500/20 text-amber-800 border border-amber-500/30">
                     🔒 Client Bio Locked
                   </span>
                 </div>
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-[11px]">
-                  <div className="bg-background/80 p-2 rounded-lg border border-border/60">
-                    <span className="text-muted-foreground block text-[9px] uppercase font-semibold">Client Name</span>
-                    <strong className="text-foreground truncate block">{clientName}</strong>
+                  <div className="bg-white p-2 rounded-lg border border-black/10">
+                    <span className="text-black/60 block text-[9px] uppercase font-semibold">Client Name</span>
+                    <strong className="text-black truncate block">{clientName}</strong>
                   </div>
-                  <div className="bg-background/80 p-2 rounded-lg border border-border/60">
-                    <span className="text-muted-foreground block text-[9px] uppercase font-semibold">Phone</span>
-                    <strong className="text-foreground truncate block">{clientPhone}</strong>
+                  <div className="bg-white p-2 rounded-lg border border-black/10">
+                    <span className="text-black/60 block text-[9px] uppercase font-semibold">Phone</span>
+                    <strong className="text-black truncate block">{clientPhone}</strong>
                   </div>
-                  <div className="bg-background/80 p-2 rounded-lg border border-border/60">
-                    <span className="text-muted-foreground block text-[9px] uppercase font-semibold">Passport</span>
+                  <div className="bg-white p-2 rounded-lg border border-black/10">
+                    <span className="text-black/60 block text-[9px] uppercase font-semibold">Passport</span>
                     <strong className="text-sky-600 truncate block font-mono">{passportNo}</strong>
                   </div>
-                  <div className="bg-background/80 p-2 rounded-lg border border-border/60">
-                    <span className="text-muted-foreground block text-[9px] uppercase font-semibold">Destination</span>
-                    <strong className="text-foreground truncate block">{caseData?.destinationCountry || caseData?.caseType?.toUpperCase() || 'Overseas'}</strong>
+                  <div className="bg-white p-2 rounded-lg border border-black/10">
+                    <span className="text-black/60 block text-[9px] uppercase font-semibold">Destination</span>
+                    <strong className="text-black truncate block">{caseData?.destinationCountry || caseData?.caseType?.toUpperCase() || 'Overseas'}</strong>
                   </div>
                 </div>
               </div>
 
               {/* Template Dropdown Selector */}
               <div className="space-y-1.5">
-                <label className="block font-bold text-foreground">Select Document Template:</label>
+                <label className="block font-bold text-black/80">Select Document Template:</label>
                 <select
                   value={selectedTemplateId}
                   onChange={(e) => setSelectedTemplateId(e.target.value)}
-                  className="w-full px-3.5 py-2.5 bg-background border border-input rounded-xl text-foreground font-semibold text-xs focus:outline-none focus:ring-2 focus:ring-primary cursor-pointer shadow-xs"
+                  className="w-full px-3.5 py-2.5 bg-white border border-black/15 rounded-xl text-black font-semibold text-xs focus:outline-none focus:ring-2 focus:ring-primary cursor-pointer shadow-xs"
                 >
                   {DOCUMENT_STUDIO_TEMPLATES.map((tmpl) => (
                     <option key={tmpl.id} value={tmpl.id}>
@@ -2019,7 +2191,7 @@ export default function CaseDetailPage() {
 
               {/* Visual Template Cards Selection Grid */}
               <div className="space-y-1.5">
-                <label className="block font-bold text-muted-foreground text-[11px] uppercase tracking-wider">Available Studio Templates:</label>
+                <label className="block font-bold text-black/60 text-[11px] uppercase tracking-wider">Available Studio Templates:</label>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 max-h-56 overflow-y-auto pr-1">
                   {DOCUMENT_STUDIO_TEMPLATES.map((tmpl) => {
                     const Icon = tmpl.icon;
@@ -2032,18 +2204,18 @@ export default function CaseDetailPage() {
                         className={`p-3 rounded-xl border text-left transition-all flex items-start gap-2.5 cursor-pointer ${
                           isSelected
                             ? 'bg-primary/10 border-primary shadow-xs ring-1 ring-primary'
-                            : 'bg-background hover:bg-muted/40 border-border'
+                            : 'bg-white hover:bg-black/[0.02] border-black/10'
                         }`}
                       >
-                        <div className={`p-2 rounded-lg shrink-0 ${isSelected ? 'bg-primary text-primary-foreground' : 'bg-muted text-muted-foreground'}`}>
+                        <div className={`p-2 rounded-lg shrink-0 ${isSelected ? 'bg-primary text-primary-foreground' : 'bg-black/[0.04] text-black/60'}`}>
                           <Icon className="size-4" />
                         </div>
                         <div className="min-w-0 flex-1">
                           <div className="flex items-center justify-between gap-1">
-                            <h4 className="font-bold text-xs text-foreground truncate">{tmpl.title}</h4>
-                            <span className="text-[9px] font-bold px-1.5 py-0.2 rounded bg-muted text-muted-foreground shrink-0">{tmpl.badge}</span>
+                            <h4 className="font-bold text-xs text-black truncate">{tmpl.title}</h4>
+                            <span className="text-[9px] font-bold px-1.5 py-0.2 rounded bg-black/[0.04] text-black/60 shrink-0">{tmpl.badge}</span>
                           </div>
-                          <p className="text-[10px] text-muted-foreground mt-0.5 line-clamp-2">{tmpl.subtitle}</p>
+                          <p className="text-[10px] text-black/60 mt-0.5 line-clamp-2">{tmpl.subtitle}</p>
                         </div>
                       </button>
                     );
@@ -2053,11 +2225,11 @@ export default function CaseDetailPage() {
             </div>
 
             {/* Footer */}
-            <div className="flex items-center justify-between p-4 border-t border-border bg-muted/20">
+            <div className="flex items-center justify-between p-4 border-t border-black/10 bg-black/[0.02] shrink-0">
               <button
                 type="button"
                 onClick={() => setIsCreateDocModalOpen(false)}
-                className="px-4 py-2 text-xs font-bold text-muted-foreground hover:bg-muted rounded-xl transition cursor-pointer"
+                className="px-4 py-2 text-xs font-bold border border-red-500/30 text-red-600 hover:bg-red-500/10 rounded-xl transition cursor-pointer"
               >
                 Cancel
               </button>

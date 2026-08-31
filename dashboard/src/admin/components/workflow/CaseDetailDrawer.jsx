@@ -47,28 +47,28 @@ const getTaskStatusConfig = (status) => {
   if (normStatus === 'approved' || normStatus === 'completed' || normStatus === 'complete') {
     return {
       label: 'Approved ✓',
-      badgeClass: 'bg-emerald-500/15 text-emerald-800 dark:text-emerald-300 border-emerald-500/40 shadow-xs shadow-emerald-500/10 font-bold',
+      badgeClass: 'bg-emerald-500/15 text-emerald-800 border-emerald-500/40 shadow-xs shadow-emerald-500/10 font-bold',
       dotClass: 'bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.8)]',
     };
   }
   if (normStatus === 'done' || normStatus === 'submitted') {
     return {
       label: 'Done',
-      badgeClass: 'bg-blue-500/15 text-blue-800 dark:text-blue-300 border-blue-500/40 shadow-xs shadow-blue-500/10 font-bold',
+      badgeClass: 'bg-blue-500/15 text-blue-800 border-blue-500/40 shadow-xs shadow-blue-500/10 font-bold',
       dotClass: 'bg-blue-500 shadow-[0_0_8px_rgba(59,130,246,0.8)]',
     };
   }
   if (normStatus === 'in progress' || normStatus === 'processing' || normStatus === 'in_progress') {
     return {
       label: 'In Progress',
-      badgeClass: 'bg-sky-500/15 text-sky-800 dark:text-sky-300 border-sky-500/40 shadow-xs shadow-sky-500/10 font-bold',
+      badgeClass: 'bg-sky-500/15 text-sky-800 border-sky-500/40 shadow-xs shadow-sky-500/10 font-bold',
       dotClass: 'bg-sky-500 animate-pulse shadow-[0_0_8px_rgba(14,165,233,0.8)]',
     };
   }
   if (normStatus === 'rejected' || normStatus === 'cancelled' || normStatus === 'failed') {
     return {
       label: 'Rejected ✗',
-      badgeClass: 'bg-rose-500/15 text-rose-800 dark:text-rose-300 border-rose-500/40 shadow-xs shadow-rose-500/10 font-bold',
+      badgeClass: 'bg-rose-500/15 text-rose-800 border-rose-500/40 shadow-xs shadow-rose-500/10 font-bold',
       dotClass: 'bg-rose-500 shadow-[0_0_8px_rgba(244,63,94,0.8)]',
     };
   }
@@ -76,7 +76,7 @@ const getTaskStatusConfig = (status) => {
   // Default / Pending - Vibrant Amber Gold
   return {
     label: 'Pending',
-    badgeClass: 'bg-amber-500/15 text-amber-800 dark:text-amber-300 border-amber-500/40 shadow-xs shadow-amber-500/10 font-bold',
+    badgeClass: 'bg-amber-500/15 text-amber-800 border-amber-500/40 shadow-xs shadow-amber-500/10 font-bold',
     dotClass: 'bg-amber-500 animate-pulse shadow-[0_0_8px_rgba(245,158,11,0.8)]',
   };
 };
@@ -174,6 +174,113 @@ export function CaseDetailDrawer({ caseDid, isOpen, onClose, onRefresh }) {
     }
   };
 
+  const getChecklistItemStatus = (key, data) => {
+    if (!data) return { isComplete: false, isUploaded: false, isManuallyChecked: false, matchedDoc: null };
+    const isManuallyChecked = Boolean(data.checklist?.[key]);
+    const vaultDocs = Array.isArray(data.vaultDocuments) ? data.vaultDocuments : [];
+    const clientAttachments = data.clientInfo?.attachments || data.attachments || {};
+    let isUploaded = false;
+    let matchedDoc = null;
+
+    if (key === 'photo2x2') {
+      if (clientAttachments.photo) {
+        isUploaded = true;
+        matchedDoc = { name: 'Applicant 2x2 Photo', url: clientAttachments.photo };
+      } else {
+        const found = vaultDocs.find((d) =>
+          /photo|picture|2x2|ছবি|image|portrait/i.test(d.documentName || d.fileName || '')
+        );
+        if (found) {
+          isUploaded = true;
+          matchedDoc = { name: found.documentName || found.fileName, url: found.fileUrl };
+        }
+      }
+    } else if (key === 'electricityBill') {
+      const found = vaultDocs.find((d) =>
+        /electricity|utility|bill|current|বিদ্যুৎ|gas|electric|wasa/i.test(d.documentName || d.fileName || '')
+      );
+      if (found) {
+        isUploaded = true;
+        matchedDoc = { name: found.documentName || found.fileName, url: found.fileUrl };
+      } else {
+        const otherDocs = Array.isArray(clientAttachments.otherDocuments) ? clientAttachments.otherDocuments : [];
+        const foundOther = otherDocs.find((d) => /bill|utility|electricity|gas|wasa/i.test(d.name || ''));
+        if (foundOther) {
+          isUploaded = true;
+          matchedDoc = { name: foundOther.name, url: foundOther.fileUrl };
+        }
+      }
+    } else if (key === 'nidCopy') {
+      if (clientAttachments.nidScan) {
+        isUploaded = true;
+        matchedDoc = { name: 'National ID (NID) Scan', url: clientAttachments.nidScan };
+      } else {
+        const found = vaultDocs.find((d) =>
+          /nid|national\s*id|voter|এনআইডি|পরিচয়পত্র|identity\s*card/i.test(d.documentName || d.fileName || '')
+        );
+        if (found) {
+          isUploaded = true;
+          matchedDoc = { name: found.documentName || found.fileName, url: found.fileUrl };
+        }
+      }
+    } else if (key === 'landDocuments') {
+      const found = vaultDocs.find((d) =>
+        /land|property|দলিল|খতিয়ান|khatian|porcha|deed|jamabandi|mutation|namjari/i.test(d.documentName || d.fileName || '')
+      );
+      if (found) {
+        isUploaded = true;
+        matchedDoc = { name: found.documentName || found.fileName, url: found.fileUrl };
+      } else {
+        const otherDocs = Array.isArray(clientAttachments.otherDocuments) ? clientAttachments.otherDocuments : [];
+        const foundOther = otherDocs.find((d) => /land|property|deed/i.test(d.name || ''));
+        if (foundOther) {
+          isUploaded = true;
+          matchedDoc = { name: foundOther.name, url: foundOther.fileUrl };
+        }
+      }
+    }
+
+    const isComplete = Boolean(isUploaded);
+    return {
+      isComplete,
+      isUploaded,
+      isManuallyChecked: false,
+      matchedDoc,
+    };
+  };
+
+  const handleToggleChecklist = async (key) => {
+    if (!caseData) return;
+    const currentVal = Boolean(caseData.checklist?.[key]);
+    const newVal = !currentVal;
+
+    setCaseData((prev) => ({
+      ...prev,
+      checklist: {
+        ...(prev?.checklist || {}),
+        [key]: newVal,
+      },
+    }));
+
+    try {
+      const caseId = caseData.did || caseData._id;
+      const res = await apiClient.put(`/api/v1/client/cases/${caseId}`, {
+        checklist: {
+          [key]: newVal,
+        },
+      });
+      if (res.data?.success || res.data?.status === 'success') {
+        toast.success(`Checklist updated: ${newVal ? 'Received / Checked' : 'Pending'}`);
+        if (onRefresh) onRefresh();
+      } else {
+        throw new Error(res.data?.message || 'Failed to update checklist');
+      }
+    } catch (err) {
+      toast.error('Failed to update checklist status.');
+      fetchDetails();
+    }
+  };
+
   const ledger = caseData?.paymentLedger || {};
   const totalAgreed = ledger.totalAgreedAmount || caseData?.packageCost || 0;
   const totalPaid = ledger.totalPaidAmount || caseData?.initialPaidAmount || 0;
@@ -212,7 +319,7 @@ export function CaseDetailDrawer({ caseDid, isOpen, onClose, onRefresh }) {
                     </span>
                   )}
                   {caseData.passportNumber && (
-                    <span className="flex items-center gap-1 font-mono text-sky-600 dark:text-sky-400">
+                    <span className="flex items-center gap-1 font-mono text-sky-600">
                       <FileText className="size-3" />
                       Passport: {caseData.passportNumber}
                     </span>
@@ -229,7 +336,7 @@ export function CaseDetailDrawer({ caseDid, isOpen, onClose, onRefresh }) {
 
           <button
             onClick={onClose}
-            className="p-2 rounded-xl border border-border hover:bg-muted text-muted-foreground transition-all cursor-pointer shrink-0"
+            className="p-2 rounded-xl text-red-500 hover:text-red-600 hover:bg-red-500/10 border border-red-500/30 transition-all cursor-pointer shrink-0"
           >
             <X className="size-5" />
           </button>
@@ -258,15 +365,15 @@ export function CaseDetailDrawer({ caseDid, isOpen, onClose, onRefresh }) {
             <div className="flex items-center gap-2">
               <button
                 onClick={() => setPaymentModalOpen(true)}
-                className="flex items-center gap-1 px-3 py-1.5 bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-bold text-xs rounded-lg transition-all cursor-pointer shadow-xs"
+                className="flex items-center gap-1 px-3.5 py-1.5 bg-primary hover:bg-primary/90 text-primary-foreground font-bold text-xs rounded-lg transition-all cursor-pointer shadow-xs"
               >
                 <CreditCard className="size-3.5" />
-                <span>+ Add Payment</span>
+                <span>Add Payment</span>
               </button>
 
               <button
                 onClick={() => setAssignModalOpen(true)}
-                className="flex items-center gap-1 px-3 py-1.5 bg-sky-500 hover:bg-sky-600 text-slate-950 font-bold text-xs rounded-lg transition-all cursor-pointer shadow-xs"
+                className="flex items-center gap-1 px-3.5 py-1.5 bg-primary hover:bg-primary/90 text-primary-foreground font-bold text-xs rounded-lg transition-all cursor-pointer shadow-xs"
               >
                 <Send className="size-3.5" />
                 <span>Assign Step</span>
@@ -517,7 +624,7 @@ export function CaseDetailDrawer({ caseDid, isOpen, onClose, onRefresh }) {
                                 <button
                                   onClick={() => handleApproveTask(t.did || t._id)}
                                   disabled={approvingTaskId === (t.did || t._id)}
-                                  className="inline-flex items-center gap-1 px-3 py-1 bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-bold text-xs rounded-lg transition-all cursor-pointer shadow-xs disabled:opacity-50"
+                                  className="inline-flex items-center gap-1 px-3 py-1 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-lg transition-all cursor-pointer shadow-xs disabled:opacity-50"
                                 >
                                   {approvingTaskId === (t.did || t._id) ? (
                                     <Loader2 className="size-3 animate-spin" />
@@ -546,7 +653,7 @@ export function CaseDetailDrawer({ caseDid, isOpen, onClose, onRefresh }) {
                     </h3>
                     <button
                       onClick={() => setPaymentModalOpen(true)}
-                      className="inline-flex items-center gap-1 px-3 py-1.5 text-xs font-bold rounded-lg bg-emerald-500 hover:bg-emerald-600 text-slate-950 transition-all cursor-pointer shadow-xs"
+                      className="inline-flex items-center gap-1 px-3 py-1.5 text-xs font-bold rounded-lg bg-primary hover:bg-primary/90 text-primary-foreground transition-all cursor-pointer shadow-xs"
                     >
                       <Plus className="size-3.5" />
                       <span>Record Payment</span>
@@ -597,10 +704,13 @@ export function CaseDetailDrawer({ caseDid, isOpen, onClose, onRefresh }) {
               {/* TAB 4: CHECKLIST & DOCUMENTS VAULT */}
               {activeTab === 'documents' && (
                 <div className="space-y-4">
-                  <h3 className="text-sm font-bold text-foreground flex items-center gap-2">
-                    <FileText className="size-4 text-primary" />
-                    <span>Physical Document Intake Checklist</span>
-                  </h3>
+                  <div className="flex items-center justify-between">
+                    <h3 className="text-sm font-bold text-foreground flex items-center gap-2">
+                      <FileText className="size-4 text-primary" />
+                      <span>Physical Document Intake Checklist</span>
+                    </h3>
+                    <span className="text-[10px] text-muted-foreground">Auto-synced from Case Vault</span>
+                  </div>
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     {[
@@ -610,24 +720,52 @@ export function CaseDetailDrawer({ caseDid, isOpen, onClose, onRefresh }) {
                       { key: 'landDocuments', label: 'Land Record / Property Papers' },
                       { key: 'followUpCallRequired', label: 'Pending Paper Follow-up Call' },
                     ].map((item) => {
-                      const isChecked = caseData.checklist?.[item.key];
+                      const status = getChecklistItemStatus(item.key, caseData);
+                      const isChecked = status.isComplete;
                       return (
                         <div
                           key={item.key}
-                          className={`p-3.5 rounded-xl border flex items-center justify-between text-xs transition-all ${
+                          className={`p-3 rounded-xl border flex flex-col justify-between gap-2 text-xs transition-all ${
                             isChecked
-                              ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-700 dark:text-emerald-300 font-semibold'
+                              ? 'bg-emerald-500/10 border-emerald-500 text-emerald-950 font-semibold shadow-xs ring-1 ring-emerald-500/20'
                               : 'bg-muted/30 border-border text-muted-foreground'
                           }`}
                         >
-                          <span>{item.label}</span>
-                          <span
-                            className={`px-2 py-0.5 rounded text-[10px] font-bold ${
-                              isChecked ? 'bg-emerald-500/20 text-emerald-600' : 'bg-muted text-muted-foreground'
-                            }`}
-                          >
-                            {isChecked ? 'Received ✓' : 'Pending'}
-                          </span>
+                          <div className="flex items-center justify-between gap-2">
+                            <div className="flex items-center gap-2 select-none min-w-0">
+                              {isChecked ? (
+                                <CheckCircle2 className="size-3.5 text-emerald-600 shrink-0" />
+                              ) : (
+                                <div className="size-3.5 rounded-full border border-black/30 shrink-0" />
+                              )}
+                              <span className={`truncate ${isChecked ? 'text-emerald-950 font-bold' : ''}`}>
+                                {item.label}
+                              </span>
+                            </div>
+                            <span
+                              className={`px-2 py-0.5 rounded text-[10px] font-bold shrink-0 ${
+                                isChecked ? 'bg-emerald-500/20 text-emerald-700 border border-emerald-500/30' : 'bg-muted text-muted-foreground border border-border/50'
+                              }`}
+                            >
+                              {isChecked ? 'Uploaded ✓' : 'Pending'}
+                            </span>
+                          </div>
+
+                          {status.matchedDoc?.url && (
+                            <div className="flex items-center justify-between pt-1 border-t border-emerald-500/20 text-[10px]">
+                              <span className="text-emerald-700 truncate max-w-[180px]">
+                                📎 {status.matchedDoc.name}
+                              </span>
+                              <a
+                                href={status.matchedDoc.url}
+                                target="_blank"
+                                rel="noreferrer"
+                                className="font-bold text-emerald-700 hover:text-emerald-900 underline cursor-pointer"
+                              >
+                                View File ↗
+                              </a>
+                            </div>
+                          )}
                         </div>
                       );
                     })}

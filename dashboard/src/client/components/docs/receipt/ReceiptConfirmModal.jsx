@@ -59,23 +59,23 @@ export function ReceiptConfirmModal({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs overflow-y-auto">
-      <div className="bg-card border border-border rounded-2xl shadow-2xl w-full max-w-2xl overflow-hidden my-auto">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-5 bg-black/60 backdrop-blur-xs overflow-hidden">
+      <div className="bg-white text-zinc-900 border border-black/10 rounded-2xl shadow-2xl w-full max-w-2xl h-[70vh] flex flex-col overflow-hidden my-auto">
         
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-border bg-muted/40">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-black/10 bg-black/[0.02] shrink-0">
           <div className="flex items-center space-x-3">
             <div className="p-2.5 rounded-xl bg-emerald-500/10 text-emerald-600 border border-emerald-500/20">
               <ShieldCheck className="w-5 h-5" />
             </div>
             <div>
-              <h2 className="text-base sm:text-lg font-bold text-foreground flex items-center gap-2">
+              <h2 className="text-base sm:text-lg font-bold text-zinc-900 flex items-center gap-2">
                 Confirm Cash Receipt & Official Seal
                 <span className="text-xs font-mono bg-emerald-500/10 text-emerald-700 px-2 py-0.5 rounded-full">
                   Accounts Desk
                 </span>
               </h2>
-              <p className="text-xs text-muted-foreground font-mono">
+              <p className="text-xs text-zinc-500 font-mono">
                 Token No: <strong className="text-primary">{receipt.receiptNo}</strong>
               </p>
             </div>
@@ -83,14 +83,15 @@ export function ReceiptConfirmModal({
 
           <button
             onClick={onClose}
-            className="p-2 rounded-lg hover:bg-muted text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
+            className="p-2 rounded-lg text-red-500 hover:text-red-600 hover:bg-red-500/10 transition-colors cursor-pointer"
+            title="Close"
           >
             <X className="w-5 h-5" />
           </button>
         </div>
 
         {/* Content Body */}
-        <div className="p-6 space-y-5">
+        <div className="p-6 space-y-5 flex-1 min-h-0 overflow-y-auto text-zinc-900">
           {confirmedData ? (
             /* After confirmation: Print & Success view */
             <div className="space-y-4 text-center">
@@ -216,11 +217,11 @@ export function ReceiptConfirmModal({
               </div>
 
               {/* Action Buttons */}
-              <div className="flex items-center justify-end gap-3 pt-3 border-t border-border">
+              <div className="flex items-center justify-end gap-3 pt-3 border-t border-black/10">
                 <button
                   type="button"
                   onClick={onClose}
-                  className="px-4 py-2 text-xs font-semibold rounded-lg border border-border text-foreground hover:bg-muted cursor-pointer"
+                  className="px-4 h-9 text-xs font-semibold rounded-xl bg-red-500/10 text-red-600 border border-red-500/30 hover:bg-red-500/20 cursor-pointer flex items-center justify-center"
                 >
                   Rejected
                 </button>
@@ -228,7 +229,7 @@ export function ReceiptConfirmModal({
                   type="button"
                   onClick={handleConfirm}
                   disabled={isSubmitting}
-                  className="flex items-center gap-2 px-5 py-2 text-xs font-bold rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white shadow-xs transition-all cursor-pointer disabled:opacity-50"
+                  className="flex items-center gap-2 px-5 h-9 text-xs font-bold rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white shadow-xs transition-all cursor-pointer disabled:opacity-50"
                 >
                   {isSubmitting ? (
                     <>

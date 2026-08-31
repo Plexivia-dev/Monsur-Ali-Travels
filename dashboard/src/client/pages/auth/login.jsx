@@ -267,9 +267,9 @@ const LoginPage = () => {
 
                   <Button
                     type="button"
-                    variant="ghost"
+                    variant="cancel"
                     onClick={handleCancel2FA}
-                    className="w-full h-9 flex items-center justify-center font-semibold text-xs text-muted-foreground hover:text-foreground hover:bg-background/20 transition cursor-pointer rounded-lg"
+                    className="w-full h-9 flex items-center justify-center font-semibold text-xs cursor-pointer rounded-lg"
                   >
                     <ArrowLeft className="h-3.5 w-3.5 mr-1" />
                     Cancel

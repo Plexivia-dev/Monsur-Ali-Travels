@@ -10,19 +10,29 @@ import { toast } from 'sonner';
 import { HeaderTitle } from '@shared/components/common/HeaderTitle';
 import { StudioFloatingViewSwitcher } from '../common/StudioFloatingViewSwitcher';
 
-export function InvoiceBuilder() {
+export function InvoiceBuilder({ initialData = null, isLocked = false, onSavedSuccess }) {
   const location = useLocation();
-  const incomingInvoiceData = location.state?.invoiceData || location.state?.initialData || null;
+  const incomingInvoiceData = initialData || location.state?.invoiceData || location.state?.initialData || null;
 
   const [data, setData] = useState(() => {
     const defaultData = getDefaultInvoiceData();
     if (!incomingInvoiceData) return defaultData;
+
+    const resolvedClientName = incomingInvoiceData.client?.name || incomingInvoiceData.clientName || incomingInvoiceData.applicantName || '';
+    const resolvedPhone = incomingInvoiceData.client?.phone || incomingInvoiceData.phone || '';
+    const resolvedEmail = incomingInvoiceData.client?.email || incomingInvoiceData.email || '';
+    const resolvedAddress = incomingInvoiceData.client?.address || incomingInvoiceData.address || incomingInvoiceData.presentAddress || '';
+
     return {
       ...defaultData,
       ...incomingInvoiceData,
       client: {
         ...defaultData.client,
-        ...(incomingInvoiceData.client || {}),
+        name: resolvedClientName,
+        contactPerson: incomingInvoiceData.client?.contactPerson || resolvedClientName,
+        phone: resolvedPhone,
+        email: resolvedEmail,
+        address: resolvedAddress,
       },
       biller: {
         ...defaultData.biller,
@@ -39,12 +49,27 @@ export function InvoiceBuilder() {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
-    if (incomingInvoiceData) {
-      toast.success(
-        `Invoice autofilled for ${incomingInvoiceData.client?.name || incomingInvoiceData.clientName || 'Client'}`
-      );
+    if (initialData) {
+      const resolvedClientName = initialData.client?.name || initialData.clientName || initialData.applicantName || '';
+      const resolvedPhone = initialData.client?.phone || initialData.phone || '';
+      const resolvedEmail = initialData.client?.email || initialData.email || '';
+      const resolvedAddress = initialData.client?.address || initialData.address || initialData.presentAddress || '';
+
+      setData((prev) => ({
+        ...prev,
+        ...initialData,
+        client: {
+          ...prev.client,
+          name: resolvedClientName || prev.client.name,
+          contactPerson: initialData.client?.contactPerson || resolvedClientName || prev.client.contactPerson,
+          phone: resolvedPhone || prev.client.phone,
+          email: resolvedEmail || prev.client.email,
+          address: resolvedAddress || prev.client.address,
+        },
+        items: initialData.items && initialData.items.length > 0 ? initialData.items : prev.items,
+      }));
     }
-  }, []);
+  }, [initialData]);
 
   const handleReset = () => {
     setData(getDefaultInvoiceData());
@@ -65,6 +90,8 @@ export function InvoiceBuilder() {
 
     const payload = {
       ...data,
+      caseDid: initialData?.caseDid || incomingInvoiceData?.caseDid,
+      caseNumber: initialData?.caseNumber || incomingInvoiceData?.caseNumber,
       subtotal,
       taxAmount,
       grandTotal,
@@ -90,6 +117,22 @@ export function InvoiceBuilder() {
           invoiceNo: returnedInvoiceNo,
           qrCode: savedDoc.qrCode || prev.qrCode || '',
         }));
+
+        if (initialData?.caseDid) {
+          try {
+            await apiClient.post(`/api/v1/client/cases/${initialData.caseDid}/documents`, {
+              documentName: `Invoice #${returnedInvoiceNo}`,
+              fileName: `Invoice-${returnedInvoiceNo}.pdf`,
+              fileUrl: savedDoc.pdfUrl || `/api/v1/client/docs/invoices/${savedDoc._id}/pdf`,
+              fileType: 'application/pdf',
+              fileSize: '1.2 MB',
+              accessLevel: 'Public',
+            });
+          } catch (_) {}
+        }
+
+        if (onSavedSuccess) onSavedSuccess(savedDoc);
+
         toast.success(
           isEdit
             ? `Invoice successfully updated! (Invoice No: ${returnedInvoiceNo})`

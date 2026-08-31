@@ -171,8 +171,11 @@ clientGuardianSchema.virtual("createdBy", {
   justOne: true,
 });
 
-// Pre-save hook to calculate due amount
+// Pre-save hook to calculate due amount and guarantee unique application number
 clientGuardianSchema.pre("save", function (next) {
+  if (!this.applicationNo) {
+    this.applicationNo = generateUniqueClientAppNo();
+  }
   if (this.payment) {
     const total = Number(this.payment.totalAmount) || 0;
     const advance = Number(this.payment.advancePaid) || 0;

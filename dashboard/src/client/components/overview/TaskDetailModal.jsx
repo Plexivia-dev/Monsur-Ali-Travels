@@ -1,4 +1,5 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
   X,
   CheckCircle2,
@@ -47,6 +48,7 @@ const DOCUMENT_NAME_PRESETS = [
   'Bank Statement & Solvency Certificate',
   'Embassy / VFS Biometric Slip',
   'Visa Copy / E-Visa Grant Letter',
+  'Client Bio-Data & Guardian Form',
   'Other Supporting Document',
 ];
 
@@ -66,8 +68,8 @@ const DOC_TYPE_LABEL_MAP = {
 };
 
 const resolveDocTitle = (docKey) => {
-  if (!docKey) return 'Passport Copy (Bio-Page)';
-  if (DOC_TYPE_LABEL_MAP[docKey]) return DOC_TYPE_LABEL_MAP[docKey];
+  if (!docKey) return 'Document Attachment';
+  if (DOC_TYPE_LABEL_MAP[docKey.toLowerCase()]) return DOC_TYPE_LABEL_MAP[docKey.toLowerCase()];
   const matchingPreset = DOCUMENT_NAME_PRESETS.find((preset) =>
     preset.toLowerCase().includes(docKey.toLowerCase())
   );
@@ -76,13 +78,55 @@ const resolveDocTitle = (docKey) => {
 };
 
 const STUDIO_GENERATORS = [
-  { id: 'money-receipt', title: 'Money Receipt / Pay Slip', icon: Receipt, color: 'text-emerald-600 bg-emerald-50 dark:bg-emerald-950/50' },
-  { id: 'invoice', title: 'Client Invoice Bill', icon: FileText, color: 'text-indigo-600 bg-indigo-50 dark:bg-indigo-950/50' },
-  { id: 'agreement', title: 'Employment Agreement', icon: FileSignature, color: 'text-blue-600 bg-blue-50 dark:bg-blue-950/50' },
-  { id: 'client-form', title: 'Client & Guardian Form', icon: UserCheck, color: 'text-sky-600 bg-sky-50 dark:bg-sky-950/50' },
-  { id: 'indian-visa', title: 'Indian Visa File', icon: Stamp, color: 'text-amber-600 bg-amber-50 dark:bg-amber-950/50' },
-  { id: 'passport-sub', title: 'Passport Custody Slip', icon: BookOpen, color: 'text-purple-600 bg-purple-50 dark:bg-purple-950/50' },
-  { id: 'job-verification', title: 'Job Verification Form', icon: FileCheck2, color: 'text-cyan-600 bg-cyan-50 dark:bg-cyan-950/50' },
+  {
+    id: 'client-form',
+    title: 'Client & Guardian Form',
+    icon: UserCheck,
+    color: 'text-sky-600 bg-sky-50',
+    keywords: ['bio-data', 'guardian', 'client form', 'client-form', 'intake', 'client bio', 'bio data'],
+  },
+  {
+    id: 'agreement',
+    title: 'Employment Agreement',
+    icon: FileSignature,
+    color: 'text-blue-600 bg-blue-50',
+    keywords: ['agreement', 'contract', 'deed', 'employment agreement', 'employment contract'],
+  },
+  {
+    id: 'money-receipt',
+    title: 'Money Receipt / Pay Slip',
+    icon: Receipt,
+    color: 'text-emerald-600 bg-emerald-50',
+    keywords: ['receipt', 'payment', 'money-receipt', 'payslip', 'money receipt', 'advance', 'fee collection'],
+  },
+  {
+    id: 'invoice',
+    title: 'Client Invoice Bill',
+    icon: FileText,
+    color: 'text-indigo-600 bg-indigo-50',
+    keywords: ['invoice', 'bill', 'billing', 'charge', 'client invoice'],
+  },
+  {
+    id: 'indian-visa',
+    title: 'Indian Visa File',
+    icon: Stamp,
+    color: 'text-amber-600 bg-amber-50',
+    keywords: ['indian visa', 'ivac', 'indian-visa', 'delhi', 'vfs india', 'india visa', 'new delhi'],
+  },
+  {
+    id: 'passport-sub',
+    title: 'Passport Custody Slip',
+    icon: BookOpen,
+    color: 'text-purple-600 bg-purple-50',
+    keywords: ['passport custody', 'passport submission', 'passport-sub', 'passport handover', 'passport receipt'],
+  },
+  {
+    id: 'job-verification',
+    title: 'Job Verification Form',
+    icon: FileCheck2,
+    color: 'text-cyan-600 bg-cyan-50',
+    keywords: ['job verification', 'job-verification', 'job letter', 'employment verification', 'job cert'],
+  },
 ];
 
 export function TaskDetailModal({
@@ -92,6 +136,7 @@ export function TaskDetailModal({
   onOpenCaseWorkspace,
   onRefreshTasks,
 }) {
+  const navigate = useNavigate();
   const switchPortal = usePortalStore((state) => state.switchPortal);
   const [activeTab, setActiveTab] = useState(
     task?.requiresPayment
@@ -109,8 +154,106 @@ export function TaskDetailModal({
   const [isSubmittingDone, setIsSubmittingDone] = useState(false);
   const [isSavingProgress, setIsSavingProgress] = useState(false);
 
-  // Multi-Row Document Upload State
+  // Compute strictly the assigned forms / sub-types for this task
+  const assignedFormOptions = useMemo(() => {
+    if (!task) return [];
+    const options = new Set();
+
+    // 1. Task Type Names explicitly assigned (e.g. ['Client Bio-Data & Guardian Form', 'VFS / Embassy Appointment Booking'])
+    if (Array.isArray(task.taskTypeNames) && task.taskTypeNames.length > 0) {
+      task.taskTypeNames.forEach((name) => {
+        if (name && typeof name === 'string' && name.trim()) {
+          options.add(name.trim());
+        }
+      });
+    }
+
+    // 2. Required Doc Types explicitly assigned
+    if (Array.isArray(task.requiredDocTypes) && task.requiredDocTypes.length > 0) {
+      task.requiredDocTypes.forEach((docKey) => {
+        if (docKey && typeof docKey === 'string' && docKey.trim()) {
+          const resolved = resolveDocTitle(docKey.trim());
+          if (resolved) options.add(resolved);
+        }
+      });
+    }
+
+    // 3. Permitted Document objects assigned
+    if (Array.isArray(task.permittedDocs) && task.permittedDocs.length > 0) {
+      task.permittedDocs.forEach((doc) => {
+        const docName = doc?.documentName || doc?.title || (typeof doc === 'string' ? doc : null);
+        if (docName && typeof docName === 'string' && docName.trim()) {
+          options.add(docName.trim());
+        }
+      });
+    }
+
+    // 4. Permitted Doc Names string array
+    if (Array.isArray(task.permittedDocNames) && task.permittedDocNames.length > 0) {
+      task.permittedDocNames.forEach((name) => {
+        if (name && typeof name === 'string' && name.trim()) {
+          options.add(name.trim());
+        }
+      });
+    }
+
+    // 5. If task.taskTypes array of objects exists
+    if (Array.isArray(task.taskTypes) && task.taskTypes.length > 0) {
+      task.taskTypes.forEach((tt) => {
+        if (tt?.name && typeof tt.name === 'string') {
+          options.add(tt.name.trim());
+        }
+      });
+    }
+
+    // 6. If no explicit sub-types were listed, extract from task.title (e.g. 'Collect Bio-Data & VFS Appointment')
+    if (options.size === 0 && task.title) {
+      const cleanTitle = task.title.replace(/^Collect\s+/i, '');
+      const parts = cleanTitle.split(/\s*&\s*|\s*,\s*/);
+      parts.forEach((p) => {
+        if (p && p.trim().length > 2) {
+          options.add(p.trim());
+        }
+      });
+    }
+
+    if (options.size > 0) {
+      return Array.from(options);
+    }
+
+    return DOCUMENT_NAME_PRESETS;
+  }, [task]);
+
+  // Compute strictly the matched studio generators for assigned task types
+  const assignedStudioGenerators = useMemo(() => {
+    if (!task) return [];
+
+    const taskTokens = [
+      ...(task.taskTypeNames || []),
+      ...(task.requiredDocTypes || []),
+      task.title || '',
+      task.description || '',
+    ].map((s) => String(s).toLowerCase());
+
+    const matched = STUDIO_GENERATORS.filter((gen) => {
+      return gen.keywords.some((kw) =>
+        taskTokens.some((token) => token.includes(kw))
+      );
+    });
+
+    return matched;
+  }, [task]);
+
+  // Multi-Row Document Upload State (Pre-populated strictly with assigned forms)
   const [uploadRows, setUploadRows] = useState(() => {
+    if (task?.taskTypeNames && Array.isArray(task.taskTypeNames) && task.taskTypeNames.length > 0) {
+      return task.taskTypeNames.map((name, i) => ({
+        id: `row-${i + 1}`,
+        title: name,
+        file: null,
+        accessLevel: 'Restricted',
+      }));
+    }
     if (task?.requiredDocTypes && Array.isArray(task.requiredDocTypes) && task.requiredDocTypes.length > 0) {
       return task.requiredDocTypes.map((docKey, i) => ({
         id: `row-${i + 1}`,
@@ -120,11 +263,81 @@ export function TaskDetailModal({
       }));
     }
     return [
-      { id: 'row-1', title: 'Passport Copy (Bio-Page)', file: null, accessLevel: 'Restricted' },
+      { id: 'row-1', title: '', file: null, accessLevel: 'Restricted' },
     ];
   });
   const [isBatchUploading, setIsBatchUploading] = useState(false);
   const [uploadedDocsList, setUploadedDocsList] = useState([]);
+  const [caseVaultDocs, setCaseVaultDocs] = useState([]);
+  const [manualSlipFile, setManualSlipFile] = useState(null);
+
+  // Load vault documents for this case to cross-reference already uploaded items
+  useEffect(() => {
+    const caseRef = task?.caseDid || task?.caseId || task?.caseDetails?.did || task?.caseDetails?._id;
+    if (caseRef) {
+      apiClient
+        .get(`/api/v1/client/cases/${caseRef}`)
+        .then((res) => {
+          if (res.data?.data?.vaultDocuments) {
+            setCaseVaultDocs(res.data.data.vaultDocuments);
+          }
+        })
+        .catch(() => {});
+    }
+  }, [task]);
+
+  const findAlreadyUploadedDoc = useCallback((docTitle) => {
+    if (!docTitle) return null;
+    const titleLower = docTitle.toLowerCase().trim();
+
+    // 1. Check in newly uploaded docs in this modal session
+    const inNew = uploadedDocsList.find((d) => {
+      const name = String(d.documentName || d.fileName || d.title || '').toLowerCase();
+      return name.includes(titleLower) || titleLower.includes(name);
+    });
+    if (inNew) return inNew;
+
+    // 2. Check in task.permittedDocs
+    const permitted = Array.isArray(task?.permittedDocs) ? task.permittedDocs : [];
+    const inPermitted = permitted.find((d) => {
+      const name = String(d.documentName || d.fileName || d.title || (typeof d === 'string' ? d : '')).toLowerCase();
+      return name.includes(titleLower) || titleLower.includes(name);
+    });
+    if (inPermitted) return inPermitted;
+
+    // 3. Check in caseVaultDocs or task.caseDetails.vaultDocuments
+    const vault = [
+      ...caseVaultDocs,
+      ...(Array.isArray(task?.caseDetails?.vaultDocuments) ? task.caseDetails.vaultDocuments : []),
+      ...(Array.isArray(task?.vaultDocuments) ? task.vaultDocuments : []),
+    ];
+
+    if (/photo|2x2|picture/i.test(titleLower)) {
+      const photoDoc = vault.find((d) => /photo|picture|2x2|ছবি|image|portrait/i.test(d.documentName || d.fileName || ''));
+      if (photoDoc) return photoDoc;
+    }
+    if (/electricity|utility|bill/i.test(titleLower)) {
+      const billDoc = vault.find((d) => /electricity|utility|bill|current|বিদ্যুৎ|gas|wasa/i.test(d.documentName || d.fileName || ''));
+      if (billDoc) return billDoc;
+    }
+    if (/nid|national\s*id/i.test(titleLower)) {
+      const nidDoc = vault.find((d) => /nid|national\s*id|voter|এনআইডি|পরিচয়পত্র/i.test(d.documentName || d.fileName || ''));
+      if (nidDoc) return nidDoc;
+    }
+    if (/passport/i.test(titleLower)) {
+      const passDoc = vault.find((d) => /passport|bio-page|পাসপোর্ট/i.test(d.documentName || d.fileName || ''));
+      if (passDoc) return passDoc;
+    }
+    if (/agreement|contract/i.test(titleLower)) {
+      const agrDoc = vault.find((d) => /agreement|contract|চুক্তি/i.test(d.documentName || d.fileName || ''));
+      if (agrDoc) return agrDoc;
+    }
+
+    return vault.find((d) => {
+      const name = String(d.documentName || d.fileName || '').toLowerCase();
+      return name && (name.includes(titleLower) || titleLower.includes(name));
+    }) || null;
+  }, [uploadedDocsList, task, caseVaultDocs]);
 
   // Sync state if task changes
   useEffect(() => {
@@ -136,7 +349,16 @@ export function TaskDetailModal({
         setActiveTab('upload');
       }
 
-      if (task.requiredDocTypes && Array.isArray(task.requiredDocTypes) && task.requiredDocTypes.length > 0) {
+      if (task.taskTypeNames && Array.isArray(task.taskTypeNames) && task.taskTypeNames.length > 0) {
+        setUploadRows(
+          task.taskTypeNames.map((name, i) => ({
+            id: `row-${i + 1}`,
+            title: name,
+            file: null,
+            accessLevel: 'Restricted',
+          }))
+        );
+      } else if (task.requiredDocTypes && Array.isArray(task.requiredDocTypes) && task.requiredDocTypes.length > 0) {
         setUploadRows(
           task.requiredDocTypes.map((docKey, i) => ({
             id: `row-${i + 1}`,
@@ -145,9 +367,18 @@ export function TaskDetailModal({
             accessLevel: 'Restricted',
           }))
         );
+      } else if (assignedFormOptions.length > 0 && assignedFormOptions !== DOCUMENT_NAME_PRESETS) {
+        setUploadRows(
+          assignedFormOptions.map((name, i) => ({
+            id: `row-${i + 1}`,
+            title: name,
+            file: null,
+            accessLevel: 'Restricted',
+          }))
+        );
       }
     }
-  }, [task]);
+  }, [task, assignedFormOptions]);
 
   // File Preview Modal State (View only, no download)
   const [viewingFile, setViewingFile] = useState(null);
@@ -294,11 +525,101 @@ export function TaskDetailModal({
 
   // Separate explicit action: Mark Task as Completed
   const handleMarkAsDone = async () => {
-    // If this is an action task (no document required and no payment), work remarks/notes are mandatory
-    if (task.requiresDocument === false && !task.requiresPayment && !completionNotes.trim()) {
-      toast.error('Work remarks / notes are mandatory for this action step.');
+    const isDocTask = task.requiresDocument !== false && assignedFormOptions.length > 0;
+
+    // 1. Work Notes Validation (Mandatory ONLY for tasks without file uploads):
+    if (!isDocTask && !completionNotes.trim()) {
+      toast.error('Work Notes are Mandatory: Please enter your progress/completion remarks before completing this step.');
       setActiveTab('notes');
       return;
+    }
+
+    // 2. Mandatory Payment Collection Validation (if payment task):
+    if (task.requiresPayment) {
+      if (paymentCollected === '' || Number(paymentCollected) < 0) {
+        toast.error('Payment Collection is Mandatory: Please record the collected payment amount.');
+        setActiveTab('payment');
+        return;
+      }
+
+      if (!generateMoneyReceipt && !manualSlipFile && !task.paymentSlipUrl && !task.moneyReceiptNumber) {
+        toast.error('Payment Slip Required: Please attach a physical payment slip/voucher or enable Auto-Issue Money Receipt.');
+        setActiveTab('payment');
+        return;
+      }
+    }
+
+    // 3. Mandatory Document Upload Validation:
+    if (task.requiresDocument !== false && assignedFormOptions.length > 0) {
+      // Auto-upload any pending selected file rows first
+      const pendingRowsWithFiles = uploadRows.filter((r) => r.file);
+      if (pendingRowsWithFiles.length > 0) {
+        setIsBatchUploading(true);
+        for (const row of pendingRowsWithFiles) {
+          try {
+            const formData = new FormData();
+            formData.append('file', row.file);
+            const queryParams = new URLSearchParams();
+            if (task.caseDid) queryParams.append('clientId', task.caseDid);
+            const categorySlug = (row.title || 'document').toLowerCase().replace(/[^a-z0-9]+/g, '-');
+            queryParams.append('documentType', `task-${categorySlug}`);
+
+            const uploadRes = await apiClient.post(`/api/v1/upload/single?${queryParams.toString()}`, formData, {
+              headers: { 'Content-Type': 'multipart/form-data' },
+            });
+            const uploadedUrl = uploadRes.data?.data?.url || uploadRes.data?.url || uploadRes.data?.fileUrl;
+            if (uploadedUrl && task.caseDid) {
+              const sizeInMb = (row.file.size / (1024 * 1024)).toFixed(2) + ' MB';
+              const attachRes = await apiClient.post(`/api/v1/client/cases/${task.caseDid}/documents`, {
+                documentName: row.title?.trim() || 'Task Document',
+                fileName: row.file.name,
+                fileUrl: uploadedUrl,
+                fileType: row.file.type || 'application/pdf',
+                fileSize: sizeInMb,
+                accessLevel: row.accessLevel || 'Restricted',
+              });
+              if (attachRes.data?.data) {
+                setUploadedDocsList((prev) => [attachRes.data.data, ...prev]);
+              }
+            }
+          } catch (uploadErr) {
+            console.warn('Auto-upload error on complete:', uploadErr.message);
+          }
+        }
+        setIsBatchUploading(false);
+      }
+
+      // Check if all required docs are satisfied (either in vault or uploaded)
+      const allAssignedSatisfied = uploadRows.every((row) => {
+        const found = findAlreadyUploadedDoc(row.title);
+        const hasPendingFile = Boolean(row.file);
+        return Boolean(found || hasPendingFile);
+      });
+
+      const totalDocsAvailable = (task.permittedDocs?.length || 0) + uploadedDocsList.length + pendingRowsWithFiles.length + caseVaultDocs.length;
+      if (!allAssignedSatisfied && totalDocsAvailable === 0) {
+        toast.error('Document Upload is Mandatory: You must select and upload the assigned file(s) before completing this step.');
+        setActiveTab('upload');
+        return;
+      }
+    }
+
+    // Handle Manual Payment Slip Upload if attached
+    let uploadedSlipUrl = task.paymentSlipUrl || null;
+    if (manualSlipFile) {
+      try {
+        const formData = new FormData();
+        formData.append('file', manualSlipFile);
+        const queryParams = new URLSearchParams();
+        if (task.caseDid) queryParams.append('clientId', task.caseDid);
+        queryParams.append('documentType', 'payment-slip');
+        const upRes = await apiClient.post(`/api/v1/upload/single?${queryParams.toString()}`, formData, {
+          headers: { 'Content-Type': 'multipart/form-data' },
+        });
+        uploadedSlipUrl = upRes.data?.data?.url || upRes.data?.url || upRes.data?.fileUrl;
+      } catch (slipUpErr) {
+        console.warn('Payment slip upload error:', slipUpErr);
+      }
     }
 
     const collectedNum = paymentCollected !== '' ? Number(paymentCollected) : (task.requiresPayment ? Number(task.paymentAmount) : 0);
@@ -306,9 +627,10 @@ export function TaskDetailModal({
     setIsSubmittingDone(true);
     try {
       await apiClient.patch(`/api/v1/client/tasks/${task.did || task._id}/done`, {
-        completionNotes: completionNotes.trim() || 'Task completed with attached documents/verifications.',
+        completionNotes: completionNotes.trim(),
         paymentCollectedAmount: collectedNum,
         paymentMethod,
+        paymentSlipUrl: uploadedSlipUrl,
         generateMoneyReceipt,
       });
 
@@ -322,23 +644,36 @@ export function TaskDetailModal({
     }
   };
 
-  // Open Document Studio Generator
+  // Open Document Studio Generator with Full Case & Client Dossier Query Params
   const handleLaunchGenerator = (generatorId) => {
-    onClose();
+    if (onClose) onClose();
+
+    const caseRef = task?.caseDid || task?.caseId || task?.caseDetails?.did || task?.caseDetails?._id || '';
+    const clientRef = task?.clientDid || task?.clientId || task?.clientInfo?.did || task?.clientInfo?._id || '';
+    const caseNum = task?.caseNumber || task?.caseDetails?.caseNumber || '';
+
+    const queryParams = new URLSearchParams();
+    if (caseRef) queryParams.set('caseDid', caseRef);
+    if (clientRef) queryParams.set('clientDid', clientRef);
+    if (caseNum) queryParams.set('caseNumber', caseNum);
+    queryParams.set('returnUrl', '/dashboard/overview/tasks');
+
+    const searchStr = queryParams.toString() ? `?${queryParams.toString()}` : '';
     switchPortal('docs', generatorId);
-    toast.info(`Opened ${generatorId} in Document Studio.`);
+    navigate(`/dashboard/docs/${generatorId}${searchStr}`);
+    toast.info(`Opened ${generatorId} with prefilled client particulars.`);
   };
 
   return (
     <>
-      <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4 animate-in fade-in duration-150 overflow-y-auto">
+      <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4 animate-in fade-in duration-150 overflow-y-auto">
         <div className="fixed inset-0" onClick={onClose} />
 
-        {/* Modal Container with strict 90vh max-height */}
-        <div className="relative bg-card border border-border rounded-2xl max-w-3xl w-full max-h-[90vh] flex flex-col shadow-2xl z-10 my-auto text-foreground overflow-hidden animate-in zoom-in-95 duration-150">
+        {/* Modal Container with strict 70vh fixed height */}
+        <div className="relative bg-white border border-black/10 rounded-2xl max-w-3xl w-full h-[70vh] flex flex-col shadow-2xl z-10 my-auto text-black overflow-hidden animate-in zoom-in-95 duration-150">
           
           {/* 1. Header (Fixed Height / Sticky) */}
-          <div className="shrink-0 border-b border-border p-4 sm:p-5 flex items-start justify-between gap-4 bg-card">
+          <div className="shrink-0 border-b border-black/10 p-4 sm:p-5 flex items-start justify-between gap-4 bg-white">
             <div className="space-y-1.5 min-w-0 flex-1">
               <div className="flex items-center gap-2 flex-wrap">
                 <span className="text-[11px] font-bold font-mono px-2 py-0.5 rounded bg-muted text-foreground border border-border">
@@ -357,7 +692,7 @@ export function TaskDetailModal({
                 )}
 
                 {task.requiresPayment && (
-                  <span className="text-[10px] font-bold px-2 py-0.5 rounded-full border bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20 flex items-center gap-1">
+                  <span className="text-[10px] font-bold px-2 py-0.5 rounded-full border bg-emerald-500/10 text-emerald-600 border-emerald-500/20 flex items-center gap-1">
                     <CreditCard className="w-3 h-3" />
                     Payment: ৳{Number(task.paymentAmount || 0).toLocaleString()}
                   </span>
@@ -366,8 +701,8 @@ export function TaskDetailModal({
                 <span
                   className={`text-[10px] font-bold px-2 py-0.5 rounded-full border ${
                     task.requiresDocument !== false
-                      ? 'bg-sky-500/10 text-sky-600 dark:text-sky-400 border-sky-500/20'
-                      : 'bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/20'
+                      ? 'bg-sky-500/10 text-sky-600 border-sky-500/20'
+                      : 'bg-amber-500/10 text-amber-600 border-amber-500/20'
                   }`}
                 >
                   {task.requiresDocument !== false ? '📄 Document Intake' : '💬 Action / Notes Only'}
@@ -414,7 +749,7 @@ export function TaskDetailModal({
               <button
                 type="button"
                 onClick={onClose}
-                className="p-1.5 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted transition-colors cursor-pointer"
+                className="p-1.5 rounded-lg text-red-500 hover:text-red-600 hover:bg-red-500/10 border border-transparent hover:border-red-500/20 transition-colors cursor-pointer"
                 title="Close"
               >
                 <X className="w-5 h-5" />
@@ -429,11 +764,11 @@ export function TaskDetailModal({
             {(task.requiresPayment || task.paymentAmount > 0) && (
               <div className="p-3.5 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 text-xs space-y-2">
                 <div className="flex items-center justify-between">
-                  <span className="font-bold text-emerald-700 dark:text-emerald-300 flex items-center gap-1.5 text-xs uppercase tracking-wider">
+                  <span className="font-bold text-emerald-700 flex items-center gap-1.5 text-xs uppercase tracking-wider">
                     <CreditCard className="w-4 h-4" />
                     Payment Collection Requirement
                   </span>
-                  <span className="font-mono font-bold text-base text-emerald-600 dark:text-emerald-400">
+                  <span className="font-mono font-bold text-base text-emerald-600">
                     ৳ {Number(task.paymentAmount || 0).toLocaleString()} {task.paymentCurrency || 'BDT'}
                   </span>
                 </div>
@@ -536,96 +871,132 @@ export function TaskDetailModal({
                   <div>
                     <h4 className="text-xs font-bold text-foreground flex items-center gap-1.5 uppercase tracking-wider">
                       <UploadCloud className="w-4 h-4 text-primary" />
-                      Client Document Intake (Multi-Row)
+                      Assigned Document Intake
                     </h4>
                     <p className="text-[11px] text-muted-foreground mt-0.5">
-                      Select or add multiple document rows to upload and register directly into Case Vault.
+                      Upload the required documents for this task step directly into Case Vault.
                     </p>
                   </div>
-                  <Button
-                    type="button"
-                    size="sm"
-                    variant="outline"
-                    onClick={handleAddRow}
-                    className="h-7 text-xs px-2.5 font-semibold border-border hover:bg-muted text-foreground flex items-center gap-1 cursor-pointer"
-                  >
-                    <Plus className="w-3.5 h-3.5" />
-                    <span>Add Row</span>
-                  </Button>
                 </div>
 
                 {/* Rows List */}
                 <div className="space-y-2.5 pt-1">
-                  {uploadRows.map((row, idx) => (
-                    <div
-                      key={row.id}
-                      className="bg-card border border-border rounded-xl p-2.5 sm:p-3 flex flex-col sm:flex-row items-stretch sm:items-center gap-2 text-xs shadow-2xs"
-                    >
-                      {/* Row Index */}
-                      <span className="w-5 text-center font-mono font-bold text-muted-foreground shrink-0 hidden sm:inline">
-                        #{idx + 1}
-                      </span>
+                  {uploadRows.map((row, idx) => {
+                    const existingDoc = findAlreadyUploadedDoc(row.title);
 
-                      {/* Preset Select & Custom Title */}
-                      <div className="flex-1 min-w-[200px] space-y-1">
-                        <select
-                          value={row.title}
-                          onChange={(e) => handleUpdateRow(row.id, 'title', e.target.value)}
-                          className="w-full h-8 px-2 text-xs bg-muted/40 border border-border rounded-md text-foreground focus:outline-none focus:border-primary cursor-pointer"
-                        >
-                          <option value="">Select Document Type / Preset...</option>
-                          {DOCUMENT_NAME_PRESETS.map((preset) => (
-                            <option key={preset} value={preset}>
-                              {preset}
-                            </option>
-                          ))}
-                        </select>
-
-                        <Input
-                          value={row.title}
-                          onChange={(e) => handleUpdateRow(row.id, 'title', e.target.value)}
-                          placeholder="Or type custom title (e.g. Greek Visa Stamped Slip)..."
-                          className="h-7 text-[11px] bg-background border-border"
-                        />
-                      </div>
-
-                      {/* File Selector */}
-                      <div className="flex-1 min-w-[180px]">
-                        <input
-                          type="file"
-                          id={`file-input-${row.id}`}
-                          onChange={(e) => {
-                            const file = e.target.files?.[0];
-                            if (file) handleUpdateRow(row.id, 'file', file);
-                          }}
-                          accept=".pdf,.png,.jpg,.jpeg,.webp,.doc,.docx"
-                          className="hidden"
-                        />
-                        <label
-                          htmlFor={`file-input-${row.id}`}
-                          className="w-full h-[58px] border border-dashed border-border hover:border-primary/60 bg-muted/20 hover:bg-muted/40 rounded-lg px-2.5 py-1.5 flex items-center justify-center gap-2 cursor-pointer transition-colors text-xs text-muted-foreground hover:text-foreground text-center"
-                        >
-                          {row.file ? (
-                            <span className="font-semibold text-foreground truncate max-w-[160px]">
-                              📁 {row.file.name} ({((row.file.size) / (1024 * 1024)).toFixed(2)} MB)
-                            </span>
-                          ) : (
-                            <span className="text-[11px]">📎 Choose PDF / Image</span>
-                          )}
-                        </label>
-                      </div>
-
-                      {/* Remove Row Button */}
-                      <button
-                        type="button"
-                        onClick={() => handleRemoveRow(row.id)}
-                        className="p-1.5 text-muted-foreground hover:text-destructive rounded-lg hover:bg-muted transition-colors cursor-pointer shrink-0 self-center"
-                        title="Remove row"
+                    return (
+                      <div
+                        key={row.id}
+                        className={`border rounded-xl p-3 flex flex-col sm:flex-row items-stretch sm:items-center gap-3 text-xs shadow-2xs transition-all ${
+                          existingDoc
+                            ? 'bg-emerald-500/5 border-emerald-500/30 text-emerald-950'
+                            : 'bg-card border-border'
+                        }`}
                       >
-                        <Trash2 className="w-4 h-4" />
-                      </button>
-                    </div>
-                  ))}
+                        {/* Row Index */}
+                        <span className="w-6 text-center font-mono font-bold text-muted-foreground shrink-0 hidden sm:inline">
+                          #{idx + 1}
+                        </span>
+
+                        {/* Document Name */}
+                        <div
+                          className={`flex-1 min-w-[200px] flex items-center gap-2.5 p-2.5 rounded-xl border ${
+                            existingDoc ? 'bg-emerald-500/10 border-emerald-500/20' : 'bg-black/[0.02] border-black/10'
+                          }`}
+                        >
+                          <div
+                            className={`size-8 rounded-lg flex items-center justify-center shrink-0 ${
+                              existingDoc ? 'bg-emerald-500/20 text-emerald-700' : 'bg-primary/10 text-primary'
+                            }`}
+                          >
+                            {existingDoc ? <CheckCircle2 className="size-4 text-emerald-600" /> : <FileText className="size-4" />}
+                          </div>
+                          <div className="min-w-0">
+                            <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider block">
+                              {existingDoc ? 'Document in Vault' : 'Required Document'}
+                            </span>
+                            <h4 className="text-xs font-bold text-foreground truncate" title={row.title || 'Required Document'}>
+                              {row.title || 'Required Document'}
+                            </h4>
+                          </div>
+                        </div>
+
+                        {/* Right Column: If Already Uploaded vs File Picker */}
+                        {existingDoc ? (
+                          <div className="flex-1 min-w-[180px] flex items-center justify-between gap-2 p-2 px-3 rounded-lg bg-emerald-500/10 border border-emerald-500/20">
+                            <div className="truncate">
+                              <span className="text-[10px] font-bold text-emerald-800 uppercase block">Already Uploaded ✓</span>
+                              <p className="text-xs font-semibold text-emerald-900 truncate">
+                                📎 {existingDoc.fileName || existingDoc.documentName || 'Document attached'}
+                              </p>
+                            </div>
+                            {(existingDoc.fileUrl || existingDoc.url) && (
+                              <Button
+                                type="button"
+                                size="sm"
+                                variant="outline"
+                                onClick={() =>
+                                  setViewingFile({
+                                    name: existingDoc.fileName || existingDoc.documentName || row.title,
+                                    url: existingDoc.fileUrl || existingDoc.url,
+                                    type: existingDoc.fileType || 'application/pdf',
+                                  })
+                                }
+                                className="h-7 text-xs px-2.5 border-emerald-500/30 text-emerald-800 hover:bg-emerald-500/20 gap-1 shrink-0 font-bold cursor-pointer"
+                              >
+                                <Eye className="w-3.5 h-3.5" />
+                                <span>View</span>
+                              </Button>
+                            )}
+                          </div>
+                        ) : (
+                          <>
+                            {/* File Selector */}
+                            <div className="flex-1 min-w-[180px]">
+                              <input
+                                type="file"
+                                id={`file-input-${row.id}`}
+                                onChange={(e) => {
+                                  const file = e.target.files?.[0];
+                                  if (file) handleUpdateRow(row.id, 'file', file);
+                                }}
+                                accept=".pdf,.png,.jpg,.jpeg,.webp,.doc,.docx"
+                                className="hidden"
+                              />
+                              <label
+                                htmlFor={`file-input-${row.id}`}
+                                className={`w-full h-[52px] border border-dashed rounded-lg px-3 py-1.5 flex items-center justify-center gap-2 cursor-pointer transition-colors text-xs text-center ${
+                                  row.file
+                                    ? 'border-emerald-500/50 bg-emerald-500/5 text-emerald-700'
+                                    : 'border-border hover:border-primary/60 bg-muted/20 hover:bg-muted/40 text-muted-foreground hover:text-foreground'
+                                }`}
+                              >
+                                {row.file ? (
+                                  <span className="font-semibold text-emerald-700 truncate max-w-[180px]">
+                                    ✓ {row.file.name} ({((row.file.size) / (1024 * 1024)).toFixed(2)} MB)
+                                  </span>
+                                ) : (
+                                  <span className="text-[11px] font-medium">📎 Choose PDF / Image</span>
+                                )}
+                              </label>
+                            </div>
+
+                            {/* Clear File Button */}
+                            {row.file ? (
+                              <button
+                                type="button"
+                                onClick={() => handleUpdateRow(row.id, 'file', null)}
+                                className="p-1.5 text-red-500 hover:text-red-600 rounded-lg hover:bg-red-500/10 transition-colors cursor-pointer shrink-0 self-center"
+                                title="Clear attached file"
+                              >
+                                <Trash2 className="w-4 h-4" />
+                              </button>
+                            ) : null}
+                          </>
+                        )}
+                      </div>
+                    );
+                  })}
                 </div>
 
                 {/* Batch Upload Action */}
@@ -662,8 +1033,8 @@ export function TaskDetailModal({
               <div className="space-y-4 bg-muted/30 border border-emerald-500/30 rounded-xl p-3.5 sm:p-4">
                 <div className="flex items-center justify-between">
                   <div>
-                    <h4 className="text-xs font-bold text-emerald-700 dark:text-emerald-300 flex items-center gap-1.5 uppercase tracking-wider">
-                      <CreditCard className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
+                    <h4 className="text-xs font-bold text-emerald-700 flex items-center gap-1.5 uppercase tracking-wider">
+                      <CreditCard className="w-4 h-4 text-emerald-600" />
                       Client Payment Intake & Money Receipt / Pay Slip
                     </h4>
                     <p className="text-[11px] text-muted-foreground mt-0.5">
@@ -719,6 +1090,43 @@ export function TaskDetailModal({
                       Auto-issue official <strong>Money Receipt / Pay Slip (MA#####)</strong> on marking this step Completed
                     </span>
                   </label>
+
+                  {!generateMoneyReceipt && (
+                    <div className="p-3 bg-card border border-amber-500/30 rounded-xl space-y-2 animate-in fade-in">
+                      <div className="flex items-center justify-between">
+                        <label className="block text-[11px] font-bold text-amber-800 uppercase tracking-wider">
+                          Attach Physical Payment Receipt / Bank Deposit Slip *
+                        </label>
+                        <span className="text-[10px] text-muted-foreground">Required if not auto-issuing</span>
+                      </div>
+                      <input
+                        type="file"
+                        id="manual-slip-input"
+                        onChange={(e) => {
+                          const file = e.target.files?.[0];
+                          if (file) setManualSlipFile(file);
+                        }}
+                        accept=".pdf,.png,.jpg,.jpeg,.webp"
+                        className="hidden"
+                      />
+                      <label
+                        htmlFor="manual-slip-input"
+                        className={`w-full h-11 border border-dashed rounded-lg px-3 flex items-center justify-center gap-2 cursor-pointer transition-colors text-xs text-center ${
+                          manualSlipFile
+                            ? 'border-emerald-500/50 bg-emerald-500/5 text-emerald-700 font-semibold'
+                            : 'border-border hover:border-amber-500 bg-muted/20 text-muted-foreground hover:text-foreground'
+                        }`}
+                      >
+                        {manualSlipFile ? (
+                          <span className="truncate max-w-[240px]">
+                            ✓ {manualSlipFile.name} ({((manualSlipFile.size) / (1024 * 1024)).toFixed(2)} MB)
+                          </span>
+                        ) : (
+                          <span className="text-[11px] font-medium">📎 Attach Scanned Pay Slip / Voucher File</span>
+                        )}
+                      </label>
+                    </div>
+                  )}
                 </div>
 
                 {/* Direct Studio Launch Buttons */}
@@ -728,7 +1136,7 @@ export function TaskDetailModal({
                     size="sm"
                     variant="outline"
                     onClick={() => handleLaunchGenerator('money-receipt')}
-                    className="h-8 text-xs px-3 font-semibold border-emerald-500/30 hover:bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 flex items-center gap-1.5 cursor-pointer"
+                    className="h-8 text-xs px-3 font-semibold border-emerald-500/30 hover:bg-emerald-500/10 text-emerald-700 flex items-center gap-1.5 cursor-pointer"
                   >
                     <Receipt className="w-3.5 h-3.5 text-emerald-600" />
                     <span>Open Money Receipt Studio</span>
@@ -739,7 +1147,7 @@ export function TaskDetailModal({
                     size="sm"
                     variant="outline"
                     onClick={() => handleLaunchGenerator('invoice')}
-                    className="h-8 text-xs px-3 font-semibold border-indigo-500/30 hover:bg-indigo-500/10 text-indigo-700 dark:text-indigo-300 flex items-center gap-1.5 cursor-pointer"
+                    className="h-8 text-xs px-3 font-semibold border-indigo-500/30 hover:bg-indigo-500/10 text-indigo-700 flex items-center gap-1.5 cursor-pointer"
                   >
                     <FileText className="w-3.5 h-3.5 text-indigo-600" />
                     <span>Open Client Invoice Studio</span>
@@ -754,66 +1162,75 @@ export function TaskDetailModal({
                 <div>
                   <h4 className="text-xs font-bold text-foreground flex items-center gap-1.5 uppercase tracking-wider">
                     <Sparkles className="w-4 h-4 text-amber-500" />
-                    Create Legal / Official Document in Studio
+                    Assigned Document Studio Generators ({assignedStudioGenerators.length})
                   </h4>
                   <p className="text-[11px] text-muted-foreground mt-0.5">
-                    If this step requires generating an agreement, money receipt, or visa file, launch the generator directly.
+                    Launch the official legal / verification document generators assigned specifically for this task step.
                   </p>
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 pt-1">
-                  {STUDIO_GENERATORS.map((gen) => {
-                    const Icon = gen.icon;
-                    return (
-                      <div
-                        key={gen.id}
-                        onClick={() => handleLaunchGenerator(gen.id)}
-                        className="p-3 rounded-xl bg-card border border-border hover:border-primary/50 hover:bg-muted/40 transition-all cursor-pointer flex items-center justify-between gap-3 shadow-2xs group"
-                      >
-                        <div className="flex items-center gap-2.5 min-w-0">
-                          <div className={`p-2 rounded-lg ${gen.color} shrink-0`}>
-                            <Icon className="w-4 h-4" />
+                {assignedStudioGenerators.length === 0 ? (
+                  <div className="bg-card border border-border rounded-xl p-4 text-center space-y-2 shadow-2xs">
+                    <AlertCircle className="w-6 h-6 mx-auto text-amber-500/80" />
+                    <p className="text-xs font-semibold text-foreground">
+                      No Document Studio templates assigned for this step.
+                    </p>
+                    <p className="text-[11px] text-muted-foreground max-w-sm mx-auto">
+                      Please use the <strong>Document Intake (Upload)</strong> tab to attach physical scans/files for this task.
+                    </p>
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 pt-1">
+                    {assignedStudioGenerators.map((gen) => {
+                      const Icon = gen.icon;
+                      return (
+                        <div
+                          key={gen.id}
+                          onClick={() => handleLaunchGenerator(gen.id)}
+                          className="p-3 rounded-xl bg-card border border-border hover:border-primary/50 hover:bg-muted/40 transition-all cursor-pointer flex items-center justify-between gap-3 shadow-2xs group"
+                        >
+                          <div className="flex items-center gap-2.5 min-w-0">
+                            <div className={`p-2 rounded-lg ${gen.color} shrink-0`}>
+                              <Icon className="w-4 h-4" />
+                            </div>
+                            <div className="min-w-0">
+                              <h5 className="font-bold text-xs text-foreground group-hover:text-primary transition-colors truncate">
+                                {gen.title}
+                              </h5>
+                              <span className="text-[10px] text-muted-foreground">Document Studio Engine</span>
+                            </div>
                           </div>
-                          <div className="min-w-0">
-                            <h5 className="font-bold text-xs text-foreground group-hover:text-primary transition-colors truncate">
-                              {gen.title}
-                            </h5>
-                            <span className="text-[10px] text-muted-foreground">Document Studio Engine</span>
-                          </div>
+                          <ChevronRight className="w-4 h-4 text-muted-foreground group-hover:text-foreground group-hover:translate-x-0.5 transition-all shrink-0" />
                         </div>
-                        <ChevronRight className="w-4 h-4 text-muted-foreground group-hover:text-foreground group-hover:translate-x-0.5 transition-all shrink-0" />
-                      </div>
-                    );
-                  })}
-                </div>
+                      );
+                    })}
+                  </div>
+                )}
               </div>
             )}
 
-            {/* TAB 3: Completion Remarks & Work Notes */}
+            {/* TAB: Completion Remarks & Work Notes */}
             {activeTab === 'notes' && (
               <div className="space-y-2 bg-muted/30 border border-border rounded-xl p-3.5 sm:p-4">
                 <label className="text-xs font-bold text-foreground uppercase tracking-wider flex items-center gap-1.5">
                   <FileCheck2 className="w-4 h-4 text-emerald-500" />
-                  {task.requiresDocument === false
-                    ? 'Staff Action Remarks / Work Notes * (Mandatory)'
-                    : 'Staff Progress & Completion Remarks (Optional)'}
+                  Staff Progress & Work Notes {task?.requiresDocument === false || assignedFormOptions.length === 0 ? '* (Mandatory)' : '(Optional)'}
                 </label>
                 <p className="text-[11px] text-muted-foreground">
-                  {task.requiresDocument === false
-                    ? 'Mandatory: Describe the actions completed, client consultation details, or appointment results.'
-                    : 'Optional: Record any additional verification notes, token slips, or remarks regarding uploaded documents.'}
+                  {task?.requiresDocument === false || assignedFormOptions.length === 0
+                    ? 'Mandatory: Describe the actions completed, client consultation details, or verification findings.'
+                    : 'Optional: Add any supplementary work notes, client remarks, or additional observations for this task.'}
                 </p>
                 <textarea
                   rows={4}
-                  required={task.requiresDocument === false}
                   value={completionNotes}
                   onChange={(e) => setCompletionNotes(e.target.value)}
                   placeholder={
-                    task.requiresDocument === false
-                      ? 'Describe what actions were taken for this step (Mandatory)...'
-                      : '(Optional) Add any notes regarding attached files...'
+                    task?.requiresDocument === false || assignedFormOptions.length === 0
+                      ? 'Enter required work details and remarks before completing this step (Mandatory)...'
+                      : 'Enter any additional work notes or remarks (Optional)...'
                   }
-                  className="w-full px-3 py-2 text-xs bg-card border border-border rounded-xl text-foreground focus:outline-none focus:border-primary resize-none placeholder:text-muted-foreground/60"
+                  className="w-full px-3 py-2 text-xs bg-card border border-border rounded-xl text-foreground focus:outline-none focus:border-primary resize-none placeholder:text-muted-foreground/60 font-normal"
                 />
               </div>
             )}
@@ -920,7 +1337,7 @@ export function TaskDetailModal({
               variant="outline"
               size="sm"
               onClick={onClose}
-              className="w-full sm:w-auto text-xs font-semibold px-4 h-9 border-border hover:bg-muted text-foreground cursor-pointer"
+              className="w-full sm:w-auto text-xs font-semibold px-4 h-9 border-red-500/30 text-red-600 dark:text-red-400 hover:bg-red-500/10 hover:border-red-500/50 cursor-pointer"
             >
               Close
             </Button>
@@ -933,7 +1350,7 @@ export function TaskDetailModal({
                 size="sm"
                 disabled={isSavingProgress}
                 onClick={handleSaveProgress}
-                className="w-full sm:w-auto text-xs font-semibold px-4 h-9 border-border hover:bg-muted text-foreground flex items-center justify-center gap-1.5 cursor-pointer"
+                className="w-full sm:w-auto text-xs font-semibold px-4 h-9 bg-primary/10 text-primary border-primary/30 hover:bg-primary/20 hover:border-primary/50 flex items-center justify-center gap-1.5 cursor-pointer"
               >
                 {isSavingProgress ? (
                   <>
@@ -942,7 +1359,7 @@ export function TaskDetailModal({
                   </>
                 ) : (
                   <>
-                    <Save className="w-3.5 h-3.5 text-muted-foreground" />
+                    <Save className="w-3.5 h-3.5 text-primary" />
                     Save Progress / Notes
                   </>
                 )}

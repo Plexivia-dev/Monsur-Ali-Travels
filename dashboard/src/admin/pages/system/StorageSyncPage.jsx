@@ -23,6 +23,8 @@ import {
   X,
 } from 'lucide-react';
 import { toast } from 'sonner';
+import { UnifiedModal } from '@shared/components/common/UnifiedModal';
+import { Button } from '@/components/ui/button';
 
 // Renders the Cloudflare R2 Storage sync, data transfer report, and orphan purge dashboard
 const StorageSyncPage = () => {
@@ -142,11 +144,16 @@ const StorageSyncPage = () => {
     }
   };
 
+  const [batchToPurge, setBatchToPurge] = useState(null);
+
   // Approve & Purge Orphan Batch
-  const handleApprovePurge = async (batchDid) => {
-    if (!window.confirm('Are you sure you want to permanently delete these unused files from local disk and Cloudflare R2? This action cannot be undone.')) {
-      return;
-    }
+  const handleApprovePurge = (batchDid) => {
+    setBatchToPurge(batchDid);
+  };
+
+  const executeApprovePurge = async () => {
+    if (!batchToPurge) return;
+    const batchDid = batchToPurge;
 
     setPurgingBatchDid(batchDid);
     try {
@@ -155,6 +162,7 @@ const StorageSyncPage = () => {
         const d = res.data.data;
         toast.success(`Purge completed! Removed ${d.deletedFromDiskCount} files from disk and ${d.deletedFromR2Count} from R2.`);
         setSelectedBatch(null);
+        setBatchToPurge(null);
         await loadAllData();
       }
     } catch (err) {
@@ -213,13 +221,13 @@ const StorageSyncPage = () => {
             <span
               className={`flex items-center gap-1.5 text-xs font-bold px-3 py-0.5 rounded-full border ${
                 overview?.r2Configured
-                  ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20'
-                  : 'bg-zinc-500/10 text-zinc-600 dark:text-zinc-400 border-zinc-500/20'
+                  ? 'bg-emerald-500/10 text-emerald-600 border-emerald-500/20'
+                  : 'bg-black/[0.04] text-black/70 border-black/15'
               }`}
             >
               <span
                 className={`size-2 rounded-full ${
-                  overview?.r2Configured ? 'bg-emerald-500 animate-pulse' : 'bg-zinc-400'
+                  overview?.r2Configured ? 'bg-emerald-500 animate-pulse' : 'bg-black/40'
                 }`}
               ></span>
               {overview?.r2Configured ? 'Cloudflare R2 Connected' : 'Local Disk Only'}
@@ -248,12 +256,12 @@ const StorageSyncPage = () => {
           <button
             onClick={handleTriggerOrphanScan}
             disabled={detecting || loading}
-            className="flex items-center gap-2 px-4.5 py-2.5 text-xs font-bold rounded-xl border border-amber-500/30 bg-amber-500/10 hover:bg-amber-500/20 text-amber-700 dark:text-amber-400 transition-all cursor-pointer shadow-xs disabled:opacity-50"
+            className="flex items-center gap-2 px-4.5 py-2.5 text-xs font-bold rounded-xl border border-amber-500/30 bg-amber-500/10 hover:bg-amber-500/20 text-amber-700 transition-all cursor-pointer shadow-xs disabled:opacity-50"
           >
             {detecting ? (
               <Loader2 className="size-3.5 animate-spin" />
             ) : (
-              <AlertTriangle className="size-3.5 text-amber-600 dark:text-amber-400" />
+              <AlertTriangle className="size-3.5 text-amber-600" />
             )}
             <span>{detecting ? 'Scanning...' : 'Scan Unused Files'}</span>
           </button>
@@ -608,72 +616,37 @@ const StorageSyncPage = () => {
         </Card>
       )}
 
-      {/* Inspect Batch File List Modal / Drawer */}
+      {/* Inspect Batch File List Modal */}
       {selectedBatch && (
-        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4">
-          <div className="bg-zinc-950 rounded-2xl border border-zinc-800 text-zinc-100 shadow-2xl max-w-3xl w-full max-h-[85vh] flex flex-col overflow-hidden animate-in zoom-in-95 duration-200">
-            {/* Modal Header */}
-            <div className="p-5 border-b border-zinc-800 flex items-center justify-between bg-linear-to-r from-zinc-950 via-slate-950 to-black">
-              <div>
-                <h3 className="text-base font-bold text-white flex items-center gap-2">
-                  <span>Batch Details:</span>
-                  <span className="font-mono text-sky-400">{selectedBatch.batchNumber}</span>
-                </h3>
-                <p className="text-xs text-zinc-400 mt-0.5">
-                  {selectedBatch.orphanCount} files ({formatBytes(selectedBatch.totalReclaimableBytes)}) detected at {formatDate(selectedBatch.createdAt)}
-                </p>
-              </div>
-              <button
-                type="button"
-                onClick={() => setSelectedBatch(null)}
-                className="p-1.5 rounded-xl bg-rose-500/10 hover:bg-rose-500/20 text-rose-500 hover:text-rose-400 border border-rose-500/40 hover:border-rose-500/80 shadow-xs transition-all cursor-pointer"
-                aria-label="Close modal"
-              >
-                <X className="w-4 h-4 stroke-[2.5]" />
-              </button>
-            </div>
-
-            {/* Modal Content / File Table */}
-            <div className="p-4 flex-grow overflow-y-auto">
-              <div className="space-y-2">
-                {selectedBatch.orphanFiles?.map((file, idx) => (
-                  <div
-                    key={idx}
-                    className="p-3 rounded-xl bg-zinc-900/50 border border-zinc-800 flex items-center justify-between text-xs gap-3"
-                  >
-                    <div className="overflow-hidden">
-                      <div className="font-semibold text-zinc-100 truncate">{file.fileName}</div>
-                      <div className="font-mono text-zinc-500 text-[11px] truncate">{file.localPath}</div>
-                    </div>
-                    <div className="text-right shrink-0">
-                      <span className="font-bold text-zinc-200">{formatBytes(file.sizeBytes)}</span>
-                      <div className="text-[11px] text-amber-400">Unreferenced</div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Modal Footer */}
-            <div className="p-4 border-t border-zinc-800 bg-zinc-950 flex items-center justify-between">
-              <span className="text-xs font-semibold text-zinc-400">
-                Status: <strong className="text-zinc-100">{selectedBatch.status}</strong>
+        <UnifiedModal
+          isOpen={Boolean(selectedBatch)}
+          onClose={() => setSelectedBatch(null)}
+          title={`Batch Details: ${selectedBatch.batchNumber}`}
+          subtitle={`${selectedBatch.orphanCount} files (${formatBytes(selectedBatch.totalReclaimableBytes)}) detected at ${formatDate(selectedBatch.createdAt)}`}
+          icon={FolderArchive}
+          maxWidth="max-w-3xl"
+          footer={
+            <div className="flex items-center justify-between w-full">
+              <span className="text-xs font-semibold text-black/70">
+                Status: <strong className="text-black">{selectedBatch.status}</strong>
               </span>
 
               <div className="flex items-center gap-2.5">
-                <button
+                <Button
                   type="button"
+                  variant="cancel"
                   onClick={() => setSelectedBatch(null)}
-                  className="px-4 py-2 text-xs font-bold rounded-xl bg-rose-500/10 hover:bg-rose-500/20 text-rose-500 dark:text-rose-400 hover:text-rose-300 border border-rose-500/40 hover:border-rose-500/80 transition-all cursor-pointer"
+                  className="cursor-pointer"
                 >
                   Close
-                </button>
+                </Button>
 
                 {selectedBatch.status === 'Pending_Review' && (
-                  <button
+                  <Button
                     onClick={() => handleApprovePurge(selectedBatch.did)}
                     disabled={purgingBatchDid === selectedBatch.did}
-                    className="flex items-center gap-2 px-5 py-2 text-xs font-bold rounded-xl bg-rose-600 hover:bg-rose-500 text-white cursor-pointer shadow-xs disabled:opacity-50 transition-all"
+                    variant="destructive"
+                    className="flex items-center gap-2 cursor-pointer shadow-xs disabled:opacity-50"
                   >
                     {purgingBatchDid === selectedBatch.did ? (
                       <Loader2 className="size-3.5 animate-spin" />
@@ -681,13 +654,44 @@ const StorageSyncPage = () => {
                       <Trash2 className="size-3.5" />
                     )}
                     <span>Approve & Purge Files</span>
-                  </button>
+                  </Button>
                 )}
               </div>
             </div>
+          }
+        >
+          <div className="space-y-2">
+            {selectedBatch.orphanFiles?.map((file, idx) => (
+              <div
+                key={idx}
+                className="p-3 rounded-xl bg-black/[0.02] border border-black/10 flex items-center justify-between text-xs gap-3"
+              >
+                <div className="overflow-hidden">
+                  <div className="font-semibold text-black truncate">{file.fileName}</div>
+                  <div className="font-mono text-black/50 text-[11px] truncate">{file.localPath}</div>
+                </div>
+                <div className="text-right shrink-0">
+                  <span className="font-bold text-black">{formatBytes(file.sizeBytes)}</span>
+                  <div className="text-[11px] text-amber-600 font-semibold">Unreferenced</div>
+                </div>
+              </div>
+            ))}
           </div>
-        </div>
+        </UnifiedModal>
       )}
+      {/* Confirm Purge Dialog */}
+      <ConfirmDeleteDialog
+        open={Boolean(batchToPurge)}
+        onOpenChange={(open) => {
+          if (!open && !purgingBatchDid) setBatchToPurge(null);
+        }}
+        title="Approve & Purge Orphan Files?"
+        description="Are you sure you want to permanently delete these unused files from local disk and Cloudflare R2? This action cannot be undone."
+        confirmText="Yes, Purge Files"
+        cancelText="Cancel"
+        isDeleting={Boolean(purgingBatchDid)}
+        onConfirm={executeApprovePurge}
+      />
     </div>
   );
 };

@@ -78,7 +78,7 @@ function MainLayout() {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [setSearchOpen]);
 
-  const isKnownPortal = ['overview', 'agency', 'docs', 'data', 'accounts', 'settings'].includes(activePortal);
+  const isKnownPortal = ['overview', 'agency', 'docs', 'data', 'accounts', 'settings', 'profile'].includes(activePortal);
 
   return (
     <DashboardLayout
@@ -97,7 +97,7 @@ function MainLayout() {
       {activePortal === 'docs' && <DocumentStudio />}
       {activePortal === 'data' && <DocumentData />}
       {activePortal === 'accounts' && <Accounts />}
-      {activePortal === 'settings' && <Settings />}
+      {(activePortal === 'settings' || activePortal === 'profile') && <Settings />}
       {!isKnownPortal && <NotFoundPage />}
     </DashboardLayout>
   );
@@ -105,6 +105,13 @@ function MainLayout() {
 
 
 export default function App() {
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      document.documentElement.classList.remove('dark');
+      localStorage.setItem('smart_erp_theme', 'light');
+    }
+  }, []);
+
   return (
     <GlobalErrorBoundary>
       <QueryClientProvider client={queryClient}>

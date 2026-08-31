@@ -131,9 +131,9 @@ export function OrdersTable({
   const getPaymentBadge = (status) => {
     switch (String(status).toLowerCase()) {
       case 'paid':
-        return <Badge className="bg-emerald-500 hover:bg-emerald-600">Paid</Badge>;
+        return <Badge className="bg-emerald-500 hover:bg-emerald-600 text-white">Paid</Badge>;
       case 'pending':
-        return <Badge variant="secondary" className="bg-amber-500/20 text-amber-600 hover:bg-amber-500/30 dark:text-amber-400">Pending</Badge>;
+        return <Badge variant="secondary" className="bg-amber-500/20 text-amber-600 hover:bg-amber-500/30">Pending</Badge>;
       case 'failed':
         return <Badge variant="destructive">Failed</Badge>;
       default:
@@ -145,16 +145,16 @@ export function OrdersTable({
     switch (String(status).toLowerCase()) {
       case 'delivered':
       case 'completed':
-        return <Badge className="bg-emerald-500 hover:bg-emerald-600">Completed</Badge>;
+        return <Badge className="bg-emerald-500 hover:bg-emerald-600 text-white">Completed</Badge>;
       case 'shipped':
-        return <Badge variant="secondary" className="bg-indigo-500/20 text-indigo-600 hover:bg-indigo-500/30 dark:text-indigo-400">Shipped</Badge>;
+        return <Badge variant="secondary" className="bg-indigo-500/20 text-indigo-600 hover:bg-indigo-500/30">Shipped</Badge>;
       case 'processing':
-        return <Badge variant="secondary" className="bg-blue-500/20 text-blue-600 hover:bg-blue-500/30 dark:text-blue-400">Processing</Badge>;
+        return <Badge variant="secondary" className="bg-blue-500/20 text-blue-600 hover:bg-blue-500/30">Processing</Badge>;
       case 'cancelled':
         return <Badge variant="destructive">Cancelled</Badge>;
       case 'pending':
       case 'unfulfilled':
-        return <Badge variant="secondary" className="bg-amber-500/20 text-amber-600 hover:bg-amber-500/30 dark:text-amber-400">Pending</Badge>;
+        return <Badge variant="secondary" className="bg-amber-500/20 text-amber-600 hover:bg-amber-500/30">Pending</Badge>;
       default:
         return <Badge variant="outline">{status}</Badge>;
     }
@@ -333,7 +333,7 @@ export function OrdersTable({
           </div>
 
           <DialogFooter>
-            <Button variant="outline" onClick={() => setStatusTarget(null)} disabled={isUpdatingStatus}>
+            <Button variant="cancel" onClick={() => setStatusTarget(null)} disabled={isUpdatingStatus}>
               Cancel
             </Button>
             <Button

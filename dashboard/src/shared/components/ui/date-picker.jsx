@@ -264,7 +264,7 @@ export function DatePicker({
                     active
                       ? 'bg-emerald-600 text-white font-bold shadow-xs'
                       : today
-                      ? 'border border-emerald-500 text-emerald-600 font-bold hover:bg-emerald-50 dark:hover:bg-emerald-950/30'
+                      ? 'border border-emerald-500 text-emerald-600 font-bold hover:bg-emerald-50'
                       : 'hover:bg-muted text-foreground'
                   }`}
                 >

@@ -6,21 +6,20 @@ export const Toaster = (props) => {
   return (
     <SonnerToaster
       position="bottom-right"
-      theme="dark"
+      theme="light"
       className="font-sans"
       closeButton
       toastOptions={{
         classNames: {
-          toast: "group flex items-start gap-3 w-[360px] p-4 rounded-xl border font-sans shadow-2xl transition-all duration-300",
-          success: "border-green-500/35 bg-green-950/20 text-green-400 [&_svg]:text-green-500",
-          error: "border-red-500/35 bg-red-950/20 text-red-400 [&_svg]:text-red-500",
-          warning: "border-amber-500/35 bg-amber-950/20 text-amber-400 [&_svg]:text-amber-500",
-          info: "border-amber-500/35 bg-amber-950/20 text-amber-400 [&_svg]:text-amber-500",
-          closeButton: "!left-auto !right-0 !top-0 !translate-x-[35%] !-translate-y-[35%] !opacity-100 !bg-gray-900 !text-white !border !border-gray-700 hover:!bg-gray-800 shadow-md",
+          toast: "group flex items-start gap-3 w-[360px] p-4 rounded-xl border border-black/10 font-sans shadow-2xl transition-all duration-300 bg-white text-zinc-900",
+          success: "border-emerald-500/35 bg-emerald-50 text-emerald-900 [&_svg]:text-emerald-600",
+          error: "border-red-500/35 bg-red-50 text-red-900 [&_svg]:text-red-600",
+          warning: "border-amber-500/35 bg-amber-50 text-amber-900 [&_svg]:text-amber-600",
+          info: "border-sky-500/35 bg-sky-50 text-sky-900 [&_svg]:text-sky-600",
+          closeButton: "!left-auto !right-0 !top-0 !translate-x-[35%] !-translate-y-[35%] !opacity-100 !bg-red-500/10 !text-red-600 !border !border-red-500/30 hover:!bg-red-500/20 shadow-md cursor-pointer",
         },
         style: {
-          background: "rgba(9, 9, 11, 0.95)",
-          backdropFilter: "blur(12px)",
+          background: "#ffffff",
         }
       }}
       {...props}

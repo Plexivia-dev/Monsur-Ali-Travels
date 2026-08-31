@@ -9,9 +9,6 @@ import {
   Mail,
   Shield,
   Calendar,
-  Briefcase,
-  User,
-  CheckCircle2,
   Lock,
 } from 'lucide-react';
 import { apiClient } from '@/lib/api-client';
@@ -85,17 +82,17 @@ export function AgencyEmployeeList() {
   return (
     <div className="space-y-6">
       {/* Header Banner */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-zinc-950 border border-zinc-800 p-6 rounded-2xl shadow-xl text-white">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-card border border-border p-5 sm:p-6 rounded-2xl shadow-xs text-foreground">
         <div className="space-y-1">
-          <div className="flex items-center gap-2.5">
-            <div className="size-9 rounded-xl bg-zinc-900 border border-zinc-700 flex items-center justify-center">
-              <UserCheck className="size-5 text-zinc-100" />
+          <div className="flex items-center gap-3">
+            <div className="size-10 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center shrink-0">
+              <UserCheck className="size-5 text-primary" />
             </div>
             <div>
-              <h1 className="text-xl font-black uppercase tracking-tight text-white">
+              <h1 className="text-xl font-bold tracking-tight text-foreground">
                 Employee & Staff Directory
               </h1>
-              <p className="text-xs text-zinc-400 font-medium">
+              <p className="text-xs text-muted-foreground font-medium mt-0.5">
                 Official staff directory and organizational roster (Read-Only Access)
               </p>
             </div>
@@ -103,8 +100,8 @@ export function AgencyEmployeeList() {
         </div>
 
         <div className="flex items-center gap-3">
-          <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-zinc-900 border border-zinc-800 text-[11px] font-semibold text-zinc-400">
-            <Lock className="size-3.5 text-zinc-400" />
+          <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-muted/60 border border-border text-[11px] font-semibold text-muted-foreground">
+            <Lock className="size-3.5 text-muted-foreground" />
             <span>Read Only</span>
           </div>
 
@@ -112,7 +109,7 @@ export function AgencyEmployeeList() {
             type="button"
             onClick={fetchEmployees}
             disabled={isLoading}
-            className="flex items-center gap-2 px-4 py-2 bg-zinc-900 hover:bg-zinc-800 border border-zinc-700 text-xs font-semibold rounded-xl text-white transition-colors cursor-pointer shadow-sm disabled:opacity-50"
+            className="flex items-center gap-2 px-4 py-2 bg-card hover:bg-muted/80 border border-border text-xs font-semibold rounded-xl text-foreground transition-colors cursor-pointer shadow-2xs disabled:opacity-50"
           >
             <RefreshCw className={`size-3.5 ${isLoading ? 'animate-spin' : ''}`} />
             <span>{isLoading ? 'Reloading...' : 'Reload Staff'}</span>
@@ -121,9 +118,9 @@ export function AgencyEmployeeList() {
       </div>
 
       {/* Filter and Search Bar */}
-      <div className="flex flex-col sm:flex-row items-center justify-between gap-3 bg-zinc-950/80 border border-zinc-800 p-4 rounded-xl">
+      <div className="flex flex-col sm:flex-row items-center justify-between gap-3 bg-card border border-border p-3.5 sm:p-4 rounded-xl shadow-2xs">
         <div className="relative w-full sm:w-80">
-          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 size-4 text-zinc-400" />
+          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
           <input
             type="text"
             placeholder="Search by staff name, email, phone, role..."
@@ -132,7 +129,7 @@ export function AgencyEmployeeList() {
               setSearch(e.target.value);
               setPage(1);
             }}
-            className="w-full pl-10 pr-4 py-2 text-xs bg-zinc-900 border border-zinc-800 rounded-lg text-white placeholder-zinc-500 focus:outline-none focus:border-zinc-500 transition-colors font-medium"
+            className="w-full pl-10 pr-4 py-2 text-xs bg-background border border-border rounded-lg text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-primary transition-colors font-medium"
           />
         </div>
 
@@ -143,7 +140,7 @@ export function AgencyEmployeeList() {
               setRoleFilter(e.target.value);
               setPage(1);
             }}
-            className="w-full sm:w-44 px-3 py-2 text-xs bg-zinc-900 border border-zinc-800 rounded-lg text-zinc-200 focus:outline-none focus:border-zinc-500 cursor-pointer font-medium"
+            className="w-full sm:w-44 px-3 py-2 text-xs bg-background border border-border rounded-lg text-foreground focus:outline-none focus:border-primary cursor-pointer font-medium"
           >
             <option value="all">All Roles</option>
             {uniqueRoles.map((r) => (
@@ -156,36 +153,38 @@ export function AgencyEmployeeList() {
       </div>
 
       {/* Employees Table */}
-      <div className="bg-zinc-950 border border-zinc-800 rounded-xl overflow-hidden shadow-sm">
+      <div className="bg-card border border-border rounded-2xl overflow-hidden shadow-2xs">
         <div className="overflow-x-auto">
-          <table className="w-full text-left text-xs text-zinc-300">
-            <thead className="bg-zinc-900/90 text-zinc-400 font-bold uppercase tracking-wider text-[11px] border-b border-zinc-800 select-none">
+          <table className="w-full text-left text-xs text-foreground">
+            <thead className="bg-muted/50 text-muted-foreground font-bold uppercase tracking-wider text-[11px] border-b border-border select-none">
               <tr>
-                <th className="py-3 px-4">Staff Member</th>
-                <th className="py-3 px-4">Contact Info</th>
-                <th className="py-3 px-4">Role / Designation</th>
-                <th className="py-3 px-4">Account Status</th>
-                <th className="py-3 px-4">Joined Date</th>
-                <th className="py-3 px-4 text-right">Actions</th>
+                <th className="py-3.5 px-4 font-semibold">Staff Member</th>
+                <th className="py-3.5 px-4 font-semibold">Contact Info</th>
+                <th className="py-3.5 px-4 font-semibold">Role / Designation</th>
+                <th className="py-3.5 px-4 font-semibold">Account Status</th>
+                <th className="py-3.5 px-4 font-semibold">Joined Date</th>
+                <th className="py-3.5 px-4 text-right font-semibold">Actions</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-zinc-800/80">
+            <tbody className="divide-y divide-border">
               {isLoading ? (
                 <tr>
-                  <td colSpan={6} className="py-12 text-center text-zinc-500">
+                  <td colSpan={6} className="py-12 text-center text-muted-foreground">
                     <div className="flex flex-col items-center justify-center gap-2">
-                      <RefreshCw className="size-6 animate-spin text-zinc-400" />
-                      <span className="text-xs font-semibold">Loading employee roster...</span>
+                      <RefreshCw className="size-6 animate-spin text-primary" />
+                      <span className="text-xs font-semibold text-foreground">Loading employee roster...</span>
                     </div>
                   </td>
                 </tr>
               ) : paginatedEmployees.length === 0 ? (
                 <tr>
-                  <td colSpan={6} className="py-12 text-center text-zinc-500">
-                    <div className="flex flex-col items-center justify-center gap-2">
-                      <UserCheck className="size-8 text-zinc-600 stroke-[1.5]" />
-                      <span className="text-sm font-semibold text-zinc-400">No staff members found</span>
-                      <p className="text-xs text-zinc-600">No employee records match your search criteria.</p>
+                  <td colSpan={6} className="py-14 text-center text-muted-foreground">
+                    <div className="flex flex-col items-center justify-center gap-2 max-w-sm mx-auto">
+                      <div className="size-12 rounded-full bg-muted flex items-center justify-center text-muted-foreground mb-1">
+                        <UserCheck className="size-6 stroke-[1.5]" />
+                      </div>
+                      <span className="text-sm font-bold text-foreground">No staff members found</span>
+                      <p className="text-xs text-muted-foreground">No employee records match your search criteria.</p>
                     </div>
                   </td>
                 </tr>
@@ -203,58 +202,58 @@ export function AgencyEmployeeList() {
                   return (
                     <tr
                       key={emp._id || emp.id || emp.did}
-                      className="hover:bg-zinc-900/50 transition-colors group"
+                      className="hover:bg-muted/30 transition-colors group"
                     >
                       <td className="py-3.5 px-4">
                         <div className="flex items-center gap-3">
-                          <div className="size-8 rounded-full bg-zinc-900 border border-zinc-700 flex items-center justify-center font-bold text-white text-xs shrink-0">
+                          <div className="size-8 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center font-bold text-primary text-xs shrink-0">
                             {empName.charAt(0).toUpperCase()}
                           </div>
                           <div>
-                            <div className="font-semibold text-white">{empName}</div>
-                            <div className="text-[10.5px] font-mono text-zinc-500">
+                            <div className="font-semibold text-foreground">{empName}</div>
+                            <div className="text-[10.5px] font-mono text-muted-foreground">
                               {emp.did || emp._id || emp.id}
                             </div>
                           </div>
                         </div>
                       </td>
                       <td className="py-3.5 px-4 space-y-0.5">
-                        <div className="text-zinc-200 font-medium">{phone}</div>
+                        <div className="text-foreground font-medium">{phone}</div>
                         {email !== '—' && (
-                          <div className="text-[11px] text-zinc-500 font-mono">{email}</div>
+                          <div className="text-[11px] text-muted-foreground font-mono">{email}</div>
                         )}
                       </td>
                       <td className="py-3.5 px-4">
-                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-md text-[11px] font-bold uppercase tracking-wide bg-zinc-900 border border-zinc-700 text-zinc-200">
+                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-md text-[11px] font-bold uppercase tracking-wide bg-muted border border-border text-foreground">
                           {role}
                         </span>
                       </td>
                       <td className="py-3.5 px-4">
                         <span
-                          className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10.5px] font-bold ${
+                          className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10.5px] font-bold border ${
                             isActive
-                              ? 'bg-zinc-900 border border-zinc-700 text-white'
-                              : 'bg-zinc-900/50 border border-zinc-800 text-zinc-500'
+                              ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-600'
+                              : 'bg-black/[0.04] border-black/10 text-black/60'
                           }`}
                         >
                           <span
                             className={`size-1.5 rounded-full ${
-                              isActive ? 'bg-white' : 'bg-zinc-600'
+                              isActive ? 'bg-emerald-500' : 'bg-muted-foreground'
                             }`}
                           />
                           <span>{isActive ? 'Active' : 'Inactive'}</span>
                         </span>
                       </td>
-                      <td className="py-3.5 px-4 font-mono text-zinc-400">
+                      <td className="py-3.5 px-4 font-mono text-muted-foreground">
                         {joinedDate}
                       </td>
                       <td className="py-3.5 px-4 text-right">
                         <button
                           type="button"
                           onClick={() => setSelectedEmployee(emp)}
-                          className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-zinc-900 hover:bg-zinc-800 border border-zinc-700 hover:border-zinc-500 rounded-lg text-xs font-semibold text-white transition-all cursor-pointer"
+                          className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-primary/10 hover:bg-primary/20 text-primary border border-primary/30 rounded-lg text-xs font-semibold transition-all cursor-pointer shadow-2xs"
                         >
-                          <Eye className="size-3.5 text-zinc-300" />
+                          <Eye className="size-3.5" />
                           <span>View Details</span>
                         </button>
                       </td>
@@ -268,7 +267,7 @@ export function AgencyEmployeeList() {
 
         {/* Pagination Bar */}
         {!isLoading && filteredEmployees.length > pageSize && (
-          <div className="flex items-center justify-between px-4 py-3 border-t border-zinc-800 bg-zinc-950 text-xs text-zinc-400">
+          <div className="flex items-center justify-between px-4 py-3 border-t border-border bg-muted/20 text-xs text-muted-foreground">
             <span>
               Showing {Math.min((page - 1) * pageSize + 1, filteredEmployees.length)} to{' '}
               {Math.min(page * pageSize, filteredEmployees.length)} of {filteredEmployees.length} staff
@@ -278,18 +277,18 @@ export function AgencyEmployeeList() {
                 type="button"
                 onClick={() => setPage((p) => Math.max(1, p - 1))}
                 disabled={page === 1}
-                className="px-3 py-1 bg-zinc-900 hover:bg-zinc-800 disabled:opacity-40 border border-zinc-800 rounded-md text-white font-medium cursor-pointer"
+                className="px-3 py-1 bg-card hover:bg-muted disabled:opacity-40 border border-border rounded-md text-foreground font-medium cursor-pointer"
               >
                 Previous
               </button>
-              <span className="font-semibold text-white">
+              <span className="font-semibold text-foreground">
                 Page {page} of {totalPages}
               </span>
               <button
                 type="button"
                 onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
                 disabled={page === totalPages}
-                className="px-3 py-1 bg-zinc-900 hover:bg-zinc-800 disabled:opacity-40 border border-zinc-800 rounded-md text-white font-medium cursor-pointer"
+                className="px-3 py-1 bg-card hover:bg-muted disabled:opacity-40 border border-border rounded-md text-foreground font-medium cursor-pointer"
               >
                 Next
               </button>
@@ -300,19 +299,19 @@ export function AgencyEmployeeList() {
 
       {/* Employee Details Modal (Strict Read-Only) */}
       {selectedEmployee && (
-        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-zinc-950 border border-zinc-800 rounded-2xl w-full max-w-xl shadow-2xl overflow-hidden animate-in zoom-in-95 duration-150">
+        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-3 sm:p-5 overflow-hidden animate-in fade-in duration-200">
+          <div className="bg-white border border-black/10 rounded-2xl w-full max-w-xl h-[70vh] flex flex-col shadow-2xl overflow-hidden animate-in zoom-in-95 duration-150 text-zinc-900">
             {/* Modal Header */}
-            <div className="flex items-center justify-between px-6 py-4 border-b border-zinc-800 bg-zinc-900/60">
+            <div className="flex items-center justify-between px-6 py-4 border-b border-black/10 bg-black/[0.02] shrink-0">
               <div className="flex items-center gap-3">
-                <div className="size-9 rounded-xl bg-zinc-900 border border-zinc-700 flex items-center justify-center">
-                  <UserCheck className="size-4 text-zinc-100" />
+                <div className="size-9 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center">
+                  <UserCheck className="size-4 text-primary" />
                 </div>
                 <div>
-                  <h3 className="text-sm font-black uppercase tracking-tight text-white">
+                  <h3 className="text-sm font-bold tracking-tight text-zinc-900">
                     Employee Details
                   </h3>
-                  <p className="text-[11px] text-zinc-400 font-medium">
+                  <p className="text-[11px] text-zinc-500 font-medium">
                     Verified Staff Profile (Read-Only)
                   </p>
                 </div>
@@ -320,71 +319,66 @@ export function AgencyEmployeeList() {
               <button
                 type="button"
                 onClick={() => setSelectedEmployee(null)}
-                className="p-1.5 rounded-lg hover:bg-zinc-800 text-zinc-400 hover:text-white transition-colors cursor-pointer"
+                className="p-1.5 rounded-lg text-red-500 hover:text-red-600 hover:bg-red-500/10 border border-transparent hover:border-red-500/20 transition-colors cursor-pointer"
+                title="Close"
               >
                 <X className="size-4" />
               </button>
             </div>
 
             {/* Modal Body */}
-            <div className="p-6 space-y-5 max-h-[75vh] overflow-y-auto">
-              <div className="flex items-center justify-between p-4 rounded-xl bg-zinc-900/60 border border-zinc-800">
-                <div className="flex items-center gap-3.5">
-                  <div className="size-11 rounded-full bg-zinc-900 border border-zinc-700 flex items-center justify-center font-black text-white text-base">
-                    {(selectedEmployee.name || selectedEmployee.fullName || 'S').charAt(0).toUpperCase()}
+            <div className="p-6 space-y-5 flex-1 min-h-0 overflow-y-auto">
+              <div className="flex items-center justify-between p-4 rounded-xl bg-black/[0.02] border border-black/10">
+                <div className="space-y-1">
+                  <div className="text-base font-bold text-zinc-900">
+                    {selectedEmployee.fullName || selectedEmployee.name || 'Staff Member'}
                   </div>
-                  <div>
-                    <div className="text-base font-bold text-white">
-                      {selectedEmployee.name || selectedEmployee.fullName || 'Staff Member'}
-                    </div>
-                    <div className="text-xs font-mono text-zinc-400">
-                      DID: {selectedEmployee.did || selectedEmployee._id || selectedEmployee.id}
-                    </div>
+                  <div className="text-xs font-mono text-zinc-500">
+                    Code: {selectedEmployee.employeeCode || selectedEmployee.code || selectedEmployee._id || selectedEmployee.id}
                   </div>
                 </div>
-                <span className="px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-zinc-900 border border-zinc-700 text-white">
-                  {selectedEmployee.designation || selectedEmployee.role || 'Staff'}
+                <span className="px-3 py-1 bg-emerald-500/10 text-emerald-600 border border-emerald-500/20 rounded-full text-xs font-semibold">
+                  {selectedEmployee.status || 'Active'}
                 </span>
               </div>
 
-              {/* Information Grid */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div className="p-3.5 rounded-xl bg-zinc-900/40 border border-zinc-800/80 space-y-1">
-                  <div className="text-[10px] font-bold uppercase tracking-wider text-zinc-500 flex items-center gap-1.5">
+                <div className="p-3.5 rounded-xl bg-black/[0.02] border border-black/10 space-y-1">
+                  <div className="text-[11px] font-semibold text-zinc-500 flex items-center gap-1.5">
+                    <Briefcase className="size-3.5 text-zinc-400" />
+                    <span>Designation</span>
+                  </div>
+                  <div className="text-xs font-bold text-zinc-900">
+                    {selectedEmployee.designation || selectedEmployee.role || 'Staff'}
+                  </div>
+                </div>
+
+                <div className="p-3.5 rounded-xl bg-black/[0.02] border border-black/10 space-y-1">
+                  <div className="text-[11px] font-semibold text-zinc-500 flex items-center gap-1.5">
                     <Phone className="size-3.5 text-zinc-400" />
-                    <span>Phone Number</span>
+                    <span>Phone</span>
                   </div>
-                  <div className="text-xs font-semibold text-zinc-200">
-                    {selectedEmployee.phone || 'Not provided'}
+                  <div className="text-xs font-mono font-medium text-zinc-900">
+                    {selectedEmployee.phone || '—'}
                   </div>
                 </div>
 
-                <div className="p-3.5 rounded-xl bg-zinc-900/40 border border-zinc-800/80 space-y-1">
-                  <div className="text-[10px] font-bold uppercase tracking-wider text-zinc-500 flex items-center gap-1.5">
+                <div className="p-3.5 rounded-xl bg-black/[0.02] border border-black/10 space-y-1">
+                  <div className="text-[11px] font-semibold text-zinc-500 flex items-center gap-1.5">
                     <Mail className="size-3.5 text-zinc-400" />
-                    <span>Email Address</span>
+                    <span>Email</span>
                   </div>
-                  <div className="text-xs font-semibold text-zinc-200 font-mono">
-                    {selectedEmployee.email || 'Not provided'}
-                  </div>
-                </div>
-
-                <div className="p-3.5 rounded-xl bg-zinc-900/40 border border-zinc-800/80 space-y-1">
-                  <div className="text-[10px] font-bold uppercase tracking-wider text-zinc-500 flex items-center gap-1.5">
-                    <Shield className="size-3.5 text-zinc-400" />
-                    <span>Assigned Role</span>
-                  </div>
-                  <div className="text-xs font-semibold text-zinc-200">
-                    {selectedEmployee.designation || selectedEmployee.role || 'Staff Member'}
+                  <div className="text-xs font-medium text-zinc-900 truncate">
+                    {selectedEmployee.email || '—'}
                   </div>
                 </div>
 
-                <div className="p-3.5 rounded-xl bg-zinc-900/40 border border-zinc-800/80 space-y-1">
-                  <div className="text-[10px] font-bold uppercase tracking-wider text-zinc-500 flex items-center gap-1.5">
+                <div className="p-3.5 rounded-xl bg-black/[0.02] border border-black/10 space-y-1">
+                  <div className="text-[11px] font-semibold text-zinc-500 flex items-center gap-1.5">
                     <Calendar className="size-3.5 text-zinc-400" />
                     <span>Joined On</span>
                   </div>
-                  <div className="text-xs font-mono font-semibold text-zinc-200">
+                  <div className="text-xs font-mono font-semibold text-zinc-900">
                     {selectedEmployee.joiningDate || selectedEmployee.createdAt
                       ? new Date(selectedEmployee.joiningDate || selectedEmployee.createdAt).toLocaleDateString('en-GB')
                       : '—'}
@@ -394,11 +388,11 @@ export function AgencyEmployeeList() {
             </div>
 
             {/* Modal Footer */}
-            <div className="px-6 py-3 border-t border-zinc-800 bg-zinc-900/40 flex items-center justify-end">
+            <div className="px-6 py-3.5 border-t border-black/10 bg-white flex items-center justify-end shrink-0">
               <button
                 type="button"
                 onClick={() => setSelectedEmployee(null)}
-                className="px-4 py-2 bg-zinc-900 hover:bg-zinc-800 border border-zinc-700 text-white rounded-xl text-xs font-semibold transition-colors cursor-pointer"
+                className="px-4 h-9 border border-red-500/30 text-red-600 bg-red-500/10 hover:bg-red-500/20 rounded-xl text-xs font-semibold transition-colors cursor-pointer flex items-center justify-center"
               >
                 Close View
               </button>

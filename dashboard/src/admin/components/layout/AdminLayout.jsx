@@ -41,22 +41,22 @@ export default function AdminLayout() {
       {/* Sign Out Confirmation Modal */}
       {showLogoutConfirm && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-xs animate-fade-in p-4">
-          <div className="bg-card border border-border rounded-2xl p-6 max-w-md w-full shadow-2xl animate-in scale-in duration-200">
-            <h3 className="text-lg font-bold text-foreground">
+          <div className="bg-white border border-black/10 rounded-2xl p-6 max-w-md w-full shadow-2xl animate-in scale-in duration-200">
+            <h3 className="text-lg font-bold text-black">
               {'Confirm Sign Out'}
             </h3>
-            <p className="text-muted-foreground text-sm mt-2">
+            <p className="text-black/60 text-sm mt-2">
               {lang === 'BN'
                 ? 'Are you sure you want to sign out of the Admin Panel?'
                 : 'Are you sure you want to log out of the admin panel?'}
             </p>
             <div className="flex items-center justify-end gap-3 mt-6">
               <Button
-                variant="outline"
+                variant="cancel"
                 onClick={() => setShowLogoutConfirm(false)}
                 className="cursor-pointer"
               >
-                {lang === 'BN' ? 'Rejected' : 'Cancel'}
+                {lang === 'BN' ? 'Cancel' : 'Cancel'}
               </Button>
               <Button
                 onClick={() => {

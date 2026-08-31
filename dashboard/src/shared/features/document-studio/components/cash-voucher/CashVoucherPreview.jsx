@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import QRCode from 'qrcode';
 import agencyInfo from '@shared/lib/information.json';
 import logoImg from '@shared/assets/logo.png';
 import { PrintablePaper } from '../common/PrintablePaper';
@@ -9,7 +10,39 @@ import { Globe, MapPin, Phone } from 'lucide-react';
  * A4 printable Cash Money Voucher / Cash Money Voucher layout
  * Matches design from physical sample: bilingual header, QR, table, totals, 3-signature footer
  */
-export function CashVoucherPreview({ data }) {
+export function CashVoucherPreview({ data = {} }) {
+  const [liveQr, setLiveQr] = useState('');
+
+  const voucherNo = data?.voucherNo || 'MAT-KV-000000';
+  const qrRawText = `MONSUR ALI TRAVELS\nCASH VOUCHER: ${voucherNo}\nPaid To: ${data?.paidTo || 'N/A'}\nAmount: BDT ${data?.grandTotal || 0}\nDate: ${data?.voucherDate || ''}\nVerify: https://monsuralitravels.com/verify/voucher/${voucherNo}`;
+
+  useEffect(() => {
+    if (data?.qrCode && typeof data.qrCode === 'string' && data.qrCode.startsWith('data:image')) {
+      setLiveQr(data.qrCode);
+      return;
+    }
+
+    let isMounted = true;
+    QRCode.toDataURL(qrRawText, {
+      width: 140,
+      margin: 1,
+      color: {
+        dark: '#000000',
+        light: '#ffffff',
+      },
+    })
+      .then((url) => {
+        if (isMounted) setLiveQr(url);
+      })
+      .catch((err) => {
+        console.warn('QR Code generation error:', err);
+      });
+
+    return () => {
+      isMounted = false;
+    };
+  }, [data?.qrCode, voucherNo, data?.paidTo, data?.grandTotal, data?.voucherDate, qrRawText]);
+
   const fmt = (n) =>
     Number(n || 0).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
@@ -99,17 +132,17 @@ export function CashVoucherPreview({ data }) {
             </div>
 
             {/* QR Code */}
-            {data.qrCode ? (
+            {liveQr || data?.qrCode ? (
               <img
-                src={data.qrCode}
-                alt="QR Code"
-                style={{ width: '72px', height: '72px', border: '1px solid #e5e7eb', borderRadius: '4px', display: 'block', marginLeft: 'auto' }}
+                src={liveQr || data?.qrCode}
+                alt={`QR Code for Voucher ${voucherNo}`}
+                style={{ width: '72px', height: '72px', border: '1px solid #e5e7eb', borderRadius: '4px', display: 'block', marginLeft: 'auto', background: '#fff', padding: '2px' }}
               />
             ) : (
               <div
                 style={{
                   width: '72px', height: '72px',
-                  border: '2px dashed #cbd5e1',
+                  border: '1px solid #e5e7eb',
                   borderRadius: '4px',
                   display: 'flex',
                   alignItems: 'center',

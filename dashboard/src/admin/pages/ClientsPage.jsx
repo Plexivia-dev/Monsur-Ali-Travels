@@ -20,6 +20,7 @@ import { UnifiedDataTable } from '@shared/components/tables/UnifiedDataTable';
 import { HeaderTitle } from '@shared/components/common/HeaderTitle';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { ConfirmDeleteDialog } from '@/components/ui/confirm-delete-dialog';
 
 export function ClientsPage() {
   const navigate = useNavigate();
@@ -33,7 +34,8 @@ export function ClientsPage() {
 
   // Modal State
   const [createModalOpen, setCreateModalOpen] = useState(false);
-  const [deletingId, setDeletingId] = useState(null);
+  const [clientToDelete, setClientToDelete] = useState(null);
+  const [isDeletingClient, setIsDeletingClient] = useState(false);
 
   // Fetches paginated client records with filters
   const fetchClients = useCallback(async () => {
@@ -94,23 +96,27 @@ export function ClientsPage() {
     });
   };
 
+  // Opens delete confirmation modal
+  const handleDeleteClient = (client) => {
+    setClientToDelete(client);
+  };
 
-
-  // Deletes a client record after confirmation
-  const handleDeleteClient = useCallback(async (client) => {
-    if (!window.confirm(`Are you sure you want to permanently delete "${client.fullName}"? This action cannot be undone.`)) return;
-    const clientId = client.did || client._id;
-    setDeletingId(clientId);
+  // Executes confirmed deletion
+  const executeDeleteClient = async () => {
+    if (!clientToDelete) return;
+    const clientId = clientToDelete.did || clientToDelete._id;
+    setIsDeletingClient(true);
     try {
       await apiClient.delete(`/api/v1/client/clients/${clientId}`);
-      toast.success(`Client "${client.fullName}" deleted successfully.`);
+      toast.success(`Client "${clientToDelete.fullName}" deleted successfully.`);
+      setClientToDelete(null);
       fetchClients();
     } catch (err) {
       toast.error(err.response?.data?.message || 'Failed to delete client record.');
     } finally {
-      setDeletingId(null);
+      setIsDeletingClient(false);
     }
-  }, [fetchClients]);
+  };
 
   // Column Definitions for UnifiedDataTable (custom table — row = raw data object)
   const columns = [
@@ -159,7 +165,7 @@ export function ClientsPage() {
       cell: ({ row }) => (
         <div className="font-mono text-xs">
           {row.passportNumber ? (
-            <span className="font-bold text-sky-600 dark:text-sky-400 block">
+            <span className="font-bold text-sky-600 block">
               {row.passportNumber}
             </span>
           ) : (
@@ -192,7 +198,7 @@ export function ClientsPage() {
           <span
             className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-bold border ${
               isActive
-                ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20'
+                ? 'bg-emerald-500/10 text-emerald-600 border-emerald-500/20'
                 : 'bg-muted text-muted-foreground border-border'
             }`}
           >
@@ -215,7 +221,7 @@ export function ClientsPage() {
       id: 'actions',
       header: 'Actions',
       cell: ({ row }) => {
-        const isDeleting = deletingId === (row.did || row._id);
+        const isDeleting = isDeletingClient && (clientToDelete?.did === (row.did || row._id) || clientToDelete?._id === (row.did || row._id));
 
         return (
           <div className="flex items-center gap-1.5">
@@ -339,6 +345,20 @@ export function ClientsPage() {
             fetchClients();
           }
         }}
+      />
+
+      {/* Confirm Delete Client Dialog */}
+      <ConfirmDeleteDialog
+        open={Boolean(clientToDelete)}
+        onOpenChange={(open) => {
+          if (!open && !isDeletingClient) setClientToDelete(null);
+        }}
+        title={`Delete Client Record?`}
+        description={`Are you sure you want to permanently delete "${clientToDelete?.fullName || 'this client'}"? All associated dossier references and profile records will be permanently removed.`}
+        confirmText="Yes, Delete"
+        cancelText="Cancel"
+        isDeleting={isDeletingClient}
+        onConfirm={executeDeleteClient}
       />
     </div>
   );

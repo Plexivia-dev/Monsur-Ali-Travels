@@ -249,8 +249,6 @@ export const Header = () => {
             )}
           </div>
 
-          {/* Dark / Light Mode Toggle */}
-          <ModeToggle />
         </div>
       </div>
     </header>

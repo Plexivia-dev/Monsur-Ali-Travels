@@ -41,15 +41,35 @@ export function ContactForm() {
       return;
     }
 
-    // Simulated API Call
+    // Real API Call to Backend
+    const apiBase = import.meta.env.VITE_API_URL || 'https://api.monsuralitravels.com';
     try {
-      await new Promise(resolve => setTimeout(resolve, 1500));
+      const payload = {
+        name: formData.get('name'),
+        email: formData.get('email'),
+        service: formData.get('service'),
+        message: formData.get('message'),
+        website_url_hp: honeypotUrl,
+        phone_hp: honeypotPhone,
+      };
+
+      const res = await fetch(`${apiBase}/api/v1/inquiries`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+
+      const data = await res.json();
+      if (!res.ok || !data.success) {
+        throw new Error(data.message || 'Failed to submit inquiry.');
+      }
+
       localStorage.setItem('lastFormSubmit', Date.now().toString());
       setStatus('success');
-      (e.target as HTMLFormElement).reset();
-    } catch (err) {
+    } catch (err: any) {
+      console.error('Inquiry submission error:', err);
       setStatus('error');
-      setErrorMessage('Failed to send message. Please try again.');
+      setErrorMessage(err.message || 'Failed to send message. Please try again.');
     }
   };
 

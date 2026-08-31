@@ -908,6 +908,33 @@ export const uploadCaseDocument = async (req, res) => {
       uploadedByName: req.user?.name || "Staff Member",
     });
 
+    // Auto-update case checklist if matching document is added
+    const nameLower = `${documentName} ${fileName || ''}`.toLowerCase();
+    let checklistUpdated = false;
+    if (!caseDoc.checklist) {
+      caseDoc.checklist = {};
+    }
+    if (/photo|picture|2x2|ছবি|image|portrait/i.test(nameLower)) {
+      caseDoc.checklist.photo2x2 = true;
+      checklistUpdated = true;
+    }
+    if (/electricity|utility|bill|current|বিদ্যুৎ|gas|electric|wasa/i.test(nameLower)) {
+      caseDoc.checklist.electricityBill = true;
+      checklistUpdated = true;
+    }
+    if (/nid|national\s*id|voter|এনআইডি|পরিচয়পত্র|identity\s*card/i.test(nameLower)) {
+      caseDoc.checklist.nidCopy = true;
+      checklistUpdated = true;
+    }
+    if (/land|property|দলিল|খতিয়ান|khatian|porcha|deed|jamabandi|mutation|namjari/i.test(nameLower)) {
+      caseDoc.checklist.landDocuments = true;
+      checklistUpdated = true;
+    }
+    if (checklistUpdated) {
+      caseDoc.markModified("checklist");
+      await caseDoc.save();
+    }
+
     return res.status(201).json({
       success: true,
       message: "Document uploaded to case vault successfully",

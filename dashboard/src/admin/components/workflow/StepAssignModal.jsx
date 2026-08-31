@@ -76,15 +76,109 @@ export function StepAssignModal({ isOpen = true, caseDoc = {}, caseDid, caseNumb
         .get(`/api/v1/client/docs?clientDid=${caseDoc.clientDid}`)
         .then((res) => {
           const docs = res.data?.data || res.data || [];
-          setVaultDocs(Array.isArray(docs) ? docs : []);
+          setVaultDocs((prev) => [...prev, ...(Array.isArray(docs) ? docs : [])]);
         })
-        .catch(() => setVaultDocs([]));
+        .catch(() => {});
     }
-  }, [isOpen, caseDoc]);
+
+    if (resolvedCaseDid) {
+      apiClient
+        .get(`/api/v1/admin/cases/${resolvedCaseDid}/full-details`)
+        .then((res) => {
+          if (res.data?.data?.vaultDocuments) {
+            setVaultDocs((prev) => [...prev, ...res.data.data.vaultDocuments]);
+          }
+        })
+        .catch(() => {
+          apiClient.get(`/api/v1/client/cases/${resolvedCaseDid}`).then((altRes) => {
+            if (altRes.data?.data?.vaultDocuments) {
+              setVaultDocs((prev) => [...prev, ...altRes.data.data.vaultDocuments]);
+            }
+          }).catch(() => {});
+        });
+    }
+  }, [isOpen, caseDoc, resolvedCaseDid]);
 
   if (!isOpen) return null;
 
+  const isDocAlreadySubmitted = (tt) => {
+    if (!tt) return false;
+    const name = String(tt.name || tt.title || '').toLowerCase();
+    const defaultDocType = String(tt.defaultDocumentType || '').toLowerCase();
+
+    // 1. Check in all vault documents
+    const allDocs = [
+      ...(Array.isArray(vaultDocs) ? vaultDocs : []),
+      ...(Array.isArray(caseDoc?.vaultDocuments) ? caseDoc.vaultDocuments : []),
+      ...(Array.isArray(caseDoc?.documents) ? caseDoc.documents : []),
+    ];
+
+    // 2. Check in client attachments
+    const clientAttachments = caseDoc?.clientInfo?.attachments || caseDoc?.attachments || {};
+
+    if (/photo|picture|2x2|portrait/i.test(name) || defaultDocType === 'photo') {
+      if (clientAttachments.photo) return true;
+      if (allDocs.some((d) => /photo|picture|2x2|ছবি|image|portrait/i.test(d.documentName || d.fileName || d.name || ''))) return true;
+    }
+
+    if (/passport|পাসপোর্ট/i.test(name) || defaultDocType === 'passport') {
+      if (clientAttachments.passportScan || (caseDoc?.passportNumber && clientAttachments.passportScan)) return true;
+      if (allDocs.some((d) => /passport|bio-page|পাসপোর্ট/i.test(d.documentName || d.fileName || d.name || ''))) return true;
+    }
+
+    if (/nid|national\s*id|voter|এনআইডি|পরিচয়পত্র/i.test(name) || defaultDocType === 'nid') {
+      if (clientAttachments.nidScan) return true;
+      if (allDocs.some((d) => /nid|national\s*id|voter|এনআইডি|পরিচয়পত্র|identity/i.test(d.documentName || d.fileName || d.name || ''))) return true;
+    }
+
+    if (/electricity|utility|bill|current|বিদ্যুৎ|gas|wasa/i.test(name) || defaultDocType === 'utility-bill') {
+      if (allDocs.some((d) => /electricity|utility|bill|current|বিদ্যুৎ|gas|electric|wasa/i.test(d.documentName || d.fileName || d.name || ''))) return true;
+    }
+
+    if (/land|property|দলিল|খতিয়ান|khatian|porcha|deed/i.test(name) || defaultDocType === 'land-doc') {
+      if (allDocs.some((d) => /land|property|দলিল|খতিয়ান|khatian|porcha|deed|mutation/i.test(d.documentName || d.fileName || d.name || ''))) return true;
+    }
+
+    if (/agreement|contract|চুক্তি/i.test(name) || defaultDocType === 'agreement') {
+      if (allDocs.some((d) => /agreement|contract|চুক্তি/i.test(d.documentName || d.fileName || d.name || ''))) return true;
+    }
+
+    if (/police|pcc|clearance/i.test(name) || defaultDocType === 'police-clearance') {
+      if (allDocs.some((d) => /police|pcc|clearance/i.test(d.documentName || d.fileName || d.name || ''))) return true;
+    }
+
+    if (/medical|gamca|fit/i.test(name) || defaultDocType === 'medical') {
+      if (allDocs.some((d) => /medical|gamca|fit|health/i.test(d.documentName || d.fileName || d.name || ''))) return true;
+    }
+
+    if (/bank|solvency|statement/i.test(name) || defaultDocType === 'bank-solvency') {
+      if (allDocs.some((d) => /bank|solvency|statement/i.test(d.documentName || d.fileName || d.name || ''))) return true;
+    }
+
+    // 3. Check previously completed workflow tasks in this case
+    const tasks = Array.isArray(caseDoc?.workflowTasks) ? caseDoc.workflowTasks : [];
+    const completedWithThis = tasks.some((t) => {
+      const isCompleted = t.status === 'Done' || t.status === 'Approved';
+      if (!isCompleted) return false;
+      const typeNames = Array.isArray(t.taskTypeNames) ? t.taskTypeNames : [];
+      const typeDids = Array.isArray(t.taskTypeDids) ? t.taskTypeDids : [];
+      return typeDids.includes(tt.did) || typeNames.some((tn) => tn.toLowerCase() === name);
+    });
+    if (completedWithThis) return true;
+
+    // 4. Direct title matching
+    return allDocs.some((d) => {
+      const docTitle = String(d.documentName || d.fileName || d.name || '').toLowerCase();
+      return docTitle && (docTitle.includes(name) || name.includes(docTitle));
+    });
+  };
+
   const handleToggleTaskType = (tt) => {
+    if (isDocAlreadySubmitted(tt)) {
+      toast.info(`"${tt.name}" is already submitted in Case Vault.`);
+      return;
+    }
+
     const isSelected = selectedTaskTypeDids.includes(tt.did);
     const nextSelectedDids = isSelected
       ? selectedTaskTypeDids.filter((id) => id !== tt.did)
@@ -171,19 +265,19 @@ export function StepAssignModal({ isOpen = true, caseDoc = {}, caseDid, caseNumb
   };
 
   return (
-    <div className="fixed inset-0 z-60 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4 animate-in fade-in duration-150 overflow-y-auto">
+    <div className="fixed inset-0 z-60 bg-black/60 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4 animate-in fade-in duration-150 overflow-y-auto">
       <div className="fixed inset-0" onClick={onClose} />
       <form
         onSubmit={handleSubmit}
-        className="relative bg-card border border-border text-foreground rounded-2xl max-w-xl w-full max-h-[90vh] flex flex-col shadow-2xl z-10 my-auto animate-in zoom-in-95 duration-150 overflow-hidden"
+        className="relative bg-white border border-black/10 text-black rounded-2xl max-w-xl w-full h-[70vh] flex flex-col shadow-2xl z-10 my-auto animate-in zoom-in-95 duration-150 overflow-hidden"
       >
         {/* Header */}
-        <div className="shrink-0 border-b border-border p-4 sm:p-5 flex items-center justify-between bg-muted/40">
+        <div className="shrink-0 border-b border-black/10 p-4 sm:p-5 flex items-center justify-between bg-black/[0.02]">
           <div>
             <span className="text-[10px] font-mono font-bold text-primary uppercase tracking-wider">
               Case: {resolvedCaseNumber} • Step {(caseDoc?.workflowTasks || []).length + 1}
             </span>
-            <h3 className="text-base font-bold text-foreground flex items-center gap-2 mt-0.5">
+            <h3 className="text-base font-bold text-black flex items-center gap-2 mt-0.5">
               <Layers className="w-5 h-5 text-primary" />
               Assign Case Workflow Step
             </h3>
@@ -191,7 +285,8 @@ export function StepAssignModal({ isOpen = true, caseDoc = {}, caseDid, caseNumb
           <button
             type="button"
             onClick={onClose}
-            className="p-1 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted cursor-pointer"
+            className="p-1 rounded-lg text-red-500 hover:text-red-600 hover:bg-red-500/10 cursor-pointer"
+            title="Close"
           >
             <X className="w-5 h-5" />
           </button>
@@ -224,32 +319,52 @@ export function StepAssignModal({ isOpen = true, caseDoc = {}, caseDid, caseNumb
               <div className="space-y-1.5 max-h-44 overflow-y-auto pr-1">
                 {taskTypes.map((tt) => {
                   const isChecked = selectedTaskTypeDids.includes(tt.did);
+                  const isAlreadySubmitted = isDocAlreadySubmitted(tt);
+
                   return (
                     <div
                       key={tt.did || tt._id}
                       onClick={() => handleToggleTaskType(tt)}
-                      className={`p-2.5 rounded-xl border text-xs flex items-center justify-between cursor-pointer transition-all ${
-                        isChecked
-                          ? 'bg-primary/10 border-primary text-foreground font-bold shadow-2xs'
-                          : 'bg-muted/30 border-border text-muted-foreground hover:text-foreground hover:bg-muted/50'
+                      className={`p-2.5 rounded-xl border text-xs flex items-center justify-between transition-all ${
+                        isAlreadySubmitted
+                          ? 'bg-emerald-500/5 border-emerald-500/30 text-emerald-950 cursor-not-allowed opacity-80'
+                          : isChecked
+                          ? 'bg-primary/10 border-primary text-foreground font-bold shadow-2xs cursor-pointer'
+                          : 'bg-muted/30 border-border text-muted-foreground hover:text-foreground hover:bg-muted/50 cursor-pointer'
                       }`}
+                      title={isAlreadySubmitted ? 'Already submitted in Case Vault' : ''}
                     >
                       <div className="flex items-center gap-2.5 min-w-0">
-                        {isChecked ? (
+                        {isAlreadySubmitted ? (
+                          <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+                        ) : isChecked ? (
                           <CheckCircle2 className="w-4 h-4 text-primary shrink-0" />
                         ) : (
                           <Square className="w-4 h-4 text-muted-foreground/50 shrink-0" />
                         )}
                         <div className="truncate">
-                          <p className="truncate font-semibold">{tt.name}</p>
+                          <p className={`truncate font-semibold ${isAlreadySubmitted ? 'text-emerald-950 font-bold' : ''}`}>
+                            {tt.name}
+                          </p>
                           <p className="text-[10px] text-muted-foreground font-normal">
-                            {tt.requiresDocument ? '📄 Requires Document Upload' : '💬 Mandatory Work Notes Only'}
+                            {isAlreadySubmitted
+                              ? '✓ Document already present in Case Vault'
+                              : tt.requiresDocument
+                              ? '📄 Requires Document Upload'
+                              : '💬 Mandatory Work Notes Only'}
                           </p>
                         </div>
                       </div>
-                      <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-muted text-muted-foreground shrink-0 uppercase">
-                        {tt.category?.replace(/_/g, ' ')}
-                      </span>
+                      <div className="flex items-center gap-1.5 shrink-0">
+                        {isAlreadySubmitted && (
+                          <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-700 border border-emerald-500/30 uppercase">
+                            Already Submitted ✓
+                          </span>
+                        )}
+                        <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-muted text-muted-foreground uppercase">
+                          {tt.category?.replace(/_/g, ' ')}
+                        </span>
+                      </div>
                     </div>
                   );
                 })}
@@ -317,8 +432,8 @@ export function StepAssignModal({ isOpen = true, caseDoc = {}, caseDid, caseNumb
             <span
               className={`text-[10px] font-bold px-2 py-0.5 rounded-full border ${
                 requiresDocument
-                  ? 'bg-sky-500/10 text-sky-600 dark:text-sky-400 border-sky-500/20'
-                  : 'bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/20'
+                  ? 'bg-sky-500/10 text-sky-600 border-sky-500/20'
+                  : 'bg-amber-500/10 text-amber-600 border-amber-500/20'
               }`}
             >
               {requiresDocument ? 'File Intake' : 'Action Step'}
@@ -330,9 +445,9 @@ export function StepAssignModal({ isOpen = true, caseDoc = {}, caseDid, caseNumb
             <div className="flex items-center justify-between">
               <label
                 onClick={() => setRequiresPayment(!requiresPayment)}
-                className="font-bold text-emerald-800 dark:text-emerald-300 flex items-center gap-2 cursor-pointer select-none"
+                className="font-bold text-emerald-800 flex items-center gap-2 cursor-pointer select-none"
               >
-                <CreditCard className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
+                <CreditCard className="w-4 h-4 text-emerald-600" />
                 <span>Require Client Payment / Service Fee Intake</span>
               </label>
               <input
@@ -467,10 +582,10 @@ export function StepAssignModal({ isOpen = true, caseDoc = {}, caseDid, caseNumb
         </div>
 
         {/* Footer */}
-        <div className="shrink-0 border-t border-border p-4 sm:p-5 flex items-center justify-end gap-2 text-xs bg-muted/20">
+        <div className="shrink-0 border-t border-black/10 p-4 sm:p-5 flex items-center justify-end gap-2 text-xs bg-black/[0.02]">
           <Button
             type="button"
-            variant="outline"
+            variant="cancel"
             size="sm"
             onClick={onClose}
             className="cursor-pointer"
