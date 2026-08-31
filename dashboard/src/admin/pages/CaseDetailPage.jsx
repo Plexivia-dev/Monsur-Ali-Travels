@@ -594,11 +594,11 @@ export default function CaseDetailPage() {
       }
     }
 
-    const isComplete = isManuallyChecked || isUploaded;
+    const isComplete = Boolean(isUploaded);
     return {
       isComplete,
       isUploaded,
-      isManuallyChecked,
+      isManuallyChecked: false,
       matchedDoc,
     };
   };
@@ -1282,7 +1282,7 @@ export default function CaseDetailPage() {
                   Physical Document Intake Checklist
                 </h3>
                 <span className="text-[11px] text-muted-foreground font-medium">
-                  Auto-syncs with uploaded scans & allows manual verification
+                  Auto-synced with uploaded Case Vault documents
                 </span>
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 text-xs">
@@ -1301,21 +1301,20 @@ export default function CaseDetailPage() {
                       className={`p-3.5 rounded-xl border transition-all flex flex-col justify-between gap-2.5 ${
                         isChecked
                           ? 'bg-emerald-500/10 border-emerald-500 text-emerald-950 font-semibold shadow-xs ring-1 ring-emerald-500/20'
-                          : 'bg-muted/30 border-border text-muted-foreground hover:border-border/80'
+                          : 'bg-muted/30 border-border text-muted-foreground'
                       }`}
                     >
                       <div className="flex items-center justify-between gap-2">
-                        <label className="flex items-center gap-2 cursor-pointer select-none">
-                          <input
-                            type="checkbox"
-                            checked={isChecked}
-                            onChange={() => handleToggleChecklist(item.key)}
-                            className="size-4 rounded text-emerald-600 focus:ring-emerald-500 border-border cursor-pointer accent-emerald-600"
-                          />
-                          <span className={isChecked ? 'text-emerald-950 font-bold' : ''}>
+                        <div className="flex items-center gap-2 select-none min-w-0">
+                          {isChecked ? (
+                            <CheckCircle2 className="size-4 text-emerald-600 shrink-0" />
+                          ) : (
+                            <div className="size-4 rounded-full border border-black/30 shrink-0" />
+                          )}
+                          <span className={`truncate ${isChecked ? 'text-emerald-950 font-bold' : 'text-foreground/80'}`}>
                             {item.label}
                           </span>
-                        </label>
+                        </div>
                         <span
                           className={`px-2 py-0.5 rounded text-[10px] font-bold shrink-0 inline-flex items-center gap-1 ${
                             isChecked
@@ -1323,7 +1322,7 @@ export default function CaseDetailPage() {
                               : 'bg-muted text-muted-foreground border border-border/50'
                           }`}
                         >
-                          {status.isUploaded ? 'Uploaded ✓' : isChecked ? 'Received ✓' : 'Pending'}
+                          {isChecked ? 'Uploaded ✓' : 'Pending'}
                         </span>
                       </div>
 

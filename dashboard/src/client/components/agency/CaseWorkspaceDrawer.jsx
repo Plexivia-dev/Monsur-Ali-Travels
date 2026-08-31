@@ -375,11 +375,11 @@ export function CaseWorkspaceDrawer({ caseId, isOpen, onClose, onRefresh }) {
       }
     }
 
-    const isComplete = isManuallyChecked || isUploaded;
+    const isComplete = Boolean(isUploaded);
     return {
       isComplete,
       isUploaded,
-      isManuallyChecked,
+      isManuallyChecked: false,
       matchedDoc,
     };
   };
@@ -804,7 +804,7 @@ export function CaseWorkspaceDrawer({ caseId, isOpen, onClose, onRefresh }) {
                       <h3 className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
                         Physical Document Intake Checklist
                       </h3>
-                      <span className="text-[10px] text-muted-foreground">Click checkbox to update status</span>
+                      <span className="text-[10px] text-muted-foreground">Auto-synced from Case Vault</span>
                     </div>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
                       {[
@@ -822,27 +822,26 @@ export function CaseWorkspaceDrawer({ caseId, isOpen, onClose, onRefresh }) {
                             className={`p-3 rounded-xl border flex flex-col justify-between gap-2 transition-all ${
                               isChecked
                                 ? 'bg-emerald-500/10 border-emerald-500 text-emerald-950 font-semibold shadow-xs ring-1 ring-emerald-500/20'
-                                : 'bg-black/[0.02] border-black/10 text-black/60 hover:border-black/20'
+                                : 'bg-black/[0.02] border-black/10 text-black/60'
                             }`}
                           >
                             <div className="flex items-center justify-between gap-2">
-                              <label className="flex items-center gap-2 cursor-pointer select-none min-w-0">
-                                <input
-                                  type="checkbox"
-                                  checked={isChecked}
-                                  onChange={() => handleToggleChecklist(item.key)}
-                                  className="size-3.5 rounded text-emerald-600 focus:ring-emerald-500 border-black/20 cursor-pointer accent-emerald-600"
-                                />
+                              <div className="flex items-center gap-2 select-none min-w-0">
+                                {isChecked ? (
+                                  <CheckCircle2 className="size-3.5 text-emerald-600 shrink-0" />
+                                ) : (
+                                  <div className="size-3.5 rounded-full border border-black/30 shrink-0" />
+                                )}
                                 <span className={`truncate ${isChecked ? 'text-emerald-950 font-bold' : ''}`}>
                                   {item.label}
                                 </span>
-                              </label>
+                              </div>
                               <span
                                 className={`px-2 py-0.5 rounded text-[10px] font-bold shrink-0 ${
                                   isChecked ? 'bg-emerald-500/20 text-emerald-700 border border-emerald-500/30' : 'bg-black/[0.04] text-black/60 border border-black/10'
                                 }`}
                               >
-                                {status.isUploaded ? 'Uploaded ✓' : isChecked ? 'Received ✓' : 'Pending'}
+                                {isChecked ? 'Uploaded ✓' : 'Pending'}
                               </span>
                             </div>
 
