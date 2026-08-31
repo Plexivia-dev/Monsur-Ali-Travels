@@ -526,6 +526,113 @@ export default function CaseDetailPage() {
     }
   };
 
+  const getChecklistItemStatus = (key, data) => {
+    if (!data) return { isComplete: false, isUploaded: false, isManuallyChecked: false, matchedDoc: null };
+    const isManuallyChecked = Boolean(data.checklist?.[key]);
+    const vaultDocs = Array.isArray(data.vaultDocuments) ? data.vaultDocuments : [];
+    const clientAttachments = data.clientInfo?.attachments || data.attachments || {};
+    let isUploaded = false;
+    let matchedDoc = null;
+
+    if (key === 'photo2x2') {
+      if (clientAttachments.photo) {
+        isUploaded = true;
+        matchedDoc = { name: 'Applicant 2x2 Photo', url: clientAttachments.photo };
+      } else {
+        const found = vaultDocs.find((d) =>
+          /photo|picture|2x2|ছবি|image|portrait/i.test(d.documentName || d.fileName || '')
+        );
+        if (found) {
+          isUploaded = true;
+          matchedDoc = { name: found.documentName || found.fileName, url: found.fileUrl };
+        }
+      }
+    } else if (key === 'electricityBill') {
+      const found = vaultDocs.find((d) =>
+        /electricity|utility|bill|current|বিদ্যুৎ|gas|electric|wasa/i.test(d.documentName || d.fileName || '')
+      );
+      if (found) {
+        isUploaded = true;
+        matchedDoc = { name: found.documentName || found.fileName, url: found.fileUrl };
+      } else {
+        const otherDocs = Array.isArray(clientAttachments.otherDocuments) ? clientAttachments.otherDocuments : [];
+        const foundOther = otherDocs.find((d) => /bill|utility|electricity|gas|wasa/i.test(d.name || ''));
+        if (foundOther) {
+          isUploaded = true;
+          matchedDoc = { name: foundOther.name, url: foundOther.fileUrl };
+        }
+      }
+    } else if (key === 'nidCopy') {
+      if (clientAttachments.nidScan) {
+        isUploaded = true;
+        matchedDoc = { name: 'National ID (NID) Scan', url: clientAttachments.nidScan };
+      } else {
+        const found = vaultDocs.find((d) =>
+          /nid|national\s*id|voter|এনআইডি|পরিচয়পত্র|identity\s*card/i.test(d.documentName || d.fileName || '')
+        );
+        if (found) {
+          isUploaded = true;
+          matchedDoc = { name: found.documentName || found.fileName, url: found.fileUrl };
+        }
+      }
+    } else if (key === 'landDocuments') {
+      const found = vaultDocs.find((d) =>
+        /land|property|দলিল|খতিয়ান|khatian|porcha|deed|jamabandi|mutation|namjari/i.test(d.documentName || d.fileName || '')
+      );
+      if (found) {
+        isUploaded = true;
+        matchedDoc = { name: found.documentName || found.fileName, url: found.fileUrl };
+      } else {
+        const otherDocs = Array.isArray(clientAttachments.otherDocuments) ? clientAttachments.otherDocuments : [];
+        const foundOther = otherDocs.find((d) => /land|property|deed/i.test(d.name || ''));
+        if (foundOther) {
+          isUploaded = true;
+          matchedDoc = { name: foundOther.name, url: foundOther.fileUrl };
+        }
+      }
+    }
+
+    const isComplete = isManuallyChecked || isUploaded;
+    return {
+      isComplete,
+      isUploaded,
+      isManuallyChecked,
+      matchedDoc,
+    };
+  };
+
+  const handleToggleChecklist = async (key) => {
+    if (!caseData) return;
+    const currentVal = Boolean(caseData.checklist?.[key]);
+    const newVal = !currentVal;
+
+    // Optimistically update local state
+    setCaseData((prev) => ({
+      ...prev,
+      checklist: {
+        ...(prev?.checklist || {}),
+        [key]: newVal,
+      },
+    }));
+
+    try {
+      const caseId = caseData.did || caseData._id;
+      const res = await apiClient.put(`/api/v1/client/cases/${caseId}`, {
+        checklist: {
+          [key]: newVal,
+        },
+      });
+      if (res.data?.success || res.data?.status === 'success') {
+        toast.success(`Checklist updated: ${newVal ? 'Received / Checked' : 'Pending'}`);
+      } else {
+        throw new Error(res.data?.message || 'Failed to update checklist');
+      }
+    } catch (err) {
+      toast.error('Failed to update checklist status.');
+      fetchCaseDetails();
+    }
+  };
+
   if (loading) {
     return (
       <div className="py-32 flex flex-col items-center justify-center space-y-3">
@@ -1167,10 +1274,15 @@ export default function CaseDetailPage() {
 
             {/* Physical Document Intake Checklist */}
             <div className="lg:col-span-2 bg-card border border-border rounded-2xl p-6 space-y-4 shadow-xs">
-              <h3 className="text-sm font-bold text-foreground uppercase tracking-wider flex items-center gap-2">
-                <FileCheck className="w-4 h-4 text-sky-600" />
-                Physical Document Intake Checklist
-              </h3>
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                <h3 className="text-sm font-bold text-foreground uppercase tracking-wider flex items-center gap-2">
+                  <FileCheck className="w-4 h-4 text-sky-600" />
+                  Physical Document Intake Checklist
+                </h3>
+                <span className="text-[11px] text-muted-foreground font-medium">
+                  Auto-syncs with uploaded scans & allows manual verification
+                </span>
+              </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 text-xs">
                 {[
                   { key: 'photo2x2', label: '2x2 Size Photo (White Background)' },
@@ -1179,24 +1291,60 @@ export default function CaseDetailPage() {
                   { key: 'landDocuments', label: 'Land Property Documents' },
                   { key: 'followUpCallRequired', label: 'Pending Document Follow-up Reminder' },
                 ].map((item) => {
-                  const isChecked = caseData.checklist?.[item.key];
+                  const status = getChecklistItemStatus(item.key, caseData);
+                  const isChecked = status.isComplete;
                   return (
                     <div
                       key={item.key}
-                      className={`p-3.5 rounded-xl border flex items-center justify-between ${
+                      className={`p-3.5 rounded-xl border transition-all flex flex-col justify-between gap-2.5 ${
                         isChecked
-                          ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-800 dark:text-emerald-300 font-semibold'
-                          : 'bg-muted/30 border-border text-muted-foreground'
+                          ? 'bg-emerald-500/10 border-emerald-500 text-emerald-950 dark:text-emerald-200 font-semibold shadow-xs ring-1 ring-emerald-500/20'
+                          : 'bg-muted/30 border-border text-muted-foreground hover:border-border/80'
                       }`}
                     >
-                      <span>{item.label}</span>
-                      <span
-                        className={`px-2 py-0.5 rounded text-[10px] font-bold ${
-                          isChecked ? 'bg-emerald-500/20 text-emerald-600' : 'bg-muted text-muted-foreground'
-                        }`}
-                      >
-                        {isChecked ? 'Received ✓' : 'Pending'}
-                      </span>
+                      <div className="flex items-center justify-between gap-2">
+                        <label className="flex items-center gap-2 cursor-pointer select-none">
+                          <input
+                            type="checkbox"
+                            checked={isChecked}
+                            onChange={() => handleToggleChecklist(item.key)}
+                            className="size-4 rounded text-emerald-600 focus:ring-emerald-500 border-border cursor-pointer accent-emerald-600"
+                          />
+                          <span className={isChecked ? 'text-emerald-950 dark:text-emerald-100 font-bold' : ''}>
+                            {item.label}
+                          </span>
+                        </label>
+                        <span
+                          className={`px-2 py-0.5 rounded text-[10px] font-bold shrink-0 inline-flex items-center gap-1 ${
+                            isChecked
+                              ? 'bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 border border-emerald-500/30'
+                              : 'bg-muted text-muted-foreground border border-border/50'
+                          }`}
+                        >
+                          {status.isUploaded ? 'Uploaded ✓' : isChecked ? 'Received ✓' : 'Pending'}
+                        </span>
+                      </div>
+
+                      {status.matchedDoc?.url && (
+                        <div className="flex items-center justify-between pt-1 border-t border-emerald-500/20 text-[11px]">
+                          <span className="text-emerald-700 dark:text-emerald-300 truncate max-w-[170px]" title={status.matchedDoc.name}>
+                            📎 {status.matchedDoc.name}
+                          </span>
+                          <button
+                            type="button"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setPreviewFile({
+                                fileUrl: status.matchedDoc.url,
+                                fileName: status.matchedDoc.name,
+                              });
+                            }}
+                            className="inline-flex items-center gap-1 text-[10px] font-bold text-emerald-700 hover:text-emerald-900 dark:text-emerald-300 dark:hover:text-emerald-100 underline cursor-pointer"
+                          >
+                            <Eye className="w-3 h-3" /> View
+                          </button>
+                        </div>
+                      )}
                     </div>
                   );
                 })}
