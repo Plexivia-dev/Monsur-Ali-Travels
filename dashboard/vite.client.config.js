@@ -83,6 +83,23 @@ export default defineConfig({
       '@client': path.resolve(__dirname, './src/client'),
     },
   },
+  optimizeDeps: {
+    include: [
+      'react',
+      'react-dom',
+      'react-router-dom',
+      'lucide-react',
+      'recharts',
+      'axios',
+      'zustand',
+      'sonner',
+      'clsx',
+      'tailwind-merge',
+      'qrcode',
+      'motion',
+      'html-to-image',
+    ],
+  },
   server: {
     port: 8004,
     strictPort: false,

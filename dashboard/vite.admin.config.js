@@ -83,6 +83,23 @@ export default defineConfig({
       '@admin': path.resolve(__dirname, './src/admin'),
     },
   },
+  optimizeDeps: {
+    include: [
+      'react',
+      'react-dom',
+      'react-router-dom',
+      'lucide-react',
+      'recharts',
+      'axios',
+      'zustand',
+      'sonner',
+      'clsx',
+      'tailwind-merge',
+      'qrcode',
+      'motion',
+      'html-to-image',
+    ],
+  },
   server: {
     port: 8005,
     strictPort: true,
