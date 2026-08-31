@@ -256,12 +256,59 @@ export function DocumentStudioPage({
         };
 
       case 'invoice':
-      case 'money-receipt':
+      case 'invoices':
         return {
-          clientName: applicantFullName,
-          phone,
-          passportNumber,
+          caseDid: caseFile.did || caseFile._id,
           caseNumber: caseFile.caseNumber || caseNumberParam || '',
+          clientName: applicantFullName,
+          client: {
+            name: applicantFullName,
+            contactPerson: applicantFullName,
+            phone: phone,
+            email: client.email || caseFile.email || '',
+            address: client.presentAddress || client.address || client.permanentAddress || '',
+          },
+          items: [
+            {
+              id: 'item-1',
+              title: `${destination} - Processing & Service Charge`,
+              description: `Case File #${caseFile.caseNumber || caseNumberParam || ''} • Trade: ${trade}`,
+              quantity: 1,
+              unitPrice: caseFile.agreedAmount || caseFile.totalAgreedAmount || caseFile.initialPaidAmount || '',
+            },
+          ],
+          isLocked: false,
+        };
+
+      case 'money-receipt':
+      case 'receipt':
+        return {
+          caseDid: caseFile.did || caseFile._id,
+          caseNumber: caseFile.caseNumber || caseNumberParam || '',
+          clientName: applicantFullName,
+          phone: phone,
+          passportNumber: passportNumber,
+          purpose: `Visa & Case Processing Fee - ${destination} (File #${caseFile.caseNumber || caseNumberParam || ''})`,
+          amount: caseFile.initialPaidAmount || caseFile.advanceAmount || '',
+          date: new Date().toISOString().split('T')[0],
+          isLocked: false,
+        };
+
+      case 'cash-voucher':
+      case 'cash-money-voucher':
+        return {
+          caseDid: caseFile.did || caseFile._id,
+          caseNumber: caseFile.caseNumber || caseNumberParam || '',
+          paidTo: applicantFullName,
+          phone: phone,
+          purpose: `Disbursement / Processing Expense for Case #${caseFile.caseNumber || caseNumberParam || ''}`,
+          items: [
+            {
+              id: 'item-1',
+              description: `Operational & Processing Expense for ${applicantFullName}`,
+              amount: '',
+            },
+          ],
           isLocked: false,
         };
 

@@ -268,6 +268,76 @@ export function TaskDetailModal({
   });
   const [isBatchUploading, setIsBatchUploading] = useState(false);
   const [uploadedDocsList, setUploadedDocsList] = useState([]);
+  const [caseVaultDocs, setCaseVaultDocs] = useState([]);
+  const [manualSlipFile, setManualSlipFile] = useState(null);
+
+  // Load vault documents for this case to cross-reference already uploaded items
+  useEffect(() => {
+    const caseRef = task?.caseDid || task?.caseId || task?.caseDetails?.did || task?.caseDetails?._id;
+    if (caseRef) {
+      apiClient
+        .get(`/api/v1/client/cases/${caseRef}`)
+        .then((res) => {
+          if (res.data?.data?.vaultDocuments) {
+            setCaseVaultDocs(res.data.data.vaultDocuments);
+          }
+        })
+        .catch(() => {});
+    }
+  }, [task]);
+
+  const findAlreadyUploadedDoc = useCallback((docTitle) => {
+    if (!docTitle) return null;
+    const titleLower = docTitle.toLowerCase().trim();
+
+    // 1. Check in newly uploaded docs in this modal session
+    const inNew = uploadedDocsList.find((d) => {
+      const name = String(d.documentName || d.fileName || d.title || '').toLowerCase();
+      return name.includes(titleLower) || titleLower.includes(name);
+    });
+    if (inNew) return inNew;
+
+    // 2. Check in task.permittedDocs
+    const permitted = Array.isArray(task?.permittedDocs) ? task.permittedDocs : [];
+    const inPermitted = permitted.find((d) => {
+      const name = String(d.documentName || d.fileName || d.title || (typeof d === 'string' ? d : '')).toLowerCase();
+      return name.includes(titleLower) || titleLower.includes(name);
+    });
+    if (inPermitted) return inPermitted;
+
+    // 3. Check in caseVaultDocs or task.caseDetails.vaultDocuments
+    const vault = [
+      ...caseVaultDocs,
+      ...(Array.isArray(task?.caseDetails?.vaultDocuments) ? task.caseDetails.vaultDocuments : []),
+      ...(Array.isArray(task?.vaultDocuments) ? task.vaultDocuments : []),
+    ];
+
+    if (/photo|2x2|picture/i.test(titleLower)) {
+      const photoDoc = vault.find((d) => /photo|picture|2x2|ছবি|image|portrait/i.test(d.documentName || d.fileName || ''));
+      if (photoDoc) return photoDoc;
+    }
+    if (/electricity|utility|bill/i.test(titleLower)) {
+      const billDoc = vault.find((d) => /electricity|utility|bill|current|বিদ্যুৎ|gas|wasa/i.test(d.documentName || d.fileName || ''));
+      if (billDoc) return billDoc;
+    }
+    if (/nid|national\s*id/i.test(titleLower)) {
+      const nidDoc = vault.find((d) => /nid|national\s*id|voter|এনআইডি|পরিচয়পত্র/i.test(d.documentName || d.fileName || ''));
+      if (nidDoc) return nidDoc;
+    }
+    if (/passport/i.test(titleLower)) {
+      const passDoc = vault.find((d) => /passport|bio-page|পাসপোর্ট/i.test(d.documentName || d.fileName || ''));
+      if (passDoc) return passDoc;
+    }
+    if (/agreement|contract/i.test(titleLower)) {
+      const agrDoc = vault.find((d) => /agreement|contract|চুক্তি/i.test(d.documentName || d.fileName || ''));
+      if (agrDoc) return agrDoc;
+    }
+
+    return vault.find((d) => {
+      const name = String(d.documentName || d.fileName || '').toLowerCase();
+      return name && (name.includes(titleLower) || titleLower.includes(name));
+    }) || null;
+  }, [uploadedDocsList, task, caseVaultDocs]);
 
   // Sync state if task changes
   useEffect(() => {
@@ -465,10 +535,18 @@ export function TaskDetailModal({
     }
 
     // 2. Mandatory Payment Collection Validation (if payment task):
-    if (task.requiresPayment && (paymentCollected === '' || Number(paymentCollected) < 0)) {
-      toast.error('Payment Collection is Mandatory: Please record the collected payment amount.');
-      setActiveTab('payment');
-      return;
+    if (task.requiresPayment) {
+      if (paymentCollected === '' || Number(paymentCollected) < 0) {
+        toast.error('Payment Collection is Mandatory: Please record the collected payment amount.');
+        setActiveTab('payment');
+        return;
+      }
+
+      if (!generateMoneyReceipt && !manualSlipFile && !task.paymentSlipUrl && !task.moneyReceiptNumber) {
+        toast.error('Payment Slip Required: Please attach a physical payment slip/voucher or enable Auto-Issue Money Receipt.');
+        setActiveTab('payment');
+        return;
+      }
     }
 
     // 3. Mandatory Document Upload Validation:
@@ -511,11 +589,36 @@ export function TaskDetailModal({
         setIsBatchUploading(false);
       }
 
-      const totalDocsAvailable = (task.permittedDocs?.length || 0) + uploadedDocsList.length + pendingRowsWithFiles.length;
-      if (totalDocsAvailable === 0) {
+      // Check if all required docs are satisfied (either in vault or uploaded)
+      const allAssignedSatisfied = uploadRows.every((row) => {
+        const found = findAlreadyUploadedDoc(row.title);
+        const hasPendingFile = Boolean(row.file);
+        return Boolean(found || hasPendingFile);
+      });
+
+      const totalDocsAvailable = (task.permittedDocs?.length || 0) + uploadedDocsList.length + pendingRowsWithFiles.length + caseVaultDocs.length;
+      if (!allAssignedSatisfied && totalDocsAvailable === 0) {
         toast.error('Document Upload is Mandatory: You must select and upload the assigned file(s) before completing this step.');
         setActiveTab('upload');
         return;
+      }
+    }
+
+    // Handle Manual Payment Slip Upload if attached
+    let uploadedSlipUrl = task.paymentSlipUrl || null;
+    if (manualSlipFile) {
+      try {
+        const formData = new FormData();
+        formData.append('file', manualSlipFile);
+        const queryParams = new URLSearchParams();
+        if (task.caseDid) queryParams.append('clientId', task.caseDid);
+        queryParams.append('documentType', 'payment-slip');
+        const upRes = await apiClient.post(`/api/v1/upload/single?${queryParams.toString()}`, formData, {
+          headers: { 'Content-Type': 'multipart/form-data' },
+        });
+        uploadedSlipUrl = upRes.data?.data?.url || upRes.data?.url || upRes.data?.fileUrl;
+      } catch (slipUpErr) {
+        console.warn('Payment slip upload error:', slipUpErr);
       }
     }
 
@@ -527,6 +630,7 @@ export function TaskDetailModal({
         completionNotes: completionNotes.trim(),
         paymentCollectedAmount: collectedNum,
         paymentMethod,
+        paymentSlipUrl: uploadedSlipUrl,
         generateMoneyReceipt,
       });
 
@@ -777,74 +881,122 @@ export function TaskDetailModal({
 
                 {/* Rows List */}
                 <div className="space-y-2.5 pt-1">
-                  {uploadRows.map((row, idx) => (
-                    <div
-                      key={row.id}
-                      className="bg-card border border-border rounded-xl p-3 flex flex-col sm:flex-row items-stretch sm:items-center gap-3 text-xs shadow-2xs"
-                    >
-                      {/* Row Index */}
-                      <span className="w-6 text-center font-mono font-bold text-muted-foreground shrink-0 hidden sm:inline">
-                        #{idx + 1}
-                      </span>
+                  {uploadRows.map((row, idx) => {
+                    const existingDoc = findAlreadyUploadedDoc(row.title);
 
-                      {/* Fixed Document Name (Non-editable) */}
-                      <div className="flex-1 min-w-[200px] flex items-center gap-2.5 p-2.5 rounded-xl bg-black/[0.02] border border-black/10">
-                        <div className="size-8 rounded-lg bg-primary/10 text-primary flex items-center justify-center shrink-0">
-                          <FileText className="size-4" />
-                        </div>
-                        <div className="min-w-0">
-                          <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider block">
-                            Required Document
-                          </span>
-                          <h4 className="text-xs font-bold text-foreground truncate" title={row.title || 'Required Document'}>
-                            {row.title || 'Required Document'}
-                          </h4>
-                        </div>
-                      </div>
+                    return (
+                      <div
+                        key={row.id}
+                        className={`border rounded-xl p-3 flex flex-col sm:flex-row items-stretch sm:items-center gap-3 text-xs shadow-2xs transition-all ${
+                          existingDoc
+                            ? 'bg-emerald-500/5 border-emerald-500/30 text-emerald-950'
+                            : 'bg-card border-border'
+                        }`}
+                      >
+                        {/* Row Index */}
+                        <span className="w-6 text-center font-mono font-bold text-muted-foreground shrink-0 hidden sm:inline">
+                          #{idx + 1}
+                        </span>
 
-                      {/* File Selector */}
-                      <div className="flex-1 min-w-[180px]">
-                        <input
-                          type="file"
-                          id={`file-input-${row.id}`}
-                          onChange={(e) => {
-                            const file = e.target.files?.[0];
-                            if (file) handleUpdateRow(row.id, 'file', file);
-                          }}
-                          accept=".pdf,.png,.jpg,.jpeg,.webp,.doc,.docx"
-                          className="hidden"
-                        />
-                        <label
-                          htmlFor={`file-input-${row.id}`}
-                          className={`w-full h-[52px] border border-dashed rounded-lg px-3 py-1.5 flex items-center justify-center gap-2 cursor-pointer transition-colors text-xs text-center ${
-                            row.file
-                              ? 'border-emerald-500/50 bg-emerald-500/5 text-emerald-700'
-                              : 'border-border hover:border-primary/60 bg-muted/20 hover:bg-muted/40 text-muted-foreground hover:text-foreground'
+                        {/* Document Name */}
+                        <div
+                          className={`flex-1 min-w-[200px] flex items-center gap-2.5 p-2.5 rounded-xl border ${
+                            existingDoc ? 'bg-emerald-500/10 border-emerald-500/20' : 'bg-black/[0.02] border-black/10'
                           }`}
                         >
-                          {row.file ? (
-                            <span className="font-semibold text-emerald-700 truncate max-w-[180px]">
-                              ✓ {row.file.name} ({((row.file.size) / (1024 * 1024)).toFixed(2)} MB)
+                          <div
+                            className={`size-8 rounded-lg flex items-center justify-center shrink-0 ${
+                              existingDoc ? 'bg-emerald-500/20 text-emerald-700' : 'bg-primary/10 text-primary'
+                            }`}
+                          >
+                            {existingDoc ? <CheckCircle2 className="size-4 text-emerald-600" /> : <FileText className="size-4" />}
+                          </div>
+                          <div className="min-w-0">
+                            <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider block">
+                              {existingDoc ? 'Document in Vault' : 'Required Document'}
                             </span>
-                          ) : (
-                            <span className="text-[11px] font-medium">📎 Choose PDF / Image</span>
-                          )}
-                        </label>
-                      </div>
+                            <h4 className="text-xs font-bold text-foreground truncate" title={row.title || 'Required Document'}>
+                              {row.title || 'Required Document'}
+                            </h4>
+                          </div>
+                        </div>
 
-                      {/* Clear File / Remove Button */}
-                      {row.file ? (
-                        <button
-                          type="button"
-                          onClick={() => handleUpdateRow(row.id, 'file', null)}
-                          className="p-1.5 text-red-500 hover:text-red-600 rounded-lg hover:bg-red-500/10 transition-colors cursor-pointer shrink-0 self-center"
-                          title="Clear attached file"
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </button>
-                      ) : null}
-                    </div>
-                  ))}
+                        {/* Right Column: If Already Uploaded vs File Picker */}
+                        {existingDoc ? (
+                          <div className="flex-1 min-w-[180px] flex items-center justify-between gap-2 p-2 px-3 rounded-lg bg-emerald-500/10 border border-emerald-500/20">
+                            <div className="truncate">
+                              <span className="text-[10px] font-bold text-emerald-800 uppercase block">Already Uploaded ✓</span>
+                              <p className="text-xs font-semibold text-emerald-900 truncate">
+                                📎 {existingDoc.fileName || existingDoc.documentName || 'Document attached'}
+                              </p>
+                            </div>
+                            {(existingDoc.fileUrl || existingDoc.url) && (
+                              <Button
+                                type="button"
+                                size="sm"
+                                variant="outline"
+                                onClick={() =>
+                                  setViewingFile({
+                                    name: existingDoc.fileName || existingDoc.documentName || row.title,
+                                    url: existingDoc.fileUrl || existingDoc.url,
+                                    type: existingDoc.fileType || 'application/pdf',
+                                  })
+                                }
+                                className="h-7 text-xs px-2.5 border-emerald-500/30 text-emerald-800 hover:bg-emerald-500/20 gap-1 shrink-0 font-bold cursor-pointer"
+                              >
+                                <Eye className="w-3.5 h-3.5" />
+                                <span>View</span>
+                              </Button>
+                            )}
+                          </div>
+                        ) : (
+                          <>
+                            {/* File Selector */}
+                            <div className="flex-1 min-w-[180px]">
+                              <input
+                                type="file"
+                                id={`file-input-${row.id}`}
+                                onChange={(e) => {
+                                  const file = e.target.files?.[0];
+                                  if (file) handleUpdateRow(row.id, 'file', file);
+                                }}
+                                accept=".pdf,.png,.jpg,.jpeg,.webp,.doc,.docx"
+                                className="hidden"
+                              />
+                              <label
+                                htmlFor={`file-input-${row.id}`}
+                                className={`w-full h-[52px] border border-dashed rounded-lg px-3 py-1.5 flex items-center justify-center gap-2 cursor-pointer transition-colors text-xs text-center ${
+                                  row.file
+                                    ? 'border-emerald-500/50 bg-emerald-500/5 text-emerald-700'
+                                    : 'border-border hover:border-primary/60 bg-muted/20 hover:bg-muted/40 text-muted-foreground hover:text-foreground'
+                                }`}
+                              >
+                                {row.file ? (
+                                  <span className="font-semibold text-emerald-700 truncate max-w-[180px]">
+                                    ✓ {row.file.name} ({((row.file.size) / (1024 * 1024)).toFixed(2)} MB)
+                                  </span>
+                                ) : (
+                                  <span className="text-[11px] font-medium">📎 Choose PDF / Image</span>
+                                )}
+                              </label>
+                            </div>
+
+                            {/* Clear File Button */}
+                            {row.file ? (
+                              <button
+                                type="button"
+                                onClick={() => handleUpdateRow(row.id, 'file', null)}
+                                className="p-1.5 text-red-500 hover:text-red-600 rounded-lg hover:bg-red-500/10 transition-colors cursor-pointer shrink-0 self-center"
+                                title="Clear attached file"
+                              >
+                                <Trash2 className="w-4 h-4" />
+                              </button>
+                            ) : null}
+                          </>
+                        )}
+                      </div>
+                    );
+                  })}
                 </div>
 
                 {/* Batch Upload Action */}
@@ -938,6 +1090,43 @@ export function TaskDetailModal({
                       Auto-issue official <strong>Money Receipt / Pay Slip (MA#####)</strong> on marking this step Completed
                     </span>
                   </label>
+
+                  {!generateMoneyReceipt && (
+                    <div className="p-3 bg-card border border-amber-500/30 rounded-xl space-y-2 animate-in fade-in">
+                      <div className="flex items-center justify-between">
+                        <label className="block text-[11px] font-bold text-amber-800 uppercase tracking-wider">
+                          Attach Physical Payment Receipt / Bank Deposit Slip *
+                        </label>
+                        <span className="text-[10px] text-muted-foreground">Required if not auto-issuing</span>
+                      </div>
+                      <input
+                        type="file"
+                        id="manual-slip-input"
+                        onChange={(e) => {
+                          const file = e.target.files?.[0];
+                          if (file) setManualSlipFile(file);
+                        }}
+                        accept=".pdf,.png,.jpg,.jpeg,.webp"
+                        className="hidden"
+                      />
+                      <label
+                        htmlFor="manual-slip-input"
+                        className={`w-full h-11 border border-dashed rounded-lg px-3 flex items-center justify-center gap-2 cursor-pointer transition-colors text-xs text-center ${
+                          manualSlipFile
+                            ? 'border-emerald-500/50 bg-emerald-500/5 text-emerald-700 font-semibold'
+                            : 'border-border hover:border-amber-500 bg-muted/20 text-muted-foreground hover:text-foreground'
+                        }`}
+                      >
+                        {manualSlipFile ? (
+                          <span className="truncate max-w-[240px]">
+                            ✓ {manualSlipFile.name} ({((manualSlipFile.size) / (1024 * 1024)).toFixed(2)} MB)
+                          </span>
+                        ) : (
+                          <span className="text-[11px] font-medium">📎 Attach Scanned Pay Slip / Voucher File</span>
+                        )}
+                      </label>
+                    </div>
+                  )}
                 </div>
 
                 {/* Direct Studio Launch Buttons */}

@@ -9,10 +9,27 @@ import { printDocument } from '@shared/lib/utils';
 import { HeaderTitle } from '@shared/components/common/HeaderTitle';
 import { StudioFloatingViewSwitcher } from '../common/StudioFloatingViewSwitcher';
 
-export function MoneyReceipt() {
-  const [data, setData] = useState(getDefaultMoneyReceiptData());
+export function MoneyReceipt({ initialData = null, isLocked = false, onSavedSuccess }) {
+  const [data, setData] = useState(() => ({
+    ...getDefaultMoneyReceiptData(),
+    ...(initialData || {}),
+  }));
   const [viewMode, setViewMode] = useState('edit'); // 'edit' | 'split' | 'preview'
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  useEffect(() => {
+    if (initialData) {
+      setData((prev) => ({
+        ...prev,
+        ...initialData,
+        clientName: initialData.clientName || initialData.client?.name || prev.clientName,
+        phone: initialData.phone || initialData.client?.phone || prev.phone,
+        passportNumber: initialData.passportNumber || prev.passportNumber,
+        purpose: initialData.purpose || prev.purpose,
+        amount: initialData.amount || prev.amount,
+      }));
+    }
+  }, [initialData]);
 
   const handleReset = () => {
     setData(getDefaultMoneyReceiptData());
@@ -34,6 +51,8 @@ export function MoneyReceipt() {
       const isEdit = Boolean(data._id);
       const payload = {
         ...data,
+        caseDid: initialData?.caseDid || data.caseDid,
+        caseNumber: initialData?.caseNumber || data.caseNumber,
         amount: Number(data.amount),
       };
 
@@ -52,6 +71,22 @@ export function MoneyReceipt() {
           qrCode: saved?.qrCode || prev.qrCode,
           did: saved?.did || prev.did,
         }));
+
+        if (initialData?.caseDid) {
+          try {
+            await apiClient.post(`/api/v1/client/cases/${initialData.caseDid}/documents`, {
+              documentName: `Money Receipt #${returnedNo}`,
+              fileName: `Receipt-${returnedNo}.pdf`,
+              fileUrl: saved?.pdfUrl || `/api/v1/client/receipts/${saved?._id}/pdf`,
+              fileType: 'application/pdf',
+              fileSize: '1.0 MB',
+              accessLevel: 'Public',
+            });
+          } catch (_) {}
+        }
+
+        if (onSavedSuccess) onSavedSuccess(saved);
+
         toast.success(
           isEdit
             ? `Money receipt #${returnedNo} updated successfully!`

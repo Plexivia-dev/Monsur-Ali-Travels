@@ -111,6 +111,52 @@ export const markTaskDone = async (req, res) => {
 
           task.moneyReceiptDid = newReceipt.did;
           task.moneyReceiptNumber = newReceipt.receiptNo;
+
+          // Attach created receipt to task permittedDocs
+          if (!Array.isArray(task.permittedDocs)) task.permittedDocs = [];
+          task.permittedDocs.push({
+            did: newReceipt.did,
+            documentName: `Money Receipt #${newReceipt.receiptNo}`,
+            fileName: `Receipt-${newReceipt.receiptNo}.pdf`,
+            fileUrl: `/api/v1/client/receipts/${newReceipt._id}/pdf`,
+            fileType: "application/pdf",
+            accessLevel: "Public",
+          });
+
+          // Attach to caseDoc vaultDocuments & update payment ledger
+          if (caseDoc) {
+            if (!Array.isArray(caseDoc.vaultDocuments)) caseDoc.vaultDocuments = [];
+            caseDoc.vaultDocuments.push({
+              did: generateDid(),
+              documentName: `Money Receipt #${newReceipt.receiptNo}`,
+              fileName: `Receipt-${newReceipt.receiptNo}.pdf`,
+              fileUrl: `/api/v1/client/receipts/${newReceipt._id}/pdf`,
+              fileType: "application/pdf",
+              fileSize: "1.0 MB",
+              accessLevel: "Public",
+              uploadedBy: req.user?.name || "Staff",
+              uploadedAt: new Date(),
+            });
+
+            // Update Case Financial Ledger
+            if (!caseDoc.paymentLedger) caseDoc.paymentLedger = {};
+            const stepNum = task.stepNumber || 1;
+            if (stepNum === 1) {
+              caseDoc.paymentLedger.step1_advance = (Number(caseDoc.paymentLedger.step1_advance) || 0) + collected;
+              caseDoc.initialPaidAmount = caseDoc.paymentLedger.step1_advance;
+            } else if (stepNum === 2) {
+              caseDoc.paymentLedger.step2_offerApproval = (Number(caseDoc.paymentLedger.step2_offerApproval) || 0) + collected;
+            } else if (stepNum === 3) {
+              caseDoc.paymentLedger.step3_delivery = (Number(caseDoc.paymentLedger.step3_delivery) || 0) + collected;
+            }
+
+            const currentTotalPaid = (Number(caseDoc.totalPaidAmount) || 0) + collected;
+            caseDoc.paymentLedger.totalPaidAmount = currentTotalPaid;
+            caseDoc.totalPaidAmount = currentTotalPaid;
+            const agreed = Number(caseDoc.paymentLedger.totalAgreedAmount || caseDoc.totalAgreedAmount) || 0;
+            caseDoc.dueAmount = Math.max(0, agreed - currentTotalPaid);
+            caseDoc.paymentLedger.dueAmount = caseDoc.dueAmount;
+          }
         } catch (receiptErr) {
           console.warn("[markTaskDone] Auto Money Receipt generation notice:", receiptErr.message);
         }
