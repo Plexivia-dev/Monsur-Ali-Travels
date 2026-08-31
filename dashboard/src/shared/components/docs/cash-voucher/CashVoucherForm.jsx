@@ -51,24 +51,21 @@ export function CashVoucherForm({ data, onChange, onReset, onSave, onPreview, is
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           {/* Voucher No */}
           <div>
-            <label className="block text-xs font-semibold text-muted-foreground mb-1">
-              {t('cashVoucherForm.voucherNo', 'Voucher No')}
-            </label>
-            <div className="flex gap-2">
-              <input
-                type="text"
-                value={data.voucherNo}
-                onChange={(e) => handleChange('voucherNo', e.target.value)}
-                className="flex-1 bg-muted border border-border rounded-xl px-3 py-2 text-sm text-foreground font-mono focus:outline-none focus:ring-2 focus:ring-primary"
-              />
-              <button
-                type="button"
-                onClick={() => handleChange('voucherNo', generateVoucherNo())}
-                className="px-3 py-2 bg-muted hover:bg-muted/80 border border-border rounded-xl text-xs font-bold text-muted-foreground transition-all cursor-pointer"
-              >
-                {t('cashVoucherForm.new', 'New')}
-              </button>
+            <div className="flex items-center justify-between mb-1">
+              <label className="block text-xs font-semibold text-muted-foreground">
+                {t('cashVoucherForm.voucherNo', 'Voucher No')}
+              </label>
+              <span className="text-[10px] font-semibold text-muted-foreground bg-muted px-1.5 py-0.5 rounded border border-border">
+                Auto-generated
+              </span>
             </div>
+            <input
+              type="text"
+              value={data.voucherNo || 'Auto-generated'}
+              readOnly
+              disabled
+              className="w-full bg-muted/60 border border-border rounded-xl px-3 py-2 text-sm text-muted-foreground font-mono cursor-not-allowed select-none outline-none"
+            />
           </div>
 
           {/* Date */}

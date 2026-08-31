@@ -429,12 +429,18 @@ export function ClientGuardianForm({ data, onChange, onReset, onSave, onPreview,
           </div>
 
           <div>
-            <label className="block font-bold text-foreground mb-1">{t('clientForm.applicationNo', 'Application No.')}</label>
+            <div className="flex items-center justify-between mb-1">
+              <label className="block font-bold text-foreground">{t('clientForm.applicationNo', 'Application No.')}</label>
+              <span className="text-[10px] font-semibold text-muted-foreground bg-muted px-1.5 py-0.5 rounded border border-border">
+                Auto-generated
+              </span>
+            </div>
             <input
               type="text"
-              value={data.applicationNo || ''}
-              onChange={(e) => onChange(prev => ({ ...prev, applicationNo: e.target.value }))}
-              className="w-full px-3 py-2 bg-background border border-border rounded-lg text-foreground font-mono font-bold text-xs"
+              value={data.applicationNo || 'Auto-generated'}
+              readOnly
+              disabled
+              className="w-full px-3 py-2 bg-muted/60 border border-border rounded-lg text-muted-foreground font-mono font-bold text-xs cursor-not-allowed select-none outline-none"
             />
           </div>
 
