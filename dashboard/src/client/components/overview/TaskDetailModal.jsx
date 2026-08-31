@@ -628,7 +628,7 @@ export function TaskDetailModal({
               <button
                 type="button"
                 onClick={onClose}
-                className="p-1.5 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted transition-colors cursor-pointer"
+                className="p-1.5 rounded-lg text-red-500 hover:text-red-600 hover:bg-red-500/10 border border-transparent hover:border-red-500/20 transition-colors cursor-pointer"
                 title="Close"
               >
                 <X className="w-5 h-5" />
@@ -759,9 +759,8 @@ export function TaskDetailModal({
                   <Button
                     type="button"
                     size="sm"
-                    variant="outline"
                     onClick={handleAddRow}
-                    className="h-7 text-xs px-2.5 font-semibold border-border hover:bg-muted text-foreground flex items-center gap-1 cursor-pointer"
+                    className="h-7 text-xs px-2.5 font-semibold bg-primary/10 text-primary border border-primary/30 hover:bg-primary/20 hover:border-primary/50 flex items-center gap-1 cursor-pointer"
                   >
                     <Plus className="w-3.5 h-3.5" />
                     <span>Add Row</span>
@@ -1142,7 +1141,7 @@ export function TaskDetailModal({
               variant="outline"
               size="sm"
               onClick={onClose}
-              className="w-full sm:w-auto text-xs font-semibold px-4 h-9 border-border hover:bg-muted text-foreground cursor-pointer"
+              className="w-full sm:w-auto text-xs font-semibold px-4 h-9 border-red-500/30 text-red-600 dark:text-red-400 hover:bg-red-500/10 hover:border-red-500/50 cursor-pointer"
             >
               Close
             </Button>
@@ -1155,7 +1154,7 @@ export function TaskDetailModal({
                 size="sm"
                 disabled={isSavingProgress}
                 onClick={handleSaveProgress}
-                className="w-full sm:w-auto text-xs font-semibold px-4 h-9 border-border hover:bg-muted text-foreground flex items-center justify-center gap-1.5 cursor-pointer"
+                className="w-full sm:w-auto text-xs font-semibold px-4 h-9 bg-primary/10 text-primary border-primary/30 hover:bg-primary/20 hover:border-primary/50 flex items-center justify-center gap-1.5 cursor-pointer"
               >
                 {isSavingProgress ? (
                   <>
@@ -1164,7 +1163,7 @@ export function TaskDetailModal({
                   </>
                 ) : (
                   <>
-                    <Save className="w-3.5 h-3.5 text-muted-foreground" />
+                    <Save className="w-3.5 h-3.5 text-primary" />
                     Save Progress / Notes
                   </>
                 )}
