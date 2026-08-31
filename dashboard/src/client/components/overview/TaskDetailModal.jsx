@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import {
   X,
   CheckCircle2,
@@ -47,6 +47,7 @@ const DOCUMENT_NAME_PRESETS = [
   'Bank Statement & Solvency Certificate',
   'Embassy / VFS Biometric Slip',
   'Visa Copy / E-Visa Grant Letter',
+  'Client Bio-Data & Guardian Form',
   'Other Supporting Document',
 ];
 
@@ -66,8 +67,8 @@ const DOC_TYPE_LABEL_MAP = {
 };
 
 const resolveDocTitle = (docKey) => {
-  if (!docKey) return 'Passport Copy (Bio-Page)';
-  if (DOC_TYPE_LABEL_MAP[docKey]) return DOC_TYPE_LABEL_MAP[docKey];
+  if (!docKey) return 'Document Attachment';
+  if (DOC_TYPE_LABEL_MAP[docKey.toLowerCase()]) return DOC_TYPE_LABEL_MAP[docKey.toLowerCase()];
   const matchingPreset = DOCUMENT_NAME_PRESETS.find((preset) =>
     preset.toLowerCase().includes(docKey.toLowerCase())
   );
@@ -76,10 +77,10 @@ const resolveDocTitle = (docKey) => {
 };
 
 const STUDIO_GENERATORS = [
+  { id: 'client-form', title: 'Client & Guardian Form', icon: UserCheck, color: 'text-sky-600 bg-sky-50 dark:bg-sky-950/50' },
+  { id: 'agreement', title: 'Employment Agreement', icon: FileSignature, color: 'text-blue-600 bg-blue-50 dark:bg-blue-950/50' },
   { id: 'money-receipt', title: 'Money Receipt / Pay Slip', icon: Receipt, color: 'text-emerald-600 bg-emerald-50 dark:bg-emerald-950/50' },
   { id: 'invoice', title: 'Client Invoice Bill', icon: FileText, color: 'text-indigo-600 bg-indigo-50 dark:bg-indigo-950/50' },
-  { id: 'agreement', title: 'Employment Agreement', icon: FileSignature, color: 'text-blue-600 bg-blue-50 dark:bg-blue-950/50' },
-  { id: 'client-form', title: 'Client & Guardian Form', icon: UserCheck, color: 'text-sky-600 bg-sky-50 dark:bg-sky-950/50' },
   { id: 'indian-visa', title: 'Indian Visa File', icon: Stamp, color: 'text-amber-600 bg-amber-50 dark:bg-amber-950/50' },
   { id: 'passport-sub', title: 'Passport Custody Slip', icon: BookOpen, color: 'text-purple-600 bg-purple-50 dark:bg-purple-950/50' },
   { id: 'job-verification', title: 'Job Verification Form', icon: FileCheck2, color: 'text-cyan-600 bg-cyan-50 dark:bg-cyan-950/50' },
@@ -109,8 +110,129 @@ export function TaskDetailModal({
   const [isSubmittingDone, setIsSubmittingDone] = useState(false);
   const [isSavingProgress, setIsSavingProgress] = useState(false);
 
-  // Multi-Row Document Upload State
+  // Compute strictly the assigned forms / sub-types for this task
+  const assignedFormOptions = useMemo(() => {
+    if (!task) return [];
+    const options = new Set();
+
+    // 1. Task Type Names explicitly assigned (e.g. ['Client Bio-Data & Guardian Form', 'VFS / Embassy Appointment Booking'])
+    if (Array.isArray(task.taskTypeNames) && task.taskTypeNames.length > 0) {
+      task.taskTypeNames.forEach((name) => {
+        if (name && typeof name === 'string' && name.trim()) {
+          options.add(name.trim());
+        }
+      });
+    }
+
+    // 2. Required Doc Types explicitly assigned
+    if (Array.isArray(task.requiredDocTypes) && task.requiredDocTypes.length > 0) {
+      task.requiredDocTypes.forEach((docKey) => {
+        if (docKey && typeof docKey === 'string' && docKey.trim()) {
+          const resolved = resolveDocTitle(docKey.trim());
+          if (resolved) options.add(resolved);
+        }
+      });
+    }
+
+    // 3. Permitted Document objects assigned
+    if (Array.isArray(task.permittedDocs) && task.permittedDocs.length > 0) {
+      task.permittedDocs.forEach((doc) => {
+        const docName = doc?.documentName || doc?.title || (typeof doc === 'string' ? doc : null);
+        if (docName && typeof docName === 'string' && docName.trim()) {
+          options.add(docName.trim());
+        }
+      });
+    }
+
+    // 4. Permitted Doc Names string array
+    if (Array.isArray(task.permittedDocNames) && task.permittedDocNames.length > 0) {
+      task.permittedDocNames.forEach((name) => {
+        if (name && typeof name === 'string' && name.trim()) {
+          options.add(name.trim());
+        }
+      });
+    }
+
+    // 5. If task.taskTypes array of objects exists
+    if (Array.isArray(task.taskTypes) && task.taskTypes.length > 0) {
+      task.taskTypes.forEach((tt) => {
+        if (tt?.name && typeof tt.name === 'string') {
+          options.add(tt.name.trim());
+        }
+      });
+    }
+
+    // 6. If no explicit sub-types were listed, extract from task.title (e.g. 'Collect Bio-Data & VFS Appointment')
+    if (options.size === 0 && task.title) {
+      const cleanTitle = task.title.replace(/^Collect\s+/i, '');
+      const parts = cleanTitle.split(/\s*&\s*|\s*,\s*/);
+      parts.forEach((p) => {
+        if (p && p.trim().length > 2) {
+          options.add(p.trim());
+        }
+      });
+    }
+
+    if (options.size > 0) {
+      return Array.from(options);
+    }
+
+    return DOCUMENT_NAME_PRESETS;
+  }, [task]);
+
+  // Compute matched studio generators for assigned task types
+  const assignedStudioGenerators = useMemo(() => {
+    if (!task) return STUDIO_GENERATORS;
+
+    const keywords = [
+      ...(task.taskTypeNames || []),
+      ...(task.requiredDocTypes || []),
+      task.title || '',
+      task.description || '',
+    ].map((s) => String(s).toLowerCase());
+
+    const matched = STUDIO_GENERATORS.filter((gen) => {
+      const gId = gen.id.toLowerCase();
+
+      return keywords.some((kw) => {
+        if (kw.includes('bio-data') || kw.includes('guardian') || kw.includes('client form') || kw.includes('client-form') || kw.includes('intake')) {
+          return gId === 'client-form';
+        }
+        if (kw.includes('agreement') || kw.includes('contract') || kw.includes('deed')) {
+          return gId === 'agreement';
+        }
+        if (kw.includes('indian visa') || kw.includes('ivac') || kw.includes('indian-visa') || kw.includes('delhi')) {
+          return gId === 'indian-visa';
+        }
+        if (kw.includes('passport custody') || kw.includes('passport submission') || kw.includes('passport-sub')) {
+          return gId === 'passport-sub';
+        }
+        if (kw.includes('job verification') || kw.includes('job-verification') || kw.includes('experience')) {
+          return gId === 'job-verification';
+        }
+        if (kw.includes('receipt') || kw.includes('payment') || kw.includes('money-receipt') || kw.includes('payslip')) {
+          return gId === 'money-receipt';
+        }
+        if (kw.includes('invoice') || kw.includes('bill')) {
+          return gId === 'invoice';
+        }
+        return false;
+      });
+    });
+
+    return matched.length > 0 ? matched : STUDIO_GENERATORS;
+  }, [task]);
+
+  // Multi-Row Document Upload State (Pre-populated strictly with assigned forms)
   const [uploadRows, setUploadRows] = useState(() => {
+    if (task?.taskTypeNames && Array.isArray(task.taskTypeNames) && task.taskTypeNames.length > 0) {
+      return task.taskTypeNames.map((name, i) => ({
+        id: `row-${i + 1}`,
+        title: name,
+        file: null,
+        accessLevel: 'Restricted',
+      }));
+    }
     if (task?.requiredDocTypes && Array.isArray(task.requiredDocTypes) && task.requiredDocTypes.length > 0) {
       return task.requiredDocTypes.map((docKey, i) => ({
         id: `row-${i + 1}`,
@@ -120,7 +242,7 @@ export function TaskDetailModal({
       }));
     }
     return [
-      { id: 'row-1', title: 'Passport Copy (Bio-Page)', file: null, accessLevel: 'Restricted' },
+      { id: 'row-1', title: '', file: null, accessLevel: 'Restricted' },
     ];
   });
   const [isBatchUploading, setIsBatchUploading] = useState(false);
@@ -136,7 +258,16 @@ export function TaskDetailModal({
         setActiveTab('upload');
       }
 
-      if (task.requiredDocTypes && Array.isArray(task.requiredDocTypes) && task.requiredDocTypes.length > 0) {
+      if (task.taskTypeNames && Array.isArray(task.taskTypeNames) && task.taskTypeNames.length > 0) {
+        setUploadRows(
+          task.taskTypeNames.map((name, i) => ({
+            id: `row-${i + 1}`,
+            title: name,
+            file: null,
+            accessLevel: 'Restricted',
+          }))
+        );
+      } else if (task.requiredDocTypes && Array.isArray(task.requiredDocTypes) && task.requiredDocTypes.length > 0) {
         setUploadRows(
           task.requiredDocTypes.map((docKey, i) => ({
             id: `row-${i + 1}`,
@@ -145,9 +276,18 @@ export function TaskDetailModal({
             accessLevel: 'Restricted',
           }))
         );
+      } else if (assignedFormOptions.length > 0 && assignedFormOptions !== DOCUMENT_NAME_PRESETS) {
+        setUploadRows(
+          assignedFormOptions.map((name, i) => ({
+            id: `row-${i + 1}`,
+            title: name,
+            file: null,
+            accessLevel: 'Restricted',
+          }))
+        );
       }
     }
-  }, [task]);
+  }, [task, assignedFormOptions]);
 
   // File Preview Modal State (View only, no download)
   const [viewingFile, setViewingFile] = useState(null);
@@ -571,12 +711,16 @@ export function TaskDetailModal({
                         <select
                           value={row.title}
                           onChange={(e) => handleUpdateRow(row.id, 'title', e.target.value)}
-                          className="w-full h-8 px-2 text-xs bg-muted/40 border border-border rounded-md text-foreground focus:outline-none focus:border-primary cursor-pointer"
+                          className="w-full h-8 px-2 text-xs bg-muted/40 border border-border rounded-md text-foreground focus:outline-none focus:border-primary cursor-pointer font-semibold"
                         >
-                          <option value="">Select Document Type / Preset...</option>
-                          {DOCUMENT_NAME_PRESETS.map((preset) => (
-                            <option key={preset} value={preset}>
-                              {preset}
+                          <option value="">
+                            {assignedFormOptions !== DOCUMENT_NAME_PRESETS
+                              ? `Select Assigned Form (${assignedFormOptions.length} available)...`
+                              : 'Select Document Type / Preset...'}
+                          </option>
+                          {assignedFormOptions.map((formName) => (
+                            <option key={formName} value={formName}>
+                              {formName}
                             </option>
                           ))}
                         </select>
@@ -762,7 +906,7 @@ export function TaskDetailModal({
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 pt-1">
-                  {STUDIO_GENERATORS.map((gen) => {
+                  {assignedStudioGenerators.map((gen) => {
                     const Icon = gen.icon;
                     return (
                       <div
