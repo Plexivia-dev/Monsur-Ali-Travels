@@ -13,16 +13,19 @@ import {
   FileText,
   ShieldCheck,
   CreditCard,
+  Plus,
 } from 'lucide-react';
 import { apiClient } from '@/lib/api-client';
 import { toast } from 'sonner';
+import { CaseFileCreationModal } from './CaseFileCreationModal';
 
-export function AgencyClientList() {
+export function AgencyClientList({ autoOpenCreate = false }) {
   const [clients, setClients] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const [selectedClient, setSelectedClient] = useState(null);
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(Boolean(autoOpenCreate));
   const [page, setPage] = useState(1);
   const pageSize = 12;
 
@@ -90,13 +93,21 @@ export function AgencyClientList() {
                 Client Directory
               </h1>
               <p className="text-xs text-zinc-400 font-medium">
-                Comprehensive roster of registered agency clients (Read-Only Access)
+                Comprehensive roster of registered agency clients and candidate dossiers
               </p>
             </div>
           </div>
         </div>
 
         <div className="flex items-center gap-3">
+          <button
+            type="button"
+            onClick={() => setIsCreateModalOpen(true)}
+            className="flex items-center gap-2 px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-xs font-bold rounded-xl text-white transition-colors cursor-pointer shadow-md"
+          >
+            <Plus className="size-3.5" />
+            <span>+ New Case / Intake</span>
+          </button>
           <button
             type="button"
             onClick={fetchClients}
@@ -384,6 +395,16 @@ export function AgencyClientList() {
           </div>
         </div>
       )}
+
+      {/* 5-Step Case Creation Modal */}
+      <CaseFileCreationModal
+        isOpen={isCreateModalOpen}
+        onClose={() => setIsCreateModalOpen(false)}
+        onSuccess={() => {
+          setIsCreateModalOpen(false);
+          fetchClients();
+        }}
+      />
     </div>
   );
 }
