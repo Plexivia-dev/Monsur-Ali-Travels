@@ -1,5 +1,5 @@
 import React from 'react';
-import { usePortalStore } from '../../store/usePortalStore';
+import { usePortalStore } from '@client/store/usePortalStore';
 import { CheckCircle2, AlertTriangle, Info, XCircle, X } from 'lucide-react';
 
 export const ToastContainer = () => {

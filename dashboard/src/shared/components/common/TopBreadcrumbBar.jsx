@@ -1,6 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { usePortalStore } from '../../store/usePortalStore';
+import { usePortalStore } from '@client/store/usePortalStore';
 import {
   ArrowLeft,
   ChevronRight,
