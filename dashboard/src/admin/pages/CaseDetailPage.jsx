@@ -511,6 +511,21 @@ export default function CaseDetailPage() {
     }
   };
 
+  const handleTriggerIndianVisa = async () => {
+    if (!caseData) return;
+    try {
+      const res = await apiClient.post(`/api/v1/admin/cases/${caseData.did || caseData._id}/indian-visa-subpipeline`);
+      toast.success(res.data?.message || 'Indian Visa Sub-Pipeline activated!');
+      fetchCaseDetails();
+      if (res.data?.data?.documentStudioUrl) {
+        navigate(res.data.data.documentStudioUrl);
+      }
+    } catch (err) {
+      console.error('Indian visa trigger error:', err);
+      toast.error(err.response?.data?.message || 'Failed to activate Indian Visa sub-pipeline.');
+    }
+  };
+
   if (loading) {
     return (
       <div className="py-32 flex flex-col items-center justify-center space-y-3">
@@ -695,6 +710,14 @@ export default function CaseDetailPage() {
             >
               <UploadCloud className="w-3.5 h-3.5" />
               <span>Upload Document</span>
+            </button>
+
+            <button
+              onClick={handleTriggerIndianVisa}
+              className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-amber-600 hover:bg-amber-500 text-white text-xs font-bold shadow-xs transition cursor-pointer"
+            >
+              <Globe2 className="w-3.5 h-3.5" />
+              <span>🇮🇳 Indian Visa Pipeline</span>
             </button>
 
             <button

@@ -698,31 +698,64 @@ export default function ClientDetailPage() {
         </div>
       )}
 
-      {/* Tab 5: Documents Vault */}
+      {/* Tab 5: Documents Vault (Unified 360° Dossier Explorer) */}
       {activeTab === 'documents' && (
         <div className="space-y-4">
-          <h3 className="text-sm font-bold text-foreground flex items-center gap-2">
-            <FileText className="size-4 text-primary" />
-            <span>Client Documents Vault</span>
-          </h3>
+          <div className="flex items-center justify-between flex-wrap gap-2">
+            <div>
+              <h3 className="text-sm font-black text-foreground flex items-center gap-2">
+                <FileText className="size-4 text-primary" />
+                <span>Client 360° Unified Document Dossier</span>
+              </h3>
+              <p className="text-[11px] text-muted-foreground mt-0.5">
+                Central archive of all uploaded scans, legal contracts, guardian affidavits, and official visa files.
+              </p>
+            </div>
 
+            <button
+              type="button"
+              onClick={() => {
+                const clientDid = client?.did || id;
+                navigate(`/admin/docs/client-form?clientDid=${clientDid}&returnUrl=${encodeURIComponent(`/admin/clients/${id}?tab=documents`)}`);
+              }}
+              className="flex items-center gap-1.5 px-3.5 py-1.5 bg-primary text-primary-foreground text-xs font-bold rounded-xl shadow-xs hover:bg-primary/90 transition cursor-pointer"
+            >
+              <Plus className="size-3.5" />
+              <span>Generate Studio Document</span>
+            </button>
+          </div>
+
+          {/* Unified Document Grid */}
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-            <div className="p-5 rounded-2xl border border-border bg-card shadow-xs space-y-3">
+            {/* 1. Passport Scan Record */}
+            <div className="p-4 rounded-2xl border border-border bg-card shadow-xs space-y-3">
               <div className="flex items-center justify-between">
                 <span className="text-xs font-bold text-foreground flex items-center gap-1.5">
                   <FileCheck className="size-4 text-sky-500" />
                   Passport Scan Copy
                 </span>
-                <span className="text-[10px] px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-600 font-bold border border-emerald-500/20">
-                  Verified
+                <span className={`text-[10px] px-2 py-0.5 rounded font-bold ${client.attachments?.passportScan || client.passportNumber ? 'bg-emerald-500/10 text-emerald-600 border border-emerald-500/20' : 'bg-muted text-muted-foreground'}`}>
+                  {client.attachments?.passportScan || client.passportNumber ? 'Active' : 'Pending'}
                 </span>
               </div>
               <p className="text-[11px] font-mono text-muted-foreground">
-                Number: {client.passportNumber || 'N/A'}
+                Number: <strong className="text-foreground">{client.passportNumber || 'N/A'}</strong>
               </p>
+              {client.attachments?.passportScan && (
+                <a
+                  href={client.attachments.passportScan}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="inline-flex items-center gap-1 text-xs font-bold text-primary hover:underline"
+                >
+                  <ExternalLink className="size-3" />
+                  <span>View Passport Scan</span>
+                </a>
+              )}
             </div>
 
-            <div className="p-5 rounded-2xl border border-border bg-card shadow-xs space-y-3">
+            {/* 2. National ID (NID) Scan Record */}
+            <div className="p-4 rounded-2xl border border-border bg-card shadow-xs space-y-3">
               <div className="flex items-center justify-between">
                 <span className="text-xs font-bold text-foreground flex items-center gap-1.5">
                   <FileText className="size-4 text-purple-500" />
@@ -735,13 +768,79 @@ export default function ClientDetailPage() {
                       : 'bg-muted text-muted-foreground'
                   }`}
                 >
-                  {client.nidNumber ? 'Uploaded' : 'Pending'}
+                  {client.nidNumber ? 'Verified' : 'Not submitted'}
                 </span>
               </div>
               <p className="text-[11px] font-mono text-muted-foreground">
-                NID: {client.nidNumber || 'Not submitted'}
+                NID: <strong className="text-foreground">{client.nidNumber || 'N/A'}</strong>
               </p>
+              {client.attachments?.nidScan && (
+                <a
+                  href={client.attachments.nidScan}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="inline-flex items-center gap-1 text-xs font-bold text-primary hover:underline"
+                >
+                  <ExternalLink className="size-3" />
+                  <span>View NID Scan</span>
+                </a>
+              )}
             </div>
+
+            {/* 3. Generated Vault Documents List */}
+            {(client.vaultDocuments || []).map((doc, idx) => (
+              <div key={doc.did || doc._id || idx} className="p-4 rounded-2xl border border-border bg-card shadow-xs space-y-3">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-bold text-foreground flex items-center gap-1.5 truncate">
+                    <ShieldCheck className="size-4 text-emerald-500 shrink-0" />
+                    <span className="truncate">{doc.documentName || 'Official Document'}</span>
+                  </span>
+                  <span className="text-[10px] px-2 py-0.5 rounded bg-sky-500/10 text-sky-600 font-bold border border-sky-500/20 shrink-0">
+                    Vault PDF
+                  </span>
+                </div>
+                <p className="text-[11px] text-muted-foreground truncate">
+                  Uploaded by: {doc.uploadedByName || 'System Engine'}
+                </p>
+                {doc.fileUrl && (
+                  <a
+                    href={doc.fileUrl}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="inline-flex items-center gap-1 text-xs font-bold text-primary hover:underline"
+                  >
+                    <ExternalLink className="size-3" />
+                    <span>View / Print Document</span>
+                  </a>
+                )}
+              </div>
+            ))}
+
+            {/* 4. Generated Agreements List */}
+            {(client.agreements || []).map((agr, idx) => (
+              <div key={agr.did || agr._id || idx} className="p-4 rounded-2xl border border-border bg-card shadow-xs space-y-3">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-bold text-foreground flex items-center gap-1.5 truncate">
+                    <FileText className="size-4 text-amber-500 shrink-0" />
+                    <span className="truncate">Employment Agreement</span>
+                  </span>
+                  <span className="text-[10px] px-2 py-0.5 rounded bg-amber-500/10 text-amber-700 dark:text-amber-300 font-bold border border-amber-500/20 shrink-0">
+                    Legal Contract
+                  </span>
+                </div>
+                <p className="text-[11px] font-mono text-muted-foreground truncate">
+                  ID: {agr.agreementId || 'AGR'}
+                </p>
+                <button
+                  type="button"
+                  onClick={() => navigate(`/admin/docs/agreement?clientDid=${client.did}&returnUrl=${encodeURIComponent(`/admin/clients/${id}?tab=documents`)}`)}
+                  className="inline-flex items-center gap-1 text-xs font-bold text-primary hover:underline cursor-pointer"
+                >
+                  <Eye className="size-3" />
+                  <span>Open in Document Studio</span>
+                </button>
+              </div>
+            ))}
           </div>
         </div>
       )}

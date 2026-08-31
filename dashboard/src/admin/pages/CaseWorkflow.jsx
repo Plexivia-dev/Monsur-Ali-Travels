@@ -249,6 +249,21 @@ export default function CaseWorkflow() {
     }
   };
 
+  const handleTriggerIndianVisa = async (c) => {
+    try {
+      const caseDid = c.did || c._id;
+      const res = await apiClient.post(`/api/v1/admin/cases/${caseDid}/indian-visa-subpipeline`);
+      toast.success(res.data?.message || 'Indian Visa Sub-Pipeline activated!');
+      fetchCases();
+      if (res.data?.data?.documentStudioUrl) {
+        navigate(res.data.data.documentStudioUrl);
+      }
+    } catch (err) {
+      console.error('Indian visa trigger error:', err);
+      toast.error(err.response?.data?.message || 'Failed to activate Indian Visa sub-pipeline.');
+    }
+  };
+
   // Filter Cases
   const filteredCases = useMemo(() => {
     return cases.filter((c) => {
@@ -569,12 +584,30 @@ export default function CaseWorkflow() {
                 </div>
 
                 {/* GAP & Footer: <last updated> Date and time */}
-                <div className="pt-2.5 mt-3 border-t border-border/60 flex items-center justify-between text-[10px] text-muted-foreground">
+                <div className="pt-2.5 mt-3 border-t border-border/60 flex items-center justify-between text-[10px] text-muted-foreground gap-2">
                   <div className="flex items-center gap-1 truncate">
                     <Clock className="size-3 text-muted-foreground/70 shrink-0" />
                     <span className="truncate">{lastUpdated}</span>
                   </div>
-                  <Maximize2 className="size-3 text-muted-foreground/50 group-hover:text-primary transition-colors shrink-0" />
+                  <div className="flex items-center gap-1.5 shrink-0">
+                    {(c.destinationCountry?.toLowerCase().includes('greece') ||
+                      c.destinationCountry?.toLowerCase().includes('macedonia') ||
+                      c.destinationCountry?.toLowerCase().includes('romania') ||
+                      c.status === 'APPROVED_OFFER_LETTER') && (
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleTriggerIndianVisa(c);
+                        }}
+                        title="1-Click Indian Visa Sub-Pipeline"
+                        className="px-2 py-0.5 rounded bg-amber-500/15 hover:bg-amber-500/30 text-amber-700 dark:text-amber-300 border border-amber-500/30 text-[10px] font-bold cursor-pointer transition"
+                      >
+                        🇮🇳 Indian Visa
+                      </button>
+                    )}
+                    <Maximize2 className="size-3 text-muted-foreground/50 group-hover:text-primary transition-colors shrink-0" />
+                  </div>
                 </div>
               </div>
             );
@@ -674,18 +707,35 @@ export default function CaseWorkflow() {
 
                       {/* Action */}
                       <td className="px-4 py-3.5 text-right">
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            navigate(`/admin/cases/${caseId}`);
-                          }}
-                          className="h-7 px-2.5 text-xs font-semibold cursor-pointer gap-1"
-                        >
-                          <Eye className="size-3 text-primary" />
-                          <span>View File</span>
-                        </Button>
+                        <div className="flex items-center justify-end gap-1.5">
+                          {(c.destinationCountry?.toLowerCase().includes('greece') ||
+                            c.destinationCountry?.toLowerCase().includes('macedonia') ||
+                            c.destinationCountry?.toLowerCase().includes('romania') ||
+                            c.status === 'APPROVED_OFFER_LETTER') && (
+                            <button
+                              type="button"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleTriggerIndianVisa(c);
+                              }}
+                              className="h-7 px-2.5 rounded-lg bg-amber-500/15 hover:bg-amber-500/30 text-amber-700 dark:text-amber-300 border border-amber-500/30 text-[10px] font-bold cursor-pointer transition"
+                            >
+                              🇮🇳 Indian Visa
+                            </button>
+                          )}
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              navigate(`/admin/cases/${caseId}`);
+                            }}
+                            className="h-7 px-2.5 text-xs font-semibold cursor-pointer gap-1"
+                          >
+                            <Eye className="size-3 text-primary" />
+                            <span>View File</span>
+                          </Button>
+                        </div>
                       </td>
                     </tr>
                   );
