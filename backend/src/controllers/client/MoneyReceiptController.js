@@ -324,7 +324,7 @@ export const confirmReceipt = async (req, res, next) => {
     const isMongoId = id.match(/^[0-9a-fA-F]{24}$/);
     const query = isMongoId
       ? { _id: id, isActive: { $ne: false } }
-      : { receiptNo: id, isActive: { $ne: false } };
+      : { $or: [{ receiptNo: id }, { did: id }], isActive: { $ne: false } };
 
     const receipt = await MoneyReceiptModel.findOne(query);
     if (!receipt) {
@@ -387,7 +387,7 @@ export const cancelReceipt = async (req, res, next) => {
     const isMongoId = id.match(/^[0-9a-fA-F]{24}$/);
     const query = isMongoId
       ? { _id: id, isActive: { $ne: false } }
-      : { receiptNo: id, isActive: { $ne: false } };
+      : { $or: [{ receiptNo: id }, { did: id }], isActive: { $ne: false } };
 
     const receipt = await MoneyReceiptModel.findOne(query);
     if (!receipt) {
@@ -424,7 +424,7 @@ export const updateBankDeposit = async (req, res, next) => {
     const isMongoId = id.match(/^[0-9a-fA-F]{24}$/);
     const query = isMongoId
       ? { _id: id, isActive: { $ne: false } }
-      : { receiptNo: id, isActive: { $ne: false } };
+      : { $or: [{ receiptNo: id }, { did: id }], isActive: { $ne: false } };
 
     const receipt = await MoneyReceiptModel.findOne(query);
     if (!receipt) {
@@ -526,7 +526,7 @@ export const deleteReceipt = async (req, res, next) => {
   try {
     const { id } = req.params;
     const isMongoId = id.match(/^[0-9a-fA-F]{24}$/);
-    const query = isMongoId ? { _id: id } : { receiptNo: id };
+    const query = isMongoId ? { _id: id } : { $or: [{ receiptNo: id }, { did: id }] };
 
     const deletedReceipt = await MoneyReceiptModel.findOneAndUpdate(
       query,

@@ -4,12 +4,12 @@ module.exports = {
       name: 'erp-backend',
       script: 'src/server.js',
       cwd: './backend',
-      instances: 'max', // or 1 for single-thread
-      exec_mode: 'cluster',
+      instances: 1, // Single instance fork mode ensures seamless Socket.IO handshakes
+      exec_mode: 'fork',
       env: {
         NODE_ENV: 'production',
-        PORT: 5000,
-        CORS_ORIGINS: 'https://app.monsuralitravels.com,https://admin.monsuralitravels.com'
+        PORT: 5092,
+        ALLOWED_ORIGINS: 'https://app.monsuralitravels.com,https://admin.monsuralitravels.com,https://dashboard.monsuralitravels.com,http://localhost:8005,http://127.0.0.1:8005,http://localhost:8004,http://127.0.0.1:8004'
       },
       log_date_format: 'YYYY-MM-DD HH:mm Z',
       error_file: '../logs/pm2-backend-error.log',

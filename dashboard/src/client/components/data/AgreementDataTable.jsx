@@ -79,27 +79,27 @@ function normalizeAgreementData(item) {
       houseRent: item.salary?.houseRent || item.compensation?.houseRent || 0,
       medicalAllowance: item.salary?.medical || item.compensation?.medicalAllowance || 0,
       conveyanceAllowance: item.salary?.conveyance || item.compensation?.conveyanceAllowance || 0,
-      specialAllowance: item.__?.End_ || item.compensation?.specialAllowance || 0,
-      paymentMethod: item.__?._ || item.compensation?.paymentMethod || '  / Direct Cash',
-      paymentDate: item.__?.__ || item.compensation?.paymentDate || '    ',
+      specialAllowance: item.salary?.specialAllowance || item.compensation?.specialAllowance || 0,
+      paymentMethod: item.compensation?.paymentMethod || 'Bank Transfer / Direct Cash',
+      paymentDate: item.compensation?.paymentDate || '1st - 5th of each month',
     },
     security: {
-      guarantorName: item.__?._ || item.security?.guarantorName || '',
-      guarantorNid: item.__?.___ || item.security?.guarantorNid || '',
-      guarantorPhone: item.__?.__ || item.security?.guarantorPhone || '',
-      guarantorAddress: item.__?._ || item.security?.guarantorAddress || '',
-      depositAmount: item.__?.__ || item.security?.depositAmount || 0,
-      securityChequeNo: item.__?.__ || item.security?.securityChequeNo || '',
-      chequeBank: item.__?._ || item.security?.chequeBank || '',
+      guarantorName: item.security?.guarantorName || item.guardian?.guardianName || '',
+      guarantorNid: item.security?.guarantorNid || item.guardian?.guardianNid || '',
+      guarantorPhone: item.security?.guarantorPhone || item.guardian?.guardianPhone || '',
+      guarantorAddress: item.security?.guarantorAddress || item.guardian?.guardianAddress || '',
+      depositAmount: item.security?.depositAmount || 0,
+      securityChequeNo: item.security?.securityChequeNo || '',
+      chequeBank: item.security?.chequeBank || '',
     },
-    status: item.Status || item.status || 'Active',
-    agreementTerms: item._ || item.agreementTerms || '',
+    status: item.status || 'Active',
+    agreementTerms: item.agreementTerms || '',
     meta: {
       witness1Name: item.meta?.witness1Name || '',
       witness1Address: item.meta?.witness1Address || '',
       witness2Name: item.meta?.witness2Name || '',
       witness2Address: item.meta?.witness2Address || '',
-      firstPartySignatureName: item.meta?.firstPartySignatureName || ':  ',
+      firstPartySignatureName: item.meta?.firstPartySignatureName || 'MD. IKRAMUL HOSSAIN',
       secondPartySignatureName: item.meta?.secondPartySignatureName || item.parties?.employeeName || '',
     }
   };
@@ -155,11 +155,11 @@ export function AgreementDataTable() {
     try {
       setIsDeleting(true);
       await apiClient.delete(`/api/v1/client/docs/agreements/${deleteTarget.id}`);
-      toast.success(` "${deleteTarget.agreementId || deleteTarget.id}" Success   ।`);
+      toast.success(`Agreement "${deleteTarget.agreementId || deleteTarget.id}" deleted successfully.`);
       setDeleteTarget(null);
       fetchData(pagination.page);
     } catch (err) {
-      toast.error('   Failed ।');
+      toast.error('Failed to delete agreement.');
     } finally {
       setIsDeleting(false);
     }

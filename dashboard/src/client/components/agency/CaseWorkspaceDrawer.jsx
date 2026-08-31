@@ -143,40 +143,43 @@ const ALL_STUDIO_GENERATORS = [
 ];
 
 const getTaskStatusConfig = (status) => {
-  switch (status) {
-    case 'Approved':
-      return {
-        label: 'Approved ✓',
-        badgeClass: 'bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 border-emerald-500/30',
-        dotClass: 'bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]',
-      };
-    case 'Done':
-      return {
-        label: 'Done',
-        badgeClass: 'bg-blue-500/15 text-blue-700 dark:text-blue-300 border-blue-500/30',
-        dotClass: 'bg-blue-500 shadow-[0_0_8px_rgba(59,130,246,0.5)]',
-      };
-    case 'In Progress':
-    case 'Processing':
-      return {
-        label: 'In Progress',
-        badgeClass: 'bg-sky-500/15 text-sky-700 dark:text-sky-300 border-sky-500/30',
-        dotClass: 'bg-sky-500 animate-pulse shadow-[0_0_8px_rgba(148,165,233,0.5)]',
-      };
-    case 'Rejected':
-      return {
-        label: 'Rejected ✗',
-        badgeClass: 'bg-rose-500/15 text-rose-700 dark:text-rose-300 border-rose-500/30',
-        dotClass: 'bg-rose-500 shadow-[0_0_8px_rgba(244,63,94,0.5)]',
-      };
-    case 'Pending':
-    default:
-      return {
-        label: 'Pending',
-        badgeClass: 'bg-slate-500/10 text-slate-700 dark:text-slate-300 border-slate-300 dark:border-slate-700',
-        dotClass: 'bg-slate-400 shadow-[0_0_8px_rgba(148,163,184,0.5)]',
-      };
+  const normStatus = (status || '').trim().toLowerCase();
+
+  if (normStatus === 'approved' || normStatus === 'completed' || normStatus === 'complete') {
+    return {
+      label: 'Approved ✓',
+      badgeClass: 'bg-emerald-500/15 text-emerald-800 dark:text-emerald-300 border-emerald-500/40 shadow-xs shadow-emerald-500/10 font-bold',
+      dotClass: 'bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.8)]',
+    };
   }
+  if (normStatus === 'done' || normStatus === 'submitted') {
+    return {
+      label: 'Done',
+      badgeClass: 'bg-blue-500/15 text-blue-800 dark:text-blue-300 border-blue-500/40 shadow-xs shadow-blue-500/10 font-bold',
+      dotClass: 'bg-blue-500 shadow-[0_0_8px_rgba(59,130,246,0.8)]',
+    };
+  }
+  if (normStatus === 'in progress' || normStatus === 'processing' || normStatus === 'in_progress') {
+    return {
+      label: 'In Progress',
+      badgeClass: 'bg-sky-500/15 text-sky-800 dark:text-sky-300 border-sky-500/40 shadow-xs shadow-sky-500/10 font-bold',
+      dotClass: 'bg-sky-500 animate-pulse shadow-[0_0_8px_rgba(14,165,233,0.8)]',
+    };
+  }
+  if (normStatus === 'rejected' || normStatus === 'cancelled' || normStatus === 'failed') {
+    return {
+      label: 'Rejected ✗',
+      badgeClass: 'bg-rose-500/15 text-rose-800 dark:text-rose-300 border-rose-500/40 shadow-xs shadow-rose-500/10 font-bold',
+      dotClass: 'bg-rose-500 shadow-[0_0_8px_rgba(244,63,94,0.8)]',
+    };
+  }
+
+  // Default / Pending - Vibrant Amber Gold
+  return {
+    label: 'Pending',
+    badgeClass: 'bg-amber-500/15 text-amber-800 dark:text-amber-300 border-amber-500/40 shadow-xs shadow-amber-500/10 font-bold',
+    dotClass: 'bg-amber-500 animate-pulse shadow-[0_0_8px_rgba(245,158,11,0.8)]',
+  };
 };
 
 export function CaseWorkspaceDrawer({ caseId, isOpen, onClose, onRefresh }) {
@@ -444,7 +447,7 @@ export function CaseWorkspaceDrawer({ caseId, isOpen, onClose, onRefresh }) {
   const totalDue = ledger.dueAmount !== undefined ? ledger.dueAmount : Math.max(0, totalAgreed - totalPaid);
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-xs flex justify-end animate-in fade-in duration-200">
+    <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex justify-end animate-in fade-in duration-200">
       <div className="bg-background w-full max-w-4xl h-full shadow-2xl flex flex-col overflow-hidden border-l border-border">
         {/* Header Bar */}
         <div className="p-5 border-b border-border bg-muted/40 flex items-start justify-between gap-4">
@@ -513,17 +516,9 @@ export function CaseWorkspaceDrawer({ caseId, isOpen, onClose, onRefresh }) {
           <div className="px-6 py-3 bg-muted/20 border-b border-border flex flex-wrap items-center justify-between gap-3">
             <div className="flex items-center gap-2">
               <span className="text-xs font-bold text-muted-foreground uppercase">Processing Stage:</span>
-              <select
-                value={caseData.status || 'ENTRY'}
-                onChange={(e) => handleStageChange(e.target.value)}
-                className="px-3 py-1.5 text-xs font-bold rounded-xl border border-input bg-background text-foreground focus:outline-none cursor-pointer"
-              >
-                {PIPELINE_STAGES.map((st) => (
-                  <option key={st.id} value={st.id}>
-                    {st.title}
-                  </option>
-                ))}
-              </select>
+              <span className="px-3 py-1 text-xs font-bold rounded-xl bg-primary/10 text-primary border border-primary/20">
+                {PIPELINE_STAGES.find((st) => st.id === (caseData.status || 'ENTRY'))?.title || caseData.status || 'Processing'}
+              </span>
             </div>
 
             <div className="flex items-center gap-2 text-xs">
@@ -1038,7 +1033,7 @@ export function CaseWorkspaceDrawer({ caseId, isOpen, onClose, onRefresh }) {
 
       {/* Upload Document Modal */}
       {showUploadModal && (
-        <div className="fixed inset-0 z-60 bg-black/80 backdrop-blur-xs flex items-center justify-center p-4">
+        <div className="fixed inset-0 z-60 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
           <form
             onSubmit={handleUploadDocument}
             className="bg-card border border-border rounded-2xl max-w-md w-full p-6 space-y-4 shadow-2xl animate-in fade-in zoom-in-95 duration-200"
@@ -1159,7 +1154,7 @@ export function CaseWorkspaceDrawer({ caseId, isOpen, onClose, onRefresh }) {
 
       {/* Generate Case Document Modal */}
       {showCreateDocModal && (
-        <div className="fixed inset-0 z-60 bg-black/80 backdrop-blur-xs flex items-center justify-center p-4">
+        <div className="fixed inset-0 z-60 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
           <div className="bg-card border border-border rounded-2xl max-w-lg w-full p-6 space-y-4 shadow-2xl animate-in fade-in zoom-in-95 duration-200">
             <div className="flex items-center justify-between border-b border-border pb-3">
               <div className="flex items-center gap-2.5">

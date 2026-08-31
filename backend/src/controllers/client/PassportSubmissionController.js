@@ -1,5 +1,15 @@
+import mongoose from "mongoose";
 import { PassportSubmissionModel, generateUniquePassportTrackingNo } from "../../models/passportSubmission.model.js";
 import { NotificationModel } from "../../models/notification.model.js";
+
+// Helper to query passport submission by either MongoDB _id, did, or trackingNo
+const findPassportByIdOrTracking = async (id, extraQuery = {}) => {
+  if (!id) return null;
+  const isObjectId = mongoose.isValidObjectId(id);
+  const conditions = [{ did: id }, { trackingNo: id }];
+  if (isObjectId) conditions.push({ _id: id });
+  return PassportSubmissionModel.findOne({ $or: conditions, ...extraQuery });
+};
 
 // @desc    Get all passport submissions
 // @route   GET /api/v1/docs/passport-submissions
@@ -66,10 +76,7 @@ export const getPassportSubmissions = async (req, res, next) => {
 export const getPassportSubmissionById = async (req, res, next) => {
   try {
     const { id } = req.params;
-    const isMongoId = id.match(/^[0-9a-fA-F]{24}$/);
-    const query = isMongoId ? { _id: id, isActive: { $ne: false } } : { trackingNo: id, isActive: { $ne: false } };
-
-    const submission = await PassportSubmissionModel.findOne(query);
+    const submission = await findPassportByIdOrTracking(id, { isActive: { $ne: false } });
     if (!submission) {
       return res.status(404).json({
         status: "error",
@@ -110,20 +117,22 @@ export const createPassportSubmission = async (req, res, next) => {
 export const updatePassportSubmission = async (req, res, next) => {
   try {
     const { id } = req.params;
-    const isMongoId = id.match(/^[0-9a-fA-F]{24}$/);
-    const query = isMongoId ? { _id: id } : { trackingNo: id };
-
-    const updatedSubmission = await PassportSubmissionModel.findOneAndUpdate(query, req.body, {
-      new: true,
-      runValidators: true,
-    });
-
-    if (!updatedSubmission) {
+    const existing = await findPassportByIdOrTracking(id);
+    if (!existing) {
       return res.status(404).json({
         status: "error",
         message: "Passport submission record not found",
       });
     }
+
+    const updatedSubmission = await PassportSubmissionModel.findOneAndUpdate(
+      { _id: existing._id },
+      req.body,
+      {
+        new: true,
+        runValidators: true,
+      }
+    );
 
     return res.status(200).json({
       status: "success",
@@ -140,16 +149,19 @@ export const updatePassportSubmission = async (req, res, next) => {
 export const deletePassportSubmission = async (req, res, next) => {
   try {
     const { id } = req.params;
-    const isMongoId = id.match(/^[0-9a-fA-F]{24}$/);
-    const query = isMongoId ? { _id: id } : { trackingNo: id };
-
-    const deletedSubmission = await PassportSubmissionModel.findOneAndUpdate(query, { isActive: false }, { new: true });
-    if (!deletedSubmission) {
+    const existing = await findPassportByIdOrTracking(id);
+    if (!existing) {
       return res.status(404).json({
         status: "error",
         message: "Passport submission record not found",
       });
     }
+
+    await PassportSubmissionModel.findOneAndUpdate(
+      { _id: existing._id },
+      { isActive: false },
+      { new: true }
+    );
 
     return res.status(200).json({
       status: "success",
@@ -166,11 +178,8 @@ export const updatePassportStage = async (req, res, next) => {
   try {
     const { status, note, document } = req.body;
     const { id } = req.params;
-    const isMongoId = id.match(/^[0-9a-fA-F]{24}$/);
-    const query = isMongoId ? { _id: id } : { trackingNo: id };
 
-    const doc = await PassportSubmissionModel.findOne(query);
-
+    const doc = await findPassportByIdOrTracking(id);
     if (!doc) {
       return res.status(404).json({
         status: "fail",
@@ -225,7 +234,7 @@ export const updatePassportStage = async (req, res, next) => {
       data: doc,
       message: `Passport processing status updated to ${status}.`,
     });
-  } catch (err) {
-    next(err);
+  } catch (error) {
+    next(error);
   }
 };

@@ -12,27 +12,35 @@
 | **IP**      | `144.79.218.241`       |
 | **User**    | `root`                 |
 | **Port**    | `22`                   |
-| **SSH Key** | `C:\Users\mdikr\.ssh\id_ed25519_ikramul` |
+| **SSH Key** | `~/.ssh/id_ed25519_ikramul` (`C:\Users\dev\.ssh\id_ed25519_ikramul`) |
 | **Project Path** | `/opt/monsuralitravels` |
 
 ### SSH Connect Command
+Direct access (configured in `~/.ssh/config`):
 ```bash
-ssh -i C:\Users\mdikr\.ssh\id_ed25519_ikramul root@144.79.218.241
+ssh root@144.79.218.241
+# or simply:
+ssh mat-vps
+```
+
+Explicit key command:
+```bash
+ssh -i C:\Users\dev\.ssh\id_ed25519_ikramul root@144.79.218.241
 ```
 
 ### Deploy / Update Production
 ```bash
-ssh -i C:\Users\mdikr\.ssh\id_ed25519_ikramul root@144.79.218.241 "cd /opt/monsuralitravels && chmod +x ./prod-update.sh && ./prod-update.sh"
+ssh mat-vps "cd /opt/monsuralitravels && make deploy"
 ```
 
 ### View Logs
 ```bash
-ssh -i C:\Users\mdikr\.ssh\id_ed25519_ikramul root@144.79.218.241 "cd /opt/monsuralitravels && docker compose -f docker-compose.prod.yml logs -f"
+ssh mat-vps "cd /opt/monsuralitravels && make logs"
 ```
 
 ### Container Status
 ```bash
-ssh -i C:\Users\mdikr\.ssh\id_ed25519_ikramul root@144.79.218.241 "cd /opt/monsuralitravels && docker compose -f docker-compose.prod.yml ps"
+ssh mat-vps "cd /opt/monsuralitravels && make status"
 ```
 
 ---

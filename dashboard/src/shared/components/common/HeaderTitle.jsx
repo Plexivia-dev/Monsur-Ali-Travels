@@ -75,7 +75,10 @@ export function HeaderTitle({
               <span className="truncate">{title}</span>
             </h1>
             {badge && (
-              <span className="text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-sky-500/20 text-sky-300 border border-sky-400/30">
+              <span
+                className="text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-sky-500/20 text-sky-300 border border-sky-400/30 truncate max-w-xs sm:max-w-md inline-block"
+                title={typeof badge === 'string' ? badge : undefined}
+              >
                 {badge}
               </span>
             )}

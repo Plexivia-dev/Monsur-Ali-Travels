@@ -1,6 +1,9 @@
+import mongoose from "mongoose";
 import TaskModel from "../../models/task.model.js";
 import CaseFile from "../../models/caseFile.model.js";
+import MoneyReceiptModel, { generateReceiptTokenNo } from "../../models/moneyReceipt.model.js";
 import { NotificationModel } from "../../models/notification.model.js";
+import { generateDid } from "../../utils/generateDid.js";
 import { sendTaskCompletedEmailToOwners } from "../../services/emailNotification.service.js";
 
 /**
@@ -35,15 +38,24 @@ export const getMyTasks = async (req, res) => {
 
 /**
  * 2. Mark Task as Done (Staff Scope)
- * Staff submits completion notes and updates task status to 'Done'
+ * Staff submits completion notes, payment intake, and updates task status to 'Done'
  */
 export const markTaskDone = async (req, res) => {
   try {
     const { taskId } = req.params;
-    const { completionNotes } = req.body;
+    const {
+      completionNotes,
+      paymentCollectedAmount,
+      paymentMethod,
+      paymentSlipUrl,
+      generateMoneyReceipt,
+    } = req.body || {};
     const userDid = req.user?.did;
 
-    const task = await TaskModel.findOne({ did: taskId });
+    const isMongoId = mongoose.isValidObjectId(taskId);
+    const conditions = [{ did: taskId }];
+    if (isMongoId) conditions.push({ _id: taskId });
+    const task = await TaskModel.findOne({ $or: conditions });
     if (!task) {
       return res.status(404).json({ status: "error", message: "Task not found" });
     }
@@ -57,14 +69,103 @@ export const markTaskDone = async (req, res) => {
     if (completionNotes) task.completionNotes = completionNotes;
     task.updatedByDid = userDid;
 
+    // Handle Payment Collection & Pay Slip / Money Receipt Creation
+    const collected = Number(paymentCollectedAmount) || (task.requiresPayment ? Number(task.paymentAmount) : 0);
+    if (collected > 0) {
+      task.paymentCollectedAmount = collected;
+      task.paymentMethod = paymentMethod || "Cash";
+      if (paymentSlipUrl) task.paymentSlipUrl = paymentSlipUrl;
+
+      // Find Case File to attach receipt details
+      const isCaseMongoId = mongoose.isValidObjectId(task.caseDid);
+      const caseConditions = [{ did: task.caseDid }, { caseNumber: task.caseDid }];
+      if (isCaseMongoId) caseConditions.push({ _id: task.caseDid });
+      const caseDoc = await CaseFile.findOne({ $or: caseConditions });
+
+      if (generateMoneyReceipt || task.requirePaySlip || collected > 0) {
+        try {
+          const receiptNo = generateReceiptTokenNo();
+          const clientName = caseDoc ? (caseDoc.applicantName || caseDoc.clientInfo?.fullName || "Client") : "Client";
+          const newReceipt = await MoneyReceiptModel.create({
+            did: generateDid(),
+            receiptNo,
+            clientName,
+            clientPhone: caseDoc ? (caseDoc.phone || "") : "",
+            passportNumber: caseDoc ? (caseDoc.passportNumber || "") : "",
+            clientDid: caseDoc ? caseDoc.clientDid : null,
+            amount: collected,
+            currency: task.paymentCurrency || "BDT",
+            paymentMethod: paymentMethod || "Cash",
+            serviceType: "Visa & Case Processing Fee",
+            purpose: task.paymentPurpose || task.title,
+            serviceRef: {
+              modelName: "CaseFile",
+              trackingId: caseDoc ? (caseDoc.caseNumber || caseDoc.did) : task.caseDid,
+            },
+            status: "confirmed",
+            createdByDid: userDid,
+            createdByName: req.user?.name || "Staff",
+            receivedBy: req.user?.name || "Accounts Officer",
+            notes: completionNotes || `Collected during Step ${task.stepNumber || 1}: ${task.title}`,
+          });
+
+          task.moneyReceiptDid = newReceipt.did;
+          task.moneyReceiptNumber = newReceipt.receiptNo;
+        } catch (receiptErr) {
+          console.warn("[markTaskDone] Auto Money Receipt generation notice:", receiptErr.message);
+        }
+      }
+    }
+
     await task.save();
 
-    // Trigger Admin notification
+    // Synchronize Case File: Record step completion in history and reset active assignment
+    try {
+      const isCaseMongoId = mongoose.isValidObjectId(task.caseDid);
+      const caseConditions = [{ did: task.caseDid }, { caseNumber: task.caseDid }];
+      if (isCaseMongoId) caseConditions.push({ _id: task.caseDid });
+
+      const caseDoc = await CaseFile.findOne({ $or: caseConditions });
+      if (caseDoc) {
+        const staffName = req.user?.name || "Staff Member";
+        const stepNum = task.stepNumber || 1;
+
+        caseDoc.workflowStatus = `Step ${stepNum} Done (${task.title}) — Awaiting Admin Review`;
+        caseDoc.assignedToDid = null;
+        caseDoc.assignedToName = "";
+        caseDoc.assignedOfficer = "";
+
+        if (!Array.isArray(caseDoc.statusHistory)) {
+          caseDoc.statusHistory = [];
+        }
+
+        const paymentNote = task.paymentCollectedAmount
+          ? ` [Collected: ৳${task.paymentCollectedAmount.toLocaleString()} (${task.paymentMethod || "Cash"})${task.moneyReceiptNumber ? ` • Receipt #${task.moneyReceiptNumber}` : ""}]`
+          : "";
+
+        caseDoc.statusHistory.push({
+          status: `Step ${stepNum} Done`,
+          remarks: `Step "${task.title}" completed by ${staffName}: ${completionNotes || "Work submitted"}${paymentNote}`,
+          updatedByDid: userDid,
+          updatedByName: staffName,
+          assignedToDid: userDid,
+          date: new Date(),
+        });
+
+        await caseDoc.save();
+      }
+    } catch (caseSyncErr) {
+      console.warn("[taskController] CaseFile sync notice:", caseSyncErr.message);
+    }
+
+    // Trigger Admin notification (targeted to Admin/Owner only)
     await NotificationModel.create({
       title: "Task Marked as Done",
-      message: `Task "${task.title}" for Case ${task.caseDid} was marked Done by ${req.user?.name || "Staff"}.`,
+      message: `Task "${task.title}" for Case ${task.caseDid} was marked Done by ${req.user?.name || "Staff"}.${task.paymentCollectedAmount ? ` (Payment Collected: ৳${task.paymentCollectedAmount})` : ""}`,
       module: "visa",
       type: "success",
+      recipientRole: "Admin",
+      createdByDid: userDid,
       createdBy: req.user?.name || "Staff",
     }).catch(() => {});
 

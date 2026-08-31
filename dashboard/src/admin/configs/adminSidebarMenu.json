@@ -52,6 +52,14 @@
             "path": "/admin/employees",
             "icon": "UserCheck",
             "roles": ["owner", "superadmin", "admin", "accountant", "accounts"]
+          },
+          {
+            "id": "agency-settings",
+            "name": "Settings",
+            "nameBn": "",
+            "path": "/admin/settings",
+            "icon": "Settings",
+            "roles": ["owner", "superadmin", "admin", "manager"]
           }
         ]
       }

@@ -2,7 +2,7 @@ import axios from 'axios';
 import { handleGlobalError } from './error-handler';
 
 export const API_BASE_URL =
-  import.meta.env?.VITE_API_BASE_URL ||'https://api.monsuralitravels.com';
+  import.meta.env?.VITE_API_BASE_URL || 'https://api.monsuralitravels.com';
 
 export const apiClient = axios.create({
   baseURL: API_BASE_URL,

@@ -261,7 +261,11 @@ const CreateClientModal = ({ isOpen, onClose, onSuccess }) => {
 
   return (
     <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4">
-      <div className="bg-zinc-950 rounded-2xl border border-zinc-800 text-zinc-100 shadow-2xl max-w-2xl w-full max-h-[92vh] flex flex-col overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+      <div className="bg-linear-to-r from-sky-950 via-indigo-950 to-slate-950 rounded-2xl sm:rounded-3xl border border-sky-800/40 text-white shadow-2xl max-w-2xl w-full max-h-[92vh] flex flex-col overflow-hidden relative animate-in fade-in zoom-in-95 duration-200">
+        {/* Decorative ambient background glows */}
+        <div className="absolute -top-24 -right-24 w-72 h-72 bg-sky-500/15 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute -bottom-24 -left-24 w-72 h-72 bg-indigo-500/15 rounded-full blur-3xl pointer-events-none" />
+
         {/* Unified Brand Navy-Blue Gradient Header */}
         <UnifiedModalHeader
           icon={UserPlus}
@@ -271,7 +275,7 @@ const CreateClientModal = ({ isOpen, onClose, onSuccess }) => {
         />
 
         {/* Form Body */}
-        <form onSubmit={handleSubmit} className="flex flex-col overflow-hidden flex-grow">
+        <form onSubmit={handleSubmit} className="flex flex-col overflow-hidden flex-grow relative z-10">
           <div className="p-6 overflow-y-auto space-y-5 flex-grow text-xs text-zinc-100">
             {/* ── TOP SECTION 1: SERVICE & DESTINATION ────────────────── */}
             <div className="p-4 rounded-xl bg-zinc-900/50 border border-zinc-800 space-y-4 shadow-2xs">

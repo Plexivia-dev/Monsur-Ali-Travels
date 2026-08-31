@@ -5,7 +5,11 @@
 Run this command directly in your Windows Terminal / PowerShell to log in to the VPS:
 
 ```bash
-ssh -i C:\Users\mdikr\.ssh\id_ed25519_ikramul root@144.79.218.241
+ssh root@144.79.218.241
+# or
+ssh mat-vps
+# or
+ssh -i C:\Users\dev\.ssh\id_ed25519_ikramul root@144.79.218.241
 ```
 
 ---
@@ -19,7 +23,7 @@ ssh -i C:\Users\mdikr\.ssh\id_ed25519_ikramul root@144.79.218.241
 - **Live Path:** `/opt/monsuralitravels`
 - **Uploads Storage:** `/var/www/uploads`
 - **Documents Storage:** `/var/www/documents`
-- **SSH Key Path:** `C:\Users\mdikr\.ssh\id_ed25519_ikramul`
+- **SSH Key Path:** `~/.ssh/id_ed25519_ikramul` (`C:\Users\dev\.ssh\id_ed25519_ikramul`)
 
 ---
 

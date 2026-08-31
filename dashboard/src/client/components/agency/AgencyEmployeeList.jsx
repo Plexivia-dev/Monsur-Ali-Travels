@@ -29,7 +29,7 @@ export function AgencyEmployeeList() {
   const fetchEmployees = async () => {
     setIsLoading(true);
     try {
-      const response = await apiClient.get('/api/v1/client/users');
+      const response = await apiClient.get('/api/v1/client/employees?limit=1000');
       const staffList = response.data?.data || (Array.isArray(response.data) ? response.data : []);
       setEmployees(staffList);
     } catch (err) {
@@ -50,7 +50,7 @@ export function AgencyEmployeeList() {
       const name = String(emp.name || emp.fullName || '').toLowerCase();
       const email = String(emp.email || '').toLowerCase();
       const phone = String(emp.phone || '').toLowerCase();
-      const role = String(emp.role || emp.designation || '').toLowerCase();
+      const role = String(emp.designation || emp.role || '').toLowerCase();
       const query = search.toLowerCase().trim();
 
       const matchesSearch =
@@ -70,7 +70,8 @@ export function AgencyEmployeeList() {
   const uniqueRoles = useMemo(() => {
     const set = new Set();
     employees.forEach((e) => {
-      if (e.role) set.add(e.role);
+      const r = e.designation || e.role;
+      if (r) set.add(r);
     });
     return Array.from(set);
   }, [employees]);
@@ -193,10 +194,10 @@ export function AgencyEmployeeList() {
                   const empName = emp.name || emp.fullName || 'Unnamed Staff';
                   const email = emp.email || '—';
                   const phone = emp.phone || '—';
-                  const role = emp.role || emp.designation || 'Staff';
-                  const isActive = emp.isActive !== false;
-                  const joinedDate = emp.createdAt
-                    ? new Date(emp.createdAt).toLocaleDateString('en-GB')
+                  const role = emp.designation || emp.role || 'Staff';
+                  const isActive = emp.status === 'Active' || (emp.isActive !== false && !emp.status);
+                  const joinedDate = emp.joiningDate || emp.createdAt
+                    ? new Date(emp.joiningDate || emp.createdAt).toLocaleDateString('en-GB')
                     : '—';
 
                   return (
@@ -342,7 +343,7 @@ export function AgencyEmployeeList() {
                   </div>
                 </div>
                 <span className="px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-zinc-900 border border-zinc-700 text-white">
-                  {selectedEmployee.role || 'Staff'}
+                  {selectedEmployee.designation || selectedEmployee.role || 'Staff'}
                 </span>
               </div>
 
@@ -374,7 +375,7 @@ export function AgencyEmployeeList() {
                     <span>Assigned Role</span>
                   </div>
                   <div className="text-xs font-semibold text-zinc-200">
-                    {selectedEmployee.role || 'Staff Member'}
+                    {selectedEmployee.designation || selectedEmployee.role || 'Staff Member'}
                   </div>
                 </div>
 
@@ -384,8 +385,8 @@ export function AgencyEmployeeList() {
                     <span>Joined On</span>
                   </div>
                   <div className="text-xs font-mono font-semibold text-zinc-200">
-                    {selectedEmployee.createdAt
-                      ? new Date(selectedEmployee.createdAt).toLocaleDateString('en-GB')
+                    {selectedEmployee.joiningDate || selectedEmployee.createdAt
+                      ? new Date(selectedEmployee.joiningDate || selectedEmployee.createdAt).toLocaleDateString('en-GB')
                       : '—'}
                   </div>
                 </div>

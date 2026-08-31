@@ -1,29 +1,50 @@
-﻿import { io } from 'socket.io-client';
+import { io } from 'socket.io-client';
 import { API_BASE_URL } from '@/lib/api-client';
 
 let socketInstance = null;
 
+export function getSocketUrl() {
+  if (import.meta.env?.VITE_SOCKET_URL) {
+    const customUrl = String(import.meta.env.VITE_SOCKET_URL).trim();
+    if (customUrl.startsWith('http://') || customUrl.startsWith('https://')) {
+      return customUrl;
+    }
+  }
+
+  if (API_BASE_URL && typeof API_BASE_URL === 'string') {
+    try {
+      const parsed = new URL(API_BASE_URL);
+      if (parsed.hostname !== 'localhost' && parsed.hostname !== '127.0.0.1') {
+        return parsed.origin;
+      }
+    } catch (_) {}
+  }
+
+  return 'https://api.monsuralitravels.com';
+}
+
 export function getSocket() {
   if (!socketInstance) {
-    // Connect to WebSocket server using current API_BASE_URL
-    const socketUrl = API_BASE_URL.replace(/\/api\/v1\/?$/, '');
+    const socketUrl = getSocketUrl();
     
     socketInstance = io(socketUrl, {
       transports: ['websocket', 'polling'],
       autoConnect: true,
       reconnection: true,
-      reconnectionAttempts: 10,
+      reconnectionAttempts: 15,
       reconnectionDelay: 1000,
+      reconnectionDelayMax: 5000,
+      timeout: 20000,
       withCredentials: true,
     });
 
     socketInstance.on('connect', () => {
-      console.info('[Socket.IO] Connected to live gateway:', socketInstance.id);
+      console.info('[Socket.IO] Connected to live gateway:', socketInstance.id, 'URL:', socketUrl);
       
       // Auto-join personal room if cached user exists
       try {
         const cachedUser = JSON.parse(localStorage.getItem('user') || '{}');
-        const userDid = cachedUser.did || cachedUser.id;
+        const userDid = cachedUser.did || cachedUser.id || cachedUser._id;
         if (userDid) {
           socketInstance.emit('join_room', { userDid });
         }

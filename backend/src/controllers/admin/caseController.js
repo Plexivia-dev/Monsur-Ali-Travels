@@ -2,9 +2,12 @@ import mongoose from "mongoose";
 import CaseFile from "../../models/caseFile.model.js";
 import TaskModel from "../../models/task.model.js";
 import DocumentVaultModel from "../../models/documentVault.model.js";
+import { InvoiceModel, generateUniqueInvoiceNo } from "../../models/invoice.model.js";
 import { NotificationModel } from "../../models/notification.model.js";
 import { UserModel } from "../../models/user.model.js";
+import { generateDid } from "../../utils/generateDid.js";
 import { sendTaskAssignmentEmail } from "../../services/emailService.js";
+import { sendPaymentOrBillCreatedEmailToOwners } from "../../services/emailNotification.service.js";
 
 
 export const buildCaseIdentifierQuery = (identifier) => {
@@ -108,7 +111,24 @@ export const assignTaskStep = async (req, res) => {
       return res.status(403).json({ status: "error", message: "Forbidden: Only Admin or Manager can assign tasks." });
     }
 
-    const { caseDid, title, description, assignedToDid, allowedDocumentDids, stepNumber } = req.body;
+    const {
+      caseDid,
+      title,
+      description,
+      assignedToDid,
+      allowedDocumentDids,
+      stepNumber,
+      taskTypeDids,
+      taskTypeNames,
+      requiresDocument,
+      requiredDocTypes,
+      requiresPayment,
+      paymentAmount,
+      paymentCurrency,
+      paymentPurpose,
+      sendInvoiceToClient,
+      requirePaySlip,
+    } = req.body;
     const adminDid = req.user?.did;
 
     if (!caseDid || !title || !assignedToDid) {
@@ -133,6 +153,49 @@ export const assignTaskStep = async (req, res) => {
     const assignedUserName = assignedUser?.name || "Staff Member";
     const canonicalAssignedToDid = assignedUser?.did || assignedToDid;
 
+    const parsedPaymentAmount = Number(paymentAmount) || 0;
+    const isPaymentRequired = Boolean(requiresPayment) || parsedPaymentAmount > 0;
+
+    let createdInvoiceDid = null;
+    let createdInvoiceNo = "";
+
+    // If Admin requested auto-generation and sending of Invoice to client
+    if (isPaymentRequired && sendInvoiceToClient && parsedPaymentAmount > 0) {
+      try {
+        const invoiceNo = generateUniqueInvoiceNo();
+        const clientName = caseDoc.applicantName || caseDoc.clientInfo?.fullName || "Valued Client";
+        const newInvoice = await InvoiceModel.create({
+          did: generateDid(),
+          invoiceNo,
+          issueDate: new Date().toISOString().split("T")[0],
+          dueDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().split("T")[0],
+          paymentStatus: "Pending",
+          currency: paymentCurrency || "BDT",
+          client: {
+            name: clientName,
+            phone: caseDoc.phone || "",
+            address: caseDoc.destinationCountry ? `Case File: ${caseDoc.caseNumber || caseDoc.did} (Destination: ${caseDoc.destinationCountry})` : "",
+          },
+          items: [
+            {
+              id: "item-1",
+              title: paymentPurpose || title,
+              description: `Case ${caseDoc.caseNumber || caseDoc.did} — ${title}`,
+              quantity: 1,
+              unitPrice: parsedPaymentAmount,
+            },
+          ],
+          subtotal: parsedPaymentAmount,
+          grandTotal: parsedPaymentAmount,
+        });
+
+        createdInvoiceDid = newInvoice.did;
+        createdInvoiceNo = newInvoice.invoiceNo;
+      } catch (invErr) {
+        console.warn("[assignTaskStep] Auto-invoice generation notice:", invErr.message);
+      }
+    }
+
     const newTask = await TaskModel.create({
       caseDid: caseDoc.did,
       title,
@@ -141,6 +204,18 @@ export const assignTaskStep = async (req, res) => {
       assignedToDid: canonicalAssignedToDid,
       assignedToName: assignedUserName,
       allowedDocumentDids: Array.isArray(allowedDocumentDids) ? allowedDocumentDids : [],
+      taskTypeDids: Array.isArray(taskTypeDids) ? taskTypeDids : [],
+      taskTypeNames: Array.isArray(taskTypeNames) ? taskTypeNames : [],
+      requiresDocument: requiresDocument !== false,
+      requiredDocTypes: Array.isArray(requiredDocTypes) ? requiredDocTypes : [],
+      requiresPayment: isPaymentRequired,
+      paymentAmount: parsedPaymentAmount,
+      paymentCurrency: paymentCurrency || "BDT",
+      paymentPurpose: paymentPurpose || title,
+      sendInvoiceToClient: Boolean(sendInvoiceToClient),
+      invoiceDid: createdInvoiceDid,
+      invoiceNumber: createdInvoiceNo,
+      requirePaySlip: Boolean(requirePaySlip),
       status: "Pending",
       createdByDid: adminDid,
     });
@@ -212,8 +287,8 @@ export const approveTaskStep = async (req, res) => {
     }
 
     const { taskDid } = req.params;
-    const { approvalNotes, nextStatus } = req.body;
-    const adminDid = req.user?.did;
+    const { approvalNotes, nextStatus } = req.body || {};
+    const adminDid = req.user?.did || req.user?.id;
 
     const task = await TaskModel.findOne(buildTaskIdentifierQuery(taskDid));
     if (!task) {
@@ -227,13 +302,18 @@ export const approveTaskStep = async (req, res) => {
     await task.save();
 
     // Update Case Workflow
-    const caseDoc = await CaseFile.findOne({ did: task.caseDid });
+    const caseDoc = await CaseFile.findOne(buildCaseIdentifierQuery(task.caseDid));
     if (caseDoc) {
-      caseDoc.workflowStatus = nextStatus || `Approved Step: ${task.title}`;
+      const stepNum = task.stepNumber || 1;
+      caseDoc.workflowStatus = nextStatus || `Step ${stepNum} Approved: ${task.title}`;
+      if (!Array.isArray(caseDoc.statusHistory)) {
+        caseDoc.statusHistory = [];
+      }
       caseDoc.statusHistory.push({
-        status: `Approved Step: ${task.title}`,
+        status: `Approved Step ${stepNum}: ${task.title}`,
         remarks: approvalNotes || "Task approved by admin",
         updatedByDid: adminDid,
+        updatedByName: req.user?.name || "Admin",
         date: new Date(),
       });
       await caseDoc.save();
@@ -247,6 +327,7 @@ export const approveTaskStep = async (req, res) => {
           type: "success",
           refDid: caseDoc.did,
           recipientUserDid: task.assignedToDid,
+          createdByDid: adminDid,
           createdBy: req.user?.name || "Admin",
         }).catch(() => {});
       }

@@ -15,6 +15,10 @@ import {
   lookupCase,
   bulkImportCases,
   updateWorkflowStatus,
+  addCaseInternalMessage,
+  uploadCaseDocument,
+  renameCaseDocument,
+  completeTaskStep,
 } from "../../controllers/client/caseFile.controller.js";
 import { authenticateToken, authorizeRoles } from "../../middlewares/auth.middleware.js";
 
@@ -33,8 +37,12 @@ adminCaseRouter.post("/bulk", bulkImportCases);
 adminCaseRouter.get("/:caseDid/full-details", getCaseFullDetails);
 adminCaseRouter.post("/assign-step", assignTaskStep);
 adminCaseRouter.patch("/tasks/:taskDid/approve", approveTaskStep);
+adminCaseRouter.patch("/tasks/:taskDid/complete", completeTaskStep);
 adminCaseRouter.post("/:caseDid/payments", addPayment);
 adminCaseRouter.patch("/:id/workflow", updateWorkflowStatus);
+adminCaseRouter.post("/:id/messages", addCaseInternalMessage);
+adminCaseRouter.post("/:id/documents", uploadCaseDocument);
+adminCaseRouter.patch("/:id/documents/:docDid/rename", renameCaseDocument);
 
 // Standard Case CRUD endpoints
 adminCaseRouter.get("/", getAllCases);

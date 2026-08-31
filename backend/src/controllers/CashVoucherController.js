@@ -216,3 +216,10 @@ export const generateQrEndpoint = async (req, res, next) => {
     next(error);
   }
 };
+
+// Aliases for route consistency
+export const getAllCashVouchers = getAllVouchers;
+export const getCashVoucherById = getVoucherById;
+export const createCashVoucher = createVoucher;
+export const updateCashVoucher = updateVoucher;
+export const deleteCashVoucher = deleteVoucher;

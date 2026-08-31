@@ -76,7 +76,11 @@ export async function createApp() {
       res.setHeader("Access-Control-Allow-Origin", origin);
       res.setHeader("Access-Control-Allow-Credentials", "true");
       res.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, PATCH, OPTIONS");
-      res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization, X-Requested-With, Accept, Origin");
+      const requestHeaders = req.headers["access-control-request-headers"];
+      res.setHeader(
+        "Access-Control-Allow-Headers",
+        requestHeaders || "Content-Type, Authorization, X-Requested-With, Accept, Origin, X-Two-Factor-Token, twofactortoken, x-two-factor-token, Cache-Control, Pragma"
+      );
     }
     if (req.method === "OPTIONS") {
       return res.status(204).end();
@@ -107,11 +111,17 @@ export async function createApp() {
     },
     methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
     allowedHeaders: [
+      "*",
       "Content-Type",
       "Authorization",
       "X-Requested-With",
       "Accept",
       "Origin",
+      "X-Two-Factor-Token",
+      "twofactortoken",
+      "x-two-factor-token",
+      "Cache-Control",
+      "Pragma",
     ],
     credentials: true,
     optionsSuccessStatus: 204,

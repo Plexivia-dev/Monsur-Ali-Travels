@@ -27,6 +27,7 @@ const LoginPage = () => {
   const [otpCode, setOtpCode] = useState('');
   const [is2faVerifying, setIs2faVerifying] = useState(false);
   const [isRequestingQr, setIsRequestingQr] = useState(false);
+  const [twoFactorToken, setTwoFactorToken] = useState('');
 
 
   useEffect(() => {
@@ -46,6 +47,7 @@ const LoginPage = () => {
     try {
       const res = await login(email, password);
       if (res && res.requires2fa) {
+        setTwoFactorToken(res.twoFactorToken || '');
         setStep(2);
         toast.info('Verification required. Enter the code from your Google Authenticator app.');
       } else {
@@ -68,7 +70,13 @@ const LoginPage = () => {
 
     setIs2faVerifying(true);
     try {
-      await verify2fa(email, password, cleanCode);
+      await verify2fa({
+        twoFactorToken,
+        code: cleanCode,
+        method: 'authenticator',
+        email,
+        password
+      });
       toast.success('2FA verified. Welcome to the Dashboard.');
     } catch (err) {
       handleGlobalError(err);
@@ -80,7 +88,7 @@ const LoginPage = () => {
   const handleSendQrCode = async () => {
     setIsRequestingQr(true);
     try {
-      const response = await apiClient.post('/api/v1/auth/2fa/send-qr', { email, password });
+      const response = await apiClient.post('/api/v1/auth/2fa/send-qr', { twoFactorToken, email, password });
       toast.success(response.data?.message || 'QR Code has been sent to your email.');
     } catch (err) {
       handleGlobalError(err);
@@ -92,6 +100,7 @@ const LoginPage = () => {
   const handleCancel2FA = () => {
     setStep(1);
     setOtpCode('');
+    setTwoFactorToken('');
   };
 
 

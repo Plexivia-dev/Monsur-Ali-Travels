@@ -1,6 +1,16 @@
+import mongoose from "mongoose";
 import { IndianVisaSubmissionModel } from "../../models/indianVisaSubmission.model.js";
 import { syncClientProfile } from "../../helper/clientSyncHelper.js";
 import { NotificationModel } from "../../models/notification.model.js";
+
+// Helper to query visa application by either MongoDB _id, did, or trackingNo
+const findVisaByIdOrDid = async (id, extraQuery = {}) => {
+  if (!id) return null;
+  const isObjectId = mongoose.isValidObjectId(id);
+  const conditions = [{ did: id }, { trackingNo: id }];
+  if (isObjectId) conditions.push({ _id: id });
+  return IndianVisaSubmissionModel.findOne({ $or: conditions, ...extraQuery });
+};
 
 /**
  * Controller for Indian Visa Application Submissions
@@ -72,7 +82,7 @@ export class IndianVisaController {
   // GET /api/v1/docs/indian-visas/:id
   static async getById(req, res) {
     try {
-      const doc = await IndianVisaSubmissionModel.findOne({ did: req.params.id, isActive: { $ne: false } });
+      const doc = await findVisaByIdOrDid(req.params.id, { isActive: { $ne: false } });
       if (!doc) {
         return res.status(404).json({
           status: "fail",
@@ -157,7 +167,7 @@ export class IndianVisaController {
   static async updateStage(req, res) {
     try {
       const { status, note, document } = req.body;
-      const doc = await IndianVisaSubmissionModel.findOne({ did: req.params.id });
+      const doc = await findVisaByIdOrDid(req.params.id);
 
       if (!doc) {
         return res.status(404).json({
@@ -225,19 +235,20 @@ export class IndianVisaController {
   // PUT /api/v1/docs/indian-visas/:id
   static async update(req, res) {
     try {
-      const updatedDoc = await IndianVisaSubmissionModel.findOneAndUpdate(
-        { did: req.params.id },
-        req.body,
-        { new: true, runValidators: true }
-      );
-
-      if (!updatedDoc) {
+      const existing = await findVisaByIdOrDid(req.params.id);
+      if (!existing) {
         return res.status(404).json({
           status: "fail",
           success: false,
           message: "Indian visa submission not found.",
         });
       }
+
+      const updatedDoc = await IndianVisaSubmissionModel.findOneAndUpdate(
+        { _id: existing._id },
+        req.body,
+        { new: true, runValidators: true }
+      );
 
       return res.status(200).json({
         status: "success",
@@ -258,18 +269,20 @@ export class IndianVisaController {
   // DELETE /api/v1/docs/indian-visas/:id
   static async delete(req, res) {
     try {
-      const deletedDoc = await IndianVisaSubmissionModel.findOneAndUpdate(
-        { did: req.params.id },
-        { isActive: false },
-        { new: true }
-      );
-      if (!deletedDoc) {
+      const existing = await findVisaByIdOrDid(req.params.id);
+      if (!existing) {
         return res.status(404).json({
           status: "fail",
           success: false,
           message: "Indian visa submission not found.",
         });
       }
+
+      const deletedDoc = await IndianVisaSubmissionModel.findOneAndUpdate(
+        { _id: existing._id },
+        { isActive: false },
+        { new: true }
+      );
 
       return res.status(200).json({
         status: "success",
@@ -287,3 +300,5 @@ export class IndianVisaController {
     }
   }
 }
+
+export default IndianVisaController;

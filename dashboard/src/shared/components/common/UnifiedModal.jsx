@@ -2,11 +2,10 @@ import React, { useEffect } from 'react';
 import * as LucideIcons from 'lucide-react';
 import { X, Loader2, CheckCircle2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { Button } from '@/components/ui/button';
 
 /**
  * UnifiedModalHeader
- * Renders the brand navy-blue gradient modal header matching PageTitle gradient.
+ * Renders the signature Dark Blue / Sky Indigo gradient modal header matching HeaderTitle.
  */
 export function UnifiedModalHeader({
   title,
@@ -35,19 +34,15 @@ export function UnifiedModalHeader({
   return (
     <div
       className={cn(
-        'bg-linear-to-r from-zinc-950 via-slate-950 to-black text-white p-5 border-b border-zinc-800 relative overflow-hidden select-none',
+        'p-5 sm:p-6 border-b border-sky-800/40 relative z-10 select-none bg-transparent',
         className
       )}
     >
-      {/* Decorative ambient background glows */}
-      <div className="absolute -top-20 -right-20 w-64 h-64 bg-sky-500/10 rounded-full blur-3xl pointer-events-none" />
-      <div className="absolute -bottom-20 -left-20 w-64 h-64 bg-indigo-500/10 rounded-full blur-3xl pointer-events-none" />
-
-      <div className="relative z-10 flex items-center justify-between gap-4">
+      <div className="flex items-center justify-between gap-4">
         {/* Left: Icon & Title/Subtitle */}
         <div className="flex items-center gap-3 min-w-0">
           {Icon && (
-            <div className="size-10 rounded-xl bg-sky-500/15 text-sky-400 border border-sky-500/30 flex items-center justify-center shrink-0 shadow-xs">
+            <div className="size-10 rounded-xl bg-sky-500/20 text-sky-400 border border-sky-500/40 flex items-center justify-center shrink-0 shadow-xs">
               {renderIcon('size-5 text-sky-400')}
             </div>
           )}
@@ -70,7 +65,7 @@ export function UnifiedModalHeader({
             {resolvedSubtitle && (
               <p
                 className={cn(
-                  'text-xs text-zinc-400 mt-0.5 leading-normal truncate max-w-xl',
+                  'text-xs text-sky-200/70 mt-0.5 leading-relaxed truncate max-w-xl',
                   subtitleClassName
                 )}
               >
@@ -80,15 +75,15 @@ export function UnifiedModalHeader({
           </div>
         </div>
 
-        {/* Right: Close Button with red border and red text */}
+        {/* Right: Close Button */}
         {onClose && (
           <button
             type="button"
             onClick={onClose}
-            className="p-1.5 rounded-xl bg-rose-500/10 hover:bg-rose-500/20 text-rose-500 hover:text-rose-400 border border-rose-500/40 hover:border-rose-500/80 shadow-xs transition-all cursor-pointer shrink-0 flex items-center justify-center"
+            className="p-1.5 rounded-xl bg-rose-500/15 hover:bg-rose-500/25 text-rose-400 hover:text-rose-300 border border-rose-500/40 shadow-xs transition-all cursor-pointer shrink-0 flex items-center justify-center"
             aria-label="Close modal"
           >
-            <X className="size-4 text-rose-500 stroke-[2.5]" />
+            <X className="size-4 text-rose-400 stroke-[2.5]" />
           </button>
         )}
       </div>
@@ -98,9 +93,7 @@ export function UnifiedModalHeader({
 
 /**
  * UnifiedModalFooter
- * Renders the modal action bar:
- * - Cancel button: Red tone
- * - Primary button: dynamic text, dynamic icon, and loading state
+ * Renders the modal action bar with cohesive dark glass aesthetics.
  */
 export function UnifiedModalFooter({
   onCancel,
@@ -120,7 +113,7 @@ export function UnifiedModalFooter({
   return (
     <div
       className={cn(
-        'p-4 sm:px-6 sm:py-4 border-t border-zinc-800 flex items-center justify-end gap-2.5 bg-zinc-950',
+        'p-4 sm:px-6 sm:py-4 border-t border-sky-800/40 flex items-center justify-end gap-2.5 bg-slate-950/60 backdrop-blur-md relative z-10',
         className
       )}
     >
@@ -134,7 +127,7 @@ export function UnifiedModalFooter({
                 type="button"
                 onClick={onCancel}
                 disabled={loading}
-                className="px-4 py-2 text-xs font-bold rounded-xl bg-rose-500/10 hover:bg-rose-500/20 text-rose-500 dark:text-rose-400 hover:text-rose-300 border border-rose-500/40 hover:border-rose-500/80 transition-all cursor-pointer disabled:opacity-50"
+                className="px-4 py-2 text-xs font-bold rounded-xl bg-rose-500/15 hover:bg-rose-500/25 text-rose-400 hover:text-rose-300 border border-rose-500/40 transition-all cursor-pointer disabled:opacity-50"
               >
                 {cancelText}
               </button>
@@ -145,7 +138,7 @@ export function UnifiedModalFooter({
               type={onSubmit ? 'button' : 'submit'}
               onClick={onSubmit}
               disabled={loading || disabled}
-              className="flex items-center gap-2 px-5 py-2 text-xs font-bold rounded-xl bg-primary text-primary-foreground hover:bg-primary/90 transition-all cursor-pointer shadow-md disabled:opacity-50 select-none"
+              className="flex items-center gap-2 px-5 py-2 text-xs font-bold rounded-xl bg-sky-500 hover:bg-sky-400 text-slate-950 hover:text-black transition-all cursor-pointer shadow-md shadow-sky-500/20 disabled:opacity-50 select-none"
             >
               {loading ? (
                 <Loader2 className="size-4 animate-spin" />
@@ -167,7 +160,7 @@ export function UnifiedModalFooter({
 
 /**
  * UnifiedModal
- * Standardized, accessible modal for Monsur Ali Travels ERP.
+ * Standardized, signature gradient modal for Monsur Ali Travels ERP.
  */
 export function UnifiedModal({
   isOpen,
@@ -219,12 +212,16 @@ export function UnifiedModal({
     <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4">
       <div
         className={cn(
-          'bg-zinc-950 rounded-2xl border border-zinc-800 text-zinc-100 shadow-2xl w-full flex flex-col overflow-hidden animate-in fade-in zoom-in-95 duration-200',
+          'bg-linear-to-r from-sky-950 via-indigo-950 to-slate-950 rounded-2xl sm:rounded-3xl border border-sky-800/40 text-white shadow-2xl w-full flex flex-col overflow-hidden relative animate-in fade-in zoom-in-95 duration-200',
           maxWidth,
           maxHeight,
           className
         )}
       >
+        {/* Decorative ambient background glows matching HeaderTitle */}
+        <div className="absolute -top-24 -right-24 w-72 h-72 bg-sky-500/15 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute -bottom-24 -left-24 w-72 h-72 bg-indigo-500/15 rounded-full blur-3xl pointer-events-none" />
+
         {/* Header */}
         <UnifiedModalHeader
           title={title}
@@ -236,7 +233,7 @@ export function UnifiedModal({
         />
 
         {/* Content Body */}
-        <div className={cn('p-6 overflow-y-auto flex-grow space-y-5', bodyClassName)}>
+        <div className={cn('p-6 overflow-y-auto flex-grow space-y-5 relative z-10', bodyClassName)}>
           {children}
         </div>
 

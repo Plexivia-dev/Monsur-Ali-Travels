@@ -137,15 +137,15 @@ export const Header = () => {
 
             {/* Notification Dropdown Panel */}
             {notifOpen && (
-              <div className="absolute right-0 mt-2 w-80 sm:w-96 bg-card border border-border rounded-2xl shadow-2xl z-50 overflow-hidden animate-in zoom-in-95 duration-150 text-foreground">
+              <div className="absolute right-0 mt-2 w-80 sm:w-96 bg-white border border-slate-200/90 rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.18),0_4px_16px_rgba(0,0,0,0.08)] z-50 overflow-hidden animate-in zoom-in-95 duration-150 text-slate-900">
                 {/* Header */}
-                <div className="flex items-center justify-between px-4 py-3 border-b border-border bg-black/5 dark:bg-white/5">
+                <div className="flex items-center justify-between px-4 py-3.5 border-b border-slate-100 bg-slate-50/80">
                   <div className="flex items-center gap-2">
-                    <span className="text-xs font-extrabold uppercase tracking-wider text-foreground">
+                    <span className="text-xs font-extrabold uppercase tracking-wider text-slate-900">
                       Notifications
                     </span>
                     {unreadCount > 0 && (
-                      <span className="px-1.5 py-0.5 rounded-full text-[10px] font-bold bg-black text-white dark:bg-white dark:text-black">
+                      <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-sky-100 text-sky-800 border border-sky-200">
                         {unreadCount} new
                       </span>
                     )}
@@ -155,21 +155,21 @@ export const Header = () => {
                     <button
                       type="button"
                       onClick={() => markAllNotificationsRead()}
-                      className="text-[11px] font-semibold text-muted-foreground hover:text-foreground flex items-center gap-1 transition-colors cursor-pointer"
+                      className="text-[11px] font-bold text-sky-600 hover:text-sky-800 flex items-center gap-1 transition-colors cursor-pointer"
                     >
-                      <CheckCheck className="w-3.5 h-3.5" />
+                      <CheckCheck className="w-3.5 h-3.5 text-sky-600" />
                       Mark all as read
                     </button>
                   )}
                 </div>
 
                 {/* Notifications List */}
-                <div className="max-h-80 overflow-y-auto divide-y divide-border">
+                <div className="max-h-80 overflow-y-auto divide-y divide-slate-100">
                   {notifications.length === 0 ? (
-                    <div className="p-8 text-center space-y-2 text-muted-foreground">
-                      <Bell className="w-6 h-6 mx-auto text-muted-foreground/60" />
-                      <p className="text-xs font-semibold">No notifications yet</p>
-                      <p className="text-[11px]">Real-time system updates will appear here.</p>
+                    <div className="p-8 text-center space-y-2 text-slate-500">
+                      <Bell className="w-6 h-6 mx-auto text-slate-400 opacity-40" />
+                      <p className="text-xs font-semibold text-slate-700">No notifications yet</p>
+                      <p className="text-[11px] text-slate-500">Real-time system updates will appear here.</p>
                     </div>
                   ) : (
                     notifications.map((item, idx) => {
@@ -178,36 +178,52 @@ export const Header = () => {
                         <div
                           key={item.id || item.did || idx}
                           onClick={() => handleNotificationClick(item)}
-                          className={`p-3 text-left transition-colors cursor-pointer hover:bg-neutral-50 dark:hover:bg-neutral-900/50 flex items-start gap-3 ${
-                            isUnread ? 'bg-black/5 dark:bg-white/5' : ''
+                          className={`p-3.5 text-left transition-colors cursor-pointer flex items-start gap-3 relative ${
+                            isUnread
+                              ? 'bg-sky-50/60 hover:bg-sky-50 border-l-4 border-l-sky-500'
+                              : 'bg-white hover:bg-slate-50/80 border-l-4 border-l-transparent'
                           }`}
                         >
-                          <div className="p-1.5 rounded-lg bg-black/5 dark:bg-white/10 border border-border shrink-0 mt-0.5">
+                          <div
+                            className={`p-2 rounded-xl shrink-0 mt-0.5 border shadow-2xs ${
+                              isUnread
+                                ? 'bg-white text-sky-600 border-sky-200/80'
+                                : 'bg-slate-100 text-slate-500 border-slate-200/60'
+                            }`}
+                          >
                             {item.module === 'visa' || item.module === 'task' ? (
-                              <Sparkles className="w-3.5 h-3.5 text-foreground" />
+                              <Sparkles className="w-4 h-4 text-sky-600" />
                             ) : item.module === 'invoice' ? (
-                              <FileText className="w-3.5 h-3.5 text-foreground" />
+                              <FileText className="w-4 h-4 text-indigo-600" />
                             ) : (
-                              <FolderOpen className="w-3.5 h-3.5 text-foreground" />
+                              <FolderOpen className="w-4 h-4 text-amber-600" />
                             )}
                           </div>
 
-                          <div className="flex-1 min-w-0 space-y-0.5">
+                          <div className="flex-1 min-w-0 space-y-0.5 pr-1">
                             <div className="flex items-center justify-between gap-1">
-                              <h5 className="text-xs font-bold text-foreground truncate">
+                              <h5
+                                className={`text-xs truncate ${
+                                  isUnread ? 'font-bold text-sky-950' : 'font-semibold text-slate-800'
+                                }`}
+                              >
                                 {item.title}
                               </h5>
-                              <span className="text-[10px] text-muted-foreground shrink-0 font-mono">
+                              <span className="text-[10px] text-slate-400 shrink-0 font-medium">
                                 {item.time || (item.createdAt ? new Date(item.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : 'Now')}
                               </span>
                             </div>
-                            <p className="text-[11px] text-muted-foreground line-clamp-2 leading-relaxed">
+                            <p
+                              className={`text-[11px] line-clamp-2 leading-relaxed ${
+                                isUnread ? 'text-slate-700 font-medium' : 'text-slate-500'
+                              }`}
+                            >
                               {item.message}
                             </p>
                           </div>
 
                           {isUnread && (
-                            <span className="size-2 rounded-full bg-rose-500 shrink-0 mt-1.5" />
+                            <span className="size-2 rounded-full bg-sky-500 shrink-0 mt-1.5 shadow-xs" />
                           )}
                         </div>
                       );
@@ -216,7 +232,7 @@ export const Header = () => {
                 </div>
 
                 {/* Footer */}
-                <div className="p-2 border-t border-border bg-black/5 dark:bg-white/5 text-center">
+                <div className="p-2.5 border-t border-slate-100 bg-slate-50/80 text-center">
                   <button
                     type="button"
                     onClick={() => {
@@ -224,7 +240,7 @@ export const Header = () => {
                       switchPortal('overview', 'tasks');
                       navigate('/dashboard/overview');
                     }}
-                    className="text-[11px] font-bold text-foreground hover:underline transition-all cursor-pointer"
+                    className="text-xs font-bold text-slate-700 hover:text-sky-600 transition-all cursor-pointer py-1 block w-full"
                   >
                     View Task Overview →
                   </button>

@@ -13,27 +13,50 @@ import { sendOtpEmail, send2faQrEmail } from "../../services/emailService.js";
 // Configure TOTP window to allow +/- 1 step (30 seconds) tolerance for clock drift
 authenticator.options = { window: 1 };
 
-// Helper to extract user from a short-lived 2FA session token
-const resolveUserFromTwoFactorToken = async (twoFactorToken) => {
-  if (!twoFactorToken) {
+// Helper to extract user from a short-lived 2FA session token (supports body, headers, or query)
+const resolveUserFromTwoFactorToken = async (req, bodyToken) => {
+  const authHeader = req?.headers?.authorization;
+  const bearerToken =
+    authHeader && authHeader.startsWith("Bearer ")
+      ? authHeader.slice(7).trim()
+      : null;
+  const customHeaderToken = req?.headers?.["x-two-factor-token"] || req?.headers?.["twofactortoken"];
+
+  const candidates = [
+    bodyToken,
+    req?.body?.twoFactorToken,
+    req?.body?.token,
+    customHeaderToken,
+    bearerToken,
+    req?.query?.twoFactorToken,
+  ].filter(Boolean);
+
+  if (candidates.length === 0) {
     const err = new Error("2FA session token is missing");
     err.status = 400;
     throw err;
   }
 
-  let decoded;
-  try {
-    decoded = jwt.verify(twoFactorToken, env.ACCESS_TOKEN_SECRET);
-  } catch (err) {
+  let decoded = null;
+  let hasValidToken = false;
+
+  for (const token of candidates) {
+    try {
+      const payload = jwt.verify(token, env.ACCESS_TOKEN_SECRET);
+      if (payload.purpose === "2fa_login" && payload.did) {
+        decoded = payload;
+        hasValidToken = true;
+        break;
+      }
+    } catch {
+      // Continue to test next candidate token
+    }
+  }
+
+  if (!hasValidToken || !decoded) {
     const error = new Error("Your 2FA verification session has expired. Please log in again.");
     error.status = 401;
     throw error;
-  }
-
-  if (decoded.purpose !== "2fa_login" || !decoded.did) {
-    const err = new Error("Invalid 2FA verification session token.");
-    err.status = 401;
-    throw err;
   }
 
   const user = await UserModel.findOne({ did: decoded.did }).select(
@@ -67,103 +90,63 @@ export const verify2fa = async (req, res, next) => {
 
     let user;
 
-    if (twoFactorToken) {
-      user = await resolveUserFromTwoFactorToken(twoFactorToken);
-    } else if (email && password) {
-      // Legacy fallback
-      const normalizedEmail = typeof email === "string" ? email.toLowerCase().trim() : "";
-      user = await UserModel.findOne({ email: normalizedEmail }).select(
-        "+passwordHash +twoFactorSecret +emailOtp +emailOtpExpiresAt +refreshToken +refreshTokenExpiresAt",
-      );
-      if (!user || !user.passwordHash) {
-        return res.status(401).json({ status: "error", message: "Invalid credentials" });
+    try {
+      user = await resolveUserFromTwoFactorToken(req, twoFactorToken);
+    } catch (tokenErr) {
+      if (email && password) {
+        // Legacy fallback
+        const normalizedEmail = typeof email === "string" ? email.toLowerCase().trim() : "";
+        user = await UserModel.findOne({ email: normalizedEmail }).select(
+          "+passwordHash +twoFactorSecret +emailOtp +emailOtpExpiresAt +refreshToken +refreshTokenExpiresAt",
+        );
+        if (!user || !user.passwordHash) {
+          return res.status(401).json({ status: "error", message: "Invalid credentials" });
+        }
+        const isPasswordValid = await comparePassword(password, user.passwordHash);
+        if (!isPasswordValid) {
+          return res.status(401).json({ status: "error", message: "Invalid credentials" });
+        }
+      } else {
+        return res.status(tokenErr.status || 400).json({ status: "error", message: tokenErr.message });
       }
-      const isPasswordValid = await comparePassword(password, user.passwordHash);
-      if (!isPasswordValid) {
-        return res.status(401).json({ status: "error", message: "Invalid credentials" });
-      }
-    } else {
-      return res.status(400).json({ status: "error", message: "2FA session token or login credentials required" });
     }
 
-    // 1. Google Authenticator (TOTP) Verification Method
-    if (selectedMethod === "authenticator") {
-      let isVerified = false;
+    let isVerified = false;
 
-      if (user.twoFactorSecret) {
-        isVerified =
-          authenticator.verify({ token: trimmedCode, secret: user.twoFactorSecret }) ||
-          authenticator.check(trimmedCode, user.twoFactorSecret);
+    // 1. Check Authenticator (TOTP)
+    if (user.twoFactorSecret) {
+      isVerified =
+        authenticator.verify({ token: trimmedCode, secret: user.twoFactorSecret }) ||
+        authenticator.check(trimmedCode, user.twoFactorSecret);
+    }
+
+    // 2. Fallback check Email OTP if TOTP check didn't pass
+    if (!isVerified && user.emailOtp && user.emailOtpExpiresAt) {
+      if (new Date() <= new Date(user.emailOtpExpiresAt) && user.emailOtp === trimmedCode) {
+        isVerified = true;
+        user.emailOtp = undefined;
+        user.emailOtpExpiresAt = undefined;
       }
+    }
 
-      // If TOTP check didn't pass, fallback to email OTP if active and matching
-      if (!isVerified && user.emailOtp && user.emailOtpExpiresAt) {
-        if (new Date() <= new Date(user.emailOtpExpiresAt) && user.emailOtp === trimmedCode) {
-          isVerified = true;
-          user.emailOtp = undefined;
-          user.emailOtpExpiresAt = undefined;
-        }
-      }
-
-      if (!isVerified) {
-        if (!user.twoFactorSecret) {
-          return res.status(400).json({
-            status: "error",
-            message: "Google Authenticator is not configured for your account yet. Please use Email verification or scan the setup QR code.",
-          });
-        }
-
+    if (!isVerified) {
+      if (selectedMethod === "authenticator" && !user.twoFactorSecret && !user.emailOtp) {
         return res.status(400).json({
           status: "error",
-          message: "Invalid or expired Authenticator code. Please enter the current 6-digit code shown in your app.",
+          message: "Google Authenticator is not configured for your account yet. Please use Email verification or scan the setup QR code.",
         });
       }
 
-      // Mark 2FA as permanently activated
+      return res.status(400).json({
+        status: "error",
+        message: "Invalid or expired verification code. Please check your 6-digit code and try again.",
+      });
+    }
+
+    // Mark 2FA as permanently activated
+    if (user.twoFactorSecret && !user.twoFactorEnabled) {
       user.twoFactorEnabled = true;
-      user.twoFactorMethod = "authenticator";
-    } else {
-      // 2. Email OTP Verification Method
-      let isEmailVerified = false;
-
-      if (user.emailOtp && user.emailOtpExpiresAt) {
-        if (new Date() > new Date(user.emailOtpExpiresAt)) {
-          return res.status(400).json({
-            status: "error",
-            message: "Your email verification code has expired. Please request a new code.",
-          });
-        }
-        if (user.emailOtp === trimmedCode) {
-          isEmailVerified = true;
-          user.emailOtp = undefined;
-          user.emailOtpExpiresAt = undefined;
-        }
-      }
-
-      // If email OTP failed or was not requested, check if valid TOTP authenticator code was entered
-      if (!isEmailVerified && user.twoFactorSecret) {
-        const isTotpValid =
-          authenticator.verify({ token: trimmedCode, secret: user.twoFactorSecret }) ||
-          authenticator.check(trimmedCode, user.twoFactorSecret);
-        if (isTotpValid) {
-          isEmailVerified = true;
-          user.twoFactorEnabled = true;
-          user.twoFactorMethod = "authenticator";
-        }
-      }
-
-      if (!isEmailVerified) {
-        if (!user.emailOtp) {
-          return res.status(400).json({
-            status: "error",
-            message: "No verification code was requested or the code has expired. Please click Resend Code.",
-          });
-        }
-        return res.status(400).json({
-          status: "error",
-          message: "Invalid email verification code. Please check your email and try again.",
-        });
-      }
+      user.twoFactorMethod = selectedMethod;
     }
 
     // Complete login by issuing tokens and updating login timestamp
@@ -214,8 +197,8 @@ export const resendEmailOtp = async (req, res, next) => {
     const { twoFactorToken, email } = req.body ?? {};
     let user;
 
-    if (twoFactorToken) {
-      user = await resolveUserFromTwoFactorToken(twoFactorToken);
+    if (twoFactorToken || req.headers.authorization || req.headers["x-two-factor-token"]) {
+      user = await resolveUserFromTwoFactorToken(req, twoFactorToken);
     } else if (email) {
       const normalizedEmail = typeof email === "string" ? email.toLowerCase().trim() : "";
       user = await UserModel.findOne({ email: normalizedEmail });
@@ -262,8 +245,8 @@ export const setupAuthenticator = async (req, res, next) => {
     const { twoFactorToken } = req.body ?? {};
     let user;
 
-    if (twoFactorToken) {
-      user = await resolveUserFromTwoFactorToken(twoFactorToken);
+    if (twoFactorToken || req.headers.authorization || req.headers["x-two-factor-token"]) {
+      user = await resolveUserFromTwoFactorToken(req, twoFactorToken);
     } else if (req.user?.did) {
       user = await UserModel.findOne({ did: req.user.did }).select("+twoFactorSecret");
     } else {
@@ -307,8 +290,8 @@ export const sendQrCodeEmail = async (req, res, next) => {
     const { twoFactorToken, email, password } = req.body ?? {};
     let user;
 
-    if (twoFactorToken) {
-      user = await resolveUserFromTwoFactorToken(twoFactorToken);
+    if (twoFactorToken || req.headers.authorization || req.headers["x-two-factor-token"]) {
+      user = await resolveUserFromTwoFactorToken(req, twoFactorToken);
     } else if (email && password) {
       const normalizedEmail = typeof email === "string" ? email.toLowerCase().trim() : "";
       user = await UserModel.findOne({ email: normalizedEmail }).select("+passwordHash +twoFactorSecret");

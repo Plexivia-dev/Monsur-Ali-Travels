@@ -39,40 +39,43 @@ import { Button } from '@/components/ui/button';
 import { HeaderTitle } from '@shared/components/common/HeaderTitle';
 
 const getTaskStatusConfig = (status) => {
-  switch (status) {
-    case 'Approved':
-      return {
-        label: 'Approved ✓',
-        badgeClass: 'bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 border-emerald-500/30',
-        dotClass: 'bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]',
-      };
-    case 'Done':
-      return {
-        label: 'Done',
-        badgeClass: 'bg-blue-500/15 text-blue-700 dark:text-blue-300 border-blue-500/30',
-        dotClass: 'bg-blue-500 shadow-[0_0_8px_rgba(59,130,246,0.5)]',
-      };
-    case 'In Progress':
-    case 'Processing':
-      return {
-        label: 'In Progress',
-        badgeClass: 'bg-sky-500/15 text-sky-700 dark:text-sky-300 border-sky-500/30',
-        dotClass: 'bg-sky-500 animate-pulse shadow-[0_0_8px_rgba(14,165,233,0.5)]',
-      };
-    case 'Rejected':
-      return {
-        label: 'Rejected ✗',
-        badgeClass: 'bg-rose-500/15 text-rose-700 dark:text-rose-300 border-rose-500/30',
-        dotClass: 'bg-rose-500 shadow-[0_0_8px_rgba(244,63,94,0.5)]',
-      };
-    case 'Pending':
-    default:
-      return {
-        label: 'Pending',
-        badgeClass: 'bg-slate-500/10 text-slate-700 dark:text-slate-300 border-slate-300 dark:border-slate-700',
-        dotClass: 'bg-slate-400 shadow-[0_0_8px_rgba(148,163,184,0.5)]',
-      };
+  const normStatus = (status || '').trim().toLowerCase();
+
+  if (normStatus === 'approved' || normStatus === 'completed' || normStatus === 'complete') {
+    return {
+      label: 'Approved ✓',
+      badgeClass: 'bg-emerald-500/15 text-emerald-800 dark:text-emerald-300 border-emerald-500/40 shadow-xs shadow-emerald-500/10 font-bold',
+      dotClass: 'bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.8)]',
+    };
   }
+  if (normStatus === 'done' || normStatus === 'submitted') {
+    return {
+      label: 'Done',
+      badgeClass: 'bg-blue-500/15 text-blue-800 dark:text-blue-300 border-blue-500/40 shadow-xs shadow-blue-500/10 font-bold',
+      dotClass: 'bg-blue-500 shadow-[0_0_8px_rgba(59,130,246,0.8)]',
+    };
+  }
+  if (normStatus === 'in progress' || normStatus === 'processing' || normStatus === 'in_progress') {
+    return {
+      label: 'In Progress',
+      badgeClass: 'bg-sky-500/15 text-sky-800 dark:text-sky-300 border-sky-500/40 shadow-xs shadow-sky-500/10 font-bold',
+      dotClass: 'bg-sky-500 animate-pulse shadow-[0_0_8px_rgba(14,165,233,0.8)]',
+    };
+  }
+  if (normStatus === 'rejected' || normStatus === 'cancelled' || normStatus === 'failed') {
+    return {
+      label: 'Rejected ✗',
+      badgeClass: 'bg-rose-500/15 text-rose-800 dark:text-rose-300 border-rose-500/40 shadow-xs shadow-rose-500/10 font-bold',
+      dotClass: 'bg-rose-500 shadow-[0_0_8px_rgba(244,63,94,0.8)]',
+    };
+  }
+
+  // Default / Pending - Vibrant Amber Gold
+  return {
+    label: 'Pending',
+    badgeClass: 'bg-amber-500/15 text-amber-800 dark:text-amber-300 border-amber-500/40 shadow-xs shadow-amber-500/10 font-bold',
+    dotClass: 'bg-amber-500 animate-pulse shadow-[0_0_8px_rgba(245,158,11,0.8)]',
+  };
 };
 
 export default function ClientDetailPage() {

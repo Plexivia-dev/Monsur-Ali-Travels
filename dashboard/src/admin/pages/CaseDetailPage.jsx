@@ -145,40 +145,43 @@ const PIPELINE_STAGES = [
 ];
 
 export const getTaskStatusConfig = (status) => {
-  switch (status) {
-    case 'Approved':
-      return {
-        label: 'Approved ✓',
-        badgeClass: 'bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 border-emerald-500/30',
-        dotClass: 'bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]',
-      };
-    case 'Done':
-      return {
-        label: 'Done',
-        badgeClass: 'bg-blue-500/15 text-blue-700 dark:text-blue-300 border-blue-500/30',
-        dotClass: 'bg-blue-500 shadow-[0_0_8px_rgba(59,130,246,0.5)]',
-      };
-    case 'In Progress':
-    case 'Processing':
-      return {
-        label: 'In Progress',
-        badgeClass: 'bg-sky-500/15 text-sky-700 dark:text-sky-300 border-sky-500/30',
-        dotClass: 'bg-sky-500 animate-pulse shadow-[0_0_8px_rgba(14,165,233,0.5)]',
-      };
-    case 'Rejected':
-      return {
-        label: 'Rejected ✗',
-        badgeClass: 'bg-rose-500/15 text-rose-700 dark:text-rose-300 border-rose-500/30',
-        dotClass: 'bg-rose-500 shadow-[0_0_8px_rgba(244,63,94,0.5)]',
-      };
-    case 'Pending':
-    default:
-      return {
-        label: 'Pending',
-        badgeClass: 'bg-slate-500/10 text-slate-700 dark:text-slate-300 border-slate-300 dark:border-slate-700',
-        dotClass: 'bg-slate-400 shadow-[0_0_8px_rgba(148,163,184,0.5)]',
-      };
+  const normStatus = (status || '').trim().toLowerCase();
+
+  if (normStatus === 'approved' || normStatus === 'completed' || normStatus === 'complete') {
+    return {
+      label: 'Approved ✓',
+      badgeClass: 'bg-emerald-500/15 text-emerald-800 dark:text-emerald-300 border-emerald-500/40 shadow-xs shadow-emerald-500/10 font-bold',
+      dotClass: 'bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.8)]',
+    };
   }
+  if (normStatus === 'done' || normStatus === 'submitted') {
+    return {
+      label: 'Done',
+      badgeClass: 'bg-blue-500/15 text-blue-800 dark:text-blue-300 border-blue-500/40 shadow-xs shadow-blue-500/10 font-bold',
+      dotClass: 'bg-blue-500 shadow-[0_0_8px_rgba(59,130,246,0.8)]',
+    };
+  }
+  if (normStatus === 'in progress' || normStatus === 'processing' || normStatus === 'in_progress') {
+    return {
+      label: 'In Progress',
+      badgeClass: 'bg-sky-500/15 text-sky-800 dark:text-sky-300 border-sky-500/40 shadow-xs shadow-sky-500/10 font-bold',
+      dotClass: 'bg-sky-500 animate-pulse shadow-[0_0_8px_rgba(14,165,233,0.8)]',
+    };
+  }
+  if (normStatus === 'rejected' || normStatus === 'cancelled' || normStatus === 'failed') {
+    return {
+      label: 'Rejected ✗',
+      badgeClass: 'bg-rose-500/15 text-rose-800 dark:text-rose-300 border-rose-500/40 shadow-xs shadow-rose-500/10 font-bold',
+      dotClass: 'bg-rose-500 shadow-[0_0_8px_rgba(244,63,94,0.8)]',
+    };
+  }
+
+  // Default / Pending - Vibrant Amber Gold
+  return {
+    label: 'Pending',
+    badgeClass: 'bg-amber-500/15 text-amber-800 dark:text-amber-300 border-amber-500/40 shadow-xs shadow-amber-500/10 font-bold',
+    dotClass: 'bg-amber-500 animate-pulse shadow-[0_0_8px_rgba(245,158,11,0.8)]',
+  };
 };
 
 export default function CaseDetailPage() {
@@ -302,11 +305,13 @@ export default function CaseDetailPage() {
 
   const handleApproveTask = async (taskDid) => {
     try {
-      await apiClient.patch(`/api/v1/admin/cases/tasks/${taskDid}/approve`);
+      await apiClient.patch(`/api/v1/admin/cases/tasks/${taskDid}/approve`, {
+        approvalNotes: 'Approved by Administrator',
+      });
       toast.success('Task approved and next step unlocked!');
       fetchCaseDetails();
     } catch (err) {
-      toast.error('Failed to approve task.');
+      toast.error(err.response?.data?.message || 'Failed to approve task.');
     }
   };
 
@@ -629,9 +634,11 @@ export default function CaseDetailPage() {
   activityTimeline.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
 
   const workflowTasks = caseData.workflowTasks || [];
-  // Find active task: first task that is Pending, In Progress, or Done; fallback to the latest step
-  const activeTask = workflowTasks.find((t) => t.status === 'Pending' || t.status === 'In Progress' || t.status === 'Processing' || t.status === 'Done') || workflowTasks[workflowTasks.length - 1];
-  const activeHandlerName = activeTask?.assignedToName || activeTask?.assignedTo?.name || caseData.assignedToName || caseData.assignedTo?.name || caseData.assignedOfficer || null;
+  const pendingOrActiveTask = workflowTasks.find((t) => t.status === 'Pending' || t.status === 'In Progress' || t.status === 'Processing');
+  const latestTask = workflowTasks[workflowTasks.length - 1];
+  const activeTask = pendingOrActiveTask || latestTask;
+  const isLatestTaskDone = !pendingOrActiveTask && latestTask?.status === 'Done';
+  const activeHandlerName = pendingOrActiveTask ? (pendingOrActiveTask.assignedToName || pendingOrActiveTask.assignedTo?.name || caseData.assignedToName || caseData.assignedTo?.name || caseData.assignedOfficer) : null;
   const activeTaskStatusCfg = activeTask ? getTaskStatusConfig(activeTask.status) : null;
 
   const client = caseData.clientInfo || caseData.clientId || {};
@@ -710,10 +717,10 @@ export default function CaseDetailPage() {
       />
 
       {/* Case Identity & Creator Banner */}
-      <div className="bg-card border border-border rounded-2xl p-6 shadow-xs space-y-4">
+      <div className="bg-card border border-border rounded-2xl p-5 sm:p-6 shadow-xs space-y-4">
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 border-b border-border pb-4">
-          <div className="space-y-2">
-            <div className="flex flex-wrap items-center gap-3">
+          <div className="space-y-2 min-w-0 flex-1">
+            <div className="flex flex-wrap items-center gap-2.5">
               <span className="text-xl font-black text-foreground">
                 {caseData.applicantName || caseData.clientInfo?.fullName}
               </span>
@@ -728,45 +735,58 @@ export default function CaseDetailPage() {
             {/* Active Handler & Current Task Status Pill Bar */}
             <div className="flex flex-wrap items-center gap-2 pt-0.5">
               {/* Handler Pill */}
-              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-muted/40 border border-border">
-                <UserCheck className="w-3.5 h-3.5 text-sky-500 shrink-0" />
-                <span className="text-muted-foreground font-medium">Currently Handling:</span>
-                {activeHandlerName ? (
-                  <strong className="text-foreground font-bold">{activeHandlerName}</strong>
-                ) : (
+              {isLatestTaskDone ? (
+                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-amber-500/10 border border-amber-500/30 text-amber-600 dark:text-amber-400">
+                  <CheckCircle2 className="w-3.5 h-3.5 text-amber-500 shrink-0" />
+                  <span className="font-semibold">Step {latestTask.stepNumber || 1} Done by {latestTask.assignedToName || 'Staff'}</span>
+                  <span className="text-[10px] bg-amber-500/20 px-2 py-0.5 rounded-full font-bold uppercase ml-1">
+                    Ready for Next Step
+                  </span>
                   <button
                     onClick={() => setIsAssignModalOpen(true)}
-                    className="text-primary font-bold hover:underline cursor-pointer flex items-center gap-1"
+                    className="ml-1 px-2 py-0.5 rounded bg-primary text-primary-foreground font-bold hover:bg-primary/90 cursor-pointer text-[10px]"
                   >
-                    Unassigned (+ Assign Staff)
+                    + Assign Step {(latestTask.stepNumber || 1) + 1}
                   </button>
-                )}
-              </div>
+                </div>
+              ) : activeHandlerName ? (
+                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-muted/40 border border-border">
+                  <UserCheck className="w-3.5 h-3.5 text-sky-500 shrink-0" />
+                  <span className="text-muted-foreground font-medium">Currently Handling:</span>
+                  <strong className="text-foreground font-bold">{activeHandlerName}</strong>
+                </div>
+              ) : (
+                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-muted/40 border border-border">
+                  <UserCheck className="w-3.5 h-3.5 text-muted-foreground/60 shrink-0" />
+                  <span className="text-muted-foreground font-medium">Assigned Staff:</span>
+                  <span className="text-muted-foreground">Unassigned</span>
+                  <button
+                    onClick={() => setIsAssignModalOpen(true)}
+                    className="text-primary font-bold hover:underline cursor-pointer flex items-center gap-0.5 ml-1"
+                  >
+                    (+ Assign Step)
+                  </button>
+                </div>
+              )}
 
               {/* Task Status Pill */}
               {activeTask ? (
-                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-muted/40 border border-border">
+                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-muted/40 border border-border shadow-2xs">
                   <Layers className="w-3.5 h-3.5 text-primary shrink-0" />
-                  <span className="text-muted-foreground font-medium">Status:</span>
+                  <span className="text-muted-foreground font-semibold">Status:</span>
                   <span className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-bold border ${activeTaskStatusCfg.badgeClass}`}>
                     <span className={`w-1.5 h-1.5 rounded-full ${activeTaskStatusCfg.dotClass}`} />
                     {activeTask.status || 'Pending'}
                   </span>
                 </div>
               ) : (
-                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-muted/40 border border-border text-muted-foreground">
+                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-muted/40 border border-border shadow-2xs">
                   <Layers className="w-3.5 h-3.5 text-muted-foreground/60 shrink-0" />
-                  <span className="text-muted-foreground font-medium">Status:</span>
-                  <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold border bg-slate-500/10 text-slate-600 dark:text-slate-400 border-slate-500/20">
-                    <span className="w-1.5 h-1.5 rounded-full bg-slate-400" />
-                    Unassigned
+                  <span className="text-muted-foreground font-semibold">Status:</span>
+                  <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-bold border bg-amber-500/15 text-amber-800 dark:text-amber-300 border-amber-500/40 shadow-xs shadow-amber-500/10">
+                    <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse shadow-[0_0_8px_rgba(245,158,11,0.8)]" />
+                    Pending
                   </span>
-                  <button
-                    onClick={() => setIsAssignModalOpen(true)}
-                    className="text-primary font-bold hover:underline cursor-pointer ml-1"
-                  >
-                    (+ Assign Step)
-                  </button>
                 </div>
               )}
             </div>
@@ -790,15 +810,20 @@ export default function CaseDetailPage() {
           </div>
 
           {/* Current Processing Stage Dropdown */}
-          <div className="flex items-center gap-3 bg-muted/40 p-2.5 rounded-xl border border-border shrink-0">
-            <div className="text-right">
+          <div className="flex items-center gap-3 bg-muted/40 p-2.5 rounded-xl border border-border shrink-0 max-w-full lg:max-w-md w-full lg:w-auto justify-between lg:justify-end">
+            <div className="text-left lg:text-right min-w-0 flex-1">
               <span className="text-[10px] font-bold uppercase text-muted-foreground block">Processing Stage</span>
-              <span className="text-xs font-black text-primary block">{caseData.workflowStatus || caseData.status}</span>
+              <span
+                className="text-xs font-black text-primary block truncate max-w-[200px] sm:max-w-[280px]"
+                title={caseData.workflowStatus || caseData.status}
+              >
+                {caseData.workflowStatus || caseData.status}
+              </span>
             </div>
             <select
               value={caseData.status || 'ENTRY'}
               onChange={(e) => handleStageChange(e.target.value)}
-              className="px-3 py-1.5 text-xs font-bold rounded-lg border border-input bg-background text-foreground focus:outline-none cursor-pointer"
+              className="px-3 py-1.5 text-xs font-bold rounded-lg border border-input bg-background text-foreground focus:outline-none cursor-pointer shrink-0 min-w-[140px] max-w-[170px]"
             >
               {PIPELINE_STAGES.map((st) => (
                 <option key={st.id} value={st.id}>
@@ -1283,12 +1308,20 @@ export default function CaseDetailPage() {
                         <strong className="text-foreground">{t.assignedToName || t.assignedTo?.name || t.assignedToDid || 'Unassigned'}</strong>
                       </span>
                       {t.status === 'Done' && (
-                        <button
-                          onClick={() => handleApproveTask(t.did || t._id)}
-                          className="px-2.5 py-1 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-lg text-[11px] cursor-pointer shadow-xs"
-                        >
-                          Approve Step ✓
-                        </button>
+                        <div className="flex items-center gap-2">
+                          <button
+                            onClick={() => handleApproveTask(t.did || t._id)}
+                            className="px-2.5 py-1 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-lg text-[11px] cursor-pointer shadow-xs"
+                          >
+                            Approve Step ✓
+                          </button>
+                          <button
+                            onClick={() => setIsAssignModalOpen(true)}
+                            className="px-2.5 py-1 bg-sky-600 hover:bg-sky-500 text-white font-bold rounded-lg text-[11px] cursor-pointer shadow-xs"
+                          >
+                            + Assign Next Step
+                          </button>
+                        </div>
                       )}
                     </div>
                   </div>
