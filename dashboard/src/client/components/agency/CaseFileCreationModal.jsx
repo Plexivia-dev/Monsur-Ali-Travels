@@ -298,22 +298,22 @@ export function CaseFileCreationModal({ isOpen, onClose, onSuccess }) {
 
   return (
     <>
-      <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-xs flex items-center justify-center p-3 sm:p-5 overflow-y-auto animate-in fade-in duration-200">
-        <div className="bg-card border border-border w-full max-w-3xl rounded-2xl shadow-2xl overflow-hidden flex flex-col my-auto max-h-[92vh]">
+      <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-3 sm:p-5 overflow-y-auto animate-in fade-in duration-200">
+        <div className="bg-white text-black border border-black/10 w-full max-w-3xl rounded-2xl shadow-2xl overflow-hidden flex flex-col my-auto max-h-[92vh]">
           {/* Modal Header */}
-          <div className="p-5 border-b border-border bg-muted/40 flex items-center justify-between shrink-0">
+          <div className="p-5 border-b border-black/10 bg-black/[0.02] flex items-center justify-between shrink-0">
             <div className="flex items-center gap-3">
               <div className="size-10 rounded-xl bg-primary/10 text-primary flex items-center justify-center border border-primary/20">
                 <FolderOpen className="size-5" />
               </div>
               <div>
-                <h2 className="text-base sm:text-lg font-bold text-foreground flex items-center gap-2">
+                <h2 className="text-base sm:text-lg font-bold text-black flex items-center gap-2">
                   5-Step Case Intake Wizard
                   <span className="text-[11px] font-semibold px-2 py-0.5 rounded-full bg-primary/10 text-primary border border-primary/20">
                     Frontdesk
                   </span>
                 </h2>
-                <p className="text-xs text-muted-foreground">
+                <p className="text-xs text-black/60 font-medium">
                   Step {currentStep} of 5 — {
                     currentStep === 1 ? 'Client Information & Bio' :
                     currentStep === 2 ? 'Destination Country & Trade' :
@@ -326,7 +326,8 @@ export function CaseFileCreationModal({ isOpen, onClose, onSuccess }) {
             </div>
             <button
               onClick={onClose}
-              className="size-8 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted/80 flex items-center justify-center transition"
+              className="size-8 rounded-lg text-red-500 hover:text-red-600 hover:bg-red-500/10 border border-transparent hover:border-red-500/20 flex items-center justify-center transition cursor-pointer"
+              title="Close"
             >
               <X className="size-4" />
             </button>

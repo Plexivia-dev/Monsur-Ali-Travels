@@ -300,9 +300,9 @@ export function AgencyEmployeeList() {
       {/* Employee Details Modal (Strict Read-Only) */}
       {selectedEmployee && (
         <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-card border border-border rounded-2xl w-full max-w-xl shadow-2xl overflow-hidden animate-in zoom-in-95 duration-150 text-foreground">
+          <div className="bg-white border border-black/10 rounded-2xl w-full max-w-xl shadow-2xl overflow-hidden animate-in zoom-in-95 duration-150 text-black">
             {/* Modal Header */}
-            <div className="flex items-center justify-between px-6 py-4 border-b border-border bg-muted/30">
+            <div className="flex items-center justify-between px-6 py-4 border-b border-black/10 bg-black/[0.02]">
               <div className="flex items-center gap-3">
                 <div className="size-9 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center">
                   <UserCheck className="size-4 text-primary" />

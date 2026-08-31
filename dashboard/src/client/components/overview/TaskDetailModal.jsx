@@ -545,14 +545,14 @@ export function TaskDetailModal({
 
   return (
     <>
-      <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4 animate-in fade-in duration-150 overflow-y-auto">
+      <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4 animate-in fade-in duration-150 overflow-y-auto">
         <div className="fixed inset-0" onClick={onClose} />
 
         {/* Modal Container with strict 90vh max-height */}
-        <div className="relative bg-card border border-border rounded-2xl max-w-3xl w-full max-h-[90vh] flex flex-col shadow-2xl z-10 my-auto text-foreground overflow-hidden animate-in zoom-in-95 duration-150">
+        <div className="relative bg-white border border-black/10 rounded-2xl max-w-3xl w-full max-h-[90vh] flex flex-col shadow-2xl z-10 my-auto text-black overflow-hidden animate-in zoom-in-95 duration-150">
           
           {/* 1. Header (Fixed Height / Sticky) */}
-          <div className="shrink-0 border-b border-border p-4 sm:p-5 flex items-start justify-between gap-4 bg-card">
+          <div className="shrink-0 border-b border-black/10 p-4 sm:p-5 flex items-start justify-between gap-4 bg-white">
             <div className="space-y-1.5 min-w-0 flex-1">
               <div className="flex items-center gap-2 flex-wrap">
                 <span className="text-[11px] font-bold font-mono px-2 py-0.5 rounded bg-muted text-foreground border border-border">
