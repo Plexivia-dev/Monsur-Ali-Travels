@@ -27,6 +27,7 @@ import {
 import { apiClient } from '@/lib/api-client';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
+import { ConfirmDeleteDialog } from '@/components/ui/confirm-delete-dialog';
 import { PageTitle } from '@shared/components/layout/PageTitle';
 import { UserProfileSettingsPage } from '@shared/features/profile';
 
@@ -161,17 +162,25 @@ export function SettingsPage() {
     }
   };
 
-  const handleDelete = async (item) => {
-    if (!window.confirm(`Are you sure you want to delete task type "${item.name}"?`)) {
-      return;
-    }
+  const [itemToDelete, setItemToDelete] = useState(null);
+  const [isDeletingItem, setIsDeletingItem] = useState(false);
 
+  const handleDelete = (item) => {
+    setItemToDelete(item);
+  };
+
+  const executeDeleteTaskType = async () => {
+    if (!itemToDelete) return;
+    setIsDeletingItem(true);
     try {
-      await apiClient.delete(`/api/v1/admin/task-types/${item.did || item._id}`);
-      toast.success(`Task Type "${item.name}" removed.`);
+      await apiClient.delete(`/api/v1/admin/task-types/${itemToDelete.did || itemToDelete._id}`);
+      toast.success(`Task Type "${itemToDelete.name}" removed.`);
+      setItemToDelete(null);
       fetchTaskTypes();
     } catch (err) {
       toast.error(err.response?.data?.message || 'Failed to delete task type');
+    } finally {
+      setIsDeletingItem(false);
     }
   };
 
@@ -684,6 +693,19 @@ export function SettingsPage() {
           </form>
         </div>
       )}
+      {/* Confirm Delete Dialog */}
+      <ConfirmDeleteDialog
+        open={Boolean(itemToDelete)}
+        onOpenChange={(open) => {
+          if (!open && !isDeletingItem) setItemToDelete(null);
+        }}
+        title="Delete Task Type?"
+        description={`Are you sure you want to delete task type "${itemToDelete?.name || ''}"? This action cannot be undone.`}
+        confirmText="Yes, Delete"
+        cancelText="Cancel"
+        isDeleting={isDeletingItem}
+        onConfirm={executeDeleteTaskType}
+      />
     </div>
   );
 }
