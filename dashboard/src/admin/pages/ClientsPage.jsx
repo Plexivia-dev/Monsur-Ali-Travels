@@ -221,7 +221,7 @@ export function ClientsPage() {
       id: 'actions',
       header: 'Actions',
       cell: ({ row }) => {
-        const isDeleting = deletingId === (row.did || row._id);
+        const isDeleting = isDeletingClient && (clientToDelete?.did === (row.did || row._id) || clientToDelete?._id === (row.did || row._id));
 
         return (
           <div className="flex items-center gap-1.5">
