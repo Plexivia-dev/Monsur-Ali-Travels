@@ -171,19 +171,19 @@ export function StepAssignModal({ isOpen = true, caseDoc = {}, caseDid, caseNumb
   };
 
   return (
-    <div className="fixed inset-0 z-60 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4 animate-in fade-in duration-150 overflow-y-auto">
+    <div className="fixed inset-0 z-60 bg-black/60 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4 animate-in fade-in duration-150 overflow-y-auto">
       <div className="fixed inset-0" onClick={onClose} />
       <form
         onSubmit={handleSubmit}
-        className="relative bg-card border border-border text-foreground rounded-2xl max-w-xl w-full max-h-[90vh] flex flex-col shadow-2xl z-10 my-auto animate-in zoom-in-95 duration-150 overflow-hidden"
+        className="relative bg-white border border-black/10 text-black rounded-2xl max-w-xl w-full max-h-[90vh] flex flex-col shadow-2xl z-10 my-auto animate-in zoom-in-95 duration-150 overflow-hidden"
       >
         {/* Header */}
-        <div className="shrink-0 border-b border-border p-4 sm:p-5 flex items-center justify-between bg-muted/40">
+        <div className="shrink-0 border-b border-black/10 p-4 sm:p-5 flex items-center justify-between bg-black/[0.02]">
           <div>
             <span className="text-[10px] font-mono font-bold text-primary uppercase tracking-wider">
               Case: {resolvedCaseNumber} • Step {(caseDoc?.workflowTasks || []).length + 1}
             </span>
-            <h3 className="text-base font-bold text-foreground flex items-center gap-2 mt-0.5">
+            <h3 className="text-base font-bold text-black flex items-center gap-2 mt-0.5">
               <Layers className="w-5 h-5 text-primary" />
               Assign Case Workflow Step
             </h3>
@@ -191,7 +191,8 @@ export function StepAssignModal({ isOpen = true, caseDoc = {}, caseDid, caseNumb
           <button
             type="button"
             onClick={onClose}
-            className="p-1 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted cursor-pointer"
+            className="p-1 rounded-lg text-red-500 hover:text-red-600 hover:bg-red-500/10 cursor-pointer"
+            title="Close"
           >
             <X className="w-5 h-5" />
           </button>
@@ -467,10 +468,10 @@ export function StepAssignModal({ isOpen = true, caseDoc = {}, caseDid, caseNumb
         </div>
 
         {/* Footer */}
-        <div className="shrink-0 border-t border-border p-4 sm:p-5 flex items-center justify-end gap-2 text-xs bg-muted/20">
+        <div className="shrink-0 border-t border-black/10 p-4 sm:p-5 flex items-center justify-end gap-2 text-xs bg-black/[0.02]">
           <Button
             type="button"
-            variant="outline"
+            variant="cancel"
             size="sm"
             onClick={onClose}
             className="cursor-pointer"

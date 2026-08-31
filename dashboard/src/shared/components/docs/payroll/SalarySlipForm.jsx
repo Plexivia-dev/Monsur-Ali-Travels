@@ -484,7 +484,7 @@ export function SalarySlipForm({ formData, setFormData, onSubmit, onReset, isSub
             <button
               type="button"
               onClick={() => setResetDialogOpen(false)}
-              className="px-4 py-2 rounded-xl text-xs font-semibold bg-muted hover:bg-muted/80 text-foreground transition-colors cursor-pointer"
+              className="px-4 py-2 rounded-xl text-xs font-semibold bg-red-500/10 text-red-600 dark:text-red-400 border border-red-500/30 hover:bg-red-500/20 hover:border-red-500/50 transition-colors cursor-pointer"
             >
               Cancel
             </button>

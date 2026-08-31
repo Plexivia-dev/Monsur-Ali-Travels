@@ -333,7 +333,7 @@ export function OrdersTable({
           </div>
 
           <DialogFooter>
-            <Button variant="outline" onClick={() => setStatusTarget(null)} disabled={isUpdatingStatus}>
+            <Button variant="cancel" onClick={() => setStatusTarget(null)} disabled={isUpdatingStatus}>
               Cancel
             </Button>
             <Button

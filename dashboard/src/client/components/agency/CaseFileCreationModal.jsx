@@ -892,7 +892,7 @@ export function CaseFileCreationModal({ isOpen, onClose, onSuccess }) {
               <button
                 type="button"
                 onClick={onClose}
-                className="px-4 py-2 bg-transparent text-muted-foreground hover:text-foreground text-xs font-semibold rounded-xl transition cursor-pointer"
+                className="px-4 py-2 bg-red-500/10 text-red-600 dark:text-red-400 border border-red-500/30 hover:bg-red-500/20 hover:border-red-500/50 text-xs font-semibold rounded-xl transition cursor-pointer"
               >
                 Cancel
               </button>

@@ -1954,7 +1954,7 @@ export default function CaseDetailPage() {
                   setIsUploadModalOpen(false);
                   handleRemoveSelectedFile();
                 }}
-                className="px-4 py-2 rounded-xl border border-border text-muted-foreground hover:bg-muted font-medium cursor-pointer"
+                className="px-4 py-2 rounded-xl border border-red-500/30 text-red-600 dark:text-red-400 hover:bg-red-500/10 font-semibold cursor-pointer"
               >
                 Cancel
               </button>
@@ -2096,7 +2096,7 @@ export default function CaseDetailPage() {
               <button
                 type="button"
                 onClick={() => setIsEditModalOpen(false)}
-                className="px-4 py-2 rounded-xl border border-border text-muted-foreground hover:bg-muted font-semibold cursor-pointer"
+                className="px-4 py-2 rounded-xl border border-red-500/30 text-red-600 dark:text-red-400 hover:bg-red-500/10 font-semibold cursor-pointer"
               >
                 Cancel
               </button>
@@ -2228,7 +2228,7 @@ export default function CaseDetailPage() {
               <button
                 type="button"
                 onClick={() => setIsCreateDocModalOpen(false)}
-                className="px-4 py-2 text-xs font-bold text-muted-foreground hover:bg-muted rounded-xl transition cursor-pointer"
+                className="px-4 py-2 text-xs font-bold border border-red-500/30 text-red-600 dark:text-red-400 hover:bg-red-500/10 rounded-xl transition cursor-pointer"
               >
                 Cancel
               </button>

@@ -27,7 +27,7 @@ export const ExportModal = ({ isOpen, onClose, title = 'Export Report Data', dat
       title={title}
       footer={
         <>
-          <Button variant="outline" onClick={onClose} disabled={isExporting}>
+          <Button variant="cancel" onClick={onClose} disabled={isExporting}>
             Cancel
           </Button>
           <Button variant="primary" icon={Download} onClick={handleExport} disabled={isExporting}>

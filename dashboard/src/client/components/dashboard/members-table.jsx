@@ -313,7 +313,7 @@ export function MembersTable({
             </div>
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setPasswordTarget(null)} disabled={isChangingPassword}>
+            <Button variant="cancel" onClick={() => setPasswordTarget(null)} disabled={isChangingPassword}>
               Cancel
             </Button>
             <Button onClick={handleChangePassword} disabled={isChangingPassword}>

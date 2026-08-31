@@ -336,7 +336,7 @@ export function ProductsTable({
           </div>
           <DialogFooter>
             <Button
-              variant="outline"
+              variant="cancel"
               onClick={() => setStockTarget(null)}
               disabled={isUpdatingStock}
             >

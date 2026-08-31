@@ -534,26 +534,27 @@ export function SettingsPage() {
 
       {/* CREATE / EDIT TASK TYPE MODAL */}
       {isModalOpen && (
-        <div className="fixed inset-0 z-60 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4 animate-in fade-in duration-150 overflow-y-auto">
+        <div className="fixed inset-0 z-60 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 animate-in fade-in duration-150 overflow-y-auto">
           <div className="fixed inset-0" onClick={() => setIsModalOpen(false)} />
           <form
             onSubmit={handleSaveTaskType}
-            className="relative bg-card border border-border rounded-2xl max-w-lg w-full p-6 space-y-4 shadow-2xl z-10 my-8 animate-in zoom-in-95 duration-150 text-foreground overflow-hidden"
+            className="relative bg-white border border-black/10 rounded-2xl max-w-lg w-full p-6 space-y-4 shadow-2xl z-10 my-8 animate-in zoom-in-95 duration-150 text-black overflow-hidden"
           >
             {/* Header */}
-            <div className="flex items-center justify-between border-b border-border pb-3">
+            <div className="flex items-center justify-between border-b border-black/10 pb-3">
               <div className="flex items-center gap-2">
                 <div className="size-8 rounded-xl bg-primary/10 text-primary flex items-center justify-center font-bold">
                   <Layers className="w-4 h-4" />
                 </div>
-                <h3 className="text-base font-bold text-foreground">
+                <h3 className="text-base font-bold text-black">
                   {editingItem ? 'Edit Task Type' : 'Add New Task Type'}
                 </h3>
               </div>
               <button
                 type="button"
                 onClick={() => setIsModalOpen(false)}
-                className="p-1 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted cursor-pointer"
+                className="p-1 rounded-lg text-red-500 hover:text-red-600 hover:bg-red-500/10 cursor-pointer"
+                title="Close"
               >
                 <XCircle className="w-5 h-5" />
               </button>
@@ -660,10 +661,10 @@ export function SettingsPage() {
             </div>
 
             {/* Footer */}
-            <div className="pt-3 border-t border-border flex items-center justify-end gap-2 text-xs">
+            <div className="pt-3 border-t border-black/10 flex items-center justify-end gap-2 text-xs">
               <Button
                 type="button"
-                variant="outline"
+                variant="cancel"
                 size="sm"
                 onClick={() => setIsModalOpen(false)}
                 className="cursor-pointer"

@@ -403,16 +403,16 @@ export function IndianVisaDataTable() {
 
       {/* Stage Status & Stage Document Update Modal */}
       {stageModalItem && (
-        <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-card border border-border rounded-2xl max-w-lg w-full p-6 shadow-2xl space-y-4 text-foreground">
-            <div className="flex items-center justify-between border-b border-border pb-3">
+        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="bg-white border border-black/10 rounded-2xl max-w-lg w-full p-6 shadow-2xl space-y-4 text-black">
+            <div className="flex items-center justify-between border-b border-black/10 pb-3">
               <div className="flex items-center gap-2">
                 <div className="p-2 bg-emerald-500/10 text-emerald-600 rounded-lg">
                   <Edit3 className="w-5 h-5" />
                 </div>
                 <div>
-                  <h3 className="text-sm font-bold text-foreground">{t('visa.stageUpdateTitle', 'Visa Processing Stage Update')}</h3>
-                  <p className="text-xs text-muted-foreground">
+                  <h3 className="text-sm font-bold text-black">{t('visa.stageUpdateTitle', 'Visa Processing Stage Update')}</h3>
+                  <p className="text-xs text-black/60">
                     Tracking: <span className="font-mono font-bold text-emerald-600">{stageModalItem.trackingNo}</span> | {stageModalItem.applicantName}
                   </p>
                 </div>
@@ -420,7 +420,8 @@ export function IndianVisaDataTable() {
               <button
                 type="button"
                 onClick={() => setStageModalItem(null)}
-                className="p-1 rounded-lg hover:bg-muted text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
+                className="p-1 rounded-lg text-red-500 hover:text-red-600 hover:bg-red-500/10 transition-colors cursor-pointer"
+                title="Close"
               >
                 <X className="w-4 h-4" />
               </button>
@@ -489,11 +490,11 @@ export function IndianVisaDataTable() {
             </div>
 
             {/* Action Buttons */}
-            <div className="flex items-center justify-end gap-2 pt-2 border-t border-border">
+            <div className="flex items-center justify-end gap-2 pt-2 border-t border-black/10">
               <button
                 type="button"
                 onClick={() => setStageModalItem(null)}
-                className="px-4 py-2 rounded-xl text-xs font-semibold text-muted-foreground hover:bg-muted cursor-pointer"
+                className="px-4 py-2 rounded-xl text-xs font-semibold border border-red-500/30 text-red-600 dark:text-red-400 hover:bg-red-500/10 cursor-pointer"
               >
                 {t('common.cancel', 'Cancel')}
               </button>

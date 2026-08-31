@@ -1276,7 +1276,7 @@ export function CaseWorkspaceDrawer({ caseId, isOpen, onClose, onRefresh }) {
                   setShowUploadModal(false);
                   handleRemoveSelectedFile();
                 }}
-                className="px-4 py-2 rounded-xl border border-border text-muted-foreground hover:bg-muted font-medium cursor-pointer"
+                className="px-4 py-2 rounded-xl border border-red-500/30 text-red-600 dark:text-red-400 hover:bg-red-500/10 font-semibold text-xs cursor-pointer"
               >
                 Cancel
               </button>
@@ -1295,16 +1295,16 @@ export function CaseWorkspaceDrawer({ caseId, isOpen, onClose, onRefresh }) {
 
       {/* Generate Case Document Modal */}
       {showCreateDocModal && (
-        <div className="fixed inset-0 z-60 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-card border border-border rounded-2xl max-w-lg w-full p-6 space-y-4 shadow-2xl animate-in fade-in zoom-in-95 duration-200">
-            <div className="flex items-center justify-between border-b border-border pb-3">
+        <div className="fixed inset-0 z-60 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="bg-white border border-black/10 rounded-2xl max-w-lg w-full p-6 space-y-4 shadow-2xl animate-in fade-in zoom-in-95 duration-200 text-black">
+            <div className="flex items-center justify-between border-b border-black/10 pb-3">
               <div className="flex items-center gap-2.5">
                 <div className="size-9 rounded-xl bg-primary/10 text-primary flex items-center justify-center font-bold">
                   <FilePlus2 className="size-5" />
                 </div>
                 <div>
-                  <h3 className="text-sm font-bold text-foreground">Generate Case Document in Studio</h3>
-                  <p className="text-[11px] text-muted-foreground">
+                  <h3 className="text-sm font-bold text-black">Generate Case Document in Studio</h3>
+                  <p className="text-[11px] text-black/60">
                     Select a document to generate for <strong>{caseData?.applicantName}</strong> ({caseData?.caseNumber})
                   </p>
                 </div>
@@ -1312,7 +1312,8 @@ export function CaseWorkspaceDrawer({ caseId, isOpen, onClose, onRefresh }) {
               <button
                 type="button"
                 onClick={() => setShowCreateDocModal(false)}
-                className="p-1 rounded text-muted-foreground hover:text-foreground cursor-pointer"
+                className="p-1 rounded text-red-500 hover:text-red-600 hover:bg-red-500/10 cursor-pointer"
+                title="Close"
               >
                 <X className="size-4" />
               </button>
@@ -1320,13 +1321,13 @@ export function CaseWorkspaceDrawer({ caseId, isOpen, onClose, onRefresh }) {
 
             <div className="space-y-4 text-xs">
               <div>
-                <label className="block font-semibold text-muted-foreground mb-1.5">
+                <label className="block font-semibold text-black/70 mb-1.5">
                   Select Document Template *
                 </label>
                 <select
                   value={selectedDocId || permittedStudioGenerators[0]?.id}
                   onChange={(e) => setSelectedDocId(e.target.value)}
-                  className="w-full px-3 py-2.5 bg-muted/40 border border-border rounded-xl text-foreground font-semibold text-xs focus:outline-none focus:ring-1 focus:ring-primary cursor-pointer"
+                  className="w-full px-3 py-2.5 bg-black/[0.03] border border-black/10 rounded-xl text-black font-semibold text-xs focus:outline-none focus:ring-1 focus:ring-primary cursor-pointer"
                 >
                   {permittedStudioGenerators.map((gen) => (
                     <option key={gen.id} value={gen.id}>
@@ -1343,14 +1344,14 @@ export function CaseWorkspaceDrawer({ caseId, isOpen, onClose, onRefresh }) {
                   permittedStudioGenerators[0];
                 if (!activeDoc) return null;
                 return (
-                  <div className="p-3.5 bg-muted/20 border border-border rounded-xl space-y-1.5">
+                  <div className="p-3.5 bg-black/[0.02] border border-black/10 rounded-xl space-y-1.5">
                     <div className="flex items-center justify-between">
-                      <span className="font-bold text-foreground text-xs">{activeDoc.label}</span>
+                      <span className="font-bold text-black text-xs">{activeDoc.label}</span>
                       <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-primary/10 text-primary border border-primary/20">
                         {activeDoc.category}
                       </span>
                     </div>
-                    <p className="text-[11px] text-muted-foreground leading-relaxed">{activeDoc.description}</p>
+                    <p className="text-[11px] text-black/60 leading-relaxed">{activeDoc.description}</p>
                   </div>
                 );
               })()}
@@ -1367,11 +1368,11 @@ export function CaseWorkspaceDrawer({ caseId, isOpen, onClose, onRefresh }) {
               </div>
             </div>
 
-            <div className="flex items-center justify-end gap-2 pt-3 border-t border-border text-xs">
+            <div className="flex items-center justify-end gap-2 pt-3 border-t border-black/10 text-xs">
               <button
                 type="button"
                 onClick={() => setShowCreateDocModal(false)}
-                className="px-4 py-2 rounded-xl border border-border text-muted-foreground hover:bg-muted font-medium cursor-pointer"
+                className="px-4 py-2 rounded-xl border border-red-500/30 text-red-600 dark:text-red-400 hover:bg-red-500/10 font-semibold cursor-pointer"
               >
                 Cancel
               </button>
