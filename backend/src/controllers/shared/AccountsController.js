@@ -6,6 +6,7 @@ import { MoneyReceiptModel } from "../../models/moneyReceipt.model.js";
 import { InvoiceModel } from "../../models/invoice.model.js";
 import { SalarySlipModel } from "../../models/salarySlip.model.js";
 import { CashVoucherModel } from "../../models/cashVoucher.model.js";
+import { BillModel } from "../../models/bill.model.js";
 import { SystemLogModel } from "../../models/systemLog.model.js";
 
 const __filename = fileURLToPath(import.meta.url);
@@ -170,35 +171,39 @@ export const getPayments = async (req, res, next) => {
   }
 };
 
-// ── 2. GET /api/v1/accounts/bills ──────────────────────────────────────────────
+// ── 2. Company Expense Bills: GET, POST, PUT, DELETE /api/v1/accounts/bills ──
 export const getBills = async (req, res, next) => {
   try {
     const {
       search = "",
+      category = "",
       paymentStatus = "",
       period = "",
       startDate = "",
       endDate = "",
       page = 1,
       limit = 25,
-      sortBy = "createdAt",
+      sortBy = "billDate",
       sortOrder = "desc",
     } = req.query;
 
-    const { query: dateQuery } = buildDateFilter(period, startDate, endDate, "createdAt");
+    const { query: dateQuery } = buildDateFilter(period, startDate, endDate, "billDate");
     const filter = { ...dateQuery };
 
+    if (category && category !== "all") {
+      filter.category = new RegExp(`^${category}$`, "i");
+    }
     if (paymentStatus && paymentStatus !== "all") {
       filter.paymentStatus = new RegExp(`^${paymentStatus}$`, "i");
     }
     if (search) {
       filter.$or = [
-        { invoiceNo: { $regex: search, $options: "i" } },
-        { "client.name": { $regex: search, $options: "i" } },
-        { "client.phone": { $regex: search, $options: "i" } },
-        { "client.email": { $regex: search, $options: "i" } },
-        { customerName: { $regex: search, $options: "i" } },
-        { customerPhone: { $regex: search, $options: "i" } },
+        { billNumber: { $regex: search, $options: "i" } },
+        { title: { $regex: search, $options: "i" } },
+        { payee: { $regex: search, $options: "i" } },
+        { payeePhone: { $regex: search, $options: "i" } },
+        { category: { $regex: search, $options: "i" } },
+        { notes: { $regex: search, $options: "i" } },
         { did: { $regex: search, $options: "i" } },
       ];
     }
@@ -207,65 +212,19 @@ export const getBills = async (req, res, next) => {
     const take = Math.min(100, parseInt(limit, 10) || 25);
     const sort = { [sortBy]: sortOrder === "asc" ? 1 : -1 };
 
-    const [rawItems, total] = await Promise.all([
-      InvoiceModel.find(filter).sort(sort).skip(skip).limit(take).lean(),
-      InvoiceModel.countDocuments(filter),
+    const [items, total] = await Promise.all([
+      BillModel.find(filter).sort(sort).skip(skip).limit(take).lean(),
+      BillModel.countDocuments(filter),
     ]);
 
-    // Format and calculate paid/due amounts reliably
-    const items = rawItems.map((inv) => {
-      const grandTotal = Number(inv.grandTotal || inv.totalAmount || 0);
-      const st = String(inv.paymentStatus || "Paid").toLowerCase();
-      let paidAmount = Number(inv.paidAmount);
-      let dueAmount = Number(inv.dueAmount);
-
-      if (isNaN(paidAmount) || isNaN(dueAmount)) {
-        if (st === "paid") {
-          paidAmount = grandTotal;
-          dueAmount = 0;
-        } else if (st === "partial") {
-          paidAmount = paidAmount || Math.round(grandTotal / 2);
-          dueAmount = grandTotal - paidAmount;
-        } else {
-          paidAmount = 0;
-          dueAmount = grandTotal;
-        }
-      }
-
-      return {
-        ...inv,
-        customerName: inv.client?.name || inv.customerName || "Unnamed Client",
-        customerPhone: inv.client?.phone || inv.customerPhone || "",
-        grandTotal,
-        paidAmount,
-        dueAmount,
-      };
-    });
-
-    const totalStats = await InvoiceModel.aggregate([
+    const totalStats = await BillModel.aggregate([
       { $match: filter },
       {
         $group: {
           _id: null,
-          totalAmount: { $sum: { $ifNull: ["$grandTotal", "$totalAmount"] } },
-          totalPaid: {
-            $sum: {
-              $cond: [
-                { $eq: [{ $toLower: { $ifNull: ["$paymentStatus", "paid"] } }, "paid"] },
-                { $ifNull: ["$grandTotal", "$totalAmount"] },
-                { $ifNull: ["$paidAmount", 0] },
-              ],
-            },
-          },
-          totalDue: {
-            $sum: {
-              $cond: [
-                { $eq: [{ $toLower: { $ifNull: ["$paymentStatus", "paid"] } }, "paid"] },
-                0,
-                { $ifNull: ["$dueAmount", { $ifNull: ["$grandTotal", "$totalAmount"] }] },
-              ],
-            },
-          },
+          totalAmount: { $sum: "$amount" },
+          totalPaid: { $sum: "$paidAmount" },
+          totalDue: { $sum: "$dueAmount" },
         },
       },
     ]);
@@ -287,6 +246,156 @@ export const getBills = async (req, res, next) => {
     next(err);
   }
 };
+
+export const createBill = async (req, res, next) => {
+  try {
+    const {
+      title,
+      category,
+      payee,
+      payeePhone,
+      amount,
+      paidAmount,
+      billDate,
+      dueDate,
+      paymentStatus,
+      paymentMethod,
+      bankAccount,
+      documentUrl,
+      documentName,
+      documentSize,
+      notes,
+    } = req.body || {};
+
+    if (!title || !title.trim()) {
+      return res.status(400).json({ status: "error", message: "Bill Title / Description is required" });
+    }
+    if (!payee || !payee.trim()) {
+      return res.status(400).json({ status: "error", message: "Paid To / Payee Name is required" });
+    }
+    const numAmount = Number(amount);
+    if (isNaN(numAmount) || numAmount <= 0) {
+      return res.status(400).json({ status: "error", message: "Valid Bill Amount is required" });
+    }
+
+    const resolvedPaid =
+      paymentStatus === "Paid"
+        ? numAmount
+        : paymentStatus === "Unpaid"
+        ? 0
+        : Number(paidAmount) || 0;
+
+    const newBill = await BillModel.create({
+      title: title.trim(),
+      category: category || "Other Office Expense",
+      payee: payee.trim(),
+      payeePhone: payeePhone ? payeePhone.trim() : "",
+      amount: numAmount,
+      paidAmount: resolvedPaid,
+      dueAmount: Math.max(0, numAmount - resolvedPaid),
+      billDate: billDate ? new Date(billDate) : new Date(),
+      dueDate: dueDate ? new Date(dueDate) : null,
+      paymentStatus: paymentStatus || "Paid",
+      paymentMethod: paymentMethod || "Cash",
+      bankAccount: bankAccount || "",
+      documentUrl: documentUrl || "",
+      documentName: documentName || "",
+      documentSize: documentSize || "",
+      notes: notes ? notes.trim() : "",
+      createdByDid: req.user?.did || "",
+      createdByName: req.user?.name || "Accounts Officer",
+    });
+
+    res.status(201).json({
+      status: "success",
+      message: `Bill "${newBill.title}" (${newBill.billNumber}) recorded successfully`,
+      data: newBill,
+    });
+  } catch (err) {
+    next(err);
+  }
+};
+
+export const getBillById = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const bill = await BillModel.findOne({
+      $or: [{ _id: id }, { did: id }, { billNumber: id }],
+    }).lean();
+
+    if (!bill) {
+      return res.status(404).json({ status: "error", message: "Bill not found" });
+    }
+
+    res.json({
+      status: "success",
+      data: bill,
+    });
+  } catch (err) {
+    next(err);
+  }
+};
+
+export const updateBill = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const updates = req.body || {};
+
+    const bill = await BillModel.findOne({
+      $or: [{ _id: id }, { did: id }, { billNumber: id }],
+    });
+
+    if (!bill) {
+      return res.status(404).json({ status: "error", message: "Bill not found" });
+    }
+
+    if (updates.title) bill.title = updates.title.trim();
+    if (updates.category) bill.category = updates.category;
+    if (updates.payee) bill.payee = updates.payee.trim();
+    if (updates.payeePhone !== undefined) bill.payeePhone = updates.payeePhone;
+    if (updates.amount !== undefined) bill.amount = Number(updates.amount);
+    if (updates.paidAmount !== undefined) bill.paidAmount = Number(updates.paidAmount);
+    if (updates.paymentStatus) bill.paymentStatus = updates.paymentStatus;
+    if (updates.paymentMethod) bill.paymentMethod = updates.paymentMethod;
+    if (updates.billDate) bill.billDate = new Date(updates.billDate);
+    if (updates.dueDate !== undefined) bill.dueDate = updates.dueDate ? new Date(updates.dueDate) : null;
+    if (updates.documentUrl !== undefined) bill.documentUrl = updates.documentUrl;
+    if (updates.documentName !== undefined) bill.documentName = updates.documentName;
+    if (updates.documentSize !== undefined) bill.documentSize = updates.documentSize;
+    if (updates.notes !== undefined) bill.notes = updates.notes;
+
+    await bill.save();
+
+    res.json({
+      status: "success",
+      message: `Bill ${bill.billNumber} updated successfully`,
+      data: bill,
+    });
+  } catch (err) {
+    next(err);
+  }
+};
+
+export const deleteBill = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const deleted = await BillModel.findOneAndDelete({
+      $or: [{ _id: id }, { did: id }, { billNumber: id }],
+    });
+
+    if (!deleted) {
+      return res.status(404).json({ status: "error", message: "Bill not found" });
+    }
+
+    res.json({
+      status: "success",
+      message: `Bill ${deleted.billNumber} deleted successfully`,
+    });
+  } catch (err) {
+    next(err);
+  }
+};
+
 
 // ── 3. GET /api/v1/accounts/salaries ──────────────────────────────────────────
 export const getSalaries = async (req, res, next) => {

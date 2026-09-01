@@ -1,37 +1,34 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
 import {
   Receipt,
   CheckCircle2,
   Clock,
-  AlertTriangle,
   Download,
-  DollarSign,
   CreditCard,
-  FileSpreadsheet,
   Plus,
   Eye,
-  Printer,
   Trash2,
+  FileText,
+  Building2,
+  ExternalLink,
+  DollarSign,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { UnifiedDataTable } from '../../../components/tables/UnifiedDataTable';
 import { accountsService } from '../services/accountsService';
-import { CreateBillModal } from '../components/CreateBillModal';
-import { InvoicePreviewModal } from '../components/InvoicePreviewModal';
+import { CreateBillModal, BILL_CATEGORIES } from '../components/CreateBillModal';
+import { BillPreviewModal } from '../components/BillPreviewModal';
 import { ConfirmDeleteDialog } from '@/components/ui/confirm-delete-dialog';
-import { printDocument } from '@/lib/utils';
 import { toast } from 'sonner';
 
 export function BillsPage() {
-  const navigate = useNavigate();
-  const location = useLocation();
   const [bills, setBills] = useState([]);
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(25);
   const [meta, setMeta] = useState({ total: 0, totalAmount: 0, totalPaid: 0, totalDue: 0 });
   const [activeTab, setActiveTab] = useState('all');
+  const [selectedCategory, setSelectedCategory] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [isExporting, setIsExporting] = useState(false);
 
@@ -48,16 +45,17 @@ export function BillsPage() {
         page,
         limit,
         paymentStatus: activeTab === 'all' ? '' : activeTab,
+        category: selectedCategory === 'all' ? '' : selectedCategory,
         search: searchQuery,
       });
       setBills(res.data || []);
       setMeta(res.meta || { total: 0, totalAmount: 0, totalPaid: 0, totalDue: 0 });
     } catch (err) {
-      toast.error('Failed to load bills & invoices.');
+      toast.error('Failed to load company expense bills.');
     } finally {
       setLoading(false);
     }
-  }, [page, limit, activeTab, searchQuery]);
+  }, [page, limit, activeTab, selectedCategory, searchQuery]);
 
   useEffect(() => {
     fetchBills();
@@ -70,7 +68,7 @@ export function BillsPage() {
         type: 'bills',
         period: 'all',
       });
-      toast.success('Bills CSV report downloaded & archived on VPS!');
+      toast.success('Company Bills CSV report downloaded & archived on VPS!');
     } catch (err) {
       toast.error('Failed to export bills report.');
     } finally {
@@ -82,8 +80,8 @@ export function BillsPage() {
     if (!deleteTarget) return;
     try {
       setIsDeleting(true);
-      await accountsService.deleteBill(deleteTarget._id || deleteTarget.id);
-      toast.success('Bill / Invoice deleted successfully.');
+      await accountsService.deleteBill(deleteTarget._id || deleteTarget.did || deleteTarget.id);
+      toast.success('Company Bill voucher deleted successfully.');
       setDeleteTarget(null);
       fetchBills();
     } catch (err) {
@@ -93,148 +91,121 @@ export function BillsPage() {
     }
   };
 
-  const handleOpenStudio = () => {
-    setIsCreateModalOpen(false);
-    if (location.pathname.startsWith('/admin')) {
-      navigate('/admin/docs/invoice');
-    } else {
-      navigate('/dashboard/docs/invoice');
-    }
-  };
-
   const columns = [
     {
-      accessorKey: 'invoiceNo',
-      header: 'Invoice No',
+      accessorKey: 'billNumber',
+      header: 'Bill Voucher #',
       cell: ({ row }) => (
         <div className="flex flex-col">
-          <span className="font-mono font-bold text-primary tracking-tight">{row.invoiceNo || '—'}</span>
-          <span className="text-[10px] text-muted-foreground">
-            {row.createdAt ? new Date(row.createdAt).toLocaleDateString('en-GB') : '—'}
+          <span className="font-mono font-bold text-black tracking-tight">
+            {row.billNumber || row.did || '—'}
+          </span>
+          <span className="text-[10px] text-black/50">
+            {row.billDate ? new Date(row.billDate).toLocaleDateString('en-GB') : '—'}
           </span>
         </div>
       ),
     },
     {
-      accessorKey: 'customerName',
-      header: 'Customer Details',
+      accessorKey: 'title',
+      header: 'Bill Description & Category',
       cell: ({ row }) => (
-        <div>
-          <p className="font-bold text-foreground text-xs leading-tight">{row.customerName || 'Unnamed'}</p>
-          <div className="flex items-center gap-2 text-[11px] text-muted-foreground mt-0.5">
-            {row.customerPhone && <span>{row.customerPhone}</span>}
-            {row.trackingNumber && <span className="font-mono text-sky-400">Ref: {row.trackingNumber}</span>}
+        <div className="max-w-[260px]">
+          <p className="font-bold text-black text-xs leading-tight truncate" title={row.title}>
+            {row.title}
+          </p>
+          <div className="flex items-center gap-1.5 mt-1">
+            <span className="inline-block px-2 py-0.5 rounded-md bg-black/[0.04] border border-black/10 text-[10px] font-semibold text-black/80">
+              {row.category || 'Office Expense'}
+            </span>
           </div>
         </div>
       ),
     },
     {
-      accessorKey: 'grandTotal',
-      header: 'Total Bill (BDT)',
-      cell: ({ row }) => {
-        const total = row.grandTotal || row.totalAmount || 0;
-        return (
-          <span className="font-bold text-xs text-foreground font-mono">
-            BDT {Number(total).toLocaleString('en-BD')}
-          </span>
-        );
-      },
+      accessorKey: 'payee',
+      header: 'Paid To / Payee',
+      cell: ({ row }) => (
+        <div>
+          <p className="font-bold text-black text-xs">{row.payee || '—'}</p>
+          {row.payeePhone && <p className="text-[10px] text-black/50 font-mono">{row.payeePhone}</p>}
+        </div>
+      ),
     },
     {
-      accessorKey: 'paidAmount',
-      header: 'Paid (BDT)',
+      accessorKey: 'paymentMethod',
+      header: 'Payment Method',
       cell: ({ row }) => (
-        <span className="font-semibold text-xs text-emerald-600 font-mono">
-          BDT {Number(row.paidAmount || 0).toLocaleString('en-BD')}
+        <span className="inline-flex items-center gap-1 text-xs font-semibold text-black">
+          <CreditCard className="w-3 h-3 text-black/50" />
+          {row.paymentMethod || 'Cash'}
         </span>
       ),
     },
     {
-      accessorKey: 'dueAmount',
-      header: 'Due (BDT)',
+      accessorKey: 'amount',
+      header: 'Total Amount (BDT)',
+      cell: ({ row }) => (
+        <span className="font-mono font-bold text-xs text-black">
+          ৳ {Number(row.amount || 0).toLocaleString('en-BD')}
+        </span>
+      ),
+    },
+    {
+      accessorKey: 'paymentStatus',
+      header: 'Status',
       cell: ({ row }) => {
-        const due = row.dueAmount || 0;
+        const st = (row.paymentStatus || 'Paid').toLowerCase();
+        let badgeStyle = 'bg-emerald-50 text-emerald-800 border-emerald-200';
+        if (st === 'unpaid') badgeStyle = 'bg-red-50 text-red-800 border-red-200';
+        if (st === 'partial') badgeStyle = 'bg-amber-50 text-amber-800 border-amber-200';
+
         return (
-          <span
-            className={`font-semibold text-xs font-mono ${
-              due > 0 ? 'text-rose-600 font-bold' : 'text-muted-foreground'
-            }`}
-          >
-            BDT {Number(due).toLocaleString('en-BD')}
+          <span className={`inline-block px-2 py-0.5 rounded-md text-[10px] font-bold border ${badgeStyle}`}>
+            {row.paymentStatus || 'Paid'}
           </span>
         );
       },
     },
     {
-      accessorKey: 'paymentStatus',
-      header: 'Payment Status',
-      cell: ({ row }) => {
-        const st = String(row.paymentStatus || 'Pending').toLowerCase();
-        let badgeClass = 'bg-amber-500/10 text-amber-500 border-amber-500/20';
-        let icon = <Clock className="w-3 h-3 mr-1" />;
-
-        if (st === 'paid') {
-          badgeClass = 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20';
-          icon = <CheckCircle2 className="w-3 h-3 mr-1" />;
-        } else if (st === 'partial') {
-          badgeClass = 'bg-blue-500/10 text-blue-500 border-blue-500/20';
-          icon = <Clock className="w-3 h-3 mr-1" />;
-        } else if (st === 'overdue') {
-          badgeClass = 'bg-rose-500/10 text-rose-500 border-rose-500/20';
-          icon = <AlertTriangle className="w-3 h-3 mr-1" />;
-        }
-
-        return (
-          <span
-            className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-bold border capitalize ${badgeClass}`}
+      accessorKey: 'documentUrl',
+      header: 'Receipt Slip',
+      cell: ({ row }) =>
+        row.documentUrl ? (
+          <a
+            href={row.documentUrl}
+            target="_blank"
+            rel="noreferrer"
+            className="inline-flex items-center gap-1 px-2 py-0.5 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 text-emerald-800 rounded-md text-[10px] font-bold transition cursor-pointer"
           >
-            {icon}
-            {row.paymentStatus || 'Pending'}
-          </span>
-        );
-      },
+            <FileText className="w-3 h-3 text-emerald-600" />
+            <span>View Slip</span>
+          </a>
+        ) : (
+          <span className="text-[10px] text-black/40 italic">No File</span>
+        ),
     },
     {
       id: 'actions',
       header: 'Actions',
       cell: ({ row }) => (
-        <div className="flex items-center gap-1.5 justify-end">
+        <div className="flex items-center gap-1">
           <Button
-            type="button"
-            variant="outline"
             size="sm"
+            variant="outline"
             onClick={() => setPreviewBill(row)}
-            className="h-7 px-2.5 text-xs font-semibold border-black/15 text-black hover:bg-black/5 flex items-center gap-1 cursor-pointer"
-            title="View & Print Invoice"
+            className="h-7 px-2 text-xs font-semibold border-black/15 text-black hover:bg-black/5 gap-1 cursor-pointer"
+            title="View Bill Details"
           >
-            <Eye className="w-3.5 h-3.5 text-primary" />
-            <span className="hidden sm:inline">View</span>
+            <Eye className="w-3.5 h-3.5" />
+            <span>View</span>
           </Button>
 
           <Button
-            type="button"
-            variant="outline"
             size="sm"
-            onClick={() =>
-              printDocument({
-                docId: row.invoiceNo,
-                docType: 'Invoice',
-                clientName: row.customerName,
-                elementId: 'printable-invoice-canvas',
-              })
-            }
-            className="h-7 px-2 text-xs font-semibold border-black/15 text-black hover:bg-black/5 cursor-pointer"
-            title="Print Invoice"
-          >
-            <Printer className="w-3.5 h-3.5 text-black/70" />
-          </Button>
-
-          <Button
-            type="button"
             variant="outline"
-            size="sm"
             onClick={() => setDeleteTarget(row)}
-            className="h-7 px-2 text-xs font-semibold border-red-200 text-red-600 hover:bg-red-50 hover:border-red-300 cursor-pointer"
+            className="h-7 px-2 text-xs font-semibold border-red-500/30 text-red-600 hover:bg-red-500/10 cursor-pointer"
             title="Delete Bill"
           >
             <Trash2 className="w-3.5 h-3.5" />
@@ -244,154 +215,195 @@ export function BillsPage() {
     },
   ];
 
-  const filterTabs = [
-    { id: 'all', label: 'All Bills', count: meta.total },
-    { id: 'Paid', label: 'Fully Paid' },
-    { id: 'Partial', label: 'Partial Paid' },
-    { id: 'Pending', label: 'Pending' },
-    { id: 'Overdue', label: 'Overdue' },
-  ];
-
   return (
     <div className="space-y-6">
-      {/* Top Summary KPI Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className="bg-card border border-border p-5 rounded-2xl shadow-xs space-y-1">
-          <div className="flex items-center justify-between text-muted-foreground">
-            <span className="text-xs font-bold uppercase tracking-wider">Total Invoiced</span>
-            <Receipt className="w-4 h-4 text-primary" />
-          </div>
-          <p className="text-2xl font-black text-foreground font-mono">
-            BDT {Number(meta.totalAmount || 0).toLocaleString('en-BD')}
+      {/* 1. Header & Quick Actions */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+          <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-black flex items-center gap-2">
+            <Receipt className="w-6 h-6 text-black" />
+            Company Expense Bills &amp; Expenditures
+          </h1>
+          <p className="text-xs sm:text-sm text-black/60 mt-0.5">
+            Manage company outgoing operational bills, utility payments, employee salary disbursements, and office expenses.
           </p>
-          <p className="text-[11px] text-muted-foreground">Grand total billed</p>
         </div>
 
-        <div className="bg-card border border-border p-5 rounded-2xl shadow-xs space-y-1">
-          <div className="flex items-center justify-between text-muted-foreground">
-            <span className="text-xs font-bold uppercase tracking-wider">Collected on Bills</span>
-            <CheckCircle2 className="w-4 h-4 text-emerald-500" />
-          </div>
-          <p className="text-2xl font-black text-emerald-600 font-mono">
-            BDT {Number(meta.totalPaid || 0).toLocaleString('en-BD')}
-          </p>
-          <p className="text-[11px] text-muted-foreground">Settled payments</p>
-        </div>
+        <div className="flex items-center gap-2 flex-wrap">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={handleExportCsv}
+            disabled={isExporting}
+            className="border-black/15 text-black hover:bg-black/5 gap-1.5 text-xs font-semibold cursor-pointer"
+          >
+            <Download className="w-3.5 h-3.5" />
+            {isExporting ? 'Exporting...' : 'Export CSV'}
+          </Button>
 
-        <div className="bg-card border border-border p-5 rounded-2xl shadow-xs space-y-1">
-          <div className="flex items-center justify-between text-muted-foreground">
-            <span className="text-xs font-bold uppercase tracking-wider">Total Outstanding Due</span>
-            <AlertTriangle className="w-4 h-4 text-rose-500" />
-          </div>
-          <p className="text-2xl font-black text-rose-600 font-mono">
-            BDT {Number(meta.totalDue || 0).toLocaleString('en-BD')}
-          </p>
-          <p className="text-[11px] text-muted-foreground">Pending receivables</p>
-        </div>
-
-        <div className="bg-card border border-border p-5 rounded-2xl shadow-xs space-y-2 flex flex-col justify-between">
-          <div className="flex items-center justify-between text-muted-foreground">
-            <span className="text-xs font-bold uppercase tracking-wider">Quick Actions</span>
-            <Plus className="w-4 h-4 text-primary" />
-          </div>
-          <div className="flex flex-col gap-1.5">
-            <Button
-              type="button"
-              variant="primary"
-              size="sm"
-              onClick={() => setIsCreateModalOpen(true)}
-              className="w-full h-8 text-xs font-bold gap-1.5 shadow-xs cursor-pointer"
-            >
-              <Plus className="w-3.5 h-3.5" />
-              <span>Create New Bill</span>
-            </Button>
-            <Button
-              type="button"
-              variant="outline"
-              size="sm"
-              onClick={handleExportCsv}
-              disabled={isExporting}
-              className="w-full h-7 text-[11px] font-semibold border-black/15 text-black hover:bg-black/5 gap-1.5 cursor-pointer"
-            >
-              <Download className={`w-3 h-3 ${isExporting ? 'animate-bounce' : ''}`} />
-              <span>{isExporting ? 'Exporting...' : 'Export Bills CSV'}</span>
-            </Button>
-          </div>
+          <Button
+            size="sm"
+            onClick={() => setIsCreateModalOpen(true)}
+            className="bg-black text-white hover:bg-black/90 gap-1.5 text-xs font-bold shadow-xs cursor-pointer"
+          >
+            <Plus className="w-4 h-4" />
+            + Add Bill / Expense
+          </Button>
         </div>
       </div>
 
-      {/* Main Unified Data Table */}
+      {/* 2. Top Metric KPI Cards */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="p-4 rounded-2xl bg-white border border-black/10 shadow-2xs space-y-1">
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-bold text-black/60 uppercase tracking-wider">Total Bills Amount</span>
+            <div className="p-2 rounded-xl bg-black/[0.04] text-black">
+              <Receipt className="w-4 h-4" />
+            </div>
+          </div>
+          <p className="text-xl font-bold font-mono text-black">
+            ৳ {Number(meta.totalAmount || 0).toLocaleString('en-BD')}
+          </p>
+          <span className="text-[11px] text-black/50">Overall recorded company expenses</span>
+        </div>
+
+        <div className="p-4 rounded-2xl bg-white border border-black/10 shadow-2xs space-y-1">
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-bold text-emerald-800 uppercase tracking-wider">Paid Bills</span>
+            <div className="p-2 rounded-xl bg-emerald-50 text-emerald-700">
+              <CheckCircle2 className="w-4 h-4" />
+            </div>
+          </div>
+          <p className="text-xl font-bold font-mono text-emerald-700">
+            ৳ {Number(meta.totalPaid || 0).toLocaleString('en-BD')}
+          </p>
+          <span className="text-[11px] text-emerald-800/60">Disbursed &amp; settled vouchers</span>
+        </div>
+
+        <div className="p-4 rounded-2xl bg-white border border-black/10 shadow-2xs space-y-1">
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-bold text-red-800 uppercase tracking-wider">Due / Unpaid</span>
+            <div className="p-2 rounded-xl bg-red-50 text-red-700">
+              <Clock className="w-4 h-4" />
+            </div>
+          </div>
+          <p className="text-xl font-bold font-mono text-red-700">
+            ৳ {Number(meta.totalDue || 0).toLocaleString('en-BD')}
+          </p>
+          <span className="text-[11px] text-red-800/60">Pending company payables</span>
+        </div>
+
+        <div className="p-4 rounded-2xl bg-white border border-black/10 shadow-2xs space-y-1">
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-bold text-black/60 uppercase tracking-wider">Total Vouchers</span>
+            <div className="p-2 rounded-xl bg-black/[0.04] text-black">
+              <FileText className="w-4 h-4" />
+            </div>
+          </div>
+          <p className="text-xl font-bold font-mono text-black">{meta.total || 0}</p>
+          <span className="text-[11px] text-black/50">Recorded bill voucher records</span>
+        </div>
+      </div>
+
+      {/* 3. Filters Bar (Status Tabs + Category Filter) */}
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 bg-white p-3 rounded-2xl border border-black/10">
+        {/* Status Tabs */}
+        <div className="flex items-center gap-1 bg-black/[0.03] p-1 rounded-xl border border-black/10 text-xs w-full sm:w-auto">
+          {[
+            { id: 'all', label: 'All Bills' },
+            { id: 'Paid', label: 'Paid' },
+            { id: 'Unpaid', label: 'Unpaid / Due' },
+            { id: 'Partial', label: 'Partial' },
+          ].map((tab) => (
+            <button
+              key={tab.id}
+              onClick={() => {
+                setActiveTab(tab.id);
+                setPage(1);
+              }}
+              className={`flex-1 sm:flex-none px-3 py-1.5 rounded-lg font-bold transition cursor-pointer ${
+                activeTab === tab.id
+                  ? 'bg-white text-black shadow-xs'
+                  : 'text-black/60 hover:text-black'
+              }`}
+            >
+              {tab.label}
+            </button>
+          ))}
+        </div>
+
+        {/* Category Dropdown */}
+        <div className="flex items-center gap-2 w-full sm:w-auto">
+          <span className="text-xs font-bold text-black/60 whitespace-nowrap">Category:</span>
+          <select
+            value={selectedCategory}
+            onChange={(e) => {
+              setSelectedCategory(e.target.value);
+              setPage(1);
+            }}
+            className="px-3 py-1.5 bg-white border border-black/15 rounded-xl text-black font-semibold text-xs focus:ring-2 focus:ring-black/10 outline-none cursor-pointer w-full sm:w-auto"
+          >
+            <option value="all">All Expense Categories</option>
+            {BILL_CATEGORIES.map((cat) => (
+              <option key={cat} value={cat}>
+                {cat}
+              </option>
+            ))}
+          </select>
+        </div>
+      </div>
+
+      {/* 4. Unified Data Table */}
       <UnifiedDataTable
-        title="Bills & Invoice Register"
-        subtitle="Comprehensive billing records, invoice balances, and client receivables"
         columns={columns}
         data={bills}
         loading={loading}
-        totalItems={meta.total}
-        page={page}
-        limit={limit}
-        onPageChange={setPage}
-        onLimitChange={setLimit}
-        onSearch={setSearchQuery}
-        searchPlaceholder="Search by invoice no, customer name, phone, ref..."
-        filterTabs={filterTabs}
-        activeTab={activeTab}
-        onTabChange={(tab) => {
-          setActiveTab(tab);
-          setPage(1);
+        pagination={{
+          page,
+          limit,
+          total: meta.total || 0,
+          totalPages: meta.totalPages || 1,
+          onPageChange: setPage,
+          onLimitChange: (newLimit) => {
+            setLimit(newLimit);
+            setPage(1);
+          },
         }}
-        onRefresh={fetchBills}
-        onExport={handleExportCsv}
-        headerActions={
-          <Button
-            type="button"
-            variant="primary"
-            size="sm"
-            onClick={() => setIsCreateModalOpen(true)}
-            className="h-9 px-3.5 rounded-xl font-bold text-xs gap-1.5 shadow-xs cursor-pointer"
-          >
-            <Plus className="w-4 h-4" />
-            <span>Create New Bill</span>
-          </Button>
-        }
+        search={{
+          value: searchQuery,
+          onChange: (val) => {
+            setSearchQuery(val);
+            setPage(1);
+          },
+          placeholder: 'Search by title, payee, or bill #...',
+        }}
       />
 
-      {/* Create Bill Modal */}
-      {isCreateModalOpen && (
-        <CreateBillModal
-          isOpen={isCreateModalOpen}
-          onClose={() => setIsCreateModalOpen(false)}
-          onSuccess={() => {
-            fetchBills();
-            setIsCreateModalOpen(false);
-          }}
-          onOpenStudio={handleOpenStudio}
-        />
-      )}
+      {/* 5. Create Bill Modal */}
+      <CreateBillModal
+        isOpen={isCreateModalOpen}
+        onClose={() => setIsCreateModalOpen(false)}
+        onSuccess={fetchBills}
+      />
 
-      {/* Invoice Preview & Print Modal */}
-      {previewBill && (
-        <InvoicePreviewModal
-          isOpen={Boolean(previewBill)}
-          invoiceData={previewBill}
-          onClose={() => setPreviewBill(null)}
-        />
-      )}
+      {/* 6. Preview Bill Modal */}
+      <BillPreviewModal
+        isOpen={Boolean(previewBill)}
+        onClose={() => setPreviewBill(null)}
+        bill={previewBill}
+      />
 
-      {/* Confirm Delete Dialog */}
-      {deleteTarget && (
-        <ConfirmDeleteDialog
-          isOpen={Boolean(deleteTarget)}
-          title="Delete Bill / Invoice"
-          description={`Are you sure you want to delete Invoice #${deleteTarget.invoiceNo || 'Bill'} for ${deleteTarget.customerName || 'client'}? This action cannot be undone.`}
-          isDeleting={isDeleting}
-          onClose={() => setDeleteTarget(null)}
-          onConfirm={handleDeleteBill}
-        />
-      )}
+      {/* 7. Delete Confirmation Dialog */}
+      <ConfirmDeleteDialog
+        isOpen={Boolean(deleteTarget)}
+        onClose={() => setDeleteTarget(null)}
+        onConfirm={handleDeleteBill}
+        title="Delete Bill Voucher"
+        description={`Are you sure you want to delete bill voucher "${deleteTarget?.title || deleteTarget?.billNumber}"? This action cannot be undone.`}
+        isDeleting={isDeleting}
+      />
     </div>
   );
 }
 
 export default BillsPage;
-

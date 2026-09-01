@@ -1,20 +1,18 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import {
   Receipt,
-  Plus,
+  UploadCloud,
+  Loader2,
+  CheckCircle2,
   Trash2,
-  User,
-  Phone,
-  Mail,
-  MapPin,
   Calendar,
   CreditCard,
+  Building2,
   FileText,
-  ExternalLink,
-  Loader2,
-  Sparkles,
-  Layers,
-  FileSpreadsheet,
+  DollarSign,
+  User,
+  Phone,
+  Tag,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
@@ -23,588 +21,403 @@ import {
   UnifiedModalFooter,
 } from '../../../components/common/UnifiedModal';
 import { apiClient } from '@/lib/api-client';
+import { accountsService } from '../services/accountsService';
 import { toast } from 'sonner';
 
-export function generateBillInvoiceNo() {
-  const date = new Date();
-  const yy = String(date.getFullYear()).slice(-2);
-  const mm = String(date.getMonth() + 1).padStart(2, '0');
-  const rand = Math.floor(1000 + Math.random() * 9000);
-  return `INV-${yy}${mm}-${rand}`;
-}
+export const BILL_CATEGORIES = [
+  'Employee Salary',
+  'Office Rent',
+  'Electricity / Utility',
+  'Internet & Phone',
+  'Office Supplies & Stationery',
+  'Tea & Refreshments',
+  'Vendor & Supplier Payment',
+  'Travel & Transportation',
+  'Legal & Trade Fees',
+  'Visa Operations',
+  'Maintenance & Repairs',
+  'Other Office Expense',
+];
 
-export function CreateBillModal({ isOpen, onClose, onSuccess, onOpenStudio }) {
+export function CreateBillModal({ isOpen, onClose, onSuccess }) {
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [clients, setClients] = useState([]);
-  const [selectedClientDid, setSelectedClientDid] = useState('');
+  const [isUploading, setIsUploading] = useState(false);
 
   const [formData, setFormData] = useState({
-    invoiceNo: generateBillInvoiceNo(),
-    issueDate: new Date().toISOString().split('T')[0],
-    dueDate: new Date(Date.now() + 15 * 86400000).toISOString().split('T')[0],
-    paymentStatus: 'Pending', // 'Paid' | 'Partial' | 'Pending' | 'Overdue'
-    paymentMethod: 'Cash',
-    taxRate: 0,
+    title: '',
+    category: 'Electricity / Utility',
+    payee: '',
+    payeePhone: '',
+    amount: '',
     paidAmount: '',
-    client: {
-      name: '',
-      phone: '',
-      email: '',
-      address: '',
-      contactPerson: '',
-    },
-    caseNumber: '',
-    caseDid: '',
-    items: [
-      {
-        id: 'item-1',
-        title: '',
-        description: '',
-        quantity: 1,
-        unitPrice: '',
-      },
-    ],
-    paymentTerms: 'Payment due within 15 days of invoice date.',
-    notes: 'Thank you for choosing Monsur Ali Tours & Travels!',
+    billDate: new Date().toISOString().split('T')[0],
+    dueDate: '',
+    paymentStatus: 'Paid', // 'Paid' | 'Unpaid' | 'Partial'
+    paymentMethod: 'Cash',
+    bankAccount: '',
+    documentUrl: '',
+    documentName: '',
+    documentSize: '',
+    notes: '',
   });
-
-  // Fetch recent clients for quick autofill
-  useEffect(() => {
-    if (isOpen) {
-      setFormData((prev) => ({
-        ...prev,
-        invoiceNo: generateBillInvoiceNo(),
-      }));
-
-      apiClient
-        .get('/api/v1/client/cases?limit=50')
-        .then((res) => {
-          if (res.data?.data) {
-            setClients(res.data.data);
-          }
-        })
-        .catch(() => {});
-    }
-  }, [isOpen]);
 
   if (!isOpen) return null;
 
-  // Handle Client Autofill Selection
-  const handleClientSelect = (caseItem) => {
-    if (!caseItem) return;
-    const name = caseItem.applicantName || caseItem.clientInfo?.fullName || caseItem.clientInfo?.name || '';
-    const phone = caseItem.phone || caseItem.clientInfo?.phone || '';
-    const email = caseItem.email || caseItem.clientInfo?.email || '';
-    const address = caseItem.clientInfo?.presentAddress || caseItem.clientInfo?.address || '';
-    const caseNum = caseItem.caseNumber || caseItem.fileNumber || '';
-    const destination = caseItem.destinationCountry || caseItem.caseType || 'Travel & Visa Processing';
-    const agreedAmt = caseItem.agreedAmount || caseItem.totalAgreedAmount || '';
+  const handleFileUpload = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
 
-    setSelectedClientDid(caseItem.did || caseItem._id);
-    setFormData((prev) => ({
-      ...prev,
-      caseNumber: caseNum,
-      caseDid: caseItem.did || caseItem._id,
-      client: {
-        name,
-        contactPerson: name,
-        phone,
-        email,
-        address,
-      },
-      items: [
-        {
-          id: 'item-1',
-          title: `${destination} - Processing & Service Charge`,
-          description: `Case File #${caseNum} • ${caseItem.tradeSkill || 'Standard Service'}`,
-          quantity: 1,
-          unitPrice: agreedAmt || prev.items[0]?.unitPrice || '',
-        },
-      ],
-    }));
+    setIsUploading(true);
+    try {
+      const uploadData = new FormData();
+      uploadData.append('file', file);
+      const res = await apiClient.post('/api/v1/upload/single?documentType=company-bill', uploadData, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      });
 
-    toast.info(`Client details loaded for ${name || 'Case'}`);
+      const uploadedUrl = res.data?.data?.url || res.data?.url || res.data?.fileUrl;
+      const sizeMb = (file.size / (1024 * 1024)).toFixed(2) + ' MB';
+
+      setFormData((prev) => ({
+        ...prev,
+        documentUrl: uploadedUrl,
+        documentName: file.name,
+        documentSize: sizeMb,
+      }));
+
+      toast.success(`Attached "${file.name}" successfully!`);
+    } catch (err) {
+      console.error('File upload error:', err);
+      toast.error('Failed to upload bill receipt document.');
+    } finally {
+      setIsUploading(false);
+    }
   };
 
-  // Line Items Calculation
-  const subtotal = formData.items.reduce((acc, item) => {
-    const qty = parseFloat(item.quantity) || 1;
-    const price = parseFloat(item.unitPrice) || 0;
-    return acc + qty * price;
-  }, 0);
-
-  const taxAmount = (subtotal * (parseFloat(formData.taxRate) || 0)) / 100;
-  const grandTotal = subtotal + taxAmount;
-
-  // Sync paid & due amounts with paymentStatus
-  const calculatedPaid =
-    formData.paymentStatus === 'Paid'
-      ? grandTotal
-      : formData.paymentStatus === 'Pending'
-      ? 0
-      : parseFloat(formData.paidAmount) || 0;
-
-  const calculatedDue = Math.max(0, grandTotal - calculatedPaid);
-
-  const handleAddItem = () => {
-    const newId = `item-${Date.now()}`;
+  const handleRemoveFile = () => {
     setFormData((prev) => ({
       ...prev,
-      items: [
-        ...prev.items,
-        { id: newId, title: '', description: '', quantity: 1, unitPrice: '' },
-      ],
-    }));
-  };
-
-  const handleRemoveItem = (id) => {
-    if (formData.items.length <= 1) return;
-    setFormData((prev) => ({
-      ...prev,
-      items: prev.items.filter((it) => it.id !== id),
-    }));
-  };
-
-  const handleItemChange = (id, field, value) => {
-    setFormData((prev) => ({
-      ...prev,
-      items: prev.items.map((it) => (it.id === id ? { ...it, [field]: value } : it)),
-    }));
-  };
-
-  const handleClientFieldChange = (field, value) => {
-    setFormData((prev) => ({
-      ...prev,
-      client: {
-        ...prev.client,
-        [field]: value,
-      },
+      documentUrl: '',
+      documentName: '',
+      documentSize: '',
     }));
   };
 
   const handleSubmit = async (e) => {
-    e?.preventDefault();
+    if (e) e.preventDefault();
 
-    if (!formData.client.name.trim()) {
-      toast.error('Client / Organization Name is required!');
+    if (!formData.title.trim()) {
+      toast.error('Bill Title / Description is required (e.g. September Office Rent)!');
+      return;
+    }
+    if (!formData.payee.trim()) {
+      toast.error('Paid To / Payee Name is required (e.g. DESCO, Rahim, Landlord)!');
+      return;
+    }
+    const numAmt = Number(formData.amount);
+    if (!numAmt || numAmt <= 0) {
+      toast.error('Please enter a valid bill amount!');
       return;
     }
 
-    if (formData.items.some((it) => !it.title.trim() || !it.unitPrice || Number(it.unitPrice) <= 0)) {
-      toast.error('Please enter a valid Service Title and Unit Price for all bill items!');
-      return;
-    }
-
+    setIsSubmitting(true);
     try {
-      setIsSubmitting(true);
-      const payload = {
+      await accountsService.createBill({
         ...formData,
-        customerName: formData.client.name,
-        customerPhone: formData.client.phone,
-        customerEmail: formData.client.email,
-        subtotal,
-        taxAmount,
-        grandTotal,
-        paidAmount: calculatedPaid,
-        dueAmount: calculatedDue,
-      };
+        amount: numAmt,
+        paidAmount:
+          formData.paymentStatus === 'Paid'
+            ? numAmt
+            : formData.paymentStatus === 'Unpaid'
+            ? 0
+            : Number(formData.paidAmount) || 0,
+      });
 
-      const res = await apiClient.post('/api/v1/client/docs/invoices', payload);
-      if (res.data?.success || res.data?.status === 'success') {
-        const returnedNo = res.data?.data?.invoiceNo || formData.invoiceNo;
-        toast.success(`Bill / Invoice #${returnedNo} created successfully!`);
-
-        // If linked to a case, register document in Case Vault
-        if (formData.caseDid) {
-          try {
-            await apiClient.post(`/api/v1/client/cases/${formData.caseDid}/documents`, {
-              documentName: `Client Bill / Invoice #${returnedNo}`,
-              fileName: `Invoice-${returnedNo}.pdf`,
-              fileUrl: res.data?.data?.pdfUrl || `/api/v1/client/docs/invoices/${res.data?.data?._id}/pdf`,
-              fileType: 'application/pdf',
-              fileSize: '1.2 MB',
-              accessLevel: 'Public',
-            });
-          } catch (_) {}
-        }
-
-        if (onSuccess) onSuccess(res.data?.data);
-        if (onClose) onClose();
-      } else {
-        throw new Error(res.data?.message || 'Failed to create bill.');
-      }
+      toast.success(`Bill "${formData.title}" recorded successfully!`);
+      if (onSuccess) onSuccess();
+      if (onClose) onClose();
     } catch (err) {
-      toast.error(err.response?.data?.message || err.message || 'Failed to save bill.');
+      toast.error(err.response?.data?.message || 'Failed to record bill.');
     } finally {
       setIsSubmitting(false);
     }
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-xs animate-in fade-in">
-      <div className="bg-white border border-black/10 rounded-2xl shadow-2xl w-full max-w-4xl max-h-[90vh] flex flex-col overflow-hidden">
-        {/* Header */}
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/60 backdrop-blur-xs animate-in fade-in duration-200">
+      <div className="fixed inset-0" onClick={onClose} />
+
+      <div className="relative w-full max-w-2xl bg-white border border-black/10 rounded-2xl shadow-2xl flex flex-col max-h-[92vh] overflow-hidden">
+        {/* Dark Blue Header */}
         <UnifiedModalHeader
-          title="Create New Bill / Client Invoice"
-          subtitle="Generate itemized billing invoice, record charges, and register into accounts receivable ledger."
+          title="Record Company Bill / Expense"
+          subtitle="Add outgoing agency expenditure, utility bills, employee salary disbursements, and office payments."
           icon={Receipt}
-          badge={formData.invoiceNo}
           onClose={onClose}
         />
 
-        {/* Modal Body with internal scroll */}
-        <UnifiedModalBody className="p-5 sm:p-6 space-y-6 overflow-y-auto max-h-[70vh]">
-          {/* Quick Case / Client Picker */}
-          {clients.length > 0 && (
-            <div className="p-3.5 bg-black/[0.02] border border-black/10 rounded-xl space-y-1.5">
-              <label className="block text-[11px] font-bold uppercase tracking-wider text-black/70 flex items-center gap-1.5">
-                <Sparkles className="w-3.5 h-3.5 text-primary" />
-                Quick Autofill from Active Case Dossier
-              </label>
-              <select
-                value={selectedClientDid}
-                onChange={(e) => {
-                  const val = e.target.value;
-                  setSelectedClientDid(val);
-                  const found = clients.find((c) => (c.did || c._id) === val);
-                  if (found) handleClientSelect(found);
-                }}
-                className="w-full px-3 py-2 text-xs font-semibold bg-white border border-black/15 rounded-xl text-black focus:outline-none focus:border-primary cursor-pointer"
-              >
-                <option value="">-- Or select an existing client case file --</option>
-                {clients.map((c) => (
-                  <option key={c.did || c._id} value={c.did || c._id}>
-                    {c.applicantName || c.clientInfo?.fullName || 'Client'} ({c.caseNumber || 'No Ref'}) •{' '}
-                    {c.destinationCountry || c.caseType || 'Service'}
-                  </option>
-                ))}
-              </select>
-            </div>
-          )}
-
-          {/* Section 1: Client / Customer Details */}
+        {/* Scrollable Modal Body (h-[70vh]) */}
+        <UnifiedModalBody className="h-[70vh] overflow-y-auto p-4 sm:p-6 space-y-4">
+          {/* Section 1: Bill Particulars */}
           <div className="space-y-3">
-            <h3 className="text-xs font-bold uppercase tracking-wider text-black/80 flex items-center gap-2 pb-1.5 border-b border-black/10">
-              <User className="w-4 h-4 text-primary" />
-              1. Client / Customer Details
-            </h3>
+            <div className="flex items-center gap-1.5 text-xs font-bold text-black uppercase tracking-wider">
+              <Tag className="w-3.5 h-3.5 text-black/60" />
+              <span>1. Bill Title &amp; Category</span>
+            </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
               <div>
-                <label className="block text-xs font-bold text-black mb-1">
-                  Client / Organization Name <span className="text-red-500">*</span>
+                <label className="block font-bold text-black mb-1">
+                  Bill Title / Description <span className="text-red-500">*</span>
                 </label>
                 <input
                   type="text"
-                  placeholder="e.g. MD Ikram Hossain"
-                  value={formData.client.name}
-                  onChange={(e) => handleClientFieldChange('name', e.target.value)}
-                  className="w-full px-3 py-2 text-xs bg-white border border-black/15 rounded-xl text-black font-semibold focus:outline-none focus:border-primary"
+                  placeholder="e.g. September Office Rent, Staff Salary - Rahim"
+                  value={formData.title}
+                  onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                  className="w-full px-3 py-2 bg-white border border-black/15 rounded-xl text-black font-semibold text-xs focus:ring-2 focus:ring-black/10 outline-none placeholder:text-black/40"
                   required
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-black mb-1">
-                  Phone / Mobile Number <span className="text-red-500">*</span>
+                <label className="block font-bold text-black mb-1">
+                  Expense Category <span className="text-red-500">*</span>
                 </label>
-                <input
-                  type="text"
-                  placeholder="e.g. +880 1712-345678"
-                  value={formData.client.phone}
-                  onChange={(e) => handleClientFieldChange('phone', e.target.value)}
-                  className="w-full px-3 py-2 text-xs bg-white border border-black/15 rounded-xl text-black focus:outline-none focus:border-primary"
-                  required
-                />
-              </div>
-
-              <div>
-                <label className="block text-xs font-bold text-black mb-1">Email Address</label>
-                <input
-                  type="email"
-                  placeholder="e.g. client@example.com"
-                  value={formData.client.email}
-                  onChange={(e) => handleClientFieldChange('email', e.target.value)}
-                  className="w-full px-3 py-2 text-xs bg-white border border-black/15 rounded-xl text-black focus:outline-none focus:border-primary"
-                />
-              </div>
-
-              <div className="sm:col-span-2">
-                <label className="block text-xs font-bold text-black mb-1">Billing Address</label>
-                <input
-                  type="text"
-                  placeholder="e.g. House #12, Road #4, Dhanmondi, Dhaka"
-                  value={formData.client.address}
-                  onChange={(e) => handleClientFieldChange('address', e.target.value)}
-                  className="w-full px-3 py-2 text-xs bg-white border border-black/15 rounded-xl text-black focus:outline-none focus:border-primary"
-                />
-              </div>
-
-              <div>
-                <label className="block text-xs font-bold text-black mb-1">Case / Tracking Ref</label>
-                <input
-                  type="text"
-                  placeholder="e.g. PASS-2026-5395"
-                  value={formData.caseNumber}
-                  onChange={(e) => setFormData((prev) => ({ ...prev, caseNumber: e.target.value }))}
-                  className="w-full px-3 py-2 text-xs bg-white border border-black/15 rounded-xl text-black focus:outline-none focus:border-primary font-mono"
-                />
-              </div>
-            </div>
-          </div>
-
-          {/* Section 2: Line Items & Charges */}
-          <div className="space-y-3">
-            <div className="flex items-center justify-between pb-1.5 border-b border-black/10">
-              <h3 className="text-xs font-bold uppercase tracking-wider text-black/80 flex items-center gap-2">
-                <Layers className="w-4 h-4 text-primary" />
-                2. Invoice Line Items &amp; Charges ({formData.items.length})
-              </h3>
-              <Button
-                type="button"
-                size="sm"
-                variant="outline"
-                onClick={handleAddItem}
-                className="h-7 text-xs font-bold px-2.5 border-black/15 text-black hover:bg-black/5 gap-1 cursor-pointer"
-              >
-                <Plus className="w-3.5 h-3.5" />
-                <span>Add Item</span>
-              </Button>
-            </div>
-
-            <div className="space-y-2.5">
-              {formData.items.map((item, idx) => {
-                const qty = parseFloat(item.quantity) || 1;
-                const price = parseFloat(item.unitPrice) || 0;
-                const lineTotal = qty * price;
-
-                return (
-                  <div
-                    key={item.id}
-                    className="p-3 bg-black/[0.02] border border-black/10 rounded-xl space-y-2 text-xs"
-                  >
-                    <div className="flex items-center justify-between">
-                      <span className="font-bold text-black flex items-center gap-1.5">
-                        <span className="size-5 rounded-full bg-primary/10 text-primary flex items-center justify-center font-mono text-[10px]">
-                          {idx + 1}
-                        </span>
-                        Item #{idx + 1}
-                      </span>
-                      {formData.items.length > 1 && (
-                        <button
-                          type="button"
-                          onClick={() => handleRemoveItem(item.id)}
-                          className="p-1 text-red-500 hover:text-red-700 hover:bg-red-50 rounded-lg transition cursor-pointer"
-                          title="Remove item"
-                        >
-                          <Trash2 className="w-3.5 h-3.5" />
-                        </button>
-                      )}
-                    </div>
-
-                    <div className="grid grid-cols-1 sm:grid-cols-12 gap-2.5">
-                      <div className="sm:col-span-6">
-                        <input
-                          type="text"
-                          placeholder="Service Title (e.g. Visa Processing Fee) *"
-                          value={item.title}
-                          onChange={(e) => handleItemChange(item.id, 'title', e.target.value)}
-                          className="w-full px-3 py-1.5 text-xs bg-white border border-black/15 rounded-lg text-black font-semibold focus:outline-none focus:border-primary"
-                          required
-                        />
-                      </div>
-                      <div className="sm:col-span-2">
-                        <input
-                          type="number"
-                          min="1"
-                          placeholder="Qty"
-                          value={item.quantity}
-                          onChange={(e) => handleItemChange(item.id, 'quantity', e.target.value)}
-                          className="w-full px-2.5 py-1.5 text-xs bg-white border border-black/15 rounded-lg text-black text-center focus:outline-none focus:border-primary font-mono"
-                        />
-                      </div>
-                      <div className="sm:col-span-2">
-                        <input
-                          type="number"
-                          min="0"
-                          step="100"
-                          placeholder="Price (BDT) *"
-                          value={item.unitPrice}
-                          onChange={(e) => handleItemChange(item.id, 'unitPrice', e.target.value)}
-                          className="w-full px-2.5 py-1.5 text-xs bg-white border border-black/15 rounded-lg text-black text-right focus:outline-none focus:border-primary font-mono font-bold"
-                          required
-                        />
-                      </div>
-                      <div className="sm:col-span-2 flex items-center justify-end px-2 font-mono font-black text-black">
-                        BDT {lineTotal.toLocaleString('en-BD')}
-                      </div>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-
-          {/* Section 3: VAT, Settlement & Status */}
-          <div className="space-y-3">
-            <h3 className="text-xs font-bold uppercase tracking-wider text-black/80 flex items-center gap-2 pb-1.5 border-b border-black/10">
-              <CreditCard className="w-4 h-4 text-primary" />
-              3. Payment Status &amp; Financial Settlement
-            </h3>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3">
-              <div>
-                <label className="block text-xs font-bold text-black mb-1">Issue Date</label>
-                <input
-                  type="date"
-                  value={formData.issueDate}
-                  onChange={(e) => setFormData((prev) => ({ ...prev, issueDate: e.target.value }))}
-                  className="w-full px-3 py-1.5 text-xs bg-white border border-black/15 rounded-xl text-black focus:outline-none focus:border-primary font-mono"
-                />
-              </div>
-
-              <div>
-                <label className="block text-xs font-bold text-black mb-1">Due Date</label>
-                <input
-                  type="date"
-                  value={formData.dueDate}
-                  onChange={(e) => setFormData((prev) => ({ ...prev, dueDate: e.target.value }))}
-                  className="w-full px-3 py-1.5 text-xs bg-white border border-black/15 rounded-xl text-black focus:outline-none focus:border-primary font-mono"
-                />
-              </div>
-
-              <div>
-                <label className="block text-xs font-bold text-black mb-1">Payment Status</label>
                 <select
-                  value={formData.paymentStatus}
-                  onChange={(e) => setFormData((prev) => ({ ...prev, paymentStatus: e.target.value }))}
-                  className="w-full px-3 py-1.5 text-xs font-bold bg-white border border-black/15 rounded-xl text-black focus:outline-none focus:border-primary cursor-pointer"
+                  value={formData.category}
+                  onChange={(e) => setFormData({ ...formData, category: e.target.value })}
+                  className="w-full px-3 py-2 bg-white border border-black/15 rounded-xl text-black font-semibold text-xs focus:ring-2 focus:ring-black/10 outline-none cursor-pointer"
                 >
-                  <option value="Pending">Pending (Unpaid)</option>
-                  <option value="Partial">Partial Paid</option>
-                  <option value="Paid">Fully Paid</option>
-                  <option value="Overdue">Overdue</option>
+                  {BILL_CATEGORIES.map((cat) => (
+                    <option key={cat} value={cat}>
+                      {cat}
+                    </option>
+                  ))}
                 </select>
               </div>
+            </div>
+          </div>
+
+          {/* Section 2: Beneficiary / Payee Details */}
+          <div className="space-y-3 pt-1 border-t border-black/10">
+            <div className="flex items-center gap-1.5 text-xs font-bold text-black uppercase tracking-wider">
+              <User className="w-3.5 h-3.5 text-black/60" />
+              <span>2. Payee / Beneficiary Information</span>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+              <div>
+                <label className="block font-bold text-black mb-1">
+                  Paid To / Payee Name <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="text"
+                  placeholder="e.g. DESCO, Landlord, Abdur Rahim (Staff)"
+                  value={formData.payee}
+                  onChange={(e) => setFormData({ ...formData, payee: e.target.value })}
+                  className="w-full px-3 py-2 bg-white border border-black/15 rounded-xl text-black font-semibold text-xs focus:ring-2 focus:ring-black/10 outline-none placeholder:text-black/40"
+                  required
+                />
+              </div>
 
               <div>
-                <label className="block text-xs font-bold text-black mb-1">Payment Method</label>
+                <label className="block font-bold text-black mb-1">Payee Phone / Contact (Optional)</label>
+                <input
+                  type="text"
+                  placeholder="e.g. 01711234567"
+                  value={formData.payeePhone}
+                  onChange={(e) => setFormData({ ...formData, payeePhone: e.target.value })}
+                  className="w-full px-3 py-2 bg-white border border-black/15 rounded-xl text-black font-mono text-xs focus:ring-2 focus:ring-black/10 outline-none placeholder:text-black/40"
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* Section 3: Financials & Payment Terms */}
+          <div className="space-y-3 pt-1 border-t border-black/10">
+            <div className="flex items-center gap-1.5 text-xs font-bold text-black uppercase tracking-wider">
+              <CreditCard className="w-3.5 h-3.5 text-black/60" />
+              <span>3. Amount &amp; Payment Status</span>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
+              <div>
+                <label className="block font-bold text-black mb-1">
+                  Total Bill Amount (৳ BDT) <span className="text-red-500">*</span>
+                </label>
+                <div className="relative">
+                  <span className="absolute left-3 top-2 font-bold text-black/50 text-xs">৳</span>
+                  <input
+                    type="number"
+                    min="0"
+                    step="1"
+                    placeholder="0.00"
+                    value={formData.amount}
+                    onChange={(e) => setFormData({ ...formData, amount: e.target.value })}
+                    className="w-full pl-8 pr-3 py-2 bg-white border border-black/15 rounded-xl text-black font-mono font-bold text-sm focus:ring-2 focus:ring-black/10 outline-none placeholder:text-black/40"
+                    required
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block font-bold text-black mb-1">Payment Method</label>
                 <select
                   value={formData.paymentMethod}
-                  onChange={(e) => setFormData((prev) => ({ ...prev, paymentMethod: e.target.value }))}
-                  className="w-full px-3 py-1.5 text-xs font-semibold bg-white border border-black/15 rounded-xl text-black focus:outline-none focus:border-primary cursor-pointer"
+                  onChange={(e) => setFormData({ ...formData, paymentMethod: e.target.value })}
+                  className="w-full px-3 py-2 bg-white border border-black/15 rounded-xl text-black font-semibold text-xs focus:ring-2 focus:ring-black/10 outline-none cursor-pointer"
                 >
                   <option value="Cash">Cash</option>
                   <option value="Bank Transfer">Bank Transfer</option>
                   <option value="bKash">bKash</option>
                   <option value="Nagad">Nagad</option>
                   <option value="Cheque">Cheque</option>
+                  <option value="Other">Other</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="block font-bold text-black mb-1">Payment Status</label>
+                <select
+                  value={formData.paymentStatus}
+                  onChange={(e) => setFormData({ ...formData, paymentStatus: e.target.value })}
+                  className="w-full px-3 py-2 bg-white border border-black/15 rounded-xl text-black font-semibold text-xs focus:ring-2 focus:ring-black/10 outline-none cursor-pointer"
+                >
+                  <option value="Paid">Paid (Full)</option>
+                  <option value="Unpaid">Unpaid / Due</option>
+                  <option value="Partial">Partial Payment</option>
                 </select>
               </div>
             </div>
 
-            {formData.paymentStatus === 'Partial' && (
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 p-3 bg-blue-50/50 border border-blue-200 rounded-xl">
-                <div>
-                  <label className="block text-xs font-bold text-black mb-1">Amount Paid (BDT) *</label>
-                  <input
-                    type="number"
-                    min="0"
-                    max={grandTotal}
-                    value={formData.paidAmount}
-                    onChange={(e) => setFormData((prev) => ({ ...prev, paidAmount: e.target.value }))}
-                    placeholder="e.g. 50000"
-                    className="w-full px-3 py-1.5 text-xs bg-white border border-black/15 rounded-lg text-black font-mono font-bold focus:outline-none focus:border-primary"
-                  />
-                </div>
-                <div className="flex flex-col justify-center text-xs">
-                  <span className="text-black/60 font-semibold">Remaining Balance Due:</span>
-                  <span className="font-mono font-black text-rose-600 text-sm">
-                    BDT {calculatedDue.toLocaleString('en-BD')}
-                  </span>
-                </div>
-              </div>
-            )}
-
-            {/* Live Financial Summary */}
-            <div className="p-4 bg-black/[0.03] border border-black/10 rounded-2xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-              <div className="space-y-0.5 text-xs">
-                <div className="flex items-center gap-2">
-                  <span className="text-black/60">Subtotal ({formData.items.length} item{formData.items.length > 1 ? 's' : ''}):</span>
-                  <span className="font-mono font-bold text-black">BDT {subtotal.toLocaleString('en-BD')}</span>
-                </div>
-                {taxAmount > 0 && (
-                  <div className="flex items-center gap-2">
-                    <span className="text-black/60">VAT ({formData.taxRate}%):</span>
-                    <span className="font-mono font-bold text-black">BDT {taxAmount.toLocaleString('en-BD')}</span>
-                  </div>
-                )}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+              <div>
+                <label className="block font-bold text-black mb-1">Bill Date</label>
+                <input
+                  type="date"
+                  value={formData.billDate}
+                  onChange={(e) => setFormData({ ...formData, billDate: e.target.value })}
+                  className="w-full px-3 py-2 bg-white border border-black/15 rounded-xl text-black font-medium text-xs focus:ring-2 focus:ring-black/10 outline-none"
+                />
               </div>
 
-              <div className="text-right">
-                <span className="text-[11px] font-bold uppercase tracking-wider text-black/60 block">
-                  Grand Total Bill
-                </span>
-                <span className="text-xl sm:text-2xl font-black font-mono text-primary">
-                  BDT {grandTotal.toLocaleString('en-BD')}
-                </span>
+              <div>
+                <label className="block font-bold text-black mb-1">Due Date (Optional)</label>
+                <input
+                  type="date"
+                  value={formData.dueDate}
+                  onChange={(e) => setFormData({ ...formData, dueDate: e.target.value })}
+                  className="w-full px-3 py-2 bg-white border border-black/15 rounded-xl text-black font-medium text-xs focus:ring-2 focus:ring-black/10 outline-none"
+                />
               </div>
             </div>
           </div>
-        </UnifiedModalBody>
 
-        {/* Footer */}
-        <UnifiedModalFooter className="flex flex-wrap items-center justify-between gap-3 p-4 bg-white border-t border-black/10">
-          <div>
-            {onOpenStudio && (
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                onClick={onOpenStudio}
-                className="h-8 text-xs px-3 font-semibold border-black/15 text-black hover:bg-black/5 flex items-center gap-1.5 cursor-pointer"
-              >
-                <FileSpreadsheet className="w-3.5 h-3.5 text-primary" />
-                <span>Open Full Document Studio</span>
-              </Button>
+          {/* Section 4: Physical Document / Receipt Attachment */}
+          <div className="space-y-3 pt-1 border-t border-black/10">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-1.5 text-xs font-bold text-black uppercase tracking-wider">
+                <FileText className="w-3.5 h-3.5 text-black/60" />
+                <span>4. Physical Bill / Voucher Slip Attachment</span>
+              </div>
+              <span className="text-[10px] text-black/50 font-mono">PDF, PNG, JPG</span>
+            </div>
+
+            {formData.documentUrl ? (
+              <div className="p-3 bg-emerald-50 border border-emerald-200 rounded-xl flex items-center justify-between gap-3 text-xs">
+                <div className="flex items-center gap-2.5 min-w-0">
+                  <div className="p-2 rounded-lg bg-emerald-600 text-white shrink-0">
+                    <CheckCircle2 className="w-4 h-4" />
+                  </div>
+                  <div className="min-w-0">
+                    <h5 className="font-bold text-emerald-950 truncate">
+                      {formData.documentName || 'Attached Bill Document'}
+                    </h5>
+                    <span className="text-[10px] text-emerald-700 font-mono">
+                      {formData.documentSize || 'Attached'} • Ready
+                    </span>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-2 shrink-0">
+                  <a
+                    href={formData.documentUrl}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="px-2.5 py-1 bg-white border border-emerald-300 text-emerald-800 rounded-lg text-xs font-semibold hover:bg-emerald-100 transition cursor-pointer"
+                  >
+                    Preview
+                  </a>
+                  <button
+                    type="button"
+                    onClick={handleRemoveFile}
+                    className="p-1.5 text-red-600 hover:bg-red-100 rounded-lg transition cursor-pointer"
+                    title="Remove Attachment"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <div>
+                <input
+                  type="file"
+                  id="bill-doc-input"
+                  accept=".pdf,.png,.jpg,.jpeg,.webp"
+                  onChange={handleFileUpload}
+                  className="hidden"
+                />
+                <label
+                  htmlFor="bill-doc-input"
+                  className={`w-full border-2 border-dashed rounded-xl p-4 flex flex-col items-center justify-center gap-1.5 cursor-pointer transition text-xs text-center ${
+                    isUploading
+                      ? 'border-black/30 bg-black/[0.03]'
+                      : 'border-black/20 hover:border-black/40 bg-black/[0.01] hover:bg-black/[0.03]'
+                  }`}
+                >
+                  {isUploading ? (
+                    <>
+                      <Loader2 className="w-6 h-6 animate-spin text-black/60 mb-1" />
+                      <span className="font-semibold text-black">Uploading document to server...</span>
+                    </>
+                  ) : (
+                    <>
+                      <UploadCloud className="w-6 h-6 text-black/50 mb-1" />
+                      <span className="font-bold text-black">Click to upload physical Bill / Receipt slip</span>
+                      <span className="text-[10px] text-black/50">Upload scan / receipt photo (PDF, JPG, PNG up to 10MB)</span>
+                    </>
+                  )}
+                </label>
+              </div>
             )}
           </div>
 
-          <div className="flex items-center gap-2">
-            <Button
-              type="button"
-              variant="cancel"
-              size="sm"
-              onClick={onClose}
-              disabled={isSubmitting}
-              className="h-8 px-4 text-xs font-semibold cursor-pointer"
-            >
-              Cancel
-            </Button>
-
-            <Button
-              type="button"
-              variant="primary"
-              size="sm"
-              onClick={handleSubmit}
-              disabled={isSubmitting}
-              className="h-8 px-5 text-xs font-bold gap-1.5 shadow-xs cursor-pointer"
-            >
-              {isSubmitting ? (
-                <>
-                  <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                  <span>Saving Bill...</span>
-                </>
-              ) : (
-                <>
-                  <Receipt className="w-3.5 h-3.5" />
-                  <span>Save &amp; Issue Bill</span>
-                </>
-              )}
-            </Button>
+          {/* Section 5: Notes & Remarks */}
+          <div className="space-y-2 pt-1 border-t border-black/10">
+            <label className="block text-xs font-bold text-black uppercase tracking-wider">
+              Notes &amp; Voucher Remarks (Optional)
+            </label>
+            <textarea
+              rows={2}
+              placeholder="Enter any additional remarks, transaction reference, meter number, or bank deposit ID..."
+              value={formData.notes}
+              onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
+              className="w-full px-3 py-2 text-xs bg-white border border-black/15 rounded-xl text-black focus:ring-2 focus:ring-black/10 outline-none resize-none placeholder:text-black/40"
+            />
           </div>
-        </UnifiedModalFooter>
+        </UnifiedModalBody>
+
+        {/* Modal Footer */}
+        <UnifiedModalFooter
+          onClose={onClose}
+          onSubmit={handleSubmit}
+          submitText="Record Bill Voucher"
+          isSubmitting={isSubmitting}
+        />
       </div>
     </div>
   );
 }
+
+export default CreateBillModal;

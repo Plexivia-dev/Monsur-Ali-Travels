@@ -2,6 +2,10 @@ import { Router } from "express";
 import {
   getPayments,
   getBills,
+  createBill,
+  getBillById,
+  updateBill,
+  deleteBill,
   getSalaries,
   getExpenses,
   getCashBook,
@@ -16,7 +20,14 @@ const accountsRouter = Router();
 
 // Accounts Data Endpoints
 accountsRouter.get("/payments", getPayments);
+
+// Company Expense Bills
 accountsRouter.get("/bills", getBills);
+accountsRouter.post("/bills", createBill);
+accountsRouter.get("/bills/:id", getBillById);
+accountsRouter.put("/bills/:id", updateBill);
+accountsRouter.delete("/bills/:id", deleteBill);
+
 accountsRouter.get("/salaries", getSalaries);
 accountsRouter.get("/expenses", getExpenses);
 accountsRouter.get("/cash-book", getCashBook);
