@@ -132,3 +132,5 @@ employmentAgreementSchema.pre("save", function (next) {
 export const EmploymentAgreementModel =
   models.EmploymentAgreement ||
   model("EmploymentAgreement", employmentAgreementSchema, "employment-agreement");
+
+export default EmploymentAgreementModel;

@@ -99,3 +99,4 @@ userSchema.virtual("employee", {
 });
 
 export const UserModel = models.User || model("User", userSchema);
+export default UserModel;
