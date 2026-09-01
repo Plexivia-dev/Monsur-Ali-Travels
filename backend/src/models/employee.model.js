@@ -99,3 +99,4 @@ employeeSchema.pre("save", function (next) {
 });
 
 export const EmployeeModel = models.Employee || model("Employee", employeeSchema);
+export default EmployeeModel;

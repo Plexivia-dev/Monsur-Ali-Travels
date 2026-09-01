@@ -90,3 +90,4 @@ invoiceSchema.pre("save", function (next) {
 });
 
 export const InvoiceModel = mongoose.models.Invoice || mongoose.model("Invoice", invoiceSchema);
+export default InvoiceModel;
