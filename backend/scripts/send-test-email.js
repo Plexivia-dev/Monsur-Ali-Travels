@@ -8,7 +8,7 @@ const __dirname = path.dirname(__filename);
 
 dotenv.config({ path: path.resolve(__dirname, "../.env") });
 
-const recipient = process.argv[2]?.trim() || "ikramul.web@gmail.com";
+const recipient = process.argv[2]?.trim() || "mr.monsur1988@gmail.com";
 
 const transporter = nodemailer.createTransport({
   host: process.env.SMTP_HOST || "smtp.hostinger.com",
