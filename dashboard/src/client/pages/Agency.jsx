@@ -1,6 +1,7 @@
 import React from 'react';
 import { useLocation, useParams } from 'react-router-dom';
 import { usePortalStore } from '../store/usePortalStore';
+import { AgencyCaseList } from '../components/agency/AgencyCaseList';
 import { AgencyClientList } from '../components/agency/AgencyClientList';
 import { AgencyEmployeeList } from '../components/agency/AgencyEmployeeList';
 import { MyTasks } from '../components/agency/MyTasks';
@@ -33,11 +34,14 @@ export function Agency() {
       return <AgencyClientList autoOpenCreate={true} />;
     case 'cases':
     case 'pipeline':
+      return <AgencyCaseList />;
     case 'clients':
     case 'clients-all':
-    default:
       return <AgencyClientList />;
+    default:
+      return <AgencyCaseList />;
   }
 }
 
 export default Agency;
+
