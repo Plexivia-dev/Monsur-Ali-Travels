@@ -16,6 +16,16 @@ export const accountsService = {
     return res.data;
   },
 
+  async createBill(payload) {
+    const res = await apiClient.post('/api/v1/client/docs/invoices', payload);
+    return res.data;
+  },
+
+  async deleteBill(id) {
+    const res = await apiClient.delete(`/api/v1/client/docs/invoices/${id}`);
+    return res.data;
+  },
+
   // ── 3. Salaries ─────────────────────────────────────────────────────────────
   async getSalaries(params = {}) {
     const res = await apiClient.get('/api/v1/accounts/salaries', { params });

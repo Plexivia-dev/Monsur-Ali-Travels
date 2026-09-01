@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import {
   Receipt,
   CheckCircle2,
@@ -8,13 +9,23 @@ import {
   DollarSign,
   CreditCard,
   FileSpreadsheet,
+  Plus,
+  Eye,
+  Printer,
+  Trash2,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { UnifiedDataTable } from '../../../components/tables/UnifiedDataTable';
 import { accountsService } from '../services/accountsService';
+import { CreateBillModal } from '../components/CreateBillModal';
+import { InvoicePreviewModal } from '../components/InvoicePreviewModal';
+import { ConfirmDeleteDialog } from '@/components/ui/confirm-delete-dialog';
+import { printDocument } from '@/lib/utils';
 import { toast } from 'sonner';
 
 export function BillsPage() {
+  const navigate = useNavigate();
+  const location = useLocation();
   const [bills, setBills] = useState([]);
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
@@ -23,6 +34,12 @@ export function BillsPage() {
   const [activeTab, setActiveTab] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [isExporting, setIsExporting] = useState(false);
+
+  // Modals state
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [previewBill, setPreviewBill] = useState(null);
+  const [deleteTarget, setDeleteTarget] = useState(null);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const fetchBills = useCallback(async () => {
     setLoading(true);
@@ -58,6 +75,30 @@ export function BillsPage() {
       toast.error('Failed to export bills report.');
     } finally {
       setIsExporting(false);
+    }
+  };
+
+  const handleDeleteBill = async () => {
+    if (!deleteTarget) return;
+    try {
+      setIsDeleting(true);
+      await accountsService.deleteBill(deleteTarget._id || deleteTarget.id);
+      toast.success('Bill / Invoice deleted successfully.');
+      setDeleteTarget(null);
+      fetchBills();
+    } catch (err) {
+      toast.error(err.response?.data?.message || 'Failed to delete bill.');
+    } finally {
+      setIsDeleting(false);
+    }
+  };
+
+  const handleOpenStudio = () => {
+    setIsCreateModalOpen(false);
+    if (location.pathname.startsWith('/admin')) {
+      navigate('/admin/docs/invoice');
+    } else {
+      navigate('/dashboard/docs/invoice');
     }
   };
 
@@ -153,6 +194,54 @@ export function BillsPage() {
         );
       },
     },
+    {
+      id: 'actions',
+      header: 'Actions',
+      cell: ({ row }) => (
+        <div className="flex items-center gap-1.5 justify-end">
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            onClick={() => setPreviewBill(row)}
+            className="h-7 px-2.5 text-xs font-semibold border-black/15 text-black hover:bg-black/5 flex items-center gap-1 cursor-pointer"
+            title="View & Print Invoice"
+          >
+            <Eye className="w-3.5 h-3.5 text-primary" />
+            <span className="hidden sm:inline">View</span>
+          </Button>
+
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            onClick={() =>
+              printDocument({
+                docId: row.invoiceNo,
+                docType: 'Invoice',
+                clientName: row.customerName,
+                elementId: 'printable-invoice-canvas',
+              })
+            }
+            className="h-7 px-2 text-xs font-semibold border-black/15 text-black hover:bg-black/5 cursor-pointer"
+            title="Print Invoice"
+          >
+            <Printer className="w-3.5 h-3.5 text-black/70" />
+          </Button>
+
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            onClick={() => setDeleteTarget(row)}
+            className="h-7 px-2 text-xs font-semibold border-red-200 text-red-600 hover:bg-red-50 hover:border-red-300 cursor-pointer"
+            title="Delete Bill"
+          >
+            <Trash2 className="w-3.5 h-3.5" />
+          </Button>
+        </div>
+      ),
+    },
   ];
 
   const filterTabs = [
@@ -166,7 +255,7 @@ export function BillsPage() {
   return (
     <div className="space-y-6">
       {/* Top Summary KPI Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <div className="bg-card border border-border p-5 rounded-2xl shadow-xs space-y-1">
           <div className="flex items-center justify-between text-muted-foreground">
             <span className="text-xs font-bold uppercase tracking-wider">Total Invoiced</span>
@@ -200,21 +289,34 @@ export function BillsPage() {
           <p className="text-[11px] text-muted-foreground">Pending receivables</p>
         </div>
 
-        <div className="bg-card border border-border p-5 rounded-2xl shadow-xs space-y-1">
+        <div className="bg-card border border-border p-5 rounded-2xl shadow-xs space-y-2 flex flex-col justify-between">
           <div className="flex items-center justify-between text-muted-foreground">
-            <span className="text-xs font-bold uppercase tracking-wider">Export to VPS</span>
-            <Download className="w-4 h-4 text-sky-500" />
+            <span className="text-xs font-bold uppercase tracking-wider">Quick Actions</span>
+            <Plus className="w-4 h-4 text-primary" />
           </div>
-          <p className="text-xs text-muted-foreground mt-1">Export full billing register to CSV</p>
-          <Button
-            size="sm"
-            onClick={handleExportCsv}
-            disabled={isExporting}
-            className="w-full mt-2 h-8 text-xs font-bold gap-1.5 cursor-pointer shadow-xs"
-          >
-            <Download className={`w-3.5 h-3.5 ${isExporting ? 'animate-bounce' : ''}`} />
-            {isExporting ? 'Exporting...' : 'Export Bills CSV'}
-          </Button>
+          <div className="flex flex-col gap-1.5">
+            <Button
+              type="button"
+              variant="primary"
+              size="sm"
+              onClick={() => setIsCreateModalOpen(true)}
+              className="w-full h-8 text-xs font-bold gap-1.5 shadow-xs cursor-pointer"
+            >
+              <Plus className="w-3.5 h-3.5" />
+              <span>Create New Bill</span>
+            </Button>
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={handleExportCsv}
+              disabled={isExporting}
+              className="w-full h-7 text-[11px] font-semibold border-black/15 text-black hover:bg-black/5 gap-1.5 cursor-pointer"
+            >
+              <Download className={`w-3 h-3 ${isExporting ? 'animate-bounce' : ''}`} />
+              <span>{isExporting ? 'Exporting...' : 'Export Bills CSV'}</span>
+            </Button>
+          </div>
         </div>
       </div>
 
@@ -240,9 +342,56 @@ export function BillsPage() {
         }}
         onRefresh={fetchBills}
         onExport={handleExportCsv}
+        headerActions={
+          <Button
+            type="button"
+            variant="primary"
+            size="sm"
+            onClick={() => setIsCreateModalOpen(true)}
+            className="h-9 px-3.5 rounded-xl font-bold text-xs gap-1.5 shadow-xs cursor-pointer"
+          >
+            <Plus className="w-4 h-4" />
+            <span>Create New Bill</span>
+          </Button>
+        }
       />
+
+      {/* Create Bill Modal */}
+      {isCreateModalOpen && (
+        <CreateBillModal
+          isOpen={isCreateModalOpen}
+          onClose={() => setIsCreateModalOpen(false)}
+          onSuccess={() => {
+            fetchBills();
+            setIsCreateModalOpen(false);
+          }}
+          onOpenStudio={handleOpenStudio}
+        />
+      )}
+
+      {/* Invoice Preview & Print Modal */}
+      {previewBill && (
+        <InvoicePreviewModal
+          isOpen={Boolean(previewBill)}
+          invoiceData={previewBill}
+          onClose={() => setPreviewBill(null)}
+        />
+      )}
+
+      {/* Confirm Delete Dialog */}
+      {deleteTarget && (
+        <ConfirmDeleteDialog
+          isOpen={Boolean(deleteTarget)}
+          title="Delete Bill / Invoice"
+          description={`Are you sure you want to delete Invoice #${deleteTarget.invoiceNo || 'Bill'} for ${deleteTarget.customerName || 'client'}? This action cannot be undone.`}
+          isDeleting={isDeleting}
+          onClose={() => setDeleteTarget(null)}
+          onConfirm={handleDeleteBill}
+        />
+      )}
     </div>
   );
 }
 
 export default BillsPage;
+
