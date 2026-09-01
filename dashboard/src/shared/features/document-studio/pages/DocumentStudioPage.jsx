@@ -45,6 +45,9 @@ export function DocumentStudioPage({
   const clientDid = searchParams.get('clientDid') || searchParams.get('clientId');
   const caseDid = searchParams.get('caseDid') || searchParams.get('caseId');
   const caseNumberParam = searchParams.get('caseNumber');
+  const amountParam = searchParams.get('amount');
+  const taskIdParam = searchParams.get('taskId');
+  const isLockedParam = searchParams.get('isLocked');
   const returnUrl = searchParams.get('returnUrl');
 
   const [dossierLoading, setDossierLoading] = useState(Boolean(clientDid || caseDid));
@@ -116,7 +119,7 @@ export function DocumentStudioPage({
           setDossierContext({
             client: clientData || {},
             caseFile: caseData || {},
-            isLocked: false,
+            isLocked: Boolean(caseDid || clientDid || isLockedParam === 'true'),
           });
         }
       } catch (err) {
@@ -131,7 +134,7 @@ export function DocumentStudioPage({
     return () => {
       isMounted = false;
     };
-  }, [clientDid, caseDid]);
+  }, [clientDid, caseDid, isLockedParam]);
 
   // Build mapped initialData for each generator based on dossierContext
   const initialData = useMemo(() => {
@@ -256,10 +259,18 @@ export function DocumentStudioPage({
         };
 
       case 'invoice':
-      case 'invoices':
+      case 'invoices': {
+        const resolvedUnitPrice =
+          parseFloat(amountParam) ||
+          caseFile.agreedAmount ||
+          caseFile.totalAgreedAmount ||
+          caseFile.initialPaidAmount ||
+          '';
+
         return {
           caseDid: caseFile.did || caseFile._id,
           caseNumber: caseFile.caseNumber || caseNumberParam || '',
+          taskId: taskIdParam || null,
           clientName: applicantFullName,
           client: {
             name: applicantFullName,
@@ -274,31 +285,44 @@ export function DocumentStudioPage({
               title: `${destination} - Processing & Service Charge`,
               description: `Case File #${caseFile.caseNumber || caseNumberParam || ''} • Trade: ${trade}`,
               quantity: 1,
-              unitPrice: caseFile.agreedAmount || caseFile.totalAgreedAmount || caseFile.initialPaidAmount || '',
+              unitPrice: resolvedUnitPrice,
             },
           ],
-          isLocked: false,
+          isLocked: Boolean(dossierContext?.isLocked),
         };
+      }
 
       case 'money-receipt':
-      case 'receipt':
+      case 'receipt': {
+        const resolvedAmount =
+          parseFloat(amountParam) ||
+          caseFile.initialPaidAmount ||
+          caseFile.advanceAmount ||
+          caseFile.paymentLedger?.step1_advance?.amount ||
+          caseFile.paymentLedger?.totalPaidAmount ||
+          caseFile.agreedAmount ||
+          '';
+
         return {
           caseDid: caseFile.did || caseFile._id,
           caseNumber: caseFile.caseNumber || caseNumberParam || '',
+          taskId: taskIdParam || null,
           clientName: applicantFullName,
           phone: phone,
           passportNumber: passportNumber,
           purpose: `Visa & Case Processing Fee - ${destination} (File #${caseFile.caseNumber || caseNumberParam || ''})`,
-          amount: caseFile.initialPaidAmount || caseFile.advanceAmount || '',
+          amount: resolvedAmount,
           date: new Date().toISOString().split('T')[0],
-          isLocked: false,
+          isLocked: Boolean(dossierContext?.isLocked),
         };
+      }
 
       case 'cash-voucher':
       case 'cash-money-voucher':
         return {
           caseDid: caseFile.did || caseFile._id,
           caseNumber: caseFile.caseNumber || caseNumberParam || '',
+          taskId: taskIdParam || null,
           paidTo: applicantFullName,
           phone: phone,
           purpose: `Disbursement / Processing Expense for Case #${caseFile.caseNumber || caseNumberParam || ''}`,
@@ -306,10 +330,10 @@ export function DocumentStudioPage({
             {
               id: 'item-1',
               description: `Operational & Processing Expense for ${applicantFullName}`,
-              amount: '',
+              amount: parseFloat(amountParam) || '',
             },
           ],
-          isLocked: false,
+          isLocked: Boolean(dossierContext?.isLocked),
         };
 
       default:
@@ -318,10 +342,10 @@ export function DocumentStudioPage({
           phone,
           passportNumber,
           nidNumber,
-          isLocked: false,
+          isLocked: Boolean(dossierContext?.isLocked),
         };
     }
-  }, [dossierContext, resolvedSubmodule, caseNumberParam]);
+  }, [dossierContext, resolvedSubmodule, caseNumberParam, amountParam, taskIdParam]);
 
   // Callback when a document is saved successfully in Document Studio
   const handleSavedSuccess = useCallback(

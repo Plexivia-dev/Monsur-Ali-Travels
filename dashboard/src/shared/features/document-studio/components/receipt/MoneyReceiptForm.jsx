@@ -24,8 +24,9 @@ import { Button } from '@/components/ui/button';
 import { useClientLookup } from '../common/useClientLookup';
 import { ExistingClientAlertModal } from '../common/ExistingClientAlertModal';
 import { validateBdPhone } from '../common/phoneValidator';
+import { ExistingClientSelector } from '@/shared/components/common/ClientSelectorAndLineItems';
 
-export function MoneyReceiptForm({ data, onChange, onReset, onSave, onPreview, isSubmitting }) {
+export function MoneyReceiptForm({ data, onChange, onReset, onSave, onPreview, isSubmitting, isLocked = false }) {
   const { t } = useTranslation();
   const [detectedMatch, setDetectedMatch] = useState(null);
   const [phoneTouched, setPhoneTouched] = useState(false);
@@ -201,15 +202,38 @@ export function MoneyReceiptForm({ data, onChange, onReset, onSave, onPreview, i
           <span>1. Client &amp; Passenger Information</span>
         </div>
 
+        {/* Existing Client Selector */}
+        <ExistingClientSelector
+          isLocked={isLocked}
+          lockedClient={{
+            name: data.clientName,
+            fullName: data.clientName,
+            caseNumber: data.caseNumber,
+          }}
+          selectedClientDid={data.caseDid || data.clientDid}
+          onSelectClient={(clientData) => {
+            onChange((prev) => ({
+              ...prev,
+              caseNumber: clientData.caseNumber || prev.caseNumber,
+              caseDid: clientData.caseDid || prev.caseDid,
+              clientDid: clientData.did || prev.clientDid,
+              clientName: clientData.name || prev.clientName,
+              phone: clientData.phone || prev.phone,
+              passportNumber: clientData.passportNumber || prev.passportNumber,
+            }));
+          }}
+        />
+
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 text-xs">
           <div>
             <label className="block font-bold text-foreground mb-1">Client / Passenger Name *</label>
             <input
               type="text"
+              disabled={isLocked}
               value={data.clientName || ''}
               placeholder="Enter recipient / client name"
               onChange={(e) => handleFieldChange('clientName', e.target.value)}
-              className="w-full px-3 py-2 bg-background border border-border rounded-xl text-foreground font-semibold text-xs focus:ring-2 focus:ring-sky-400/40 outline-none"
+              className="w-full px-3 py-2 bg-background border border-border rounded-xl text-foreground font-semibold text-xs focus:ring-2 focus:ring-sky-400/40 outline-none disabled:opacity-70 disabled:bg-muted/40"
             />
           </div>
 
@@ -217,10 +241,11 @@ export function MoneyReceiptForm({ data, onChange, onReset, onSave, onPreview, i
             <label className="block font-bold text-foreground mb-1">Passport / NID No.</label>
             <input
               type="text"
+              disabled={isLocked}
               value={data.passportNumber || ''}
               placeholder="Enter passport number"
               onChange={(e) => handleFieldChange('passportNumber', e.target.value)}
-              className="w-full px-3 py-2 bg-background border border-border rounded-xl text-foreground font-mono font-medium text-xs focus:ring-2 focus:ring-sky-400/40 outline-none"
+              className="w-full px-3 py-2 bg-background border border-border rounded-xl text-foreground font-mono font-medium text-xs focus:ring-2 focus:ring-sky-400/40 outline-none disabled:opacity-70 disabled:bg-muted/40"
             />
           </div>
 
@@ -231,6 +256,7 @@ export function MoneyReceiptForm({ data, onChange, onReset, onSave, onPreview, i
             <BdPhoneInput
               value={data.phone || ''}
               required
+              disabled={isLocked}
               onBlur={() => setPhoneTouched(true)}
               onChange={(val) => {
                 handleFieldChange('phone', val);
@@ -337,7 +363,7 @@ export function MoneyReceiptForm({ data, onChange, onReset, onSave, onPreview, i
                   value={data.amount || ''}
                   placeholder="0.00"
                   onChange={(e) => handleFieldChange('amount', e.target.value)}
-                  className="w-full pl-8 pr-3 py-2 bg-background border border-border rounded-xl text-foreground font-mono font-bold text-sm focus:ring-2 focus:ring-sky-400/40 outline-none"
+                  className="w-full pl-14 pr-3 py-2 bg-background border border-border rounded-xl text-foreground font-mono font-bold text-sm focus:ring-2 focus:ring-sky-400/40 outline-none"
                 />
               </div>
             </div>

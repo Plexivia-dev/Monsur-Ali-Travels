@@ -80,7 +80,7 @@ export const markTaskDone = async (req, res) => {
       const isCaseMongoId = mongoose.isValidObjectId(task.caseDid);
       const caseConditions = [{ did: task.caseDid }, { caseNumber: task.caseDid }];
       if (isCaseMongoId) caseConditions.push({ _id: task.caseDid });
-      const caseDoc = await CaseFile.findOne({ $or: caseConditions });
+      let caseDoc = await CaseFile.findOne({ $or: caseConditions });
 
       if (generateMoneyReceipt || task.requirePaySlip || collected > 0) {
         try {
@@ -180,6 +180,13 @@ export const markTaskDone = async (req, res) => {
         caseDoc.assignedToDid = null;
         caseDoc.assignedToName = "";
         caseDoc.assignedOfficer = "";
+
+        if (task.paymentCollectedAmount) {
+          if (!caseDoc.paymentLedger) caseDoc.paymentLedger = {};
+          const currentTotalPaid = (Number(caseDoc.totalPaidAmount) || 0);
+          const agreed = Number(caseDoc.paymentLedger.totalAgreedAmount || caseDoc.totalAgreedAmount) || 0;
+          caseDoc.dueAmount = Math.max(0, agreed - currentTotalPaid);
+        }
 
         if (!Array.isArray(caseDoc.statusHistory)) {
           caseDoc.statusHistory = [];

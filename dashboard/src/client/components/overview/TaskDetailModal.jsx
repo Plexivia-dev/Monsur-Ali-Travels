@@ -651,17 +651,21 @@ export function TaskDetailModal({
     const caseRef = task?.caseDid || task?.caseId || task?.caseDetails?.did || task?.caseDetails?._id || '';
     const clientRef = task?.clientDid || task?.clientId || task?.clientInfo?.did || task?.clientInfo?._id || '';
     const caseNum = task?.caseNumber || task?.caseDetails?.caseNumber || '';
+    const targetAmt = paymentRequiredAmount || paymentCollected || (stepRequirement?.paymentAmount) || '';
 
     const queryParams = new URLSearchParams();
     if (caseRef) queryParams.set('caseDid', caseRef);
     if (clientRef) queryParams.set('clientDid', clientRef);
     if (caseNum) queryParams.set('caseNumber', caseNum);
+    if (task?.did || task?._id) queryParams.set('taskId', task?.did || task?._id);
+    if (targetAmt) queryParams.set('amount', String(targetAmt));
+    queryParams.set('isLocked', 'true');
     queryParams.set('returnUrl', '/dashboard/overview/tasks');
 
     const searchStr = queryParams.toString() ? `?${queryParams.toString()}` : '';
     switchPortal('docs', generatorId);
     navigate(`/dashboard/docs/${generatorId}${searchStr}`);
-    toast.info(`Opened ${generatorId} with prefilled client particulars.`);
+    toast.info(`Opened ${generatorId} with prefilled client particulars & amount.`);
   };
 
   return (

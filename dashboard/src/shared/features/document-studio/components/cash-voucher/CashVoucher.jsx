@@ -5,7 +5,7 @@ import { getDefaultCashVoucherData, generateVoucherNo } from './sampleData';
 import { Download, RefreshCw, Share2, Printer, Receipt } from 'lucide-react';
 import { toast } from 'sonner';
 import { apiClient } from '@shared/lib/api-client';
-import { printDocument } from '@shared/lib/utils';
+import { printDocument, downloadDocumentDirect } from '@shared/lib/utils';
 import { HeaderTitle } from '@shared/components/common/HeaderTitle';
 import { StudioFloatingViewSwitcher } from '../common/StudioFloatingViewSwitcher';
 
@@ -16,6 +16,7 @@ export function CashVoucher({ initialData = null, isLocked = false, onSavedSucce
   }));
   const [viewMode, setViewMode] = useState('edit'); // 'edit' | 'split' | 'preview'
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isDownloading, setIsDownloading] = useState(false);
 
   useEffect(() => {
     if (initialData) {
@@ -84,6 +85,23 @@ export function CashVoucher({ initialData = null, isLocked = false, onSavedSucce
     }
   };
 
+  const handleDownloadDirect = async () => {
+    setIsDownloading(true);
+    try {
+      await downloadDocumentDirect({
+        docId: data.voucherNo,
+        docType: 'Cash_Voucher',
+        clientName: data.paidTo || data.receivedBy,
+        elementId: 'cash-voucher-canvas',
+      });
+      toast.success(`Cash Voucher #${data.voucherNo} downloaded successfully!`);
+    } catch (err) {
+      toast.error('Failed to download voucher image.');
+    } finally {
+      setIsDownloading(false);
+    }
+  };
+
   const handlePrint = () => {
     printDocument({
       docId: data.voucherNo,
@@ -142,6 +160,16 @@ export function CashVoucher({ initialData = null, isLocked = false, onSavedSucce
             </button>
 
             <button
+              onClick={handleDownloadDirect}
+              disabled={isDownloading}
+              className="flex items-center space-x-1.5 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold px-3.5 py-1.5 rounded-xl shadow-xs transition-colors cursor-pointer"
+              title="Direct Download Image/PDF"
+            >
+              <Download className={`w-3.5 h-3.5 ${isDownloading ? 'animate-bounce' : ''}`} />
+              <span>{isDownloading ? 'Downloading...' : 'Download'}</span>
+            </button>
+
+            <button
               onClick={handlePrint}
               className="flex items-center space-x-1.5 bg-sky-500 hover:bg-sky-400 text-white text-xs font-bold px-4 py-1.5 rounded-xl shadow-md transition-colors cursor-pointer"
               title="Export Printable A4 PDF"
@@ -163,6 +191,7 @@ export function CashVoucher({ initialData = null, isLocked = false, onSavedSucce
             onSave={handleFormSubmit}
             onPreview={() => setViewMode('preview')}
             isSubmitting={isSubmitting}
+            isLocked={Boolean(isLocked || initialData?.isLocked)}
           />
           <div className="hidden print:block w-full">
             <CashVoucherPreview data={data} />

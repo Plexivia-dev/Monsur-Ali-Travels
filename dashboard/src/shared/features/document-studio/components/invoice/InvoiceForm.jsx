@@ -26,8 +26,9 @@ import { toast } from 'sonner';
 import { useClientLookup } from '../common/useClientLookup';
 import { ExistingClientAlertModal } from '../common/ExistingClientAlertModal';
 import { validateBdPhone } from '../common/phoneValidator';
+import { ExistingClientSelector } from '@/shared/components/common/ClientSelectorAndLineItems';
 
-export function InvoiceForm({ data, onChange, onSubmit, onReset, isSubmitting = false }) {
+export function InvoiceForm({ data, onChange, onSubmit, onReset, isSubmitting = false, isLocked = false }) {
   const [detectedMatch, setDetectedMatch] = useState(null);
   const [phoneTouched, setPhoneTouched] = useState(false);
 
@@ -204,16 +205,39 @@ export function InvoiceForm({ data, onChange, onSubmit, onReset, isSubmitting = 
           <span>1. Billed To (Client &amp; Organization Details)</span>
         </div>
 
+        {/* Existing Client Selector */}
+        <ExistingClientSelector
+          isLocked={isLocked}
+          lockedClient={data.client}
+          selectedClientDid={data.caseDid}
+          onSelectClient={(clientData) => {
+            onChange((prev) => ({
+              ...prev,
+              caseNumber: clientData.caseNumber || prev.caseNumber,
+              caseDid: clientData.caseDid || prev.caseDid,
+              client: {
+                ...prev.client,
+                name: clientData.name || prev.client?.name,
+                contactPerson: clientData.contactPerson || prev.client?.contactPerson,
+                phone: clientData.phone || prev.client?.phone,
+                email: clientData.email || prev.client?.email,
+                address: clientData.address || prev.client?.address,
+              },
+            }));
+          }}
+        />
+
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 text-xs">
           <div>
             <label className="block font-bold text-foreground mb-1">Client / Organization Name *</label>
             <input
               type="text"
               required
+              disabled={isLocked}
               value={data.client?.name || ''}
               placeholder="Enter recipient / client name"
               onChange={(e) => handleClientChange('name', e.target.value)}
-              className="w-full px-3 py-2 bg-background border border-border rounded-xl text-foreground font-semibold text-xs focus:ring-2 focus:ring-sky-400/40 outline-none"
+              className="w-full px-3 py-2 bg-background border border-border rounded-xl text-foreground font-semibold text-xs focus:ring-2 focus:ring-sky-400/40 outline-none disabled:opacity-70 disabled:bg-muted/40"
             />
           </div>
 
@@ -221,10 +245,11 @@ export function InvoiceForm({ data, onChange, onSubmit, onReset, isSubmitting = 
             <label className="block font-bold text-foreground mb-1">Contact Person (Attn)</label>
             <input
               type="text"
+              disabled={isLocked}
               value={data.client?.contactPerson || ''}
               placeholder="Enter designation / company name"
               onChange={(e) => handleClientChange('contactPerson', e.target.value)}
-              className="w-full px-3 py-2 bg-background border border-border rounded-xl text-foreground text-xs focus:ring-2 focus:ring-sky-400/40 outline-none"
+              className="w-full px-3 py-2 bg-background border border-border rounded-xl text-foreground text-xs focus:ring-2 focus:ring-sky-400/40 outline-none disabled:opacity-70 disabled:bg-muted/40"
             />
           </div>
 
@@ -235,6 +260,7 @@ export function InvoiceForm({ data, onChange, onSubmit, onReset, isSubmitting = 
             <BdPhoneInput
               value={data.client?.phone || ''}
               required
+              disabled={isLocked}
               onBlur={() => setPhoneTouched(true)}
               onChange={(val) => {
                 handleClientChange('phone', val);
@@ -252,10 +278,11 @@ export function InvoiceForm({ data, onChange, onSubmit, onReset, isSubmitting = 
             <label className="block font-bold text-foreground mb-1">Email Address</label>
             <input
               type="email"
+              disabled={isLocked}
               value={data.client?.email || ''}
               placeholder="Enter client email address"
               onChange={(e) => handleClientChange('email', e.target.value)}
-              className="w-full px-3 py-2 bg-background border border-border rounded-xl text-foreground text-xs focus:ring-2 focus:ring-sky-400/40 outline-none"
+              className="w-full px-3 py-2 bg-background border border-border rounded-xl text-foreground text-xs focus:ring-2 focus:ring-sky-400/40 outline-none disabled:opacity-70 disabled:bg-muted/40"
             />
           </div>
 
@@ -263,10 +290,11 @@ export function InvoiceForm({ data, onChange, onSubmit, onReset, isSubmitting = 
             <label className="block font-bold text-foreground mb-1">Billing Address</label>
             <input
               type="text"
+              disabled={isLocked}
               value={data.client?.address || ''}
               placeholder="Enter client billing address"
               onChange={(e) => handleClientChange('address', e.target.value)}
-              className="w-full px-3 py-2 bg-background border border-border rounded-xl text-foreground text-xs focus:ring-2 focus:ring-sky-400/40 outline-none"
+              className="w-full px-3 py-2 bg-background border border-border rounded-xl text-foreground text-xs focus:ring-2 focus:ring-sky-400/40 outline-none disabled:opacity-70 disabled:bg-muted/40"
             />
           </div>
         </div>
