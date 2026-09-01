@@ -325,7 +325,7 @@ export function InvoiceForm({ data, onChange, onSubmit, onReset, isSubmitting = 
             >
               <div className="flex items-center justify-between border-b border-border/40 pb-1.5">
                 <span className="font-bold text-foreground text-xs flex items-center gap-1.5">
-                  <span className="size-5 rounded-full bg-sky-500/20 text-sky-700 dark:text-sky-300 flex items-center justify-center font-mono text-[10px]">
+                  <span className="size-5 rounded-full bg-sky-500/20 text-sky-700 flex items-center justify-center font-mono text-[10px]">
                     {idx + 1}
                   </span>
                   Item #{idx + 1}

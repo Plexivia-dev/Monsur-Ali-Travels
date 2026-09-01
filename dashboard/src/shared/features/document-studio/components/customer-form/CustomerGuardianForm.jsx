@@ -656,15 +656,15 @@ export function ClientGuardianForm({ data, onChange, onReset, onSave, onPreview,
                   </td>
                   <td className="py-2 px-3">
                     {uploadingDocIndex === idx ? (
-                      <div className="flex items-center gap-1.5 text-xs text-sky-600 font-semibold px-2.5 py-1 bg-sky-50 dark:bg-sky-950/40 rounded-lg border border-sky-200 dark:border-sky-800">
+                      <div className="flex items-center gap-1.5 text-xs text-sky-600 font-semibold px-2.5 py-1 bg-sky-50 rounded-lg border border-sky-200">
                         <Loader2 className="w-3.5 h-3.5 animate-spin" />
                         <span>{t('clientForm.uploading', 'Uploading...')}</span>
                       </div>
                     ) : (doc.fileUrl || doc.fileData || doc.fileName) ? (
-                      <div className="flex items-center justify-between gap-1.5 bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-800/60 px-2 py-1 rounded-lg text-xs">
+                      <div className="flex items-center justify-between gap-1.5 bg-emerald-50 border border-emerald-200 px-2 py-1 rounded-lg text-xs">
                         <div
                           onClick={() => setSelectedPreviewDoc({ title: doc.name || doc.fileName, url: doc.fileUrl || doc.fileData })}
-                          className="flex items-center gap-1.5 min-w-0 max-w-[125px] cursor-pointer hover:underline text-emerald-700 dark:text-emerald-400 font-medium truncate"
+                          className="flex items-center gap-1.5 min-w-0 max-w-[125px] cursor-pointer hover:underline text-emerald-700 font-medium truncate"
                           title={doc.fileName || doc.name}
                         >
                           <FileCheck className="w-3.5 h-3.5 shrink-0 text-emerald-600" />
@@ -674,7 +674,7 @@ export function ClientGuardianForm({ data, onChange, onReset, onSave, onPreview,
                           <button
                             type="button"
                             onClick={() => setSelectedPreviewDoc({ title: doc.name || doc.fileName, url: doc.fileUrl || doc.fileData })}
-                            className="p-0.5 text-emerald-600 hover:text-emerald-800 rounded hover:bg-emerald-100 dark:hover:bg-emerald-900/50 cursor-pointer"
+                            className="p-0.5 text-emerald-600 hover:text-emerald-800 rounded hover:bg-emerald-100 cursor-pointer"
                             title="Preview Document"
                           >
                             <Eye className="w-3.5 h-3.5" />
@@ -682,7 +682,7 @@ export function ClientGuardianForm({ data, onChange, onReset, onSave, onPreview,
                           <button
                             type="button"
                             onClick={() => handleRemoveRowFile(idx)}
-                            className="p-0.5 text-muted-foreground hover:text-rose-600 rounded hover:bg-rose-50 dark:hover:bg-rose-950/50 cursor-pointer"
+                            className="p-0.5 text-muted-foreground hover:text-rose-600 rounded hover:bg-rose-50 cursor-pointer"
                             title="Remove file"
                           >
                             <X className="w-3.5 h-3.5" />
@@ -690,7 +690,7 @@ export function ClientGuardianForm({ data, onChange, onReset, onSave, onPreview,
                         </div>
                       </div>
                     ) : (
-                      <label className="inline-flex items-center justify-center gap-1.5 px-3 py-1 bg-sky-50 hover:bg-sky-100 dark:bg-sky-950/40 dark:hover:bg-sky-900/50 text-sky-600 dark:text-sky-400 border border-sky-200 dark:border-sky-800/80 rounded-lg text-xs font-semibold cursor-pointer transition-all shadow-2xs">
+                      <label className="inline-flex items-center justify-center gap-1.5 px-3 py-1 bg-sky-50 hover:bg-sky-100 text-sky-600 border border-sky-200 rounded-lg text-xs font-semibold cursor-pointer transition-all shadow-2xs">
                         <Upload className="w-3.5 h-3.5" />
                         <span>{t('clientForm.uploadFile', 'Upload')}</span>
                         <input
@@ -733,7 +733,7 @@ export function ClientGuardianForm({ data, onChange, onReset, onSave, onPreview,
               variant="outline"
               size="sm"
               onClick={handleAddDoc}
-              className="w-full sm:w-auto border-dashed border-sky-400 dark:border-sky-600 text-sky-600 dark:text-sky-400 hover:bg-sky-50 dark:hover:bg-sky-950/40 px-6 py-1.5 rounded-xl text-xs font-bold gap-1.5 shadow-2xs cursor-pointer transition-all"
+              className="w-full sm:w-auto border-dashed border-sky-400 text-sky-600 hover:bg-sky-50 px-6 py-1.5 rounded-xl text-xs font-bold gap-1.5 shadow-2xs cursor-pointer transition-all"
             >
               <Plus className="w-4 h-4" />
               <span>{t('clientForm.addNew', 'Add New')}</span>
@@ -759,13 +759,13 @@ export function ClientGuardianForm({ data, onChange, onReset, onSave, onPreview,
                 placeholder="0"
                 value={data.payment?.totalAmount || ''}
                 onChange={(e) => handlePaymentChange('totalAmount', e.target.value)}
-                className="w-full pl-8 pr-3 py-2 bg-background border border-border rounded-lg text-foreground font-mono font-bold focus:outline-hidden focus:ring-1 focus:ring-primary"
+                className="w-full pl-14 pr-3 py-2 bg-background border border-border rounded-lg text-foreground font-mono font-bold focus:outline-hidden focus:ring-1 focus:ring-primary"
               />
             </div>
           </div>
 
           <div>
-            <label className="block font-bold text-emerald-600 dark:text-emerald-400 mb-1">
+            <label className="block font-bold text-emerald-600 mb-1">
               {t('clientForm.advancePaid', 'Advance Paid')}
             </label>
             <div className="relative">
@@ -775,13 +775,13 @@ export function ClientGuardianForm({ data, onChange, onReset, onSave, onPreview,
                 placeholder="0"
                 value={data.payment?.advancePaid || ''}
                 onChange={(e) => handlePaymentChange('advancePaid', e.target.value)}
-                className="w-full pl-8 pr-3 py-2 bg-background border border-emerald-500/40 rounded-lg text-emerald-700 dark:text-emerald-400 font-mono font-black focus:outline-hidden focus:ring-1 focus:ring-emerald-500"
+                className="w-full pl-14 pr-3 py-2 bg-background border border-emerald-500/40 rounded-lg text-emerald-700 font-mono font-black focus:outline-hidden focus:ring-1 focus:ring-emerald-500"
               />
             </div>
           </div>
 
           <div>
-            <label className="block font-bold text-rose-600 dark:text-rose-400 mb-1">
+            <label className="block font-bold text-rose-600 mb-1">
               {t('clientForm.dueAmount', 'Due Amount')}
             </label>
             <div className="relative">
@@ -790,7 +790,7 @@ export function ClientGuardianForm({ data, onChange, onReset, onSave, onPreview,
                 type="number"
                 readOnly
                 value={data.payment?.dueAmount || 0}
-                className="w-full pl-8 pr-3 py-2 bg-muted/60 border border-rose-500/40 rounded-lg text-rose-600 dark:text-rose-400 font-mono font-black"
+                className="w-full pl-14 pr-3 py-2 bg-muted/60 border border-rose-500/40 rounded-lg text-rose-600 font-mono font-black"
               />
             </div>
           </div>
