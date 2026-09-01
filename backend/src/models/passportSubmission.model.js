@@ -161,3 +161,4 @@ passportSubmissionSchema.pre("save", function (next) {
 export const PassportSubmissionModel =
   mongoose.models.PassportSubmission ||
   mongoose.model("PassportSubmission", passportSubmissionSchema);
+export default PassportSubmissionModel;
