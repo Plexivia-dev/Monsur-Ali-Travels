@@ -870,7 +870,7 @@ export function TaskDetailModal({
                   onClick={() => setActiveTab('payment')}
                   className={`flex-1 py-1.5 px-3 rounded-lg font-bold flex items-center justify-center gap-1.5 transition-all cursor-pointer ${
                     activeTab === 'payment'
-                      ? 'bg-card text-emerald-600 dark:text-emerald-400 shadow-xs'
+                      ? 'bg-card text-emerald-600 shadow-xs'
                       : 'text-muted-foreground hover:text-foreground'
                   }`}
                 >
@@ -1424,7 +1424,7 @@ export function TaskDetailModal({
 
               {task.completedAt && (
                 <div className="p-2 rounded-xl bg-muted/40 border border-border col-span-2 sm:col-span-1">
-                  <span className="text-[10px] uppercase tracking-wider text-emerald-600 dark:text-emerald-400 font-semibold flex items-center gap-1 mb-0.5">
+                  <span className="text-[10px] uppercase tracking-wider text-emerald-600 font-semibold flex items-center gap-1 mb-0.5">
                     <CheckCircle2 className="w-3 h-3" /> Completed At
                   </span>
                   <span className="font-semibold text-foreground">
@@ -1442,7 +1442,7 @@ export function TaskDetailModal({
               variant="outline"
               size="sm"
               onClick={onClose}
-              className="w-full sm:w-auto text-xs font-semibold px-4 h-9 border-red-500/30 text-red-600 dark:text-red-400 hover:bg-red-500/10 hover:border-red-500/50 cursor-pointer"
+              className="w-full sm:w-auto text-xs font-semibold px-4 h-9 border-red-500/30 text-red-600 hover:bg-red-500/10 hover:border-red-500/50 cursor-pointer"
             >
               Close
             </Button>

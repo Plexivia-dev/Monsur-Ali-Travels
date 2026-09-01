@@ -314,11 +314,11 @@ export function ClientGuardianDataTable({ onEditItem }) {
                       <td className="py-3 px-4">
                         <div className="font-bold text-foreground">BDT  {total.toLocaleString('en-IN')}</div>
                         <div className="text-[10.5px] flex items-center gap-2 mt-0.5">
-                          <span className="text-emerald-600 dark:text-emerald-400 font-semibold">
+                          <span className="text-emerald-600 font-semibold">
                             Adv: BDT {advance.toLocaleString('en-IN')}
                           </span>
                           {due > 0 && (
-                            <span className="text-rose-600 dark:text-rose-400 font-semibold">
+                            <span className="text-rose-600 font-semibold">
                               Due: BDT {due.toLocaleString('en-IN')}
                             </span>
                           )}

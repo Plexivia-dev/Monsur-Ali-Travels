@@ -396,7 +396,7 @@ export function MoneyReceiptModal({
                 <button
                   type="button"
                   onClick={onClose}
-                  className="px-4 py-2 text-xs font-semibold rounded-lg border border-red-500/30 text-red-600 dark:text-red-400 hover:bg-red-500/10 hover:border-red-500/50 transition-colors cursor-pointer"
+                  className="px-4 py-2 text-xs font-semibold rounded-lg border border-red-500/30 text-red-600 hover:bg-red-500/10 hover:border-red-500/50 transition-colors cursor-pointer"
                 >
                   Cancel
                 </button>
