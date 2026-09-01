@@ -60,6 +60,13 @@ export const markTaskDone = async (req, res) => {
       return res.status(404).json({ status: "error", message: "Task not found" });
     }
 
+    if (task.status === "Done" || task.status === "Completed") {
+      return res.status(400).json({
+        status: "error",
+        message: "This task has already been completed and cannot be submitted again.",
+      });
+    }
+
     if (task.assignedToDid !== userDid && req.user?.role !== "Admin" && req.user?.role !== "Owner") {
       return res.status(403).json({ status: "error", message: "You are not assigned to this task" });
     }

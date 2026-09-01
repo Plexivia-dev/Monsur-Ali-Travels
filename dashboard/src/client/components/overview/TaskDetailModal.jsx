@@ -386,19 +386,25 @@ export function TaskDetailModal({
   if (!isOpen || !task) return null;
 
   const permittedDocs = [...(task.permittedDocs || []), ...uploadedDocsList];
-  const isCompleted = task.status === 'Done' || task.status === 'Approved';
+  const isCompleted =
+    task.status === 'Done' ||
+    task.status === 'Completed' ||
+    task.status === 'Approved' ||
+    Boolean(task.completedAt);
 
   const statusVariant = {
     Pending: 'pending',
     In_Progress: 'in_progress',
     'In Progress': 'in_progress',
     Done: 'done',
+    Completed: 'done',
     Approved: 'approved',
     Rejected: 'rejected',
   }[task.status] || 'default';
 
   // Multi-row management
   const handleAddRow = () => {
+    if (isCompleted) return;
     const newId = `row-${Date.now()}-${Math.random().toString(36).substring(2, 5)}`;
     setUploadRows((prev) => [
       ...prev,
@@ -407,6 +413,7 @@ export function TaskDetailModal({
   };
 
   const handleRemoveRow = (id) => {
+    if (isCompleted) return;
     if (uploadRows.length <= 1) {
       setUploadRows([{ id: 'row-1', title: '', file: null, accessLevel: 'Restricted' }]);
       return;
@@ -415,6 +422,7 @@ export function TaskDetailModal({
   };
 
   const handleUpdateRow = (id, field, value) => {
+    if (isCompleted) return;
     setUploadRows((prev) =>
       prev.map((r) => {
         if (r.id !== id) return r;
@@ -430,6 +438,10 @@ export function TaskDetailModal({
 
   // Batch Upload All Rows with files
   const handleBatchUpload = async () => {
+    if (isCompleted) {
+      toast.info('This task is already completed. No further uploads allowed.');
+      return;
+    }
     const validRows = uploadRows.filter((r) => r.file && r.title.trim());
     if (validRows.length === 0) {
       toast.error('Please select at least one file and document title to upload.');
@@ -505,6 +517,10 @@ export function TaskDetailModal({
 
   // Save Progress / Notes (Without completing the task)
   const handleSaveProgress = async () => {
+    if (isCompleted) {
+      toast.info('This task is already completed and cannot be edited.');
+      return;
+    }
     setIsSavingProgress(true);
     try {
       if (task.did || task._id) {
@@ -525,6 +541,10 @@ export function TaskDetailModal({
 
   // Separate explicit action: Mark Task as Completed
   const handleMarkAsDone = async () => {
+    if (isCompleted) {
+      toast.info('This task is already completed and cannot be resubmitted.');
+      return;
+    }
     const isDocTask = task.requiresDocument !== false && assignedFormOptions.length > 0;
 
     // 1. Work Notes Validation (Mandatory ONLY for tasks without file uploads):
@@ -764,6 +784,24 @@ export function TaskDetailModal({
           {/* 2. Scrollable Body Container (Guaranteed within 90vh) */}
           <div className="flex-1 min-h-0 overflow-y-auto p-4 sm:p-5 space-y-5">
             
+            {/* Completed Task Banner Notice */}
+            {isCompleted && (
+              <div className="p-3.5 bg-emerald-500/10 border border-emerald-500/30 rounded-2xl flex items-center justify-between gap-3 text-xs text-emerald-950 animate-in fade-in">
+                <div className="flex items-center gap-2.5 min-w-0">
+                  <div className="p-2 rounded-xl bg-emerald-600 text-white shrink-0">
+                    <CheckCircle2 className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <h4 className="font-bold text-xs">Task Step Completed &amp; Locked</h4>
+                    <p className="text-[11px] text-emerald-800">
+                      This task has already been completed and submitted. All attached records are locked and cannot be resubmitted.
+                    </p>
+                  </div>
+                </div>
+                <Badge className="bg-emerald-600 text-white font-bold text-xs shrink-0">Completed ✓</Badge>
+              </div>
+            )}
+
             {/* Payment & Invoice Overview Banner (if payment required) */}
             {(task.requiresPayment || task.paymentAmount > 0) && (
               <div className="p-3.5 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 text-xs space-y-2">
@@ -823,7 +861,7 @@ export function TaskDetailModal({
                 }`}
               >
                 <UploadCloud className="w-4 h-4 text-primary" />
-                <span>Upload Documents</span>
+                <span>{isCompleted ? 'Attached Documents' : 'Upload Documents'}</span>
               </button>
 
               {(task.requiresPayment || task.paymentAmount > 0) && (
@@ -875,13 +913,27 @@ export function TaskDetailModal({
                   <div>
                     <h4 className="text-xs font-bold text-foreground flex items-center gap-1.5 uppercase tracking-wider">
                       <UploadCloud className="w-4 h-4 text-primary" />
-                      Assigned Document Intake
+                      {isCompleted ? 'Submitted Task Documents' : 'Assigned Document Intake'}
                     </h4>
                     <p className="text-[11px] text-muted-foreground mt-0.5">
-                      Upload the required documents for this task step directly into Case Vault.
+                      {isCompleted
+                        ? 'All verified and registered documents attached to this completed step.'
+                        : 'Upload the required documents for this task step directly into Case Vault.'}
                     </p>
                   </div>
+                  {isCompleted && (
+                    <span className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-emerald-500/15 text-emerald-800 border border-emerald-500/30">
+                      Read-Only (Completed)
+                    </span>
+                  )}
                 </div>
+
+                {!isCompleted && uploadRows.every((r) => findAlreadyUploadedDoc(r.title)) && (
+                  <div className="p-3 bg-emerald-500/10 border border-emerald-500/25 rounded-xl text-xs text-emerald-900 flex items-center gap-2">
+                    <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+                    <span>All assigned required documents are already present in Case Vault. You do not need to re-upload them.</span>
+                  </div>
+                )}
 
                 {/* Rows List */}
                 <div className="space-y-2.5 pt-1">
@@ -953,6 +1005,10 @@ export function TaskDetailModal({
                               </Button>
                             )}
                           </div>
+                        ) : isCompleted ? (
+                          <div className="flex-1 min-w-[180px] p-2 text-muted-foreground text-center italic text-xs">
+                            Not attached prior to completion
+                          </div>
                         ) : (
                           <>
                             {/* File Selector */}
@@ -1004,31 +1060,33 @@ export function TaskDetailModal({
                 </div>
 
                 {/* Batch Upload Action */}
-                <div className="flex items-center justify-between pt-2 border-t border-border/80">
-                  <span className="text-[11px] text-muted-foreground">
-                    Ready to upload: {uploadRows.filter((r) => r.file && r.title.trim()).length} file(s)
-                  </span>
+                {!isCompleted && (
+                  <div className="flex items-center justify-between pt-2 border-t border-border/80">
+                    <span className="text-[11px] text-muted-foreground">
+                      Ready to upload: {uploadRows.filter((r) => r.file && r.title.trim()).length} file(s)
+                    </span>
 
-                  <Button
-                    type="button"
-                    size="sm"
-                    onClick={handleBatchUpload}
-                    disabled={isBatchUploading || uploadRows.every((r) => !r.file)}
-                    className="h-8 px-4 text-xs font-bold bg-primary text-primary-foreground hover:bg-primary/90 flex items-center gap-1.5 shadow-xs cursor-pointer"
-                  >
-                    {isBatchUploading ? (
-                      <>
-                        <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                        Uploading to Vault...
-                      </>
-                    ) : (
-                      <>
-                        <UploadCloud className="w-3.5 h-3.5" />
-                        Upload All to Case Vault
-                      </>
-                    )}
-                  </Button>
-                </div>
+                    <Button
+                      type="button"
+                      size="sm"
+                      onClick={handleBatchUpload}
+                      disabled={isBatchUploading || uploadRows.every((r) => !r.file)}
+                      className="h-8 px-4 text-xs font-bold bg-primary text-primary-foreground hover:bg-primary/90 flex items-center gap-1.5 shadow-xs cursor-pointer"
+                    >
+                      {isBatchUploading ? (
+                        <>
+                          <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                          Uploading to Vault...
+                        </>
+                      ) : (
+                        <>
+                          <UploadCloud className="w-3.5 h-3.5" />
+                          Upload All to Case Vault
+                        </>
+                      )}
+                    </Button>
+                  </div>
+                )}
               </div>
             )}
 
@@ -1039,124 +1097,155 @@ export function TaskDetailModal({
                   <div>
                     <h4 className="text-xs font-bold text-emerald-700 flex items-center gap-1.5 uppercase tracking-wider">
                       <CreditCard className="w-4 h-4 text-emerald-600" />
-                      Client Payment Intake & Money Receipt / Pay Slip
+                      Client Payment Intake &amp; Money Receipt / Pay Slip
                     </h4>
                     <p className="text-[11px] text-muted-foreground mt-0.5">
-                      Record collected payment and automatically generate official Money Receipt / Pay Slip for this step.
+                      {isCompleted
+                        ? 'Recorded payment details and issued Money Receipt for this completed step.'
+                        : 'Record collected payment and automatically generate official Money Receipt / Pay Slip for this step.'}
                     </p>
                   </div>
-                </div>
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
-                  <div>
-                    <label className="block font-semibold text-foreground mb-1 text-xs">
-                      Amount Collected (৳ BDT) *
-                    </label>
-                    <input
-                      type="number"
-                      min="0"
-                      step="1"
-                      placeholder="e.g. 50000"
-                      value={paymentCollected}
-                      onChange={(e) => setPaymentCollected(e.target.value)}
-                      className="w-full px-3 py-2 bg-card border border-emerald-500/40 rounded-xl text-foreground font-bold focus:outline-none focus:border-emerald-500 text-xs"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block font-semibold text-foreground mb-1 text-xs">
-                      Payment Method
-                    </label>
-                    <select
-                      value={paymentMethod}
-                      onChange={(e) => setPaymentMethod(e.target.value)}
-                      className="w-full px-3 py-2 bg-card border border-border rounded-xl text-foreground focus:outline-none focus:border-primary text-xs cursor-pointer"
-                    >
-                      <option value="Cash">Cash Payment</option>
-                      <option value="Bank Transfer">Bank Transfer (Deposit / EFT / RTGS)</option>
-                      <option value="bKash">bKash Mobile Banking</option>
-                      <option value="Nagad">Nagad Mobile Banking</option>
-                      <option value="Cheque">Cheque Payment</option>
-                    </select>
-                  </div>
-                </div>
-
-                <div className="space-y-2 pt-1 border-t border-border/80">
-                  <label className="flex items-center gap-2 text-foreground font-medium text-xs cursor-pointer">
-                    <input
-                      type="checkbox"
-                      checked={generateMoneyReceipt}
-                      onChange={(e) => setGenerateMoneyReceipt(e.target.checked)}
-                      className="rounded border-border text-emerald-600 h-3.5 w-3.5 accent-emerald-600 cursor-pointer"
-                    />
-                    <span className="flex items-center gap-1.5">
-                      <Receipt className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
-                      Auto-issue official <strong>Money Receipt / Pay Slip (MA#####)</strong> on marking this step Completed
+                  {isCompleted && (
+                    <span className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-emerald-500/15 text-emerald-800 border border-emerald-500/30">
+                      Paid &amp; Recorded ✓
                     </span>
-                  </label>
-
-                  {!generateMoneyReceipt && (
-                    <div className="p-3 bg-card border border-amber-500/30 rounded-xl space-y-2 animate-in fade-in">
-                      <div className="flex items-center justify-between">
-                        <label className="block text-[11px] font-bold text-amber-800 uppercase tracking-wider">
-                          Attach Physical Payment Receipt / Bank Deposit Slip *
-                        </label>
-                        <span className="text-[10px] text-muted-foreground">Required if not auto-issuing</span>
-                      </div>
-                      <input
-                        type="file"
-                        id="manual-slip-input"
-                        onChange={(e) => {
-                          const file = e.target.files?.[0];
-                          if (file) setManualSlipFile(file);
-                        }}
-                        accept=".pdf,.png,.jpg,.jpeg,.webp"
-                        className="hidden"
-                      />
-                      <label
-                        htmlFor="manual-slip-input"
-                        className={`w-full h-11 border border-dashed rounded-lg px-3 flex items-center justify-center gap-2 cursor-pointer transition-colors text-xs text-center ${
-                          manualSlipFile
-                            ? 'border-emerald-500/50 bg-emerald-500/5 text-emerald-700 font-semibold'
-                            : 'border-border hover:border-amber-500 bg-muted/20 text-muted-foreground hover:text-foreground'
-                        }`}
-                      >
-                        {manualSlipFile ? (
-                          <span className="truncate max-w-[240px]">
-                            ✓ {manualSlipFile.name} ({((manualSlipFile.size) / (1024 * 1024)).toFixed(2)} MB)
-                          </span>
-                        ) : (
-                          <span className="text-[11px] font-medium">📎 Attach Scanned Pay Slip / Voucher File</span>
-                        )}
-                      </label>
-                    </div>
                   )}
                 </div>
 
-                {/* Direct Studio Launch Buttons */}
-                <div className="pt-2 flex flex-wrap gap-2 border-t border-border/80">
-                  <Button
-                    type="button"
-                    size="sm"
-                    variant="outline"
-                    onClick={() => handleLaunchGenerator('money-receipt')}
-                    className="h-8 text-xs px-3 font-semibold border-emerald-500/30 hover:bg-emerald-500/10 text-emerald-700 flex items-center gap-1.5 cursor-pointer"
-                  >
-                    <Receipt className="w-3.5 h-3.5 text-emerald-600" />
-                    <span>Open Money Receipt Studio</span>
-                  </Button>
+                {/* If already completed, show read-only payment summary */}
+                {isCompleted ? (
+                  <div className="p-3.5 bg-card border border-emerald-500/20 rounded-xl space-y-2 text-xs">
+                    <div className="flex items-center justify-between">
+                      <span className="font-bold text-muted-foreground">Collected Amount:</span>
+                      <span className="font-mono font-bold text-emerald-700 text-sm">
+                        ৳ {Number(task.paymentCollectedAmount || task.paymentAmount || paymentCollected || 0).toLocaleString()} BDT
+                      </span>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="font-bold text-muted-foreground">Payment Method:</span>
+                      <span className="font-semibold text-foreground">{task.paymentMethod || paymentMethod || 'Cash'}</span>
+                    </div>
+                    {task.moneyReceiptNumber && (
+                      <div className="flex items-center justify-between">
+                        <span className="font-bold text-muted-foreground">Money Receipt:</span>
+                        <span className="font-mono font-bold text-emerald-600">#{task.moneyReceiptNumber}</span>
+                      </div>
+                    )}
+                  </div>
+                ) : (
+                  <>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
+                      <div>
+                        <label className="block font-semibold text-foreground mb-1 text-xs">
+                          Amount Collected (৳ BDT) *
+                        </label>
+                        <input
+                          type="number"
+                          min="0"
+                          step="1"
+                          placeholder="e.g. 50000"
+                          value={paymentCollected}
+                          onChange={(e) => setPaymentCollected(e.target.value)}
+                          className="w-full px-3 py-2 bg-card border border-emerald-500/40 rounded-xl text-foreground font-bold focus:outline-none focus:border-emerald-500 text-xs"
+                        />
+                      </div>
 
-                  <Button
-                    type="button"
-                    size="sm"
-                    variant="outline"
-                    onClick={() => handleLaunchGenerator('invoice')}
-                    className="h-8 text-xs px-3 font-semibold border-indigo-500/30 hover:bg-indigo-500/10 text-indigo-700 flex items-center gap-1.5 cursor-pointer"
-                  >
-                    <FileText className="w-3.5 h-3.5 text-indigo-600" />
-                    <span>Open Client Invoice Studio</span>
-                  </Button>
-                </div>
+                      <div>
+                        <label className="block font-semibold text-foreground mb-1 text-xs">
+                          Payment Method
+                        </label>
+                        <select
+                          value={paymentMethod}
+                          onChange={(e) => setPaymentMethod(e.target.value)}
+                          className="w-full px-3 py-2 bg-card border border-border rounded-xl text-foreground focus:outline-none focus:border-primary text-xs cursor-pointer"
+                        >
+                          <option value="Cash">Cash Payment</option>
+                          <option value="Bank Transfer">Bank Transfer (Deposit / EFT / RTGS)</option>
+                          <option value="bKash">bKash Mobile Banking</option>
+                          <option value="Nagad">Nagad Mobile Banking</option>
+                          <option value="Cheque">Cheque Payment</option>
+                        </select>
+                      </div>
+                    </div>
+
+                    <div className="space-y-2 pt-1 border-t border-border/80">
+                      <label className="flex items-center gap-2 text-foreground font-medium text-xs cursor-pointer">
+                        <input
+                          type="checkbox"
+                          checked={generateMoneyReceipt}
+                          onChange={(e) => setGenerateMoneyReceipt(e.target.checked)}
+                          className="rounded border-border text-emerald-600 h-3.5 w-3.5 accent-emerald-600 cursor-pointer"
+                        />
+                        <span className="flex items-center gap-1.5">
+                          <Receipt className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+                          Auto-issue official <strong>Money Receipt / Pay Slip (MA#####)</strong> on marking this step Completed
+                        </span>
+                      </label>
+
+                      {!generateMoneyReceipt && (
+                        <div className="p-3 bg-card border border-amber-500/30 rounded-xl space-y-2 animate-in fade-in">
+                          <div className="flex items-center justify-between">
+                            <label className="block text-[11px] font-bold text-amber-800 uppercase tracking-wider">
+                              Attach Physical Payment Receipt / Bank Deposit Slip *
+                            </label>
+                            <span className="text-[10px] text-muted-foreground">Required if not auto-issuing</span>
+                          </div>
+                          <input
+                            type="file"
+                            id="manual-slip-input"
+                            onChange={(e) => {
+                              const file = e.target.files?.[0];
+                              if (file) setManualSlipFile(file);
+                            }}
+                            accept=".pdf,.png,.jpg,.jpeg,.webp"
+                            className="hidden"
+                          />
+                          <label
+                            htmlFor="manual-slip-input"
+                            className={`w-full h-11 border border-dashed rounded-lg px-3 flex items-center justify-center gap-2 cursor-pointer transition-colors text-xs text-center ${
+                              manualSlipFile
+                                ? 'border-emerald-500/50 bg-emerald-500/5 text-emerald-700 font-semibold'
+                                : 'border-border hover:border-amber-500 bg-muted/20 text-muted-foreground hover:text-foreground'
+                            }`}
+                          >
+                            {manualSlipFile ? (
+                              <span className="truncate max-w-[240px]">
+                                ✓ {manualSlipFile.name} ({((manualSlipFile.size) / (1024 * 1024)).toFixed(2)} MB)
+                              </span>
+                            ) : (
+                              <span className="text-[11px] font-medium">📎 Attach Scanned Pay Slip / Voucher File</span>
+                            )}
+                          </label>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Direct Studio Launch Buttons */}
+                    <div className="pt-2 flex flex-wrap gap-2 border-t border-border/80">
+                      <Button
+                        type="button"
+                        size="sm"
+                        variant="outline"
+                        onClick={() => handleLaunchGenerator('money-receipt')}
+                        className="h-8 text-xs px-3 font-semibold border-emerald-500/30 hover:bg-emerald-500/10 text-emerald-700 flex items-center gap-1.5 cursor-pointer"
+                      >
+                        <Receipt className="w-3.5 h-3.5 text-emerald-600" />
+                        <span>Open Money Receipt Studio</span>
+                      </Button>
+
+                      <Button
+                        type="button"
+                        size="sm"
+                        variant="outline"
+                        onClick={() => handleLaunchGenerator('invoice')}
+                        className="h-8 text-xs px-3 font-semibold border-indigo-500/30 hover:bg-indigo-500/10 text-indigo-700 flex items-center gap-1.5 cursor-pointer"
+                      >
+                        <FileText className="w-3.5 h-3.5 text-indigo-600" />
+                        <span>Open Client Invoice Studio</span>
+                      </Button>
+                    </div>
+                  </>
+                )}
               </div>
             )}
 
@@ -1218,24 +1307,36 @@ export function TaskDetailModal({
               <div className="space-y-2 bg-muted/30 border border-border rounded-xl p-3.5 sm:p-4">
                 <label className="text-xs font-bold text-foreground uppercase tracking-wider flex items-center gap-1.5">
                   <FileCheck2 className="w-4 h-4 text-emerald-500" />
-                  Staff Progress & Work Notes {task?.requiresDocument === false || assignedFormOptions.length === 0 ? '* (Mandatory)' : '(Optional)'}
+                  Staff Progress &amp; Work Notes
                 </label>
-                <p className="text-[11px] text-muted-foreground">
-                  {task?.requiresDocument === false || assignedFormOptions.length === 0
-                    ? 'Mandatory: Describe the actions completed, client consultation details, or verification findings.'
-                    : 'Optional: Add any supplementary work notes, client remarks, or additional observations for this task.'}
-                </p>
-                <textarea
-                  rows={4}
-                  value={completionNotes}
-                  onChange={(e) => setCompletionNotes(e.target.value)}
-                  placeholder={
-                    task?.requiresDocument === false || assignedFormOptions.length === 0
-                      ? 'Enter required work details and remarks before completing this step (Mandatory)...'
-                      : 'Enter any additional work notes or remarks (Optional)...'
-                  }
-                  className="w-full px-3 py-2 text-xs bg-card border border-border rounded-xl text-foreground focus:outline-none focus:border-primary resize-none placeholder:text-muted-foreground/60 font-normal"
-                />
+                {isCompleted ? (
+                  <div className="p-3 bg-card border border-border rounded-xl text-xs text-foreground">
+                    {task.completionNotes || completionNotes ? (
+                      <p className="whitespace-pre-line leading-relaxed">{task.completionNotes || completionNotes}</p>
+                    ) : (
+                      <p className="text-muted-foreground italic">No completion notes submitted.</p>
+                    )}
+                  </div>
+                ) : (
+                  <>
+                    <p className="text-[11px] text-muted-foreground">
+                      {task?.requiresDocument === false || assignedFormOptions.length === 0
+                        ? 'Mandatory: Describe the actions completed, client consultation details, or verification findings.'
+                        : 'Optional: Add any supplementary work notes, client remarks, or additional observations for this task.'}
+                    </p>
+                    <textarea
+                      rows={4}
+                      value={completionNotes}
+                      onChange={(e) => setCompletionNotes(e.target.value)}
+                      placeholder={
+                        task?.requiresDocument === false || assignedFormOptions.length === 0
+                          ? 'Enter required work details and remarks before completing this step (Mandatory)...'
+                          : 'Enter any additional work notes or remarks (Optional)...'
+                      }
+                      className="w-full px-3 py-2 text-xs bg-card border border-border rounded-xl text-foreground focus:outline-none focus:border-primary resize-none placeholder:text-muted-foreground/60 font-normal"
+                    />
+                  </>
+                )}
               </div>
             )}
 
@@ -1347,49 +1448,56 @@ export function TaskDetailModal({
             </Button>
 
             <div className="flex items-center gap-2 w-full sm:w-auto justify-end flex-wrap">
-              {/* Save Progress Button */}
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                disabled={isSavingProgress}
-                onClick={handleSaveProgress}
-                className="w-full sm:w-auto text-xs font-semibold px-4 h-9 bg-primary/10 text-primary border-primary/30 hover:bg-primary/20 hover:border-primary/50 flex items-center justify-center gap-1.5 cursor-pointer"
-              >
-                {isSavingProgress ? (
-                  <>
-                    <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                    Saving...
-                  </>
-                ) : (
-                  <>
-                    <Save className="w-3.5 h-3.5 text-primary" />
-                    Save Progress / Notes
-                  </>
-                )}
-              </Button>
+              {isCompleted ? (
+                <span className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-emerald-500/10 text-emerald-800 border border-emerald-500/25 text-xs font-bold">
+                  <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+                  Task Step Completed &amp; Locked
+                </span>
+              ) : (
+                <>
+                  {/* Save Progress Button */}
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    disabled={isSavingProgress}
+                    onClick={handleSaveProgress}
+                    className="w-full sm:w-auto text-xs font-semibold px-4 h-9 bg-primary/10 text-primary border-primary/30 hover:bg-primary/20 hover:border-primary/50 flex items-center justify-center gap-1.5 cursor-pointer"
+                  >
+                    {isSavingProgress ? (
+                      <>
+                        <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                        Saving...
+                      </>
+                    ) : (
+                      <>
+                        <Save className="w-3.5 h-3.5 text-primary" />
+                        Save Progress / Notes
+                      </>
+                    )}
+                  </Button>
 
-              {/* Mark Completed Button */}
-              {!isCompleted && (
-                <Button
-                  type="button"
-                  size="sm"
-                  disabled={isSubmittingDone}
-                  onClick={handleMarkAsDone}
-                  className="w-full sm:w-auto bg-primary text-primary-foreground hover:bg-primary/90 font-bold text-xs h-9 px-5 flex items-center justify-center gap-1.5 shadow-sm cursor-pointer"
-                >
-                  {isSubmittingDone ? (
-                    <>
-                      <Loader2 className="w-4 h-4 animate-spin" />
-                      Completing...
-                    </>
-                  ) : (
-                    <>
-                      <CheckCircle2 className="w-4 h-4" />
-                      Mark Task as Completed
-                    </>
-                  )}
-                </Button>
+                  {/* Mark Completed Button */}
+                  <Button
+                    type="button"
+                    size="sm"
+                    disabled={isSubmittingDone}
+                    onClick={handleMarkAsDone}
+                    className="w-full sm:w-auto bg-primary text-primary-foreground hover:bg-primary/90 font-bold text-xs h-9 px-5 flex items-center justify-center gap-1.5 shadow-sm cursor-pointer"
+                  >
+                    {isSubmittingDone ? (
+                      <>
+                        <Loader2 className="w-4 h-4 animate-spin" />
+                        Completing...
+                      </>
+                    ) : (
+                      <>
+                        <CheckCircle2 className="w-4 h-4" />
+                        Mark Task as Completed
+                      </>
+                    )}
+                  </Button>
+                </>
               )}
             </div>
           </div>
