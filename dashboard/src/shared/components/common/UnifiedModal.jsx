@@ -82,6 +82,18 @@ export function UnifiedModalHeader({
 }
 
 /**
+ * UnifiedModalBody
+ * Scrollable content container with internal padding.
+ */
+export function UnifiedModalBody({ children, className = '' }) {
+  return (
+    <div className={cn('p-6 overflow-y-auto flex-1 bg-white text-black', className)}>
+      {children}
+    </div>
+  );
+}
+
+/**
  * UnifiedModalFooter
  * Clean, standardized action footer with Previous, Cancel and Action buttons.
  */
