@@ -3,7 +3,7 @@ import { Modal } from '../ui/Modal';
 import { Button } from "../ui/button";
 import { Select } from "../ui/input";
 import { Download, FileSpreadsheet, FileText, CheckCircle } from 'lucide-react';
-import { usePortal } from '../../context/PortalContext';
+import { usePortal } from '@client/context/PortalContext';
 
 export const ExportModal = ({ isOpen, onClose, title = 'Export Report Data', dataName = 'Records' }) => {
   const [format, setFormat] = useState('csv');
@@ -27,7 +27,7 @@ export const ExportModal = ({ isOpen, onClose, title = 'Export Report Data', dat
       title={title}
       footer={
         <>
-          <Button variant="outline" onClick={onClose} disabled={isExporting}>
+          <Button variant="cancel" onClick={onClose} disabled={isExporting}>
             Cancel
           </Button>
           <Button variant="primary" icon={Download} onClick={handleExport} disabled={isExporting}>

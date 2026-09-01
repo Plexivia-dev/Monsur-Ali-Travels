@@ -117,22 +117,22 @@ export function MoneyReceiptModal({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs overflow-y-auto">
-      <div className="bg-card border border-border rounded-2xl shadow-2xl w-full max-w-4xl max-h-[92vh] flex flex-col overflow-hidden my-auto">
+      <div className="bg-white text-black border border-black/10 rounded-2xl shadow-2xl w-full max-w-4xl max-h-[92vh] flex flex-col overflow-hidden my-auto">
         
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-border bg-muted/40">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-black/10 bg-black/[0.02]">
           <div className="flex items-center space-x-3">
             <div className="p-2.5 rounded-xl bg-primary/10 text-primary border border-primary/20">
               <Receipt className="w-5 h-5" />
             </div>
             <div>
-              <h2 className="text-base sm:text-lg font-bold text-foreground flex items-center gap-2">
+              <h2 className="text-base sm:text-lg font-bold text-black flex items-center gap-2">
                 {createdReceipt ? 'Print & Preview Token' : 'Create New Payment Token & Money Receipt'}
                 <span className="text-xs bg-primary/10 text-primary px-2 py-0.5 rounded-full font-mono">
                   Internal Office Use
                 </span>
               </h2>
-              <p className="text-xs text-muted-foreground">
+              <p className="text-xs text-black/60">
                 {createdReceipt 
                   ? 'Hand over this slip to cashier for seal and cash deposit confirmation.' 
                   : 'Manager issues this token slip for cashier seal and cash collection.'}
@@ -142,7 +142,8 @@ export function MoneyReceiptModal({
 
           <button
             onClick={onClose}
-            className="p-2 rounded-lg hover:bg-muted text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
+            className="p-2 rounded-lg text-red-500 hover:text-red-600 hover:bg-red-500/10 border border-transparent hover:border-red-500/20 transition-colors cursor-pointer"
+            title="Close"
           >
             <X className="w-5 h-5" />
           </button>
@@ -341,7 +342,7 @@ export function MoneyReceiptModal({
                 <button
                   type="button"
                   onClick={onClose}
-                  className="px-4 py-2 text-xs font-semibold rounded-lg border border-border text-foreground hover:bg-muted transition-colors cursor-pointer"
+                  className="px-4 py-2 text-xs font-semibold rounded-lg border border-red-500/30 text-red-600 hover:bg-red-500/10 hover:border-red-500/50 transition-colors cursor-pointer"
                 >
                   Cancel
                 </button>

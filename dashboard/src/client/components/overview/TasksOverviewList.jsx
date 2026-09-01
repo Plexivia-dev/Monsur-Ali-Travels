@@ -342,34 +342,33 @@ export function TasksOverviewList({ activeFilter, onFilterChange }) {
                     </div>
 
                     <div className="flex items-center gap-2">
-                      <Button
-                        type="button"
-                        variant="outline"
-                        size="sm"
-                        onClick={() => setDetailModalTask(task)}
-                        className="h-8 px-2.5 text-xs font-semibold border-border hover:bg-muted text-foreground flex items-center gap-1"
-                      >
-                        <Eye className="w-3.5 h-3.5 text-muted-foreground" />
-                        Execute / Details
-                      </Button>
-
-                      {!isCompleted && (
+                      {!isCompleted ? (
                         <Button
                           type="button"
                           size="sm"
                           onClick={() => setDetailModalTask(task)}
-                          className="h-8 px-3 text-xs font-bold bg-primary text-primary-foreground hover:bg-primary/90 flex items-center gap-1.5 shadow-xs"
+                          className="h-8 px-3.5 text-xs font-bold bg-primary text-primary-foreground hover:bg-primary/90 flex items-center gap-1.5 shadow-xs cursor-pointer"
                         >
                           <CheckCircle2 className="w-3.5 h-3.5" />
                           Do Task
                         </Button>
-                      )}
-
-                      {isCompleted && (
-                        <span className="inline-flex items-center gap-1 text-xs font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2.5 py-1 rounded-lg">
-                          <CheckCircle2 className="w-3.5 h-3.5" />
-                          Completed
-                        </span>
+                      ) : (
+                        <>
+                          <Button
+                            type="button"
+                            variant="outline"
+                            size="sm"
+                            onClick={() => setDetailModalTask(task)}
+                            className="h-8 px-2.5 text-xs font-semibold border-border hover:bg-muted text-foreground flex items-center gap-1 cursor-pointer"
+                          >
+                            <Eye className="w-3.5 h-3.5 text-muted-foreground" />
+                            View Details
+                          </Button>
+                          <span className="inline-flex items-center gap-1 text-xs font-bold text-emerald-700 bg-emerald-500/10 border border-emerald-500/20 px-2.5 py-1 rounded-lg">
+                            <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
+                            Completed
+                          </span>
+                        </>
                       )}
                     </div>
                   </div>

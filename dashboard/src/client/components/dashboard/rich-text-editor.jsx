@@ -29,7 +29,7 @@ export function RichTextEditor({ value, onChange }) {
     editorProps: {
       attributes: {
         class:
-          'min-h-[160px] w-full rounded-b-lg border border-t-0 border-input bg-transparent px-3 py-2.5 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none disabled:cursor-not-allowed disabled:opacity-50 prose dark:prose-invert max-w-none focus-within:ring-1 focus-within:ring-ring',
+          'min-h-[160px] w-full rounded-b-lg border border-t-0 border-black/15 bg-white px-3 py-2.5 text-sm text-black placeholder:text-black/40 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50 prose max-w-none focus-within:ring-1 focus-within:ring-primary',
       },
     },
     onUpdate: ({ editor }) => {

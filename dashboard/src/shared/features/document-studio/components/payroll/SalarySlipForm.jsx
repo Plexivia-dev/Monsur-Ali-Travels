@@ -99,29 +99,16 @@ export function SalarySlipForm({ formData, setFormData, onSubmit, onReset, isSub
           <div>
             <div className="flex items-center justify-between mb-1">
               <label className="block font-bold text-foreground">Slip No.</label>
-              <button
-                type="button"
-                onClick={() => {
-                  const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-                  const getChar = () => letters.charAt(Math.floor(Math.random() * letters.length));
-                  const getDigits = (len) => {
-                    let res = '';
-                    for (let i = 0; i < len; i++) res += Math.floor(Math.random() * 10);
-                    return res;
-                  };
-                  const code = `SLIP-${getChar()}${getChar()}${getDigits(4)}${getChar()}${getDigits(3)}`;
-                  handleChange('slipNo', code);
-                }}
-                className="text-[10px] text-sky-600 dark:text-sky-400 hover:underline font-semibold cursor-pointer"
-              >
-                Regenerate
-              </button>
+              <span className="text-[10px] font-semibold text-muted-foreground bg-muted px-1.5 py-0.5 rounded border border-border">
+                Auto-generated
+              </span>
             </div>
             <input
               type="text"
-              value={formData.slipNo || ''}
-              onChange={(e) => handleChange('slipNo', e.target.value)}
-              className="w-full px-3 py-2 bg-background border border-border rounded-xl text-foreground font-mono font-bold text-xs focus:ring-2 focus:ring-sky-400/40 outline-none"
+              value={formData.slipNo || 'Auto-generated'}
+              readOnly
+              disabled
+              className="w-full px-3 py-2 bg-muted/60 border border-border rounded-xl text-muted-foreground font-mono font-bold text-xs cursor-not-allowed select-none outline-none"
             />
           </div>
 
@@ -460,7 +447,7 @@ export function SalarySlipForm({ formData, setFormData, onSubmit, onReset, isSub
             <button
               type="button"
               onClick={() => setResetDialogOpen(false)}
-              className="px-4 py-2 rounded-xl text-xs font-semibold bg-muted hover:bg-muted/80 text-foreground transition-colors cursor-pointer"
+              className="px-4 py-2 rounded-xl text-xs font-semibold bg-red-500/10 text-red-600 dark:text-red-400 border border-red-500/30 hover:bg-red-500/20 hover:border-red-500/50 transition-colors cursor-pointer"
             >
               Cancel
             </button>

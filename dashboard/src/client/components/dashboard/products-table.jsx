@@ -245,7 +245,7 @@ export function ProductsTable({
                 {/* Stock status */}
                 <TableCell className="w-[120px] min-w-[120px]">
                   {product.status === 'In Stock' ? (
-                    <Badge className="w-[100px] inline-flex items-center justify-center text-center bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border-emerald-500/20 whitespace-nowrap shrink-0" variant="outline">
+                    <Badge className="w-[100px] inline-flex items-center justify-center text-center bg-emerald-500/15 text-emerald-600 border-emerald-500/20 whitespace-nowrap shrink-0" variant="outline">
                       In Stock
                     </Badge>
                   ) : (
@@ -336,7 +336,7 @@ export function ProductsTable({
           </div>
           <DialogFooter>
             <Button
-              variant="outline"
+              variant="cancel"
               onClick={() => setStockTarget(null)}
               disabled={isUpdatingStock}
             >

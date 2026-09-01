@@ -8,7 +8,6 @@ import DropdownPage from '@/pages/DropdownPage'
 import DropdownProfilePage from '@/pages/DropdownProfilePage'
 import DialogPage from '@/pages/DialogPage'
 import { LoginPage } from '@/pages/LoginPage'
-import VisaWorkflowsPage from '@/pages/VisaWorkflowsPage'
 import CaseWorkflow from '@/pages/CaseWorkflow'
 import CaseDetailPage from '@/pages/CaseDetailPage'
 import ActivityLogsPage from '@/pages/ActivityLogsPage'
@@ -58,8 +57,8 @@ export default function App() {
               <Route path="dialog" element={<DialogPage />} />
               <Route path="datatable" element={<UnifiedTableShowcasePage />} />
               <Route path="tables" element={<UnifiedTableShowcasePage />} />
-              <Route path="visa-workflows" element={<VisaWorkflowsPage />} />
-              <Route path="visa-workflows/:id" element={<CaseDetailPage />} />
+              <Route path="visa-workflows" element={<Navigate to="/admin/cases" replace />} />
+              <Route path="visa-workflows/:id" element={<Navigate to="/admin/cases" replace />} />
               <Route path="cases" element={<CaseWorkflow />} />
               <Route path="cases/:id" element={<CaseDetailPage />} />
               <Route path="clients" element={<ClientsPage />} />

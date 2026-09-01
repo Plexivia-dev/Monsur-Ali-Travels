@@ -27,16 +27,17 @@ import {
 import { apiClient } from '@/lib/api-client';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
+import { ConfirmDeleteDialog } from '@/components/ui/confirm-delete-dialog';
 import { PageTitle } from '@shared/components/layout/PageTitle';
 import { UserProfileSettingsPage } from '@shared/features/profile';
 
 const CATEGORY_MAP = {
-  DOCUMENT_UPLOAD: { label: 'Document Upload', color: 'bg-sky-500/10 text-sky-600 dark:text-sky-400 border-sky-500/20' },
-  LEGAL: { label: 'Legal & Contract', color: 'bg-purple-500/10 text-purple-600 dark:text-purple-400 border-purple-500/20' },
-  FINANCIAL: { label: 'Financial & Accounts', color: 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20' },
-  EMBASSY_PROCESS: { label: 'Embassy & Visa', color: 'bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border-indigo-500/20' },
-  VERIFICATION: { label: 'Verification & Scrutiny', color: 'bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/20' },
-  GENERAL_ACTION: { label: 'Operational Action', color: 'bg-slate-500/10 text-slate-600 dark:text-slate-400 border-slate-500/20' },
+  DOCUMENT_UPLOAD: { label: 'Document Upload', color: 'bg-sky-500/10 text-sky-600 border-sky-500/20' },
+  LEGAL: { label: 'Legal & Contract', color: 'bg-purple-500/10 text-purple-600 border-purple-500/20' },
+  FINANCIAL: { label: 'Financial & Accounts', color: 'bg-emerald-500/10 text-emerald-600 border-emerald-500/20' },
+  EMBASSY_PROCESS: { label: 'Embassy & Visa', color: 'bg-indigo-500/10 text-indigo-600 border-indigo-500/20' },
+  VERIFICATION: { label: 'Verification & Scrutiny', color: 'bg-amber-500/10 text-amber-600 border-amber-500/20' },
+  GENERAL_ACTION: { label: 'Operational Action', color: 'bg-black/[0.04] text-black/70 border-black/15' },
 };
 
 const DOC_PRESETS = [
@@ -161,17 +162,25 @@ export function SettingsPage() {
     }
   };
 
-  const handleDelete = async (item) => {
-    if (!window.confirm(`Are you sure you want to delete task type "${item.name}"?`)) {
-      return;
-    }
+  const [itemToDelete, setItemToDelete] = useState(null);
+  const [isDeletingItem, setIsDeletingItem] = useState(false);
 
+  const handleDelete = (item) => {
+    setItemToDelete(item);
+  };
+
+  const executeDeleteTaskType = async () => {
+    if (!itemToDelete) return;
+    setIsDeletingItem(true);
     try {
-      await apiClient.delete(`/api/v1/admin/task-types/${item.did || item._id}`);
-      toast.success(`Task Type "${item.name}" removed.`);
+      await apiClient.delete(`/api/v1/admin/task-types/${itemToDelete.did || itemToDelete._id}`);
+      toast.success(`Task Type "${itemToDelete.name}" removed.`);
+      setItemToDelete(null);
       fetchTaskTypes();
     } catch (err) {
       toast.error(err.response?.data?.message || 'Failed to delete task type');
+    } finally {
+      setIsDeletingItem(false);
     }
   };
 
@@ -395,8 +404,8 @@ export function SettingsPage() {
                         onClick={() => handleToggleStatus(item)}
                         className={`px-2.5 py-1 rounded-full text-[10px] font-bold transition cursor-pointer shrink-0 flex items-center gap-1 ${
                           item.isActive
-                            ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20'
-                            : 'bg-rose-500/10 text-rose-600 dark:text-rose-400 border border-rose-500/20'
+                            ? 'bg-emerald-500/10 text-emerald-600 border border-emerald-500/20'
+                            : 'bg-rose-500/10 text-rose-600 border border-rose-500/20'
                         }`}
                         title="Click to toggle active status"
                       >
@@ -534,26 +543,27 @@ export function SettingsPage() {
 
       {/* CREATE / EDIT TASK TYPE MODAL */}
       {isModalOpen && (
-        <div className="fixed inset-0 z-60 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4 animate-in fade-in duration-150 overflow-y-auto">
+        <div className="fixed inset-0 z-60 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 animate-in fade-in duration-150 overflow-y-auto">
           <div className="fixed inset-0" onClick={() => setIsModalOpen(false)} />
           <form
             onSubmit={handleSaveTaskType}
-            className="relative bg-card border border-border rounded-2xl max-w-lg w-full p-6 space-y-4 shadow-2xl z-10 my-8 animate-in zoom-in-95 duration-150 text-foreground overflow-hidden"
+            className="relative bg-white border border-black/10 rounded-2xl max-w-lg w-full p-6 space-y-4 shadow-2xl z-10 my-8 animate-in zoom-in-95 duration-150 text-black overflow-hidden"
           >
             {/* Header */}
-            <div className="flex items-center justify-between border-b border-border pb-3">
+            <div className="flex items-center justify-between border-b border-black/10 pb-3">
               <div className="flex items-center gap-2">
                 <div className="size-8 rounded-xl bg-primary/10 text-primary flex items-center justify-center font-bold">
                   <Layers className="w-4 h-4" />
                 </div>
-                <h3 className="text-base font-bold text-foreground">
+                <h3 className="text-base font-bold text-black">
                   {editingItem ? 'Edit Task Type' : 'Add New Task Type'}
                 </h3>
               </div>
               <button
                 type="button"
                 onClick={() => setIsModalOpen(false)}
-                className="p-1 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted cursor-pointer"
+                className="p-1 rounded-lg text-red-500 hover:text-red-600 hover:bg-red-500/10 cursor-pointer"
+                title="Close"
               >
                 <XCircle className="w-5 h-5" />
               </button>
@@ -660,10 +670,10 @@ export function SettingsPage() {
             </div>
 
             {/* Footer */}
-            <div className="pt-3 border-t border-border flex items-center justify-end gap-2 text-xs">
+            <div className="pt-3 border-t border-black/10 flex items-center justify-end gap-2 text-xs">
               <Button
                 type="button"
-                variant="outline"
+                variant="cancel"
                 size="sm"
                 onClick={() => setIsModalOpen(false)}
                 className="cursor-pointer"
@@ -683,6 +693,19 @@ export function SettingsPage() {
           </form>
         </div>
       )}
+      {/* Confirm Delete Dialog */}
+      <ConfirmDeleteDialog
+        open={Boolean(itemToDelete)}
+        onOpenChange={(open) => {
+          if (!open && !isDeletingItem) setItemToDelete(null);
+        }}
+        title="Delete Task Type?"
+        description={`Are you sure you want to delete task type "${itemToDelete?.name || ''}"? This action cannot be undone.`}
+        confirmText="Yes, Delete"
+        cancelText="Cancel"
+        isDeleting={isDeletingItem}
+        onConfirm={executeDeleteTaskType}
+      />
     </div>
   );
 }

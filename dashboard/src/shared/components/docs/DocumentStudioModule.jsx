@@ -1,5 +1,5 @@
 import React from 'react';
-import { usePortal } from '../../context/PortalContext';
+import { usePortal } from '@client/context/PortalContext';
 import { EmploymentAgreement } from './agreement/EmploymentAgreement';
 import { IdCard } from './idcard/IdCard';
 import { SalarySlip } from './payroll/SalarySlip';

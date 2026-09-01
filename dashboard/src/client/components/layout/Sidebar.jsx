@@ -46,8 +46,8 @@ export const Sidebar = () => {
       user={user}
       onLogout={logout}
       onProfileClick={() => {
-        switchPortal('admin', 'profile');
-        navigate('/dashboard/admin/profile');
+        switchPortal('settings');
+        navigate('/dashboard/settings');
       }}
       lang={currentLang}
     />

@@ -18,6 +18,7 @@ import {
   Building2,
   FileText,
   Layers,
+  Plus,
 } from 'lucide-react';
 import { apiClient } from '../../lib/api-client';
 import { toast } from 'sonner';
@@ -25,81 +26,7 @@ import { useAuthStore } from '../../store/useAuthStore';
 import { HeaderTitle } from '@shared/components/common/HeaderTitle';
 import { CaseWorkspaceDrawer } from './CaseWorkspaceDrawer';
 import { TaskDetailModal } from '../overview/TaskDetailModal';
-
-const FALLBACK_TASKS = [
-  {
-    did: 'task-mock-1',
-    _id: 'task-mock-1',
-    stepNumber: 1,
-    title: 'Verify Passport & National ID Bio-data',
-    description: 'Check physical passport validity (minimum 6 months) and verify NID copy against client submission.',
-    status: 'Pending',
-    caseDid: 'CASE-2026-089',
-    caseNumber: 'CASE-2026-089',
-    applicantName: 'Md. Rafiqul Islam',
-    passportNumber: 'A08923412',
-    destinationCountry: 'Saudi Arabia',
-    tradeSkill: 'Electrician',
-    assignedToName: 'Frontdesk Officer',
-    createdAt: new Date(Date.now() - 3600000 * 4).toISOString(),
-    priority: 'High',
-  },
-  {
-    did: 'task-mock-2',
-    _id: 'task-mock-2',
-    stepNumber: 2,
-    title: 'Police Clearance Certificate (PCC) Verification',
-    description: 'Review online police clearance portal submission and verify digital signature copy.',
-    status: 'Pending',
-    caseDid: 'CASE-2026-090',
-    caseNumber: 'CASE-2026-090',
-    applicantName: 'Kazi Tanvir Ahmed',
-    passportNumber: 'B19283746',
-    destinationCountry: 'Romania',
-    tradeSkill: 'Warehouse Worker',
-    assignedToName: 'Visa Specialist',
-    createdAt: new Date(Date.now() - 3600000 * 12).toISOString(),
-    priority: 'Medium',
-  },
-  {
-    did: 'task-mock-3',
-    _id: 'task-mock-3',
-    stepNumber: 3,
-    title: 'Medical Fitness Test Submission',
-    description: 'Collect GAMCA/Medical center fit report and upload scan to Document Vault.',
-    status: 'Done',
-    completionNotes: 'Medical report verified fit. Uploaded copy to vault.',
-    caseDid: 'CASE-2026-077',
-    caseNumber: 'CASE-2026-077',
-    applicantName: 'Shahidul Alam',
-    passportNumber: 'EF7788991',
-    destinationCountry: 'Qatar',
-    tradeSkill: 'Pipe Fitter',
-    assignedToName: 'Operations Officer',
-    createdAt: new Date(Date.now() - 3600000 * 36).toISOString(),
-    completedAt: new Date(Date.now() - 3600000 * 6).toISOString(),
-    priority: 'Normal',
-  },
-  {
-    did: 'task-mock-4',
-    _id: 'task-mock-4',
-    stepNumber: 4,
-    title: 'Embassy / VFS Biometric Dossier Submission',
-    description: 'Submit physical dossier with visa fee voucher to VFS Global center.',
-    status: 'Approved',
-    completionNotes: 'Submitted to VFS. Token #VFS-8819.',
-    caseDid: 'CASE-2026-065',
-    caseNumber: 'CASE-2026-065',
-    applicantName: 'Mizanur Rahman',
-    passportNumber: 'GH3344552',
-    destinationCountry: 'Malaysia',
-    tradeSkill: 'Factory Worker',
-    assignedToName: 'Visa Officer',
-    createdAt: new Date(Date.now() - 3600000 * 72).toISOString(),
-    completedAt: new Date(Date.now() - 3600000 * 48).toISOString(),
-    priority: 'High',
-  },
-];
+import { CaseFileCreationModal } from './CaseFileCreationModal';
 
 export function MyTasks() {
   const user = useAuthStore((state) => state.user);
@@ -107,6 +34,7 @@ export function MyTasks() {
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState('ALL');
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   
   // Task completion modal / action state
   const [activeCompletingTask, setActiveCompletingTask] = useState(null);
@@ -122,7 +50,7 @@ export function MyTasks() {
     try {
       // 1. Try dedicated staff tasks endpoint
       const res = await apiClient.get('/api/v1/client/tasks/my-tasks');
-      if (res.data?.data && Array.isArray(res.data.data) && res.data.data.length > 0) {
+      if (res.data?.data && Array.isArray(res.data.data)) {
         setTasks(res.data.data);
       } else {
         // 2. Try fetching from cases workflow tasks
@@ -146,15 +74,11 @@ export function MyTasks() {
           }
         });
 
-        if (extractedTasks.length > 0) {
-          setTasks(extractedTasks);
-        } else {
-          setTasks(FALLBACK_TASKS);
-        }
+        setTasks(extractedTasks);
       }
     } catch (err) {
-      console.warn('Using fallback tasks:', err.message);
-      setTasks(FALLBACK_TASKS);
+      console.warn('Could not load tasks:', err.message);
+      setTasks([]);
     } finally {
       setLoading(false);
     }
@@ -228,13 +152,22 @@ export function MyTasks() {
         title="My Operational Tasks"
         subtitle={`Welcome, ${user?.name || 'Staff Member'} (${user?.subRole || user?.role || 'Staff'}) — Track and execute your assigned case tasks.`}
         actions={
-          <button
-            onClick={fetchTasks}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-white/20 bg-white/10 hover:bg-white/20 text-white text-xs font-semibold backdrop-blur-xs transition cursor-pointer"
-          >
-            <RefreshCw className={`size-3.5 ${loading ? 'animate-spin' : ''}`} />
-            <span>Refresh Tasks</span>
-          </button>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => setIsCreateModalOpen(true)}
+              className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold shadow-md transition cursor-pointer"
+            >
+              <Plus className="size-3.5" />
+              <span>+ New Case Intake</span>
+            </button>
+            <button
+              onClick={fetchTasks}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-white/20 bg-white/10 hover:bg-white/20 text-white text-xs font-semibold backdrop-blur-xs transition cursor-pointer"
+            >
+              <RefreshCw className={`size-3.5 ${loading ? 'animate-spin' : ''}`} />
+              <span>Refresh Tasks</span>
+            </button>
+          </div>
         }
       />
 
@@ -396,7 +329,7 @@ export function MyTasks() {
                           ? 'bg-emerald-500/10 text-emerald-600 border border-emerald-500/20'
                           : isDone
                           ? 'bg-sky-500/10 text-sky-600 border border-sky-500/20'
-                          : 'bg-slate-500/10 text-slate-600 dark:text-slate-400 border border-slate-500/20'
+                          : 'bg-amber-500/10 text-amber-700 border border-amber-500/20'
                       }`}
                     >
                       {isApproved ? (
@@ -492,6 +425,16 @@ export function MyTasks() {
           onRefresh={fetchTasks}
         />
       )}
+
+      {/* 5-Step Case Creation Modal */}
+      <CaseFileCreationModal
+        isOpen={isCreateModalOpen}
+        onClose={() => setIsCreateModalOpen(false)}
+        onSuccess={() => {
+          setIsCreateModalOpen(false);
+          fetchTasks();
+        }}
+      />
     </div>
   );
 }

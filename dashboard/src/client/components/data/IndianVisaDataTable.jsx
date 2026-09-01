@@ -268,7 +268,7 @@ export function IndianVisaDataTable() {
                         </div>
                       )}
                     </td>
-                    <td className="p-3 font-mono font-bold text-slate-800 dark:text-slate-200">
+                    <td className="p-3 font-mono font-bold text-black">
                       {item.passportNo || '—'}
                     </td>
                     <td className="p-3">
@@ -361,15 +361,15 @@ export function IndianVisaDataTable() {
 
       {/* Full Preview & Download Modal */}
       {previewItem && (
-        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 overflow-y-auto">
-          <div className="bg-background border border-border rounded-xl shadow-2xl max-w-4xl w-full max-h-[90vh] flex flex-col overflow-hidden">
+        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-3 sm:p-5 overflow-hidden animate-in fade-in duration-200">
+          <div className="bg-white text-zinc-900 border border-black/10 rounded-2xl shadow-2xl max-w-4xl w-full h-[70vh] flex flex-col overflow-hidden animate-in zoom-in-95 duration-200">
             {/* Modal Header */}
-            <div className="px-5 py-3.5 border-b border-border bg-card flex items-center justify-between gap-3">
+            <div className="px-6 py-4 border-b border-black/10 bg-black/[0.02] flex items-center justify-between gap-3 shrink-0">
               <div>
-                <h3 className="text-sm font-bold text-foreground">
+                <h3 className="text-sm font-bold text-zinc-900">
                   {t('indianVisas.receiptTitle', 'Indian Visa Application Receipt')} — {previewItem.trackingNo || ''}
                 </h3>
-                <p className="text-[11px] text-muted-foreground">
+                <p className="text-[11px] text-zinc-500">
                   {t('common.applicant', 'Applicant')}: {previewItem.applicantName || '—'} | {t('common.passport', 'Passport')}: {previewItem.passportNo || '—'}
                 </p>
               </div>
@@ -378,7 +378,7 @@ export function IndianVisaDataTable() {
                 <button
                   type="button"
                   onClick={handlePrint}
-                  className="flex items-center gap-1.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-4 py-2 rounded-lg shadow-xs transition-all cursor-pointer"
+                  className="flex items-center gap-1.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-4 h-9 rounded-xl shadow-xs transition-all cursor-pointer"
                 >
                   <Printer className="w-4 h-4" />
                   <span>Download / Print PDF</span>
@@ -386,7 +386,8 @@ export function IndianVisaDataTable() {
                 <button
                   type="button"
                   onClick={() => setPreviewItem(null)}
-                  className="p-2 rounded-lg hover:bg-muted text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
+                  className="p-1.5 rounded-lg text-red-500 hover:text-red-600 hover:bg-red-500/10 transition-colors cursor-pointer"
+                  title="Close"
                 >
                   <X className="w-4 h-4" />
                 </button>
@@ -394,7 +395,7 @@ export function IndianVisaDataTable() {
             </div>
 
             {/* Modal Body */}
-            <div className="flex-1 overflow-y-auto p-4 sm:p-6 bg-muted/40 flex justify-center">
+            <div className="flex-1 min-h-0 overflow-y-auto p-4 sm:p-6 bg-black/[0.02] flex justify-center">
               <IndianVisaPreview data={previewItem} />
             </div>
           </div>
@@ -403,16 +404,16 @@ export function IndianVisaDataTable() {
 
       {/* Stage Status & Stage Document Update Modal */}
       {stageModalItem && (
-        <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-card border border-border rounded-2xl max-w-lg w-full p-6 shadow-2xl space-y-4 text-foreground">
-            <div className="flex items-center justify-between border-b border-border pb-3">
+        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-3 sm:p-5 overflow-hidden animate-in fade-in duration-200">
+          <div className="bg-white border border-black/10 rounded-2xl max-w-lg w-full h-[70vh] flex flex-col shadow-2xl text-zinc-900 overflow-hidden animate-in zoom-in-95 duration-200">
+            <div className="flex items-center justify-between px-6 py-4 border-b border-black/10 bg-black/[0.02] shrink-0">
               <div className="flex items-center gap-2">
                 <div className="p-2 bg-emerald-500/10 text-emerald-600 rounded-lg">
                   <Edit3 className="w-5 h-5" />
                 </div>
                 <div>
-                  <h3 className="text-sm font-bold text-foreground">{t('visa.stageUpdateTitle', 'Visa Processing Stage Update')}</h3>
-                  <p className="text-xs text-muted-foreground">
+                  <h3 className="text-sm font-bold text-zinc-900">{t('visa.stageUpdateTitle', 'Visa Processing Stage Update')}</h3>
+                  <p className="text-xs text-zinc-500">
                     Tracking: <span className="font-mono font-bold text-emerald-600">{stageModalItem.trackingNo}</span> | {stageModalItem.applicantName}
                   </p>
                 </div>
@@ -420,80 +421,83 @@ export function IndianVisaDataTable() {
               <button
                 type="button"
                 onClick={() => setStageModalItem(null)}
-                className="p-1 rounded-lg hover:bg-muted text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
+                className="p-1.5 rounded-lg text-red-500 hover:text-red-600 hover:bg-red-500/10 transition-colors cursor-pointer"
+                title="Close"
               >
                 <X className="w-4 h-4" />
               </button>
             </div>
 
-            {/* Stage Dropdown Selector */}
-            <div className="space-y-1.5">
-              <label className="block text-xs font-bold text-foreground">
-                {t('visa.selectNewStatus', 'Select New Status / Stage:')}
-              </label>
-              <select
-                value={newStage}
-                onChange={(e) => setNewStage(e.target.value)}
-                className="w-full px-3.5 py-2.5 bg-background border border-border rounded-xl text-foreground font-bold text-xs focus:ring-1 focus:ring-primary outline-hidden cursor-pointer"
-              >
-                {VISA_STAGES.map((st) => (
-                  <option key={st.id} value={st.id}>
-                    {t('visaStatus.' + st.id, st.label)}
-                  </option>
-                ))}
-              </select>
-            </div>
+            <div className="p-6 flex-1 min-h-0 overflow-y-auto space-y-4 text-xs">
+              {/* Stage Dropdown Selector */}
+              <div className="space-y-1.5">
+                <label className="block text-xs font-bold text-zinc-700">
+                  {t('visa.selectNewStatus', 'Select New Status / Stage:')}
+                </label>
+                <select
+                  value={newStage}
+                  onChange={(e) => setNewStage(e.target.value)}
+                  className="w-full px-3.5 py-2.5 bg-black/[0.03] border border-black/10 rounded-xl text-zinc-900 font-bold text-xs focus:ring-1 focus:ring-primary outline-hidden cursor-pointer"
+                >
+                  {VISA_STAGES.map((st) => (
+                    <option key={st.id} value={st.id}>
+                      {t('visaStatus.' + st.id, st.label)}
+                    </option>
+                  ))}
+                </select>
+              </div>
 
-            {/* Stage Document Upload Option */}
-            <div className="space-y-1.5 bg-muted/40 p-3.5 rounded-xl border border-border text-xs">
-              <label className="block font-bold text-foreground flex items-center gap-1.5">
-                <Paperclip className="w-4 h-4 text-primary" />
-                <span>{t('visa.attachStageDoc', 'Attach Stage Document / Visa Copy (Optional):')}</span>
-              </label>
-              
-              <div className="flex items-center gap-2 pt-1">
-                <label className="flex items-center gap-2 bg-background border border-border hover:bg-muted/80 text-foreground px-3 py-2 rounded-lg text-xs font-semibold cursor-pointer transition-colors shrink-0">
-                  <Upload className="w-4 h-4 text-primary" />
-                  <span>{t('common.selectFile', 'Select File')}</span>
-                  <input
-                    type="file"
-                    className="hidden"
-                    onChange={handleFileUpload}
-                    accept=".pdf,.png,.jpg,.jpeg,.doc,.docx"
-                  />
+              {/* Stage Document Upload Option */}
+              <div className="space-y-1.5 bg-black/[0.02] p-3.5 rounded-xl border border-black/10 text-xs">
+                <label className="block font-bold text-zinc-700 flex items-center gap-1.5">
+                  <Paperclip className="w-4 h-4 text-primary" />
+                  <span>{t('visa.attachStageDoc', 'Attach Stage Document / Visa Copy (Optional):')}</span>
                 </label>
                 
-                {stageDocument.fileUrl ? (
-                  <div className="flex items-center gap-1.5 text-xs text-emerald-600 font-medium truncate">
-                    <CheckCircle2 className="w-4 h-4 shrink-0" />
-                    <span className="truncate">{stageDocument.name}</span>
-                  </div>
-                ) : (
-                  <span className="text-[11px] text-muted-foreground">{t('visa.noFile', 'No file attached')}</span>
-                )}
+                <div className="flex items-center gap-2 pt-1">
+                  <label className="flex items-center gap-2 bg-white border border-black/10 hover:bg-black/[0.03] text-zinc-900 px-3 py-2 rounded-lg text-xs font-semibold cursor-pointer transition-colors shrink-0">
+                    <Upload className="w-4 h-4 text-primary" />
+                    <span>{t('common.selectFile', 'Select File')}</span>
+                    <input
+                      type="file"
+                      className="hidden"
+                      onChange={handleFileUpload}
+                      accept=".pdf,.png,.jpg,.jpeg,.doc,.docx"
+                    />
+                  </label>
+                  
+                  {stageDocument.fileUrl ? (
+                    <div className="flex items-center gap-1.5 text-xs text-emerald-600 font-medium truncate">
+                      <CheckCircle2 className="w-4 h-4 shrink-0" />
+                      <span className="truncate">{stageDocument.name}</span>
+                    </div>
+                  ) : (
+                    <span className="text-[11px] text-zinc-500">{t('visa.noFile', 'No file attached')}</span>
+                  )}
+                </div>
+              </div>
+
+              {/* Note / Remarks */}
+              <div className="space-y-1.5">
+                <label className="block text-xs font-bold text-zinc-700">
+                  {t('common.remarks', 'Note / Remarks (Optional):')}
+                </label>
+                <textarea
+                  value={stageNote}
+                  onChange={(e) => setStageNote(e.target.value)}
+                  placeholder="e.g. File submitted to embassy / Visa approved"
+                  rows={2}
+                  className="w-full px-3 py-2 bg-black/[0.03] border border-black/10 rounded-xl text-xs text-zinc-900 focus:ring-1 focus:ring-primary outline-hidden"
+                />
               </div>
             </div>
 
-            {/* Note / Remarks */}
-            <div className="space-y-1.5">
-              <label className="block text-xs font-bold text-foreground">
-                {t('common.remarks', 'Note / Remarks (Optional):')}
-              </label>
-              <textarea
-                value={stageNote}
-                onChange={(e) => setStageNote(e.target.value)}
-                placeholder="e.g. File submitted to embassy / Visa approved"
-                rows={2}
-                className="w-full px-3 py-2 bg-background border border-border rounded-xl text-xs text-foreground focus:ring-1 focus:ring-primary outline-hidden"
-              />
-            </div>
-
             {/* Action Buttons */}
-            <div className="flex items-center justify-end gap-2 pt-2 border-t border-border">
+            <div className="flex items-center justify-end gap-2.5 px-6 py-3.5 border-t border-black/10 bg-white shrink-0">
               <button
                 type="button"
                 onClick={() => setStageModalItem(null)}
-                className="px-4 py-2 rounded-xl text-xs font-semibold text-muted-foreground hover:bg-muted cursor-pointer"
+                className="px-4 h-9 rounded-xl text-xs font-semibold border border-red-500/30 text-red-600 hover:bg-red-500/10 cursor-pointer flex items-center justify-center"
               >
                 {t('common.cancel', 'Cancel')}
               </button>
@@ -501,7 +505,7 @@ export function IndianVisaDataTable() {
                 type="button"
                 onClick={handleSaveStageUpdate}
                 disabled={isUpdatingStage}
-                className="flex items-center gap-1.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-5 py-2 rounded-xl shadow-xs transition-all cursor-pointer disabled:opacity-50"
+                className="flex items-center gap-1.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-5 h-9 rounded-xl shadow-xs transition-all cursor-pointer disabled:opacity-50"
               >
                 <Check className="w-4 h-4" />
                 <span>{isUpdatingStage ? t('common.updating', 'Updating...') : t('visa.updateStage', 'Update Stage')}</span>

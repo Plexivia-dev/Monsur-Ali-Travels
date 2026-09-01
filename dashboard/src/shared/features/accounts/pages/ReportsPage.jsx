@@ -197,7 +197,7 @@ export function ReportsPage() {
             <span className="text-xs font-bold uppercase tracking-wider">Total Received</span>
             <Wallet className="w-4 h-4 text-emerald-500" />
           </div>
-          <p className="text-2xl font-black text-emerald-600 dark:text-emerald-400 font-mono">
+          <p className="text-2xl font-black text-emerald-600 font-mono">
             BDT {Number(financials.totalIncome || 0).toLocaleString('en-BD')}
           </p>
           <p className="text-[11px] text-muted-foreground">
@@ -225,7 +225,7 @@ export function ReportsPage() {
             <span className="text-xs font-bold uppercase tracking-wider">Outstanding Due</span>
             <AlertTriangle className="w-4 h-4 text-rose-500" />
           </div>
-          <p className="text-2xl font-black text-rose-600 dark:text-rose-400 font-mono">
+          <p className="text-2xl font-black text-rose-600 font-mono">
             BDT {Number(financials.totalDueOnBills || 0).toLocaleString('en-BD')}
           </p>
           <p className="text-[11px] text-muted-foreground">Uncollected bill balances</p>
@@ -237,7 +237,7 @@ export function ReportsPage() {
             <span className="text-xs font-bold uppercase tracking-wider">Settled on Bills</span>
             <CheckCircle2 className="w-4 h-4 text-sky-500" />
           </div>
-          <p className="text-2xl font-black text-sky-600 dark:text-sky-400 font-mono">
+          <p className="text-2xl font-black text-sky-600 font-mono">
             BDT {Number(financials.totalPaidOnBills || 0).toLocaleString('en-BD')}
           </p>
           <p className="text-[11px] text-muted-foreground">Directly settled payments</p>

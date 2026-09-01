@@ -50,9 +50,9 @@ const STAGES = [
     title: '1. File Intake',
     titleBn: '',
     stageName: 'File Intake',
-    badgeColor: 'bg-slate-500/10 text-slate-700 dark:text-slate-300 border-slate-300 dark:border-slate-700',
-    headerBg: 'bg-slate-50 dark:bg-slate-900/60 border-slate-200 dark:border-slate-800',
-    accentColor: 'text-slate-600 dark:text-slate-400',
+    badgeColor: 'bg-black/[0.04] text-black border-black/15',
+    headerBg: 'bg-black/[0.02] border-black/10',
+    accentColor: 'text-black/70',
     stepNumber: 1,
     icon: FolderOpen,
   },
@@ -61,9 +61,9 @@ const STAGES = [
     title: '2. Document Processing',
     titleBn: '',
     stageName: 'Processing',
-    badgeColor: 'bg-sky-500/10 text-sky-700 dark:text-sky-300 border-sky-300 dark:border-sky-800',
-    headerBg: 'bg-sky-50/50 dark:bg-sky-950/30 border-sky-200 dark:border-sky-800/60',
-    accentColor: 'text-sky-600 dark:text-sky-400',
+    badgeColor: 'bg-sky-500/10 text-sky-700 border-sky-300',
+    headerBg: 'bg-sky-50/50 border-sky-200',
+    accentColor: 'text-sky-600',
     stepNumber: 2,
     icon: Layers,
   },
@@ -72,9 +72,9 @@ const STAGES = [
     title: '3. Offer Approved',
     titleBn: '',
     stageName: 'Offer Approved',
-    badgeColor: 'bg-indigo-500/10 text-indigo-700 dark:text-indigo-300 border-indigo-300 dark:border-indigo-800',
-    headerBg: 'bg-indigo-50/50 dark:bg-indigo-950/30 border-indigo-200 dark:border-indigo-800/60',
-    accentColor: 'text-indigo-600 dark:text-indigo-400',
+    badgeColor: 'bg-indigo-500/10 text-indigo-700 border-indigo-300',
+    headerBg: 'bg-indigo-50/50 border-indigo-200',
+    accentColor: 'text-indigo-600',
     stepNumber: 3,
     icon: Award,
   },
@@ -83,9 +83,9 @@ const STAGES = [
     title: '4. Embassy / VFS',
     titleBn: '',
     stageName: 'Embassy / VFS',
-    badgeColor: 'bg-amber-500/10 text-amber-700 dark:text-amber-300 border-amber-300 dark:border-amber-800',
-    headerBg: 'bg-amber-50/50 dark:bg-amber-950/30 border-amber-200 dark:border-amber-800/60',
-    accentColor: 'text-amber-600 dark:text-amber-400',
+    badgeColor: 'bg-amber-500/10 text-amber-700 border-amber-300',
+    headerBg: 'bg-amber-50/50 border-amber-200',
+    accentColor: 'text-amber-600',
     stepNumber: 4,
     icon: UserCheck,
   },
@@ -94,9 +94,9 @@ const STAGES = [
     title: '5. Visa Delivered',
     titleBn: '',
     stageName: 'Delivered',
-    badgeColor: 'bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 border-emerald-300 dark:border-emerald-800',
-    headerBg: 'bg-emerald-50/50 dark:bg-emerald-950/30 border-emerald-200 dark:border-emerald-800/60',
-    accentColor: 'text-emerald-600 dark:text-emerald-400',
+    badgeColor: 'bg-emerald-500/10 text-emerald-700 border-emerald-300',
+    headerBg: 'bg-emerald-50/50 border-emerald-200',
+    accentColor: 'text-emerald-600',
     stepNumber: 5,
     icon: Plane,
   },
@@ -110,49 +110,49 @@ function getDestinationChip(c) {
   if (dest.includes('india') || service.includes('indian visa') || c.caseType === 'INDIAN_VISA') {
     return {
       label: 'Indian Visa',
-      color: 'bg-amber-500/15 text-amber-700 dark:text-amber-300 border-amber-500/30',
+      color: 'bg-amber-500/15 text-amber-700 border-amber-500/30',
       icon: <Stamp className="size-3 mr-1" />,
     };
   }
   if (dest.includes('greece')) {
     return {
       label: 'Greece',
-      color: 'bg-sky-500/15 text-sky-700 dark:text-sky-300 border-sky-500/30',
+      color: 'bg-sky-500/15 text-sky-700 border-sky-500/30',
       icon: <Globe2 className="size-3 mr-1" />,
     };
   }
   if (dest.includes('saudi')) {
     return {
       label: 'Saudi Arabia',
-      color: 'bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 border-emerald-500/30',
+      color: 'bg-emerald-500/15 text-emerald-700 border-emerald-500/30',
       icon: <Globe2 className="size-3 mr-1" />,
     };
   }
   if (dest.includes('croatia')) {
     return {
       label: 'Croatia',
-      color: 'bg-indigo-500/15 text-indigo-700 dark:text-indigo-300 border-indigo-500/30',
+      color: 'bg-indigo-500/15 text-indigo-700 border-indigo-500/30',
       icon: <Globe2 className="size-3 mr-1" />,
     };
   }
   if (dest.includes('macedonia')) {
     return {
       label: 'N. Macedonia',
-      color: 'bg-purple-500/15 text-purple-700 dark:text-purple-300 border-purple-500/30',
+      color: 'bg-purple-500/15 text-purple-700 border-purple-500/30',
       icon: <Globe2 className="size-3 mr-1" />,
     };
   }
   if (dest.includes('qatar')) {
     return {
       label: 'Qatar',
-      color: 'bg-rose-500/15 text-rose-700 dark:text-rose-300 border-rose-500/30',
+      color: 'bg-rose-500/15 text-rose-700 border-rose-500/30',
       icon: <Globe2 className="size-3 mr-1" />,
     };
   }
   if (dest.includes('dubai') || dest.includes('uae')) {
     return {
       label: 'Dubai / UAE',
-      color: 'bg-blue-500/15 text-blue-700 dark:text-blue-300 border-blue-500/30',
+      color: 'bg-blue-500/15 text-blue-700 border-blue-500/30',
       icon: <Globe2 className="size-3 mr-1" />,
     };
   }
@@ -168,19 +168,19 @@ function getDestinationChip(c) {
 function getStageBadge(stKey) {
   const st = String(stKey || 'ENTRY').toUpperCase();
   if (st === 'ENTRY' || st === 'NEW') {
-    return { label: 'File Intake', color: 'bg-slate-500/10 text-slate-700 dark:text-slate-300 border-slate-300' };
+    return { label: 'File Intake', color: 'bg-black/[0.04] text-black border-black/15' };
   }
   if (st === 'PROCESSING') {
-    return { label: 'Processing', color: 'bg-sky-500/10 text-sky-700 dark:text-sky-300 border-sky-300' };
+    return { label: 'Processing', color: 'bg-sky-500/10 text-sky-700 border-sky-300' };
   }
   if (st === 'APPROVED_OFFER_LETTER' || st === 'FLIGHT_BOOKED') {
-    return { label: 'Offer Approved', color: 'bg-indigo-500/10 text-indigo-700 dark:text-indigo-300 border-indigo-300' };
+    return { label: 'Offer Approved', color: 'bg-indigo-500/10 text-indigo-700 border-indigo-300' };
   }
   if (st === 'SUBMITTED_EMBASSY_BSF' || st === 'VISA_SUBMITTED') {
-    return { label: 'Embassy / VFS', color: 'bg-amber-500/10 text-amber-700 dark:text-amber-300 border-amber-300' };
+    return { label: 'Embassy / VFS', color: 'bg-amber-500/10 text-amber-700 border-amber-300' };
   }
   if (st === 'COMPLETED_DELIVERED' || st === 'COMPLETED') {
-    return { label: 'Visa Delivered', color: 'bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 border-emerald-300' };
+    return { label: 'Visa Delivered', color: 'bg-emerald-500/10 text-emerald-700 border-emerald-300' };
   }
   return { label: stKey || 'Active', color: 'bg-muted text-muted-foreground border-border' };
 }
@@ -246,6 +246,21 @@ export default function CaseWorkflow() {
       fetchCases();
     } catch (err) {
       toast.error('Failed to update stage.');
+    }
+  };
+
+  const handleTriggerIndianVisa = async (c) => {
+    try {
+      const caseDid = c.did || c._id;
+      const res = await apiClient.post(`/api/v1/admin/cases/${caseDid}/indian-visa-subpipeline`);
+      toast.success(res.data?.message || 'Indian Visa Sub-Pipeline activated!');
+      fetchCases();
+      if (res.data?.data?.documentStudioUrl) {
+        navigate(res.data.data.documentStudioUrl);
+      }
+    } catch (err) {
+      console.error('Indian visa trigger error:', err);
+      toast.error(err.response?.data?.message || 'Failed to activate Indian Visa sub-pipeline.');
     }
   };
 
@@ -338,7 +353,7 @@ export default function CaseWorkflow() {
           <>
             <Button
               onClick={() => setCreateModalOpen(true)}
-              className="h-10 px-4 bg-sky-500 hover:bg-sky-400 text-slate-950 rounded-xl font-bold text-xs transition shadow-lg cursor-pointer gap-2"
+              className="h-10 px-4 bg-primary hover:bg-primary/90 text-primary-foreground rounded-xl font-bold text-xs transition shadow-lg cursor-pointer gap-2"
             >
               <Plus className="size-4" />
               <span>New Client File</span>
@@ -569,12 +584,30 @@ export default function CaseWorkflow() {
                 </div>
 
                 {/* GAP & Footer: <last updated> Date and time */}
-                <div className="pt-2.5 mt-3 border-t border-border/60 flex items-center justify-between text-[10px] text-muted-foreground">
+                <div className="pt-2.5 mt-3 border-t border-border/60 flex items-center justify-between text-[10px] text-muted-foreground gap-2">
                   <div className="flex items-center gap-1 truncate">
                     <Clock className="size-3 text-muted-foreground/70 shrink-0" />
                     <span className="truncate">{lastUpdated}</span>
                   </div>
-                  <Maximize2 className="size-3 text-muted-foreground/50 group-hover:text-primary transition-colors shrink-0" />
+                  <div className="flex items-center gap-1.5 shrink-0">
+                    {(c.destinationCountry?.toLowerCase().includes('greece') ||
+                      c.destinationCountry?.toLowerCase().includes('macedonia') ||
+                      c.destinationCountry?.toLowerCase().includes('romania') ||
+                      c.status === 'APPROVED_OFFER_LETTER') && (
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleTriggerIndianVisa(c);
+                        }}
+                        title="1-Click Indian Visa Sub-Pipeline"
+                        className="px-2 py-0.5 rounded bg-amber-500/15 hover:bg-amber-500/30 text-amber-700 border border-amber-500/30 text-[10px] font-bold cursor-pointer transition"
+                      >
+                        🇮🇳 Indian Visa
+                      </button>
+                    )}
+                    <Maximize2 className="size-3 text-muted-foreground/50 group-hover:text-primary transition-colors shrink-0" />
+                  </div>
                 </div>
               </div>
             );
@@ -657,7 +690,7 @@ export default function CaseWorkflow() {
                         <div className="space-y-0.5">
                           {c.phone && <div className="text-[11px] text-muted-foreground">{c.phone}</div>}
                           {c.passportNumber && (
-                            <div className="font-mono font-bold text-sky-600 dark:text-sky-400 text-[11px]">
+                            <div className="font-mono font-bold text-sky-600 text-[11px]">
                               {c.passportNumber}
                             </div>
                           )}
@@ -674,18 +707,35 @@ export default function CaseWorkflow() {
 
                       {/* Action */}
                       <td className="px-4 py-3.5 text-right">
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            navigate(`/admin/cases/${caseId}`);
-                          }}
-                          className="h-7 px-2.5 text-xs font-semibold cursor-pointer gap-1"
-                        >
-                          <Eye className="size-3 text-primary" />
-                          <span>View File</span>
-                        </Button>
+                        <div className="flex items-center justify-end gap-1.5">
+                          {(c.destinationCountry?.toLowerCase().includes('greece') ||
+                            c.destinationCountry?.toLowerCase().includes('macedonia') ||
+                            c.destinationCountry?.toLowerCase().includes('romania') ||
+                            c.status === 'APPROVED_OFFER_LETTER') && (
+                            <button
+                              type="button"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleTriggerIndianVisa(c);
+                              }}
+                              className="h-7 px-2.5 rounded-lg bg-amber-500/15 hover:bg-amber-500/30 text-amber-700 border border-amber-500/30 text-[10px] font-bold cursor-pointer transition"
+                            >
+                              🇮🇳 Indian Visa
+                            </button>
+                          )}
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              navigate(`/admin/cases/${caseId}`);
+                            }}
+                            className="h-7 px-2.5 text-xs font-semibold cursor-pointer gap-1"
+                          >
+                            <Eye className="size-3 text-primary" />
+                            <span>View File</span>
+                          </Button>
+                        </div>
                       </td>
                     </tr>
                   );

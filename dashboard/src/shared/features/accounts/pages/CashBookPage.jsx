@@ -68,7 +68,7 @@ export function CashBookPage() {
       <div className="bg-card border border-border p-6 rounded-2xl shadow-xs space-y-4">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
-            <div className="inline-flex items-center gap-2 px-2.5 py-0.5 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 text-xs font-bold mb-1.5">
+            <div className="inline-flex items-center gap-2 px-2.5 py-0.5 rounded-full bg-emerald-500/10 text-emerald-600 border border-emerald-500/20 text-xs font-bold mb-1.5">
               <Wallet className="w-3.5 h-3.5" />
               <span>Real-Time Cash Management</span>
             </div>
@@ -122,7 +122,7 @@ export function CashBookPage() {
             <span className="text-xs font-bold uppercase tracking-wider">Total Cash Inflows</span>
             <ArrowDownLeft className="w-4 h-4 text-emerald-500" />
           </div>
-          <p className="text-2xl font-black text-emerald-600 dark:text-emerald-400 font-mono">
+          <p className="text-2xl font-black text-emerald-600 font-mono">
             BDT {Number(summary.totalCashIn || 0).toLocaleString('en-BD')}
           </p>
           <p className="text-[11px] text-muted-foreground">{summary.receiptsCount || 0} Cash Receipts</p>
@@ -134,7 +134,7 @@ export function CashBookPage() {
             <span className="text-xs font-bold uppercase tracking-wider">Total Cash Outflows</span>
             <ArrowUpRight className="w-4 h-4 text-rose-500" />
           </div>
-          <p className="text-2xl font-black text-rose-600 dark:text-rose-400 font-mono">
+          <p className="text-2xl font-black text-rose-600 font-mono">
             BDT {Number(summary.totalCashOut || 0).toLocaleString('en-BD')}
           </p>
           <p className="text-[11px] text-muted-foreground">{summary.vouchersCount || 0} Cash Vouchers</p>
@@ -146,7 +146,7 @@ export function CashBookPage() {
             <span className="text-xs font-bold uppercase tracking-wider">Net Cash in Hand</span>
             <Wallet className="w-4 h-4 text-sky-500" />
           </div>
-          <p className={`text-2xl font-black font-mono ${Number(summary.netCashBalance || 0) >= 0 ? 'text-sky-600 dark:text-sky-400' : 'text-rose-600'}`}>
+          <p className={`text-2xl font-black font-mono ${Number(summary.netCashBalance || 0) >= 0 ? 'text-sky-600' : 'text-rose-600'}`}>
             BDT {Number(summary.netCashBalance || 0).toLocaleString('en-BD')}
           </p>
           <p className="text-[11px] text-muted-foreground">Period liquidity balance</p>
@@ -223,11 +223,11 @@ export function CashBookPage() {
                     </td>
                     <td className="py-2.5 px-3">
                       {t.type === 'INFLOW' ? (
-                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
+                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/10 text-emerald-600 border border-emerald-500/20">
                           <ArrowDownLeft className="w-3 h-3" /> Cash In
                         </span>
                       ) : (
-                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-rose-500/10 text-rose-600 dark:text-rose-400 border border-rose-500/20">
+                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-rose-500/10 text-rose-600 border border-rose-500/20">
                           <ArrowUpRight className="w-3 h-3" /> Cash Out
                         </span>
                       )}
@@ -238,10 +238,10 @@ export function CashBookPage() {
                     <td className="py-2.5 px-3 text-muted-foreground max-w-[200px] truncate" title={t.description}>
                       {t.description}
                     </td>
-                    <td className="py-2.5 px-3 text-right font-mono font-bold text-emerald-600 dark:text-emerald-400">
+                    <td className="py-2.5 px-3 text-right font-mono font-bold text-emerald-600">
                       {t.amountIn > 0 ? `BDT ${t.amountIn.toLocaleString('en-BD')}` : '—'}
                     </td>
-                    <td className="py-2.5 px-3 text-right font-mono font-bold text-rose-600 dark:text-rose-400">
+                    <td className="py-2.5 px-3 text-right font-mono font-bold text-rose-600">
                       {t.amountOut > 0 ? `BDT ${t.amountOut.toLocaleString('en-BD')}` : '—'}
                     </td>
                     <td className="py-2.5 px-3 text-center">

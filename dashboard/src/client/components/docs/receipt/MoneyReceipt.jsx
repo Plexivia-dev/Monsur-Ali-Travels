@@ -179,7 +179,7 @@ export function MoneyReceipt() {
 
       {/* Floating Bottom View Switcher (Desktop & Mobile) */}
       <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-40 print:hidden">
-        <div className="flex items-center space-x-1 bg-slate-900/90 dark:bg-slate-950/90 backdrop-blur-xl p-1.5 rounded-full border border-slate-700/60 shadow-2xl shadow-slate-950/50">
+        <div className="flex items-center space-x-1 bg-white/95 text-black backdrop-blur-xl p-1.5 rounded-full border border-black/15 shadow-2xl">
           {[
             { id: 'edit', label: 'Edit Form', icon: Edit3 },
             { id: 'split', label: 'Split View', icon: Columns },
@@ -193,8 +193,8 @@ export function MoneyReceipt() {
                 onClick={() => setViewMode(btn.id)}
                 className={`flex items-center space-x-2 px-4 py-2 rounded-full text-xs font-bold transition-all duration-200 cursor-pointer ${
                   isActive
-                    ? 'bg-gradient-to-r from-sky-500 to-blue-600 text-white shadow-lg shadow-sky-500/30 font-extrabold scale-105'
-                    : 'text-slate-300 hover:text-white hover:bg-white/10'
+                    ? 'bg-primary text-primary-foreground shadow-md font-extrabold scale-105'
+                    : 'text-black/60 hover:text-black hover:bg-black/[0.05]'
                 }`}
               >
                 <Icon className="w-3.5 h-3.5" />

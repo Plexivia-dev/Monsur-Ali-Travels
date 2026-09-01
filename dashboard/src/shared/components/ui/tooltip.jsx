@@ -1,60 +1,92 @@
-import { Tooltip as TooltipPrimitive } from "@base-ui/react/tooltip"
-
+import * as React from "react"
 import { cn } from "@/lib/utils"
 
-function TooltipProvider({
-  delay = 0,
-  ...props
-}) {
+export function TooltipProvider({ children }) {
+  return <>{children}</>
+}
+
+export function Tooltip({ children, open, defaultOpen, onOpenChange, ...props }) {
+  const [isOpenState, setIsOpenState] = React.useState(defaultOpen || false)
+  const isControlled = open !== undefined
+  const isOpen = isControlled ? open : isOpenState
+  const timeoutRef = React.useRef(null)
+
+  const handleOpen = () => {
+    clearTimeout(timeoutRef.current)
+    if (!isControlled) setIsOpenState(true)
+    onOpenChange?.(true)
+  }
+
+  const handleClose = () => {
+    clearTimeout(timeoutRef.current)
+    if (!isControlled) setIsOpenState(false)
+    onOpenChange?.(false)
+  }
+
   return (
-    <TooltipPrimitive.Provider
-      data-slot="tooltip-provider"
-      delay={delay}
+    <div
+      className="relative inline-flex"
+      onMouseEnter={handleOpen}
+      onMouseLeave={handleClose}
+      onFocus={handleOpen}
+      onBlur={handleClose}
       {...props}
-    />
+    >
+      {React.Children.map(children, (child) => {
+        if (React.isValidElement(child)) {
+          return React.cloneElement(child, { isOpen })
+        }
+        return child
+      })}
+    </div>
   )
 }
 
-function Tooltip({ ...props }) {
-  return <TooltipPrimitive.Root data-slot="tooltip" {...props} />
+export function TooltipTrigger({ children, render, asChild, isOpen, ...props }) {
+  if (render) {
+    return React.isValidElement(render) ? React.cloneElement(render, props) : render
+  }
+  return (
+    <div className="inline-flex cursor-pointer select-none" {...props}>
+      {children}
+    </div>
+  )
 }
 
-function TooltipTrigger({ ...props }) {
-  return <TooltipPrimitive.Trigger data-slot="tooltip-trigger" {...props} />
-}
-
-function TooltipContent({
-  className,
+export function TooltipContent({
+  children,
+  isOpen,
   side = "top",
   sideOffset = 4,
   align = "center",
-  alignOffset = 0,
-  children,
+  className,
   ...props
 }) {
+  if (!isOpen) return null
+
+  const positions = {
+    top: "bottom-full left-1/2 -translate-x-1/2 mb-1.5",
+    bottom: "top-full left-1/2 -translate-x-1/2 mt-1.5",
+    left: "right-full top-1/2 -translate-y-1/2 mr-1.5",
+    right: "left-full top-1/2 -translate-y-1/2 ml-1.5",
+    "inline-start": "right-full top-1/2 -translate-y-1/2 mr-1.5",
+    "inline-end": "left-full top-1/2 -translate-y-1/2 ml-1.5",
+  }
+
   return (
-    <TooltipPrimitive.Portal>
-      <TooltipPrimitive.Positioner
-        align={align}
-        alignOffset={alignOffset}
-        side={side}
-        sideOffset={sideOffset}
-        className="isolate z-50"
-      >
-        <TooltipPrimitive.Popup
-          data-slot="tooltip-content"
-          className={cn(
-            "z-50 inline-flex w-fit max-w-xs origin-(--transform-origin) items-center gap-1.5 rounded-md bg-foreground px-3 py-1.5 text-xs text-background has-data-[slot=kbd]:pr-1.5 data-[side=bottom]:slide-in-from-top-2 data-[side=inline-end]:slide-in-from-left-2 data-[side=inline-start]:slide-in-from-right-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 **:data-[slot=kbd]:relative **:data-[slot=kbd]:isolate **:data-[slot=kbd]:z-50 **:data-[slot=kbd]:rounded-sm data-[state=delayed-open]:animate-in data-[state=delayed-open]:fade-in-0 data-[state=delayed-open]:zoom-in-95 data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95",
-            className
-          )}
-          {...props}
-        >
-          {children}
-          <TooltipPrimitive.Arrow className="z-50 size-2.5 translate-y-[calc(-50%-2px)] rotate-45 rounded-[2px] bg-foreground fill-foreground data-[side=bottom]:top-1 data-[side=inline-end]:top-1/2! data-[side=inline-end]:-left-1 data-[side=inline-end]:-translate-y-1/2 data-[side=inline-start]:top-1/2! data-[side=inline-start]:-right-1 data-[side=inline-start]:-translate-y-1/2 data-[side=left]:top-1/2! data-[side=left]:-right-1 data-[side=left]:-translate-y-1/2 data-[side=right]:top-1/2! data-[side=right]:-left-1 data-[side=right]:-translate-y-1/2 data-[side=top]:-bottom-2.5" />
-        </TooltipPrimitive.Popup>
-      </TooltipPrimitive.Positioner>
-    </TooltipPrimitive.Portal>
+    <div
+      data-slot="tooltip-content"
+      role="tooltip"
+      className={cn(
+        "absolute z-50 rounded-md bg-foreground px-3 py-1.5 text-xs text-background shadow-md animate-in fade-in-0 zoom-in-95 whitespace-nowrap pointer-events-none",
+        positions[side] || positions.top,
+        className
+      )}
+      {...props}
+    >
+      {children}
+    </div>
   )
 }
 
-export { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider }
+export default Tooltip

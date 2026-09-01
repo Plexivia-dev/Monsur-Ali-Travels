@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { MarriageCertificateForm } from './MarriageCertificateForm';
 import { MarriageCertificatePreview } from './MarriageCertificatePreview';
 import { SAMPLE_MARRIAGE_CERTIFICATE } from './sampleData';
@@ -7,9 +7,23 @@ import { printDocument } from '@shared/lib/utils';
 import { HeaderTitle } from '@shared/components/common/HeaderTitle';
 import { StudioFloatingViewSwitcher } from '../common/StudioFloatingViewSwitcher';
 
-export function MarriageCertificate() {
-  const [data, setData] = useState(SAMPLE_MARRIAGE_CERTIFICATE);
+export function MarriageCertificate({ initialData = null, isLocked = false, onSavedSuccess = null }) {
+  const [data, setData] = useState(() => ({
+    ...SAMPLE_MARRIAGE_CERTIFICATE,
+    ...(initialData || {}),
+    groomName: initialData?.groomName || initialData?.clientName || SAMPLE_MARRIAGE_CERTIFICATE.groomName,
+  }));
   const [viewMode, setViewMode] = useState('edit');
+
+  useEffect(() => {
+    if (initialData) {
+      setData((prev) => ({
+        ...prev,
+        ...initialData,
+        groomName: initialData.groomName || initialData.clientName || prev.groomName,
+      }));
+    }
+  }, [initialData]);
 
   const handleResetSample = () => {
     setData(SAMPLE_MARRIAGE_CERTIFICATE);

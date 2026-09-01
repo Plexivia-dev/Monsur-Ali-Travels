@@ -1,6 +1,6 @@
 import { Button } from '@/components/ui/button'
 import LanguageDropdown from '@/components/blocks/dropdown-language'
-import { RiTranslate2 } from '@remixicon/react'
+import { Languages } from 'lucide-react'
 
 export default function DropdownPage() {
   return (
@@ -10,7 +10,7 @@ export default function DropdownPage() {
         align='center'
         trigger={
           <Button variant='outline' size='icon'>
-            <RiTranslate2 />
+            <Languages className="size-4" />
           </Button>
         }
       />

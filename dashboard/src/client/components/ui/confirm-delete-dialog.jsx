@@ -62,7 +62,7 @@ export function ConfirmDeleteDialog({
         <DialogFooter className="gap-2 sm:gap-2 flex-row justify-end">
           <Button
             type="button"
-            variant="outline"
+            variant="cancel"
             onClick={() => onOpenChange(false)}
             disabled={isDeleting}
             className="w-20 font-bold"

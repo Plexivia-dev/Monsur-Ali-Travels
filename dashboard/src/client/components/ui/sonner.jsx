@@ -53,9 +53,9 @@ const Toaster = ({ ...props }) => {
           title: "!text-slate-900 !font-bold !text-[13px] !tracking-tight",
           description: "!text-slate-600 !text-xs !leading-relaxed !mt-0.5",
           actionButton: "!bg-sky-600 !text-white !font-bold !text-xs !rounded-xl !px-3 !py-1.5 shadow-xs",
-          cancelButton: "!bg-slate-100 !text-slate-700 !font-semibold !text-xs !rounded-xl !px-3 !py-1.5",
+          cancelButton: "!bg-red-500/10 !text-red-600 !border !border-red-500/30 hover:!bg-red-500/20 !font-semibold !text-xs !rounded-xl !px-3 !py-1.5",
           closeButton:
-            "!left-auto !right-0 !top-0 !translate-x-[35%] !-translate-y-[35%] !opacity-100 !bg-white !text-slate-700 !border !border-slate-300 hover:!bg-slate-100 hover:!text-slate-950 !shadow-md !size-6 !rounded-full !flex !items-center !justify-center transition-all",
+            "!left-auto !right-0 !top-0 !translate-x-[35%] !-translate-y-[35%] !opacity-100 !bg-white !text-red-500 !border !border-red-300 hover:!bg-red-50 hover:!text-red-600 !shadow-md !size-6 !rounded-full !flex !items-center !justify-center transition-all",
           info:
             "!bg-white !border-sky-500 !shadow-[0_12px_32px_rgba(14,165,233,0.22),0_4px_12px_rgba(14,165,233,0.12)] [&>svg]:!text-sky-600",
           success:
