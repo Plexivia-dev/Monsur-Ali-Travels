@@ -350,4 +350,80 @@ export function printDocument({
   }
 }
 
+/**
+ * Direct download of document canvas as an image/pdf blob with standardized naming.
+ * Does not require print dialog interaction.
+ */
+export async function downloadDocumentDirect({
+  docId,
+  docType = 'Document',
+  clientName = '',
+  elementId = '',
+  element = null,
+} = {}) {
+  const cleanId = String(docId || '').trim();
+  const cleanType = String(docType || 'Document').trim().replace(/[\s/\\:*?"<>|]+/g, '_');
+  const cleanName = String(clientName || 'Client').trim().replace(/[\s/\\:*?"<>|]+/g, '_');
+
+  const parts = [];
+  if (cleanId) parts.push(cleanId);
+  if (cleanType) parts.push(cleanType);
+  if (cleanName) parts.push(cleanName);
+  const fileName = (parts.length > 0 ? parts.join('_') : 'Monsur_Ali_Travels_Document') + '.png';
+
+  let targetEl = element;
+  if (!targetEl && elementId) {
+    targetEl = document.getElementById(elementId);
+  }
+  if (!targetEl) {
+    const knownIds = [
+      '#job-verification-canvas',
+      '#printable-invoice-canvas',
+      '#printable-receipt-canvas',
+      '#printable-money-receipt',
+      '#salary-slip-canvas',
+      '#employment-agreement-canvas',
+      '#client-guardian-canvas',
+      '#printable-client-form-canvas',
+      '#customer-guardian-canvas',
+      '#cash-voucher-canvas',
+      '#printable-indian-visa-canvas',
+      '#printable-passport-canvas',
+      '#experience-certificate-canvas',
+      '#printable-experience-certificate',
+      '#character-certificate-canvas',
+      '#printable-character-certificate',
+      '#marriage-certificate-canvas',
+      '#printable-marriage-certificate',
+      '.printable-a4-paper',
+      '.printable-money-receipt',
+    ];
+    for (const selector of knownIds) {
+      const found = document.querySelector(selector);
+      if (found) {
+        targetEl = found;
+        break;
+      }
+    }
+  }
+
+  if (targetEl && typeof window !== 'undefined') {
+    try {
+      const { toPng } = await import('html-to-image');
+      const dataUrl = await toPng(targetEl, { quality: 0.98, pixelRatio: 2, backgroundColor: '#ffffff' });
+      const link = document.createElement('a');
+      link.download = fileName;
+      link.href = dataUrl;
+      link.click();
+      return true;
+    } catch (err) {
+      console.warn('Direct canvas download error, falling back to printDocument:', err);
+    }
+  }
+
+  printDocument({ docId, docType, clientName, elementId, element });
+  return true;
+}
+
+
 

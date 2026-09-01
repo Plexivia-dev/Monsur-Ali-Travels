@@ -5,7 +5,7 @@ import { InvoicePreview } from './InvoicePreview';
 import { getDefaultInvoiceData, generateUniqueInvoiceNo } from './sampleData';
 import { Download, RefreshCw, Share2, Printer, FileSpreadsheet } from 'lucide-react';
 import { apiClient } from '@shared/lib/api-client';
-import { printDocument } from '@shared/lib/utils';
+import { printDocument, downloadDocumentDirect } from '@shared/lib/utils';
 import { toast } from 'sonner';
 import { HeaderTitle } from '@shared/components/common/HeaderTitle';
 import { StudioFloatingViewSwitcher } from '../common/StudioFloatingViewSwitcher';
@@ -13,6 +13,7 @@ import { StudioFloatingViewSwitcher } from '../common/StudioFloatingViewSwitcher
 export function InvoiceBuilder({ initialData = null, isLocked = false, onSavedSuccess }) {
   const location = useLocation();
   const incomingInvoiceData = initialData || location.state?.invoiceData || location.state?.initialData || null;
+  const [isDownloading, setIsDownloading] = useState(false);
 
   const [data, setData] = useState(() => {
     const defaultData = getDefaultInvoiceData();
@@ -154,6 +155,23 @@ export function InvoiceBuilder({ initialData = null, isLocked = false, onSavedSu
     }
   };
 
+  const handleDownloadDirect = async () => {
+    setIsDownloading(true);
+    try {
+      await downloadDocumentDirect({
+        docId: data?.invoiceNo,
+        docType: 'Invoice',
+        clientName: data?.client?.name,
+        elementId: 'printable-invoice-canvas',
+      });
+      toast.success(`Invoice #${data?.invoiceNo || 'Document'} downloaded successfully!`);
+    } catch (err) {
+      toast.error('Failed to download invoice image.');
+    } finally {
+      setIsDownloading(false);
+    }
+  };
+
   const handlePrint = () => {
     printDocument({
       docId: data?.invoiceNo,
@@ -214,6 +232,16 @@ export function InvoiceBuilder({ initialData = null, isLocked = false, onSavedSu
             </button>
 
             <button
+              onClick={handleDownloadDirect}
+              disabled={isDownloading}
+              className="flex items-center space-x-1.5 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold px-3.5 py-1.5 rounded-xl shadow-xs transition-colors cursor-pointer"
+              title="Direct Download Image/PDF"
+            >
+              <Download className={`w-3.5 h-3.5 ${isDownloading ? 'animate-bounce' : ''}`} />
+              <span>{isDownloading ? 'Downloading...' : 'Download'}</span>
+            </button>
+
+            <button
               onClick={handlePrint}
               className="flex items-center space-x-1.5 bg-sky-500 hover:bg-sky-400 text-white text-xs font-bold px-4 py-1.5 rounded-xl shadow-md transition-colors cursor-pointer"
               title="Export Printable A4 PDF"
@@ -234,6 +262,7 @@ export function InvoiceBuilder({ initialData = null, isLocked = false, onSavedSu
             onSubmit={handleFormSubmit}
             onReset={handleReset}
             isSubmitting={isSubmitting}
+            isLocked={isLocked}
           />
           <div className="hidden print:block w-full">
             <InvoicePreview data={data} />
@@ -256,6 +285,7 @@ export function InvoiceBuilder({ initialData = null, isLocked = false, onSavedSu
               onSubmit={handleFormSubmit}
               onReset={handleReset}
               isSubmitting={isSubmitting}
+              isLocked={isLocked}
             />
           </div>
           <div className="w-full bg-muted/30 border border-border rounded-xl p-3 overflow-y-auto max-h-[calc(100vh-140px)] flex justify-center">
