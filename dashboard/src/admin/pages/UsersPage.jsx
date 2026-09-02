@@ -39,6 +39,8 @@ const UsersPage = () => {
     name: '',
     email: '',
     phone: '',
+    designation: '',
+    department: '',
     password: '',
     role: 'Staff',
     subRole: 'Frontdesk',
@@ -47,6 +49,8 @@ const UsersPage = () => {
     name: '',
     email: '',
     phone: '',
+    designation: '',
+    department: '',
     role: 'Staff',
     subRole: 'Frontdesk',
     password: '',
@@ -102,13 +106,24 @@ const UsersPage = () => {
         fullName: userName,
         email: createForm.email.trim(),
         phone: createForm.phone.trim(),
+        designation: (createForm.designation || '').trim(),
+        department: (createForm.department || '').trim(),
         password: createForm.password,
         role: createForm.role,
         subRole: createForm.role === 'Staff' ? createForm.subRole : undefined,
       });
       toast.success(`User "${userName}" created successfully!`);
       setCreateModalOpen(false);
-      setCreateForm({ name: '', email: '', phone: '', password: '', role: 'Staff', subRole: 'Frontdesk' });
+      setCreateForm({
+        name: '',
+        email: '',
+        phone: '',
+        designation: '',
+        department: '',
+        password: '',
+        role: 'Staff',
+        subRole: 'Frontdesk',
+      });
       fetchUsers();
     } catch (err) {
       toast.error(err.response?.data?.message || err.response?.data?.errors?.[0] || 'Failed to create user.');
@@ -124,6 +139,8 @@ const UsersPage = () => {
       name: user.fullName || user.name || '',
       email: user.email || '',
       phone: user.phone || '',
+      designation: user.designation || '',
+      department: user.department || '',
       role: user.role || 'Staff',
       subRole: user.subRole || 'Frontdesk',
       password: '',
@@ -147,6 +164,8 @@ const UsersPage = () => {
         name: editForm.name.trim(),
         email: editForm.email.trim(),
         phone: editForm.phone.trim(),
+        designation: (editForm.designation || '').trim(),
+        department: (editForm.department || '').trim(),
         role: editForm.role,
         subRole: editForm.role === 'Staff' ? editForm.subRole : undefined,
       };
@@ -224,6 +243,11 @@ const UsersPage = () => {
               </div>
               <div>
                 <span className="font-bold text-foreground block text-xs">{name}</span>
+                {u.designation && (
+                  <span className="text-[11px] font-semibold text-primary block leading-tight">
+                    {u.designation}
+                  </span>
+                )}
                 <div className="font-mono text-[10px] text-muted-foreground">
                   {u.did ? `DID: ${u.did.slice(0, 14)}...` : u._id ? `ID: ${u._id.slice(0, 14)}...` : '\u2014'}
                 </div>
@@ -259,20 +283,20 @@ const UsersPage = () => {
           const role = u.role || 'Staff';
           const roleBadgeColor =
             role === 'Owner'
-              ? 'bg-primary text-primary-foreground'
+              ? 'bg-amber-600 text-white'
               : role === 'Admin'
-              ? 'bg-primary/80 text-primary-foreground'
-              : role === 'Accountant'
-              ? 'bg-primary/60 text-primary-foreground'
-              : 'bg-primary/50 text-primary-foreground';
+              ? 'bg-purple-600 text-white'
+              : role === 'Manager'
+              ? 'bg-blue-600 text-white'
+              : 'bg-emerald-600 text-white';
           return (
-            <div className="flex items-center gap-1.5">
+            <div className="flex items-center gap-1.5 flex-wrap">
               <span className={`font-bold text-[11px] px-2 py-0.5 rounded-md uppercase tracking-wider shadow-2xs ${roleBadgeColor}`}>
                 {role}
               </span>
               {u.subRole && (
                 <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-accent text-accent-foreground border border-border">
-                  {u.subRole}
+                  {u.subRole === 'ClientManager' ? 'Client Manager' : u.subRole === 'Visa_Processor' ? 'Visa Processor' : u.subRole}
                 </span>
               )}
             </div>
@@ -359,7 +383,7 @@ const UsersPage = () => {
         },
       },
     ],
-    [handleToggleStatus, togglingId]
+    [handleToggleStatus, togglingId, formatDate]
   );
 
   const facetedFilters = [
@@ -369,8 +393,8 @@ const UsersPage = () => {
       options: [
         { label: 'Admin', value: 'Admin' },
         { label: 'Owner', value: 'Owner' },
+        { label: 'Manager', value: 'Manager' },
         { label: 'Staff', value: 'Staff' },
-        { label: 'Accountant', value: 'Accountant' },
       ],
     },
   ];
@@ -383,7 +407,7 @@ const UsersPage = () => {
         icon={Shield}
         title="System Users & Staff"
         badge={`${users.length} Total`}
-        subtitle="Manage agency administrators, operations staff, accountants, and user account privileges."
+        subtitle="Manage agency administrators, operations staff, managers, and user account privileges."
         actions={
           <>
             <button
@@ -427,7 +451,7 @@ const UsersPage = () => {
       {/* Create User Modal */}
       {createModalOpen && (
         <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-3 sm:p-5 overflow-hidden animate-in fade-in duration-200">
-          <div className="bg-white text-zinc-900 rounded-2xl border border-black/10 shadow-2xl max-w-lg w-full h-[70vh] flex flex-col overflow-hidden relative animate-in zoom-in-95 duration-200">
+          <div className="bg-white text-zinc-900 rounded-2xl border border-black/10 shadow-2xl max-w-lg w-full h-[85vh] flex flex-col overflow-hidden relative animate-in zoom-in-95 duration-200">
             {/* Unified Modal Header */}
             <UnifiedModalHeader
               icon={UserPlus}
@@ -464,15 +488,15 @@ const UsersPage = () => {
                     >
                       <option value="Owner" className="bg-white text-black">Owner</option>
                       <option value="Admin" className="bg-white text-black">Admin</option>
+                      <option value="Manager" className="bg-white text-black">Manager</option>
                       <option value="Staff" className="bg-white text-black">Staff</option>
-                      <option value="Accountant" className="bg-white text-black">Accountant</option>
                     </select>
                   </div>
 
                   {createForm.role === 'Staff' && (
                     <div>
                       <label className="text-xs font-semibold text-black/80 block mb-1.5">
-                        Staff Sub-Role / Designation <span className="text-rose-500">*</span>
+                        Staff Sub-Role <span className="text-rose-500">*</span>
                       </label>
                       <select
                         value={createForm.subRole}
@@ -480,7 +504,6 @@ const UsersPage = () => {
                         className="w-full px-3.5 py-2.5 text-xs rounded-xl border border-black/15 bg-black/[0.02] text-black focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all cursor-pointer"
                       >
                         <option value="Frontdesk" className="bg-white text-black">Frontdesk</option>
-                        <option value="Lawyer" className="bg-white text-black">Lawyer</option>
                         <option value="Visa_Processor" className="bg-white text-black">Visa Processor</option>
                         <option value="Accountant" className="bg-white text-black">Accountant</option>
                         <option value="Representative" className="bg-white text-black">Representative</option>
@@ -488,6 +511,31 @@ const UsersPage = () => {
                       </select>
                     </div>
                   )}
+
+                  <div>
+                    <label className="text-xs font-semibold text-black/80 block mb-1.5">
+                      Designation
+                    </label>
+                    <input
+                      type="text"
+                      value={createForm.designation}
+                      onChange={(e) => setCreateForm((p) => ({ ...p, designation: e.target.value }))}
+                      placeholder="e.g. Senior Operations Executive"
+                      className="w-full px-3.5 py-2.5 text-xs rounded-xl border border-black/15 bg-black/[0.02] text-black placeholder:text-black/40 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-xs font-semibold text-black/80 block mb-1.5">
+                      Department
+                    </label>
+                    <input
+                      type="text"
+                      value={createForm.department}
+                      onChange={(e) => setCreateForm((p) => ({ ...p, department: e.target.value }))}
+                      placeholder="e.g. Sales, Operations"
+                      className="w-full px-3.5 py-2.5 text-xs rounded-xl border border-black/15 bg-black/[0.02] text-black placeholder:text-black/40 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
+                    />
+                  </div>
 
                   <div>
                     <label className="text-xs font-semibold text-black/80 block mb-1.5">
@@ -587,14 +635,14 @@ const UsersPage = () => {
                       onChange={(e) => setEditForm((p) => ({ ...p, role: e.target.value }))}
                       className="w-full px-3.5 py-2.5 text-xs rounded-xl border border-black/15 bg-black/[0.02] text-black focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all cursor-pointer font-bold"
                     >
-                      <option value="Owner" className="bg-white text-black">Owner (Full Authority)</option>
+                      <option value="Owner" className="bg-white text-black">Owner (Full Authority / MD)</option>
                       <option value="Admin" className="bg-white text-black">Admin (Operations Manager)</option>
-                      <option value="Staff" className="bg-white text-black">Staff (Standard User)</option>
-                      <option value="Accountant" className="bg-white text-black">Accountant (Ledgers & Bills)</option>
+                      <option value="Manager" className="bg-white text-black">Manager (Project / Dept Lead)</option>
+                      <option value="Staff" className="bg-white text-black">Staff (Operational Staff)</option>
                     </select>
                   </div>
 
-                  {editForm.role === 'Staff' ? (
+                  {editForm.role === 'Staff' && (
                     <div>
                       <label className="text-xs font-semibold text-black/80 block mb-1.5">
                         Staff Sub-Role <span className="text-rose-500">*</span>
@@ -605,27 +653,39 @@ const UsersPage = () => {
                         className="w-full px-3.5 py-2.5 text-xs rounded-xl border border-black/15 bg-black/[0.02] text-black focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all cursor-pointer font-semibold"
                       >
                         <option value="Frontdesk" className="bg-white text-black">Frontdesk</option>
-                        <option value="Lawyer" className="bg-white text-black">Lawyer</option>
                         <option value="Visa_Processor" className="bg-white text-black">Visa Processor</option>
                         <option value="Accountant" className="bg-white text-black">Accountant</option>
                         <option value="Representative" className="bg-white text-black">Representative</option>
                         <option value="ClientManager" className="bg-white text-black">Client Manager</option>
                       </select>
                     </div>
-                  ) : (
-                    <div>
-                      <label className="text-xs font-semibold text-black/80 block mb-1.5">
-                        Phone Number
-                      </label>
-                      <input
-                        type="tel"
-                        value={editForm.phone}
-                        onChange={(e) => setEditForm((p) => ({ ...p, phone: e.target.value }))}
-                        placeholder="e.g. +880 1712-345678"
-                        className="w-full px-3.5 py-2.5 text-xs rounded-xl border border-black/15 bg-black/[0.02] text-black placeholder:text-black/40 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
-                      />
-                    </div>
                   )}
+
+                  <div>
+                    <label className="text-xs font-semibold text-black/80 block mb-1.5">
+                      Designation
+                    </label>
+                    <input
+                      type="text"
+                      value={editForm.designation}
+                      onChange={(e) => setEditForm((p) => ({ ...p, designation: e.target.value }))}
+                      placeholder="e.g. Managing Director / Project Manager"
+                      className="w-full px-3.5 py-2.5 text-xs rounded-xl border border-black/15 bg-black/[0.02] text-black placeholder:text-black/40 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all font-medium"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="text-xs font-semibold text-black/80 block mb-1.5">
+                      Department
+                    </label>
+                    <input
+                      type="text"
+                      value={editForm.department}
+                      onChange={(e) => setEditForm((p) => ({ ...p, department: e.target.value }))}
+                      placeholder="e.g. Management / Operations"
+                      className="w-full px-3.5 py-2.5 text-xs rounded-xl border border-black/15 bg-black/[0.02] text-black placeholder:text-black/40 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
+                    />
+                  </div>
 
                   <div>
                     <label className="text-xs font-semibold text-black/80 block mb-1.5">
@@ -641,20 +701,18 @@ const UsersPage = () => {
                     />
                   </div>
 
-                  {editForm.role === 'Staff' && (
-                    <div>
-                      <label className="text-xs font-semibold text-black/80 block mb-1.5">
-                        Phone Number
-                      </label>
-                      <input
-                        type="tel"
-                        value={editForm.phone}
-                        onChange={(e) => setEditForm((p) => ({ ...p, phone: e.target.value }))}
-                        placeholder="e.g. +880 1712-345678"
-                        className="w-full px-3.5 py-2.5 text-xs rounded-xl border border-black/15 bg-black/[0.02] text-black placeholder:text-black/40 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
-                      />
-                    </div>
-                  )}
+                  <div>
+                    <label className="text-xs font-semibold text-black/80 block mb-1.5">
+                      Phone Number
+                    </label>
+                    <input
+                      type="tel"
+                      value={editForm.phone}
+                      onChange={(e) => setEditForm((p) => ({ ...p, phone: e.target.value }))}
+                      placeholder="e.g. +880 1712-345678"
+                      className="w-full px-3.5 py-2.5 text-xs rounded-xl border border-black/15 bg-black/[0.02] text-black placeholder:text-black/40 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
+                    />
+                  </div>
 
                   <div className="sm:col-span-2">
                     <label className="text-xs font-semibold text-black/80 block mb-1.5">
