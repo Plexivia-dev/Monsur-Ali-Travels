@@ -69,20 +69,40 @@ export const login = async (req, res, next) => {
       return res.status(401).json({ status: "error", message: "Invalid credentials" });
     }
 
-    const twoFactorToken = createTwoFactorToken(user);
+    const refreshToken = createRefreshToken();
+    const refreshTokenExpiresAt = new Date(Date.now() + env.REFRESH_TOKEN_EXPIRES_MS);
+    user.lastLogin = new Date();
+    user.refreshToken = refreshToken;
+    user.refreshTokenExpiresAt = refreshTokenExpiresAt;
+    await user.save();
 
-    logger.info({ userId: user.id, email: user.email }, "User password validated; 2FA challenge initiated");
+    const accessToken = createAccessToken(user);
 
-    // Do NOT issue access or refresh tokens here; require 2FA completion
+    logger.info({ userId: user.id, email: user.email }, "User password validated; logged in successfully (2FA disabled)");
+
     return res.json({
       status: "success",
-      requires2fa: true,
-      twoFactorToken,
-      availableMethods: ["authenticator", "email"],
-      defaultMethod: "authenticator",
-      email: user.email,
-      hasAuthenticatorConfigured: !!user.twoFactorSecret,
-      message: "Please enter the 6-digit code from your Google Authenticator app or request an Email OTP.",
+      message: "Logged in successfully.",
+      requires2fa: false,
+      data: {
+        user: {
+          id: user.did || user.id,
+          did: user.did,
+          name: user.name,
+          email: user.email,
+          phone: user.phone || "",
+          role: user.role,
+          subRole: user.subRole || "",
+          department: user.department || "",
+          designation: user.designation || "",
+          avatar: user.avatar || "",
+          lastLogin: user.lastLogin,
+        },
+        accessToken,
+        accessTokenExpiresIn: env.ACCESS_TOKEN_EXPIRES_IN,
+        refreshToken,
+        refreshTokenExpiresAt: refreshTokenExpiresAt.toISOString(),
+      },
     });
   } catch (error) {
     next(error);

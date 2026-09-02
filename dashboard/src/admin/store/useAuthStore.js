@@ -2,7 +2,7 @@ import { create } from 'zustand';
 import { apiClient } from '@/lib/api-client';
 import { getErrorMessage } from '@/lib/error-handler';
 
-const ROLES_ADMIN = ['Owner', 'Admin'];
+const ROLES_ADMIN = ['Owner', 'Admin', 'Manager'];
 
 // ── helpers ───────────────────────────────────────────────────────────────────
 
