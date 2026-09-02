@@ -229,7 +229,7 @@ export function ClientGuardianForm({ data, onChange, onReset, onSave, onPreview,
       const dataUrl = reader.result;
 
       try {
-        const clientId = data.clientUniqueId || data.clientId || data.client_id || data._id || detectedClient?._id || detectedClient?.clientUniqueId;
+        const clientId = data.clientUniqueId || data.clientId || data.client_id || data._id || detectedMatch?.client?._id || detectedMatch?.client?.clientUniqueId;
         const queryParams = new URLSearchParams();
         if (clientId) {
           queryParams.append('clientId', clientId);

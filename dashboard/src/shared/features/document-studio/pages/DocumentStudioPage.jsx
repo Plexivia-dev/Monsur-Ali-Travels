@@ -13,6 +13,8 @@ import { CashVoucher } from '../components/cash-voucher/CashVoucher';
 import { ExperienceCertificate } from '../components/certificate-experience/ExperienceCertificate';
 import { CharacterCertificate } from '../components/certificate-character/CharacterCertificate';
 import { MarriageCertificate } from '../components/certificate-marriage/MarriageCertificate';
+import { ResumeBuilder } from '../components/resume/ResumeBuilder';
+import { CertificateBuilder } from '../components/certificate/CertificateBuilder';
 import { apiClient } from '@shared/lib/api-client';
 import { toast } from 'sonner';
 import { ShieldCheck, ArrowLeft, Lock, FileText, CheckCircle2, Loader2 } from 'lucide-react';
@@ -441,12 +443,18 @@ export function DocumentStudioPage({
           isLocked={Boolean(dossierContext?.isLocked)}
         />
       )}
-      {resolvedSubmodule === 'client-form' && (
+      {(resolvedSubmodule === 'client-form' || resolvedSubmodule === 'customer-form') && (
         <ClientGuardian
           initialData={initialData}
           onSavedSuccess={handleSavedSuccess}
           isLocked={Boolean(dossierContext?.isLocked)}
         />
+      )}
+      {(resolvedSubmodule === 'resume' || resolvedSubmodule === 'cv') && (
+        <ResumeBuilder />
+      )}
+      {(resolvedSubmodule === 'certificate' || resolvedSubmodule === 'certificate-builder') && (
+        <CertificateBuilder />
       )}
       {resolvedSubmodule === 'indian-visa' && (
         <IndianVisa

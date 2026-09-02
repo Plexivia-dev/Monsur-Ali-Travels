@@ -1290,3 +1290,7 @@ export function ClientGuardianForm({ data, onChange, onReset, onSave, onPreview,
     </div>
   );
 }
+
+export { ClientGuardianForm as CustomerGuardianForm };
+export default ClientGuardianForm;
+

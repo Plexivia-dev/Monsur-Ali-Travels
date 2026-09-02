@@ -13,14 +13,14 @@ import {
   Activity,
   Share2,
   Phone,
-  Eye
+  Eye,
 } from 'lucide-react';
 import { apiClient } from '../../lib/api-client';
 import { DataTablePagination } from './DataTablePagination';
 import { toast } from 'sonner';
 import { formatToDdMmYyyy, printDocument } from '../../lib/utils';
 import { usePortal } from '../../context/PortalContext';
-import { ClientGuardianPreview, STATUS_OPTIONS, SERVICE_TYPES } from '@/shared/features/document-studio';
+import { ClientGuardianPreview, STATUS_OPTIONS, SERVICE_TYPES, getServiceLabel } from '@/shared/features/document-studio';
 import { ConfirmDeleteDialog } from '@/components/ui/confirm-delete-dialog';
 import { Button } from '@/components/ui/button';
 import { useTranslation } from 'react-i18next';

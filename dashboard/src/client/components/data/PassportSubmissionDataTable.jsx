@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Search, RefreshCw, ShieldCheck, Trash2, Printer, Download, X, Receipt, Edit3, Paperclip, Upload } from 'lucide-react';
+import { Search, RefreshCw, ShieldCheck, Trash2, Printer, Download, X, Receipt, Edit3, Paperclip, Upload, CheckCircle2 } from 'lucide-react';
 import { apiClient } from '../../lib/api-client';
 import { DataTablePagination } from './DataTablePagination';
 import { toast } from 'sonner';

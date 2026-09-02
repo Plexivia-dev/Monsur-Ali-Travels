@@ -25,6 +25,7 @@ import {
 import { toast } from 'sonner';
 import { UnifiedModal } from '@shared/components/common/UnifiedModal';
 import { Button } from '@/components/ui/button';
+import { ConfirmDeleteDialog } from '@/components/ui/confirm-delete-dialog';
 
 // Renders the Cloudflare R2 Storage sync, data transfer report, and orphan purge dashboard
 const StorageSyncPage = () => {

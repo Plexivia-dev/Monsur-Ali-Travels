@@ -4,7 +4,7 @@ export const AuthProvider = ({ children }) => {
   return <>{children}</>;
 };
 
-export const useAuth = () => {
+export const useAuth = (selector) => {
   const [user, setUser] = useState(() => {
     if (typeof window !== 'undefined') {
       try {
@@ -30,11 +30,13 @@ export const useAuth = () => {
     return () => window.removeEventListener('storage', handleStorage);
   }, []);
 
-  return {
+  const state = {
     user,
     setUser,
     isAuthenticated: !!user,
   };
+
+  return typeof selector === 'function' ? selector(state) : state;
 };
 
 export default useAuth;

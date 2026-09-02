@@ -28,6 +28,7 @@ export function MoneyReceiptModal({
   onClose,
   initialData = {},
   onSuccess,
+  onCreated,
 }) {
   const user = useAuth((state) => state.user);
   const [loading, setLoading] = useState(false);
@@ -144,9 +145,7 @@ export function MoneyReceiptModal({
         const receipt = res.data.data;
         setCreatedReceipt(receipt);
         toast.success(`Payment Token #${receipt.receiptNo} created successfully!`);
-        if (onCreated) {
-          onCreated(receipt);
-        }
+        (onCreated || onSuccess)?.(receipt);
       } else {
         toast.error(res.data?.message || 'Failed to create receipt token.');
       }

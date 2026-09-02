@@ -11,6 +11,10 @@ import {
   Printer,
   FolderOpen,
   CheckCircle2,
+  Plus,
+  Trash2,
+  ShieldCheck,
+  Image,
 } from 'lucide-react';
 import { apiClient } from '@/lib/api-client';
 import { toast } from 'sonner';
