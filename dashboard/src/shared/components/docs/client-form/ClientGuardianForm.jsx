@@ -45,6 +45,7 @@ export function ClientGuardianForm({ data, onChange, onReset, onSave, onPreview,
   const [selectedPreviewDoc, setSelectedPreviewDoc] = useState(null);
   const [detectedClient, setDetectedClient] = useState(null);
   const [hasPromptedFor, setHasPromptedFor] = useState(new Set());
+  const [uploadingDocIndex, setUploadingDocIndex] = useState(null);
   const lookupTimeoutRef = useRef(null);
 
   // Auto-detect existing client by mobile or passport
@@ -233,8 +234,6 @@ export function ClientGuardianForm({ data, onChange, onReset, onSave, onPreview,
       }
     }));
   };
-
-  const [uploadingDocIndex, setUploadingDocIndex] = useState(null);
 
   const handleDocChange = (index, field, value) => {
     onChange(prev => {

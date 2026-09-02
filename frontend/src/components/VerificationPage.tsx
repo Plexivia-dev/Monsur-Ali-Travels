@@ -4,16 +4,9 @@ import {
   CheckCircle2,
   XCircle,
   Search,
-  Building2,
-  Calendar,
-  User,
-  CreditCard,
-  FileText,
-  Clock,
   Printer,
   ArrowLeft,
   Loader2,
-  Award,
 } from 'lucide-react';
 
 export function VerificationPage() {

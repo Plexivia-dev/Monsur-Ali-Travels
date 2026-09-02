@@ -1,3 +1,4 @@
+import mongoose from "mongoose";
 import { ClientCaseFileModel } from "../../models/clientCaseFile.model.js";
 import { logger } from "../../config/logger.js";
 
@@ -146,10 +147,14 @@ export const updateClient = async (req, res, next) => {
     const { id } = req.params;
     const body = req.body ?? {};
 
-    const client = await ClientCaseFileModel.findByIdAndUpdate(id, body, {
-      new: true,
-      runValidators: true,
-    });
+    const client = await ClientCaseFileModel.findOneAndUpdate(
+      { $or: [{ _id: mongoose.isValidObjectId(id) ? id : null }, { did: id }, { fileNumber: id }] },
+      body,
+      {
+        new: true,
+        runValidators: true,
+      }
+    );
 
     if (!client) {
       return res.status(404).json({ status: "error", message: "Client Case File not found" });
@@ -170,8 +175,8 @@ export const deleteClient = async (req, res, next) => {
   try {
     const { id } = req.params;
 
-    const client = await ClientCaseFileModel.findByIdAndUpdate(
-      id,
+    const client = await ClientCaseFileModel.findOneAndUpdate(
+      { $or: [{ _id: mongoose.isValidObjectId(id) ? id : null }, { did: id }, { fileNumber: id }] },
       { isActive: false },
       { new: true }
     );
@@ -196,7 +201,7 @@ export const updateClientStatus = async (req, res, next) => {
     const { status } = req.body;
 
     const client = await ClientCaseFileModel.findOneAndUpdate(
-      { $or: [{ _id: id.match(/^[0-9a-fA-F]{24}$/) ? id : null }, { did: id }, { fileNumber: id }] },
+      { $or: [{ _id: mongoose.isValidObjectId(id) ? id : null }, { did: id }, { fileNumber: id }] },
       { status },
       { new: true, runValidators: true }
     );

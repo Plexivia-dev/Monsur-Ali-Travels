@@ -163,10 +163,6 @@ const caseFileSchema = new Schema(
       type: String,
       default: null,
     },
-    assignedToName: {
-      type: String,
-      default: "",
-    },
   },
   {
     timestamps: true,

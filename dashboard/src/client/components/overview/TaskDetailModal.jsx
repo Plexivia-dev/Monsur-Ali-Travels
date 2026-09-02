@@ -671,7 +671,7 @@ export function TaskDetailModal({
     const caseRef = task?.caseDid || task?.caseId || task?.caseDetails?.did || task?.caseDetails?._id || '';
     const clientRef = task?.clientDid || task?.clientId || task?.clientInfo?.did || task?.clientInfo?._id || '';
     const caseNum = task?.caseNumber || task?.caseDetails?.caseNumber || '';
-    const targetAmt = paymentRequiredAmount || paymentCollected || (stepRequirement?.paymentAmount) || '';
+    const targetAmt = paymentCollected || task?.paymentAmount || task?.paymentCollectedAmount || '';
 
     const queryParams = new URLSearchParams();
     if (caseRef) queryParams.set('caseDid', caseRef);

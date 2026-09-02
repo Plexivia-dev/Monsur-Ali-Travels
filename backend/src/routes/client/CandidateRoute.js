@@ -6,7 +6,7 @@ import {
   updateClient,
   deleteClient,
   updateClientStatus,
-} from "../../controllers/client/ClientController.js";
+} from "../../controllers/client/CandidateController.js";
 
 const clientRouter = Router();
 

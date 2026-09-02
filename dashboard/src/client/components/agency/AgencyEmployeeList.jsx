@@ -10,6 +10,7 @@ import {
   Shield,
   Calendar,
   Lock,
+  Briefcase,
 } from 'lucide-react';
 import { apiClient } from '@/lib/api-client';
 import { toast } from 'sonner';

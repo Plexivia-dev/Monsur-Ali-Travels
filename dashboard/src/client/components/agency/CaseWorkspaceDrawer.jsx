@@ -211,6 +211,7 @@ export function CaseWorkspaceDrawer({ caseId, isOpen, onClose, onRefresh }) {
     file: null,
   });
   const [uploadingDoc, setUploadingDoc] = useState(false);
+  const fileInputRef = useRef(null);
 
   // Task execution
   const [completingTaskId, setCompletingTaskId] = useState(null);
@@ -435,8 +436,6 @@ export function CaseWorkspaceDrawer({ caseId, isOpen, onClose, onRefresh }) {
       setSendingMsg(false);
     }
   };
-
-  const fileInputRef = useRef(null);
 
   const handleFileChange = (e) => {
     const file = e.target.files?.[0];

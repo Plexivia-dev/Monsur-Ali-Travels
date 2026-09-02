@@ -46,6 +46,7 @@ export function ClientGuardianForm({ data, onChange, onReset, onSave, onPreview,
   const isBn = i18n.language === 'bn';
   const [selectedPreviewDoc, setSelectedPreviewDoc] = useState(null);
   const [detectedMatch, setDetectedMatch] = useState(null);
+  const [uploadingDocIndex, setUploadingDocIndex] = useState(null);
 
   const { triggerLookup, resetLookup } = useClientLookup({
     onClientFound: (client, caseFile) => setDetectedMatch({ client, caseFile }),
@@ -203,8 +204,6 @@ export function ClientGuardianForm({ data, onChange, onReset, onSave, onPreview,
       }
     }));
   };
-
-  const [uploadingDocIndex, setUploadingDocIndex] = useState(null);
 
   const handleDocChange = (index, field, value) => {
     onChange(prev => {
