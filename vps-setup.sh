@@ -25,7 +25,7 @@ fi
 
 PROJECT_DIR="/opt/monsuralitravels"
 UPLOADS_DIR="/var/www/uploads"
-REPO_URL="https://github.com/ikram3031/Monsur-Ali-Travels.git"
+REPO_URL="https://github.com/Plexivia-dev/Monsur-Ali-Travels.git"
 
 # 2. System Update & Essential Packages
 echo -e "\n${YELLOW}Step 1/8: Updating package repository & installing essential packages...${NC}"
