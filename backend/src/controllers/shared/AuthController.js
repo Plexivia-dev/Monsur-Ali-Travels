@@ -49,8 +49,8 @@ export const login = async (req, res, next) => {
       // Case-insensitive exact match by email or username
       user = await UserModel.findOne({
         $or: [
-          { email: new RegExp(`^${normalizedInput.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&')}$`, 'i') },
-          { username: new RegExp(`^${normalizedInput.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&')}$`, 'i') },
+          { email: new RegExp(`^${normalizedInput.replace(/[-/\\^$*+?.()|[\]{}]/g, '\\$&')}$`, 'i') },
+          { username: new RegExp(`^${normalizedInput.replace(/[-/\\^$*+?.()|[\]{}]/g, '\\$&')}$`, 'i') },
         ],
       }).select("+passwordHash +twoFactorSecret +emailOtp +emailOtpExpiresAt");
     }

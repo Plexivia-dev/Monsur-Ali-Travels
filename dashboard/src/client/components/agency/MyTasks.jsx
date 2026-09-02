@@ -3,20 +3,10 @@ import {
   CheckSquare,
   Clock,
   CheckCircle2,
-  AlertCircle,
-  FolderOpen,
   Search,
   RefreshCw,
   Loader2,
-  User,
-  Calendar,
-  ChevronRight,
-  Send,
-  ExternalLink,
-  Filter,
   Check,
-  Building2,
-  FileText,
   Layers,
   Plus,
 } from 'lucide-react';
@@ -87,36 +77,6 @@ export function MyTasks() {
   useEffect(() => {
     fetchTasks();
   }, [fetchTasks]);
-
-  const handleMarkDone = async (e) => {
-    e.preventDefault();
-    if (!activeCompletingTask) return;
-    setSubmittingDone(true);
-    const taskId = activeCompletingTask.did || activeCompletingTask._id;
-    try {
-      await apiClient.patch(`/api/v1/client/tasks/${taskId}/done`, {
-        completionNotes: completionNotes.trim() || 'Completed by staff in My Tasks portal',
-      });
-      toast.success('Task marked as Done! Sent for Admin approval.');
-      setActiveCompletingTask(null);
-      setCompletionNotes('');
-      fetchTasks();
-    } catch (err) {
-      // Fallback local update
-      setTasks((prev) =>
-        prev.map((t) =>
-          (t.did === taskId || t._id === taskId)
-            ? { ...t, status: 'Done', completionNotes: completionNotes.trim() || 'Completed' }
-            : t
-        )
-      );
-      toast.success('Task marked as completed!');
-      setActiveCompletingTask(null);
-      setCompletionNotes('');
-    } finally {
-      setSubmittingDone(false);
-    }
-  };
 
   const handleOpenCaseDrawer = (caseId) => {
     if (!caseId) return;

@@ -8,19 +8,8 @@ import {
   Trash2,
   FileText,
   CreditCard,
-  Building2,
-  Calendar,
-  Layers,
-  Globe2,
-  Phone,
-  User,
-  CheckCircle2,
   Clock,
-  AlertCircle,
-  Plane,
   Stamp,
-  ExternalLink,
-  ChevronRight,
 } from 'lucide-react';
 import { apiClient } from '@/lib/api-client';
 import { toast } from 'sonner';

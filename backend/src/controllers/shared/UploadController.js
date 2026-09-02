@@ -178,7 +178,7 @@ class UploadController {
       }
 
       // Parse mime type and buffer from data URL
-      const matches = base64Data.match(/^data:([A-Za-z-+\/]+);base64,(.+)$/);
+      const matches = base64Data.match(/^data:([A-Za-z-+/]+);base64,(.+)$/);
       let mimeType = 'application/octet-stream';
       let buffer;
 

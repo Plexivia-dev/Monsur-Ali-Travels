@@ -1,13 +1,10 @@
 import React, { useState } from 'react';
 import {
-  CheckSquare,
   Clock,
   CheckCircle2,
   ListTodo,
   Sparkles,
   Calendar,
-  Layers,
-  ArrowRight,
 } from 'lucide-react';
 import { useAuthStore } from '../store/useAuthStore';
 import { Badge } from '@/components/ui/badge';

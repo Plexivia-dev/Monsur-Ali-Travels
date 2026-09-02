@@ -229,6 +229,27 @@ export const createReceipt = async (req, res, next) => {
 
     const newReceipt = await MoneyReceiptModel.create(body);
 
+    const creatorName = req.user?.name || body.createdByName || "Staff Member";
+    const receiptAmount = Number(newReceipt.amount || newReceipt.netReceivedBDT || 0);
+
+    // Action 3: Email Accountant
+    sendPaymentDocCreatedEmailToAccountants({
+      createdByUserName: creatorName,
+      docType: "Money Receipt",
+      docNumber: newReceipt.receiptNo,
+      amount: receiptAmount,
+      clientName: newReceipt.clientName || "",
+    }).catch((err) => console.error("[EmailTrigger] sendPaymentDocCreatedEmailToAccountants (Receipt) error:", err.message));
+
+    // Action 4: Email Owners for payment entry
+    sendPaymentOrBillCreatedEmailToOwners({
+      createdByUserName: creatorName,
+      type: "Money Receipt",
+      refNumber: newReceipt.receiptNo,
+      amount: receiptAmount,
+      notes: `Receipt issued to ${newReceipt.clientName || "Client"} (${newReceipt.purpose || "Payment"})`,
+    }).catch((err) => console.error("[EmailTrigger] sendPaymentOrBillCreatedEmailToOwners (Receipt) error:", err.message));
+
     // Asynchronously dispatch payment receipt email
     (async () => {
       try {

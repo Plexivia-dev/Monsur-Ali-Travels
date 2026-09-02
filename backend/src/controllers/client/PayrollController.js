@@ -1,8 +1,17 @@
+import mongoose from "mongoose";
 import { SalarySlip } from "../../models/salarySlip.model.js";
+
+const findSalarySlipByIdOrCustomId = async (id, extraQuery = {}) => {
+  if (!id) return null;
+  const isMongoId = mongoose.isValidObjectId(id);
+  const conditions = [{ did: id }, { slipNo: id }];
+  if (isMongoId) conditions.push({ _id: id });
+  return SalarySlip.findOne({ $or: conditions, ...extraQuery });
+};
 
 // @desc    Get all salary slips
 // @route   GET /api/v1/docs/payrolls
-export const getSalarySlips = async (req, res) => {
+export const getSalarySlips = async (req, res, next) => {
   try {
     const page = Math.max(1, parseInt(req.query.page, 10) || 1);
     const limit = req.query.limit !== undefined ? Math.max(1, parseInt(req.query.limit, 10) || 10) : 10;
@@ -51,116 +60,100 @@ export const getSalarySlips = async (req, res) => {
       },
     });
   } catch (error) {
-    console.error("Error fetching salary slips:", error);
-    return res.status(500).json({
-      success: false,
-      status: "error",
-      message: "Server Error: Could not fetch salary slips",
-      error: error.message,
-    });
+    next(error);
   }
 };
 
-// @desc    Get single salary slip by ID
+// @desc    Get single salary slip by ID, did, or slipNo
 // @route   GET /api/v1/docs/payrolls/:id
-export const getSalarySlipById = async (req, res) => {
+export const getSalarySlipById = async (req, res, next) => {
   try {
-    const slip = await SalarySlip.findOne({ _id: req.params.id, isActive: { $ne: false } });
+    const slip = await findSalarySlipByIdOrCustomId(req.params.id, { isActive: { $ne: false } });
     if (!slip) {
       return res.status(404).json({
         success: false,
+        status: "error",
         message: "Salary slip not found",
       });
     }
     return res.status(200).json({
       success: true,
+      status: "success",
       data: slip,
     });
   } catch (error) {
-    console.error("Error fetching salary slip by ID:", error);
-    return res.status(500).json({
-      success: false,
-      message: "Server Error: Could not fetch salary slip",
-      error: error.message,
-    });
+    next(error);
   }
 };
 
-// @desc    Create new salary slip (Schema automatically generates unique slipNo: 3 uppercase letters + 5 digits)
+// @desc    Create new salary slip
 // @route   POST /api/v1/docs/payrolls
-export const createSalarySlip = async (req, res) => {
+export const createSalarySlip = async (req, res, next) => {
   try {
     const newSlip = await SalarySlip.create(req.body);
 
     return res.status(201).json({
       success: true,
+      status: "success",
       message: "Salary slip created successfully",
       data: newSlip,
     });
   } catch (error) {
-    console.error("Error creating salary slip:", error);
-    return res.status(400).json({
-      success: false,
-      message: "Could not create salary slip",
-      error: error.message,
-    });
+    next(error);
   }
 };
 
 // @desc    Update existing salary slip
 // @route   PUT /api/v1/docs/payrolls/:id
-export const updateSalarySlip = async (req, res) => {
+export const updateSalarySlip = async (req, res, next) => {
   try {
-    const updatedSlip = await SalarySlip.findByIdAndUpdate(
-      req.params.id,
-      req.body,
-      { new: true, runValidators: true }
-    );
-
-    if (!updatedSlip) {
+    const existing = await findSalarySlipByIdOrCustomId(req.params.id);
+    if (!existing) {
       return res.status(404).json({
         success: false,
+        status: "error",
         message: "Salary slip not found",
       });
     }
 
+    const updatedSlip = await SalarySlip.findOneAndUpdate(
+      { _id: existing._id },
+      req.body,
+      { new: true, runValidators: true }
+    );
+
     return res.status(200).json({
       success: true,
+      status: "success",
       message: "Salary slip updated successfully",
       data: updatedSlip,
     });
   } catch (error) {
-    console.error("Error updating salary slip:", error);
-    return res.status(400).json({
-      success: false,
-      message: "Could not update salary slip",
-      error: error.message,
-    });
+    next(error);
   }
 };
 
 // @desc    Delete salary slip
 // @route   DELETE /api/v1/docs/payrolls/:id
-export const deleteSalarySlip = async (req, res) => {
+export const deleteSalarySlip = async (req, res, next) => {
   try {
-    const deletedSlip = await SalarySlip.findByIdAndUpdate(req.params.id, { isActive: false }, { new: true });
-    if (!deletedSlip) {
+    const existing = await findSalarySlipByIdOrCustomId(req.params.id);
+    if (!existing) {
       return res.status(404).json({
         success: false,
+        status: "error",
         message: "Salary slip not found",
       });
     }
 
+    await SalarySlip.findOneAndUpdate({ _id: existing._id }, { isActive: false }, { new: true });
+
     return res.status(200).json({
       success: true,
+      status: "success",
       message: "Salary slip deleted successfully",
     });
   } catch (error) {
-    console.error("Error deleting salary slip:", error);
-    return res.status(500).json({
-      success: false,
-      message: "Server Error: Could not delete salary slip",
-      error: error.message,
-    });
+    next(error);
   }
 };

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useMemo, useCallback } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   X,
@@ -13,9 +13,7 @@ import {
   FileCheck2,
   UploadCloud,
   Loader2,
-  Plus,
   Trash2,
-  ExternalLink,
   Save,
   Sparkles,
   FileSignature,
@@ -23,10 +21,8 @@ import {
   Stamp,
   BookOpen,
   Receipt,
-  Layers,
   ChevronRight,
   CreditCard,
-  DollarSign,
 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';

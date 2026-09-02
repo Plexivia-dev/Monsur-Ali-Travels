@@ -1,29 +1,15 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   X,
-  User,
-  Users,
   Search,
   Check,
   ChevronRight,
   ChevronLeft,
   UploadCloud,
   FileText,
-  CreditCard,
-  Building2,
-  Globe2,
-  Calendar,
-  DollarSign,
-  Plus,
-  ShieldCheck,
   Loader2,
   Printer,
-  Sparkles,
-  AlertCircle,
   FolderOpen,
-  Image,
-  Eye,
-  Trash2,
   CheckCircle2,
 } from 'lucide-react';
 import { apiClient } from '@/lib/api-client';

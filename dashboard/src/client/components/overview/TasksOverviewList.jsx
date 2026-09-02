@@ -2,26 +2,21 @@ import React, { useState, useEffect, useMemo } from 'react';
 import {
   Search,
   CheckCircle2,
-  Clock,
   FileText,
-  Lock,
   Eye,
   RefreshCw,
   FolderOpen,
-  AlertCircle,
 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { apiClient } from '../../lib/api-client';
-import { useAuthStore } from '../../store/useAuthStore';
 import { TaskDoneModal } from '../tasks/TaskDoneModal';
 import { TaskDetailModal } from './TaskDetailModal';
 import { CaseWorkspaceDrawer } from '../agency/CaseWorkspaceDrawer';
 import { toast } from 'sonner';
 
 export function TasksOverviewList({ activeFilter, onFilterChange }) {
-  const user = useAuthStore((state) => state.user);
   const [tasks, setTasks] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');

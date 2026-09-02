@@ -7,7 +7,6 @@ import {
   X,
   Phone,
   Mail,
-  Shield,
   Calendar,
   Lock,
   Briefcase,

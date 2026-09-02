@@ -6,6 +6,7 @@ import DocumentVaultModel from "../../models/documentVault.model.js";
 import { UserModel } from "../../models/user.model.js";
 import { NotificationModel } from "../../models/notification.model.js";
 import { sendNewCaseEmailToAdmins } from "../../services/emailNotification.service.js";
+import { sendCaseStatusUpdateEmail, sendTaskAssignmentEmail } from "../../services/emailService.js";
 import { generateDid } from "../../utils/generateDid.js";
 
 export const buildCaseIdentifierQuery = (identifier) => {
@@ -718,8 +719,6 @@ export const updateWorkflowStatus = async (req, res) => {
     await caseDoc.save();
 
     // Trigger Notification
-    const Notification = (await import("../../models/notification.model.js")).NotificationModel;
-    
     let notificationTitle = "Case File Updated";
     let notificationMsg = `Case ${caseDoc.caseNumber} status updated to ${workflowStatus}.`;
     let recipientId = assignedTo || null;
@@ -733,7 +732,7 @@ export const updateWorkflowStatus = async (req, res) => {
       recipientId = null; // Broadcast or frontdesk team (can be handled differently)
     }
 
-    await Notification.create({
+    await NotificationModel.create({
       title: notificationTitle,
       message: notificationMsg,
       module: "client",
@@ -741,12 +740,11 @@ export const updateWorkflowStatus = async (req, res) => {
       refDid: caseDoc.did,
       recipientUserDid: recipientId,
       createdBy: req.user?.name || "System"
-    });
+    }).catch(() => {});
 
     // Asynchronously dispatch email notification
     (async () => {
       try {
-        const { sendCaseStatusUpdateEmail, sendTaskAssignmentEmail } = await import("../../services/emailService.js");
         if (assignedTo && assignedTo !== previousAssignedToDid) {
           const assignedUser = await UserModel.findOne({ did: assignedTo }).lean();
           if (assignedUser?.email) {

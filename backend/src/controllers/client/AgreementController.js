@@ -222,7 +222,7 @@ export const deleteEmploymentAgreement = async (req, res, next) => {
       return res.status(404).json({ status: "error", message: "Employment agreement not found" });
     }
 
-    const agreement = await EmploymentAgreementModel.findOneAndUpdate(
+    await EmploymentAgreementModel.findOneAndUpdate(
       { _id: existing._id },
       { isActive: false },
       { new: true }

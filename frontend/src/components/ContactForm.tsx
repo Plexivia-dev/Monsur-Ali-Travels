@@ -26,10 +26,10 @@ export function ContactForm() {
       return;
     }
 
-    // 2. Timing check (prevent submission under 3 seconds from component mount)
+    // 2. Timing check (prevent instantaneous automated bot script submissions)
     const submitTime = Date.now();
-    if (submitTime - mountTime < 3000) {
-      setTimeout(() => setStatus('success'), 1000); // Fake success
+    if (submitTime - mountTime < 500 && !honeypotUrl && !honeypotPhone) {
+      setTimeout(() => setStatus('success'), 600); // Fake success for sub-500ms bot scripts
       return;
     }
 
