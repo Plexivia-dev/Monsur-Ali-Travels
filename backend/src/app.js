@@ -287,7 +287,11 @@ export async function createApp() {
   });
 
   app.get("/", (req, res) => {
-    res.json({ "API is live": true });
+    res.json({ "API is live": true, service: "Monsur Ali Travels ERP Backend API" });
+  });
+
+  app.get(["/health", "/api/health", "/api/v1/health"], (req, res) => {
+    res.json({ status: "healthy", timestamp: new Date().toISOString(), uptime: process.uptime() });
   });
 
   app.use("/api/v1", coreRouter);

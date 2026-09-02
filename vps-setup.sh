@@ -25,7 +25,7 @@ fi
 
 PROJECT_DIR="/opt/monsuralitravels"
 UPLOADS_DIR="/var/www/uploads"
-REPO_URL="https://github.com/Plexivia-dev/Monsur-Ali-Travels.git"
+REPO_URL="git@github.com:Plexivia-dev/Monsur-Ali-Travels.git"
 
 # 2. System Update & Essential Packages
 echo -e "\n${YELLOW}Step 1/8: Updating package repository & installing essential packages...${NC}"
@@ -90,6 +90,26 @@ fi
 
 # 7. Nginx Reverse Proxy Setup
 echo -e "\n${YELLOW}Step 6/8: Configuring Nginx reverse proxy...${NC}"
+
+# Ensure SSL directory and bootstrap certificates exist for initial Nginx start
+if [ ! -f /etc/letsencrypt/live/admin.monsuralitravels.com/fullchain.pem ]; then
+    echo "Creating bootstrap SSL certificate for Nginx initial configuration..."
+    mkdir -p /etc/letsencrypt/live/admin.monsuralitravels.com
+    openssl req -x509 -nodes -days 30 -newkey rsa:2048 \
+        -keyout /etc/letsencrypt/live/admin.monsuralitravels.com/privkey.pem \
+        -out /etc/letsencrypt/live/admin.monsuralitravels.com/fullchain.pem \
+        -subj "/CN=admin.monsuralitravels.com"
+fi
+
+if [ ! -f /etc/letsencrypt/options-ssl-nginx.conf ]; then
+    mkdir -p /etc/letsencrypt
+    curl -fsSL https://raw.githubusercontent.com/certbot/certbot/master/certbot-nginx/certbot_nginx/_internal/tls_configs/options-ssl-nginx.conf -o /etc/letsencrypt/options-ssl-nginx.conf || touch /etc/letsencrypt/options-ssl-nginx.conf
+fi
+
+if [ ! -f /etc/letsencrypt/ssl-dhparams.pem ]; then
+    openssl dhparam -out /etc/letsencrypt/ssl-dhparams.pem 2048 2>/dev/null || touch /etc/letsencrypt/ssl-dhparams.pem
+fi
+
 cp "$PROJECT_DIR/nginx-prod.conf" /etc/nginx/sites-available/monsuralitravels
 ln -sf /etc/nginx/sites-available/monsuralitravels /etc/nginx/sites-enabled/monsuralitravels
 rm -f /etc/nginx/sites-enabled/default
