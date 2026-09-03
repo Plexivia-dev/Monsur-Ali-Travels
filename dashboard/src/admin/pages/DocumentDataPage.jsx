@@ -8,6 +8,7 @@ import { SalarySlipDataTable } from '@client/components/data/SalarySlipDataTable
 import { InvoiceDataTable } from '@client/components/data/InvoiceDataTable';
 import { ClientGuardianDataTable } from '@client/components/data/ClientGuardianDataTable';
 import { MoneyReceiptDataTable } from '@client/components/data/MoneyReceiptDataTable';
+import { CashVoucherDataTable } from '@client/components/data/CashVoucherDataTable';
 
 export function DocumentDataPage() {
   const params = useParams();
@@ -41,6 +42,12 @@ export function DocumentDataPage() {
       case 'receipts':
       case 'tokens':
         return <MoneyReceiptDataTable />;
+
+      case 'cash-vouchers':
+      case 'cash-voucher':
+      case 'vouchers':
+      case 'voucher':
+        return <CashVoucherDataTable />;
 
       case 'salary-slips':
       case 'payrolls':
@@ -86,6 +93,12 @@ export function DocumentDataPage() {
     case 'receipts':
     case 'tokens':
       return <MoneyReceiptDataTable />;
+
+    case 'cash-vouchers':
+    case 'cash-voucher':
+    case 'vouchers':
+    case 'voucher':
+      return <CashVoucherDataTable />;
 
     case 'client-profiles':
       return <ClientDataTable />;

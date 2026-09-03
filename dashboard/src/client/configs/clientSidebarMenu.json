@@ -296,6 +296,15 @@
             "icon": "Receipt"
           },
           {
+            "id": "data-cash-vouchers",
+            "name": "Cash Voucher Records",
+            "nameBn": "ক্যাশ ভাউচার রেকর্ড",
+            "portal": "data",
+            "submodule": "cash-vouchers",
+            "path": "/dashboard/data/cash-vouchers",
+            "icon": "Wallet"
+          },
+          {
             "id": "data-agreements",
             "name": "Agreement Records",
             "nameBn": "",

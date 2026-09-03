@@ -35,7 +35,18 @@ export const getAllVouchers = async (req, res, next) => {
     const term = (search || q || "").trim();
     if (term) {
       const rx = new RegExp(term, "i");
-      query.$or = [{ voucherNo: rx }, { did: rx }, { preparedBy: rx }, { "items.descriptionEn": rx }];
+      query.$or = [
+        { voucherNo: rx },
+        { did: rx },
+        { preparedBy: rx },
+        { receivedBy: rx },
+        { receivedFrom: rx },
+        { paidTo: rx },
+        { phone: rx },
+        { purpose: rx },
+        { "items.descriptionEn": rx },
+        { "items.descriptionBn": rx },
+      ];
     }
 
     const totalCount = await CashVoucherModel.countDocuments(query);
@@ -95,18 +106,27 @@ export const getVoucherById = async (req, res, next) => {
 // @route  POST /api/v1/cash-vouchers
 export const createVoucher = async (req, res, next) => {
   try {
-    const body = req.body || {};
+    const rawBody = req.body || {};
+    const body = { ...rawBody };
+
+    // Strip empty / null IDs so Mongoose will generate fresh unique identifiers
+    if (!body._id || body._id === "null" || body._id === "undefined") {
+      delete body._id;
+    }
+    if (!body.did || body.did === "null" || body.did === "undefined") {
+      delete body.did;
+    }
+
     if (!body.voucherNo) body.voucherNo = generateVoucherNo();
     if (!body.qrCode)   body.qrCode   = await generateVoucherQrCode(body.voucherNo);
 
-    if (req.user?._id) {
-      body.createdBy = req.user._id;
-      body.createdByName = req.user.name || body.createdByName || "";
-    }
+    const creatorName = req.user?.name || body.createdByName || "Staff Member";
+    body.createdBy = req.user?.did || req.user?.id || req.user?._id || "SYSTEM";
+    body.createdByDid = req.user?.did || req.user?.id || req.user?._id || null;
+    body.createdByName = creatorName;
 
     const voucher = await CashVoucherModel.create(body);
 
-    const creatorName = req.user?.name || body.createdByName || "Staff Member";
     const voucherAmount = Number(voucher.grandTotal || voucher.totalAmount || voucher.amount || 0);
 
     // Action 3: Email Accountant
@@ -115,7 +135,7 @@ export const createVoucher = async (req, res, next) => {
       docType: "Cash Voucher",
       docNumber: voucher.voucherNo,
       amount: voucherAmount,
-      clientName: voucher.receivedFrom || "",
+      clientName: voucher.receivedFrom || voucher.paidTo || "",
     }).catch((err) => console.error("[EmailTrigger] sendPaymentDocCreatedEmailToAccountants (Voucher) error:", err.message));
 
     // Action 4: Email Owners for payment entry
@@ -124,7 +144,7 @@ export const createVoucher = async (req, res, next) => {
       type: "Cash Voucher",
       refNumber: voucher.voucherNo,
       amount: voucherAmount,
-      notes: `Voucher paid to/received from: ${voucher.receivedFrom || "N/A"}`,
+      notes: `Voucher paid to/received from: ${voucher.receivedFrom || voucher.paidTo || "N/A"}`,
     }).catch((err) => console.error("[EmailTrigger] sendPaymentOrBillCreatedEmailToOwners (Voucher) error:", err.message));
 
     return res.status(201).json({

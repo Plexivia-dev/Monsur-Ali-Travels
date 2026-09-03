@@ -74,12 +74,15 @@ export function CashVoucher({ initialData = null, isLocked = false, onSavedSucce
             ? `Cash voucher #${returnedNo} updated successfully!`
             : `Cash voucher #${returnedNo} saved to database!`
         );
+        if (onSavedSuccess) {
+          onSavedSuccess(saved);
+        }
       } else {
         throw new Error(res.data?.message || 'Failed to save cash voucher.');
       }
     } catch (err) {
-      console.warn('Cash voucher save warning (preview mode ready):', err);
-      toast.info(`Cash voucher preview ready! (#${data.voucherNo})`);
+      console.error('Cash voucher save error:', err);
+      toast.error(err.response?.data?.message || err.message || 'Failed to save cash voucher.');
     } finally {
       setIsSubmitting(false);
     }

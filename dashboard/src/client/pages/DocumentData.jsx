@@ -8,6 +8,7 @@ import { SalarySlipDataTable } from '../components/data/SalarySlipDataTable';
 import { InvoiceDataTable } from '../components/data/InvoiceDataTable';
 import { ClientGuardianDataTable } from '../components/data/ClientGuardianDataTable';
 import { MoneyReceiptDataTable } from '../components/data/MoneyReceiptDataTable';
+import { CashVoucherDataTable } from '../components/data/CashVoucherDataTable';
 
 export default function DocumentData() {
   const activeSubmodule = usePortalStore((state) => state.activeSubmodule);
@@ -35,6 +36,12 @@ export default function DocumentData() {
       case 'receipts':
       case 'tokens':
         return <MoneyReceiptDataTable />;
+
+      case 'cash-vouchers':
+      case 'cash-voucher':
+      case 'vouchers':
+      case 'voucher':
+        return <CashVoucherDataTable />;
 
       case 'salary-slips':
       case 'payrolls':
@@ -85,6 +92,13 @@ export default function DocumentData() {
     case 'receipts':
     case 'tokens':
       return <MoneyReceiptDataTable />;
+
+    // ── Cash Money Vouchers ────────────────────────────────────
+    case 'cash-vouchers':
+    case 'cash-voucher':
+    case 'vouchers':
+    case 'voucher':
+      return <CashVoucherDataTable />;
 
     // ── Default / Fallback → Client Profiles ─────────────────
     default:

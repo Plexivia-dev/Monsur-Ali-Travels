@@ -211,6 +211,14 @@ export const navGroups = [
         submodule: 'invoices',
         href: '/dashboard/data/invoices',
       },
+      {
+        icon: 'Wallet',
+        label: 'Cash Vouchers',
+        key: 'nav.cashVoucherRecords',
+        portal: 'data',
+        submodule: 'cash-vouchers',
+        href: '/dashboard/data/cash-vouchers',
+      },
     ],
   },
 ];

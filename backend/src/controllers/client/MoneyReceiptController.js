@@ -198,7 +198,22 @@ export const generateQrEndpoint = async (req, res, next) => {
 // @route   POST /api/v1/receipts
 export const createReceipt = async (req, res, next) => {
   try {
-    const body = req.body || {};
+    const rawBody = req.body || {};
+    const body = { ...rawBody };
+
+    // Clean up empty / null IDs or existing did on create to prevent unique index duplicate errors
+    if (!body._id || body._id === "null" || body._id === "undefined") {
+      delete body._id;
+    }
+    if (body.did) {
+      const existingDid = await MoneyReceiptModel.findOne({ did: body.did });
+      if (existingDid) {
+        delete body.did;
+      }
+    } else {
+      delete body.did;
+    }
+
     if (!body.receiptNo) {
       body.receiptNo = generateReceiptTokenNo();
     }
