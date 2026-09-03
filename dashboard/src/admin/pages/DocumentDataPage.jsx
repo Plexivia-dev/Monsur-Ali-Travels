@@ -9,6 +9,9 @@ import { InvoiceDataTable } from '@client/components/data/InvoiceDataTable';
 import { ClientGuardianDataTable } from '@client/components/data/ClientGuardianDataTable';
 import { MoneyReceiptDataTable } from '@client/components/data/MoneyReceiptDataTable';
 import { CashVoucherDataTable } from '@client/components/data/CashVoucherDataTable';
+import { JobVerificationDataTable } from '@client/components/data/JobVerificationDataTable';
+import { MarriageCertificateDataTable } from '@client/components/data/MarriageCertificateDataTable';
+import { CharacterCertificateDataTable } from '@client/components/data/CharacterCertificateDataTable';
 
 export function DocumentDataPage() {
   const params = useParams();
@@ -99,6 +102,21 @@ export function DocumentDataPage() {
     case 'vouchers':
     case 'voucher':
       return <CashVoucherDataTable />;
+
+    case 'job-verifications':
+    case 'job-verification':
+    case 'job-verify':
+      return <JobVerificationDataTable />;
+
+    case 'marriage-certificates':
+    case 'marriage-certificate':
+    case 'marriage':
+      return <MarriageCertificateDataTable />;
+
+    case 'character-certificates':
+    case 'character-certificate':
+    case 'character':
+      return <CharacterCertificateDataTable />;
 
     case 'client-profiles':
       return <ClientDataTable />;

@@ -38,6 +38,9 @@
     "invoiceRecords": "Invoice Records",
     "moneyReceiptRecords": "Money Receipt Records",
     "agreementRecords": "Agreement Records",
+    "jobVerificationRecords": "Job Verification Records",
+    "marriageCertificateRecords": "Marriage Certificate Records",
+    "characterCertificateRecords": "Character Certificate Records",
     "systemUsers": "System Users",
     "auditLogs": "Audit & Database Logs",
     "globalSettings": "Global Settings"
@@ -630,5 +633,20 @@
     "submitted_to_bsf": "Submitted to BSF Center",
     "interview_scheduled": "Interview Scheduled",
     "complete_process": "Complete Process"
+  },
+  "jobVerification": {
+    "title": "Job & Stay Verification Records",
+    "subtitle": "Official overseas candidate job verification certificates, stay details, and sponsor guarantees.",
+    "newForm": "+ New Job Verification"
+  },
+  "marriageCertificate": {
+    "title": "Marriage Certificate Records",
+    "subtitle": "Official Nikahnama extracts, bilateral marital attestations, and spouse immigration records.",
+    "newForm": "+ New Marriage Certificate"
+  },
+  "characterCertificate": {
+    "title": "Character Certificate & Testimonial Records",
+    "subtitle": "Official good moral character certificates, testimonials, and institutional recommendations.",
+    "newForm": "+ New Character Certificate"
   }
 }

@@ -343,6 +343,36 @@
             "path": "/dashboard/data/passports",
             "icon": "BookOpen",
             "excludeRoles": ["accountant", "accounts"]
+          },
+          {
+            "id": "data-job-verifications",
+            "name": "Job Verification Records",
+            "nameBn": "জব ভেরিফিকেশন রেকর্ড",
+            "portal": "data",
+            "submodule": "job-verifications",
+            "path": "/dashboard/data/job-verifications",
+            "icon": "FileCheck2",
+            "excludeRoles": ["accountant", "accounts"]
+          },
+          {
+            "id": "data-marriage-certificates",
+            "name": "Marriage Certificates",
+            "nameBn": "বিবাহ সনদ রেকর্ড",
+            "portal": "data",
+            "submodule": "marriage-certificates",
+            "path": "/dashboard/data/marriage-certificates",
+            "icon": "Heart",
+            "excludeRoles": ["accountant", "accounts"]
+          },
+          {
+            "id": "data-character-certificates",
+            "name": "Character Certificates",
+            "nameBn": "চারিত্রিক সনদ রেকর্ড",
+            "portal": "data",
+            "submodule": "character-certificates",
+            "path": "/dashboard/data/character-certificates",
+            "icon": "ShieldCheck",
+            "excludeRoles": ["accountant", "accounts"]
           }
         ]
       }

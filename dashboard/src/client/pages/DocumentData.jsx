@@ -9,6 +9,9 @@ import { InvoiceDataTable } from '../components/data/InvoiceDataTable';
 import { ClientGuardianDataTable } from '../components/data/ClientGuardianDataTable';
 import { MoneyReceiptDataTable } from '../components/data/MoneyReceiptDataTable';
 import { CashVoucherDataTable } from '../components/data/CashVoucherDataTable';
+import { JobVerificationDataTable } from '../components/data/JobVerificationDataTable';
+import { MarriageCertificateDataTable } from '../components/data/MarriageCertificateDataTable';
+import { CharacterCertificateDataTable } from '../components/data/CharacterCertificateDataTable';
 
 export default function DocumentData() {
   const activeSubmodule = usePortalStore((state) => state.activeSubmodule);
@@ -99,6 +102,24 @@ export default function DocumentData() {
     case 'vouchers':
     case 'voucher':
       return <CashVoucherDataTable />;
+
+    // ── Job & Stay Verification Forms ─────────────────────────
+    case 'job-verifications':
+    case 'job-verification':
+    case 'job-verify':
+      return <JobVerificationDataTable />;
+
+    // ── Marriage Certificate Records ──────────────────────────
+    case 'marriage-certificates':
+    case 'marriage-certificate':
+    case 'marriage':
+      return <MarriageCertificateDataTable />;
+
+    // ── Character Certificate Records ─────────────────────────
+    case 'character-certificates':
+    case 'character-certificate':
+    case 'character':
+      return <CharacterCertificateDataTable />;
 
     // ── Default / Fallback → Client Profiles ─────────────────
     default:
