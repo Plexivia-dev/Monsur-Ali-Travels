@@ -142,6 +142,52 @@ export function BillPreviewModal({ isOpen, onClose, bill }) {
               )}
             </div>
 
+            {/* Payment & Settlement History */}
+            {bill.paymentHistory && bill.paymentHistory.length > 0 && (
+              <div className="text-xs space-y-2 pt-2 border-t border-black/10">
+                <div className="flex items-center justify-between">
+                  <span className="font-bold uppercase text-[10px] text-black/60 flex items-center gap-1">
+                    <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
+                    Payment &amp; Settlement History ({bill.paymentHistory.length})
+                  </span>
+                </div>
+                <div className="border border-black/10 rounded-xl overflow-hidden">
+                  <table className="w-full text-left text-[11px]">
+                    <thead className="bg-black/[0.03] border-b border-black/10 font-bold text-black/60">
+                      <tr>
+                        <th className="py-2 px-2.5">Date</th>
+                        <th className="py-2 px-2.5">Method</th>
+                        <th className="py-2 px-2.5">Account / Ref</th>
+                        <th className="py-2 px-2.5">Recorded By</th>
+                        <th className="py-2 px-2.5 text-right">Amount (BDT)</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-black/5">
+                      {bill.paymentHistory.map((p, idx) => (
+                        <tr key={idx} className="hover:bg-black/[0.01]">
+                          <td className="py-2 px-2.5 text-black/70">
+                            {p.paidDate ? new Date(p.paidDate).toLocaleDateString('en-GB') : '—'}
+                          </td>
+                          <td className="py-2 px-2.5 font-semibold text-black">
+                            {p.paymentMethod || 'Cash'}
+                          </td>
+                          <td className="py-2 px-2.5 text-black/60 font-mono text-[10px]">
+                            {p.bankAccount || p.notes || '—'}
+                          </td>
+                          <td className="py-2 px-2.5 text-black/70">
+                            {p.recordedBy || 'Accounts'}
+                          </td>
+                          <td className="py-2 px-2.5 text-right font-mono font-bold text-emerald-700">
+                            ৳ {Number(p.amount || 0).toLocaleString('en-BD')}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            )}
+
             {/* Notes */}
             {bill.notes && (
               <div className="text-xs space-y-1">

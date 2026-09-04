@@ -117,6 +117,17 @@ const billSchema = new Schema(
       type: String,
       default: "",
     },
+    paymentHistory: [
+      {
+        amount: { type: Number, required: true },
+        paymentMethod: { type: String, default: "Cash" },
+        bankAccount: { type: String, default: "" },
+        paidDate: { type: Date, default: Date.now },
+        notes: { type: String, default: "" },
+        recordedBy: { type: String, default: "" },
+        createdAt: { type: Date, default: Date.now },
+      },
+    ],
     createdByDid: {
       type: String,
       default: "",
@@ -143,6 +154,9 @@ billSchema.pre("save", function (next) {
   } else if (this.paymentStatus === "Partial") {
     const paid = Number(this.paidAmount) || 0;
     this.dueAmount = Math.max(0, tot - paid);
+    if (this.dueAmount === 0 && tot > 0) {
+      this.paymentStatus = "Paid";
+    }
   }
   next();
 });

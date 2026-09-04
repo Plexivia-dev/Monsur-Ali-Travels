@@ -396,6 +396,73 @@ export const deleteBill = async (req, res, next) => {
   }
 };
 
+// @desc    Settle / Pay Due Bill (Full or Partial)
+// @route   POST /api/v1/accounts/bills/:id/settle
+export const settleBillPayment = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const { amount, paymentMethod, bankAccount, paidDate, notes } = req.body || {};
+
+    const isMongoId = Boolean(id.match(/^[0-9a-fA-F]{24}$/));
+    const bill = await BillModel.findOne({
+      $or: [
+        ...(isMongoId ? [{ _id: id }] : []),
+        { did: id },
+        { billNumber: id },
+      ],
+    });
+
+    if (!bill) {
+      return res.status(404).json({ status: "error", message: "Bill not found" });
+    }
+
+    const payAmount = Number(amount);
+    if (isNaN(payAmount) || payAmount <= 0) {
+      return res.status(400).json({ status: "error", message: "Valid payment amount is required" });
+    }
+
+    const currentDue = Number(bill.dueAmount) || Math.max(0, (bill.amount || 0) - (bill.paidAmount || 0));
+    if (payAmount > currentDue) {
+      return res.status(400).json({
+        status: "error",
+        message: `Payment amount (৳${payAmount.toLocaleString("en-BD")}) exceeds remaining due (৳${currentDue.toLocaleString("en-BD")})`,
+      });
+    }
+
+    const newPaidAmount = (Number(bill.paidAmount) || 0) + payAmount;
+    const newDueAmount = Math.max(0, (Number(bill.amount) || 0) - newPaidAmount);
+    const newStatus = newDueAmount === 0 ? "Paid" : "Partial";
+
+    const historyEntry = {
+      amount: payAmount,
+      paymentMethod: paymentMethod || bill.paymentMethod || "Cash",
+      bankAccount: bankAccount || bill.bankAccount || "",
+      paidDate: paidDate ? new Date(paidDate) : new Date(),
+      notes: notes ? notes.trim() : "",
+      recordedBy: req.user?.name || "Accounts Officer",
+      createdAt: new Date(),
+    };
+
+    bill.paidAmount = newPaidAmount;
+    bill.dueAmount = newDueAmount;
+    bill.paymentStatus = newStatus;
+    if (paymentMethod) bill.paymentMethod = paymentMethod;
+    if (bankAccount) bill.bankAccount = bankAccount;
+    if (!bill.paymentHistory) bill.paymentHistory = [];
+    bill.paymentHistory.push(historyEntry);
+
+    await bill.save();
+
+    res.status(200).json({
+      status: "success",
+      message: `Payment of ৳${payAmount.toLocaleString("en-BD")} recorded successfully for Bill ${bill.billNumber}`,
+      data: bill,
+    });
+  } catch (err) {
+    next(err);
+  }
+};
+
 
 // ── 3. GET /api/v1/accounts/salaries ──────────────────────────────────────────
 export const getSalaries = async (req, res, next) => {
@@ -541,19 +608,29 @@ export const getCashBook = async (req, res, next) => {
       paymentMethod: { $regex: /^cash$/i },
     };
 
-    // Outflow: Cash Money Vouchers / Expenses
+    // Outflow 1: Cash Money Vouchers / Expenses
     const cashVouchersFilter = {
       ...dateQuery,
       status: { $ne: "cancelled" },
     };
 
-    const [cashReceipts, cashVouchers] = await Promise.all([
+    // Outflow 2: Company Bills Paid via Cash
+    const cashBillsFilter = {
+      ...dateQuery,
+      paidAmount: { $gt: 0 },
+      paymentMethod: { $regex: /^cash$/i },
+    };
+
+    const [cashReceipts, cashVouchers, cashBills] = await Promise.all([
       MoneyReceiptModel.find(cashReceiptsFilter).sort({ createdAt: -1 }).lean(),
       CashVoucherModel.find(cashVouchersFilter).sort({ createdAt: -1 }).lean(),
+      BillModel.find(cashBillsFilter).sort({ createdAt: -1 }).lean(),
     ]);
 
     const totalCashIn = cashReceipts.reduce((sum, r) => sum + Number(r.amount || 0), 0);
-    const totalCashOut = cashVouchers.reduce((sum, v) => sum + Number(v.grandTotal || v.subtotal || 0), 0);
+    const totalVouchersOut = cashVouchers.reduce((sum, v) => sum + Number(v.grandTotal || v.subtotal || 0), 0);
+    const totalBillsOut = cashBills.reduce((sum, b) => sum + Number(b.paidAmount || 0), 0);
+    const totalCashOut = totalVouchersOut + totalBillsOut;
     const netCashBalance = totalCashIn - totalCashOut;
 
     // Combined timeline ledger
@@ -584,6 +661,19 @@ export const getCashBook = async (req, res, next) => {
         date: v.createdAt || v.voucherDate,
         status: v.status || "Confirmed",
       })),
+      ...cashBills.map((b) => ({
+        id: b._id,
+        type: "OUTFLOW",
+        category: "Company Bill",
+        refNo: b.billNumber || b.did,
+        party: b.payee,
+        phone: b.payeePhone || "",
+        description: `${b.category} - ${b.title}`,
+        amountIn: 0,
+        amountOut: Number(b.paidAmount || 0),
+        date: b.billDate || b.createdAt,
+        status: b.paymentStatus || "Paid",
+      })),
     ].sort((a, b) => new Date(b.date) - new Date(a.date));
 
     res.json({
@@ -596,6 +686,7 @@ export const getCashBook = async (req, res, next) => {
           totalTransactions: transactions.length,
           receiptsCount: cashReceipts.length,
           vouchersCount: cashVouchers.length,
+          billsCount: cashBills.length,
         },
         transactions,
       },
@@ -611,16 +702,27 @@ export const getBankLedger = async (req, res, next) => {
     const { period = "this_month", startDate = "", endDate = "" } = req.query;
     const { query: dateQuery } = buildDateFilter(period, startDate, endDate, "createdAt");
 
-    // Bank / Digital Inflows
-    const bankFilter = {
+    // Bank / Digital Inflows (Money Receipts)
+    const bankInflowFilter = {
       ...dateQuery,
       paymentMethod: { $not: { $regex: /^cash$/i } },
     };
 
-    const bankReceipts = await MoneyReceiptModel.find(bankFilter).sort({ createdAt: -1 }).lean();
+    // Bank / Digital Outflows (Company Bills Paid via Bank, Cheque, bKash, etc.)
+    const bankOutflowFilter = {
+      ...dateQuery,
+      paidAmount: { $gt: 0 },
+      paymentMethod: { $not: { $regex: /^cash$/i } },
+    };
+
+    const [bankReceipts, bankBills] = await Promise.all([
+      MoneyReceiptModel.find(bankInflowFilter).sort({ createdAt: -1 }).lean(),
+      BillModel.find(bankOutflowFilter).sort({ createdAt: -1 }).lean(),
+    ]);
 
     const channelSummary = {};
     let totalBankIn = 0;
+    let totalBankOut = 0;
 
     for (const r of bankReceipts) {
       const method = (r.paymentMethod || "Bank Transfer").toLowerCase();
@@ -629,27 +731,62 @@ export const getBankLedger = async (req, res, next) => {
       channelSummary[method] = (channelSummary[method] || 0) + amount;
     }
 
-    const transactions = bankReceipts.map((r) => ({
-      id: r._id,
-      refNo: r.receiptNo,
-      method: r.paymentMethod || "Bank Transfer",
-      party: r.clientName,
-      phone: r.clientPhone,
-      passport: r.passportNumber,
-      description: r.purpose || r.serviceType || "Bank / Digital Deposit",
-      bankName: r.bankName || "",
-      accountNo: r.bankAccountNo || "",
-      amount: Number(r.amount || 0),
-      date: r.createdAt || r.date,
-      status: r.status || "Confirmed",
-    }));
+    for (const b of bankBills) {
+      const amount = Number(b.paidAmount || 0);
+      totalBankOut += amount;
+    }
+
+    const netBankBalance = totalBankIn - totalBankOut;
+
+    const transactions = [
+      ...bankReceipts.map((r) => ({
+        id: r._id,
+        type: "INFLOW",
+        category: "Client Deposit",
+        refNo: r.receiptNo,
+        method: r.paymentMethod || "Bank Transfer",
+        party: r.clientName,
+        phone: r.clientPhone,
+        passport: r.passportNumber,
+        description: r.purpose || r.serviceType || "Bank / Digital Deposit",
+        bankName: r.bankName || "",
+        accountNo: r.bankAccountNo || "",
+        amountIn: Number(r.amount || 0),
+        amountOut: 0,
+        amount: Number(r.amount || 0),
+        date: r.createdAt || r.date,
+        status: r.status || "Confirmed",
+      })),
+      ...bankBills.map((b) => ({
+        id: b._id,
+        type: "OUTFLOW",
+        category: "Bill / Expense",
+        refNo: b.billNumber || b.did,
+        method: b.paymentMethod || "Bank Transfer",
+        party: b.payee,
+        phone: b.payeePhone || "",
+        passport: "",
+        description: `${b.category} - ${b.title}`,
+        bankName: b.bankAccount || "",
+        accountNo: "",
+        amountIn: 0,
+        amountOut: Number(b.paidAmount || 0),
+        amount: Number(b.paidAmount || 0),
+        date: b.billDate || b.createdAt,
+        status: b.paymentStatus || "Paid",
+      })),
+    ].sort((a, b) => new Date(b.date) - new Date(a.date));
 
     res.json({
       status: "success",
       data: {
         summary: {
           totalBankIn,
+          totalBankOut,
+          netBankBalance,
           totalTransactions: transactions.length,
+          inflowsCount: bankReceipts.length,
+          outflowsCount: bankBills.length,
           channelBreakdown: Object.entries(channelSummary).map(([channel, amount]) => ({
             channel: channel.toUpperCase(),
             amount,
@@ -671,13 +808,13 @@ export const getReportsSummary = async (req, res, next) => {
     const { query: invoiceDateQuery } = buildDateFilter(period, startDate, endDate, "createdAt");
     const { query: expenseDateQuery } = buildDateFilter(period, startDate, endDate, "createdAt");
 
-    // Receipts, Invoices, Expenses, Salaries summary
     const [
       receiptTotals,
       methodBreakdown,
       invoiceTotals,
       paymentStatusBreakdown,
       expenseTotals,
+      billTotals,
       salaryTotals,
       dailyReceipts,
       dailyInvoices,
@@ -760,6 +897,18 @@ export const getReportsSummary = async (req, res, next) => {
           },
         },
       ]),
+      BillModel.aggregate([
+        { $match: expenseDateQuery },
+        {
+          $group: {
+            _id: null,
+            totalBillsPaid: { $sum: { $ifNull: ["$paidAmount", 0] } },
+            totalBillsDue: { $sum: { $ifNull: ["$dueAmount", 0] } },
+            totalBillsAmount: { $sum: { $ifNull: ["$amount", 0] } },
+            count: { $sum: 1 },
+          },
+        },
+      ]),
       SalarySlipModel.aggregate([
         { $match: expenseDateQuery },
         {
@@ -796,10 +945,17 @@ export const getReportsSummary = async (req, res, next) => {
 
     const totalIncome = receiptTotals[0]?.totalAmount || 0;
     const totalBilled = invoiceTotals[0]?.totalBilled || 0;
-    const totalPaidOnBills = invoiceTotals[0]?.totalPaid || 0;
-    const totalDueOnBills = invoiceTotals[0]?.totalDue || 0;
-    const totalExpenses = expenseTotals[0]?.totalExpenses || 0;
+    const accountsReceivable = invoiceTotals[0]?.totalDue || 0;
+    const totalPaidOnInvoices = invoiceTotals[0]?.totalPaid || 0;
+
+    const totalVouchersExpense = expenseTotals[0]?.totalExpenses || 0;
+    const totalBillsPaid = billTotals[0]?.totalBillsPaid || 0;
+    const accountsPayable = billTotals[0]?.totalBillsDue || 0;
     const totalSalaries = salaryTotals[0]?.totalSalaries || 0;
+
+    const totalExpenses = totalVouchersExpense + totalBillsPaid;
+    const totalOutflow = totalExpenses + totalSalaries;
+    const netPosition = totalIncome - totalOutflow;
 
     res.json({
       status: "success",
@@ -814,14 +970,19 @@ export const getReportsSummary = async (req, res, next) => {
           confirmedIncome: receiptTotals[0]?.confirmedAmount || totalIncome,
           receiptsCount: receiptTotals[0]?.count || 0,
           totalBilled,
-          totalPaidOnBills,
-          totalDueOnBills,
+          totalPaidOnInvoices,
+          totalPaidOnBills: totalBillsPaid,
+          totalDueOnBills: accountsPayable,
+          accountsReceivable,
+          accountsPayable,
           invoicesCount: invoiceTotals[0]?.count || 0,
+          billsCount: billTotals[0]?.count || 0,
           totalExpenses,
-          expensesCount: expenseTotals[0]?.count || 0,
+          expensesCount: (expenseTotals[0]?.count || 0) + (billTotals[0]?.count || 0),
           totalSalaries,
           salariesCount: salaryTotals[0]?.count || 0,
-          netPosition: totalIncome - totalDueOnBills - totalExpenses,
+          totalOutflow,
+          netPosition,
         },
         methods: methodBreakdown.map((m) => ({
           method: m._id || "Other",

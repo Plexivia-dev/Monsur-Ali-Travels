@@ -18,6 +18,7 @@ import { UnifiedDataTable } from '../../../components/tables/UnifiedDataTable';
 import { accountsService } from '../services/accountsService';
 import { CreateBillModal, BILL_CATEGORIES } from '../components/CreateBillModal';
 import { BillPreviewModal } from '../components/BillPreviewModal';
+import { SettleBillModal } from '../components/SettleBillModal';
 import { ConfirmDeleteDialog } from '@/components/ui/confirm-delete-dialog';
 import { toast } from 'sonner';
 
@@ -35,6 +36,7 @@ export function BillsPage() {
   // Modals state
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [previewBill, setPreviewBill] = useState(null);
+  const [settleTarget, setSettleTarget] = useState(null);
   const [deleteTarget, setDeleteTarget] = useState(null);
   const [isDeleting, setIsDeleting] = useState(false);
 
@@ -188,30 +190,46 @@ export function BillsPage() {
     {
       id: 'actions',
       header: 'Actions',
-      cell: ({ row }) => (
-        <div className="flex items-center gap-1">
-          <Button
-            size="sm"
-            variant="outline"
-            onClick={() => setPreviewBill(row)}
-            className="h-7 px-2 text-xs font-semibold border-black/15 text-black hover:bg-black/5 gap-1 cursor-pointer"
-            title="View Bill Details"
-          >
-            <Eye className="w-3.5 h-3.5" />
-            <span>View</span>
-          </Button>
+      cell: ({ row }) => {
+        const isDue = (row.paymentStatus || '').toLowerCase() === 'unpaid' || (row.paymentStatus || '').toLowerCase() === 'partial';
+        return (
+          <div className="flex items-center gap-1">
+            {isDue && (
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={() => setSettleTarget(row)}
+                className="h-7 px-2 text-xs font-semibold border-emerald-500/30 text-emerald-700 bg-emerald-50 hover:bg-emerald-100 gap-1 cursor-pointer"
+                title="Pay / Settle Due Bill"
+              >
+                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
+                <span>Pay Due</span>
+              </Button>
+            )}
 
-          <Button
-            size="sm"
-            variant="outline"
-            onClick={() => setDeleteTarget(row)}
-            className="h-7 px-2 text-xs font-semibold border-red-500/30 text-red-600 hover:bg-red-500/10 cursor-pointer"
-            title="Delete Bill"
-          >
-            <Trash2 className="w-3.5 h-3.5" />
-          </Button>
-        </div>
-      ),
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={() => setPreviewBill(row)}
+              className="h-7 px-2 text-xs font-semibold border-black/15 text-black hover:bg-black/5 gap-1 cursor-pointer"
+              title="View Bill Details"
+            >
+              <Eye className="w-3.5 h-3.5" />
+              <span>View</span>
+            </Button>
+
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={() => setDeleteTarget(row)}
+              className="h-7 px-2 text-xs font-semibold border-red-500/30 text-red-600 hover:bg-red-500/10 cursor-pointer"
+              title="Delete Bill"
+            >
+              <Trash2 className="w-3.5 h-3.5" />
+            </Button>
+          </div>
+        );
+      },
     },
   ];
 
@@ -391,6 +409,17 @@ export function BillsPage() {
         isOpen={Boolean(previewBill)}
         onClose={() => setPreviewBill(null)}
         bill={previewBill}
+      />
+
+      {/* 7. Settle Bill Modal */}
+      <SettleBillModal
+        isOpen={Boolean(settleTarget)}
+        onClose={() => setSettleTarget(null)}
+        bill={settleTarget}
+        onSuccess={() => {
+          setSettleTarget(null);
+          fetchBills();
+        }}
       />
 
       {/* 7. Delete Confirmation Dialog */}

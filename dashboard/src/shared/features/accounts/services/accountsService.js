@@ -36,6 +36,11 @@ export const accountsService = {
     return res.data;
   },
 
+  async settleBillPayment(id, payload) {
+    const res = await apiClient.post(`/api/v1/accounts/bills/${id}/settle`, payload);
+    return res.data;
+  },
+
   // ── 3. Salaries ─────────────────────────────────────────────────────────────
   async getSalaries(params = {}) {
     const res = await apiClient.get('/api/v1/accounts/salaries', { params });

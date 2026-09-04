@@ -6,6 +6,7 @@ import {
   getBillById,
   updateBill,
   deleteBill,
+  settleBillPayment,
   getSalaries,
   getExpenses,
   getCashBook,
@@ -27,6 +28,7 @@ accountsRouter.post("/bills", createBill);
 accountsRouter.get("/bills/:id", getBillById);
 accountsRouter.put("/bills/:id", updateBill);
 accountsRouter.delete("/bills/:id", deleteBill);
+accountsRouter.post("/bills/:id/settle", settleBillPayment);
 
 accountsRouter.get("/salaries", getSalaries);
 accountsRouter.get("/expenses", getExpenses);
