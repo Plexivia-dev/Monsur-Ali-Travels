@@ -1,6 +1,8 @@
 import { execSync } from 'child_process';
 import { config } from './config.js';
 
+import fs from 'fs';
+
 export function runDeployCommand(target, makeCommand) {
   if (config.host === 'your_server_ip_here') {
     console.error('Error: Please set DEPLOY_SERVER_IP in your backend/.env file');
@@ -11,7 +13,7 @@ export function runDeployCommand(target, makeCommand) {
   console.log(`🔗 Connecting to ${config.user}@${config.host}...`);
   
   try {
-    const keyArg = config.keyPath ? `-i "${config.keyPath}"` : '';
+    const keyArg = config.keyPath && fs.existsSync(config.keyPath) ? `-i "${config.keyPath}"` : '';
     const sshCommand = `ssh ${keyArg} ${config.user}@${config.host} "cd ${config.deployPath} && ${makeCommand}"`;
     execSync(sshCommand, { stdio: 'inherit' });
     console.log(`✅ Deployment for ${target} completed successfully!\n`);
