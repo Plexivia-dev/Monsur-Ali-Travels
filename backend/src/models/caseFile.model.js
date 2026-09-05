@@ -1,5 +1,10 @@
 import mongoose, { Schema, model } from "mongoose";
 import { generateDid } from "../utils/generateDid.js";
+import "./client.model.js";
+import "./documentVault.model.js";
+import "./task.model.js";
+import "./moneyReceipt.model.js";
+import "./user.model.js";
 
 const { models } = mongoose;
 
@@ -51,6 +56,15 @@ const caseFileSchema = new Schema(
       default: "",
     },
 
+    // Primary Guardian Info (Guarantor for 300-Tk Judicial Stamp Deed)
+    guardian: {
+      name: { type: String, default: "", trim: true },
+      relationship: { type: String, default: "Father", trim: true },
+      phone: { type: String, default: "", trim: true },
+      nidNumber: { type: String, default: "", trim: true },
+      address: { type: String, default: "", trim: true },
+    },
+
     // Case Type / Country (Extensible: 'greece', 'n-macedonia', 'indian-bsf', or custom string)
     caseType: {
       type: String,
@@ -60,19 +74,23 @@ const caseFileSchema = new Schema(
       index: true,
     },
 
-    // Universal 5 Lifecycle Steps (Legacy)
+    // Canonical 4 Lifecycle Stages & Aliases
     status: {
       type: String,
       enum: [
-        "ENTRY",                  // 1. Received / Entry
-        "PROCESSING",             // 2. Processing / In Progress
-        "APPROVED_OFFER_LETTER",  // 3. Approved / Offer Letter
-        "SUBMITTED_EMBASSY_BSF",  // 4. Submitted (Embassy / BSF)
-        "COMPLETED_DELIVERED",    // 5. Completed / Delivered
+        "ENTRY",
+        "INTAKE",
+        "PROCESSING",
+        "UNDER_PROCESS",
+        "APPROVED_OFFER_LETTER",
+        "OFFER_LETTER",
+        "SUBMITTED_EMBASSY_BSF",
+        "COMPLETED_DELIVERED",
+        "COMPLETED",
         "REJECTED",
         "ON_HOLD",
       ],
-      default: "ENTRY",
+      default: "INTAKE",
       index: true,
     },
 

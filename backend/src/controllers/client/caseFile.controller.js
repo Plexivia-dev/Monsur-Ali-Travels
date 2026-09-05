@@ -62,14 +62,35 @@ function buildGenericCaseQuery(queryParams) {
     filter.caseType = typesArray.length === 1 ? typesArray[0] : { $in: typesArray };
   }
 
-  // 2. Generic Status filter ($in support for multiple statuses)
+  // 2. Generic Status filter ($in support for multiple statuses and canonical stage aliases)
   if (status && status !== "all") {
+    const statusMap = {
+      INTAKE: ["ENTRY", "INTAKE"],
+      ENTRY: ["ENTRY", "INTAKE"],
+      UNDER_PROCESS: ["PROCESSING", "UNDER_PROCESS", "SUBMITTED_EMBASSY_BSF"],
+      PROCESSING: ["PROCESSING", "UNDER_PROCESS", "SUBMITTED_EMBASSY_BSF"],
+      OFFER_LETTER: ["APPROVED_OFFER_LETTER", "OFFER_LETTER"],
+      APPROVED_OFFER_LETTER: ["APPROVED_OFFER_LETTER", "OFFER_LETTER"],
+      COMPLETED: ["COMPLETED_DELIVERED", "COMPLETED"],
+      COMPLETED_DELIVERED: ["COMPLETED_DELIVERED", "COMPLETED"],
+    };
+
     const statusesArray = String(status)
       .split(",")
-      .map((s) => s.trim())
+      .map((s) => s.trim().toUpperCase())
       .filter(Boolean);
 
-    filter.status = statusesArray.length === 1 ? statusesArray[0] : { $in: statusesArray };
+    const expandedStatuses = new Set();
+    statusesArray.forEach((st) => {
+      if (statusMap[st]) {
+        statusMap[st].forEach((mapped) => expandedStatuses.add(mapped));
+      } else {
+        expandedStatuses.add(st);
+      }
+    });
+
+    const finalStatuses = Array.from(expandedStatuses);
+    filter.status = finalStatuses.length === 1 ? finalStatuses[0] : { $in: finalStatuses };
   }
 
   // 3. Client DID / Client ID filter
@@ -135,7 +156,7 @@ export const getAllCases = async (req, res) => {
     sortOptions[sortBy] = sortOrder === "asc" ? 1 : -1;
 
     const pageNum = Math.max(1, Number(page) || 1);
-    const limitNum = Math.min(100, Math.max(1, Number(limit) || 20));
+    const limitNum = Math.min(500, Math.max(1, Number(limit) || 20));
     const skip = (pageNum - 1) * limitNum;
 
     let queryBuilder = CaseFile.find(filter)
@@ -315,6 +336,7 @@ export const createCase = async (req, res) => {
       passportNumber,
       phone,
       nidNumber,
+      guardian,
       caseType,
       type,
       serviceType,
@@ -324,12 +346,58 @@ export const createCase = async (req, res) => {
       initialPaidAmount,
       advanceAmount,
       paymentMethod,
-      status = "ENTRY",
+      status = "INTAKE",
+      initialDocuments = [],
       checklist = {},
       paymentLedger = {},
       extraData = {},
       remarks = "",
+      passportScan,
     } = req.body;
+
+    // Default status INTAKE; if ENTRY treat as INTAKE
+    let targetStatus = (status || "INTAKE").trim().toUpperCase();
+    if (!targetStatus || targetStatus === "ENTRY") {
+      targetStatus = "INTAKE";
+    }
+
+    const resolvedGuardian = {
+      name: guardian?.name || guardian?.fullName || req.body.guardianName || "",
+      relationship: guardian?.relationship || req.body.guardianRelationship || "Father",
+      phone: guardian?.phone || guardian?.mobileNumber || req.body.guardianPhone || "",
+      nidNumber: guardian?.nidNumber || req.body.guardianNid || "",
+      address: guardian?.address || req.body.guardianAddress || "",
+    };
+
+    // Gather initial documents from all possible ingestion sources
+    const docsToIngest = Array.isArray(initialDocuments) && initialDocuments.length > 0
+      ? initialDocuments
+      : Array.isArray(extraData?.documents) && extraData.documents.length > 0
+      ? extraData.documents
+      : Array.isArray(req.body.documents)
+      ? req.body.documents
+      : [];
+
+    // Resolve passport scan URL
+    let resolvedPassportScan =
+      passportScan ||
+      req.body.passportUrl ||
+      extraData?.passportScan ||
+      "";
+
+    if (!resolvedPassportScan && Array.isArray(docsToIngest)) {
+      const pDoc = docsToIngest.find(
+        (d) =>
+          d &&
+          (String(d.documentName || "").toLowerCase().includes("passport") ||
+            String(d.name || "").toLowerCase().includes("passport") ||
+            String(d.fileName || "").toLowerCase().includes("passport") ||
+            String(d.fileUrl || "").toLowerCase().includes("passport"))
+      );
+      if (pDoc) {
+        resolvedPassportScan = pDoc.fileUrl || pDoc.url || "";
+      }
+    }
 
     const resolvedType = caseType || type || serviceType || destinationCountry || "general";
     let resolvedClientDid = clientDid || clientId;
@@ -350,9 +418,13 @@ export const createCase = async (req, res) => {
         const newClientPayload = {
           fullName: applicantName || "Unknown Applicant",
           phone: phone ? phone.trim() : "N/A",
+          guardian: resolvedGuardian,
         };
         if (passportNumber && passportNumber.trim()) newClientPayload.passportNumber = passportNumber.trim().toUpperCase();
         if (nidNumber && nidNumber.trim()) newClientPayload.nidNumber = nidNumber.trim();
+        if (resolvedPassportScan) {
+          newClientPayload.attachments = { passportScan: resolvedPassportScan };
+        }
         existingClient = await Client.create(newClientPayload);
       }
       if (existingClient) {
@@ -391,9 +463,10 @@ export const createCase = async (req, res) => {
       passportNumber: passportNumber ? passportNumber.trim().toUpperCase() : "",
       phone: phone || "",
       nidNumber: nidNumber || "",
+      guardian: resolvedGuardian,
       caseType: String(resolvedType).toLowerCase(),
       destinationCountry: destinationCountry || "",
-      status,
+      status: targetStatus,
       checklist,
       paymentLedger: mergedPaymentLedger,
       extraData,
@@ -402,8 +475,8 @@ export const createCase = async (req, res) => {
       createdByName: creatorName,
       statusHistory: [
         {
-          status: status || "ENTRY",
-          remarks: `Case file created by ${creatorName}`,
+          status: targetStatus,
+          remarks: `Case file created by ${creatorName} at stage ${targetStatus}`,
           updatedByDid: creatorDid,
           updatedByName: creatorName,
           date: new Date(),
@@ -411,17 +484,55 @@ export const createCase = async (req, res) => {
       ],
     });
 
-    // Add case reference to Client and update totals
+    // Ingest initial documents into DocumentVaultModel atomically
+    if (Array.isArray(docsToIngest) && docsToIngest.length > 0) {
+      for (const doc of docsToIngest) {
+        if (!doc) continue;
+        const fileUrl = doc.fileUrl || doc.url || doc.path || "";
+        if (!fileUrl) continue;
+        const docName = doc.documentName || doc.name || doc.title || "Case Document";
+        const fName = doc.fileName || doc.name || docName;
+        const fType = doc.fileType || doc.type || "application/octet-stream";
+        let fSize = doc.fileSize || doc.size || "0 B";
+        if (typeof fSize === "number") {
+          fSize = `${(fSize / 1024).toFixed(1)} KB`;
+        }
+
+        await DocumentVaultModel.create({
+          did: generateDid(),
+          clientDid: resolvedClientDid,
+          caseDid: newCase.did,
+          documentName: docName,
+          fileName: fName,
+          fileUrl,
+          fileType: fType,
+          fileSize: String(fSize),
+          accessLevel: doc.accessLevel || "Restricted",
+          uploadedByDid: creatorDid,
+          uploadedByName: creatorName,
+        }).catch((vaultErr) => console.warn("[createCase] DocumentVaultModel creation warning:", vaultErr.message));
+      }
+    }
+
+    // Add case reference to Client and update totals & attachments
+    const clientUpdatePayload = {
+      $addToSet: { caseDids: newCase.did, clientCaseDids: newCase.did },
+      $inc: {
+        totalBilledAmount: totalAgreed,
+        totalDueAmount: due,
+        totalPaidAmount: advancePaid,
+      },
+    };
+    if (resolvedPassportScan) {
+      clientUpdatePayload.$set = { ...(clientUpdatePayload.$set || {}), "attachments.passportScan": resolvedPassportScan };
+    }
+    if (resolvedGuardian.name || resolvedGuardian.phone) {
+      clientUpdatePayload.$set = { ...(clientUpdatePayload.$set || {}), guardian: resolvedGuardian };
+    }
+
     await Client.findOneAndUpdate(
       { did: resolvedClientDid },
-      {
-        $addToSet: { caseDids: newCase.did, clientCaseDids: newCase.did },
-        $inc: {
-          totalBilledAmount: totalAgreed,
-          totalDueAmount: due,
-          totalPaidAmount: advancePaid,
-        },
-      }
+      clientUpdatePayload
     ).catch(() => {});
 
     // Broadcast new case creation notification
@@ -1010,17 +1121,22 @@ export const completeTaskStep = async (req, res) => {
     task.completedAt = new Date();
     await task.save();
 
-    // Synchronize Case File: Update status & history and reset active assignment
+    // Synchronize Case File: Update workflowStatus & history without wiping assignment or corrupting macro status
     try {
       const caseDoc = await CaseFile.findOne(buildCaseIdentifierQuery(task.caseDid));
       if (caseDoc) {
-        const staffName = req.user?.name || "Staff Member";
+        const staffName = req.user?.name || task.assignedToName || "Staff Member";
         const stepNum = task.stepNumber || 1;
 
+        // Informative workflowStatus without altering macro status
         caseDoc.workflowStatus = `Step ${stepNum} Done (${task.title}) — Awaiting Admin Review`;
-        caseDoc.assignedToDid = null;
-        caseDoc.assignedToName = "";
-        caseDoc.assignedOfficer = "";
+
+        // Do NOT wipe assignedToDid to null! Keep assignedToDid so assigned views don't drop the case.
+        if (!caseDoc.assignedToDid && task.assignedToDid) {
+          caseDoc.assignedToDid = task.assignedToDid;
+          caseDoc.assignedToName = task.assignedToName || staffName;
+          caseDoc.assignedOfficer = task.assignedToName || staffName;
+        }
 
         if (!Array.isArray(caseDoc.statusHistory)) {
           caseDoc.statusHistory = [];
@@ -1031,7 +1147,7 @@ export const completeTaskStep = async (req, res) => {
           remarks: `Step "${task.title}" completed by ${staffName}: ${remarks || "Work submitted"}`,
           updatedByDid: req.user?.did || req.user?.id,
           updatedByName: staffName,
-          assignedToDid: req.user?.did || req.user?.id,
+          assignedToDid: caseDoc.assignedToDid || req.user?.did || req.user?.id,
           date: new Date(),
         });
 

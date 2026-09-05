@@ -16,6 +16,19 @@ export async function createApp() {
   app.set("trust proxy", true);
 
   const defaultOrigins = [
+    // Dev Plexivia Domains
+    "https://admin.plexivia.online",
+    "http://admin.plexivia.online",
+    "https://dash.plexivia.online",
+    "http://dash.plexivia.online",
+    "https://dashboard.plexivia.online",
+    "http://dashboard.plexivia.online",
+    "https://server.plexivia.online",
+    "http://server.plexivia.online",
+    "https://api.plexivia.online",
+    "http://api.plexivia.online",
+
+    // Live Domains
     "https://admin.monsuralitravels.com",
     "https://admin.monsuralitravels.com/",
     "http://admin.monsuralitravels.com",
@@ -40,7 +53,10 @@ export async function createApp() {
     "https://www.monsuralitravelsbd.com",
     "https://dashboard.monsuralitravelsbd.com",
     "http://dashboard.monsuralitravelsbd.com",
-    "http://localhost:8001",
+
+    // Localhost Development Ports (Any port allowed via regex below as well)
+    "http://localhost:3000",
+    "http://127.0.0.1:3000",
     "http://localhost:5173",
     "http://localhost:5173/",
     "http://127.0.0.1:5173",
@@ -49,6 +65,14 @@ export async function createApp() {
     "http://localhost:5174/",
     "http://127.0.0.1:5174",
     "http://127.0.0.1:5174/",
+    "http://localhost:5175",
+    "http://127.0.0.1:5175",
+    "http://localhost:8000",
+    "http://127.0.0.1:8000",
+    "http://localhost:8001",
+    "http://127.0.0.1:8001",
+    "http://localhost:8004",
+    "http://127.0.0.1:8004",
     "http://localhost:8005",
     "http://localhost:8005/",
     "http://127.0.0.1:8005",
@@ -61,6 +85,14 @@ export async function createApp() {
     "http://localhost:8007/",
     "http://127.0.0.1:8007",
     "http://127.0.0.1:8007/",
+    "http://localhost:8015",
+    "http://127.0.0.1:8015",
+    "http://localhost:8017",
+    "http://127.0.0.1:8017",
+    "http://localhost:5092",
+    "http://127.0.0.1:5092",
+    "http://localhost:5093",
+    "http://127.0.0.1:5093",
   ];
 
   const envOrigins = env.ALLOWED_ORIGINS
@@ -99,9 +131,11 @@ export async function createApp() {
         allowedOrigins.includes("*") ||
         allowedOrigins.includes(origin) ||
         allowedOrigins.includes(cleanOrigin) ||
+        cleanOrigin.includes("plexivia.online") ||
         cleanOrigin.includes("monsuralitravels") ||
         cleanOrigin.includes("localhost") ||
-        cleanOrigin.includes("127.0.0.1")
+        cleanOrigin.includes("127.0.0.1") ||
+        /^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(cleanOrigin)
       ) {
         return callback(null, true);
       }
@@ -133,20 +167,30 @@ export async function createApp() {
   app.use(express.json({ limit: "50mb" }));
   app.use(express.urlencoded({ limit: "50mb", extended: true }));
 
-  const docsPath = path.join(process.cwd(), "documents");
+  const uploadsPath = process.env.UPLOAD_PATH || path.join(process.cwd(), "uploads");
+  const docsPath = process.env.DOCUMENT_PATH || path.join(process.cwd(), "documents");
   try {
+    if (!fs.existsSync(uploadsPath)) {
+      fs.mkdirSync(uploadsPath, { recursive: true });
+    }
     if (!fs.existsSync(docsPath)) {
       fs.mkdirSync(docsPath, { recursive: true });
     }
   } catch (err) {
-    logger.warn(`Could not create documents directory at ${docsPath}: ${err.message}`);
+    logger.warn(`Could not create uploads/documents directory: ${err.message}`);
   }
 
-  app.use("/uploads", express.static(path.join(process.cwd(), "uploads")));
-  app.use("/src/uploads", express.static(path.join(process.cwd(), "uploads")));
+  // Uploads & Documents Static Routes
+  app.use("/uploads", express.static(uploadsPath));
+  app.use("/src/uploads", express.static(uploadsPath));
+  app.use("/api/v1/uploads", express.static(uploadsPath));
+  app.use("/api/uploads", express.static(uploadsPath));
+
   app.use("/documents", express.static(docsPath));
   app.use("/uploads/documents", express.static(docsPath));
   app.use("/src/documents", express.static(docsPath));
+  app.use("/api/v1/documents", express.static(docsPath));
+  app.use("/api/documents", express.static(docsPath));
 
   // Helper to format transfer byte size
   function formatBytes(bytes) {

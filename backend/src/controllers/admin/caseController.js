@@ -287,7 +287,7 @@ export const approveTaskStep = async (req, res) => {
     }
 
     const { taskDid } = req.params;
-    const { approvalNotes, nextStatus } = req.body || {};
+    const { approvalNotes, nextStatus, status } = req.body || {};
     const adminDid = req.user?.did || req.user?.id;
 
     const task = await TaskModel.findOne(buildTaskIdentifierQuery(taskDid));
@@ -305,13 +305,23 @@ export const approveTaskStep = async (req, res) => {
     const caseDoc = await CaseFile.findOne(buildCaseIdentifierQuery(task.caseDid));
     if (caseDoc) {
       const stepNum = task.stepNumber || 1;
-      caseDoc.workflowStatus = nextStatus || `Step ${stepNum} Approved: ${task.title}`;
+      const targetMacroStatus = (nextStatus || status || "").trim().toUpperCase();
+
+      // Advance macro status when requested
+      if (targetMacroStatus) {
+        caseDoc.status = targetMacroStatus;
+      }
+
+      caseDoc.workflowStatus = targetMacroStatus
+        ? `Step ${stepNum} Approved ➔ Advanced to ${targetMacroStatus}`
+        : (nextStatus || `Step ${stepNum} Approved: ${task.title}`);
+
       if (!Array.isArray(caseDoc.statusHistory)) {
         caseDoc.statusHistory = [];
       }
       caseDoc.statusHistory.push({
-        status: `Approved Step ${stepNum}: ${task.title}`,
-        remarks: approvalNotes || "Task approved by admin",
+        status: targetMacroStatus ? `Advanced to ${targetMacroStatus}` : `Approved Step ${stepNum}: ${task.title}`,
+        remarks: approvalNotes || `Task approved by ${req.user?.name || "Admin"}${targetMacroStatus ? ` (Advanced to ${targetMacroStatus})` : ""}`,
         updatedByDid: adminDid,
         updatedByName: req.user?.name || "Admin",
         date: new Date(),
@@ -322,7 +332,7 @@ export const approveTaskStep = async (req, res) => {
       if (task.assignedToDid) {
         await NotificationModel.create({
           title: "Task Approved",
-          message: `Your task "${task.title}" for Case ${caseDoc.caseNumber || caseDoc.did} has been approved by admin.`,
+          message: `Your task "${task.title}" for Case ${caseDoc.caseNumber || caseDoc.did} has been approved by admin${targetMacroStatus ? ` (Stage: ${targetMacroStatus})` : ""}.`,
           module: "visa",
           type: "success",
           refDid: caseDoc.did,
@@ -379,7 +389,7 @@ export const addPayment = async (req, res) => {
     }
 
     // Advance workflow state if it's the initial entry
-    if (caseDoc.status === "ENTRY" || !caseDoc.workflowStatus) {
+    if (caseDoc.status === "ENTRY" || caseDoc.status === "INTAKE" || !caseDoc.workflowStatus) {
       caseDoc.status = "PROCESSING";
       caseDoc.workflowStatus = "Initial Payment Done";
     }
