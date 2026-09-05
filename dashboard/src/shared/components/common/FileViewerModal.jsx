@@ -38,7 +38,7 @@ export function normalizeFileUrl(fileUrl = '') {
 
   // 2. Localhost URLs stored in database -> Redirect to live API domain
   if (trimmed.startsWith('http://localhost:') || trimmed.startsWith('http://127.0.0.1:')) {
-    return trimmed.replace(/^https?:\/\/[^/]+/, 'https://api.monsuralitravels.com');
+    return trimmed.replace(/^https?:\/\/[^/]+/, API_BASE_URL);
   }
 
   // 3. HTTP live domain -> Upgrade to HTTPS
@@ -51,8 +51,8 @@ export function normalizeFileUrl(fileUrl = '') {
     return trimmed;
   }
 
-  // 5. Relative paths (/uploads/...) -> prepend live API_BASE_URL
-  const cleanBase = 'https://api.monsuralitravels.com';
+  // 5. Relative paths (/uploads/...) -> prepend API_BASE_URL
+  const cleanBase = API_BASE_URL || 'https://api.monsuralitravels.com';
   const cleanPath = trimmed.startsWith('/') ? trimmed : `/${trimmed}`;
   return `${cleanBase}${cleanPath}`;
 }

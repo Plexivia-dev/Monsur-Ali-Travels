@@ -1,9 +1,32 @@
-# Environment files
+# Environment files & Secrets
 .env
 .env.*
+*.env
+*.env.*
 **/.env
 **/.env.*
+**/*.env
+**/*.env.*
+**/example.env.*
 !**/.env.example
+!**/.env.dev.example
+
+# Credentials, Keys, Certificates & Tokens
+*credentials*
+*credential*
+*.token
+*.secret
+*.key
+*.pem
+*.cert
+*.crt
+*.pfx
+*.p12
+id_rsa*
+id_ed25519*
+cfat_*
+cloudflare-*.txt
+serviceAccountKey*.json
 
 # Node / package managers
 node_modules/
