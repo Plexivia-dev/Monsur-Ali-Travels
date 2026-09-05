@@ -1,0 +1,97 @@
+name: PR Security & Credential Leak Guard
+
+on:
+  pull_request:
+    branches:
+      - live
+      - master
+      - main
+  push:
+    branches:
+      - live
+      - master
+      - main
+
+jobs:
+  credential-audit:
+    name: Audit PR for Credentials & Secrets
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Codebase
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Check for Forbidden Files in PR
+        run: |
+          echo "🔍 Scanning PR for forbidden sensitive / credential files..."
+          
+          # Determine base and head commit for diff
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            BASE_REF="origin/${{ github.base_ref }}"
+            HEAD_REF="HEAD"
+            CHANGED_FILES=$(git diff --name-only "$BASE_REF"..."$HEAD_REF" || git diff --name-only HEAD~1 HEAD)
+          else
+            CHANGED_FILES=$(git diff --name-only HEAD~1 HEAD || git ls-files)
+          fi
+
+          FORBIDDEN_FILE_REGEX='(^|/)(\.env(\..+)?|.*credentials.*|.*\.pem|.*\.key|.*\.cert|.*\.crt|id_rsa.*|id_ed25519.*|cloudflare-.*\.txt)$'
+          ALLOWED_EXCEPTION='(\.env\.example|\.env\.dev\.example)$'
+
+          FAILED_FILES=""
+          for file in $CHANGED_FILES; do
+            if echo "$file" | grep -E -q "$FORBIDDEN_FILE_REGEX"; then
+              if ! echo "$file" | grep -E -q "$ALLOWED_EXCEPTION"; then
+                FAILED_FILES="$FAILED_FILES\n  ❌ $file"
+              fi
+            fi
+          done
+
+          if [ -n "$FAILED_FILES" ]; then
+            echo "::error::Forbidden credential file(s) found in PR:"
+            printf "$FAILED_FILES\n"
+            echo "Action required: Delete or remove these files from the PR branch immediately."
+            exit 1
+          fi
+          echo "✅ No sensitive/credential files found in PR."
+
+      - name: Scan PR Diff for High-Risk Secrets
+        run: |
+          echo "🔍 Scanning PR diff for leaked secrets, tokens, and passwords..."
+
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            BASE_REF="origin/${{ github.base_ref }}"
+            HEAD_REF="HEAD"
+            DIFF_CONTENT=$(git diff "$BASE_REF"..."$HEAD_REF" -U0 || git diff HEAD~1 HEAD -U0)
+          else
+            DIFF_CONTENT=$(git diff HEAD~1 HEAD -U0)
+          fi
+
+          LEAK_FOUND=0
+
+          # Check for known passwords or tokens
+          if echo "$DIFF_CONTENT" | grep -E -q '^\+[^+].*(Monsur[A]liSecPass|cf[a]t_[a-zA-Z0-9_-]{20,}|BEGIN (RSA |OPENSSH |EC |DSA )?PRIVATE KEY)'; then
+            echo "::error::Detected password, Cloudflare token, or private key in PR diff!"
+            LEAK_FOUND=1
+          fi
+
+          # Check for unredacted SMTP password
+          if echo "$DIFF_CONTENT" | grep -E -q '^\+[^+].*SMTP_PASSWORD=[^"'\''\$\{[:space:]]+' | grep -v -E '(your_|placeholder|REDACTED)'; then
+            echo "::error::Detected raw SMTP_PASSWORD in PR diff!"
+            LEAK_FOUND=1
+          fi
+
+          # Check for unredacted R2 Secret Access Key
+          if echo "$DIFF_CONTENT" | grep -E -q '^\+[^+].*R2_SECRET_ACCESS_KEY=[0-9a-fA-F]{32,}' | grep -v -E '(your_|placeholder)'; then
+            echo "::error::Detected Cloudflare R2 Secret Access Key in PR diff!"
+            LEAK_FOUND=1
+          fi
+
+          if [ "$LEAK_FOUND" -eq 1 ]; then
+            echo "❌ PR Security Audit Failed: Secrets detected in git diff."
+            echo "Never merge secrets into live or master. Use server environment variables."
+            exit 1
+          fi
+
+          echo "✅ All PR diff security checks passed. Zero secrets detected."

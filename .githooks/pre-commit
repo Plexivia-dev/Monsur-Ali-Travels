@@ -1,0 +1,64 @@
+#!/bin/sh
+# ==============================================================================
+# Git Pre-Commit Hook: Secret Leak & Sensitive File Blocker
+# Ensures no credentials, API keys, passwords, or .env files are ever committed
+# ==============================================================================
+
+# 1. Check for forbidden file patterns in staged files
+FORBIDDEN_FILE_REGEX='(^|/)(\.env(\..+)?|.*credentials.*|.*\.pem|.*\.key|.*\.cert|.*\.crt|id_rsa.*|id_ed25519.*|cloudflare-.*\.txt)$'
+ALLOWED_EXCEPTION='(\.env\.example|\.env\.dev\.example)$'
+
+STAGED_FILES=$(git diff --cached --name-only)
+
+if [ -z "$STAGED_FILES" ]; then
+    exit 0
+fi
+
+FORBIDDEN_STAGED=""
+for file in $STAGED_FILES; do
+    if echo "$file" | grep -E -q "$FORBIDDEN_FILE_REGEX"; then
+        if ! echo "$file" | grep -E -q "$ALLOWED_EXCEPTION"; then
+            FORBIDDEN_STAGED="$FORBIDDEN_STAGED\n  - $file"
+        fi
+    fi
+done
+
+if [ -n "$FORBIDDEN_STAGED" ]; then
+    echo "\n========================================================"
+    echo " ❌ COMMIT REJECTED: Sensitive/Credential File Detected!"
+    echo "========================================================"
+    echo " The following forbidden file(s) are staged for commit:"
+    printf "$FORBIDDEN_STAGED\n"
+    echo "\n Please unstage these files before committing:"
+    echo "   git reset HEAD <file>"
+    echo "========================================================\n"
+    exit 1
+fi
+
+# 2. Check for high-risk secret strings in the staged diff content
+STAGED_DIFF=$(git diff --cached -U0)
+
+# Check for known production/dev passwords or tokens
+SECRET_MATCH=""
+
+if echo "$STAGED_DIFF" | grep -E -q '^\+[^+].*(Monsur[A]liSecPass|cf[a]t_[a-zA-Z0-9_-]{20,}|BEGIN (RSA |OPENSSH |EC |DSA )?PRIVATE KEY)'; then
+    SECRET_MATCH="Detected password, Cloudflare token, or Private Key"
+elif echo "$STAGED_DIFF" | grep -E -q '^\+[^+].*SMTP_PASSWORD=[^"'\''\$\{[:space:]]+' | grep -v -E '(your_|placeholder|REDACTED)'; then
+    SECRET_MATCH="Detected hardcoded SMTP password"
+elif echo "$STAGED_DIFF" | grep -E -q '^\+[^+].*R2_SECRET_ACCESS_KEY=[0-9a-fA-F]{32,}' | grep -v -E '(your_|placeholder)'; then
+    SECRET_MATCH="Detected real Cloudflare R2 Secret Access Key"
+fi
+
+if [ -n "$SECRET_MATCH" ]; then
+    echo "\n========================================================"
+    echo " ❌ COMMIT REJECTED: High-Risk Secret Detected in Diff!"
+    echo " Reason: $SECRET_MATCH"
+    echo "========================================================"
+    echo " Never commit raw secrets or passwords into git."
+    echo " Please use environment variables (in gitignored .env) or"
+    echo " generic placeholder values (e.g. your_secret_here)."
+    echo "========================================================\n"
+    exit 1
+fi
+
+exit 0
