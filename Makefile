@@ -60,3 +60,37 @@ logs-front:
 
 down:
 	docker compose -f docker-compose.prod.yml down
+
+# ==============================================================================
+# DEV Server Targets (Isolated /opt/monsuralitravels-dev)
+# ==============================================================================
+.PHONY: dev-deploy dev-up dev-down dev-build dev-status dev-logs dev-logs-bg dev-logs-client dev-logs-admin
+
+dev-deploy:
+	docker compose -f docker-compose.dev.yml build --no-cache
+	docker compose -f docker-compose.dev.yml up -d
+
+dev-up:
+	docker compose -f docker-compose.dev.yml up -d
+
+dev-down:
+	docker compose -f docker-compose.dev.yml down
+
+dev-build:
+	docker compose -f docker-compose.dev.yml build --no-cache
+
+dev-status:
+	docker compose -f docker-compose.dev.yml ps
+
+dev-logs:
+	docker compose -f docker-compose.dev.yml logs -f
+
+dev-logs-bg:
+	docker compose -f docker-compose.dev.yml logs -f backend-dev
+
+dev-logs-client:
+	docker compose -f docker-compose.dev.yml logs -f dashboard-client-dev
+
+dev-logs-admin:
+	docker compose -f docker-compose.dev.yml logs -f dashboard-admin-dev
+

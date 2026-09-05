@@ -1,54 +1,67 @@
+name: monsuralitravels-dev
+
 services:
-  postgres-dev:
-    image: postgres:16-alpine
-    container_name: monsuralitravels-postgres-dev
+  mongodb-dev:
+    image: mongo:7.0
+    container_name: monsuralitravels-mongodb-dev
     restart: always
     environment:
-      POSTGRES_USER: ${POSTGRES_USER:-admin}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-MonsurAliSecPass2026!}
-      POSTGRES_DB: ${POSTGRES_DB:-monsur_ali_travels_dev}
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_INITDB_ROOT_USERNAME:-admin}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD:-devpassword123}
+      MONGO_INITDB_DATABASE: ${MONGO_INITDB_DATABASE:-monsur-ali-travels-dev}
     ports:
-      - "5433:5432"
+      - "27018:27017"
     volumes:
-      - postgres-dev-data:/var/lib/postgresql/data
+      - mongodb-dev-data:/data/db
     networks:
       - monsuralitravels-dev-net
 
   backend-dev:
     build:
-      context: ./server
+      context: ./backend
       dockerfile: Dockerfile
     container_name: monsuralitravels-backend-dev
     restart: always
+    env_file:
+      - ./backend/.env
     volumes:
-      - /var/www/uploads-dev:/app/uploads
-      - /var/www/documents-dev:/app/documents
+      - /dev-env/var/www/uploads:/app/uploads
+      - /dev-env/var/www/uploads:/app/src/uploads
+      - /dev-env/var/www/documents:/app/documents
+      - /dev-env/var/www/documents:/app/src/documents
     environment:
       NODE_ENV: development
       PORT: 5093
-      DATABASE_URL: ${DATABASE_URL:-postgresql://admin:MonsurAliSecPass2026!@monsuralitravels-postgres-dev:5432/monsur_ali_travels_dev?schema=public}
-      JWT_SECRET: ${JWT_SECRET:-monsuralitravels_super_secret_access_token_jwt_2026}
-      JWT_EXPIRES_IN: ${JWT_EXPIRES_IN:-7d}
-      UPLOAD_PATH: /app/uploads
-      DOCUMENT_PATH: /app/documents
-      CORS_ORIGIN: "https://dashboard.monsuralitravels.com,https://dashboard.monsuralitravelsbd.com,https://monsuralitravels.com,https://www.monsuralitravels.com,https://monsuralitravelsbd.com,https://www.monsuralitravelsbd.com,http://localhost:5173,http://localhost:8005,http://localhost:8006,http://localhost:8015,*"
     ports:
       - "5093:5093"
     depends_on:
-      - postgres-dev
+      - mongodb-dev
     networks:
       - monsuralitravels-dev-net
 
-  dashboard-dev:
+  dashboard-client-dev:
     build:
       context: ./dashboard
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.client
       args:
-        - VITE_API_BASE_URL=${VITE_API_BASE_URL:-https://server.monsuralitravelsbd.com}
-    container_name: monsuralitravels-dashboard-dev
+        - VITE_API_BASE_URL=${VITE_API_BASE_URL:-https://server.plexivia.online}
+    container_name: monsuralitravels-dashboard-client-dev
     restart: always
     ports:
       - "8015:80"
+    networks:
+      - monsuralitravels-dev-net
+
+  dashboard-admin-dev:
+    build:
+      context: ./dashboard
+      dockerfile: Dockerfile.admin
+      args:
+        - VITE_API_BASE_URL=${VITE_API_BASE_URL:-https://server.plexivia.online}
+    container_name: monsuralitravels-dashboard-admin-dev
+    restart: always
+    ports:
+      - "8017:80"
     networks:
       - monsuralitravels-dev-net
 
@@ -57,5 +70,5 @@ networks:
     driver: bridge
 
 volumes:
-  postgres-dev-data:
+  mongodb-dev-data:
     driver: local
