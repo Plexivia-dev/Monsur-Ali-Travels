@@ -27,6 +27,7 @@ import {
 import { Collapsible, CollapsibleContent } from '@/components/ui/collapsible';
 import { cn } from '@/lib/utils';
 import logoImg from '@shared/assets/logo.png';
+import { APP_VERSION } from '../../configs/appConfig';
 
 /**
  * Universal Sidebar Component for Client and Admin Dashboards.
@@ -44,7 +45,7 @@ export function UnifiedSidebar({
   activeChecker,
   onItemSelect,
   brandTitle = 'Monsur Ali Travels',
-  brandSubtitle = 'Smart ERP v3.1',
+  brandSubtitle = `Smart ERP v${APP_VERSION}`,
   logo = logoImg,
   user = null,
   onLogout = () => {},
