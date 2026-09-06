@@ -59,39 +59,6 @@ function parseMrzDate(yymmdd, isDob = false) {
   return `${yyyy}-${mm}-${dd}`;
 }
 
-/**
- * Smart extractor to read passport details from file name and document data
- */
-function extractPassportDataFromDoc(file) {
-  if (!file) return { passportNumber: '', fullName: '', dateOfBirth: '', passportExpiryDate: '' };
-  const rawName = file.name || '';
-  const nameWithoutExt = rawName.replace(/\.[^/.]+$/, '');
-
-  // 1. Bangladeshi Passport Pattern: 1 letter followed by 7 or 8 digits (e.g., A02948192, B00123456, EF1234567)
-  const passportMatch =
-    nameWithoutExt.match(/\b([A-PR-WYa-pr-wy][0-9]{7,8})\b/) ||
-    nameWithoutExt.match(/([A-Za-z][0-9]{7,8})/);
-  const detectedPassport = passportMatch ? passportMatch[1].toUpperCase() : '';
-
-  // 2. Name extraction: strip passport number and common filler terms
-  let cleanedName = nameWithoutExt
-    .replace(/\b([A-PR-WYa-pr-wy][0-9]{7,8})\b/gi, '')
-    .replace(/\b(passport|scan|copy|bio|biodata|page|img|doc|pdf|file|original|photo)\b/gi, '')
-    .replace(/[_\-+.]+/g, ' ')
-    .replace(/\s+/g, ' ')
-    .trim();
-
-  const detectedName =
-    cleanedName.length >= 3 && /[a-zA-Z]/.test(cleanedName) ? formatTitleCase(cleanedName) : '';
-
-  return {
-    passportNumber: detectedPassport,
-    fullName: detectedName,
-    dateOfBirth: '',
-    passportExpiryDate: '',
-  };
-}
-
 export default function CreateClientModal({ isOpen, onClose, onSuccess }) {
   const [loading, setLoading] = useState(false);
   const [clientMode, setClientMode] = useState('new'); // 'new' | 'existing'
@@ -133,6 +100,7 @@ export default function CreateClientModal({ isOpen, onClose, onSuccess }) {
     address: '',
     notes: '',
     packageAmount: '',
+    totalPaid: '',
   });
 
   // 5. Optional Documents State
@@ -168,6 +136,7 @@ export default function CreateClientModal({ isOpen, onClose, onSuccess }) {
         address: '',
         notes: '',
         packageAmount: '',
+        totalPaid: '',
       });
     }
   }, [isOpen]);
@@ -267,7 +236,7 @@ export default function CreateClientModal({ isOpen, onClose, onSuccess }) {
   /**
    * Helper: Check if a client exists with the given passport number
    */
-  const lookupClientByPassport = async (passportNo, fallbackName, extractedDob, extractedExpiry) => {
+  const lookupClientByPassport = async (passportNo, fallbackName, extractedDob, extractedExpiry, extraData = {}) => {
     if (!passportNo && !fallbackName) return;
 
     try {
@@ -294,13 +263,13 @@ export default function CreateClientModal({ isOpen, onClose, onSuccess }) {
           ...prev,
           fullName: exactMatch.fullName || fallbackName || prev.fullName,
           passportNumber: exactMatch.passportNumber || passportNo || prev.passportNumber,
-          phone: exactMatch.phone || prev.phone,
+          phone: exactMatch.phone || extraData.phone || prev.phone,
           email: exactMatch.email || prev.email,
-          fatherName: exactMatch.fatherName || exactMatch.guardian?.name || prev.fatherName,
+          fatherName: exactMatch.fatherName || exactMatch.guardian?.name || extraData.fatherName || prev.fatherName,
           dateOfBirth: exactMatch.birthDate || exactMatch.dateOfBirth || extractedDob || prev.dateOfBirth,
           passportExpiryDate: exactMatch.passportExpiryDate || extractedExpiry || prev.passportExpiryDate,
           nidNumber: exactMatch.nidNumber || prev.nidNumber,
-          address: exactMatch.presentAddress || exactMatch.address || prev.address,
+          address: exactMatch.presentAddress || exactMatch.address || extraData.address || prev.address,
         }));
         toast.success(`Existing client detected: ${exactMatch.fullName} (${exactMatch.passportNumber}). Profile linked!`);
       } else {
@@ -314,6 +283,9 @@ export default function CreateClientModal({ isOpen, onClose, onSuccess }) {
           passportNumber: passportNo || prev.passportNumber,
           dateOfBirth: extractedDob || prev.dateOfBirth,
           passportExpiryDate: extractedExpiry || prev.passportExpiryDate,
+          fatherName: extraData.fatherName || prev.fatherName,
+          phone: extraData.phone || prev.phone,
+          address: extraData.address || prev.address,
         }));
       }
     } catch (err) {
@@ -334,14 +306,15 @@ export default function CreateClientModal({ isOpen, onClose, onSuccess }) {
     setPassportPreviewUrl(localUrl);
     setUploadingPassport(true);
 
-    // Initial filename extraction
-    const extracted = extractPassportDataFromDoc(file);
-    let nameToSet = extracted.fullName;
-    let passportToSet = extracted.passportNumber;
+    let nameToSet = '';
+    let passportToSet = '';
     let dobToSet = '';
     let expiryToSet = '';
+    let fatherNameToSet = '';
+    let phoneToSet = '';
+    let addressToSet = '';
 
-    // If PDF, inspect MRZ pattern
+    // If PDF, inspect MRZ pattern as client-side fallback
     if (file.name.toLowerCase().endsWith('.pdf')) {
       try {
         const reader = new FileReader();
@@ -375,13 +348,9 @@ export default function CreateClientModal({ isOpen, onClose, onSuccess }) {
       } catch (pdfErr) {
         console.warn('PDF reader note:', pdfErr);
       }
-    } else {
-      if (nameToSet || passportToSet) {
-        setAutoExtractedBadge(true);
-      }
     }
 
-    // Upload to server
+    // Upload to server and trigger intelligent OCR
     const uploadData = new FormData();
     uploadData.append('file', file);
     uploadData.append('documentType', 'Passport Scan');
@@ -403,10 +372,34 @@ export default function CreateClientModal({ isOpen, onClose, onSuccess }) {
       };
       setPassportDocData(newDoc);
 
-      // Perform database lookup
-      await lookupClientByPassport(passportToSet, nameToSet, dobToSet, expiryToSet);
+      // Extract server-side OCR passport data
+      const passportData = fileData.passportData;
+      if (passportData) {
+        if (passportData.fullName) nameToSet = passportData.fullName;
+        if (passportData.passportNumber) passportToSet = passportData.passportNumber;
+        if (passportData.dateOfBirth) dobToSet = passportData.dateOfBirth;
+        if (passportData.passportExpiryDate) expiryToSet = passportData.passportExpiryDate;
+        if (passportData.fatherName) fatherNameToSet = passportData.fatherName;
+        if (passportData.phone) phoneToSet = passportData.phone;
+        if (passportData.address) addressToSet = passportData.address;
+      }
 
-      toast.success('Passport scan uploaded to vault and verified successfully.');
+      if (nameToSet || passportToSet) {
+        setAutoExtractedBadge(true);
+      }
+
+      // Perform database lookup and auto-link/auto-populate
+      await lookupClientByPassport(passportToSet, nameToSet, dobToSet, expiryToSet, {
+        fatherName: fatherNameToSet,
+        phone: phoneToSet,
+        address: addressToSet,
+      });
+
+      if (nameToSet || passportToSet) {
+        toast.success(`Passport verified: ${nameToSet || passportToSet}`);
+      } else {
+        toast.success('Passport scan uploaded to vault successfully.');
+      }
     } catch (err) {
       console.warn('Passport upload fallback to local URL:', err);
       toast.info('Passport scan attached (Local Preview).');
@@ -419,8 +412,13 @@ export default function CreateClientModal({ isOpen, onClose, onSuccess }) {
         did: `DOC-LOCAL-PASSPORT-${Date.now()}`,
       });
 
-      // Still run lookup even on local preview fallback
-      await lookupClientByPassport(passportToSet, nameToSet, dobToSet, expiryToSet);
+      if (passportToSet || nameToSet) {
+        await lookupClientByPassport(passportToSet, nameToSet, dobToSet, expiryToSet, {
+          fatherName: fatherNameToSet,
+          phone: phoneToSet,
+          address: addressToSet,
+        });
+      }
     } finally {
       setUploadingPassport(false);
     }
@@ -479,6 +477,9 @@ export default function CreateClientModal({ isOpen, onClose, onSuccess }) {
   // Check if Section 2 (Candidate & Financial Details) is unlocked
   const isStep2Unlocked = Boolean(passportDocData || passportPreviewUrl || selectedClient);
 
+  // Mid-stage flag: UNDER_PROCESS or OFFER_LETTER requires both Total Agreed and Total Paid
+  const isMidStage = targetStage === 'UNDER_PROCESS' || targetStage === 'OFFER_LETTER';
+
   // Submit Handler
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -516,10 +517,24 @@ export default function CreateClientModal({ isOpen, onClose, onSuccess }) {
     }
 
     // 3. Package Financial Validation
-    if (!formData.packageAmount || isNaN(Number(formData.packageAmount)) || Number(formData.packageAmount) <= 0) {
-      toast.error('Total agreed amount (BDT) is required.');
+    const totalAgreed = Number(formData.packageAmount) || 0;
+    if (!formData.packageAmount || isNaN(totalAgreed) || totalAgreed <= 0) {
+      toast.error('Total agreed amount (BDT) is required and must be greater than 0.');
       return;
     }
+
+    const totalPaid = isMidStage ? (Number(formData.totalPaid) || 0) : 0;
+    if (isMidStage) {
+      if (totalPaid < 0) {
+        toast.error('Total paid amount cannot be negative.');
+        return;
+      }
+      if (totalPaid > totalAgreed) {
+        toast.error('Total paid amount cannot exceed the total agreed package amount.');
+        return;
+      }
+    }
+    const remainingDue = Math.max(0, totalAgreed - totalPaid);
 
     // Destination Country Resolution
     let resolvedCountry = 'Greece';
@@ -589,11 +604,19 @@ export default function CreateClientModal({ isOpen, onClose, onSuccess }) {
           caseType: serviceType,
           serviceType: serviceType,
           status: targetStage,
-          packageCost: Number(formData.packageAmount) || 0,
-          packageAmount: Number(formData.packageAmount) || 0,
-          initialPaidAmount: 0,
-          advanceAmount: 0,
+          packageCost: totalAgreed,
+          packageAmount: totalAgreed,
+          initialPaidAmount: totalPaid,
+          advanceAmount: totalPaid,
           paymentMethod: 'Cash',
+          paymentLedger: {
+            totalAgreedAmount: totalAgreed,
+            step1_advance: totalPaid,
+            totalPaidAmount: totalPaid,
+            dueAmount: remainingDue,
+            isFullyPaid: totalAgreed > 0 && totalPaid >= totalAgreed,
+            paymentMethod: 'Cash',
+          },
           passportScan: passportDocData?.fileUrl || passportPreviewUrl || '',
           initialDocuments: allInitialDocs,
           remarks: formData.notes.trim() || formData.address.trim() || `Created in stage: ${targetStage}`,
@@ -1303,38 +1326,159 @@ export default function CreateClientModal({ isOpen, onClose, onSuccess }) {
                 </div>
 
                 {/* ── SECTION 6: PACKAGE DETAILS & FINANCIALS ─────────────────────── */}
-                <div className="p-4 rounded-2xl bg-black/[0.02] border border-black/10 space-y-3 shadow-2xs animate-in fade-in duration-200">
+                <div className="p-4 rounded-2xl bg-black/[0.02] border border-black/10 space-y-4 shadow-2xs animate-in fade-in duration-200">
                   <div className="flex items-center justify-between">
                     <label className="text-xs font-bold text-black flex items-center gap-1.5 uppercase tracking-wider">
                       <span className="size-5 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-[10px] font-black">6</span>
                       <span>Package & Financial Details</span>
                     </label>
-                    <span className="text-[10px] font-semibold text-black/50">Payments collected via assigned tasks</span>
+                    <span className="text-[10px] font-semibold text-black/50">
+                      {isMidStage ? 'Configured for advanced stage' : 'Payments collected via assigned tasks'}
+                    </span>
                   </div>
 
-                  <div className="max-w-md">
-                    <label className="text-xs font-semibold text-black/80 block mb-1.5">
-                      Total Agreed Amount (BDT) <span className="text-rose-500">*</span>
-                    </label>
-                    <div className="relative">
-                      <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs font-bold text-black/40 select-none">
-                        BDT
-                      </span>
-                      <input
-                        type="number"
-                        name="packageAmount"
-                        required
-                        min="1"
-                        placeholder="e.g. 450000"
-                        value={formData.packageAmount}
-                        onChange={handleChange}
-                        className="w-full pl-12 pr-3.5 py-2.5 text-sm rounded-xl border border-black/15 bg-white text-black font-mono font-bold focus:border-primary outline-hidden shadow-2xs"
-                      />
+                  {isMidStage ? (
+                    <div className="space-y-3.5">
+                      <div className="p-3 bg-amber-500/10 border border-amber-500/20 rounded-xl text-xs text-amber-950 flex items-start gap-2.5">
+                        <Sparkles className="size-4 text-amber-600 shrink-0 mt-0.5" />
+                        <div className="leading-relaxed">
+                          For <strong>{targetStage === 'UNDER_PROCESS' ? '2. Under Process' : '3. Offer Letter'}</strong> cases, specify both the <strong>Total Agreed Amount</strong> and any <strong>Total Paid</strong> amount collected so far. The remaining balance will be automatically calculated.
+                        </div>
+                      </div>
+
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                        <div>
+                          <label className="text-xs font-semibold text-black/80 block mb-1.5">
+                            Total Agreed Amount (BDT) <span className="text-rose-500">*</span>
+                          </label>
+                          <div className="relative">
+                            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs font-bold text-black/40 select-none">
+                              BDT
+                            </span>
+                            <input
+                              type="number"
+                              name="packageAmount"
+                              required
+                              min="1"
+                              placeholder="e.g. 450000"
+                              value={formData.packageAmount}
+                              onChange={handleChange}
+                              className="w-full pl-12 pr-3.5 py-2.5 text-sm rounded-xl border border-black/15 bg-white text-black font-mono font-bold focus:border-primary outline-hidden shadow-2xs"
+                            />
+                          </div>
+                          <p className="text-[11px] text-black/55 mt-1">
+                            Total agreed contract value for this case file.
+                          </p>
+                        </div>
+
+                        <div>
+                          <label className="text-xs font-semibold text-black/80 block mb-1.5">
+                            Total Paid So Far (BDT)
+                          </label>
+                          <div className="relative">
+                            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs font-bold text-black/40 select-none">
+                              BDT
+                            </span>
+                            <input
+                              type="number"
+                              name="totalPaid"
+                              min="0"
+                              placeholder="e.g. 150000"
+                              value={formData.totalPaid}
+                              onChange={handleChange}
+                              className="w-full pl-12 pr-3.5 py-2.5 text-sm rounded-xl border border-black/15 bg-white text-black font-mono font-bold focus:border-primary outline-hidden shadow-2xs"
+                            />
+                          </div>
+                          <p className="text-[11px] text-black/55 mt-1">
+                            Payment amount already collected from client up to this stage.
+                          </p>
+                        </div>
+                      </div>
+
+                      {/* Real-time Dynamic Financial Balance Card */}
+                      <div className="p-3.5 rounded-xl bg-white border border-black/10 shadow-2xs space-y-2.5">
+                        <div className="flex items-center justify-between text-[11px]">
+                          <span className="font-bold text-black/70 uppercase tracking-wider">
+                            Live Financial Balance Breakdown
+                          </span>
+                          {(Number(formData.packageAmount) || 0) > 0 && (
+                            <span className={`px-2 py-0.5 rounded-md font-bold text-[10px] border ${
+                              (Number(formData.totalPaid) || 0) >= (Number(formData.packageAmount) || 0)
+                                ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
+                                : (Number(formData.totalPaid) || 0) > 0
+                                ? 'bg-blue-50 text-blue-700 border-blue-200'
+                                : 'bg-zinc-50 text-zinc-700 border-zinc-200'
+                            }`}>
+                              {(Number(formData.totalPaid) || 0) >= (Number(formData.packageAmount) || 0)
+                                ? 'Fully Settled'
+                                : (Number(formData.totalPaid) || 0) > 0
+                                ? 'Partially Paid'
+                                : 'Full Balance Due'}
+                            </span>
+                          )}
+                        </div>
+
+                        <div className="grid grid-cols-3 gap-2 text-center">
+                          <div className="p-2.5 rounded-lg bg-black/[0.03] border border-black/5">
+                            <div className="text-[10px] text-black/50 font-medium">Total Agreed</div>
+                            <div className="text-xs sm:text-sm font-mono font-bold text-black mt-0.5">
+                              BDT {(Number(formData.packageAmount) || 0).toLocaleString()}
+                            </div>
+                          </div>
+                          <div className="p-2.5 rounded-lg bg-emerald-500/10 border border-emerald-500/20">
+                            <div className="text-[10px] text-emerald-800 font-medium">Total Paid</div>
+                            <div className="text-xs sm:text-sm font-mono font-bold text-emerald-700 mt-0.5">
+                              BDT {(Number(formData.totalPaid) || 0).toLocaleString()}
+                            </div>
+                          </div>
+                          <div className={`p-2.5 rounded-lg border ${
+                            (Number(formData.packageAmount) || 0) > 0 && (Number(formData.packageAmount) || 0) <= (Number(formData.totalPaid) || 0)
+                              ? 'bg-emerald-500/15 border-emerald-500/30'
+                              : 'bg-amber-500/10 border-amber-500/20'
+                          }`}>
+                            <div className="text-[10px] text-black/60 font-medium">Remaining Due</div>
+                            <div className={`text-xs sm:text-sm font-mono font-bold mt-0.5 ${
+                              (Number(formData.packageAmount) || 0) > 0 && (Number(formData.packageAmount) || 0) <= (Number(formData.totalPaid) || 0)
+                                ? 'text-emerald-800'
+                                : 'text-amber-700'
+                            }`}>
+                              BDT {Math.max(0, (Number(formData.packageAmount) || 0) - (Number(formData.totalPaid) || 0)).toLocaleString()}
+                            </div>
+                          </div>
+                        </div>
+
+                        {Number(formData.totalPaid) > Number(formData.packageAmount) && Number(formData.packageAmount) > 0 && (
+                          <div className="text-[11px] text-rose-600 font-bold animate-in fade-in">
+                            ⚠️ Total paid amount exceeds total agreed package price!
+                          </div>
+                        )}
+                      </div>
                     </div>
-                    <p className="text-[11px] text-black/55 mt-1.5">
-                      Total contract price for this case file. Payment collection tasks, invoices, and receipts will be handled directly through task assignment.
-                    </p>
-                  </div>
+                  ) : (
+                    <div className="max-w-md">
+                      <label className="text-xs font-semibold text-black/80 block mb-1.5">
+                        Total Agreed Amount (BDT) <span className="text-rose-500">*</span>
+                      </label>
+                      <div className="relative">
+                        <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs font-bold text-black/40 select-none">
+                          BDT
+                        </span>
+                        <input
+                          type="number"
+                          name="packageAmount"
+                          required
+                          min="1"
+                          placeholder="e.g. 450000"
+                          value={formData.packageAmount}
+                          onChange={handleChange}
+                          className="w-full pl-12 pr-3.5 py-2.5 text-sm rounded-xl border border-black/15 bg-white text-black font-mono font-bold focus:border-primary outline-hidden shadow-2xs"
+                        />
+                      </div>
+                      <p className="text-[11px] text-black/55 mt-1.5">
+                        Total contract price for this case file. In Intake stage, full amount remains due initially; payment collection tasks, invoices, and receipts will be handled directly through task assignment.
+                      </p>
+                    </div>
+                  )}
                 </div>
               </>
             )}
