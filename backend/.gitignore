@@ -11,12 +11,20 @@ img/
 RawUploads/
 RawUpload/
 
-# Runtime files
+# Runtime files & Environment
 .env
-.env.development
-.env.production
-.env.local
-.env.*.local
+.env.*
+*.env
+*.env.*
+**/example.env.*
+!example.env.example
+!.env.example
+!.env.dev.example
+*credentials*
+*credential*
+*.key
+*.pem
+*.token
 
 # Logs
 npm-debug.log*

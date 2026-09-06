@@ -41,12 +41,20 @@ import { usePortalStore } from '../../store/usePortalStore';
 import { FileViewerModal } from '@shared/components/common/FileViewerModal';
 
 const PIPELINE_STAGES = [
-  { id: 'ENTRY', title: 'New Entry' },
-  { id: 'PROCESSING', title: 'Processing' },
-  { id: 'APPROVED_OFFER_LETTER', title: 'Offer Letter Approved' },
-  { id: 'SUBMITTED_EMBASSY_BSF', title: 'Embassy / VFS Submitted' },
-  { id: 'COMPLETED_DELIVERED', title: 'Completed & Delivered' },
+  { id: 'INTAKE', title: '1. File Intake' },
+  { id: 'UNDER_PROCESS', title: '2. Under Process' },
+  { id: 'OFFER_LETTER', title: '3. Offer Letter' },
+  { id: 'COMPLETED', title: '4. Completed' },
 ];
+
+const getCanonicalStage = (status) => {
+  const st = String(status || '').toUpperCase();
+  if (st === 'ENTRY' || st === 'INTAKE') return 'INTAKE';
+  if (st === 'PROCESSING' || st === 'UNDER_PROCESS' || st === 'SUBMITTED_EMBASSY_BSF') return 'UNDER_PROCESS';
+  if (st === 'APPROVED_OFFER_LETTER' || st === 'OFFER_LETTER' || st === 'FLIGHT_BOOKED') return 'OFFER_LETTER';
+  if (st === 'COMPLETED_DELIVERED' || st === 'COMPLETED') return 'COMPLETED';
+  return 'INTAKE';
+};
 
 const ALL_STUDIO_GENERATORS = [
   {
@@ -219,6 +227,7 @@ export function CaseWorkspaceDrawer({ caseId, isOpen, onClose, onRefresh }) {
   // Filter permitted studio generators for currently logged-in staff role
   const userRole = String(user?.role || '').toLowerCase();
   const userSubRole = String(user?.subRole || user?.sub_role || user?.designation || '').toLowerCase();
+  const isAdminOrOwner = ['admin', 'owner', 'superadmin'].includes(userRole);
 
   const permittedStudioGenerators = ALL_STUDIO_GENERATORS.filter((gen) => {
     if (['admin', 'owner', 'superadmin', 'manager'].includes(userRole)) return true;
@@ -297,10 +306,14 @@ export function CaseWorkspaceDrawer({ caseId, isOpen, onClose, onRefresh }) {
   if (!isOpen) return null;
 
   const handleStageChange = async (newStatus) => {
+    if (!isAdminOrOwner) {
+      toast.error('Stage progression is restricted to Admin or Owner accounts.');
+      return;
+    }
     try {
       await apiClient.patch(`/api/v1/client/cases/${caseId}/workflow`, {
         status: newStatus,
-        remarks: `Staff moved status to ${newStatus}`,
+        remarks: `${user?.name || 'Admin'} updated status to ${newStatus}`,
       });
       toast.success(`Case stage updated to ${newStatus.replace(/_/g, ' ')}`);
       fetchCaseDetails();
@@ -622,9 +635,27 @@ export function CaseWorkspaceDrawer({ caseId, isOpen, onClose, onRefresh }) {
           <div className="px-6 py-3 bg-muted/20 border-b border-border flex flex-wrap items-center justify-between gap-3">
             <div className="flex items-center gap-2">
               <span className="text-xs font-bold text-muted-foreground uppercase">Processing Stage:</span>
-              <span className="px-3 py-1 text-xs font-bold rounded-xl bg-primary/10 text-primary border border-primary/20">
-                {PIPELINE_STAGES.find((st) => st.id === (caseData.status || 'ENTRY'))?.title || caseData.status || 'Processing'}
-              </span>
+              {isAdminOrOwner ? (
+                <select
+                  value={getCanonicalStage(caseData.status)}
+                  onChange={(e) => handleStageChange(e.target.value)}
+                  className="px-2.5 py-1 text-xs font-bold rounded-xl bg-primary/10 text-primary border border-primary/20 outline-hidden cursor-pointer"
+                >
+                  {PIPELINE_STAGES.map((st) => (
+                    <option key={st.id} value={st.id} className="bg-background text-foreground">
+                      {st.title}
+                    </option>
+                  ))}
+                </select>
+              ) : (
+                <span
+                  className="inline-flex items-center gap-1.5 px-3 py-1 text-xs font-bold rounded-xl bg-muted text-muted-foreground border border-border"
+                  title="Stage advancement is restricted to Admin/Owner authority"
+                >
+                  <Lock className="size-3 text-muted-foreground" />
+                  {PIPELINE_STAGES.find((st) => st.id === getCanonicalStage(caseData.status))?.title || caseData.status || '1. File Intake'}
+                </span>
+              )}
             </div>
 
             <div className="flex items-center gap-2 text-xs">

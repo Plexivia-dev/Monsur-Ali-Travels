@@ -46,10 +46,10 @@ import { PageTitle } from '@shared/components/layout/PageTitle';
 
 const STAGES = [
   {
-    id: 'ENTRY',
+    id: 'INTAKE',
     title: '1. File Intake',
-    titleBn: '',
-    stageName: 'File Intake',
+    titleBn: 'ফাইল ইনটেক',
+    stageName: '1. File Intake',
     badgeColor: 'bg-black/[0.04] text-black border-black/15',
     headerBg: 'bg-black/[0.02] border-black/10',
     accentColor: 'text-black/70',
@@ -57,10 +57,10 @@ const STAGES = [
     icon: FolderOpen,
   },
   {
-    id: 'PROCESSING',
-    title: '2. Document Processing',
-    titleBn: '',
-    stageName: 'Processing',
+    id: 'UNDER_PROCESS',
+    title: '2. Under Process',
+    titleBn: 'আন্ডার প্রসেস',
+    stageName: '2. Under Process',
     badgeColor: 'bg-sky-500/10 text-sky-700 border-sky-300',
     headerBg: 'bg-sky-50/50 border-sky-200',
     accentColor: 'text-sky-600',
@@ -68,10 +68,10 @@ const STAGES = [
     icon: Layers,
   },
   {
-    id: 'APPROVED_OFFER_LETTER',
-    title: '3. Offer Approved',
-    titleBn: '',
-    stageName: 'Offer Approved',
+    id: 'OFFER_LETTER',
+    title: '3. Offer Letter Approved',
+    titleBn: 'অফার লেটার',
+    stageName: '3. Offer Letter',
     badgeColor: 'bg-indigo-500/10 text-indigo-700 border-indigo-300',
     headerBg: 'bg-indigo-50/50 border-indigo-200',
     accentColor: 'text-indigo-600',
@@ -79,25 +79,14 @@ const STAGES = [
     icon: Award,
   },
   {
-    id: 'SUBMITTED_EMBASSY_BSF',
-    title: '4. Embassy / VFS',
-    titleBn: '',
-    stageName: 'Embassy / VFS',
-    badgeColor: 'bg-amber-500/10 text-amber-700 border-amber-300',
-    headerBg: 'bg-amber-50/50 border-amber-200',
-    accentColor: 'text-amber-600',
-    stepNumber: 4,
-    icon: UserCheck,
-  },
-  {
-    id: 'COMPLETED_DELIVERED',
-    title: '5. Visa Delivered',
-    titleBn: '',
-    stageName: 'Delivered',
+    id: 'COMPLETED',
+    title: '4. Visa Delivered',
+    titleBn: 'ডেলিভারি / সম্পন্ন',
+    stageName: '4. Visa Delivered',
     badgeColor: 'bg-emerald-500/10 text-emerald-700 border-emerald-300',
     headerBg: 'bg-emerald-50/50 border-emerald-200',
     accentColor: 'text-emerald-600',
-    stepNumber: 5,
+    stepNumber: 4,
     icon: Plane,
   },
 ];
@@ -165,24 +154,24 @@ function getDestinationChip(c) {
 }
 
 // Helper: Formats Stage Badge
-function getStageBadge(stKey) {
-  const st = String(stKey || 'ENTRY').toUpperCase();
-  if (st === 'ENTRY' || st === 'NEW') {
-    return { label: 'File Intake', color: 'bg-black/[0.04] text-black border-black/15' };
+function getStageBadge(status, workflowStatus) {
+  const st = String(status || workflowStatus || 'INTAKE').toUpperCase();
+  if (st === 'ENTRY' || st === 'INTAKE' || st === 'NEW') {
+    return { label: '1. File Intake', color: 'bg-black/[0.04] text-black border-black/15' };
   }
-  if (st === 'PROCESSING') {
-    return { label: 'Processing', color: 'bg-sky-500/10 text-sky-700 border-sky-300' };
+  if (st === 'PROCESSING' || st === 'UNDER_PROCESS') {
+    return { label: '2. Under Process', color: 'bg-sky-500/10 text-sky-700 border-sky-300' };
   }
-  if (st === 'APPROVED_OFFER_LETTER' || st === 'FLIGHT_BOOKED') {
-    return { label: 'Offer Approved', color: 'bg-indigo-500/10 text-indigo-700 border-indigo-300' };
+  if (st === 'APPROVED_OFFER_LETTER' || st === 'OFFER_LETTER' || st === 'FLIGHT_BOOKED') {
+    return { label: '3. Offer Letter', color: 'bg-indigo-500/10 text-indigo-700 border-indigo-300' };
+  }
+  if (st === 'COMPLETED_DELIVERED' || st === 'COMPLETED') {
+    return { label: '4. Visa Delivered', color: 'bg-emerald-500/10 text-emerald-700 border-emerald-300' };
   }
   if (st === 'SUBMITTED_EMBASSY_BSF' || st === 'VISA_SUBMITTED') {
     return { label: 'Embassy / VFS', color: 'bg-amber-500/10 text-amber-700 border-amber-300' };
   }
-  if (st === 'COMPLETED_DELIVERED' || st === 'COMPLETED') {
-    return { label: 'Visa Delivered', color: 'bg-emerald-500/10 text-emerald-700 border-emerald-300' };
-  }
-  return { label: stKey || 'Active', color: 'bg-muted text-muted-foreground border-border' };
+  return { label: status || workflowStatus || 'Active', color: 'bg-muted text-muted-foreground border-border' };
 }
 
 // Helper: Formats Date and Time
@@ -196,6 +185,108 @@ function formatDateTime(dateStr) {
     hour: '2-digit',
     minute: '2-digit',
   });
+}
+
+// Helper: Extracts Candidate Triad Identity
+function getCandidateTriad(c) {
+  const photoUrl =
+    c.attachments?.photo ||
+    c.clientInfo?.attachments?.photo ||
+    c.photo ||
+    c.clientInfo?.photo ||
+    c.vaultDocuments?.find((d) =>
+      /photo|picture|2x2|ছবি|image|portrait/i.test(d.documentName || d.fileName || '')
+    )?.fileUrl ||
+    null;
+
+  const passportScanUrl =
+    c.attachments?.passport ||
+    c.clientInfo?.attachments?.passport ||
+    c.passportScan ||
+    c.vaultDocuments?.find((d) =>
+      /passport|পাসপোর্ট/i.test(d.documentName || d.fileName || '')
+    )?.fileUrl ||
+    null;
+
+  const clientName = c.applicantName || c.clientName || c.clientInfo?.fullName || 'Unnamed Client';
+  const fatherName = c.fatherName || c.extraData?.fatherName || c.clientInfo?.fatherName || '';
+  const district =
+    c.district ||
+    c.clientInfo?.district ||
+    c.presentAddress ||
+    c.extraData?.presentAddress ||
+    c.clientInfo?.presentAddress ||
+    '';
+
+  const passportNumber = (c.passportNumber || c.clientInfo?.passportNumber || '').toUpperCase().trim();
+
+  const initials = (clientName || 'C')
+    .split(' ')
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((n) => n[0].toUpperCase())
+    .join('');
+
+  return {
+    photoUrl,
+    passportScanUrl,
+    clientName,
+    fatherName,
+    district,
+    passportNumber,
+    initials,
+  };
+}
+
+// Helper: 1-Click Hover Passport Chip with Live Quick Peek Popover
+function PassportChipPopover({ passportNumber, passportScanUrl }) {
+  if (!passportNumber && !passportScanUrl) {
+    return <span className="font-mono text-[10px] text-muted-foreground font-semibold">No Passport</span>;
+  }
+
+  return (
+    <div className="relative group/passport inline-block" onClick={(e) => e.stopPropagation()}>
+      <button
+        type="button"
+        onClick={(e) => {
+          e.stopPropagation();
+          if (passportScanUrl) {
+            window.open(passportScanUrl, '_blank', 'noopener,noreferrer');
+          } else {
+            toast.info(`Passport: ${passportNumber}`);
+          }
+        }}
+        className="font-mono text-[11px] font-bold px-2 py-0.5 rounded-lg bg-black/[0.04] dark:bg-white/10 hover:bg-black/[0.08] dark:hover:bg-white/20 border border-black/15 dark:border-white/15 text-foreground flex items-center gap-1 cursor-pointer transition select-none"
+        title={passportScanUrl ? 'Click to open full scan' : 'Candidate Passport'}
+      >
+        <span>🛂</span>
+        <span>{passportNumber || 'VIEW SCAN'}</span>
+      </button>
+
+      {/* Hover Quick-Peek Floating Popover */}
+      <div className="absolute bottom-full left-0 mb-2 hidden group-hover/passport:flex flex-col w-56 p-2.5 bg-white dark:bg-zinc-900 border border-black/10 dark:border-zinc-800 rounded-xl shadow-2xl z-50 pointer-events-none animate-in fade-in zoom-in-95 duration-150">
+        <div className="flex items-center justify-between border-b border-black/10 dark:border-zinc-800 pb-1.5 mb-1.5">
+          <span className="text-[10px] font-bold uppercase tracking-wider text-black/60 dark:text-white/60">Passport Quick Peek</span>
+          <span className="font-mono text-[10px] font-bold text-primary">{passportNumber || '—'}</span>
+        </div>
+        {passportScanUrl ? (
+          <div className="rounded-lg overflow-hidden border border-black/10 dark:border-zinc-800 bg-muted/30 max-h-32 flex items-center justify-center">
+            {passportScanUrl.toLowerCase().endsWith('.pdf') ? (
+              <div className="p-3 text-center">
+                <FileText className="size-6 text-primary mx-auto mb-1" />
+                <span className="text-[10px] text-muted-foreground font-semibold">PDF Bio-Page Scan</span>
+              </div>
+            ) : (
+              <img src={passportScanUrl} alt="Passport Scan" className="w-full h-auto max-h-32 object-contain" />
+            )}
+          </div>
+        ) : (
+          <p className="text-[10px] text-muted-foreground italic py-1">No scan attached yet</p>
+        )}
+        <span className="text-[9px] text-muted-foreground mt-1 text-center font-medium">Click chip to open document</span>
+      </div>
+    </div>
+  );
 }
 
 export default function CaseWorkflow() {
@@ -285,26 +376,46 @@ export default function CaseWorkflow() {
         matchesDest = dest.includes(destinationFilter.toLowerCase());
       }
 
-      // Stage Filter
+      // Stage Filter (CRITICAL FIX: checks c.status FIRST)
       let matchesStage = true;
       if (activeStageFilter !== 'all') {
-        const st = String(c.workflowStatus || c.status || 'ENTRY').toUpperCase();
-        if (activeStageFilter === 'ENTRY') matchesStage = st === 'ENTRY' || st === 'NEW';
-        else if (activeStageFilter === 'PROCESSING') matchesStage = st === 'PROCESSING';
-        else if (activeStageFilter === 'APPROVED_OFFER_LETTER') matchesStage = st === 'APPROVED_OFFER_LETTER' || st === 'FLIGHT_BOOKED';
-        else if (activeStageFilter === 'SUBMITTED_EMBASSY_BSF') matchesStage = st === 'SUBMITTED_EMBASSY_BSF' || st === 'VISA_SUBMITTED';
-        else if (activeStageFilter === 'COMPLETED_DELIVERED') matchesStage = st === 'COMPLETED_DELIVERED' || st === 'COMPLETED';
+        const st = String(c.status || c.workflowStatus || 'INTAKE').toUpperCase();
+        if (activeStageFilter === 'INTAKE' || activeStageFilter === 'ENTRY') {
+          matchesStage = st === 'ENTRY' || st === 'INTAKE' || st === 'NEW';
+        } else if (activeStageFilter === 'UNDER_PROCESS' || activeStageFilter === 'PROCESSING') {
+          matchesStage = st === 'PROCESSING' || st === 'UNDER_PROCESS';
+        } else if (activeStageFilter === 'OFFER_LETTER' || activeStageFilter === 'APPROVED_OFFER_LETTER') {
+          matchesStage = st === 'APPROVED_OFFER_LETTER' || st === 'OFFER_LETTER' || st === 'FLIGHT_BOOKED';
+        } else if (activeStageFilter === 'COMPLETED' || activeStageFilter === 'COMPLETED_DELIVERED') {
+          matchesStage = st === 'COMPLETED_DELIVERED' || st === 'COMPLETED';
+        }
       }
 
       return matchesSearch && matchesDest && matchesStage;
     });
   }, [cases, search, destinationFilter, activeStageFilter]);
 
-  // KPIs
+  // Master Counter Metrics (Immutable, never disappearing when searching)
   const totalCases = cases.length;
-  const inProcessing = cases.filter((c) => c.status === 'PROCESSING' || c.status === 'APPROVED_OFFER_LETTER').length;
-  const inEmbassy = cases.filter((c) => c.status === 'SUBMITTED_EMBASSY_BSF').length;
-  const delivered = cases.filter((c) => c.status === 'COMPLETED_DELIVERED').length;
+  const intakeCount = useMemo(() => cases.filter((c) => {
+    const st = String(c.status || c.workflowStatus || 'INTAKE').toUpperCase();
+    return st === 'ENTRY' || st === 'INTAKE' || st === 'NEW';
+  }).length, [cases]);
+
+  const underProcessCount = useMemo(() => cases.filter((c) => {
+    const st = String(c.status || c.workflowStatus || '').toUpperCase();
+    return st === 'PROCESSING' || st === 'UNDER_PROCESS';
+  }).length, [cases]);
+
+  const offerLetterCount = useMemo(() => cases.filter((c) => {
+    const st = String(c.status || c.workflowStatus || '').toUpperCase();
+    return st === 'APPROVED_OFFER_LETTER' || st === 'OFFER_LETTER' || st === 'FLIGHT_BOOKED';
+  }).length, [cases]);
+
+  const deliveredCount = useMemo(() => cases.filter((c) => {
+    const st = String(c.status || c.workflowStatus || '').toUpperCase();
+    return st === 'COMPLETED_DELIVERED' || st === 'COMPLETED';
+  }).length, [cases]);
 
   const handleExportCsv = () => {
     if (filteredCases.length === 0) {
@@ -316,7 +427,7 @@ export default function CaseWorkflow() {
 
     for (const c of filteredCases) {
       const chip = getDestinationChip(c);
-      const st = getStageBadge(c.workflowStatus || c.status);
+      const st = getStageBadge(c.status, c.workflowStatus);
       const officer = c.assignedToName || c.assignedTo?.name || c.assignedOfficer || c.workflowTasks?.[c.workflowTasks?.length - 1]?.assignedToName || 'Unassigned';
       const updated = formatDateTime(c.updatedAt || c.createdAt);
 
@@ -347,7 +458,7 @@ export default function CaseWorkflow() {
       {/* Top Banner Control Center */}
       <PageTitle
         title="Case Files & Overseas Pipeline"
-        subtitle="5-Column card grid and column views. Track client stages, passport files, assigned officers, and open full 360° dossiers instantly."
+        subtitle="4-Stage canonical workflow grid and table views. Track candidate files, passport identity, assigned officers, and full dossiers."
         icon={FolderOpen}
         actions={
           <>
@@ -380,6 +491,50 @@ export default function CaseWorkflow() {
           </>
         }
       />
+
+      {/* Persistent Global Master Counter Banner (Never disappearing during search) */}
+      <div className="bg-white dark:bg-zinc-950 border border-black/10 dark:border-zinc-800 rounded-2xl p-4 sm:p-5 shadow-xs flex flex-wrap items-center justify-between gap-4">
+        <div className="flex items-center gap-3.5">
+          <div className="size-11 rounded-2xl bg-black/[0.04] dark:bg-white/10 flex items-center justify-center text-foreground shrink-0 border border-black/10 dark:border-white/10 text-xl font-bold">
+            📁
+          </div>
+          <div>
+            <div className="flex items-center gap-2.5 flex-wrap">
+              <span className="text-sm sm:text-base font-black text-foreground">
+                Total Active Cases: <span className="font-mono text-primary text-base sm:text-lg">{totalCases}</span>
+              </span>
+              {(search.trim() || destinationFilter !== 'all' || activeStageFilter !== 'all') && (
+                <span className="text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-primary/10 text-primary border border-primary/20">
+                  Showing {filteredCases.length} of {totalCases} total active cases
+                </span>
+              )}
+            </div>
+            <p className="text-xs text-muted-foreground mt-0.5">
+              Permanent operational docket counter across all candidate dossiers and stages.
+            </p>
+          </div>
+        </div>
+
+        {/* Stage Micro Counters */}
+        <div className="flex items-center gap-2 flex-wrap text-xs font-semibold">
+          <div className="px-3 py-1.5 rounded-xl bg-black/[0.03] dark:bg-white/5 border border-black/10 dark:border-white/10 flex items-center gap-1.5">
+            <span className="text-muted-foreground">📥 Intake:</span>
+            <span className="font-mono font-bold text-foreground">{intakeCount}</span>
+          </div>
+          <div className="px-3 py-1.5 rounded-xl bg-sky-500/10 border border-sky-500/20 text-sky-700 dark:text-sky-400 flex items-center gap-1.5">
+            <span>⚙️ Processing:</span>
+            <span className="font-mono font-bold">{underProcessCount}</span>
+          </div>
+          <div className="px-3 py-1.5 rounded-xl bg-indigo-500/10 border border-indigo-500/20 text-indigo-700 dark:text-indigo-400 flex items-center gap-1.5">
+            <span>📜 Offer Letter:</span>
+            <span className="font-mono font-bold">{offerLetterCount}</span>
+          </div>
+          <div className="px-3 py-1.5 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-700 dark:text-emerald-400 flex items-center gap-1.5">
+            <span>✈️ Delivered:</span>
+            <span className="font-mono font-bold">{deliveredCount}</span>
+          </div>
+        </div>
+      </div>
 
       {/* Filter & View Switcher Bar */}
       <div className="bg-card border border-border p-4 rounded-2xl shadow-xs space-y-4">
@@ -419,8 +574,8 @@ export default function CaseWorkflow() {
             <button
               type="button"
               onClick={() => setViewMode('grid')}
-              title="5-Col Grid View"
-              aria-label="5-Col Grid View"
+              title="4-Col Grid View"
+              aria-label="4-Col Grid View"
               className={`p-2 rounded-lg transition cursor-pointer flex items-center justify-center ${
                 viewMode === 'grid'
                   ? 'bg-card text-primary shadow-xs border border-border'
@@ -445,7 +600,7 @@ export default function CaseWorkflow() {
           </div>
         </div>
 
-        {/* Stage Filter Quick Pills */}
+        {/* Stage Filter Quick Pills (checking c.status FIRST) */}
         <div className="flex items-center gap-1.5 overflow-x-auto pb-1 no-scrollbar border-t border-border pt-3">
           <button
             type="button"
@@ -461,12 +616,11 @@ export default function CaseWorkflow() {
 
           {STAGES.map((s) => {
             const count = cases.filter((c) => {
-              const st = String(c.workflowStatus || c.status || 'ENTRY').toUpperCase();
-              if (s.id === 'ENTRY') return st === 'ENTRY' || st === 'NEW';
-              if (s.id === 'PROCESSING') return st === 'PROCESSING';
-              if (s.id === 'APPROVED_OFFER_LETTER') return st === 'APPROVED_OFFER_LETTER' || st === 'FLIGHT_BOOKED';
-              if (s.id === 'SUBMITTED_EMBASSY_BSF') return st === 'SUBMITTED_EMBASSY_BSF' || st === 'VISA_SUBMITTED';
-              if (s.id === 'COMPLETED_DELIVERED') return st === 'COMPLETED_DELIVERED' || st === 'COMPLETED';
+              const st = String(c.status || c.workflowStatus || 'INTAKE').toUpperCase();
+              if (s.id === 'INTAKE') return st === 'ENTRY' || st === 'INTAKE' || st === 'NEW';
+              if (s.id === 'UNDER_PROCESS') return st === 'PROCESSING' || st === 'UNDER_PROCESS';
+              if (s.id === 'OFFER_LETTER') return st === 'APPROVED_OFFER_LETTER' || st === 'OFFER_LETTER' || st === 'FLIGHT_BOOKED';
+              if (s.id === 'COMPLETED') return st === 'COMPLETED_DELIVERED' || st === 'COMPLETED';
               return false;
             }).length;
 
@@ -509,13 +663,13 @@ export default function CaseWorkflow() {
           <span className="text-xs text-muted-foreground">Try clearing search filters or add a new client file.</span>
         </div>
       ) : viewMode === 'grid' ? (
-        /* ── 5 COLUMNS IN A ROW: CARD GRID VIEW ───────────────────────────────── */
+        /* ── CARD GRID VIEW WITH TRIAD IDENTITY ───────────────────────────────── */
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
           {filteredCases.map((c) => {
             const caseId = c.did || c._id;
             const chip = getDestinationChip(c);
-            const stage = getStageBadge(c.workflowStatus || c.status);
-            const clientName = c.applicantName || c.clientName || 'Unnamed Client';
+            const stage = getStageBadge(c.status, c.workflowStatus);
+            const triad = getCandidateTriad(c);
             const officerName = c.assignedToName || c.assignedTo?.name || c.assignedOfficer || c.workflowTasks?.[c.workflowTasks?.length - 1]?.assignedToName || 'Unassigned';
             const lastUpdated = formatDateTime(c.updatedAt || c.createdAt);
 
@@ -528,8 +682,8 @@ export default function CaseWorkflow() {
                 {/* Top Accent bar */}
                 <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-primary/40 via-primary to-sky-400 opacity-0 group-hover:opacity-100 transition-opacity" />
 
-                <div className="space-y-2.5">
-                  {/* Row 1: Chip (Country / Indian Visa) */}
+                <div className="space-y-3">
+                  {/* Row 1: Chip (Country / Indian Visa) & Case File Number */}
                   <div className="flex items-center justify-between gap-1.5">
                     <span
                       className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-bold border ${chip.color}`}
@@ -537,19 +691,44 @@ export default function CaseWorkflow() {
                       {chip.icon}
                       <span className="truncate max-w-[120px]">{chip.label}</span>
                     </span>
-                    <span className="text-[10px] font-mono text-muted-foreground font-bold truncate max-w-[70px]">
+                    <span className="text-[10px] font-mono text-muted-foreground font-bold truncate max-w-[75px]">
                       {c.caseNumber || c.fileNumber || ''}
                     </span>
                   </div>
 
-                  {/* Row 2: Client Name */}
+                  {/* Triad Identity: 40×40px Photo Avatar + Full Name + S/O Father + District */}
+                  <div className="flex items-start gap-2.5 pt-0.5">
+                    <div className="size-10 rounded-xl overflow-hidden shrink-0 border border-black/10 dark:border-white/10 bg-black/[0.04] dark:bg-white/5 flex items-center justify-center font-bold text-xs text-foreground shadow-2xs">
+                      {triad.photoUrl ? (
+                        <img
+                          src={triad.photoUrl}
+                          alt={triad.clientName}
+                          className="size-full object-cover"
+                          onError={(e) => {
+                            e.target.style.display = 'none';
+                          }}
+                        />
+                      ) : (
+                        <span>{triad.initials}</span>
+                      )}
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <h3 className="text-sm font-bold text-foreground group-hover:text-primary transition-colors leading-tight line-clamp-1">
+                        {triad.clientName}
+                      </h3>
+                      <p className="text-[11px] text-muted-foreground truncate mt-0.5">
+                        {triad.fatherName ? `S/O: ${triad.fatherName}` : 'S/O: —'}
+                        {triad.district ? ` • ${triad.district}` : ''}
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Monospace Passport Chip with 1-Click Hover Popover Quick Peek */}
                   <div className="pt-0.5">
-                    <span className="text-[11px] text-muted-foreground font-semibold uppercase tracking-wider block">
-                      Client name:
-                    </span>
-                    <h3 className="text-sm font-bold text-foreground group-hover:text-primary transition-colors leading-tight line-clamp-1 mt-0.5">
-                      {clientName}
-                    </h3>
+                    <PassportChipPopover
+                      passportNumber={triad.passportNumber}
+                      passportScanUrl={triad.passportScanUrl}
+                    />
                   </div>
 
                   {/* GAP & Middle Details: Assigned To & Stage */}
@@ -557,7 +736,7 @@ export default function CaseWorkflow() {
                     {/* Assigned to: <Avatar> Name */}
                     <div className="flex items-center justify-between gap-2">
                       <span className="text-[11px] text-muted-foreground font-medium shrink-0">
-                        Assigned to :
+                        Assigned to:
                       </span>
                       <div className="flex items-center gap-1.5 min-w-0">
                         <div className="size-5 rounded-full bg-primary/10 text-primary flex items-center justify-center font-bold text-[10px] shrink-0 border border-primary/20">
@@ -614,17 +793,17 @@ export default function CaseWorkflow() {
           })}
         </div>
       ) : (
-        /* ── COLUMN / TABLE VIEW ─────────────────────────────────────────────── */
+        /* ── COLUMN / TABLE VIEW WITH TRIAD IDENTITY ─────────────────────────── */
         <div className="bg-card border border-border rounded-2xl shadow-xs overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full text-xs text-left border-collapse">
               <thead className="bg-muted/40 uppercase text-muted-foreground border-b border-border text-[11px] font-bold tracking-wider">
                 <tr>
                   <th className="px-4 py-3">Destination / Type</th>
-                  <th className="px-4 py-3">Client Name</th>
+                  <th className="px-4 py-3">Candidate Triad Identity</th>
+                  <th className="px-4 py-3">Passport &amp; Contact</th>
                   <th className="px-4 py-3">Assigned To</th>
                   <th className="px-4 py-3">Current Stage</th>
-                  <th className="px-4 py-3">Contact & Passport</th>
                   <th className="px-4 py-3">Last Updated</th>
                   <th className="px-4 py-3 text-right">Actions</th>
                 </tr>
@@ -633,8 +812,8 @@ export default function CaseWorkflow() {
                 {filteredCases.map((c) => {
                   const caseId = c.did || c._id;
                   const chip = getDestinationChip(c);
-                  const stage = getStageBadge(c.workflowStatus || c.status);
-                  const clientName = c.applicantName || c.clientName || 'Unnamed Client';
+                  const stage = getStageBadge(c.status, c.workflowStatus);
+                  const triad = getCandidateTriad(c);
                   const officerName = c.assignedToName || c.assignedTo?.name || c.assignedOfficer || c.workflowTasks?.[c.workflowTasks?.length - 1]?.assignedToName || 'Unassigned';
                   const lastUpdated = formatDateTime(c.updatedAt || c.createdAt);
 
@@ -654,15 +833,46 @@ export default function CaseWorkflow() {
                         </span>
                       </td>
 
-                      {/* Client Name */}
+                      {/* Triad Identity: Photo Avatar + Full Name + S/O Father + District */}
                       <td className="px-4 py-3.5">
-                        <div className="flex flex-col">
-                          <span className="font-bold text-foreground group-hover:text-primary transition-colors text-xs">
-                            {clientName}
-                          </span>
-                          <span className="font-mono text-[10px] text-muted-foreground">
-                            {c.caseNumber || c.fileNumber || '—'}
-                          </span>
+                        <div className="flex items-center gap-3">
+                          <div className="size-10 rounded-xl overflow-hidden shrink-0 border border-black/10 dark:border-white/10 bg-black/[0.04] dark:bg-white/5 flex items-center justify-center font-bold text-xs text-foreground shadow-2xs">
+                            {triad.photoUrl ? (
+                              <img
+                                src={triad.photoUrl}
+                                alt={triad.clientName}
+                                className="size-full object-cover"
+                                onError={(e) => {
+                                  e.target.style.display = 'none';
+                                }}
+                              />
+                            ) : (
+                              <span>{triad.initials}</span>
+                            )}
+                          </div>
+                          <div className="flex flex-col min-w-0">
+                            <span className="font-bold text-foreground group-hover:text-primary transition-colors text-xs truncate">
+                              {triad.clientName}
+                            </span>
+                            <span className="text-[11px] text-muted-foreground truncate">
+                              {triad.fatherName ? `S/O: ${triad.fatherName}` : 'S/O: —'}
+                              {triad.district ? ` • ${triad.district}` : ''}
+                            </span>
+                            <span className="font-mono text-[10px] text-muted-foreground mt-0.5">
+                              {c.caseNumber || c.fileNumber || '—'}
+                            </span>
+                          </div>
+                        </div>
+                      </td>
+
+                      {/* Contact & Monospace Passport Chip with Hover Popover */}
+                      <td className="px-4 py-3.5">
+                        <div className="space-y-1">
+                          {c.phone && <div className="text-[11px] text-muted-foreground">{c.phone}</div>}
+                          <PassportChipPopover
+                            passportNumber={triad.passportNumber}
+                            passportScanUrl={triad.passportScanUrl}
+                          />
                         </div>
                       </td>
 
@@ -683,18 +893,6 @@ export default function CaseWorkflow() {
                         >
                           {stage.label}
                         </span>
-                      </td>
-
-                      {/* Contact & Passport */}
-                      <td className="px-4 py-3.5">
-                        <div className="space-y-0.5">
-                          {c.phone && <div className="text-[11px] text-muted-foreground">{c.phone}</div>}
-                          {c.passportNumber && (
-                            <div className="font-mono font-bold text-sky-600 text-[11px]">
-                              {c.passportNumber}
-                            </div>
-                          )}
-                        </div>
                       </td>
 
                       {/* Last Updated */}

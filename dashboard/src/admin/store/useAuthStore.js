@@ -10,7 +10,13 @@ const readCachedUser = () => {
   try {
     const raw = localStorage.getItem('user');
     const token = localStorage.getItem('accessToken');
-    return raw && token ? JSON.parse(raw) : null;
+    if (!raw || !token) return null;
+    const parsed = JSON.parse(raw);
+    const role = parsed?.role;
+    if (!role || !ROLES_ADMIN.map((r) => r.toLowerCase()).includes(String(role).toLowerCase())) {
+      return null;
+    }
+    return parsed;
   } catch {
     return null;
   }

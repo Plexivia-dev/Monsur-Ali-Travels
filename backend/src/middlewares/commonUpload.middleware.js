@@ -40,7 +40,10 @@ const storage = multer.diskStorage({
     }
 
     const defaultRoot = 'uploads';
-    const targetDir = path.join(process.cwd(), defaultRoot, ...subPathParts);
+    const uploadsBase = process.env.UPLOAD_PATH
+      ? (path.isAbsolute(process.env.UPLOAD_PATH) ? process.env.UPLOAD_PATH : path.join(process.cwd(), process.env.UPLOAD_PATH))
+      : path.join(process.cwd(), defaultRoot);
+    const targetDir = path.join(uploadsBase, ...subPathParts);
 
     if (!fs.existsSync(targetDir)) {
       fs.mkdirSync(targetDir, { recursive: true });

@@ -131,12 +131,12 @@ export default defineConfig({
     open: false,
     proxy: {
       '/uploads': {
-        target: 'https://api.monsuralitravels.com',
+        target: 'https://server.plexivia.online',
         changeOrigin: true,
         secure: false,
       },
       '/documents': {
-        target: 'https://api.monsuralitravels.com',
+        target: 'https://server.plexivia.online',
         changeOrigin: true,
         secure: false,
       },

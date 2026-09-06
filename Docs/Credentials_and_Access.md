@@ -79,6 +79,33 @@ SMTP_FROM_NAME=Monsur Ali Travels
 
 ---
 
+## 3.1. SMTP Email Credentials (Development — Plexivia)
+
+| Field              | Value                                    |
+| :----------------- | :--------------------------------------- |
+| **Email Address**  | `info@plexivia.com`                      |
+| **SMTP Host**      | `roxy.us.webxlogin.com`                  |
+| **SMTP Port**      | `465` (SSL) / `587` (TLS)                |
+| **SMTP User**      | `info@plexivia.com`                      |
+| **SMTP Password**  | `[REDACTED_FOR_SECURITY]`                |
+| **Encryption**     | `SSL`                                    |
+| **From Name**      | `Monsur Ali Travels (Dev)`               |
+| **Webmail URL**    | `https://roxy.us.webxlogin.com:2096/...` |
+| **Reference File** | `G:\My Drive\MAT\DEV_EMAIL_CREDENTIALS_AND_CONFIG.md` |
+
+### Backend DEV `.env` SMTP Block (`/dev-env/opt/monsuralitravels/backend/.env`)
+```env
+SMTP_HOST=roxy.us.webxlogin.com
+SMTP_PORT=465
+SMTP_ENCRYPTION=SSL
+SMTP_USER=info@plexivia.com
+SMTP_PASSWORD=[REDACTED_FOR_SECURITY]
+SMTP_FROM_NAME=Monsur Ali Travels (Dev)
+SMTP_FROM=info@plexivia.com
+```
+
+---
+
 ## 4. MongoDB (Production — Docker Internal)
 
 | Field          | Value                            |

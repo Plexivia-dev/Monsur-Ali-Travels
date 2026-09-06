@@ -50,6 +50,9 @@ export function CaseFileCreationModal({ isOpen, onClose, onSuccess }) {
   const [loading, setLoading] = useState(false);
   const [clientMode, setClientMode] = useState('new'); // 'new' | 'existing'
 
+  // Stage Injection: target pipeline stage
+  const [targetStage, setTargetStage] = useState('INTAKE'); // 'INTAKE' | 'UNDER_PROCESS' | 'OFFER_LETTER'
+
   // Step 1: Client Search & Selection
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState([]);
@@ -70,7 +73,18 @@ export function CaseFileCreationModal({ isOpen, onClose, onSuccess }) {
     guardianName: '',
     guardianPhone: '',
     guardianRelationship: 'Father',
+    guardianNid: '',
   });
+
+  // Step 1: Mandatory Passport Scan & Live Preview State
+  const [passportFile, setPassportFile] = useState(null);
+  const [passportPreviewUrl, setPassportPreviewUrl] = useState(null);
+  const [uploadingPassport, setUploadingPassport] = useState(false);
+
+  // Step 1: 5-Page Greek Work Permit / Offer Letter Dossier State (when targetStage === 'OFFER_LETTER')
+  const [offerLetterFile, setOfferLetterFile] = useState(null);
+  const [offerLetterPreviewUrl, setOfferLetterPreviewUrl] = useState(null);
+  const [uploadingOfferLetter, setUploadingOfferLetter] = useState(false);
 
   // Step 2: Destination & Case Program
   const [caseDetails, setCaseDetails] = useState({
@@ -138,15 +152,113 @@ export function CaseFileCreationModal({ isOpen, onClose, onSuccess }) {
       motherName: client.motherName || '',
       presentAddress: client.presentAddress || client.address || '',
       permanentAddress: client.permanentAddress || '',
-      guardianName: client.guardian?.name || '',
-      guardianPhone: client.guardian?.phone || '',
-      guardianRelationship: client.guardian?.relationship || 'Father',
+      guardianName: client.guardian?.name || client.guardianName || '',
+      guardianPhone: client.guardian?.phone || client.guardianPhone || '',
+      guardianRelationship: client.guardian?.relationship || client.guardianRelationship || 'Father',
+      guardianNid: client.guardian?.nidNumber || client.guardianNid || '',
     });
+    if (client.attachments?.passportScan || client.passportScanUrl) {
+      setPassportPreviewUrl(client.attachments?.passportScan || client.passportScanUrl);
+    }
     setSearchResults([]);
     setSearchQuery('');
   };
 
-  // Document Upload Handler
+  // Step 1: Mandatory Passport Scan Upload Handler
+  const handlePassportUpload = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const localUrl = URL.createObjectURL(file);
+    setPassportFile(file);
+    setPassportPreviewUrl(localUrl);
+
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('documentType', 'Passport Scan');
+
+    setUploadingPassport(true);
+    try {
+      const res = await apiClient.post('/api/v1/upload/document', formData, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      });
+      const fileData = res.data?.data || res.data;
+      const uploadedUrl = fileData.fileUrl || fileData.url || localUrl;
+      const newDoc = {
+        title: 'Passport Scan',
+        documentType: 'Passport Scan',
+        fileUrl: uploadedUrl,
+        fileName: file.name,
+        size: file.size,
+        did: fileData.did || `DOC-PASSPORT-${Date.now()}`,
+      };
+      setUploadedDocs((prev) => [...prev.filter((d) => d.documentType !== 'Passport Scan'), newDoc]);
+      toast.success('Original Passport Copy attached and verified!');
+    } catch (err) {
+      console.warn('Passport scan upload fallback to local URL:', err);
+      toast.info('Passport scan attached (local preview).');
+      const localDoc = {
+        title: 'Passport Scan',
+        documentType: 'Passport Scan',
+        fileName: file.name,
+        fileUrl: localUrl,
+        size: file.size,
+        did: `DOC-LOCAL-PASSPORT-${Date.now()}`,
+      };
+      setUploadedDocs((prev) => [...prev.filter((d) => d.documentType !== 'Passport Scan'), localDoc]);
+    } finally {
+      setUploadingPassport(false);
+    }
+  };
+
+  // Step 1 / Offer Letter Dossier Upload Handler
+  const handleOfferLetterUpload = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const localUrl = URL.createObjectURL(file);
+    setOfferLetterFile(file);
+    setOfferLetterPreviewUrl(localUrl);
+
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('documentType', 'Offer Letter');
+
+    setUploadingOfferLetter(true);
+    try {
+      const res = await apiClient.post('/api/v1/upload/document', formData, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      });
+      const fileData = res.data?.data || res.data;
+      const uploadedUrl = fileData.fileUrl || fileData.url || localUrl;
+      const newDoc = {
+        title: 'Offer Letter (5-Page Work Permit)',
+        documentType: 'Offer Letter',
+        fileUrl: uploadedUrl,
+        fileName: file.name,
+        size: file.size,
+        did: fileData.did || `DOC-OFFER-${Date.now()}`,
+      };
+      setUploadedDocs((prev) => [...prev.filter((d) => d.documentType !== 'Offer Letter'), newDoc]);
+      toast.success('5-Page Offer Letter Dossier attached!');
+    } catch (err) {
+      console.warn('Offer letter upload fallback to local URL:', err);
+      toast.info('Offer letter attached (local preview).');
+      const localDoc = {
+        title: 'Offer Letter (5-Page Work Permit)',
+        documentType: 'Offer Letter',
+        fileName: file.name,
+        fileUrl: localUrl,
+        size: file.size,
+        did: `DOC-LOCAL-OFFER-${Date.now()}`,
+      };
+      setUploadedDocs((prev) => [...prev.filter((d) => d.documentType !== 'Offer Letter'), localDoc]);
+    } finally {
+      setUploadingOfferLetter(false);
+    }
+  };
+
+  // General Document Upload Handler (for Step 3)
   const handleFileUpload = async (e, docType) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -198,29 +310,84 @@ export function CaseFileCreationModal({ isOpen, onClose, onSuccess }) {
   const advPaid = Number(paymentData.advanceAmount) || 0;
   const remainingDue = Math.max(0, totalPkg - advPaid);
 
-  // Submit Final Case Intake
-  const handleSubmitCase = async () => {
+  // Validation for Step 1
+  const validateStep1 = () => {
     if (!clientData.fullName.trim()) {
       toast.error('Applicant full name is required!');
-      setCurrentStep(1);
-      return;
+      return false;
     }
     if (!clientData.phone.trim()) {
       toast.error('Contact phone number is required!');
+      return false;
+    }
+    if (!clientData.passportNumber.trim()) {
+      toast.error('Passport number is required for candidate identity!');
+      return false;
+    }
+    if (!clientData.fatherName.trim()) {
+      toast.error("Father's name is required for Candidate Triad Identity!");
+      return false;
+    }
+    const hasPassportScan = Boolean(
+      passportPreviewUrl ||
+      uploadedDocs.some((d) => d.documentType === 'Passport Scan' || d.title === 'Passport Scan')
+    );
+    if (!hasPassportScan) {
+      toast.error('Mandatory Original Passport Copy must be attached before proceeding.');
+      return false;
+    }
+    if (targetStage === 'OFFER_LETTER') {
+      const hasOfferLetter = Boolean(
+        offerLetterPreviewUrl ||
+        uploadedDocs.some((d) => d.documentType === 'Offer Letter' || d.title?.includes('Offer Letter'))
+      );
+      if (!hasOfferLetter) {
+        toast.error('5-Page Work Permit / Offer Letter PDF is required when creating directly in Offer Letter stage.');
+        return false;
+      }
+    }
+    return true;
+  };
+
+  const handleNextStep = () => {
+    if (currentStep === 1) {
+      if (!validateStep1()) return;
+    }
+    setCurrentStep((prev) => prev + 1);
+  };
+
+  const handleStepClick = (stepNum) => {
+    if (stepNum > currentStep && currentStep === 1) {
+      if (!validateStep1()) return;
+    }
+    setCurrentStep(stepNum);
+  };
+
+  // Submit Final Case Intake
+  const handleSubmitCase = async () => {
+    if (!validateStep1()) {
       setCurrentStep(1);
       return;
     }
 
     setLoading(true);
     try {
-      // 1. Submit Case File to backend
+      // 1. Submit Case File to backend with Stage Injection & Guardian details
       const payload = {
         clientDid: selectedClient?.did || undefined,
         applicantName: clientData.fullName.trim(),
         passportNumber: clientData.passportNumber.trim().toUpperCase(),
         phone: clientData.phone.trim(),
         nidNumber: clientData.nidNumber.trim(),
-        destinationCountry: caseDetails.destinationCountry === 'Other' ? caseDetails.customCountry : caseDetails.destinationCountry,
+        status: targetStage,
+        workflowStatus:
+          targetStage === 'OFFER_LETTER'
+            ? 'Approved Offer Letter'
+            : targetStage === 'UNDER_PROCESS'
+            ? 'Under Process'
+            : 'Intake Received',
+        destinationCountry:
+          caseDetails.destinationCountry === 'Other' ? caseDetails.customCountry : caseDetails.destinationCountry,
         tradeSkill: caseDetails.tradeSkill,
         caseType: caseDetails.destinationCountry.toLowerCase().includes('greece') ? 'greece' : 'general',
         packageAmount: totalPkg,
@@ -229,16 +396,23 @@ export function CaseFileCreationModal({ isOpen, onClose, onSuccess }) {
         advanceAmount: advPaid,
         paymentMethod: paymentData.paymentMethod,
         remarks: caseDetails.specialInstructions,
+        guardianName: clientData.guardianName.trim(),
+        guardianPhone: clientData.guardianPhone.trim(),
+        guardianRelationship: clientData.guardianRelationship,
+        guardianNid: clientData.guardianNid.trim(),
+        initialDocuments: uploadedDocs,
         extraData: {
           priority: caseDetails.priority,
-          fatherName: clientData.fatherName,
-          motherName: clientData.motherName,
-          presentAddress: clientData.presentAddress,
-          permanentAddress: clientData.permanentAddress,
+          initialStage: targetStage,
+          fatherName: clientData.fatherName.trim(),
+          motherName: clientData.motherName.trim(),
+          presentAddress: clientData.presentAddress.trim(),
+          permanentAddress: clientData.permanentAddress.trim(),
           guardian: {
-            name: clientData.guardianName,
-            phone: clientData.guardianPhone,
+            name: clientData.guardianName.trim(),
+            phone: clientData.guardianPhone.trim(),
             relationship: clientData.guardianRelationship,
+            nidNumber: clientData.guardianNid.trim(),
           },
           documents: uploadedDocs,
         },
@@ -335,8 +509,8 @@ export function CaseFileCreationModal({ isOpen, onClose, onSuccess }) {
               <button
                 key={s.num}
                 type="button"
-                onClick={() => setCurrentStep(s.num)}
-                className={`py-2.5 px-2 flex items-center justify-center gap-1.5 transition text-center border-b-2 ${
+                onClick={() => handleStepClick(s.num)}
+                className={`py-2.5 px-2 flex items-center justify-center gap-1.5 transition text-center border-b-2 cursor-pointer ${
                   currentStep === s.num
                     ? 'border-primary text-primary bg-primary/5 font-bold'
                     : currentStep > s.num
@@ -365,6 +539,128 @@ export function CaseFileCreationModal({ isOpen, onClose, onSuccess }) {
             {/* STEP 1: CLIENT SELECTION / ONBOARDING */}
             {currentStep === 1 && (
               <div className="space-y-4">
+                {/* Stage Injection Selector Bar */}
+                <div className="bg-black/[0.02] p-3.5 rounded-xl border border-black/10 space-y-2">
+                  <div className="flex items-center justify-between">
+                    <label className="text-[11px] font-bold text-black/70 uppercase tracking-wider flex items-center gap-1.5">
+                      <span>Pipeline Stage Injection</span>
+                      <span className="text-[10px] font-normal lowercase text-black/50">(create directly into stage)</span>
+                    </label>
+                    <span className="text-[10px] font-semibold px-2.5 py-0.5 rounded-full bg-primary/10 text-primary border border-primary/20">
+                      Target: {targetStage === 'INTAKE' ? '1. File Intake' : targetStage === 'UNDER_PROCESS' ? '2. Under Process' : '3. Offer Letter'}
+                    </span>
+                  </div>
+                  <div className="grid grid-cols-3 gap-2">
+                    {[
+                      { id: 'INTAKE', label: '1. File Intake', icon: '📂', desc: 'New candidate onboarding' },
+                      { id: 'UNDER_PROCESS', label: '2. Under Process', icon: '⚙️', desc: 'Police / Medical / Embassy' },
+                      { id: 'OFFER_LETTER', label: '3. Offer Letter', icon: '📜', desc: 'Greek permit approved' },
+                    ].map((stage) => {
+                      const isSelected = targetStage === stage.id;
+                      return (
+                        <button
+                          key={stage.id}
+                          type="button"
+                          onClick={() => setTargetStage(stage.id)}
+                          className={`p-2.5 rounded-xl border text-left transition cursor-pointer flex flex-col justify-between ${
+                            isSelected
+                              ? 'bg-primary/10 border-primary text-primary font-bold shadow-xs'
+                              : 'bg-white border-black/10 text-black/80 hover:bg-black/[0.03]'
+                          }`}
+                        >
+                          <div className="flex items-center gap-1.5 text-xs font-bold">
+                            <span>{stage.icon}</span>
+                            <span className="truncate">{stage.label}</span>
+                          </div>
+                          <span className="text-[10px] text-black/50 mt-0.5 truncate">{stage.desc}</span>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                {/* 5-Page Greek Work Permit / Offer Letter Dossier Dropzone (when targetStage === 'OFFER_LETTER') */}
+                {targetStage === 'OFFER_LETTER' && (
+                  <div className="p-3.5 bg-amber-500/5 border border-amber-500/30 rounded-xl space-y-2.5 animate-in fade-in duration-150">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <FileText className="size-4 text-amber-600" />
+                        <span className="text-xs font-bold text-amber-900">
+                          5-Page Greek Work Permit / Offer Letter Dossier *
+                        </span>
+                      </div>
+                      {offerLetterPreviewUrl ? (
+                        <span className="text-[10px] font-bold text-emerald-600 bg-emerald-500/10 border border-emerald-500/30 px-2 py-0.5 rounded-full flex items-center gap-1">
+                          <CheckCircle2 className="size-3" /> Attached
+                        </span>
+                      ) : (
+                        <span className="text-[10px] font-bold text-amber-600 bg-amber-500/10 border border-amber-500/30 px-2 py-0.5 rounded-full">
+                          Required for Stage 3
+                        </span>
+                      )}
+                    </div>
+                    <p className="text-[11px] text-black/60">
+                      Attach the complete 5-page Greek Ministry / Employer Work Permit approval letter (PDF or multi-page image).
+                    </p>
+
+                    {offerLetterPreviewUrl ? (
+                      <div className="flex items-center justify-between p-2.5 bg-white rounded-lg border border-amber-500/30 text-xs">
+                        <div className="flex items-center gap-2.5 truncate">
+                          <FileText className="size-5 text-amber-600 shrink-0" />
+                          <div className="truncate">
+                            <p className="font-bold text-black truncate">
+                              {offerLetterFile?.name || 'Offer_Letter_5_Page_Dossier.pdf'}
+                            </p>
+                            <p className="text-[10px] text-black/50">
+                              {offerLetterFile?.size ? `${(offerLetterFile.size / 1024).toFixed(1)} KB` : 'Dossier Attached'} • Document Studio Ready
+                            </p>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-2.5 shrink-0 ml-2">
+                          <a
+                            href={offerLetterPreviewUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-[11px] font-bold text-amber-600 hover:text-amber-700 underline"
+                          >
+                            View ↗
+                          </a>
+                          <label className="text-[11px] font-bold text-black/60 hover:text-black cursor-pointer underline">
+                            Replace
+                            <input
+                              type="file"
+                              accept=".pdf,image/*"
+                              className="hidden"
+                              onChange={handleOfferLetterUpload}
+                              disabled={uploadingOfferLetter}
+                            />
+                          </label>
+                        </div>
+                      </div>
+                    ) : (
+                      <label className="border-2 border-dashed border-amber-500/40 hover:border-amber-600 bg-white/60 rounded-xl p-4 flex flex-col items-center justify-center gap-1.5 cursor-pointer transition">
+                        <UploadCloud className="size-6 text-amber-600" />
+                        <span className="text-xs font-bold text-black">Click or drag 5-Page Offer Letter PDF</span>
+                        <span className="text-[10px] text-black/50">PDF, JPG up to 25MB (Mandatory for Stage 3 injection)</span>
+                        <input
+                          type="file"
+                          accept=".pdf,image/*"
+                          className="hidden"
+                          onChange={handleOfferLetterUpload}
+                          disabled={uploadingOfferLetter}
+                        />
+                      </label>
+                    )}
+                    {uploadingOfferLetter && (
+                      <div className="flex items-center gap-2 text-xs text-amber-700">
+                        <Loader2 className="size-3.5 animate-spin" />
+                        <span>Uploading Offer Letter to Vault...</span>
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                {/* Client Mode Switch */}
                 <div className="flex items-center justify-between gap-3 bg-muted/40 p-1.5 rounded-xl border border-border">
                   <button
                     type="button"
@@ -456,7 +752,7 @@ export function CaseFileCreationModal({ isOpen, onClose, onSuccess }) {
                 {/* Candidate Personal Bio Form */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5 pt-1">
                   <div>
-                    <label className="text-[11px] font-bold text-muted-foreground block mb-1">
+                    <label className="text-[11px] font-bold text-black/70 block mb-1">
                       Applicant Full Name *
                     </label>
                     <input
@@ -465,12 +761,12 @@ export function CaseFileCreationModal({ isOpen, onClose, onSuccess }) {
                       placeholder="e.g. Md. Rafiqul Islam"
                       value={clientData.fullName}
                       onChange={(e) => setClientData({ ...clientData, fullName: e.target.value })}
-                      className="w-full px-3 py-2 text-xs bg-background border border-border rounded-lg focus:border-primary outline-hidden"
+                      className="w-full px-3 py-2 text-xs bg-white border border-black/15 rounded-lg focus:border-primary outline-hidden"
                     />
                   </div>
 
                   <div>
-                    <label className="text-[11px] font-bold text-muted-foreground block mb-1">
+                    <label className="text-[11px] font-bold text-black/70 block mb-1">
                       Phone / WhatsApp Number *
                     </label>
                     <input
@@ -479,25 +775,40 @@ export function CaseFileCreationModal({ isOpen, onClose, onSuccess }) {
                       placeholder="e.g. 01712345678"
                       value={clientData.phone}
                       onChange={(e) => setClientData({ ...clientData, phone: e.target.value })}
-                      className="w-full px-3 py-2 text-xs bg-background border border-border rounded-lg focus:border-primary outline-hidden"
+                      className="w-full px-3 py-2 text-xs bg-white border border-black/15 rounded-lg focus:border-primary outline-hidden"
                     />
                   </div>
 
                   <div>
-                    <label className="text-[11px] font-bold text-muted-foreground block mb-1">
-                      Passport Number (If available)
+                    <label className="text-[11px] font-bold text-black/70 block mb-1">
+                      Passport Number *
                     </label>
                     <input
                       type="text"
+                      required
                       placeholder="e.g. A08923412"
                       value={clientData.passportNumber}
                       onChange={(e) => setClientData({ ...clientData, passportNumber: e.target.value.toUpperCase() })}
-                      className="w-full px-3 py-2 text-xs bg-background border border-border rounded-lg focus:border-primary outline-hidden font-mono uppercase"
+                      className="w-full px-3 py-2 text-xs bg-white border border-black/15 rounded-lg focus:border-primary outline-hidden font-mono uppercase"
                     />
                   </div>
 
                   <div>
-                    <label className="text-[11px] font-bold text-muted-foreground block mb-1">
+                    <label className="text-[11px] font-bold text-black/70 block mb-1">
+                      Father's Name (Triad Identity) *
+                    </label>
+                    <input
+                      type="text"
+                      required
+                      placeholder="e.g. Late Monir Uddin"
+                      value={clientData.fatherName}
+                      onChange={(e) => setClientData({ ...clientData, fatherName: e.target.value })}
+                      className="w-full px-3 py-2 text-xs bg-white border border-black/15 rounded-lg focus:border-primary outline-hidden"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="text-[11px] font-bold text-black/70 block mb-1">
                       National ID (NID) Number
                     </label>
                     <input
@@ -505,51 +816,25 @@ export function CaseFileCreationModal({ isOpen, onClose, onSuccess }) {
                       placeholder="e.g. 1992123456789"
                       value={clientData.nidNumber}
                       onChange={(e) => setClientData({ ...clientData, nidNumber: e.target.value })}
-                      className="w-full px-3 py-2 text-xs bg-background border border-border rounded-lg focus:border-primary outline-hidden font-mono"
+                      className="w-full px-3 py-2 text-xs bg-white border border-black/15 rounded-lg focus:border-primary outline-hidden font-mono"
                     />
                   </div>
 
                   <div>
-                    <label className="text-[11px] font-bold text-muted-foreground block mb-1">
-                      Father's Name
+                    <label className="text-[11px] font-bold text-black/70 block mb-1">
+                      Mother's Name
                     </label>
                     <input
                       type="text"
-                      placeholder="Father's full name"
-                      value={clientData.fatherName}
-                      onChange={(e) => setClientData({ ...clientData, fatherName: e.target.value })}
-                      className="w-full px-3 py-2 text-xs bg-background border border-border rounded-lg focus:border-primary outline-hidden"
+                      placeholder="Mother's full name"
+                      value={clientData.motherName}
+                      onChange={(e) => setClientData({ ...clientData, motherName: e.target.value })}
+                      className="w-full px-3 py-2 text-xs bg-white border border-black/15 rounded-lg focus:border-primary outline-hidden"
                     />
                   </div>
 
-                  <div>
-                    <label className="text-[11px] font-bold text-muted-foreground block mb-1">
-                      Guardian Phone & Relationship
-                    </label>
-                    <div className="grid grid-cols-2 gap-2">
-                      <input
-                        type="tel"
-                        placeholder="Guardian Phone"
-                        value={clientData.guardianPhone}
-                        onChange={(e) => setClientData({ ...clientData, guardianPhone: e.target.value })}
-                        className="w-full px-3 py-2 text-xs bg-background border border-border rounded-lg focus:border-primary outline-hidden"
-                      />
-                      <select
-                        value={clientData.guardianRelationship}
-                        onChange={(e) => setClientData({ ...clientData, guardianRelationship: e.target.value })}
-                        className="w-full px-2 py-2 text-xs bg-background border border-border rounded-lg focus:border-primary outline-hidden"
-                      >
-                        <option value="Father">Father</option>
-                        <option value="Mother">Mother</option>
-                        <option value="Brother">Brother</option>
-                        <option value="Uncle">Uncle</option>
-                        <option value="Spouse">Spouse</option>
-                      </select>
-                    </div>
-                  </div>
-
                   <div className="sm:col-span-2">
-                    <label className="text-[11px] font-bold text-muted-foreground block mb-1">
+                    <label className="text-[11px] font-bold text-black/70 block mb-1">
                       Present Address (Village, Post Office, District)
                     </label>
                     <input
@@ -557,9 +842,167 @@ export function CaseFileCreationModal({ isOpen, onClose, onSuccess }) {
                       placeholder="e.g. Vill: Madhupur, P.O: Madhupur, Dist: Tangail"
                       value={clientData.presentAddress}
                       onChange={(e) => setClientData({ ...clientData, presentAddress: e.target.value })}
-                      className="w-full px-3 py-2 text-xs bg-background border border-border rounded-lg focus:border-primary outline-hidden"
+                      className="w-full px-3 py-2 text-xs bg-white border border-black/15 rounded-lg focus:border-primary outline-hidden"
                     />
                   </div>
+                </div>
+
+                {/* Guardian / Guarantor Section for 300-Tk Judicial Stamp Deed */}
+                <div className="border-t border-black/10 pt-3">
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-[11px] font-bold uppercase tracking-wider text-black/70">
+                      Guardian / Guarantor Information (300-Tk Judicial Stamp Deed)
+                    </span>
+                    <span className="text-[10px] text-black/50">Legal Guarantor Signatory</span>
+                  </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                      <label className="text-[11px] font-bold text-black/70 block mb-1">
+                        Guardian Full Name *
+                      </label>
+                      <input
+                        type="text"
+                        placeholder="e.g. Late Monir Uddin / Md. Sirajul Haque"
+                        value={clientData.guardianName}
+                        onChange={(e) => setClientData({ ...clientData, guardianName: e.target.value })}
+                        className="w-full px-3 py-2 text-xs bg-white border border-black/15 rounded-lg focus:border-primary outline-hidden"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="text-[11px] font-bold text-black/70 block mb-1">
+                        Relationship to Candidate *
+                      </label>
+                      <select
+                        value={clientData.guardianRelationship}
+                        onChange={(e) => setClientData({ ...clientData, guardianRelationship: e.target.value })}
+                        className="w-full px-3 py-2 text-xs bg-white border border-black/15 rounded-lg focus:border-primary outline-hidden"
+                      >
+                        <option value="Father">Father (পিতা)</option>
+                        <option value="Mother">Mother (মাতা)</option>
+                        <option value="Brother">Brother (ভাই)</option>
+                        <option value="Uncle">Uncle (চাচা / মামা)</option>
+                        <option value="Spouse">Spouse (স্ত্রী / স্বামী)</option>
+                        <option value="Other">Other Legal Guardian</option>
+                      </select>
+                    </div>
+
+                    <div>
+                      <label className="text-[11px] font-bold text-black/70 block mb-1">
+                        Guardian Phone Number *
+                      </label>
+                      <input
+                        type="tel"
+                        placeholder="e.g. 01812345678"
+                        value={clientData.guardianPhone}
+                        onChange={(e) => setClientData({ ...clientData, guardianPhone: e.target.value })}
+                        className="w-full px-3 py-2 text-xs bg-white border border-black/15 rounded-lg focus:border-primary outline-hidden"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="text-[11px] font-bold text-black/70 block mb-1">
+                        Guardian National ID (NID) *
+                      </label>
+                      <input
+                        type="text"
+                        placeholder="Guardian's NID for Stamp Deed"
+                        value={clientData.guardianNid}
+                        onChange={(e) => setClientData({ ...clientData, guardianNid: e.target.value })}
+                        className="w-full px-3 py-2 text-xs bg-white border border-black/15 rounded-lg focus:border-primary outline-hidden font-mono"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Mandatory Original Passport Bio-Page Copy with Instant Live Preview */}
+                <div className="p-3.5 bg-sky-500/5 border border-sky-500/30 rounded-xl space-y-2.5">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <UploadCloud className="size-4 text-sky-600" />
+                      <span className="text-xs font-bold text-sky-900">
+                        Mandatory Original Passport Bio-Page Copy *
+                      </span>
+                    </div>
+                    {passportPreviewUrl ? (
+                      <span className="text-[10px] font-bold text-emerald-600 bg-emerald-500/10 border border-emerald-500/30 px-2 py-0.5 rounded-full flex items-center gap-1">
+                        <CheckCircle2 className="size-3" /> Scanned Copy Verified
+                      </span>
+                    ) : (
+                      <span className="text-[10px] font-bold text-rose-600 bg-rose-500/10 border border-rose-500/30 px-2 py-0.5 rounded-full">
+                        Required to Proceed
+                      </span>
+                    )}
+                  </div>
+                  <p className="text-[11px] text-black/60">
+                    High-resolution scan of pages 2-3 (bio-data page). Required for Candidate Triad Identity and Stage 2/3 processing.
+                  </p>
+
+                  {passportPreviewUrl ? (
+                    <div className="flex items-center gap-3 p-2.5 bg-white rounded-lg border border-sky-500/30">
+                      {passportFile?.type?.startsWith('image/') || (!passportFile && passportPreviewUrl.match(/\.(jpeg|jpg|png|webp)/i)) ? (
+                        <img
+                          src={passportPreviewUrl}
+                          alt="Passport Bio-Page Scan"
+                          className="size-16 object-cover rounded-lg border border-black/10 shrink-0 shadow-xs"
+                        />
+                      ) : (
+                        <div className="size-16 rounded-lg bg-red-500/10 text-red-600 border border-red-500/20 flex flex-col items-center justify-center shrink-0">
+                          <FileText className="size-6" />
+                          <span className="text-[9px] font-bold mt-0.5">PDF SCAN</span>
+                        </div>
+                      )}
+
+                      <div className="flex-1 min-w-0">
+                        <p className="text-xs font-bold text-black truncate">
+                          {passportFile?.name || 'Passport_Bio_Page_Scan.pdf'}
+                        </p>
+                        <p className="text-[10px] text-black/50">
+                          {passportFile?.size ? `${(passportFile.size / 1024).toFixed(1)} KB` : 'Attached Bio-Data'} • Document Vault Stored
+                        </p>
+                        <div className="flex items-center gap-3 mt-1 text-[11px]">
+                          <a
+                            href={passportPreviewUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-primary font-bold hover:underline"
+                          >
+                            Full Preview ↗
+                          </a>
+                          <label className="text-black/60 hover:text-black cursor-pointer underline">
+                            Change File
+                            <input
+                              type="file"
+                              accept=".pdf,image/*"
+                              className="hidden"
+                              onChange={handlePassportUpload}
+                              disabled={uploadingPassport}
+                            />
+                          </label>
+                        </div>
+                      </div>
+                    </div>
+                  ) : (
+                    <label className="border-2 border-dashed border-sky-500/40 hover:border-sky-600 bg-white/60 rounded-xl p-4 flex flex-col items-center justify-center gap-1.5 cursor-pointer transition">
+                      <UploadCloud className="size-6 text-sky-600" />
+                      <span className="text-xs font-bold text-black">Click or drag original passport bio-page scan</span>
+                      <span className="text-[10px] text-black/50">PDF, JPG, PNG up to 20MB (Blocks Next Step if absent)</span>
+                      <input
+                        type="file"
+                        accept=".pdf,image/*"
+                        className="hidden"
+                        onChange={handlePassportUpload}
+                        disabled={uploadingPassport}
+                      />
+                    </label>
+                  )}
+
+                  {uploadingPassport && (
+                    <div className="flex items-center gap-2 text-xs text-sky-700">
+                      <Loader2 className="size-3.5 animate-spin" />
+                      <span>Uploading Passport Scan to Vault...</span>
+                    </div>
+                  )}
                 </div>
               </div>
             )}
@@ -806,37 +1249,71 @@ export function CaseFileCreationModal({ isOpen, onClose, onSuccess }) {
             {/* STEP 5: REVIEW & SUMMARY */}
             {currentStep === 5 && (
               <div className="space-y-4">
-                <div className="bg-primary/5 border border-primary/20 rounded-xl p-4 space-y-3">
-                  <h3 className="text-sm font-black text-primary uppercase tracking-wide">
-                    Case Intake Dossier Summary
-                  </h3>
+                <div className="bg-primary/5 border border-primary/20 rounded-xl p-4 space-y-3.5">
+                  <div className="flex items-center justify-between">
+                    <h3 className="text-sm font-black text-primary uppercase tracking-wide">
+                      Case Intake Dossier Summary
+                    </h3>
+                    <span className="text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-primary/10 text-primary border border-primary/20">
+                      {targetStage === 'OFFER_LETTER' ? 'Stage 3: Offer Letter Approved' : targetStage === 'UNDER_PROCESS' ? 'Stage 2: Under Process' : 'Stage 1: File Intake'}
+                    </span>
+                  </div>
+
+                  {/* Triad Identity Card */}
+                  <div className="p-3 bg-white rounded-lg border border-black/10 text-xs space-y-2">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="font-black text-sm text-black">{clientData.fullName || '—'}</p>
+                        <p className="text-[11px] text-black/60">
+                          S/O: {clientData.fatherName || '—'} • {clientData.presentAddress || 'District N/A'}
+                        </p>
+                      </div>
+                      <span className="font-mono font-bold text-xs bg-black/[0.04] text-black px-2 py-1 rounded-md border border-black/10">
+                        🛂 {clientData.passportNumber || 'N/A'}
+                      </span>
+                    </div>
+                    <div className="grid grid-cols-2 gap-2 text-[11px] text-black/70 pt-1 border-t border-black/5">
+                      <div><span className="text-black/50">Phone:</span> <strong>{clientData.phone || '—'}</strong></div>
+                      <div><span className="text-black/50">NID:</span> <span className="font-mono">{clientData.nidNumber || '—'}</span></div>
+                    </div>
+                  </div>
+
+                  {/* 300-Tk Judicial Stamp Deed Info */}
+                  <div className="p-3 bg-amber-500/5 rounded-lg border border-amber-500/20 text-xs">
+                    <p className="font-bold text-amber-900 text-[11px] uppercase tracking-wider mb-1">
+                      300-Tk Judicial Stamp Deed Guarantor:
+                    </p>
+                    <div className="grid grid-cols-2 gap-y-1 text-[11px] text-black/80">
+                      <div><span className="text-black/50">Guardian:</span> <strong>{clientData.guardianName || '—'}</strong> ({clientData.guardianRelationship})</div>
+                      <div><span className="text-black/50">Phone:</span> <strong>{clientData.guardianPhone || '—'}</strong></div>
+                      <div><span className="text-black/50">Guardian NID:</span> <span className="font-mono">{clientData.guardianNid || '—'}</span></div>
+                    </div>
+                  </div>
 
                   <div className="grid grid-cols-2 gap-y-2 text-xs">
                     <div>
-                      <span className="text-muted-foreground">Candidate Name:</span>
-                      <p className="font-bold text-foreground">{clientData.fullName || '—'}</p>
-                    </div>
-                    <div>
-                      <span className="text-muted-foreground">Contact Phone:</span>
-                      <p className="font-bold text-foreground">{clientData.phone || '—'}</p>
-                    </div>
-                    <div>
-                      <span className="text-muted-foreground">Passport Number:</span>
-                      <p className="font-bold text-foreground font-mono">{clientData.passportNumber || 'Pending / N/A'}</p>
-                    </div>
-                    <div>
-                      <span className="text-muted-foreground">Target Destination:</span>
-                      <p className="font-bold text-foreground">
+                      <span className="text-black/60 text-[11px]">Target Destination:</span>
+                      <p className="font-bold text-black">
                         {caseDetails.destinationCountry === 'Other' ? caseDetails.customCountry : caseDetails.destinationCountry}
                       </p>
                     </div>
                     <div>
-                      <span className="text-muted-foreground">Applied Trade:</span>
-                      <p className="font-bold text-foreground">{caseDetails.tradeSkill}</p>
+                      <span className="text-black/60 text-[11px]">Applied Trade:</span>
+                      <p className="font-bold text-black">{caseDetails.tradeSkill}</p>
                     </div>
                     <div>
-                      <span className="text-black/60">Priority:</span>
-                      <span className="inline-block font-bold text-amber-600">{caseDetails.priority}</span>
+                      <span className="text-black/60 text-[11px]">Priority:</span>
+                      <p className="font-bold text-amber-600">{caseDetails.priority}</p>
+                    </div>
+                    <div>
+                      <span className="text-black/60 text-[11px]">Attached Documents ({uploadedDocs.length}):</span>
+                      <div className="flex flex-wrap gap-1 mt-0.5">
+                        {uploadedDocs.map((d, i) => (
+                          <span key={i} className="text-[10px] bg-black/[0.04] text-black px-1.5 py-0.5 rounded border border-black/10">
+                            ✓ {d.title}
+                          </span>
+                        ))}
+                      </div>
                     </div>
                   </div>
 
@@ -857,7 +1334,7 @@ export function CaseFileCreationModal({ isOpen, onClose, onSuccess }) {
                 </div>
 
                 <p className="text-xs text-black/60 leading-relaxed">
-                  Clicking <strong>"Submit & Dispatch to Admin Board"</strong> will create the Master Case File, attach all Document Vault scans, issue the Money Receipt, and alert the Admin Board for processor assignment.
+                  Clicking <strong>"Submit & Dispatch to Admin Board"</strong> will create the Master Case File in <strong>{targetStage.replace(/_/g, ' ')}</strong> stage, attach all Document Vault scans, issue the Money Receipt, and alert the Admin Board.
                 </p>
               </div>
             )}
@@ -869,7 +1346,7 @@ export function CaseFileCreationModal({ isOpen, onClose, onSuccess }) {
               <button
                 type="button"
                 onClick={() => setCurrentStep((prev) => prev - 1)}
-                className="flex items-center gap-1.5 px-4 h-9 bg-black/[0.04] hover:bg-black/[0.08] text-black border border-black/15 text-xs font-semibold rounded-xl transition cursor-pointer shadow-xs"
+                className="flex items-center gap-1.5 px-4 h-9 bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 text-zinc-700 dark:text-zinc-300 border border-zinc-300 dark:border-zinc-700 text-xs font-semibold rounded-xl transition cursor-pointer shadow-xs"
               >
                 <ChevronLeft className="size-4" />
                 <span>Previous Step</span>
@@ -890,7 +1367,7 @@ export function CaseFileCreationModal({ isOpen, onClose, onSuccess }) {
               {currentStep < 5 ? (
                 <button
                   type="button"
-                  onClick={() => setCurrentStep((prev) => prev + 1)}
+                  onClick={handleNextStep}
                   className="flex items-center gap-1.5 px-5 h-9 bg-primary hover:bg-primary/90 text-primary-foreground text-xs font-bold rounded-xl transition cursor-pointer shadow-xs"
                 >
                   <span>Next Step</span>
@@ -901,7 +1378,7 @@ export function CaseFileCreationModal({ isOpen, onClose, onSuccess }) {
                   type="button"
                   disabled={loading}
                   onClick={handleSubmitCase}
-                  className="flex items-center gap-2 px-6 h-9 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-xl transition cursor-pointer shadow-xs disabled:opacity-50"
+                  className="flex items-center gap-2 px-6 h-9 bg-primary hover:bg-primary/90 text-primary-foreground text-xs font-bold rounded-xl transition cursor-pointer shadow-xs disabled:opacity-50"
                 >
                   {loading ? (
                     <>

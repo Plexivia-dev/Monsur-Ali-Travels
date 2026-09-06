@@ -1,0 +1,16 @@
+# Git Attributes for Monsur Ali Travels
+# Ensure line endings are consistent across Windows and Linux
+* text=auto eol=lf
+
+# ── Environment & Deployment Configuration Isolation ─────────────────────────────
+# Prevent dev-specific and live-specific deployment configurations from being
+# unintentionally overwritten when merging or pulling between 'dev' and 'live'.
+docker-compose.prod.yml merge=ours
+docker-compose.dev.yml merge=ours
+backend/.env.dev.example merge=ours
+backend/example.env.example merge=ours
+nginx-dev.conf merge=ours
+dev-setup.sh merge=ours
+monsuralitravels-dev.service merge=ours
+monsuralitravels.service merge=ours
+Docs/Credentials_and_Access.md merge=ours

@@ -20,6 +20,7 @@ import { apiClient } from '@/lib/api-client';
 import { handleGlobalError } from '@shared/lib/error-handler';
 import { toast } from 'sonner';
 import defaultLogo from '@/assets/logo.png';
+import plexiviaLogo from '../../assets/plexivia.png';
 
 export function SharedLoginPage({
   portalType = 'client',
@@ -782,7 +783,7 @@ export function SharedLoginPage({
             Powered by
           </span>
           <img
-            src="https://api.monsuralitravels.com/uploads/assets/plexivia.webp"
+            src={plexiviaLogo}
             alt="Plexivia"
             className="h-5 sm:h-6 w-auto object-contain transition-transform group-hover:scale-105"
           />
