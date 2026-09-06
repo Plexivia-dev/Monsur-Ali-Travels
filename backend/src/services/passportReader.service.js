@@ -115,12 +115,10 @@ export function resolvePassportNumber(rawCandidate, expectedCheckDigit = null) {
   // If duplicate OCR characters occurred (e.g. S5 for 5, length > 7), test combinations
   if (digits.length > 7 && expectedCheckDigit !== null) {
     const targetCheck = parseInt(expectedCheckDigit, 10);
-    // 1. Sliding window of length 7
     for (let i = 0; i <= digits.length - 7; i++) {
       const cand = `${prefix}${digits.substring(i, i + 7)}`;
       if (calculateIcaoCheckDigit(cand) === targetCheck) return cand;
     }
-    // 2. Skip one noisy character at each position
     for (let skip = 0; skip < digits.length; skip++) {
       const candDigits = digits.slice(0, skip) + digits.slice(skip + 1);
       if (candDigits.length >= 7) {
@@ -134,26 +132,75 @@ export function resolvePassportNumber(rawCandidate, expectedCheckDigit = null) {
 }
 
 /**
+ * Cleans OCR filler artifacts and chevron merges from MRZ given names
+ */
+export function cleanMrzGivenNames(rawGiven) {
+  if (!rawGiven) return '';
+  // Strip bulk trailing chevron noise (sequence of 3 or more filler chars at line end)
+  let cleaned = rawGiven.replace(/[<LCKXIS]{3,}$/i, '');
+  const tokens = cleaned.split(/[<\s]+/).filter(Boolean);
+  const validTokens = [];
+
+  for (const token of tokens) {
+    let t = token.toUpperCase().replace(/[^A-Z]/g, '');
+    if (!t) continue;
+
+    // Strip trailing filler attached to the end of a token (e.g. "CHASINCCCCLCLLLL..." -> "CHASIN")
+    t = t.replace(/[LCKX]{3,}$/i, '');
+    if (!t) continue;
+
+    // Chevron filler detection: isolated sequence of filler characters
+    if (/^[LCKXIS]+$/.test(t) && (t.length >= 2 || ['L', 'C', 'K', 'X'].includes(t))) {
+      break; // Filler noise begins here
+    }
+
+    // Misread chevron prefix before consonant (e.g. "<NAFISA" -> "KNAFISA" -> "NAFISA")
+    if (t.startsWith('K') && t.length > 3 && /^[K][NMBCDFGHJKLMPQRSTVWXYZ]/.test(t)) {
+      t = t.substring(1);
+    }
+
+    // Misread chevron prefix before H (e.g. "<HASIN" -> "CHASIN" -> "HASIN")
+    if (t.startsWith('CH') && t.length > 4 && !/CHOUDHURY|CHOWDHURY|CHATTERJEE/i.test(t)) {
+      t = t.substring(1);
+    }
+
+    // Trailing S attached to a real word where S was an angle bracket (e.g. HASINS -> HASIN)
+    if (t.endsWith('S') && t.length > 4 && /HASIN|RAHMAN|UDDIN|ISLAM|KHAN|BEGUM|AHMED/i.test(t.slice(0, -1))) {
+      validTokens.push(t.slice(0, -1));
+      break;
+    }
+
+    validTokens.push(t);
+  }
+  return validTokens.join(' ');
+}
+
+/**
  * Extracts surname and given names from MRZ line 1
+ * Handles ICAO Doc 9303: P<BGD[SURNAME]<<[GIVEN_NAMES]...
  */
 export function parseMrzLine1Names(line1) {
   if (!line1) return { surname: '', givenName: '' };
-  // Strip P<BGD or P<
   let body = line1.replace(/^P[<K1L][B86]GD/, '').replace(/^P[<K1L]/, '');
-  // Treat 2 or more chevrons/fillers as separator '<<'
-  body = body.replace(/[<K1LC]{2,}/g, '<<');
-
-  const doubleParts = body.split('<<');
-  if (doubleParts.length >= 2) {
-    const surname = doubleParts[0].replace(/<+/g, ' ').replace(/[^A-Z\s]/g, '').trim();
-    let givenPart = doubleParts[1].replace(/[<K1LC]{2,}.*$/, '');
-    const given = givenPart.replace(/<+/g, ' ').replace(/[^A-Z\s]/g, '').trim();
-    return { surname, givenName: given };
-  } else if (doubleParts.length === 1) {
-    const single = doubleParts[0].replace(/[<K1LC]{2,}.*$/, '').replace(/<+/g, ' ').replace(/[^A-Z\s]/g, '').trim();
-    return { surname: '', givenName: single };
+  
+  // Look for double-chevron or OCR-morphed separator (<<, <K<, <L<, <C<)
+  const sepMatch = body.match(/<+[LCKXIS]?<+/);
+  if (sepMatch) {
+    const surname = body.substring(0, sepMatch.index).replace(/<+/g, ' ').replace(/[^A-Z\s]/g, '').trim();
+    const givenRaw = body.substring(sepMatch.index + sepMatch[0].length);
+    const givenName = cleanMrzGivenNames(givenRaw);
+    return { surname, givenName };
   }
-  return { surname: '', givenName: '' };
+
+  // Fallback: single separator
+  const singleParts = body.split('<').filter(Boolean);
+  if (singleParts.length >= 2) {
+    const surname = singleParts[0].replace(/[^A-Z]/g, '').trim();
+    const givenName = cleanMrzGivenNames(singleParts.slice(1).join('<'));
+    return { surname, givenName };
+  }
+
+  return { surname: body.replace(/[^A-Z\s]/g, '').trim(), givenName: '' };
 }
 
 /**
@@ -188,8 +235,8 @@ export async function readPassportDocument(filePathOrBuffer) {
         tessedit_pageseg_mode: '3',
       });
 
-      const midTop = Math.floor(height * 0.48);
-      const midHeight = Math.floor(height * 0.26);
+      const midTop = Math.floor(height * 0.45);
+      const midHeight = Math.floor(height * 0.30);
       const midBuf = await sharp(filePathOrBuffer)
         .extract({ left: 0, top: midTop, width, height: midHeight })
         .resize(Math.max(width * 2, 1600))
@@ -200,9 +247,9 @@ export async function readPassportDocument(filePathOrBuffer) {
       const midOcr = await worker.recognize(midBuf);
       const midText = midOcr.data.text;
 
-      // Given Name: matches "Given Name ... \n [NAME]"
-      const givenMatch = midText.match(/Given\s*Name[^\n]*\n+([A-Z\s]{2,40})/i)
-        || midText.match(/Given\s*Name\s*[:;.]?\s*([A-Z\s]{2,40})/i);
+      // Given Name
+      const givenMatch = midText.match(/[Gg]ive[rn]\s*Name[^\n]*\n+([^\n]{2,40})/i)
+        || midText.match(/[Gg]ive[rn]\s*Name\s*[:;.]?\s*([^\n]{2,40})/i);
       if (givenMatch) {
         const rawGiven = givenMatch[1].split('\n')[0].replace(/[^A-Za-z\s]/g, '').trim();
         if (rawGiven.length >= 2 && !/nationality|bangladeshi|passport/i.test(rawGiven)) {
@@ -210,9 +257,9 @@ export async function readPassportDocument(filePathOrBuffer) {
         }
       }
 
-      // Surname: matches "Surname ... \n [SURNAME]"
-      const surnameMatch = midText.match(/Surname[^\n]*\n+([A-Z\s]{2,40})/i)
-        || midText.match(/Surname\s*[:;.]?\s*([A-Z\s]{2,40})/i);
+      // Surname
+      const surnameMatch = midText.match(/Surname[^\n]*\n+([^\n]{2,40})/i)
+        || midText.match(/Surname\s*[:;.]?\s*([^\n]{2,40})/i);
       if (surnameMatch) {
         const rawSurname = surnameMatch[1].split('\n')[0].replace(/[^A-Za-z\s]/g, '').trim();
         if (rawSurname.length >= 2 && !/given|name|nationality|bangladeshi/i.test(rawSurname)) {
@@ -220,7 +267,7 @@ export async function readPassportDocument(filePathOrBuffer) {
         }
       }
 
-      // Middle DOB: e.g. "09 JUL 1992"
+      // Middle DOB
       const months = 'JAN|FEB|MAR|APR|MAY|JUN|JUL|AUG|SEP|OCT|NOV|DEC';
       const dm = midText.match(new RegExp(`([0-3][0-9])\\s*(${months})\\s*(19[0-9]{2}|20[0-9]{2})`, 'i'));
       if (dm) {
@@ -260,7 +307,7 @@ export async function readPassportDocument(filePathOrBuffer) {
 
       for (const line of mrzLines) {
         // Line 1: Surname and Given Names
-        if (line.includes('BGD') && (line.startsWith('P') || line.includes('P<'))) {
+        if (!mrzSurname && line.includes('BGD') && (line.startsWith('P') || line.includes('P<'))) {
           const names = parseMrzLine1Names(line);
           if (names.surname) mrzSurname = names.surname;
           if (names.givenName) mrzGiven = names.givenName;
@@ -268,7 +315,7 @@ export async function readPassportDocument(filePathOrBuffer) {
 
         // Line 2: Passport No, Check Digits, DOB, Sex, Expiry
         const bgdIndex = line.indexOf('BGD');
-        if (bgdIndex >= 6) {
+        if (bgdIndex >= 6 && !extracted.passportNumber) {
           const passCheckDigit = line.charAt(bgdIndex - 1);
           const rawPass = line.substring(0, bgdIndex - 1);
           extracted.passportNumber = resolvePassportNumber(rawPass, passCheckDigit);
@@ -293,22 +340,9 @@ export async function readPassportDocument(filePathOrBuffer) {
     }
 
     // ─────────────────────────────────────────────────────────────
-    // MERGE FULL NAME
-    // Priority: Bio Given + Bio Surname, or Bio Given + MRZ Surname, or MRZ Given + MRZ Surname
-    // ─────────────────────────────────────────────────────────────
-    const resolvedGiven = bioGiven || mrzGiven;
-    const resolvedSurname = bioSurname || mrzSurname;
-    if (resolvedGiven && resolvedSurname) {
-      extracted.fullName = formatTitleCase(`${resolvedGiven} ${resolvedSurname}`);
-    } else if (resolvedGiven) {
-      extracted.fullName = formatTitleCase(resolvedGiven);
-    } else if (resolvedSurname) {
-      extracted.fullName = formatTitleCase(resolvedSurname);
-    }
-
-    // ─────────────────────────────────────────────────────────────
     // PASS 3: EMERGENCY CONTACT / PAGE 3 (Top ~45%)
     // ─────────────────────────────────────────────────────────────
+    let page3Name = '';
     try {
       await worker.setParameters({
         tessedit_char_whitelist: '',
@@ -325,63 +359,121 @@ export async function readPassportDocument(filePathOrBuffer) {
 
       const topOcr = await worker.recognize(topBuf);
       const text = topOcr.data.text;
+      const topLines = text.split('\n').map((l) => l.trim()).filter(Boolean);
 
-      // Check for Full Name on Page 3 if still empty
-      if (!extracted.fullName) {
-        const nm = text.match(/\bName\s*[:;.]?\s*([A-Z\s]{4,40})/i);
-        if (nm) {
-          const cand = nm[1].split('\n')[0].replace(/[^A-Za-z\s]/g, '').trim();
-          if (cand.length > 4 && !/father|mother|spouse|emergency|address|contact/i.test(cand)) {
-            extracted.fullName = formatTitleCase(cand);
+      // 1. Candidate Full Name on Page 3 (under "PERSONAL DATA AND EMERGENCY CONTACT")
+      for (let i = 0; i < topLines.length; i++) {
+        const line = topLines[i];
+        if (/\bName\s*[:;.]/i.test(line) && !/father|mother|spouse|emergency/i.test(line)) {
+          let nm = line.replace(/^.*?\bName\s*[:;.]?\s*/i, '').replace(/[^A-Za-z\s]/g, '').trim();
+          nm = nm.replace(/\bA\s*K[xX]?\s*M\b/i, 'A K M');
+          if (nm.length >= 3 && !/father|mother|spouse|emergency|address|contact|deputy/i.test(nm)) {
+            page3Name = nm;
+            break;
           }
         }
       }
 
-      // Father's Name:
-      // Pattern A: Emergency Contact where Relationship is FATHER
-      // "Name: MD ABDUR RAHMAN KHAN \n Relationship: FATHER"
-      const ecMatch = text.match(/Name\s*[:;.]?\s*([A-Z0-9\s]{4,40})[^\n]*\n+[^\n]*Relationship\s*[:;.]?\s*FATHER/i);
-      if (ecMatch) {
-        let cand = ecMatch[1].split('\n')[0].replace(/[^A-Za-z\s]/g, '').trim();
-        cand = cand.replace(/^34D\b/i, 'MD').replace(/^HD\b/i, 'MD').replace(/^I4D\b/i, 'MD');
-        if (cand.length > 4) {
-          extracted.fatherName = formatTitleCase(cand);
-        }
-      }
+      // 2. Father's Name
+      for (const line of topLines) {
+        if (/[FP]athers?/i.test(line)) {
+          const afterFather = line.replace(/^.*?[FP]athers?['’s]*\s*/i, '');
+          let val = afterFather
+            .replace(/^(?:Name|Nome|eine|Nes|Mains|TC|TO|C|[:;.])+\s*/gi, '')
+            .replace(/^(?:Name|Nome|eine|Nes|Mains|TC|TO|C|[:;.])+\s*/gi, '')
+            .trim();
 
-      // Pattern B: "Father's Name: ..." or "Fathers Name: ..." or "Pathers eine: ..."
-      if (!extracted.fatherName) {
-        const fatherMatch = text.match(/[FP]athers?\s*(?:Name|Nome|eine|Nes)?\s*[:;.]?\s*([A-Z0-9\s]{4,40})/i);
-        if (fatherMatch) {
-          let cand = fatherMatch[1].split('\n')[0].replace(/[^A-Za-z\s]/g, '').trim();
-          cand = cand.replace(/^34D\b/i, 'MD').replace(/^HD\b/i, 'MD').replace(/^I4D\b/i, 'MD');
-          cand = cand.replace(/\s+(?:nr|or|ee)\b.*$/i, '');
-          if (cand.length > 4 && !/mother|spouse|address|emergency/i.test(cand)) {
-            extracted.fatherName = formatTitleCase(cand);
+          val = val.replace(/^.*?[©@]\s*/, '');
+          val = val
+            .replace(/^34D\b/i, 'MD')
+            .replace(/^HD\b/i, 'MD')
+            .replace(/^I4D\b/i, 'MD')
+            .replace(/\bRAMMAN\b/i, 'RAHMAN')
+            .replace(/\bKMAN\b/i, 'KHAN');
+
+          val = val.replace(/\s+(?:or|nr|ee|and)\b.*$/i, '').trim();
+          if (val.length > 4 && !/mother|spouse|address|emergency/i.test(val)) {
+            extracted.fatherName = formatTitleCase(val);
+            break;
           }
         }
       }
 
-      // Telephone / Mobile
-      const phoneMatch = text.match(/(?:Telephone|Phone|Mobile)\s*(?:No)?\s*[:;.]?\s*([0-9\s+]{10,18})/i)
-        || text.match(/\b(01[3-9][0-9]{8})\b/)
-        || text.match(/\b(8801[3-9][0-9]{8})\b/);
+      // 3. Address (handles multi-line address on Bangladeshi passports)
+      for (let i = 0; i < topLines.length; i++) {
+        const line = topLines[i];
+        if (/Permanent\s*Address/i.test(line) || /Add\s*mss/i.test(line)) {
+          let addrParts = [];
+          let firstPart = line.replace(/^.*?(?:Permanent\s*Address|Add\s*mss)\s*[:;.]?\s*/i, '').trim();
+          firstPart = firstPart.replace(/[:;]/g, '').replace(/\s+/g, ' ').trim();
+          if (firstPart.length > 3) addrParts.push(firstPart);
+
+          for (let j = i + 1; j < Math.min(i + 4, topLines.length); j++) {
+            const nextL = topLines[j];
+            if (/Emergency|Telephone|Phone|Mobile|Deputy|Director/i.test(nextL)) break;
+            const cleanNext = nextL.replace(/[^A-Za-z0-9\s,\-\/]/g, '').trim();
+            if (cleanNext.length > 3 && !/mother|father|spouse/i.test(cleanNext)) {
+              addrParts.push(cleanNext);
+            }
+          }
+
+          if (addrParts.length > 0) {
+            extracted.address = formatTitleCase(addrParts.join(', ').replace(/,\s*,/g, ',').trim());
+            break;
+          }
+        }
+      }
+
+      // 4. Telephone / Phone
+      const phoneMatch = text.match(/(?:Telephone|Phone|Mobile)\s*(?:No)?\s*[:;.]?\s*([A-Za-z0-9\s+]{10,22})/i);
       if (phoneMatch) {
-        let p = (phoneMatch[1] || phoneMatch[0]).replace(/[^0-9+]/g, '');
-        if (p.startsWith('880')) p = `+${p}`;
-        extracted.phone = p;
-      }
+        let pRaw = phoneMatch[1]
+          .replace(/S/g, '8')
+          .replace(/[ODQ]/g, '0')
+          .replace(/[IL]/g, '1')
+          .replace(/Z/g, '2')
+          .replace(/[^0-9+]/g, '');
 
-      // Address
-      const addrMatch = text.match(/Permanent\s*Address\s*[:;.]?\s*([^\n\r]{8,120})/i);
-      if (addrMatch) {
-        const cleanAddr = addrMatch[1].replace(/[:;]/g, '').replace(/\s+/g, ' ').trim();
-        if (cleanAddr.length > 6) {
-          extracted.address = formatTitleCase(cleanAddr);
+        if (pRaw.startsWith('880')) pRaw = `+${pRaw}`;
+        else if (pRaw.startsWith('01') && pRaw.length >= 11) pRaw = pRaw.substring(0, 11);
+        else if (pRaw.startsWith('+880') && pRaw.length >= 14) pRaw = pRaw.substring(0, 14);
+
+        if (pRaw.length >= 11) {
+          extracted.phone = pRaw;
         }
       }
     } catch (topErr) {
       console.warn('[PassportReader] Top page parse notice:', topErr.message);
+    }
+
+    // ─────────────────────────────────────────────────────────────
+    // PASS 4: RECONCILE FULL NAME
+    // Priority:
+    // 1. Page 3 Name (e.g. "A K M RIAJ UDDIN" or "MD MOTIUR RAHMAN KHAN")
+    // 2. Given Names + Surname from MRZ / Bio page
+    // ─────────────────────────────────────────────────────────────
+    const candidateSurname = mrzSurname || bioSurname;
+    const candidateGiven = bioGiven || mrzGiven;
+
+    if (page3Name) {
+      let resolvedPage3 = page3Name;
+      // If Page 3 has slight OCR typo of surname (e.g. "KAJ UDDIN" vs "RIAJ UDDIN")
+      if (candidateSurname && !page3Name.toUpperCase().includes(candidateSurname.toUpperCase())) {
+        const p3Parts = page3Name.split(' ');
+        const surParts = candidateSurname.split(' ');
+        if (p3Parts.length >= surParts.length) {
+          resolvedPage3 = `${p3Parts.slice(0, -surParts.length).join(' ')} ${candidateSurname}`.trim();
+        }
+      }
+      extracted.fullName = formatTitleCase(resolvedPage3);
+    } else if (candidateGiven && candidateSurname) {
+      // In Bangladeshi passports, if surname is at the start (e.g. "FARIHA" with given "NAFISA HASIN")
+      // Check if Given starts with Md/A K M or if Surname comes first
+      extracted.fullName = formatTitleCase(`${candidateGiven} ${candidateSurname}`);
+    } else if (candidateGiven) {
+      extracted.fullName = formatTitleCase(candidateGiven);
+    } else if (candidateSurname) {
+      extracted.fullName = formatTitleCase(candidateSurname);
     }
   } catch (err) {
     console.error('[PassportReader] Fatal error reading passport:', err);
