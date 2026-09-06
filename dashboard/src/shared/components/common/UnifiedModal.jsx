@@ -32,9 +32,9 @@ export function UnifiedModalHeader({
           <div className="size-9 rounded-xl bg-primary/10 text-primary border border-primary/20 flex items-center justify-center shrink-0">
             {React.isValidElement(Icon) ? (
               Icon
-            ) : typeof Icon === 'function' ? (
-              <Icon className="size-4.5" />
-            ) : null}
+            ) : (
+              <Icon className="w-4.5 h-4.5 sm:w-5 sm:h-5 shrink-0" />
+            )}
           </div>
         )}
         <div className="min-w-0">

@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Link, useLocation } from 'react-router-dom';
 import * as LucideIcons from 'lucide-react';
 import {
   ChevronRight,
@@ -46,6 +47,7 @@ export function UnifiedSidebar({
   onItemSelect,
   brandTitle = 'Monsur Ali Travels',
   brandSubtitle = `Smart ERP v${APP_VERSION}`,
+  brandPath = '/admin',
   logo = logoImg,
   user = null,
   onLogout = () => {},
@@ -53,6 +55,7 @@ export function UnifiedSidebar({
   lang = 'EN',
   className = '',
 }) {
+  const location = useLocation();
   const { state, setOpen, isMobile, setOpenMobile } = useSidebar();
   const isCollapsed = state === 'collapsed';
 
@@ -145,8 +148,20 @@ export function UnifiedSidebar({
           </button>
         ) : (
           <div className="flex items-center justify-between w-full px-1">
-            <div
-              onClick={(e) => handleNavClick(e, { path: '/' })}
+            <Link
+              to={brandPath}
+              onClick={(e) => {
+                if (location.pathname === brandPath) {
+                  e.preventDefault();
+                  return;
+                }
+                if (isCollapsed) {
+                  setOpen(true);
+                }
+                if (isMobile) {
+                  setOpenMobile(false);
+                }
+              }}
               className="flex items-center justify-start gap-2.5 cursor-pointer group/brand overflow-hidden text-left"
             >
               <div className="size-10 rounded-full bg-white p-[3px] flex items-center justify-center shrink-0 overflow-hidden shadow-xs border border-white/30">
@@ -164,7 +179,7 @@ export function UnifiedSidebar({
                   {brandSubtitle}
                 </span>
               </div>
-            </div>
+            </Link>
             <button
               type="button"
               onClick={(e) => {

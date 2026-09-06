@@ -32,6 +32,7 @@ export function AdminSidebar({ lang = 'EN', onOpenLogoutConfirm }) {
       onItemSelect={handleItemSelect}
       brandTitle="Monsur Ali Travels"
       brandSubtitle={`Admin Panel v${APP_VERSION}`}
+      brandPath="/admin"
       logo={logoImg}
       user={user}
       onLogout={onOpenLogoutConfirm}

@@ -174,7 +174,6 @@ export default function CreateClientModal({ isOpen, onClose, onSuccess }) {
 
   // Debounced search for existing clients
   useEffect(() => {
-    if (clientMode !== 'existing') return;
     if (!searchQuery.trim() || searchQuery.trim().length < 2) {
       setSearchResults([]);
       return;
@@ -198,7 +197,7 @@ export default function CreateClientModal({ isOpen, onClose, onSuccess }) {
     }, 300);
 
     return () => clearTimeout(timer);
-  }, [searchQuery, clientMode]);
+  }, [searchQuery]);
 
   // Click outside to close client search dropdown
   useEffect(() => {
@@ -255,6 +254,14 @@ export default function CreateClientModal({ isOpen, onClose, onSuccess }) {
     }
 
     toast.success(`Client profile linked: ${client.fullName} (${client.passportNumber || client.phone})`);
+  };
+
+  // Handles switching from matched/existing client to creating a brand-new client
+  const handleSwitchToNewClient = () => {
+    setSelectedClient(null);
+    setClientMode('new');
+    setClientMatchStatus('new');
+    toast.info('Switched to New Client mode. A new client record will be registered.');
   };
 
   /**
@@ -838,32 +845,93 @@ export default function CreateClientModal({ isOpen, onClose, onSuccess }) {
               )}
             </div>
 
-            {/* ── SECTION 3: MANDATORY PASSPORT SCAN UPLOAD & AUTO-READER ────────── */}
-            <div className="p-4 rounded-2xl bg-amber-500/5 border-2 border-dashed border-amber-500/30 space-y-3 shadow-2xs">
+            {/* ── SECTION 3: MANDATORY PASSPORT SCAN & CLIENT MATCHING ────────── */}
+            <div className="p-4 rounded-2xl bg-amber-500/5 border-2 border-dashed border-amber-500/30 space-y-4 shadow-2xs">
               <div className="flex items-center justify-between flex-wrap gap-2">
                 <label className="text-xs font-bold text-amber-950 flex items-center gap-1.5 uppercase tracking-wider">
                   <span className="size-5 rounded-full bg-amber-600 text-white flex items-center justify-center text-[10px] font-black">3</span>
-                  <span>Mandatory Passport Scan Copy *</span>
+                  <span>Mandatory Passport Scan & Client Matching *</span>
                 </label>
-                {passportPreviewUrl ? (
+                {selectedClient ? (
+                  <span className="text-[10px] font-bold text-emerald-700 bg-emerald-500/15 border border-emerald-500/30 px-2.5 py-0.5 rounded-full flex items-center gap-1">
+                    <UserCheck className="size-3" />
+                    <span>Existing Client Linked</span>
+                  </span>
+                ) : (passportDocData || passportPreviewUrl) ? (
                   <span className="text-[10px] font-bold text-emerald-700 bg-emerald-500/15 border border-emerald-500/30 px-2.5 py-0.5 rounded-full flex items-center gap-1">
                     <CheckCircle2 className="size-3" />
-                    <span>Attached & Verified</span>
+                    <span>Passport Verified</span>
                   </span>
                 ) : (
-                  <span className="text-[10px] font-bold text-rose-600 bg-rose-500/10 border border-rose-500/30 px-2.5 py-0.5 rounded-full">
-                    Mandatory
+                  <span className="text-[10px] font-bold text-rose-600 bg-rose-500/10 border border-rose-500/30 px-2.5 py-0.5 rounded-full flex items-center gap-1">
+                    <Lock className="size-3" />
+                    <span>Required to Unlock</span>
                   </span>
                 )}
               </div>
 
-              <p className="text-[11px] text-black/70">
-                Passport scan copy is mandatory. Uploading will automatically extract client information into the editable fields below for your review.
+              <p className="text-[11px] text-black/70 leading-relaxed">
+                Upload the passport bio-page scan below. The system will automatically extract candidate details and search for existing clients. You can also search for an existing client directly using the search bar.
               </p>
+
+              {/* Direct Existing Client Search Bar */}
+              <div className="relative" ref={searchContainerRef}>
+                <div className="flex items-center justify-between mb-1.5">
+                  <label className="text-xs font-semibold text-black/80 flex items-center gap-1.5">
+                    <Search className="size-3.5 text-primary" />
+                    <span>Search Existing Client (Passport / Phone / Name)</span>
+                  </label>
+                  {selectedClient && (
+                    <button
+                      type="button"
+                      onClick={handleSwitchToNewClient}
+                      className="text-[10px] font-bold text-primary hover:underline cursor-pointer"
+                    >
+                      + Switch to New Client
+                    </button>
+                  )}
+                </div>
+
+                <div className="relative">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-black/40" />
+                  <input
+                    type="text"
+                    placeholder="Search by passport number, phone, or name..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    onFocus={() => {
+                      if (searchResults.length > 0) setDropdownOpen(true);
+                    }}
+                    className="w-full pl-9 pr-8 py-2 text-xs rounded-xl border border-black/15 bg-white text-black focus:border-primary outline-hidden shadow-2xs"
+                  />
+                  {searching && <Loader2 className="absolute right-3 top-1/2 -translate-y-1/2 size-4 text-primary animate-spin" />}
+                </div>
+
+                {dropdownOpen && searchResults.length > 0 && (
+                  <div className="absolute top-full left-0 right-0 mt-1 max-h-52 overflow-y-auto bg-white border border-black/10 rounded-xl shadow-xl z-30 divide-y divide-black/10 animate-in fade-in zoom-in-95">
+                    {searchResults.map((c) => (
+                      <button
+                        key={c._id || c.did}
+                        type="button"
+                        onClick={() => handleSelectClient(c)}
+                        className="w-full text-left p-2.5 hover:bg-primary/5 transition flex items-center justify-between cursor-pointer"
+                      >
+                        <div>
+                          <div className="font-bold text-xs text-black">{c.fullName}</div>
+                          <div className="text-[10px] text-black/60">
+                            Phone: {c.phone || 'N/A'} • Passport: <span className="font-mono font-bold text-primary">{c.passportNumber || 'N/A'}</span>
+                          </div>
+                        </div>
+                        <Check className="size-4 text-primary shrink-0" />
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
 
               {/* Upload Dropzone or Attached Preview */}
               {passportPreviewUrl ? (
-                <div className="flex items-center gap-3 p-3 bg-white rounded-xl border border-amber-500/40 shadow-xs">
+                <div className="flex items-center gap-3 p-3 bg-white rounded-xl border border-emerald-500/40 shadow-xs">
                   {passportFile?.type?.startsWith('image/') || (!passportFile && passportPreviewUrl.match(/\.(jpeg|jpg|png|webp)/i)) ? (
                     <img
                       src={passportPreviewUrl}
@@ -921,7 +989,7 @@ export default function CreateClientModal({ isOpen, onClose, onSuccess }) {
                     Click or drag passport bio-page scan here *
                   </span>
                   <span className="text-[10px] text-black/50">
-                    PDF, JPG, PNG, WEBP (File upload triggers automatic data reading)
+                    PDF, JPG, PNG, WEBP (Triggers automatic data reading & client matching)
                   </span>
                   <input
                     type="file"
@@ -935,367 +1003,341 @@ export default function CreateClientModal({ isOpen, onClose, onSuccess }) {
 
               {uploadingPassport && (
                 <div className="flex items-center gap-2 text-xs text-amber-800 font-medium">
-                  <Loader2 className="size-3.5 animate-spin" />
-                  <span>Uploading & Reading Passport Document...</span>
+                  <Loader2 className="size-3.5 animate-spin text-amber-600" />
+                  <span>Uploading to Vault & Auto-Reading Passport...</span>
+                </div>
+              )}
+
+              {/* Dynamic Match Alert Banner */}
+              {clientMatchStatus === 'matched' && selectedClient && (
+                <div className="p-3 bg-emerald-50 border border-emerald-200 rounded-xl flex items-center justify-between gap-3 text-xs text-emerald-950 animate-in fade-in duration-200">
+                  <div className="flex items-center gap-2.5 min-w-0">
+                    <div className="size-8 rounded-lg bg-emerald-500/20 text-emerald-700 flex items-center justify-center shrink-0">
+                      <UserCheck className="size-4" />
+                    </div>
+                    <div className="min-w-0">
+                      <div className="font-bold flex items-center gap-1.5 flex-wrap">
+                        <span>Existing Client Linked:</span>
+                        <span className="underline decoration-emerald-400">{selectedClient.fullName}</span>
+                      </div>
+                      <div className="text-[10px] text-emerald-800 truncate mt-0.5">
+                        Passport: {selectedClient.passportNumber || 'N/A'} • Phone: {selectedClient.phone || 'N/A'}
+                      </div>
+                    </div>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={handleSwitchToNewClient}
+                    className="shrink-0 text-[11px] font-bold px-2.5 py-1 rounded-lg bg-white border border-emerald-300 text-emerald-800 hover:bg-emerald-100 transition cursor-pointer"
+                  >
+                    Switch to New Client
+                  </button>
+                </div>
+              )}
+
+              {clientMatchStatus === 'new' && (
+                <div className="p-3 bg-sky-50 border border-sky-200 rounded-xl flex items-center gap-2.5 text-xs text-sky-950 animate-in fade-in duration-200">
+                  <div className="size-8 rounded-lg bg-sky-500/20 text-sky-700 flex items-center justify-center shrink-0">
+                    <Sparkles className="size-4" />
+                  </div>
+                  <div className="min-w-0">
+                    <div className="font-bold">New Client Profile Detected</div>
+                    <div className="text-[10px] text-sky-800 mt-0.5">
+                      No existing profile matches passport {formData.passportNumber ? `"${formData.passportNumber}"` : 'number'}. A new client profile will be created upon file creation.
+                    </div>
+                  </div>
                 </div>
               )}
             </div>
 
-            {/* ── SECTION 4: EDITABLE CANDIDATE & PASSPORT DETAILS ─────────────── */}
-            <div className="p-4 rounded-2xl bg-black/[0.02] border border-black/10 space-y-4 shadow-2xs">
-              <div className="flex items-center justify-between">
-                <label className="text-xs font-bold text-black flex items-center gap-1.5 uppercase tracking-wider">
-                  <span className="size-5 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-[10px] font-black">4</span>
-                  <span>Candidate & Passport Information</span>
-                </label>
-                {/* Client Mode Selector: New vs Existing */}
-                <div className="flex items-center gap-1 bg-black/[0.04] p-1 rounded-xl border border-black/10 text-[11px]">
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setClientMode('new');
-                      setSelectedClient(null);
-                    }}
-                    className={`px-2.5 py-1 rounded-lg font-bold transition cursor-pointer ${
-                      clientMode === 'new' ? 'bg-white text-black shadow-xs' : 'text-black/60 hover:text-black'
-                    }`}
-                  >
-                    Add New Client
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setClientMode('existing')}
-                    className={`px-2.5 py-1 rounded-lg font-bold transition cursor-pointer ${
-                      clientMode === 'existing' ? 'bg-white text-black shadow-xs' : 'text-black/60 hover:text-black'
-                    }`}
-                  >
-                    Select Existing
-                  </button>
+            {/* ── STEP 2 LOCKED PLACEHOLDER (WHEN NO PASSPORT OR CLIENT) ───────── */}
+            {!isStep2Unlocked && (
+              <div className="p-8 rounded-2xl border-2 border-dashed border-black/15 bg-black/[0.01] flex flex-col items-center justify-center text-center space-y-3 animate-in fade-in duration-200">
+                <div className="size-12 rounded-full bg-amber-500/10 text-amber-600 flex items-center justify-center">
+                  <Lock className="size-6" />
+                </div>
+                <div className="max-w-md">
+                  <h4 className="text-sm font-bold text-black">Candidate & Financial Sections Locked</h4>
+                  <p className="text-xs text-black/60 mt-1 leading-relaxed">
+                    Please upload the mandatory passport scan copy or search and select an existing client in Step 3 above. 
+                    Candidate information, supporting documents, and package details will unlock automatically.
+                  </p>
                 </div>
               </div>
+            )}
 
-              {/* Existing Client Search */}
-              {clientMode === 'existing' && (
-                <div className="space-y-2 animate-in fade-in duration-150 relative" ref={searchContainerRef}>
-                  <label className="text-xs font-semibold text-black/80 block">Search Existing Client</label>
-                  <div className="relative">
-                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-black/40" />
-                    <input
-                      type="text"
-                      placeholder="Search by name, phone, or passport..."
-                      value={searchQuery}
-                      onChange={(e) => setSearchQuery(e.target.value)}
-                      onFocus={() => {
-                        if (searchResults.length > 0) setDropdownOpen(true);
-                      }}
-                      className="w-full pl-9 pr-8 py-2 text-xs rounded-xl border border-black/15 bg-white text-black focus:border-primary outline-hidden"
-                    />
-                    {searching && <Loader2 className="absolute right-3 top-1/2 -translate-y-1/2 size-4 text-primary animate-spin" />}
+            {isStep2Unlocked && (
+              <>
+                {/* ── SECTION 4: CANDIDATE & PASSPORT DETAILS ─────────────── */}
+                <div className="p-4 rounded-2xl bg-black/[0.02] border border-black/10 space-y-4 shadow-2xs animate-in fade-in duration-200">
+                  <div className="flex items-center justify-between">
+                    <label className="text-xs font-bold text-black flex items-center gap-1.5 uppercase tracking-wider">
+                      <span className="size-5 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-[10px] font-black">4</span>
+                      <span>Candidate & Passport Information</span>
+                    </label>
+                    <span className="text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-black/5 text-black/70 border border-black/10">
+                      {selectedClient ? 'Linked to Existing Profile' : 'New Client Profile'}
+                    </span>
                   </div>
 
-                  {dropdownOpen && searchResults.length > 0 && (
-                    <div className="absolute top-full left-0 right-0 mt-1 max-h-48 overflow-y-auto bg-white border border-black/10 rounded-xl shadow-xl z-30 divide-y divide-black/10">
-                      {searchResults.map((c) => (
-                        <button
-                          key={c._id || c.did}
-                          type="button"
-                          onClick={() => handleSelectClient(c)}
-                          className="w-full text-left p-2.5 hover:bg-black/[0.02] flex items-center justify-between cursor-pointer"
-                        >
-                          <div>
-                            <div className="font-bold text-xs">{c.fullName}</div>
-                            <div className="text-[10px] text-black/60">{c.phone} • Passport: {c.passportNumber || 'N/A'}</div>
+                  {/* Editable Fields Grid */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                    <div>
+                      <label className="text-xs font-semibold text-black/80 block mb-1">
+                        Full Name (as per Passport) <span className="text-rose-500">*</span>
+                      </label>
+                      <input
+                        type="text"
+                        name="fullName"
+                        placeholder="e.g. Md. Suhag Rahman"
+                        value={formData.fullName}
+                        onChange={handleChange}
+                        required
+                        className="w-full px-3.5 py-2 text-xs rounded-xl border border-black/15 bg-white text-black font-semibold focus:border-primary outline-hidden"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="text-xs font-semibold text-black/80 block mb-1">
+                        Passport Number <span className="text-rose-500">*</span>
+                      </label>
+                      <input
+                        type="text"
+                        name="passportNumber"
+                        placeholder="e.g. A02948192"
+                        value={formData.passportNumber}
+                        onChange={handleChange}
+                        required
+                        className="w-full px-3.5 py-2 text-xs rounded-xl border border-black/15 bg-white text-black font-mono uppercase font-bold focus:border-primary outline-hidden"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="text-xs font-semibold text-black/80 block mb-1">
+                        Phone Number <span className="text-rose-500">*</span>
+                      </label>
+                      <input
+                        type="tel"
+                        name="phone"
+                        placeholder="e.g. 01712345678"
+                        value={formData.phone}
+                        onChange={handleChange}
+                        required
+                        className="w-full px-3.5 py-2 text-xs rounded-xl border border-black/15 bg-white text-black font-mono focus:border-primary outline-hidden"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="text-xs font-semibold text-black/80 block mb-1">
+                        Father's Name <span className="text-rose-500">*</span>
+                      </label>
+                      <input
+                        type="text"
+                        name="fatherName"
+                        placeholder="e.g. Late Monir Uddin"
+                        value={formData.fatherName}
+                        onChange={handleChange}
+                        required
+                        className="w-full px-3.5 py-2 text-xs rounded-xl border border-black/15 bg-white text-black focus:border-primary outline-hidden"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="text-xs font-semibold text-black/80 block mb-1">
+                        Date of Birth <span className="text-rose-500">*</span>
+                      </label>
+                      <input
+                        type="date"
+                        name="dateOfBirth"
+                        value={formData.dateOfBirth}
+                        onChange={handleChange}
+                        required
+                        className="w-full px-3.5 py-2 text-xs rounded-xl border border-black/15 bg-white text-black focus:border-primary outline-hidden cursor-pointer"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="text-xs font-semibold text-black/80 block mb-1">
+                        Passport Expiry Date <span className="text-rose-500">*</span>
+                      </label>
+                      <input
+                        type="date"
+                        name="passportExpiryDate"
+                        value={formData.passportExpiryDate}
+                        onChange={handleChange}
+                        required
+                        className="w-full px-3.5 py-2 text-xs rounded-xl border border-black/15 bg-white text-black focus:border-primary outline-hidden cursor-pointer"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="text-xs font-semibold text-black/80 block mb-1">
+                        National ID (NID)
+                      </label>
+                      <input
+                        type="text"
+                        name="nidNumber"
+                        placeholder="e.g. 19881234567890"
+                        value={formData.nidNumber}
+                        onChange={handleChange}
+                        className="w-full px-3.5 py-2 text-xs rounded-xl border border-black/15 bg-white text-black font-mono focus:border-primary outline-hidden"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="text-xs font-semibold text-black/80 block mb-1">
+                        Present Address
+                      </label>
+                      <input
+                        type="text"
+                        name="address"
+                        placeholder="e.g. Sylhet, Bangladesh"
+                        value={formData.address}
+                        onChange={handleChange}
+                        className="w-full px-3.5 py-2 text-xs rounded-xl border border-black/15 bg-white text-black focus:border-primary outline-hidden"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                {/* ── SECTION 5: OPTIONAL SUPPORTING DOCUMENTS ────────────────────── */}
+                <div className="p-4 rounded-2xl bg-black/[0.02] border border-black/10 space-y-3 shadow-2xs animate-in fade-in duration-200">
+                  <div className="flex items-center justify-between">
+                    <label className="text-xs font-bold text-black flex items-center gap-1.5 uppercase tracking-wider">
+                      <span className="size-5 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-[10px] font-black">5</span>
+                      <span>Supporting Documents</span>
+                    </label>
+                    <span className="text-[10px] text-black/50 font-semibold">(Optional)</span>
+                  </div>
+                  <p className="text-[11px] text-black/60">
+                    Supporting documents are optional. You can upload them now or attach them later from the Case Workspace.
+                  </p>
+
+                  {/* Quick Upload Slots */}
+                  <div className="flex flex-wrap items-center gap-2.5 pt-1">
+                    {/* Photo Upload */}
+                    <label className="px-3 py-1.5 rounded-xl bg-white border border-black/15 hover:bg-black/[0.03] text-xs font-semibold text-black cursor-pointer flex items-center gap-1.5 transition">
+                      <UploadCloud className="size-3.5 text-black/60" />
+                      <span>+ Candidate Photo</span>
+                      <input
+                        type="file"
+                        accept="image/*"
+                        className="hidden"
+                        onChange={(e) => handleOptionalDocUpload(e, 'Candidate Photo (2x2)')}
+                        disabled={uploadingOptionalDoc}
+                      />
+                    </label>
+
+                    {/* NID Card Upload */}
+                    <label className="px-3 py-1.5 rounded-xl bg-white border border-black/15 hover:bg-black/[0.03] text-xs font-semibold text-black cursor-pointer flex items-center gap-1.5 transition">
+                      <UploadCloud className="size-3.5 text-black/60" />
+                      <span>+ NID Scan</span>
+                      <input
+                        type="file"
+                        accept=".pdf,image/*"
+                        className="hidden"
+                        onChange={(e) => handleOptionalDocUpload(e, 'National ID (NID)')}
+                        disabled={uploadingOptionalDoc}
+                      />
+                    </label>
+
+                    {/* Offer Letter Upload */}
+                    <label className={`px-3 py-1.5 rounded-xl border text-xs font-semibold cursor-pointer flex items-center gap-1.5 transition ${
+                      targetStage === 'OFFER_LETTER'
+                        ? 'bg-indigo-500/10 border-indigo-500/30 text-indigo-900 font-bold hover:bg-indigo-500/20'
+                        : 'bg-white border-black/15 hover:bg-black/[0.03] text-black'
+                    }`}>
+                      <FileCheck className="size-3.5 text-indigo-600" />
+                      <span>+ Offer Letter / Work Permit Dossier</span>
+                      <input
+                        type="file"
+                        accept=".pdf,image/*"
+                        className="hidden"
+                        onChange={(e) => handleOptionalDocUpload(e, 'Offer Letter / Work Permit Dossier')}
+                        disabled={uploadingOptionalDoc}
+                      />
+                    </label>
+
+                    {/* General Supporting Doc */}
+                    <label className="px-3 py-1.5 rounded-xl bg-white border border-black/15 hover:bg-black/[0.03] text-xs font-semibold text-black cursor-pointer flex items-center gap-1.5 transition">
+                      <UploadCloud className="size-3.5 text-black/60" />
+                      <span>+ Other Document</span>
+                      <input
+                        type="file"
+                        accept=".pdf,image/*"
+                        className="hidden"
+                        onChange={(e) => handleOptionalDocUpload(e, 'Supporting Document')}
+                        disabled={uploadingOptionalDoc}
+                      />
+                    </label>
+                  </div>
+
+                  {uploadingOptionalDoc && (
+                    <div className="flex items-center gap-2 text-xs text-primary font-medium pt-1">
+                      <Loader2 className="size-3.5 animate-spin" />
+                      <span>Uploading document to vault...</span>
+                    </div>
+                  )}
+
+                  {/* Uploaded Optional Docs List */}
+                  {optionalDocs.length > 0 && (
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-2">
+                      {optionalDocs.map((doc) => (
+                        <div key={doc.did} className="flex items-center justify-between p-2 bg-white rounded-lg border border-black/10 text-xs">
+                          <div className="flex items-center gap-2 min-w-0 pr-2">
+                            <FileText className="size-4 text-primary shrink-0" />
+                            <span className="font-semibold text-black truncate">{doc.title}</span>
                           </div>
-                          <Check className="size-4 text-primary" />
-                        </button>
+                          <button
+                            type="button"
+                            onClick={() => removeOptionalDoc(doc.did)}
+                            className="p-1 rounded text-red-500 hover:bg-red-50 cursor-pointer shrink-0"
+                            title="Remove Document"
+                          >
+                            <Trash2 className="size-3.5" />
+                          </button>
+                        </div>
                       ))}
                     </div>
                   )}
+                </div>
 
-                  {selectedClient && (
-                    <div className="p-2.5 bg-emerald-500/10 border border-emerald-500/30 rounded-xl text-[11px] text-emerald-900 font-medium">
-                      Selected: <strong>{selectedClient.fullName}</strong> ({selectedClient.phone})
+                {/* ── SECTION 6: PACKAGE DETAILS & FINANCIALS ─────────────────────── */}
+                <div className="p-4 rounded-2xl bg-black/[0.02] border border-black/10 space-y-3 shadow-2xs animate-in fade-in duration-200">
+                  <div className="flex items-center justify-between">
+                    <label className="text-xs font-bold text-black flex items-center gap-1.5 uppercase tracking-wider">
+                      <span className="size-5 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-[10px] font-black">6</span>
+                      <span>Package & Financial Details</span>
+                    </label>
+                    <span className="text-[10px] font-semibold text-black/50">Payments collected via assigned tasks</span>
+                  </div>
+
+                  <div className="max-w-md">
+                    <label className="text-xs font-semibold text-black/80 block mb-1.5">
+                      Total Agreed Amount (BDT) <span className="text-rose-500">*</span>
+                    </label>
+                    <div className="relative">
+                      <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs font-bold text-black/40 select-none">
+                        BDT
+                      </span>
+                      <input
+                        type="number"
+                        name="packageAmount"
+                        required
+                        min="1"
+                        placeholder="e.g. 450000"
+                        value={formData.packageAmount}
+                        onChange={handleChange}
+                        className="w-full pl-12 pr-3.5 py-2.5 text-sm rounded-xl border border-black/15 bg-white text-black font-mono font-bold focus:border-primary outline-hidden shadow-2xs"
+                      />
                     </div>
-                  )}
+                    <p className="text-[11px] text-black/55 mt-1.5">
+                      Total contract price for this case file. Payment collection tasks, invoices, and receipts will be handled directly through task assignment.
+                    </p>
+                  </div>
                 </div>
-              )}
-
-              {/* Editable Fields Grid */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
-                <div>
-                  <label className="text-xs font-semibold text-black/80 block mb-1">
-                    Full Name (as per Passport) <span className="text-rose-500">*</span>
-                  </label>
-                  <input
-                    type="text"
-                    name="fullName"
-                    placeholder="e.g. Md. Suhag Rahman"
-                    value={formData.fullName}
-                    onChange={handleChange}
-                    required
-                    className="w-full px-3.5 py-2 text-xs rounded-xl border border-black/15 bg-white text-black font-semibold focus:border-primary outline-hidden"
-                  />
-                </div>
-
-                <div>
-                  <label className="text-xs font-semibold text-black/80 block mb-1">
-                    Passport Number <span className="text-rose-500">*</span>
-                  </label>
-                  <input
-                    type="text"
-                    name="passportNumber"
-                    placeholder="e.g. A02948192"
-                    value={formData.passportNumber}
-                    onChange={handleChange}
-                    required
-                    className="w-full px-3.5 py-2 text-xs rounded-xl border border-black/15 bg-white text-black font-mono uppercase font-bold focus:border-primary outline-hidden"
-                  />
-                </div>
-
-                <div>
-                  <label className="text-xs font-semibold text-black/80 block mb-1">
-                    Phone Number <span className="text-rose-500">*</span>
-                  </label>
-                  <input
-                    type="tel"
-                    name="phone"
-                    placeholder="e.g. 01712345678"
-                    value={formData.phone}
-                    onChange={handleChange}
-                    required
-                    className="w-full px-3.5 py-2 text-xs rounded-xl border border-black/15 bg-white text-black font-mono focus:border-primary outline-hidden"
-                  />
-                </div>
-
-                <div>
-                  <label className="text-xs font-semibold text-black/80 block mb-1">
-                    Father's Name
-                  </label>
-                  <input
-                    type="text"
-                    name="fatherName"
-                    placeholder="e.g. Late Monir Uddin"
-                    value={formData.fatherName}
-                    onChange={handleChange}
-                    className="w-full px-3.5 py-2 text-xs rounded-xl border border-black/15 bg-white text-black focus:border-primary outline-hidden"
-                  />
-                </div>
-
-                <div>
-                  <label className="text-xs font-semibold text-black/80 block mb-1">
-                    Date of Birth
-                  </label>
-                  <input
-                    type="date"
-                    name="dateOfBirth"
-                    value={formData.dateOfBirth}
-                    onChange={handleChange}
-                    className="w-full px-3.5 py-2 text-xs rounded-xl border border-black/15 bg-white text-black focus:border-primary outline-hidden cursor-pointer"
-                  />
-                </div>
-
-                <div>
-                  <label className="text-xs font-semibold text-black/80 block mb-1">
-                    Passport Expiry Date
-                  </label>
-                  <input
-                    type="date"
-                    name="passportExpiryDate"
-                    value={formData.passportExpiryDate}
-                    onChange={handleChange}
-                    className="w-full px-3.5 py-2 text-xs rounded-xl border border-black/15 bg-white text-black focus:border-primary outline-hidden cursor-pointer"
-                  />
-                </div>
-
-                <div>
-                  <label className="text-xs font-semibold text-black/80 block mb-1">
-                    National ID (NID)
-                  </label>
-                  <input
-                    type="text"
-                    name="nidNumber"
-                    placeholder="e.g. 19881234567890"
-                    value={formData.nidNumber}
-                    onChange={handleChange}
-                    className="w-full px-3.5 py-2 text-xs rounded-xl border border-black/15 bg-white text-black font-mono focus:border-primary outline-hidden"
-                  />
-                </div>
-
-                <div>
-                  <label className="text-xs font-semibold text-black/80 block mb-1">
-                    Present Address
-                  </label>
-                  <input
-                    type="text"
-                    name="address"
-                    placeholder="e.g. Sylhet, Bangladesh"
-                    value={formData.address}
-                    onChange={handleChange}
-                    className="w-full px-3.5 py-2 text-xs rounded-xl border border-black/15 bg-white text-black focus:border-primary outline-hidden"
-                  />
-                </div>
-              </div>
-            </div>
-
-            {/* ── SECTION 5: OPTIONAL SUPPORTING DOCUMENTS ────────────────────── */}
-            <div className="p-4 rounded-2xl bg-black/[0.02] border border-black/10 space-y-3 shadow-2xs">
-              <div className="flex items-center justify-between">
-                <label className="text-xs font-bold text-black flex items-center gap-1.5 uppercase tracking-wider">
-                  <span className="size-5 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-[10px] font-black">5</span>
-                  <span>Supporting Documents</span>
-                </label>
-                <span className="text-[10px] text-black/50 font-semibold">(Optional)</span>
-              </div>
-              <p className="text-[11px] text-black/60">
-                Supporting documents are optional. You can upload them now or attach them later from the Case Workspace.
-              </p>
-
-              {/* Quick Upload Slots */}
-              <div className="flex flex-wrap items-center gap-2.5 pt-1">
-                {/* Photo Upload */}
-                <label className="px-3 py-1.5 rounded-xl bg-white border border-black/15 hover:bg-black/[0.03] text-xs font-semibold text-black cursor-pointer flex items-center gap-1.5 transition">
-                  <UploadCloud className="size-3.5 text-black/60" />
-                  <span>+ Candidate Photo</span>
-                  <input
-                    type="file"
-                    accept="image/*"
-                    className="hidden"
-                    onChange={(e) => handleOptionalDocUpload(e, 'Candidate Photo (2x2)')}
-                    disabled={uploadingOptionalDoc}
-                  />
-                </label>
-
-                {/* NID Card Upload */}
-                <label className="px-3 py-1.5 rounded-xl bg-white border border-black/15 hover:bg-black/[0.03] text-xs font-semibold text-black cursor-pointer flex items-center gap-1.5 transition">
-                  <UploadCloud className="size-3.5 text-black/60" />
-                  <span>+ NID Scan</span>
-                  <input
-                    type="file"
-                    accept=".pdf,image/*"
-                    className="hidden"
-                    onChange={(e) => handleOptionalDocUpload(e, 'National ID (NID)')}
-                    disabled={uploadingOptionalDoc}
-                  />
-                </label>
-
-                {/* Offer Letter Upload (Highlighted if targetStage === OFFER_LETTER) */}
-                <label className={`px-3 py-1.5 rounded-xl border text-xs font-semibold cursor-pointer flex items-center gap-1.5 transition ${
-                  targetStage === 'OFFER_LETTER'
-                    ? 'bg-indigo-500/10 border-indigo-500/30 text-indigo-900 font-bold hover:bg-indigo-500/20'
-                    : 'bg-white border-black/15 hover:bg-black/[0.03] text-black'
-                }`}>
-                  <FileCheck className="size-3.5 text-indigo-600" />
-                  <span>+ Offer Letter / Work Permit Dossier</span>
-                  <input
-                    type="file"
-                    accept=".pdf,image/*"
-                    className="hidden"
-                    onChange={(e) => handleOptionalDocUpload(e, 'Offer Letter / Work Permit Dossier')}
-                    disabled={uploadingOptionalDoc}
-                  />
-                </label>
-
-                {/* General Supporting Doc */}
-                <label className="px-3 py-1.5 rounded-xl bg-white border border-black/15 hover:bg-black/[0.03] text-xs font-semibold text-black cursor-pointer flex items-center gap-1.5 transition">
-                  <UploadCloud className="size-3.5 text-black/60" />
-                  <span>+ Other Document</span>
-                  <input
-                    type="file"
-                    accept=".pdf,image/*"
-                    className="hidden"
-                    onChange={(e) => handleOptionalDocUpload(e, 'Supporting Document')}
-                    disabled={uploadingOptionalDoc}
-                  />
-                </label>
-              </div>
-
-              {uploadingOptionalDoc && (
-                <div className="flex items-center gap-2 text-xs text-primary font-medium pt-1">
-                  <Loader2 className="size-3.5 animate-spin" />
-                  <span>Uploading document to vault...</span>
-                </div>
-              )}
-
-              {/* Uploaded Optional Docs List */}
-              {optionalDocs.length > 0 && (
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-2">
-                  {optionalDocs.map((doc) => (
-                    <div key={doc.did} className="flex items-center justify-between p-2 bg-white rounded-lg border border-black/10 text-xs">
-                      <div className="flex items-center gap-2 min-w-0 pr-2">
-                        <FileText className="size-4 text-primary shrink-0" />
-                        <span className="font-semibold text-black truncate">{doc.title}</span>
-                      </div>
-                      <button
-                        type="button"
-                        onClick={() => removeOptionalDoc(doc.did)}
-                        className="p-1 rounded text-red-500 hover:bg-red-50 cursor-pointer shrink-0"
-                        title="Remove Document"
-                      >
-                        <Trash2 className="size-3.5" />
-                      </button>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-
-            {/* ── SECTION 6: PACKAGE DETAILS & FINANCIALS ─────────────────────── */}
-            <div className="p-4 rounded-2xl bg-black/[0.02] border border-black/10 space-y-3 shadow-2xs">
-              <label className="text-xs font-bold text-black flex items-center gap-1.5 uppercase tracking-wider">
-                <span className="size-5 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-[10px] font-black">6</span>
-                <span>Package & Financial Details</span>
-              </label>
-
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3.5">
-                <div>
-                  <label className="text-xs font-semibold text-black/80 block mb-1">
-                    Total Agreed Amount (BDT) <span className="text-rose-500">*</span>
-                  </label>
-                  <input
-                    type="number"
-                    name="packageAmount"
-                    required
-                    min="1"
-                    placeholder="e.g. 450000"
-                    value={formData.packageAmount}
-                    onChange={handleChange}
-                    className="w-full px-3.5 py-2 text-xs rounded-xl border border-black/15 bg-white text-black font-mono font-bold focus:border-primary outline-hidden"
-                  />
-                </div>
-
-                <div>
-                  <label className="text-xs font-semibold text-black/80 block mb-1">
-                    Initial Advance Paid (BDT)
-                  </label>
-                  <input
-                    type="number"
-                    name="advanceAmount"
-                    min="0"
-                    placeholder="e.g. 50000"
-                    value={formData.advanceAmount}
-                    onChange={handleChange}
-                    className="w-full px-3.5 py-2 text-xs rounded-xl border border-black/15 bg-white text-black font-mono focus:border-primary outline-hidden"
-                  />
-                </div>
-
-                <div>
-                  <label className="text-xs font-semibold text-black/80 block mb-1">
-                    Payment Method
-                  </label>
-                  <select
-                    name="paymentMethod"
-                    value={formData.paymentMethod}
-                    onChange={handleChange}
-                    className="w-full px-3.5 py-2 text-xs rounded-xl border border-black/15 bg-white text-black font-medium focus:border-primary outline-hidden cursor-pointer"
-                  >
-                    <option value="Cash">Cash</option>
-                    <option value="Bank Transfer">Bank Transfer</option>
-                    <option value="bKash">bKash</option>
-                    <option value="Nagad">Nagad</option>
-                  </select>
-                </div>
-              </div>
-            </div>
+              </>
+            )}
 
           </div>
 
@@ -1303,10 +1345,23 @@ export default function CreateClientModal({ isOpen, onClose, onSuccess }) {
           <UnifiedModalFooter
             onCancel={onClose}
             cancelText="Cancel"
-            submitText={loading ? 'Creating...' : `Create Case File in ${targetStage === 'INTAKE' ? 'Intake' : targetStage === 'UNDER_PROCESS' ? 'Processing' : 'Offer Letter'}`}
+            submitText={
+              loading
+                ? 'Creating...'
+                : !isStep2Unlocked
+                ? 'Upload Passport to Proceed'
+                : `Create Case File in ${
+                    targetStage === 'INTAKE'
+                      ? 'Intake'
+                      : targetStage === 'UNDER_PROCESS'
+                      ? 'Processing'
+                      : 'Offer Letter'
+                  }`
+            }
             loadingText="Creating Case File..."
-            submitIcon={CheckCircle2}
+            submitIcon={!isStep2Unlocked ? Lock : CheckCircle2}
             loading={loading}
+            disabled={!isStep2Unlocked}
           />
         </form>
       </div>
