@@ -65,48 +65,48 @@ export function JobVerificationPreview({ data }) {
         </div>
 
         {/* Title Banner */}
-        <div className="bg-[#0b2341] text-white py-1.5 px-3 rounded-xs text-center mb-3 shadow-2xs">
-          <h2 className="text-[11.5px] font-[900] tracking-[1px] uppercase">
-            কোম্পানি, ক্লায়েন্ট ও কাজের বিস্তারিত তথ্য ফরম
-          </h2>
-          <p className="text-[9.5px] font-semibold text-amber-400 tracking-wide mt-0.5 uppercase">
+        <div className="bg-[#0b2341] text-white py-2 px-3 rounded-xs text-center mb-3 shadow-2xs">
+          <h2 className="text-[12px] font-[900] tracking-[1.5px] uppercase">
             Company, Client &amp; Job Verification Details Form
+          </h2>
+          <p className="text-[9px] font-semibold text-amber-400 tracking-wider mt-0.5 uppercase">
+            Official Travel &amp; Work Permit Verification Record
           </p>
         </div>
 
         {/* SECTION 1: COMPANY INFORMATION */}
         <div className="border border-slate-400 rounded-xs mb-2.5 overflow-hidden">
           <div className="bg-slate-100 border-b border-slate-400 px-2.5 py-0.5 text-[10px] font-[900] text-[#0b2341] uppercase tracking-wide flex items-center justify-between">
-            <span>১. কোম্পানির তথ্য (Company Information)</span>
+            <span>1. Company Information</span>
             <span className="text-[8.5px] font-mono text-slate-500 font-bold">SECTION 1</span>
           </div>
           <div className="p-2 text-[9.5px] grid grid-cols-2 gap-x-4 gap-y-1 bg-white">
             <div className="flex justify-between border-b border-slate-200 pb-0.5">
-              <span className="font-semibold text-slate-600">কোম্পানির নাম (Company Name):</span>
+              <span className="font-semibold text-slate-600">Company Name:</span>
               <span className="font-bold text-slate-900">{company.companyName || 'MONSUR ALI TOURS & TRAVELS'}</span>
             </div>
             <div className="flex justify-between border-b border-slate-200 pb-0.5">
-              <span className="font-semibold text-slate-600">মোবাইল নাম্বার (Mobile Number):</span>
+              <span className="font-semibold text-slate-600">Mobile Number:</span>
               <span className="font-bold text-slate-900 font-mono">{company.companyPhone || '+8801345579534'}</span>
             </div>
             <div className="flex justify-between border-b border-slate-200 pb-0.5">
-              <span className="font-semibold text-slate-600">ইমেইল (Email):</span>
+              <span className="font-semibold text-slate-600">Email:</span>
               <span className="font-bold text-slate-900 font-mono">{company.companyEmail || 'contact@monsuralitravels.com'}</span>
             </div>
             <div className="flex justify-between border-b border-slate-200 pb-0.5">
-              <span className="font-semibold text-slate-600">ট্যাক্স নাম্বার (Tax Number):</span>
+              <span className="font-semibold text-slate-600">Tax Number:</span>
               <span className="font-bold text-slate-900 font-mono">{company.companyTaxNumber || 'N/A'}</span>
             </div>
             <div className="flex justify-between border-b border-slate-200 pb-0.5">
-              <span className="font-semibold text-slate-600">আইডি নাম্বার (ID Number):</span>
+              <span className="font-semibold text-slate-600">ID Number:</span>
               <span className="font-bold text-slate-900 font-mono">{company.companyIdNumber || 'RL-1849'}</span>
             </div>
             <div className="flex justify-between border-b border-slate-200 pb-0.5">
-              <span className="font-semibold text-slate-600">শহর (City):</span>
+              <span className="font-semibold text-slate-600">City:</span>
               <span className="font-bold text-slate-900">{company.companyCity || 'Sunamganj'}</span>
             </div>
             <div className="col-span-2 flex justify-between pt-0.5">
-              <span className="font-semibold text-slate-600">ঠিকানা (Address):</span>
+              <span className="font-semibold text-slate-600">Address:</span>
               <span className="font-bold text-slate-900 text-right">{company.companyAddress || 'Mominpur Jagannathpur Road, Sunamganj, Post Code 3060'}</span>
             </div>
           </div>
@@ -115,36 +115,36 @@ export function JobVerificationPreview({ data }) {
         {/* SECTION 2: CLIENT INFORMATION */}
         <div className="border border-slate-400 rounded-xs mb-2.5 overflow-hidden">
           <div className="bg-slate-100 border-b border-slate-400 px-2.5 py-0.5 text-[10px] font-[900] text-[#0b2341] uppercase tracking-wide flex items-center justify-between">
-            <span>২. ক্লায়েন্টের তথ্য (Client Information)</span>
+            <span>2. Client Information</span>
             <span className="text-[8.5px] font-mono text-slate-500 font-bold">SECTION 2</span>
           </div>
           <div className="p-2 text-[9.5px] grid grid-cols-2 gap-x-4 gap-y-1 bg-white">
             <div className="flex justify-between border-b border-slate-200 pb-0.5">
-              <span className="font-semibold text-slate-600">ক্লায়েন্টের নাম (Client Name):</span>
+              <span className="font-semibold text-slate-600">Client Name:</span>
               <span className="font-bold text-slate-900 uppercase">{client.clientName || 'N/A'}</span>
             </div>
             <div className="flex justify-between border-b border-slate-200 pb-0.5">
-              <span className="font-semibold text-slate-600">মোবাইল নাম্বার (Mobile Number):</span>
+              <span className="font-semibold text-slate-600">Mobile Number:</span>
               <span className="font-bold text-slate-900 font-mono">{client.clientPhone || 'N/A'}</span>
             </div>
             <div className="flex justify-between border-b border-slate-200 pb-0.5">
-              <span className="font-semibold text-slate-600">ইমেইল (Email):</span>
+              <span className="font-semibold text-slate-600">Email:</span>
               <span className="font-bold text-slate-900 font-mono">{client.clientEmail || 'N/A'}</span>
             </div>
             <div className="flex justify-between border-b border-slate-200 pb-0.5">
-              <span className="font-semibold text-slate-600">ট্যাক্স নাম্বার (Tax Number):</span>
+              <span className="font-semibold text-slate-600">Tax Number:</span>
               <span className="font-bold text-slate-900 font-mono">{client.clientTaxNumber || 'N/A'}</span>
             </div>
             <div className="flex justify-between border-b border-slate-200 pb-0.5">
-              <span className="font-semibold text-slate-600">আইডি নাম্বার (ID Number):</span>
+              <span className="font-semibold text-slate-600">ID Number:</span>
               <span className="font-bold text-slate-900 font-mono uppercase">{client.clientIdNumber || 'N/A'}</span>
             </div>
             <div className="flex justify-between border-b border-slate-200 pb-0.5">
-              <span className="font-semibold text-slate-600">শহর (City):</span>
+              <span className="font-semibold text-slate-600">City:</span>
               <span className="font-bold text-slate-900">{client.clientCity || 'N/A'}</span>
             </div>
             <div className="col-span-2 flex justify-between pt-0.5">
-              <span className="font-semibold text-slate-600">ঠিকানা (Address):</span>
+              <span className="font-semibold text-slate-600">Address:</span>
               <span className="font-bold text-slate-900 text-right">{client.clientAddress || 'N/A'}</span>
             </div>
           </div>
@@ -153,48 +153,48 @@ export function JobVerificationPreview({ data }) {
         {/* SECTION 3: JOB & STAY DETAILS */}
         <div className="border border-slate-400 rounded-xs mb-2.5 overflow-hidden">
           <div className="bg-slate-100 border-b border-slate-400 px-2.5 py-0.5 text-[10px] font-[900] text-[#0b2341] uppercase tracking-wide flex items-center justify-between">
-            <span>৩. কাজের বিবরণী ও আবাসন (Job &amp; Stay Details)</span>
+            <span>3. Job &amp; Stay Details</span>
             <span className="text-[8.5px] font-mono text-slate-500 font-bold">SECTION 3</span>
           </div>
           <div className="p-2 text-[9.5px] grid grid-cols-2 gap-x-4 gap-y-1 bg-white">
             <div className="flex justify-between border-b border-slate-200 pb-0.5">
-              <span className="font-semibold text-slate-600">কোথায় যাচ্ছেন? (Where are you going?):</span>
+              <span className="font-semibold text-slate-600">Destination Region:</span>
               <span className="font-bold text-slate-900">{job.destinationPlace || 'Europe / Overseas'}</span>
             </div>
             <div className="flex justify-between border-b border-slate-200 pb-0.5">
-              <span className="font-semibold text-slate-600">কোন দেশে যাচ্ছেন? (Destination Country):</span>
+              <span className="font-semibold text-slate-600">Destination Country:</span>
               <span className="font-bold text-blue-900 uppercase">{job.destinationCountry || 'N/A'}</span>
             </div>
             <div className="flex justify-between border-b border-slate-200 pb-0.5">
-              <span className="font-semibold text-slate-600">কোন শহরে যাচ্ছেন? (Destination City):</span>
+              <span className="font-semibold text-slate-600">Destination City:</span>
               <span className="font-bold text-slate-900">{job.destinationCity || 'N/A'}</span>
             </div>
             <div className="flex justify-between border-b border-slate-200 pb-0.5">
-              <span className="font-semibold text-slate-600">কোথায় থাকবেন? / থাকার স্থান (Accommodation):</span>
+              <span className="font-semibold text-slate-600">Accommodation Type:</span>
               <span className="font-bold text-slate-900">{job.accommodationType || 'Company Provided'}</span>
             </div>
             <div className="col-span-2 flex justify-between border-b border-slate-200 pb-0.5">
-              <span className="font-semibold text-slate-600">আপনি কোথায় থাকবেন তার অ্যাড্রেস? (Residence Address):</span>
+              <span className="font-semibold text-slate-600">Residence Address:</span>
               <span className="font-bold text-slate-900 text-right">{job.residenceAddress || 'N/A'}</span>
             </div>
             <div className="flex justify-between border-b border-slate-200 pb-0.5">
-              <span className="font-semibold text-slate-600">কি কাজ করবেন? (Job Nature/Type):</span>
+              <span className="font-semibold text-slate-600">Job Nature / Type:</span>
               <span className="font-bold text-slate-900">{job.jobNature || 'N/A'}</span>
             </div>
             <div className="flex justify-between border-b border-slate-200 pb-0.5">
-              <span className="font-semibold text-slate-600">আপনার জব টাইটেল কি? (Job Title):</span>
+              <span className="font-semibold text-slate-600">Job Title:</span>
               <span className="font-bold text-slate-900">{job.jobTitle || 'N/A'}</span>
             </div>
             <div className="flex justify-between border-b border-slate-200 pb-0.5">
-              <span className="font-semibold text-slate-600">দৈনিক কত ঘণ্টা কাজ করবেন? (Daily Working Hours):</span>
+              <span className="font-semibold text-slate-600">Daily Working Hours:</span>
               <span className="font-bold text-slate-900 font-mono">{job.dailyWorkingHours || '8 Hours'}</span>
             </div>
             <div className="flex justify-between border-b border-slate-200 pb-0.5">
-              <span className="font-semibold text-slate-600">সপ্তাহে কত ঘণ্টা কাজ করবেন? (Weekly Working Hours):</span>
+              <span className="font-semibold text-slate-600">Weekly Working Hours:</span>
               <span className="font-bold text-slate-900 font-mono">{job.weeklyWorkingHours || '48 Hours'}</span>
             </div>
             <div className="col-span-2 flex justify-between pt-0.5 bg-emerald-50/70 px-2 py-1 rounded-xs border border-emerald-200">
-              <span className="font-bold text-emerald-950">আপনার বেতন কত? (Salary/Remuneration):</span>
+              <span className="font-bold text-emerald-950">Salary / Remuneration:</span>
               <span className="font-black text-emerald-900 font-mono text-[10.5px]">
                 {job.salaryAmount ? `${job.salaryAmount} ${job.currency || 'EUR'} / Month` : 'N/A'}
               </span>
@@ -205,42 +205,42 @@ export function JobVerificationPreview({ data }) {
         {/* SECTION 4: WORK PERMIT & HELPER INFO */}
         <div className="border border-slate-400 rounded-xs mb-3 overflow-hidden">
           <div className="bg-slate-100 border-b border-slate-400 px-2.5 py-0.5 text-[10px] font-[900] text-[#0b2341] uppercase tracking-wide flex items-center justify-between">
-            <span>৪. ওয়ার্ক পারমিট ও সহায়তাকারীর বিবরণ (Work Permit &amp; Helper Info)</span>
+            <span>4. Work Permit &amp; Helper Info</span>
             <span className="text-[8.5px] font-mono text-slate-500 font-bold">SECTION 4</span>
           </div>
           <div className="p-2 text-[9.5px] grid grid-cols-2 gap-x-4 gap-y-1 bg-white">
             <div className="col-span-2 flex justify-between border-b border-slate-200 pb-0.5">
-              <span className="font-semibold text-slate-600">ওয়ার্ক পারমিট কে দিয়েছে ও সাহায্য করেছে? (Who Provided Work Permit?):</span>
+              <span className="font-semibold text-slate-600">Sponsor / Helper Name:</span>
               <span className="font-bold text-slate-900 uppercase">{helper.helperName || 'N/A'}</span>
             </div>
             <div className="flex justify-between border-b border-slate-200 pb-0.5">
-              <span className="font-semibold text-slate-600">সম্পর্ক/রিলেশনশিপ (Relationship, e.g. Uncle/চাচা/মামা):</span>
+              <span className="font-semibold text-slate-600">Relationship (e.g. Uncle, Brother):</span>
               <span className="font-bold text-slate-900">{helper.helperRelationship || 'N/A'}</span>
             </div>
             <div className="flex justify-between border-b border-slate-200 pb-0.5">
-              <span className="font-semibold text-slate-600">সহায়তাকারী কতদিন ওই জায়গায় স্টে করতেছে? (Duration of Stay):</span>
+              <span className="font-semibold text-slate-600">Duration of Stay in Destination:</span>
               <span className="font-bold text-slate-900 font-mono">{helper.helperDurationOfStay || 'N/A'}</span>
             </div>
             <div className="flex justify-between border-b border-slate-200 pb-0.5">
-              <span className="font-semibold text-slate-600">তিনি কিভাবে গেছেন? লিগ্যাল না ইল্লিগ্যাল? (Legal/Illegal Entry):</span>
+              <span className="font-semibold text-slate-600">Immigration / Legal Status:</span>
               <span className="font-bold text-slate-900">{helper.helperImmigrationStatus || 'Legal Resident'}</span>
             </div>
             <div className="flex justify-between border-b border-slate-200 pb-0.5">
-              <span className="font-semibold text-slate-600">তাকে আপনি চিনেন? (Do you know him?):</span>
+              <span className="font-semibold text-slate-600">Personally Known to Applicant:</span>
               <span className="font-bold text-slate-900 font-mono">
-                {helper.knowsHelper === 'Yes' ? '[ ✔ ] হ্যাঁ / Yes    [  ] না / No' : '[  ] হ্যাঁ / Yes    [ ✔ ] না / No'}
+                {helper.knowsHelper === 'Yes' ? '[ ✔ ] Yes    [  ] No' : '[  ] Yes    [ ✔ ] No'}
               </span>
             </div>
             <div className="flex justify-between border-b border-slate-200 pb-0.5">
-              <span className="font-semibold text-slate-600">কতদিন ধরে তাকে চিনেন? (How long known?):</span>
+              <span className="font-semibold text-slate-600">Duration Known:</span>
               <span className="font-bold text-slate-900">{helper.durationKnown || 'N/A'}</span>
             </div>
             <div className="flex justify-between border-b border-slate-200 pb-0.5">
-              <span className="font-semibold text-slate-600">সহায়তাকারীর জন্ম তারিখ (Helper's Date of Birth):</span>
+              <span className="font-semibold text-slate-600">Helper's Date of Birth:</span>
               <span className="font-bold text-slate-900 font-mono">{formatToDdMmYyyy(helper.helperDob) || 'N/A'}</span>
             </div>
             <div className="col-span-2 flex justify-between pt-0.5">
-              <span className="font-semibold text-slate-600">সহায়তাকারীর মোবাইল নাম্বার (Helper's Mobile Number):</span>
+              <span className="font-semibold text-slate-600">Helper's Mobile Number:</span>
               <span className="font-bold text-slate-900 font-mono">{helper.helperPhone || 'N/A'}</span>
             </div>
           </div>
@@ -263,7 +263,7 @@ export function JobVerificationPreview({ data }) {
                 </span>
               </div>
               <div className="border-t border-slate-900 pt-1 font-bold text-slate-900">
-                ক্লায়েন্টের স্বাক্ষর (Client's Signature)
+                Client's Signature
               </div>
               <div className="text-[8.5px] text-slate-500 font-mono">
                 Date: {formatToDdMmYyyy(verification.clientSignatureDate) || currentDate}
@@ -278,7 +278,7 @@ export function JobVerificationPreview({ data }) {
                 </span>
               </div>
               <div className="border-t border-slate-900 pt-1 font-bold text-slate-900">
-                কোম্পানি কর্তৃপক্ষের স্বাক্ষর (Authorized Signature)
+                Authorized Company Signature
               </div>
               <div className="text-[8.5px] text-slate-500 font-mono">
                 {company.companyName || 'MONSUR ALI TOURS & TRAVELS'}

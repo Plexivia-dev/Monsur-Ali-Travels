@@ -48,7 +48,7 @@ const STAGES = [
   {
     id: 'INTAKE',
     title: '1. File Intake',
-    titleBn: 'ফাইল ইনটেক',
+    titleBn: 'File Intake',
     stageName: '1. File Intake',
     badgeColor: 'bg-black/[0.04] text-black border-black/15',
     headerBg: 'bg-black/[0.02] border-black/10',
@@ -59,7 +59,7 @@ const STAGES = [
   {
     id: 'UNDER_PROCESS',
     title: '2. Under Process',
-    titleBn: 'আন্ডার প্রসেস',
+    titleBn: 'Under Process',
     stageName: '2. Under Process',
     badgeColor: 'bg-sky-500/10 text-sky-700 border-sky-300',
     headerBg: 'bg-sky-50/50 border-sky-200',
@@ -70,7 +70,7 @@ const STAGES = [
   {
     id: 'OFFER_LETTER',
     title: '3. Offer Letter Approved',
-    titleBn: 'অফার লেটার',
+    titleBn: 'Offer Letter',
     stageName: '3. Offer Letter',
     badgeColor: 'bg-indigo-500/10 text-indigo-700 border-indigo-300',
     headerBg: 'bg-indigo-50/50 border-indigo-200',
@@ -81,7 +81,7 @@ const STAGES = [
   {
     id: 'COMPLETED',
     title: '4. Visa Delivered',
-    titleBn: 'ডেলিভারি / সম্পন্ন',
+    titleBn: 'Visa Delivered',
     stageName: '4. Visa Delivered',
     badgeColor: 'bg-emerald-500/10 text-emerald-700 border-emerald-300',
     headerBg: 'bg-emerald-50/50 border-emerald-200',
@@ -195,7 +195,7 @@ function getCandidateTriad(c) {
     c.photo ||
     c.clientInfo?.photo ||
     c.vaultDocuments?.find((d) =>
-      /photo|picture|2x2|ছবি|image|portrait/i.test(d.documentName || d.fileName || '')
+      /photo|picture|2x2|image|portrait/i.test(d.documentName || d.fileName || '')
     )?.fileUrl ||
     null;
 
@@ -204,7 +204,7 @@ function getCandidateTriad(c) {
     c.clientInfo?.attachments?.passport ||
     c.passportScan ||
     c.vaultDocuments?.find((d) =>
-      /passport|পাসপোর্ট/i.test(d.documentName || d.fileName || '')
+      /passport|bio-page/i.test(d.documentName || d.fileName || '')
     )?.fileUrl ||
     null;
 
@@ -306,6 +306,7 @@ export default function CaseWorkflow() {
   // Modals
   const [selectedCaseForAction, setSelectedCaseForAction] = useState(null);
   const [assignModalOpen, setAssignModalOpen] = useState(false);
+  const [assignPaymentMode, setAssignPaymentMode] = useState(false);
   const [paymentModalOpen, setPaymentModalOpen] = useState(false);
   const [createModalOpen, setCreateModalOpen] = useState(false);
 
@@ -376,10 +377,10 @@ export default function CaseWorkflow() {
         matchesDest = dest.includes(destinationFilter.toLowerCase());
       }
 
-      // Stage Filter (CRITICAL FIX: checks c.status FIRST)
+      // Stage Filter (Strictly checks c.status as requested)
       let matchesStage = true;
       if (activeStageFilter !== 'all') {
-        const st = String(c.status || c.workflowStatus || 'INTAKE').toUpperCase();
+        const st = String(c.status || 'INTAKE').toUpperCase();
         if (activeStageFilter === 'INTAKE' || activeStageFilter === 'ENTRY') {
           matchesStage = st === 'ENTRY' || st === 'INTAKE' || st === 'NEW';
         } else if (activeStageFilter === 'UNDER_PROCESS' || activeStageFilter === 'PROCESSING') {
@@ -395,25 +396,25 @@ export default function CaseWorkflow() {
     });
   }, [cases, search, destinationFilter, activeStageFilter]);
 
-  // Master Counter Metrics (Immutable, never disappearing when searching)
+  // Master Counter Metrics (Immutable, strictly based on c.status)
   const totalCases = cases.length;
   const intakeCount = useMemo(() => cases.filter((c) => {
-    const st = String(c.status || c.workflowStatus || 'INTAKE').toUpperCase();
+    const st = String(c.status || 'INTAKE').toUpperCase();
     return st === 'ENTRY' || st === 'INTAKE' || st === 'NEW';
   }).length, [cases]);
 
   const underProcessCount = useMemo(() => cases.filter((c) => {
-    const st = String(c.status || c.workflowStatus || '').toUpperCase();
+    const st = String(c.status || '').toUpperCase();
     return st === 'PROCESSING' || st === 'UNDER_PROCESS';
   }).length, [cases]);
 
   const offerLetterCount = useMemo(() => cases.filter((c) => {
-    const st = String(c.status || c.workflowStatus || '').toUpperCase();
+    const st = String(c.status || '').toUpperCase();
     return st === 'APPROVED_OFFER_LETTER' || st === 'OFFER_LETTER' || st === 'FLIGHT_BOOKED';
   }).length, [cases]);
 
   const deliveredCount = useMemo(() => cases.filter((c) => {
-    const st = String(c.status || c.workflowStatus || '').toUpperCase();
+    const st = String(c.status || '').toUpperCase();
     return st === 'COMPLETED_DELIVERED' || st === 'COMPLETED';
   }).length, [cases]);
 
@@ -492,49 +493,7 @@ export default function CaseWorkflow() {
         }
       />
 
-      {/* Persistent Global Master Counter Banner (Never disappearing during search) */}
-      <div className="bg-white dark:bg-zinc-950 border border-black/10 dark:border-zinc-800 rounded-2xl p-4 sm:p-5 shadow-xs flex flex-wrap items-center justify-between gap-4">
-        <div className="flex items-center gap-3.5">
-          <div className="size-11 rounded-2xl bg-black/[0.04] dark:bg-white/10 flex items-center justify-center text-foreground shrink-0 border border-black/10 dark:border-white/10 text-xl font-bold">
-            📁
-          </div>
-          <div>
-            <div className="flex items-center gap-2.5 flex-wrap">
-              <span className="text-sm sm:text-base font-black text-foreground">
-                Total Active Cases: <span className="font-mono text-primary text-base sm:text-lg">{totalCases}</span>
-              </span>
-              {(search.trim() || destinationFilter !== 'all' || activeStageFilter !== 'all') && (
-                <span className="text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-primary/10 text-primary border border-primary/20">
-                  Showing {filteredCases.length} of {totalCases} total active cases
-                </span>
-              )}
-            </div>
-            <p className="text-xs text-muted-foreground mt-0.5">
-              Permanent operational docket counter across all candidate dossiers and stages.
-            </p>
-          </div>
-        </div>
 
-        {/* Stage Micro Counters */}
-        <div className="flex items-center gap-2 flex-wrap text-xs font-semibold">
-          <div className="px-3 py-1.5 rounded-xl bg-black/[0.03] dark:bg-white/5 border border-black/10 dark:border-white/10 flex items-center gap-1.5">
-            <span className="text-muted-foreground">📥 Intake:</span>
-            <span className="font-mono font-bold text-foreground">{intakeCount}</span>
-          </div>
-          <div className="px-3 py-1.5 rounded-xl bg-sky-500/10 border border-sky-500/20 text-sky-700 dark:text-sky-400 flex items-center gap-1.5">
-            <span>⚙️ Processing:</span>
-            <span className="font-mono font-bold">{underProcessCount}</span>
-          </div>
-          <div className="px-3 py-1.5 rounded-xl bg-indigo-500/10 border border-indigo-500/20 text-indigo-700 dark:text-indigo-400 flex items-center gap-1.5">
-            <span>📜 Offer Letter:</span>
-            <span className="font-mono font-bold">{offerLetterCount}</span>
-          </div>
-          <div className="px-3 py-1.5 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-700 dark:text-emerald-400 flex items-center gap-1.5">
-            <span>✈️ Delivered:</span>
-            <span className="font-mono font-bold">{deliveredCount}</span>
-          </div>
-        </div>
-      </div>
 
       {/* Filter & View Switcher Bar */}
       <div className="bg-card border border-border p-4 rounded-2xl shadow-xs space-y-4">
@@ -616,7 +575,7 @@ export default function CaseWorkflow() {
 
           {STAGES.map((s) => {
             const count = cases.filter((c) => {
-              const st = String(c.status || c.workflowStatus || 'INTAKE').toUpperCase();
+              const st = String(c.status || 'INTAKE').toUpperCase();
               if (s.id === 'INTAKE') return st === 'ENTRY' || st === 'INTAKE' || st === 'NEW';
               if (s.id === 'UNDER_PROCESS') return st === 'PROCESSING' || st === 'UNDER_PROCESS';
               if (s.id === 'OFFER_LETTER') return st === 'APPROVED_OFFER_LETTER' || st === 'OFFER_LETTER' || st === 'FLIGHT_BOOKED';
@@ -921,6 +880,20 @@ export default function CaseWorkflow() {
                               🇮🇳 Indian Visa
                             </button>
                           )}
+                          <button
+                            type="button"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setSelectedCaseForAction(c);
+                              setAssignPaymentMode(true);
+                              setAssignModalOpen(true);
+                            }}
+                            className="h-7 px-2 rounded-lg bg-emerald-500/15 hover:bg-emerald-500/30 text-emerald-800 border border-emerald-500/30 text-[10px] font-bold cursor-pointer transition flex items-center gap-1"
+                            title="Assign Payment Collection Task to Staff/Accountant"
+                          >
+                            <CreditCard className="size-3" />
+                            <span>Collect</span>
+                          </button>
                           <Button
                             size="sm"
                             variant="outline"
@@ -956,8 +929,10 @@ export default function CaseWorkflow() {
       {assignModalOpen && selectedCaseForAction && (
         <StepAssignModal
           caseDoc={selectedCaseForAction}
+          initialPaymentMode={assignPaymentMode}
           onClose={() => {
             setAssignModalOpen(false);
+            setAssignPaymentMode(false);
             setSelectedCaseForAction(null);
           }}
           onSuccess={fetchCases}

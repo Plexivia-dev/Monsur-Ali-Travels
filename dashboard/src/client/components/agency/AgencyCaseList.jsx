@@ -18,9 +18,11 @@ import { Button } from '@/components/ui/button';
 import { CaseFileCreationModal } from './CaseFileCreationModal';
 import { CaseWorkspaceDrawer } from './CaseWorkspaceDrawer';
 import { ConfirmDeleteDialog } from '@/components/ui/confirm-delete-dialog';
+import { HeaderTitle } from '@shared/components/common/HeaderTitle';
+import { useAuthStore } from '@/store/useAuthStore';
 
 const STAGE_FILTERS = [
-  { id: 'all', label: 'All Files (সব ফাইল)' },
+  { id: 'all', label: 'All Files' },
   { id: 'INTAKE', label: '1. File Intake' },
   { id: 'UNDER_PROCESS', label: '2. Under Process' },
   { id: 'OFFER_LETTER', label: '3. Offer Letter' },
@@ -35,7 +37,7 @@ function getCandidateTriad(c) {
     c.photo ||
     c.clientInfo?.photo ||
     c.vaultDocuments?.find((d) =>
-      /photo|picture|2x2|ছবি|image|portrait/i.test(d.documentName || d.fileName || '')
+      /photo|picture|2x2|image|portrait/i.test(d.documentName || d.fileName || '')
     )?.fileUrl ||
     null;
 
@@ -44,7 +46,7 @@ function getCandidateTriad(c) {
     c.clientInfo?.attachments?.passport ||
     c.passportScan ||
     c.vaultDocuments?.find((d) =>
-      /passport|পাসপোর্ট/i.test(d.documentName || d.fileName || '')
+      /passport|bio-page/i.test(d.documentName || d.fileName || '')
     )?.fileUrl ||
     null;
 
@@ -130,6 +132,8 @@ function PassportChipPopover({ passportNumber, passportScanUrl }) {
 }
 
 export function AgencyCaseList({ autoOpenCreate = false }) {
+  const user = useAuthStore((state) => state.user);
+  const isManager = String(user?.role || '').toLowerCase().trim() === 'manager';
   const [cases, setCases] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [search, setSearch] = useState('');
@@ -290,45 +294,34 @@ export function AgencyCaseList({ autoOpenCreate = false }) {
   return (
     <div className="space-y-6">
       {/* 1. Header Banner */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white border border-black/10 p-5 sm:p-6 rounded-2xl shadow-xs text-black">
-        <div className="space-y-1">
-          <div className="flex items-center gap-3">
-            <div className="size-10 rounded-xl bg-black/[0.04] border border-black/15 flex items-center justify-center shrink-0 text-black">
-              <FolderOpen className="size-5" />
-            </div>
-            <div>
-              <h1 className="text-xl font-bold tracking-tight text-black flex items-center gap-2">
-                Client Case Files &amp; Dossiers
-              </h1>
-              <p className="text-xs text-black/60 font-medium mt-0.5">
-                Centralized visa workflow pipelines, candidate dossiers, vault documents, and stage progress.
-              </p>
-            </div>
-          </div>
-        </div>
+      <HeaderTitle
+        title="Client Case Files & Dossiers"
+        subtitle="Centralized visa workflow pipelines, candidate dossiers, vault documents, and stage progress."
+        icon={FolderOpen}
+        actions={
+          <>
+            <Button
+              size="sm"
+              onClick={() => setIsCreateModalOpen(true)}
+              className="bg-emerald-500 hover:bg-emerald-400 border border-emerald-400 text-white font-bold text-xs gap-1.5 cursor-pointer"
+            >
+              <Plus className="size-3.5" />
+              <span>New Case File / Intake</span>
+            </Button>
 
-        <div className="flex items-center gap-2.5 flex-wrap">
-          <Button
-            size="sm"
-            onClick={() => setIsCreateModalOpen(true)}
-            className="bg-black text-white hover:bg-black/90 font-bold text-xs shadow-xs gap-1.5 cursor-pointer"
-          >
-            <Plus className="size-3.5" />
-            <span>+ New Case File / Intake</span>
-          </Button>
-
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={fetchCases}
-            disabled={isLoading}
-            className="border-black/15 text-black hover:bg-black/5 font-semibold text-xs gap-1.5 cursor-pointer"
-          >
-            <RefreshCw className={`size-3.5 ${isLoading ? 'animate-spin' : ''}`} />
-            <span>{isLoading ? 'Reloading...' : 'Reload Data'}</span>
-          </Button>
-        </div>
-      </div>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={fetchCases}
+              disabled={isLoading}
+              className="bg-white/10 hover:bg-white/20 border-white/20 text-white font-semibold text-xs gap-1.5 cursor-pointer"
+            >
+              <RefreshCw className={`size-3.5 ${isLoading ? 'animate-spin' : ''}`} />
+              <span>{isLoading ? 'Reloading...' : 'Reload Data'}</span>
+            </Button>
+          </>
+        }
+      />
 
       {/* 2. KPI Summary Cards (4 Canonical Stages + Total Active) */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3.5">
@@ -602,11 +595,11 @@ export function AgencyCaseList({ autoOpenCreate = false }) {
                         {agreedAmount > 0 ? (
                           <div>
                             <span className="text-emerald-800 font-bold block">
-                              Paid: ৳ {paidAmount.toLocaleString('en-BD')}
+                              Paid: BDT {paidAmount.toLocaleString('en-BD')}
                             </span>
                             {dueAmount > 0 ? (
                               <span className="text-red-700 font-bold text-[10px]">
-                                Due: ৳ {dueAmount.toLocaleString('en-BD')}
+                                Due: BDT {dueAmount.toLocaleString('en-BD')}
                               </span>
                             ) : (
                               <span className="text-emerald-700 text-[10px] font-semibold">Settled ✓</span>
@@ -638,15 +631,17 @@ export function AgencyCaseList({ autoOpenCreate = false }) {
                             <span>Workspace</span>
                           </Button>
 
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            onClick={() => setDeleteTarget(caseItem)}
-                            className="h-7 px-2 text-xs font-semibold border-red-500/30 text-red-600 hover:bg-red-500/10 cursor-pointer"
-                            title="Delete Case File"
-                          >
-                            <Trash2 className="size-3.5" />
-                          </Button>
+                          {!isManager && (
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={() => setDeleteTarget(caseItem)}
+                              className="h-7 px-2 text-xs font-semibold border-red-500/30 text-red-600 hover:bg-red-500/10 cursor-pointer"
+                              title="Delete Case File"
+                            >
+                              <Trash2 className="size-3.5" />
+                            </Button>
+                          )}
                         </div>
                       </td>
                     </tr>

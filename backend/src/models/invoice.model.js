@@ -75,6 +75,8 @@ const invoiceSchema = new mongoose.Schema(
     grandTotal: { type: Number, default: 0 },
     qrCode: { type: String, default: "" },
     isActive: { type: Boolean, default: true },
+    createdByDid: { type: String, default: null },
+    createdByName: { type: String, default: "" },
   },
   {
     timestamps: true,

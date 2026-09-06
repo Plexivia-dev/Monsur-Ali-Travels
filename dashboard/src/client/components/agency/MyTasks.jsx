@@ -115,10 +115,10 @@ export function MyTasks() {
           <div className="flex items-center gap-2">
             <button
               onClick={() => setIsCreateModalOpen(true)}
-              className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold shadow-md transition cursor-pointer"
+              className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-white text-xs font-bold shadow-md transition cursor-pointer"
             >
               <Plus className="size-3.5" />
-              <span>+ New Case Intake</span>
+              <span>New Case Intake</span>
             </button>
             <button
               onClick={fetchTasks}

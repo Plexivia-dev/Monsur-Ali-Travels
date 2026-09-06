@@ -542,7 +542,7 @@ export default function CaseDetailPage() {
         matchedDoc = { name: 'Applicant 2x2 Photo', url: clientAttachments.photo };
       } else {
         const found = vaultDocs.find((d) =>
-          /photo|picture|2x2|ছবি|image|portrait/i.test(d.documentName || d.fileName || '')
+          /photo|picture|2x2|image|portrait/i.test(d.documentName || d.fileName || '')
         );
         if (found) {
           isUploaded = true;
@@ -551,7 +551,7 @@ export default function CaseDetailPage() {
       }
     } else if (key === 'electricityBill') {
       const found = vaultDocs.find((d) =>
-        /electricity|utility|bill|current|বিদ্যুৎ|gas|electric|wasa/i.test(d.documentName || d.fileName || '')
+        /electricity|utility|bill|current|gas|electric|wasa/i.test(d.documentName || d.fileName || '')
       );
       if (found) {
         isUploaded = true;
@@ -570,7 +570,7 @@ export default function CaseDetailPage() {
         matchedDoc = { name: 'National ID (NID) Scan', url: clientAttachments.nidScan };
       } else {
         const found = vaultDocs.find((d) =>
-          /nid|national\s*id|voter|এনআইডি|পরিচয়পত্র|identity\s*card/i.test(d.documentName || d.fileName || '')
+          /nid|national\s*id|voter|identity\s*card/i.test(d.documentName || d.fileName || '')
         );
         if (found) {
           isUploaded = true;
@@ -579,7 +579,7 @@ export default function CaseDetailPage() {
       }
     } else if (key === 'landDocuments') {
       const found = vaultDocs.find((d) =>
-        /land|property|দলিল|খতিয়ান|khatian|porcha|deed|jamabandi|mutation|namjari/i.test(d.documentName || d.fileName || '')
+        /land|property|khatian|porcha|deed|jamabandi|mutation|namjari/i.test(d.documentName || d.fileName || '')
       );
       if (found) {
         isUploaded = true;
@@ -864,106 +864,113 @@ export default function CaseDetailPage() {
               </span>
             </div>
 
-            {/* Active Handler & Current Task Status Pill Bar */}
-            <div className="flex flex-wrap items-center gap-2 pt-0.5">
-              {/* Handler Pill */}
-              {isLatestTaskDone ? (
-                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-amber-500/10 border border-amber-500/30 text-amber-600">
-                  <CheckCircle2 className="w-3.5 h-3.5 text-amber-500 shrink-0" />
-                  <span className="font-semibold">Step {latestTask.stepNumber || 1} Done by {latestTask.assignedToName || 'Staff'}</span>
-                  <span className="text-[10px] bg-amber-500/20 px-2 py-0.5 rounded-full font-bold uppercase ml-1">
-                    Ready for Next Step
-                  </span>
-                  <button
-                    onClick={() => setIsAssignModalOpen(true)}
-                    className="ml-1 px-2 py-0.5 rounded bg-primary text-primary-foreground font-bold hover:bg-primary/90 cursor-pointer text-[10px]"
-                  >
-                    + Assign Step {(latestTask.stepNumber || 1) + 1}
-                  </button>
-                </div>
-              ) : activeHandlerName ? (
-                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-muted/40 border border-border">
-                  <UserCheck className="w-3.5 h-3.5 text-sky-500 shrink-0" />
-                  <span className="text-muted-foreground font-medium">Currently Handling:</span>
-                  <strong className="text-foreground font-bold">{activeHandlerName}</strong>
-                </div>
-              ) : (
-                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-muted/40 border border-border">
-                  <UserCheck className="w-3.5 h-3.5 text-muted-foreground/60 shrink-0" />
-                  <span className="text-muted-foreground font-medium">Assigned Staff:</span>
-                  <span className="text-muted-foreground">Unassigned</span>
-                  <button
-                    onClick={() => setIsAssignModalOpen(true)}
-                    className="text-primary font-bold hover:underline cursor-pointer flex items-center gap-0.5 ml-1"
-                  >
-                    (+ Assign Step)
-                  </button>
-                </div>
-              )}
+            {/* Active Handler & Current Task Status Pill Bar - commented out */}
+            {false && (
+              <div className="flex flex-wrap items-center gap-2 pt-0.5">
+                {/* Handler Pill */}
+                {isLatestTaskDone ? (
+                  <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-amber-500/10 border border-amber-500/30 text-amber-600">
+                    <CheckCircle2 className="w-3.5 h-3.5 text-amber-500 shrink-0" />
+                    <span className="font-semibold">Step {latestTask.stepNumber || 1} Done by {latestTask.assignedToName || 'Staff'}</span>
+                    <span className="text-[10px] bg-amber-500/20 px-2 py-0.5 rounded-full font-bold uppercase ml-1">
+                      Ready for Next Step
+                    </span>
+                    <button
+                      onClick={() => setIsAssignModalOpen(true)}
+                      className="ml-1 px-2 py-0.5 rounded bg-primary text-primary-foreground font-bold hover:bg-primary/90 cursor-pointer text-[10px]"
+                    >
+                      + Assign Step {(latestTask.stepNumber || 1) + 1}
+                    </button>
+                  </div>
+                ) : activeHandlerName ? (
+                  <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-muted/40 border border-border">
+                    <UserCheck className="w-3.5 h-3.5 text-sky-500 shrink-0" />
+                    <span className="text-muted-foreground font-medium">Currently Handling:</span>
+                    <strong className="text-foreground font-bold">{activeHandlerName}</strong>
+                  </div>
+                ) : (
+                  <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-muted/40 border border-border">
+                    <UserCheck className="w-3.5 h-3.5 text-muted-foreground/60 shrink-0" />
+                    <span className="text-muted-foreground font-medium">Assigned Staff:</span>
+                    <span className="text-muted-foreground">Unassigned</span>
+                    <button
+                      onClick={() => setIsAssignModalOpen(true)}
+                      className="text-primary font-bold hover:underline cursor-pointer flex items-center gap-0.5 ml-1"
+                    >
+                      (+ Assign Step)
+                    </button>
+                  </div>
+                )}
 
-              {/* Task Status Pill */}
-              {activeTask ? (
-                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-muted/40 border border-border shadow-2xs">
-                  <Layers className="w-3.5 h-3.5 text-primary shrink-0" />
-                  <span className="text-muted-foreground font-semibold">Status:</span>
-                  <span className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-bold border ${activeTaskStatusCfg.badgeClass}`}>
-                    <span className={`w-1.5 h-1.5 rounded-full ${activeTaskStatusCfg.dotClass}`} />
-                    {activeTask.status || 'Pending'}
-                  </span>
-                </div>
-              ) : (
-                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-muted/40 border border-border shadow-2xs">
-                  <Layers className="w-3.5 h-3.5 text-muted-foreground/60 shrink-0" />
-                  <span className="text-muted-foreground font-semibold">Status:</span>
-                  <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-bold border bg-amber-500/15 text-amber-800 border-amber-500/40 shadow-xs shadow-amber-500/10">
-                    <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse shadow-[0_0_8px_rgba(245,158,11,0.8)]" />
-                    Pending
-                  </span>
-                </div>
-              )}
-            </div>
+                {/* Task Status Pill */}
+                {activeTask ? (
+                  <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-muted/40 border border-border shadow-2xs">
+                    <Layers className="w-3.5 h-3.5 text-primary shrink-0" />
+                    <span className="text-muted-foreground font-semibold">Status:</span>
+                    <span className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-bold border ${activeTaskStatusCfg.badgeClass}`}>
+                      <span className={`w-1.5 h-1.5 rounded-full ${activeTaskStatusCfg.dotClass}`} />
+                      {activeTask.status || 'Pending'}
+                    </span>
+                  </div>
+                ) : (
+                  <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-muted/40 border border-border shadow-2xs">
+                    <Layers className="w-3.5 h-3.5 text-muted-foreground/60 shrink-0" />
+                    <span className="text-muted-foreground font-semibold">Status:</span>
+                    <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-bold border bg-amber-500/15 text-amber-800 border-amber-500/40 shadow-xs shadow-amber-500/10">
+                      <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse shadow-[0_0_8px_rgba(245,158,11,0.8)]" />
+                      Pending
+                    </span>
+                  </div>
+                )}
+              </div>
+            )}
 
-            <div className="flex flex-wrap items-center gap-x-5 gap-y-1 text-xs text-muted-foreground pt-1">
-              <span className="flex items-center gap-1.5">
-                <Phone className="w-3.5 h-3.5 text-primary" />
-                {caseData.phone || caseData.clientInfo?.phone || '—'}
-              </span>
-              <span className="flex items-center gap-1.5 font-mono text-sky-600 font-semibold">
-                <FileText className="w-3.5 h-3.5" />
-                Passport: {caseData.passportNumber || caseData.clientInfo?.passportNumber || '—'}
-              </span>
-              {caseData.clientInfo?.nidNumber && (
+            {/* Phone / Passport / NID row - commented out */}
+            {false && (
+              <div className="flex flex-wrap items-center gap-x-5 gap-y-1 text-xs text-muted-foreground pt-1">
                 <span className="flex items-center gap-1.5">
-                  <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
-                  NID: {caseData.clientInfo.nidNumber}
+                  <Phone className="w-3.5 h-3.5 text-primary" />
+                  {caseData.phone || caseData.clientInfo?.phone || '—'}
                 </span>
-              )}
-            </div>
+                <span className="flex items-center gap-1.5 font-mono text-sky-600 font-semibold">
+                  <FileText className="w-3.5 h-3.5" />
+                  Passport: {caseData.passportNumber || caseData.clientInfo?.passportNumber || '—'}
+                </span>
+                {caseData.clientInfo?.nidNumber && (
+                  <span className="flex items-center gap-1.5">
+                    <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
+                    NID: {caseData.clientInfo.nidNumber}
+                  </span>
+                )}
+              </div>
+            )}
           </div>
 
-          {/* Current Processing Stage Dropdown */}
-          <div className="flex items-center gap-3 bg-muted/40 p-2.5 rounded-xl border border-border shrink-0 max-w-full lg:max-w-md w-full lg:w-auto justify-between lg:justify-end">
-            <div className="text-left lg:text-right min-w-0 flex-1">
-              <span className="text-[10px] font-bold uppercase text-muted-foreground block">Processing Stage</span>
-              <span
-                className="text-xs font-black text-primary block truncate max-w-[200px] sm:max-w-[280px]"
-                title={caseData.workflowStatus || caseData.status}
+          {/* Current Processing Stage Dropdown - commented out */}
+          {false && (
+            <div className="flex items-center gap-3 bg-muted/40 p-2.5 rounded-xl border border-border shrink-0 max-w-full lg:max-w-md w-full lg:w-auto justify-between lg:justify-end">
+              <div className="text-left lg:text-right min-w-0 flex-1">
+                <span className="text-[10px] font-bold uppercase text-muted-foreground block">Processing Stage</span>
+                <span
+                  className="text-xs font-black text-primary block truncate max-w-[200px] sm:max-w-[280px]"
+                  title={caseData.workflowStatus || caseData.status}
+                >
+                  {caseData.workflowStatus || caseData.status}
+                </span>
+              </div>
+              <select
+                value={caseData.status || 'ENTRY'}
+                onChange={(e) => handleStageChange(e.target.value)}
+                className="px-3 py-1.5 text-xs font-bold rounded-lg border border-input bg-background text-foreground focus:outline-none cursor-pointer shrink-0 min-w-[140px] max-w-[170px]"
               >
-                {caseData.workflowStatus || caseData.status}
-              </span>
+                {PIPELINE_STAGES.map((st) => (
+                  <option key={st.id} value={st.id}>
+                    {st.title}
+                  </option>
+                ))}
+              </select>
             </div>
-            <select
-              value={caseData.status || 'ENTRY'}
-              onChange={(e) => handleStageChange(e.target.value)}
-              className="px-3 py-1.5 text-xs font-bold rounded-lg border border-input bg-background text-foreground focus:outline-none cursor-pointer shrink-0 min-w-[140px] max-w-[170px]"
-            >
-              {PIPELINE_STAGES.map((st) => (
-                <option key={st.id} value={st.id}>
-                  {st.title}
-                </option>
-              ))}
-            </select>
-          </div>
+          )}
         </div>
 
         {/* Creator Audit Strip */}

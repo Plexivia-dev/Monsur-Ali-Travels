@@ -2,7 +2,7 @@ import { create } from 'zustand';
 import { apiClient } from '@/lib/api-client';
 import { getErrorMessage } from '@/lib/error-handler';
 
-const ROLES_ADMIN = ['Owner', 'Admin', 'Manager'];
+const ROLES_ADMIN = ['Owner', 'Admin', 'Superadmin'];
 
 // ── helpers ───────────────────────────────────────────────────────────────────
 
@@ -56,8 +56,13 @@ export const useAuthStore = create((set, get) => ({
       if (data?.data) {
         const { user: apiUser, accessToken, refreshToken } = data.data;
         const loggedUser = mapApiUser(apiUser, email);
+        const roleNormalized = String(loggedUser.role || '').toLowerCase();
 
-        if (!ROLES_ADMIN.includes(loggedUser.role)) {
+        if (roleNormalized === 'manager') {
+          throw new Error('Access denied. Managers cannot log in to the Admin Dashboard. Please log in to the Client Dashboard.');
+        }
+
+        if (!ROLES_ADMIN.map((r) => r.toLowerCase()).includes(roleNormalized)) {
           throw new Error('Access denied. Only Owners and Admins are allowed to access this portal.');
         }
 
@@ -90,8 +95,13 @@ export const useAuthStore = create((set, get) => ({
       const { data } = await apiClient.post('/api/v1/auth/2fa/verify', payload, { headers });
       const { user: apiUser, accessToken, refreshToken } = data.data;
       const loggedUser = mapApiUser(apiUser, payload?.email || (typeof params === 'string' ? params : ''));
+      const roleNormalized = String(loggedUser.role || '').toLowerCase();
 
-      if (!ROLES_ADMIN.includes(loggedUser.role)) {
+      if (roleNormalized === 'manager') {
+        throw new Error('Access denied. Managers cannot log in to the Admin Dashboard. Please log in to the Client Dashboard.');
+      }
+
+      if (!ROLES_ADMIN.map((r) => r.toLowerCase()).includes(roleNormalized)) {
         throw new Error('Access denied. Only Owners and Admins are allowed to access this portal.');
       }
 

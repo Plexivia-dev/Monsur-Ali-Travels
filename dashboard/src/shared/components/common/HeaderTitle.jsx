@@ -53,7 +53,7 @@ export function HeaderTitle({
   return (
     <div
       className={cn(
-        'no-print bg-linear-to-r from-sky-950 via-indigo-950 to-black rounded-2xl sm:rounded-3xl p-5 sm:p-6 text-white shadow-xl border border-sky-800/40 relative overflow-hidden transition-all select-none',
+        'no-print bg-gradient-to-r from-sky-950 via-indigo-950 to-black rounded-2xl sm:rounded-3xl p-5 sm:p-6 text-white shadow-xl border border-sky-800/40 relative overflow-hidden transition-all select-none',
         className
       )}
     >

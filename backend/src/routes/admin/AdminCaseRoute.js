@@ -25,7 +25,7 @@ import { authenticateToken, authorizeRoles } from "../../middlewares/auth.middle
 const adminCaseRouter = Router();
 
 adminCaseRouter.use(authenticateToken);
-adminCaseRouter.use(authorizeRoles("Admin", "Owner", "Manager", "Staff"));
+adminCaseRouter.use(authorizeRoles("Admin", "Owner", "Staff"));
 
 // Summaries & lookups
 adminCaseRouter.get("/summary", getDueSummary);

@@ -9,6 +9,7 @@ import {
   sendPaymentDocCreatedEmailToAccountants,
   sendPaymentOrBillCreatedEmailToOwners,
 } from "../../services/emailNotification.service.js";
+import { checkManagerCanDelete, checkManagerCanUpdate } from "../../helper/managerRbacHelper.js";
 
 // @desc    Get all money receipts / tokens with pagination and search
 // @route   GET /api/v1/receipts
@@ -329,6 +330,10 @@ export const updateReceipt = async (req, res, next) => {
       });
     }
 
+    if (!checkManagerCanUpdate(req, res, receipt, "Money receipt")) {
+      return;
+    }
+
     // If receiptNo is modified or qrCode missing, re-generate QR code
     if (body.receiptNo && body.receiptNo !== receipt.receiptNo) {
       body.qrCode = await generateReceiptQrCode(body.receiptNo);
@@ -368,6 +373,10 @@ export const confirmReceipt = async (req, res, next) => {
         status: "error",
         message: "Money receipt not found",
       });
+    }
+
+    if (!checkManagerCanUpdate(req, res, receipt, "Money receipt")) {
+      return;
     }
 
     if (receipt.status === "confirmed") {
@@ -433,6 +442,10 @@ export const cancelReceipt = async (req, res, next) => {
       });
     }
 
+    if (!checkManagerCanUpdate(req, res, receipt, "Money receipt")) {
+      return;
+    }
+
     receipt.status = "cancelled";
     if (reason) {
       receipt.notes = receipt.notes ? `${receipt.notes} | Cancellation Reason: ${reason}` : `Cancellation Reason: ${reason}`;
@@ -468,6 +481,10 @@ export const updateBankDeposit = async (req, res, next) => {
         status: "error",
         message: "Money receipt not found",
       });
+    }
+
+    if (!checkManagerCanUpdate(req, res, receipt, "Money receipt")) {
+      return;
     }
 
     receipt.handedOverToBank = handedOverToBank !== undefined ? Boolean(handedOverToBank) : true;
@@ -560,6 +577,10 @@ export const getReceiptSummary = async (req, res, next) => {
 // @route   DELETE /api/v1/receipts/:id
 export const deleteReceipt = async (req, res, next) => {
   try {
+    if (!checkManagerCanDelete(req, res, "Money receipt")) {
+      return;
+    }
+
     const { id } = req.params;
     const isMongoId = id.match(/^[0-9a-fA-F]{24}$/);
     const query = isMongoId ? { _id: id } : { $or: [{ receiptNo: id }, { did: id }] };

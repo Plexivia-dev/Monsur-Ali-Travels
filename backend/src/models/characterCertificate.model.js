@@ -109,6 +109,14 @@ const characterCertificateSchema = new Schema(
       type: Boolean,
       default: true,
     },
+    createdByDid: {
+      type: String,
+      default: null,
+    },
+    createdByName: {
+      type: String,
+      default: "",
+    },
   },
   {
     timestamps: true,

@@ -175,7 +175,7 @@ export function BankLedgerPage() {
                   className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-muted/60 text-foreground border border-border text-[10px] font-semibold"
                 >
                   <span>{c.channel}:</span>
-                  <span className="font-mono font-bold text-primary">৳{Number(c.amount || 0).toLocaleString('en-BD')}</span>
+                  <span className="font-mono font-bold text-primary">BDT {Number(c.amount || 0).toLocaleString('en-BD')}</span>
                 </span>
               ))
             )}
@@ -303,10 +303,10 @@ export function BankLedgerPage() {
                         )}
                       </td>
                       <td className="py-2.5 px-3 text-right font-mono font-bold text-emerald-600">
-                        {Number(t.amountIn || 0) > 0 ? `+৳${Number(t.amountIn).toLocaleString('en-BD')}` : '—'}
+                        {Number(t.amountIn || 0) > 0 ? `+BDT ${Number(t.amountIn).toLocaleString('en-BD')}` : '—'}
                       </td>
                       <td className="py-2.5 px-3 text-right font-mono font-bold text-rose-600">
-                        {Number(t.amountOut || 0) > 0 ? `-৳${Number(t.amountOut).toLocaleString('en-BD')}` : '—'}
+                        {Number(t.amountOut || 0) > 0 ? `-BDT ${Number(t.amountOut).toLocaleString('en-BD')}` : '—'}
                       </td>
                       <td className="py-2.5 px-3 text-center">
                         <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/10 text-emerald-600 border border-emerald-500/20 capitalize">

@@ -4,6 +4,7 @@ import {
   sendPaymentDocCreatedEmailToAccountants,
   sendPaymentOrBillCreatedEmailToOwners,
 } from "../../services/emailNotification.service.js";
+import { checkManagerCanDelete, checkManagerCanUpdate } from "../../helper/managerRbacHelper.js";
 
 // @desc    Get all invoices
 // @route   GET /api/v1/docs/invoices
@@ -116,6 +117,12 @@ export const createInvoice = async (req, res, next) => {
     if (!body.invoiceNo) {
       body.invoiceNo = generateUniqueInvoiceNo();
     }
+    if (req.user?.did) {
+      body.createdByDid = req.user.did;
+    }
+    if (req.user?.name) {
+      body.createdByName = req.user.name;
+    }
 
     if (!body.qrCode) {
       try {
@@ -167,6 +174,18 @@ export const updateInvoice = async (req, res, next) => {
     const isMongoId = id.match(/^[0-9a-fA-F]{24}$/);
     const query = isMongoId ? { _id: id } : { invoiceNo: id };
 
+    const existing = await InvoiceModel.findOne(query);
+    if (!existing) {
+      return res.status(404).json({
+        status: "error",
+        message: "Invoice not found",
+      });
+    }
+
+    if (!checkManagerCanUpdate(req, res, existing, "Invoice")) {
+      return;
+    }
+
     if (req.body) {
       try {
         const qrText = formatInvoiceQrText(req.body);
@@ -180,13 +199,6 @@ export const updateInvoice = async (req, res, next) => {
       new: true,
       runValidators: true,
     });
-
-    if (!updatedInvoice) {
-      return res.status(404).json({
-        status: "error",
-        message: "Invoice not found",
-      });
-    }
 
     return res.status(200).json({
       status: "success",
@@ -202,6 +214,10 @@ export const updateInvoice = async (req, res, next) => {
 // @route   DELETE /api/v1/docs/invoices/:id
 export const deleteInvoice = async (req, res, next) => {
   try {
+    if (!checkManagerCanDelete(req, res, "Invoice")) {
+      return;
+    }
+
     const { id } = req.params;
     const isMongoId = id.match(/^[0-9a-fA-F]{24}$/);
     const query = isMongoId ? { _id: id } : { invoiceNo: id };

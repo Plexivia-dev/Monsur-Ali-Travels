@@ -125,6 +125,8 @@ const passportSubmissionSchema = new mongoose.Schema(
       },
     ],
     isActive: { type: Boolean, default: true },
+    createdByDid: { type: String, default: null },
+    createdByName: { type: String, default: "" },
   },
   {
     timestamps: true,

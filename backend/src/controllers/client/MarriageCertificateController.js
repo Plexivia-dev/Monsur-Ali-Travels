@@ -1,6 +1,7 @@
 import { MarriageCertificateModel, generateUniqueMarriageCertificateNo } from "../../models/marriageCertificate.model.js";
 import { syncClientProfile } from "../../helper/clientSyncHelper.js";
 import { logger } from "../../config/logger.js";
+import { checkManagerCanDelete, checkManagerCanUpdate } from "../../helper/managerRbacHelper.js";
 
 export class MarriageCertificateController {
   // GET /api/v1/client/docs/marriage-certificates
@@ -161,30 +162,36 @@ export class MarriageCertificateController {
   static async update(req, res) {
     try {
       const { id } = req.params;
-      const updateData = { ...req.body };
-      delete updateData._id;
-      delete updateData.id;
+      const existing = await MarriageCertificateModel.findOne({
+        $or: [
+          { _id: id.match(/^[0-9a-fA-F]{24}$/) ? id : null },
+          { did: id },
+          { certificateNo: id },
+        ],
+        isActive: { $ne: false },
+      });
 
-      const doc = await MarriageCertificateModel.findOneAndUpdate(
-        {
-          $or: [
-            { _id: id.match(/^[0-9a-fA-F]{24}$/) ? id : null },
-            { did: id },
-            { certificateNo: id },
-          ],
-          isActive: { $ne: false },
-        },
-        { $set: updateData },
-        { new: true, runValidators: true }
-      );
-
-      if (!doc) {
+      if (!existing) {
         return res.status(404).json({
           success: false,
           status: "error",
           message: "Marriage certificate document not found",
         });
       }
+
+      if (!checkManagerCanUpdate(req, res, existing, "Marriage certificate")) {
+        return;
+      }
+
+      const updateData = { ...req.body };
+      delete updateData._id;
+      delete updateData.id;
+
+      const doc = await MarriageCertificateModel.findOneAndUpdate(
+        { _id: existing._id },
+        { $set: updateData },
+        { new: true, runValidators: true }
+      );
 
       return res.status(200).json({
         success: true,
@@ -205,6 +212,10 @@ export class MarriageCertificateController {
   // DELETE /api/v1/client/docs/marriage-certificates/:id
   static async delete(req, res) {
     try {
+      if (!checkManagerCanDelete(req, res, "Marriage certificate")) {
+        return;
+      }
+
       const { id } = req.params;
       const doc = await MarriageCertificateModel.findOneAndUpdate(
         {

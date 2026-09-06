@@ -156,6 +156,22 @@ export const assignTaskStep = async (req, res) => {
     const parsedPaymentAmount = Number(paymentAmount) || 0;
     const isPaymentRequired = Boolean(requiresPayment) || parsedPaymentAmount > 0;
 
+    // Validate payment collection amount against remaining balance if financial deal exists
+    if (isPaymentRequired && parsedPaymentAmount > 0) {
+      const totalAgreed = Number(caseDoc.paymentLedger?.totalAgreedAmount || caseDoc.totalAgreedAmount) || 0;
+      const totalPaid = Number(caseDoc.paymentLedger?.totalPaidAmount || caseDoc.totalPaidAmount) || 0;
+      const remainingDue = caseDoc.paymentLedger?.dueAmount !== undefined
+        ? Number(caseDoc.paymentLedger.dueAmount)
+        : Math.max(0, totalAgreed - totalPaid);
+
+      if (totalAgreed > 0 && parsedPaymentAmount > remainingDue) {
+        return res.status(400).json({
+          status: "error",
+          message: `Assigned payment amount (BDT ${parsedPaymentAmount.toLocaleString()}) cannot exceed the remaining due amount (BDT ${remainingDue.toLocaleString()}).`,
+        });
+      }
+    }
+
     let createdInvoiceDid = null;
     let createdInvoiceNo = "";
 

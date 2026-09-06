@@ -227,7 +227,7 @@ export function CaseWorkspaceDrawer({ caseId, isOpen, onClose, onRefresh }) {
   // Filter permitted studio generators for currently logged-in staff role
   const userRole = String(user?.role || '').toLowerCase();
   const userSubRole = String(user?.subRole || user?.sub_role || user?.designation || '').toLowerCase();
-  const isAdminOrOwner = ['admin', 'owner', 'superadmin'].includes(userRole);
+  const isAdminOrOwner = ['admin', 'owner', 'superadmin', 'manager'].includes(userRole);
 
   const permittedStudioGenerators = ALL_STUDIO_GENERATORS.filter((gen) => {
     if (['admin', 'owner', 'superadmin', 'manager'].includes(userRole)) return true;
@@ -337,7 +337,7 @@ export function CaseWorkspaceDrawer({ caseId, isOpen, onClose, onRefresh }) {
         matchedDoc = { name: 'Applicant 2x2 Photo', url: clientAttachments.photo };
       } else {
         const found = vaultDocs.find((d) =>
-          /photo|picture|2x2|ছবি|image|portrait/i.test(d.documentName || d.fileName || '')
+          /photo|picture|2x2|image|portrait/i.test(d.documentName || d.fileName || '')
         );
         if (found) {
           isUploaded = true;
@@ -346,7 +346,7 @@ export function CaseWorkspaceDrawer({ caseId, isOpen, onClose, onRefresh }) {
       }
     } else if (key === 'electricityBill') {
       const found = vaultDocs.find((d) =>
-        /electricity|utility|bill|current|বিদ্যুৎ|gas|electric|wasa/i.test(d.documentName || d.fileName || '')
+        /electricity|utility|bill|current|gas|electric|wasa/i.test(d.documentName || d.fileName || '')
       );
       if (found) {
         isUploaded = true;
@@ -365,7 +365,7 @@ export function CaseWorkspaceDrawer({ caseId, isOpen, onClose, onRefresh }) {
         matchedDoc = { name: 'National ID (NID) Scan', url: clientAttachments.nidScan };
       } else {
         const found = vaultDocs.find((d) =>
-          /nid|national\s*id|voter|এনআইডি|পরিচয়পত্র|identity\s*card/i.test(d.documentName || d.fileName || '')
+          /nid|national\s*id|voter|identity\s*card/i.test(d.documentName || d.fileName || '')
         );
         if (found) {
           isUploaded = true;
@@ -374,7 +374,7 @@ export function CaseWorkspaceDrawer({ caseId, isOpen, onClose, onRefresh }) {
       }
     } else if (key === 'landDocuments') {
       const found = vaultDocs.find((d) =>
-        /land|property|দলিল|খতিয়ান|khatian|porcha|deed|jamabandi|mutation|namjari/i.test(d.documentName || d.fileName || '')
+        /land|property|khatian|porcha|deed|jamabandi|mutation|namjari/i.test(d.documentName || d.fileName || '')
       );
       if (found) {
         isUploaded = true;

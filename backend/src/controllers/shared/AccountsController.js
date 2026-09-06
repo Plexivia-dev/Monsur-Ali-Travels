@@ -425,7 +425,7 @@ export const settleBillPayment = async (req, res, next) => {
     if (payAmount > currentDue) {
       return res.status(400).json({
         status: "error",
-        message: `Payment amount (৳${payAmount.toLocaleString("en-BD")}) exceeds remaining due (৳${currentDue.toLocaleString("en-BD")})`,
+        message: `Payment amount (BDT ${payAmount.toLocaleString("en-BD")}) exceeds remaining due (BDT ${currentDue.toLocaleString("en-BD")})`,
       });
     }
 
@@ -455,7 +455,7 @@ export const settleBillPayment = async (req, res, next) => {
 
     res.status(200).json({
       status: "success",
-      message: `Payment of ৳${payAmount.toLocaleString("en-BD")} recorded successfully for Bill ${bill.billNumber}`,
+      message: `Payment of BDT ${payAmount.toLocaleString("en-BD")} recorded successfully for Bill ${bill.billNumber}`,
       data: bill,
     });
   } catch (err) {

@@ -8,6 +8,7 @@ import { NotificationModel } from "../../models/notification.model.js";
 import { sendNewCaseEmailToAdmins } from "../../services/emailNotification.service.js";
 import { sendCaseStatusUpdateEmail, sendTaskAssignmentEmail } from "../../services/emailService.js";
 import { generateDid } from "../../utils/generateDid.js";
+import { checkManagerCanDelete, checkManagerCanUpdate } from "../../helper/managerRbacHelper.js";
 
 export const buildCaseIdentifierQuery = (identifier) => {
   if (!identifier) return { _id: null };
@@ -584,6 +585,10 @@ export const updateCase = async (req, res) => {
       });
     }
 
+    if (!checkManagerCanUpdate(req, res, caseDoc, "case file")) {
+      return;
+    }
+
     if (updates.applicantName) caseDoc.applicantName = updates.applicantName;
     if (updates.passportNumber) caseDoc.passportNumber = updates.passportNumber.trim().toUpperCase();
     if (updates.phone) caseDoc.phone = updates.phone;
@@ -641,6 +646,10 @@ export const updateCase = async (req, res) => {
 // 6. Generic DELETE Case
 export const deleteCase = async (req, res) => {
   try {
+    if (!checkManagerCanDelete(req, res, "case file")) {
+      return;
+    }
+
     const { id } = req.params;
     const deleted = await CaseFile.findOneAndDelete(buildCaseIdentifierQuery(id));
 

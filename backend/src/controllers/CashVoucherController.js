@@ -8,6 +8,7 @@ import {
   sendPaymentDocCreatedEmailToAccountants,
   sendPaymentOrBillCreatedEmailToOwners,
 } from "../services/emailNotification.service.js";
+import { checkManagerCanDelete, checkManagerCanUpdate } from "../helper/managerRbacHelper.js";
 
 // ─── GET ALL ──────────────────────────────────────────────────────────────────
 // @route  GET /api/v1/cash-vouchers
@@ -174,6 +175,10 @@ export const updateVoucher = async (req, res, next) => {
       return res.status(404).json({ status: "error", message: "Cash voucher not found" });
     }
 
+    if (!checkManagerCanUpdate(req, res, voucher, "Cash voucher")) {
+      return;
+    }
+
     // Re-generate QR if voucherNo changed or QR is missing
     if (body.voucherNo && body.voucherNo !== voucher.voucherNo) {
       body.qrCode = await generateVoucherQrCode(body.voucherNo);
@@ -199,6 +204,10 @@ export const updateVoucher = async (req, res, next) => {
 // @route  DELETE /api/v1/cash-vouchers/:id
 export const deleteVoucher = async (req, res, next) => {
   try {
+    if (!checkManagerCanDelete(req, res, "Cash voucher")) {
+      return;
+    }
+
     const { id } = req.params;
     const isMongoId = /^[0-9a-fA-F]{24}$/.test(id);
     const query = isMongoId ? { _id: id } : { $or: [{ voucherNo: id }, { did: id }] };

@@ -7,32 +7,40 @@ import {
   FileText,
   Loader2,
   Layers,
-  CheckSquare,
   Square,
   Sparkles,
   UploadCloud,
   CheckCircle2,
-  Info,
   CreditCard,
   Receipt,
   DollarSign,
+  AlertTriangle,
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { apiClient } from '../../lib/api-client';
 import { Button } from '@/components/ui/button';
 
-export function StepAssignModal({ isOpen = true, caseDoc = {}, caseDid, caseNumber, onClose, onSuccess }) {
+export function StepAssignModal({
+  isOpen = true,
+  caseDoc = {},
+  caseDid,
+  caseNumber,
+  initialPaymentMode = false,
+  onClose,
+  onSuccess,
+}) {
+  const [assignMode, setAssignMode] = useState(initialPaymentMode ? 'payment' : 'workflow');
   const [taskTypes, setTaskTypes] = useState([]);
   const [selectedTaskTypeDids, setSelectedTaskTypeDids] = useState([]);
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [assignedToDid, setAssignedToDid] = useState('');
   const [selectedDocDids, setSelectedDocDids] = useState([]);
-  const [requiresDocument, setRequiresDocument] = useState(true);
+  const [requiresDocument, setRequiresDocument] = useState(!initialPaymentMode);
   const [requiredDocTypes, setRequiredDocTypes] = useState([]);
 
   // Payment & Invoicing State
-  const [requiresPayment, setRequiresPayment] = useState(false);
+  const [requiresPayment, setRequiresPayment] = useState(Boolean(initialPaymentMode));
   const [paymentAmount, setPaymentAmount] = useState('');
   const [paymentCurrency, setPaymentCurrency] = useState('BDT');
   const [paymentPurpose, setPaymentPurpose] = useState('');
@@ -46,9 +54,35 @@ export function StepAssignModal({ isOpen = true, caseDoc = {}, caseDid, caseNumb
 
   const resolvedCaseDid = caseDoc?.did || caseDoc?._id || caseDid;
   const resolvedCaseNumber = caseDoc?.caseNumber || caseDoc?.fileNumber || caseNumber || 'CASE-FILE';
+  const clientName =
+    caseDoc?.applicantName ||
+    caseDoc?.clientInfo?.fullName ||
+    caseDoc?.clientInfo?.name ||
+    'Valued Client';
+
+  // Financial Ledger Computations
+  const totalAgreed = Number(caseDoc?.paymentLedger?.totalAgreedAmount || caseDoc?.totalAgreedAmount) || 0;
+  const currentPaid = Number(caseDoc?.paymentLedger?.totalPaidAmount || caseDoc?.totalPaidAmount) || 0;
+  const remainingDue = caseDoc?.paymentLedger?.dueAmount !== undefined
+    ? Number(caseDoc?.paymentLedger?.dueAmount)
+    : Math.max(0, totalAgreed - currentPaid);
+
+  const numPaymentAmount = Number(paymentAmount) || 0;
+  const isAmountExceeded = requiresPayment && totalAgreed > 0 && remainingDue > 0 && numPaymentAmount > remainingDue;
 
   useEffect(() => {
     if (!isOpen) return;
+
+    if (initialPaymentMode) {
+      setAssignMode('payment');
+      setRequiresPayment(true);
+      setRequiresDocument(false);
+      setTitle(`Collect Payment from ${clientName}`);
+      setPaymentPurpose(`Case Processing Fee (${resolvedCaseNumber})`);
+      if (remainingDue > 0) {
+        setPaymentAmount(String(remainingDue));
+      }
+    }
 
     // Fetch Task Types
     setLoadingTaskTypes(true);
@@ -61,12 +95,18 @@ export function StepAssignModal({ isOpen = true, caseDoc = {}, caseDid, caseNumb
       .catch(() => setTaskTypes([]))
       .finally(() => setLoadingTaskTypes(false));
 
-    // Fetch users for assignment
+    // Fetch users for assignment (highlights accountants)
     apiClient
       .get('/api/v1/admin/users?limit=100')
       .then((res) => {
         const data = res.data?.data || res.data?.users || res.data || [];
-        setUsers(Array.isArray(data) ? data : []);
+        const userList = Array.isArray(data) ? data : [];
+        setUsers(userList);
+        // If in payment mode and no assignee selected, auto-select first accountant
+        if (initialPaymentMode && !assignedToDid) {
+          const accountant = userList.find((u) => u.role?.toLowerCase() === 'accountant');
+          if (accountant) setAssignedToDid(accountant.did || accountant._id);
+        }
       })
       .catch(() => setUsers([]));
 
@@ -97,9 +137,34 @@ export function StepAssignModal({ isOpen = true, caseDoc = {}, caseDid, caseNumb
           }).catch(() => {});
         });
     }
-  }, [isOpen, caseDoc, resolvedCaseDid]);
+  }, [isOpen, initialPaymentMode, caseDoc, resolvedCaseDid, clientName, remainingDue, resolvedCaseNumber, assignedToDid]);
 
   if (!isOpen) return null;
+
+  const handleSwitchMode = (mode) => {
+    setAssignMode(mode);
+    if (mode === 'payment') {
+      setRequiresPayment(true);
+      setRequiresDocument(false);
+      setTitle(`Collect Payment from ${clientName}`);
+      if (!paymentPurpose) {
+        setPaymentPurpose(`Case Processing Fee (${resolvedCaseNumber})`);
+      }
+      if (!paymentAmount && remainingDue > 0) {
+        setPaymentAmount(String(remainingDue));
+      }
+      if (!assignedToDid) {
+        const accountant = users.find((u) => u.role?.toLowerCase() === 'accountant');
+        if (accountant) setAssignedToDid(accountant.did || accountant._id);
+      }
+    } else {
+      setRequiresPayment(false);
+      setRequiresDocument(true);
+      if (title.startsWith('Collect Payment from')) {
+        setTitle('');
+      }
+    }
+  };
 
   const isDocAlreadySubmitted = (tt) => {
     if (!tt) return false;
@@ -118,29 +183,29 @@ export function StepAssignModal({ isOpen = true, caseDoc = {}, caseDid, caseNumb
 
     if (/photo|picture|2x2|portrait/i.test(name) || defaultDocType === 'photo') {
       if (clientAttachments.photo) return true;
-      if (allDocs.some((d) => /photo|picture|2x2|ছবি|image|portrait/i.test(d.documentName || d.fileName || d.name || ''))) return true;
+      if (allDocs.some((d) => /photo|picture|2x2|image|portrait/i.test(d.documentName || d.fileName || d.name || ''))) return true;
     }
 
-    if (/passport|পাসপোর্ট/i.test(name) || defaultDocType === 'passport') {
+    if (/passport/i.test(name) || defaultDocType === 'passport') {
       if (clientAttachments.passportScan || (caseDoc?.passportNumber && clientAttachments.passportScan)) return true;
-      if (allDocs.some((d) => /passport|bio-page|পাসপোর্ট/i.test(d.documentName || d.fileName || d.name || ''))) return true;
+      if (allDocs.some((d) => /passport|bio-page/i.test(d.documentName || d.fileName || d.name || ''))) return true;
     }
 
-    if (/nid|national\s*id|voter|এনআইডি|পরিচয়পত্র/i.test(name) || defaultDocType === 'nid') {
+    if (/nid|national\s*id|voter/i.test(name) || defaultDocType === 'nid') {
       if (clientAttachments.nidScan) return true;
-      if (allDocs.some((d) => /nid|national\s*id|voter|এনআইডি|পরিচয়পত্র|identity/i.test(d.documentName || d.fileName || d.name || ''))) return true;
+      if (allDocs.some((d) => /nid|national\s*id|voter|identity/i.test(d.documentName || d.fileName || d.name || ''))) return true;
     }
 
-    if (/electricity|utility|bill|current|বিদ্যুৎ|gas|wasa/i.test(name) || defaultDocType === 'utility-bill') {
-      if (allDocs.some((d) => /electricity|utility|bill|current|বিদ্যুৎ|gas|electric|wasa/i.test(d.documentName || d.fileName || d.name || ''))) return true;
+    if (/electricity|utility|bill|current|gas|wasa/i.test(name) || defaultDocType === 'utility-bill') {
+      if (allDocs.some((d) => /electricity|utility|bill|current|gas|electric|wasa/i.test(d.documentName || d.fileName || d.name || ''))) return true;
     }
 
-    if (/land|property|দলিল|খতিয়ান|khatian|porcha|deed/i.test(name) || defaultDocType === 'land-doc') {
-      if (allDocs.some((d) => /land|property|দলিল|খতিয়ান|khatian|porcha|deed|mutation/i.test(d.documentName || d.fileName || d.name || ''))) return true;
+    if (/land|property|khatian|porcha|deed/i.test(name) || defaultDocType === 'land-doc') {
+      if (allDocs.some((d) => /land|property|khatian|porcha|deed|mutation/i.test(d.documentName || d.fileName || d.name || ''))) return true;
     }
 
-    if (/agreement|contract|চুক্তি/i.test(name) || defaultDocType === 'agreement') {
-      if (allDocs.some((d) => /agreement|contract|চুক্তি/i.test(d.documentName || d.fileName || d.name || ''))) return true;
+    if (/agreement|contract/i.test(name) || defaultDocType === 'agreement') {
+      if (allDocs.some((d) => /agreement|contract/i.test(d.documentName || d.fileName || d.name || ''))) return true;
     }
 
     if (/police|pcc|clearance/i.test(name) || defaultDocType === 'police-clearance') {
@@ -230,8 +295,22 @@ export function StepAssignModal({ isOpen = true, caseDoc = {}, caseDid, caseNumb
       return;
     }
 
+    if (requiresPayment) {
+      const parsedAmount = Number(paymentAmount) || 0;
+      if (parsedAmount <= 0) {
+        toast.error('Please specify a valid payment collection amount.');
+        return;
+      }
+      if (totalAgreed > 0 && remainingDue > 0 && parsedAmount > remainingDue) {
+        toast.error(
+          `Payment collection amount (BDT ${parsedAmount.toLocaleString()}) cannot exceed the remaining due balance of BDT ${remainingDue.toLocaleString()}.`
+        );
+        return;
+      }
+    }
+
     const selectedObjs = taskTypes.filter((t) => selectedTaskTypeDids.includes(t.did));
-    const taskTypeNames = selectedObjs.map((t) => t.name);
+    const taskTypeNames = assignMode === 'payment' ? ['Payment Collection'] : selectedObjs.map((t) => t.name);
 
     setSubmitting(true);
     try {
@@ -241,10 +320,10 @@ export function StepAssignModal({ isOpen = true, caseDoc = {}, caseDid, caseNumb
         description,
         assignedToDid,
         allowedDocumentDids: selectedDocDids,
-        taskTypeDids: selectedTaskTypeDids,
+        taskTypeDids: assignMode === 'payment' ? [] : selectedTaskTypeDids,
         taskTypeNames,
-        requiresDocument,
-        requiredDocTypes,
+        requiresDocument: assignMode === 'payment' ? false : requiresDocument,
+        requiredDocTypes: assignMode === 'payment' ? [] : requiredDocTypes,
         requiresPayment,
         paymentAmount: requiresPayment ? Number(paymentAmount) || 0 : 0,
         paymentCurrency,
@@ -254,7 +333,11 @@ export function StepAssignModal({ isOpen = true, caseDoc = {}, caseDid, caseNumb
         stepNumber: (caseDoc?.workflowTasks || []).length + 1,
       });
 
-      toast.success(`Task step "${title}" assigned to staff!`);
+      toast.success(
+        assignMode === 'payment'
+          ? `Payment task for BDT ${Number(paymentAmount).toLocaleString()} assigned to staff!`
+          : `Task step "${title}" assigned to staff!`
+      );
       if (onSuccess) onSuccess();
       if (onClose) onClose();
     } catch (err) {
@@ -278,14 +361,23 @@ export function StepAssignModal({ isOpen = true, caseDoc = {}, caseDid, caseNumb
               Case: {resolvedCaseNumber} • Step {(caseDoc?.workflowTasks || []).length + 1}
             </span>
             <h3 className="text-base font-bold text-black flex items-center gap-2 mt-0.5">
-              <Layers className="w-5 h-5 text-primary" />
-              Assign Case Workflow Step
+              {assignMode === 'payment' ? (
+                <>
+                  <CreditCard className="w-5 h-5 text-emerald-600" />
+                  <span>Assign Payment Collection Task</span>
+                </>
+              ) : (
+                <>
+                  <Layers className="w-5 h-5 text-primary" />
+                  <span>Assign Case Workflow Step</span>
+                </>
+              )}
             </h3>
           </div>
           <button
             type="button"
             onClick={onClose}
-            className="p-1 rounded-lg text-red-500 hover:text-red-600 hover:bg-red-500/10 cursor-pointer"
+            className="p-1 rounded-lg text-red-500 hover:text-red-600 hover:bg-red-500/10 cursor-pointer transition-colors"
             title="Close"
           >
             <X className="w-5 h-5" />
@@ -294,221 +386,203 @@ export function StepAssignModal({ isOpen = true, caseDoc = {}, caseDid, caseNumb
 
         {/* Scrollable Body */}
         <div className="flex-1 min-h-0 overflow-y-auto p-4 sm:p-5 space-y-4 text-xs">
-          {/* Section 1: Task Type & Document Presets Selector */}
-          <div className="space-y-2">
-            <div className="flex items-center justify-between">
-              <label className="font-bold text-foreground flex items-center gap-1.5 uppercase tracking-wider text-[11px]">
-                <Sparkles className="w-3.5 h-3.5 text-primary" />
-                Select Task Sub-Type & Required Documents
-              </label>
-              <span className="text-[10px] text-muted-foreground">
-                {selectedTaskTypeDids.length} selected
-              </span>
-            </div>
-
-            {loadingTaskTypes ? (
-              <div className="p-4 text-center text-muted-foreground bg-muted/20 border border-border rounded-xl flex items-center justify-center gap-2">
-                <Loader2 className="w-4 h-4 animate-spin text-primary" />
-                <span>Loading available task types...</span>
-              </div>
-            ) : taskTypes.length === 0 ? (
-              <div className="p-3 bg-muted/20 border border-border rounded-xl text-muted-foreground text-center">
-                No task types found. You can add custom task types in Agency Settings.
-              </div>
-            ) : (
-              <div className="space-y-1.5 max-h-44 overflow-y-auto pr-1">
-                {taskTypes.map((tt) => {
-                  const isChecked = selectedTaskTypeDids.includes(tt.did);
-                  const isAlreadySubmitted = isDocAlreadySubmitted(tt);
-
-                  return (
-                    <div
-                      key={tt.did || tt._id}
-                      onClick={() => handleToggleTaskType(tt)}
-                      className={`p-2.5 rounded-xl border text-xs flex items-center justify-between transition-all ${
-                        isAlreadySubmitted
-                          ? 'bg-emerald-500/5 border-emerald-500/30 text-emerald-950 cursor-not-allowed opacity-80'
-                          : isChecked
-                          ? 'bg-primary/10 border-primary text-foreground font-bold shadow-2xs cursor-pointer'
-                          : 'bg-muted/30 border-border text-muted-foreground hover:text-foreground hover:bg-muted/50 cursor-pointer'
-                      }`}
-                      title={isAlreadySubmitted ? 'Already submitted in Case Vault' : ''}
-                    >
-                      <div className="flex items-center gap-2.5 min-w-0">
-                        {isAlreadySubmitted ? (
-                          <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
-                        ) : isChecked ? (
-                          <CheckCircle2 className="w-4 h-4 text-primary shrink-0" />
-                        ) : (
-                          <Square className="w-4 h-4 text-muted-foreground/50 shrink-0" />
-                        )}
-                        <div className="truncate">
-                          <p className={`truncate font-semibold ${isAlreadySubmitted ? 'text-emerald-950 font-bold' : ''}`}>
-                            {tt.name}
-                          </p>
-                          <p className="text-[10px] text-muted-foreground font-normal">
-                            {isAlreadySubmitted
-                              ? '✓ Document already present in Case Vault'
-                              : tt.requiresDocument
-                              ? '📄 Requires Document Upload'
-                              : '💬 Mandatory Work Notes Only'}
-                          </p>
-                        </div>
-                      </div>
-                      <div className="flex items-center gap-1.5 shrink-0">
-                        {isAlreadySubmitted && (
-                          <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-700 border border-emerald-500/30 uppercase">
-                            Already Submitted ✓
-                          </span>
-                        )}
-                        <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-muted text-muted-foreground uppercase">
-                          {tt.category?.replace(/_/g, ' ')}
-                        </span>
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            )}
-          </div>
-
-          {/* Section 2: Step Title & Assignee */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            <div className="sm:col-span-2">
-              <label className="block font-semibold text-muted-foreground mb-1">
-                Step Title / Task Name *
-              </label>
-              <input
-                type="text"
-                required
-                placeholder="e.g. Upload Passport & NID Copy, Embassy Portal Verification"
-                value={title}
-                onChange={(e) => setTitle(e.target.value)}
-                className="w-full px-3.5 py-2 bg-muted/40 border border-border rounded-xl text-foreground focus:outline-none focus:border-primary"
-              />
-            </div>
-
-            <div className="sm:col-span-2">
-              <label className="block font-semibold text-muted-foreground mb-1">
-                Assign To Staff Member *
-              </label>
-              <select
-                required
-                value={assignedToDid}
-                onChange={(e) => setAssignedToDid(e.target.value)}
-                className="w-full px-3.5 py-2 bg-muted/40 border border-border rounded-xl text-foreground focus:outline-none focus:border-primary cursor-pointer"
-              >
-                <option value="" className="bg-card text-muted-foreground">
-                  — Select Staff Member —
-                </option>
-                {users.map((u) => (
-                  <option key={u.did || u._id} value={u.did || u._id} className="bg-card text-foreground">
-                    {u.name} ({u.role}) — {u.email}
-                  </option>
-                ))}
-              </select>
-            </div>
-          </div>
-
-          {/* Section 3: Task Behavior Status */}
-          <div className="p-3 rounded-xl border border-border bg-muted/20 flex items-center justify-between text-xs">
-            <div className="flex items-center gap-2">
-              {requiresDocument ? (
-                <UploadCloud className="w-4 h-4 text-sky-500 shrink-0" />
-              ) : (
-                <FileText className="w-4 h-4 text-amber-500 shrink-0" />
-              )}
-              <div>
-                <p className="font-bold text-foreground">
-                  {requiresDocument ? 'Document Upload Enforced' : 'Work Notes & Remarks Mandatory'}
-                </p>
-                <p className="text-[10px] text-muted-foreground">
-                  {requiresDocument
-                    ? 'Staff will upload required files. Remarks will be optional.'
-                    : 'No documents required. Staff must provide completion notes.'}
-                </p>
-              </div>
-            </div>
-            <span
-              className={`text-[10px] font-bold px-2 py-0.5 rounded-full border ${
-                requiresDocument
-                  ? 'bg-sky-500/10 text-sky-600 border-sky-500/20'
-                  : 'bg-amber-500/10 text-amber-600 border-amber-500/20'
+          {/* Mode Selector Pill Switch */}
+          <div className="flex items-center p-1 rounded-xl bg-black/[0.04] border border-black/10 gap-1 shrink-0">
+            <button
+              type="button"
+              onClick={() => handleSwitchMode('workflow')}
+              className={`flex-1 py-1.5 px-3 rounded-lg text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
+                assignMode === 'workflow'
+                  ? 'bg-white text-black shadow-xs border border-black/10'
+                  : 'text-black/60 hover:text-black'
               }`}
             >
-              {requiresDocument ? 'File Intake' : 'Action Step'}
-            </span>
+              <Layers className="w-3.5 h-3.5 text-primary" />
+              <span>Workflow &amp; Documents</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => handleSwitchMode('payment')}
+              className={`flex-1 py-1.5 px-3 rounded-lg text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
+                assignMode === 'payment'
+                  ? 'bg-emerald-600 text-white shadow-xs'
+                  : 'text-black/60 hover:text-emerald-700'
+              }`}
+            >
+              <CreditCard className="w-3.5 h-3.5" />
+              <span>Direct Payment Collection Task</span>
+            </button>
           </div>
 
-          {/* Section 4: Payment Intake, Client Invoicing & Pay Slip */}
-          <div className="p-3.5 rounded-2xl border border-emerald-500/30 bg-emerald-500/5 space-y-3">
-            <div className="flex items-center justify-between">
-              <label
-                onClick={() => setRequiresPayment(!requiresPayment)}
-                className="font-bold text-emerald-800 flex items-center gap-2 cursor-pointer select-none"
-              >
-                <CreditCard className="w-4 h-4 text-emerald-600" />
-                <span>Require Client Payment / Service Fee Intake</span>
-              </label>
-              <input
-                type="checkbox"
-                checked={requiresPayment}
-                onChange={(e) => setRequiresPayment(e.target.checked)}
-                className="rounded border-emerald-400 text-emerald-600 focus:ring-emerald-500 h-4 w-4 accent-emerald-600 cursor-pointer"
-              />
-            </div>
+          {/* PAYMENT COLLECTION MODE BODY */}
+          {assignMode === 'payment' ? (
+            <div className="space-y-4 animate-in fade-in duration-150">
+              {/* Financial Ledger Summary Card */}
+              <div className="p-3.5 rounded-xl border border-emerald-500/30 bg-emerald-500/5 space-y-2.5">
+                <div className="flex items-center justify-between">
+                  <span className="font-bold text-emerald-800 flex items-center gap-1.5 uppercase tracking-wider text-[10px]">
+                    <CreditCard className="w-3.5 h-3.5 text-emerald-600" />
+                    Case Financial Ledger ({clientName})
+                  </span>
+                  {totalAgreed > 0 && remainingDue <= 0 ? (
+                    <span className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-emerald-500/20 text-emerald-800 border border-emerald-500/30">
+                      Fully Paid ✓
+                    </span>
+                  ) : (
+                    <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-md bg-white border border-emerald-500/30 text-emerald-700">
+                      Due: BDT {remainingDue.toLocaleString()}
+                    </span>
+                  )}
+                </div>
 
-            {requiresPayment && (
-              <div className="space-y-3 pt-2 border-t border-emerald-500/20 text-xs animate-in fade-in-50 duration-150">
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  <div>
-                    <label className="block font-semibold text-foreground mb-1">
-                      Payment Amount (৳ BDT) *
-                    </label>
-                    <input
-                      type="number"
-                      min="0"
-                      step="1"
-                      required={requiresPayment}
-                      placeholder="e.g. 50000"
-                      value={paymentAmount}
-                      onChange={(e) => setPaymentAmount(e.target.value)}
-                      className="w-full px-3 py-2 bg-card border border-emerald-500/40 rounded-xl text-foreground font-bold focus:outline-none focus:border-emerald-500"
-                    />
+                <div className="grid grid-cols-3 gap-2 text-center">
+                  <div className="p-2 bg-white rounded-lg border border-black/10 shadow-2xs">
+                    <span className="text-[10px] text-black/60 font-semibold block">Total Deal</span>
+                    <span className="text-xs font-mono font-bold text-black">BDT {totalAgreed.toLocaleString()}</span>
                   </div>
-                  <div>
-                    <label className="block font-semibold text-foreground mb-1">
-                      Payment Purpose / Installment Label
-                    </label>
-                    <input
-                      type="text"
-                      placeholder="e.g. 1st Booking Deposit / Embassy Fee"
-                      value={paymentPurpose}
-                      onChange={(e) => setPaymentPurpose(e.target.value)}
-                      className="w-full px-3 py-2 bg-card border border-border rounded-xl text-foreground focus:outline-none focus:border-primary"
-                    />
+                  <div className="p-2 bg-white rounded-lg border border-black/10 shadow-2xs">
+                    <span className="text-[10px] text-black/60 font-semibold block">Paid So Far</span>
+                    <span className="text-xs font-mono font-bold text-emerald-700">BDT {currentPaid.toLocaleString()}</span>
+                  </div>
+                  <div className="p-2 bg-white rounded-lg border border-black/10 shadow-2xs">
+                    <span className="text-[10px] text-black/60 font-semibold block">Remaining Due</span>
+                    <span className="text-xs font-mono font-bold text-rose-600">BDT {remainingDue.toLocaleString()}</span>
                   </div>
                 </div>
 
-                <div className="space-y-2 pt-1">
-                  <label className="flex items-center gap-2 text-foreground font-medium cursor-pointer">
+                {/* Quick Presets */}
+                {remainingDue > 0 && (
+                  <div className="flex items-center gap-2 pt-1 flex-wrap">
+                    <span className="text-[10px] font-semibold text-black/60">Quick Fill:</span>
+                    <button
+                      type="button"
+                      onClick={() => setPaymentAmount(String(remainingDue))}
+                      className="px-2 py-0.5 rounded-md bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-[10px] transition cursor-pointer"
+                    >
+                      Full Due (BDT {remainingDue.toLocaleString()})
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setPaymentAmount(String(Math.round(remainingDue / 2)))}
+                      className="px-2 py-0.5 rounded-md bg-black/10 hover:bg-black/20 text-black font-semibold text-[10px] transition cursor-pointer"
+                    >
+                      50% (BDT {Math.round(remainingDue / 2).toLocaleString()})
+                    </button>
+                  </div>
+                )}
+              </div>
+
+              {/* Target Collection Amount with Capping Indicator */}
+              <div>
+                <div className="flex items-center justify-between mb-1">
+                  <label className="font-semibold text-black flex items-center gap-1 text-xs">
+                    <DollarSign className="w-3.5 h-3.5 text-emerald-600" />
+                    Collection Target Amount (BDT) <span className="text-red-500">*</span>
+                  </label>
+                  {remainingDue > 0 && (
+                    <span className="text-[10px] text-black/60">
+                      Capped Limit: <strong>BDT {remainingDue.toLocaleString()}</strong>
+                    </span>
+                  )}
+                </div>
+                <input
+                  type="number"
+                  min="1"
+                  step="1"
+                  required
+                  value={paymentAmount}
+                  onChange={(e) => setPaymentAmount(e.target.value)}
+                  placeholder="e.g. 50000"
+                  className={`w-full px-3.5 py-2 bg-white rounded-xl font-bold text-sm focus:outline-none transition-colors ${
+                    isAmountExceeded
+                      ? 'border-2 border-red-500 text-red-600 bg-red-50/30'
+                      : 'border border-emerald-500/50 text-black focus:border-emerald-600'
+                  }`}
+                />
+                {isAmountExceeded && (
+                  <p className="text-[11px] font-bold text-red-600 mt-1 flex items-center gap-1">
+                    <AlertTriangle className="w-3.5 h-3.5 shrink-0" />
+                    Amount cannot exceed remaining balance of BDT {remainingDue.toLocaleString()}!
+                  </p>
+                )}
+              </div>
+
+              {/* Step Title & Assignee */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div className="sm:col-span-2">
+                  <label className="block font-semibold text-black/70 mb-1">Task Title *</label>
+                  <input
+                    type="text"
+                    required
+                    value={title}
+                    onChange={(e) => setTitle(e.target.value)}
+                    placeholder="e.g. Collect Payment from Client"
+                    className="w-full px-3.5 py-2 bg-white border border-black/10 rounded-xl text-black focus:outline-none focus:border-primary font-medium"
+                  />
+                </div>
+
+                <div className="sm:col-span-2">
+                  <div className="flex items-center justify-between mb-1">
+                    <label className="font-semibold text-black/70">Assign To Accountant / Staff *</label>
+                    {users.some((u) => u.role?.toLowerCase() === 'accountant') && (
+                      <span className="text-[10px] text-emerald-700 font-semibold">
+                        💼 Accountants highlighted below
+                      </span>
+                    )}
+                  </div>
+                  <select
+                    required
+                    value={assignedToDid}
+                    onChange={(e) => setAssignedToDid(e.target.value)}
+                    className="w-full px-3.5 py-2 bg-white border border-black/10 rounded-xl text-black focus:outline-none focus:border-primary cursor-pointer font-medium"
+                  >
+                    <option value="">— Select Staff Member / Accountant —</option>
+                    {users.map((u) => {
+                      const isAccountant = u.role?.toLowerCase() === 'accountant';
+                      return (
+                        <option key={u.did || u._id} value={u.did || u._id}>
+                          {isAccountant ? '💼 [Accountant] ' : `[${u.role}] `}
+                          {u.name} — {u.email}
+                        </option>
+                      );
+                    })}
+                  </select>
+                </div>
+              </div>
+
+              {/* Purpose & Invoicing Checkboxes */}
+              <div className="p-3 bg-black/[0.02] border border-black/10 rounded-xl space-y-2.5">
+                <div>
+                  <label className="block font-semibold text-black/70 mb-1">Payment Purpose / Milestone</label>
+                  <input
+                    type="text"
+                    value={paymentPurpose}
+                    onChange={(e) => setPaymentPurpose(e.target.value)}
+                    placeholder="e.g. 1st Milestone Visa Processing Fee"
+                    className="w-full px-3 py-1.5 bg-white border border-black/10 rounded-lg text-black focus:outline-none focus:border-primary"
+                  />
+                </div>
+
+                <div className="space-y-2 pt-1 border-t border-black/5">
+                  <label className="flex items-center gap-2 text-black font-medium cursor-pointer">
                     <input
                       type="checkbox"
                       checked={sendInvoiceToClient}
                       onChange={(e) => setSendInvoiceToClient(e.target.checked)}
-                      className="rounded border-border text-primary h-3.5 w-3.5 accent-primary cursor-pointer"
+                      className="rounded border-black/20 text-primary h-3.5 w-3.5 accent-primary cursor-pointer"
                     />
                     <span className="flex items-center gap-1.5">
                       <FileText className="w-3.5 h-3.5 text-primary shrink-0" />
                       Auto-generate official <strong>Client Invoice (I-#####)</strong> and link to case
                     </span>
                   </label>
-                  <label className="flex items-center gap-2 text-foreground font-medium cursor-pointer">
+
+                  <label className="flex items-center gap-2 text-black font-medium cursor-pointer">
                     <input
                       type="checkbox"
                       checked={requirePaySlip}
                       onChange={(e) => setRequirePaySlip(e.target.checked)}
-                      className="rounded border-border text-emerald-600 h-3.5 w-3.5 accent-emerald-600 cursor-pointer"
+                      className="rounded border-black/20 text-emerald-600 h-3.5 w-3.5 accent-emerald-600 cursor-pointer"
                     />
                     <span className="flex items-center gap-1.5">
                       <Receipt className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
@@ -517,24 +591,254 @@ export function StepAssignModal({ isOpen = true, caseDoc = {}, caseDid, caseNumb
                   </label>
                 </div>
               </div>
-            )}
-          </div>
 
-          {/* Section 4: Task Instructions */}
-          <div>
-            <label className="block font-semibold text-muted-foreground mb-1">
-              Instructions & Scope for Staff
-            </label>
-            <textarea
-              rows={2}
-              placeholder="Provide specific guidelines or notes for the staff..."
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              className="w-full px-3.5 py-2 bg-muted/40 border border-border rounded-xl text-foreground focus:outline-none focus:border-primary resize-none"
-            />
-          </div>
+              {/* Instructions */}
+              <div>
+                <label className="block font-semibold text-black/70 mb-1">Instructions for Assignee</label>
+                <textarea
+                  rows={2}
+                  placeholder="e.g. Please collect the remaining package fee in cash or bank transfer and issue money receipt..."
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value)}
+                  className="w-full px-3.5 py-2 bg-white border border-black/10 rounded-xl text-black focus:outline-none focus:border-primary resize-none"
+                />
+              </div>
+            </div>
+          ) : (
+            /* WORKFLOW & DOCUMENT MODE BODY */
+            <div className="space-y-4 animate-in fade-in duration-150">
+              {/* Section 1: Task Type & Document Presets Selector */}
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <label className="font-bold text-foreground flex items-center gap-1.5 uppercase tracking-wider text-[11px]">
+                    <Sparkles className="w-3.5 h-3.5 text-primary" />
+                    Select Task Sub-Type &amp; Required Documents
+                  </label>
+                  <span className="text-[10px] text-muted-foreground">
+                    {selectedTaskTypeDids.length} selected
+                  </span>
+                </div>
 
-          {/* Section 5: Permitted Documents (Restricted Access) */}
+                {loadingTaskTypes ? (
+                  <div className="p-4 text-center text-muted-foreground bg-muted/20 border border-border rounded-xl flex items-center justify-center gap-2">
+                    <Loader2 className="w-4 h-4 animate-spin text-primary" />
+                    <span>Loading available task types...</span>
+                  </div>
+                ) : taskTypes.length === 0 ? (
+                  <div className="p-3 bg-muted/20 border border-border rounded-xl text-muted-foreground text-center">
+                    No task types found. You can add custom task types in Agency Settings.
+                  </div>
+                ) : (
+                  <div className="space-y-1.5 max-h-44 overflow-y-auto pr-1">
+                    {taskTypes.map((tt) => {
+                      const isChecked = selectedTaskTypeDids.includes(tt.did);
+                      const isAlreadySubmitted = isDocAlreadySubmitted(tt);
+
+                      return (
+                        <div
+                          key={tt.did || tt._id}
+                          onClick={() => handleToggleTaskType(tt)}
+                          className={`p-2.5 rounded-xl border text-xs flex items-center justify-between transition-all ${
+                            isAlreadySubmitted
+                              ? 'bg-emerald-500/5 border-emerald-500/30 text-emerald-950 cursor-not-allowed opacity-80'
+                              : isChecked
+                              ? 'bg-primary/10 border-primary text-foreground font-bold shadow-2xs cursor-pointer'
+                              : 'bg-muted/30 border-border text-muted-foreground hover:text-foreground hover:bg-muted/50 cursor-pointer'
+                          }`}
+                          title={isAlreadySubmitted ? 'Already submitted in Case Vault' : ''}
+                        >
+                          <div className="flex items-center gap-2.5 min-w-0">
+                            {isAlreadySubmitted ? (
+                              <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+                            ) : isChecked ? (
+                              <CheckCircle2 className="w-4 h-4 text-primary shrink-0" />
+                            ) : (
+                              <Square className="w-4 h-4 text-muted-foreground/50 shrink-0" />
+                            )}
+                            <div className="truncate">
+                              <p className={`truncate font-semibold ${isAlreadySubmitted ? 'text-emerald-950 font-bold' : ''}`}>
+                                {tt.name}
+                              </p>
+                              <p className="text-[10px] text-muted-foreground font-normal">
+                                {isAlreadySubmitted
+                                  ? '✓ Document already present in Case Vault'
+                                  : tt.requiresDocument
+                                  ? '📄 Requires Document Upload'
+                                  : '💬 Mandatory Work Notes Only'}
+                              </p>
+                            </div>
+                          </div>
+                          <div className="flex items-center gap-1.5 shrink-0">
+                            {isAlreadySubmitted && (
+                              <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-700 border border-emerald-500/30 uppercase">
+                                Already Submitted ✓
+                              </span>
+                            )}
+                            <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-muted text-muted-foreground uppercase">
+                              {tt.category?.replace(/_/g, ' ')}
+                            </span>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
+
+              {/* Section 2: Step Title & Assignee */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div className="sm:col-span-2">
+                  <label className="block font-semibold text-muted-foreground mb-1">
+                    Step Title / Task Name *
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    placeholder="e.g. Upload Passport & NID Copy, Embassy Portal Verification"
+                    value={title}
+                    onChange={(e) => setTitle(e.target.value)}
+                    className="w-full px-3.5 py-2 bg-muted/40 border border-border rounded-xl text-foreground focus:outline-none focus:border-primary"
+                  />
+                </div>
+
+                <div className="sm:col-span-2">
+                  <label className="block font-semibold text-muted-foreground mb-1">
+                    Assign To Staff Member *
+                  </label>
+                  <select
+                    required
+                    value={assignedToDid}
+                    onChange={(e) => setAssignedToDid(e.target.value)}
+                    className="w-full px-3.5 py-2 bg-muted/40 border border-border rounded-xl text-foreground focus:outline-none focus:border-primary cursor-pointer"
+                  >
+                    <option value="" className="bg-card text-muted-foreground">
+                      — Select Staff Member —
+                    </option>
+                    {users.map((u) => (
+                      <option key={u.did || u._id} value={u.did || u._id} className="bg-card text-foreground">
+                        {u.name} ({u.role}) — {u.email}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+
+              {/* Section 3: Task Behavior Status */}
+              <div className="p-3 rounded-xl border border-border bg-muted/20 flex items-center justify-between text-xs">
+                <div className="flex items-center gap-2">
+                  {requiresDocument ? (
+                    <UploadCloud className="w-4 h-4 text-sky-500 shrink-0" />
+                  ) : (
+                    <FileText className="w-4 h-4 text-amber-500 shrink-0" />
+                  )}
+                  <div>
+                    <p className="font-bold text-foreground">
+                      {requiresDocument ? 'Document Upload Enforced' : 'Work Notes & Remarks Mandatory'}
+                    </p>
+                    <p className="text-[10px] text-muted-foreground">
+                      {requiresDocument
+                        ? 'Staff will upload required files. Remarks will be optional.'
+                        : 'No documents required. Staff must provide completion notes.'}
+                    </p>
+                  </div>
+                </div>
+                <span
+                  className={`text-[10px] font-bold px-2 py-0.5 rounded-full border ${
+                    requiresDocument
+                      ? 'bg-sky-500/10 text-sky-600 border-sky-500/20'
+                      : 'bg-amber-500/10 text-amber-600 border-amber-500/20'
+                  }`}
+                >
+                  {requiresDocument ? 'File Intake' : 'Action Step'}
+                </span>
+              </div>
+
+              {/* Section 4: Optional Payment Intake */}
+              <div className="p-3.5 rounded-2xl border border-emerald-500/30 bg-emerald-500/5 space-y-3">
+                <div className="flex items-center justify-between">
+                  <label
+                    onClick={() => setRequiresPayment(!requiresPayment)}
+                    className="font-bold text-emerald-800 flex items-center gap-2 cursor-pointer select-none"
+                  >
+                    <CreditCard className="w-4 h-4 text-emerald-600" />
+                    <span>Require Client Payment / Service Fee Intake</span>
+                  </label>
+                  <input
+                    type="checkbox"
+                    checked={requiresPayment}
+                    onChange={(e) => setRequiresPayment(e.target.checked)}
+                    className="rounded border-emerald-400 text-emerald-600 focus:ring-emerald-500 h-4 w-4 accent-emerald-600 cursor-pointer"
+                  />
+                </div>
+
+                {requiresPayment && (
+                  <div className="space-y-3 pt-2 border-t border-emerald-500/20 text-xs animate-in fade-in-50 duration-150">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                      <div>
+                        <div className="flex items-center justify-between mb-1">
+                          <label className="font-semibold text-foreground">
+                            Payment Amount (BDT) *
+                          </label>
+                          {remainingDue > 0 && (
+                            <span className="text-[10px] text-muted-foreground font-mono">
+                              Max: BDT {remainingDue.toLocaleString()}
+                            </span>
+                          )}
+                        </div>
+                        <input
+                          type="number"
+                          min="0"
+                          step="1"
+                          required={requiresPayment}
+                          placeholder="e.g. 50000"
+                          value={paymentAmount}
+                          onChange={(e) => setPaymentAmount(e.target.value)}
+                          className={`w-full px-3 py-2 bg-card rounded-xl text-foreground font-bold focus:outline-none ${
+                            isAmountExceeded
+                              ? 'border-2 border-red-500 text-red-600'
+                              : 'border border-emerald-500/40 focus:border-emerald-500'
+                          }`}
+                        />
+                        {isAmountExceeded && (
+                          <p className="text-[10px] font-bold text-red-600 mt-1">
+                            Cannot exceed remaining due of BDT {remainingDue.toLocaleString()}
+                          </p>
+                        )}
+                      </div>
+                      <div>
+                        <label className="block font-semibold text-foreground mb-1">
+                          Payment Purpose / Installment Label
+                        </label>
+                        <input
+                          type="text"
+                          placeholder="e.g. 1st Booking Deposit / Embassy Fee"
+                          value={paymentPurpose}
+                          onChange={(e) => setPaymentPurpose(e.target.value)}
+                          className="w-full px-3 py-2 bg-card border border-border rounded-xl text-foreground focus:outline-none focus:border-primary"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* Instructions & Scope */}
+              <div>
+                <label className="block font-semibold text-muted-foreground mb-1">
+                  Instructions &amp; Scope for Staff
+                </label>
+                <textarea
+                  rows={2}
+                  placeholder="Provide specific guidelines or notes for the staff..."
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value)}
+                  className="w-full px-3.5 py-2 bg-muted/40 border border-border rounded-xl text-foreground focus:outline-none focus:border-primary resize-none"
+                />
+              </div>
+            </div>
+          )}
+
+          {/* Permitted Documents Section (Restricted Access) */}
           <div className="space-y-2 pt-2 border-t border-border">
             <div className="flex items-center justify-between">
               <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider flex items-center gap-1.5">
@@ -582,25 +886,39 @@ export function StepAssignModal({ isOpen = true, caseDoc = {}, caseDid, caseNumb
         </div>
 
         {/* Footer */}
-        <div className="shrink-0 border-t border-black/10 p-4 sm:p-5 flex items-center justify-end gap-2 text-xs bg-black/[0.02]">
-          <Button
-            type="button"
-            variant="cancel"
-            size="sm"
-            onClick={onClose}
-            className="cursor-pointer"
-          >
-            Cancel
-          </Button>
-          <Button
-            type="submit"
-            size="sm"
-            disabled={submitting}
-            className="flex items-center gap-1.5 bg-primary text-primary-foreground font-bold hover:bg-primary/90 shadow-sm disabled:opacity-50 cursor-pointer"
-          >
-            {submitting ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Send className="w-3.5 h-3.5" />}
-            Assign Task Step
-          </Button>
+        <div className="shrink-0 border-t border-black/10 p-4 sm:p-5 flex items-center justify-between text-xs bg-black/[0.02]">
+          <div className="text-[11px] text-black/60 font-mono">
+            {assignMode === 'payment'
+              ? `Target: BDT ${numPaymentAmount.toLocaleString()}`
+              : `Step ${(caseDoc?.workflowTasks || []).length + 1}`}
+          </div>
+
+          <div className="flex items-center gap-2">
+            <Button
+              type="button"
+              variant="cancel"
+              size="sm"
+              onClick={onClose}
+              className="cursor-pointer"
+            >
+              Cancel
+            </Button>
+            <Button
+              type="submit"
+              size="sm"
+              disabled={submitting || isAmountExceeded || (requiresPayment && numPaymentAmount <= 0)}
+              className="flex items-center gap-1.5 bg-primary text-primary-foreground font-bold hover:bg-primary/90 shadow-sm disabled:opacity-50 cursor-pointer"
+            >
+              {submitting ? (
+                <Loader2 className="w-3.5 h-3.5 animate-spin" />
+              ) : assignMode === 'payment' ? (
+                <Receipt className="w-3.5 h-3.5" />
+              ) : (
+                <Send className="w-3.5 h-3.5" />
+              )}
+              {assignMode === 'payment' ? 'Assign Payment Task' : 'Assign Task Step'}
+            </Button>
+          </div>
         </div>
       </form>
     </div>

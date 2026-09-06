@@ -1,6 +1,7 @@
 import mongoose from "mongoose";
 import { PassportSubmissionModel, generateUniquePassportTrackingNo } from "../../models/passportSubmission.model.js";
 import { NotificationModel } from "../../models/notification.model.js";
+import { checkManagerCanDelete, checkManagerCanUpdate } from "../../helper/managerRbacHelper.js";
 
 // Helper to query passport submission by either MongoDB _id, did, or trackingNo
 const findPassportByIdOrTracking = async (id, extraQuery = {}) => {
@@ -100,6 +101,12 @@ export const createPassportSubmission = async (req, res, next) => {
     if (!body.trackingNo) {
       body.trackingNo = generateUniquePassportTrackingNo();
     }
+    if (req.user?.did) {
+      body.createdByDid = req.user.did;
+    }
+    if (req.user?.name) {
+      body.createdByName = req.user.name;
+    }
     const newSubmission = await PassportSubmissionModel.create(body);
 
     return res.status(201).json({
@@ -125,6 +132,10 @@ export const updatePassportSubmission = async (req, res, next) => {
       });
     }
 
+    if (!checkManagerCanUpdate(req, res, existing, "Passport submission")) {
+      return;
+    }
+
     const updatedSubmission = await PassportSubmissionModel.findOneAndUpdate(
       { _id: existing._id },
       req.body,
@@ -148,6 +159,10 @@ export const updatePassportSubmission = async (req, res, next) => {
 // @route   DELETE /api/v1/docs/passport-submissions/:id
 export const deletePassportSubmission = async (req, res, next) => {
   try {
+    if (!checkManagerCanDelete(req, res, "Passport submission")) {
+      return;
+    }
+
     const { id } = req.params;
     const existing = await findPassportByIdOrTracking(id);
     if (!existing) {
@@ -186,6 +201,10 @@ export const updatePassportStage = async (req, res, next) => {
         success: false,
         message: "Passport submission not found.",
       });
+    }
+
+    if (!checkManagerCanUpdate(req, res, doc, "Passport submission")) {
+      return;
     }
 
     if (status) {
