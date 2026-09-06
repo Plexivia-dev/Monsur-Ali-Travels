@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'motion/react';
 import { Send, CheckCircle, AlertCircle, Loader2 } from 'lucide-react';
+import { API_BASE_URL } from '../config/api';
 
 export function ContactForm() {
   const [mountTime, setMountTime] = useState(0);
@@ -42,7 +43,7 @@ export function ContactForm() {
     }
 
     // Real API Call to Backend
-    const apiBase = import.meta.env.VITE_API_URL || 'https://api.monsuralitravels.com';
+    const apiBase = API_BASE_URL;
     try {
       const payload = {
         name: formData.get('name'),

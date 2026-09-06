@@ -8,6 +8,7 @@ import {
   ArrowLeft,
   Loader2,
 } from 'lucide-react';
+import { API_BASE_URL } from '../config/api';
 
 export function VerificationPage() {
   const [queryId, setQueryId] = useState('');
@@ -31,7 +32,7 @@ export function VerificationPage() {
     setError(null);
     setResult(null);
 
-    const apiBase = import.meta.env.VITE_API_URL || 'https://api.monsuralitravels.com';
+    const apiBase = API_BASE_URL;
 
     try {
       const response = await fetch(`${apiBase}/api/v1/qr/verify/${encodeURIComponent(idToVerify.trim())}`);
