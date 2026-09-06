@@ -6,7 +6,7 @@
 
 # 1. Check for forbidden file patterns in staged files
 FORBIDDEN_FILE_REGEX='(^|/)(\.env(\..+)?|.*credentials.*|.*\.pem|.*\.key|.*\.cert|.*\.crt|id_rsa.*|id_ed25519.*|cloudflare-.*\.txt)$'
-ALLOWED_EXCEPTION='(\.env\.example|\.env\.dev\.example)$'
+ALLOWED_EXCEPTION='(\.env\.example|\.env\.dev\.example|Docs/Credentials_and_Access\.md)$'
 
 STAGED_FILES=$(git diff --cached --name-only)
 

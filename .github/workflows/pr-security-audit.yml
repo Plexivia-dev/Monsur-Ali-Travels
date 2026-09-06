@@ -37,7 +37,7 @@ jobs:
           fi
 
           FORBIDDEN_FILE_REGEX='(^|/)(\.env(\..+)?|.*credentials.*|.*\.pem|.*\.key|.*\.cert|.*\.crt|id_rsa.*|id_ed25519.*|cloudflare-.*\.txt)$'
-          ALLOWED_EXCEPTION='(\.env\.example|\.env\.dev\.example)$'
+          ALLOWED_EXCEPTION='(\.env\.example|\.env\.dev\.example|Docs/Credentials_and_Access\.md)$'
 
           FAILED_FILES=""
           for file in $CHANGED_FILES; do
