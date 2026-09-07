@@ -60,7 +60,7 @@ const fetchMembers = async (params) => {
         total: meta.total ?? parsedMembers.length,
         page: meta.page ?? page,
         limit: meta.limit ?? limit,
-        totalPages: meta.totalPages ?? Math.ceil((meta.total ?? parsedMembers.length) / limit) || 1,
+        totalPages: meta.totalPages ?? (Math.ceil((meta.total ?? parsedMembers.length) / limit) || 1),
       },
     };
   } catch (err) {

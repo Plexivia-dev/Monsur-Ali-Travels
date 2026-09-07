@@ -41,12 +41,20 @@ import { usePortalStore } from '../../store/usePortalStore';
 import { FileViewerModal } from '@shared/components/common/FileViewerModal';
 
 const PIPELINE_STAGES = [
-  { id: 'ENTRY', title: 'New Entry' },
-  { id: 'PROCESSING', title: 'Processing' },
-  { id: 'APPROVED_OFFER_LETTER', title: 'Offer Letter Approved' },
-  { id: 'SUBMITTED_EMBASSY_BSF', title: 'Embassy / VFS Submitted' },
-  { id: 'COMPLETED_DELIVERED', title: 'Completed & Delivered' },
+  { id: 'INTAKE', title: '1. File Intake' },
+  { id: 'UNDER_PROCESS', title: '2. Under Process' },
+  { id: 'OFFER_LETTER', title: '3. Offer Letter' },
+  { id: 'COMPLETED', title: '4. Completed' },
 ];
+
+const getCanonicalStage = (status) => {
+  const st = String(status || '').toUpperCase();
+  if (st === 'ENTRY' || st === 'INTAKE') return 'INTAKE';
+  if (st === 'PROCESSING' || st === 'UNDER_PROCESS' || st === 'SUBMITTED_EMBASSY_BSF') return 'UNDER_PROCESS';
+  if (st === 'APPROVED_OFFER_LETTER' || st === 'OFFER_LETTER' || st === 'FLIGHT_BOOKED') return 'OFFER_LETTER';
+  if (st === 'COMPLETED_DELIVERED' || st === 'COMPLETED') return 'COMPLETED';
+  return 'INTAKE';
+};
 
 const ALL_STUDIO_GENERATORS = [
   {
@@ -211,6 +219,7 @@ export function CaseWorkspaceDrawer({ caseId, isOpen, onClose, onRefresh }) {
     file: null,
   });
   const [uploadingDoc, setUploadingDoc] = useState(false);
+  const fileInputRef = useRef(null);
 
   // Task execution
   const [completingTaskId, setCompletingTaskId] = useState(null);
@@ -218,6 +227,7 @@ export function CaseWorkspaceDrawer({ caseId, isOpen, onClose, onRefresh }) {
   // Filter permitted studio generators for currently logged-in staff role
   const userRole = String(user?.role || '').toLowerCase();
   const userSubRole = String(user?.subRole || user?.sub_role || user?.designation || '').toLowerCase();
+  const isAdminOrOwner = ['admin', 'owner', 'superadmin', 'manager'].includes(userRole);
 
   const permittedStudioGenerators = ALL_STUDIO_GENERATORS.filter((gen) => {
     if (['admin', 'owner', 'superadmin', 'manager'].includes(userRole)) return true;
@@ -296,10 +306,14 @@ export function CaseWorkspaceDrawer({ caseId, isOpen, onClose, onRefresh }) {
   if (!isOpen) return null;
 
   const handleStageChange = async (newStatus) => {
+    if (!isAdminOrOwner) {
+      toast.error('Stage progression is restricted to Admin or Owner accounts.');
+      return;
+    }
     try {
       await apiClient.patch(`/api/v1/client/cases/${caseId}/workflow`, {
         status: newStatus,
-        remarks: `Staff moved status to ${newStatus}`,
+        remarks: `${user?.name || 'Admin'} updated status to ${newStatus}`,
       });
       toast.success(`Case stage updated to ${newStatus.replace(/_/g, ' ')}`);
       fetchCaseDetails();
@@ -323,7 +337,7 @@ export function CaseWorkspaceDrawer({ caseId, isOpen, onClose, onRefresh }) {
         matchedDoc = { name: 'Applicant 2x2 Photo', url: clientAttachments.photo };
       } else {
         const found = vaultDocs.find((d) =>
-          /photo|picture|2x2|ছবি|image|portrait/i.test(d.documentName || d.fileName || '')
+          /photo|picture|2x2|image|portrait/i.test(d.documentName || d.fileName || '')
         );
         if (found) {
           isUploaded = true;
@@ -332,7 +346,7 @@ export function CaseWorkspaceDrawer({ caseId, isOpen, onClose, onRefresh }) {
       }
     } else if (key === 'electricityBill') {
       const found = vaultDocs.find((d) =>
-        /electricity|utility|bill|current|বিদ্যুৎ|gas|electric|wasa/i.test(d.documentName || d.fileName || '')
+        /electricity|utility|bill|current|gas|electric|wasa/i.test(d.documentName || d.fileName || '')
       );
       if (found) {
         isUploaded = true;
@@ -351,7 +365,7 @@ export function CaseWorkspaceDrawer({ caseId, isOpen, onClose, onRefresh }) {
         matchedDoc = { name: 'National ID (NID) Scan', url: clientAttachments.nidScan };
       } else {
         const found = vaultDocs.find((d) =>
-          /nid|national\s*id|voter|এনআইডি|পরিচয়পত্র|identity\s*card/i.test(d.documentName || d.fileName || '')
+          /nid|national\s*id|voter|identity\s*card/i.test(d.documentName || d.fileName || '')
         );
         if (found) {
           isUploaded = true;
@@ -360,7 +374,7 @@ export function CaseWorkspaceDrawer({ caseId, isOpen, onClose, onRefresh }) {
       }
     } else if (key === 'landDocuments') {
       const found = vaultDocs.find((d) =>
-        /land|property|দলিল|খতিয়ান|khatian|porcha|deed|jamabandi|mutation|namjari/i.test(d.documentName || d.fileName || '')
+        /land|property|khatian|porcha|deed|jamabandi|mutation|namjari/i.test(d.documentName || d.fileName || '')
       );
       if (found) {
         isUploaded = true;
@@ -435,8 +449,6 @@ export function CaseWorkspaceDrawer({ caseId, isOpen, onClose, onRefresh }) {
       setSendingMsg(false);
     }
   };
-
-  const fileInputRef = useRef(null);
 
   const handleFileChange = (e) => {
     const file = e.target.files?.[0];
@@ -623,9 +635,27 @@ export function CaseWorkspaceDrawer({ caseId, isOpen, onClose, onRefresh }) {
           <div className="px-6 py-3 bg-muted/20 border-b border-border flex flex-wrap items-center justify-between gap-3">
             <div className="flex items-center gap-2">
               <span className="text-xs font-bold text-muted-foreground uppercase">Processing Stage:</span>
-              <span className="px-3 py-1 text-xs font-bold rounded-xl bg-primary/10 text-primary border border-primary/20">
-                {PIPELINE_STAGES.find((st) => st.id === (caseData.status || 'ENTRY'))?.title || caseData.status || 'Processing'}
-              </span>
+              {isAdminOrOwner ? (
+                <select
+                  value={getCanonicalStage(caseData.status)}
+                  onChange={(e) => handleStageChange(e.target.value)}
+                  className="px-2.5 py-1 text-xs font-bold rounded-xl bg-primary/10 text-primary border border-primary/20 outline-hidden cursor-pointer"
+                >
+                  {PIPELINE_STAGES.map((st) => (
+                    <option key={st.id} value={st.id} className="bg-background text-foreground">
+                      {st.title}
+                    </option>
+                  ))}
+                </select>
+              ) : (
+                <span
+                  className="inline-flex items-center gap-1.5 px-3 py-1 text-xs font-bold rounded-xl bg-muted text-muted-foreground border border-border"
+                  title="Stage advancement is restricted to Admin/Owner authority"
+                >
+                  <Lock className="size-3 text-muted-foreground" />
+                  {PIPELINE_STAGES.find((st) => st.id === getCanonicalStage(caseData.status))?.title || caseData.status || '1. File Intake'}
+                </span>
+              )}
             </div>
 
             <div className="flex items-center gap-2 text-xs">

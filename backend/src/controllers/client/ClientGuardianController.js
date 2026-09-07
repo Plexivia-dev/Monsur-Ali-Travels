@@ -1,6 +1,7 @@
 import mongoose from "mongoose";
 import { ClientGuardianModel } from "../../models/clientGuardianApplication.model.js";
 import { syncClientProfile } from "../../helper/clientSyncHelper.js";
+import { checkManagerCanDelete, checkManagerCanUpdate } from "../../helper/managerRbacHelper.js";
 
 // Helper to query client application by either MongoDB _id, did, or applicationNo
 const findApplicationByIdOrDid = async (id, extraQuery = {}) => {
@@ -193,6 +194,10 @@ export class ClientGuardianController {
         });
       }
 
+      if (!checkManagerCanUpdate(req, res, existing, "Client application")) {
+        return;
+      }
+
       const updateData = { ...req.body };
 
       if (updateData.payment) {
@@ -255,6 +260,10 @@ export class ClientGuardianController {
         });
       }
 
+      if (!checkManagerCanUpdate(req, res, existing, "Client application")) {
+        return;
+      }
+
       const newLog = {
         timestamp: new Date(),
         statusChangedTo: status,
@@ -285,6 +294,10 @@ export class ClientGuardianController {
   // DELETE /api/v1/docs/client-guardians/:id
   static async delete(req, res) {
     try {
+      if (!checkManagerCanDelete(req, res, "Client application")) {
+        return;
+      }
+
       const existing = await findApplicationByIdOrDid(req.params.id);
       if (!existing) {
         return res.status(404).json({

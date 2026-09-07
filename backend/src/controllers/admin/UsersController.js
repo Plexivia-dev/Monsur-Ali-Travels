@@ -52,6 +52,8 @@ export const createUser = async (req, res, next) => {
     const phone = (payload.phone || "").trim();
     const role = payload.role || "Staff";
     const subRole = role === "Staff" ? (payload.subRole || "Frontdesk") : undefined;
+    const designation = (payload.designation || "").trim();
+    const department = (payload.department || "").trim();
 
     // If creator is Admin, they cannot create Owner or Admin accounts
     const creatorRole = req.user?.role || null;
@@ -70,6 +72,8 @@ export const createUser = async (req, res, next) => {
       phone,
       role,
       subRole,
+      designation,
+      department,
       passwordHash: await hashPassword(payload.password),
       createdByDid: req.user?.did || null,
     });
@@ -122,6 +126,8 @@ export const updateUser = async (req, res, next) => {
     }
 
     if (payload.phone !== undefined) user.phone = payload.phone.trim();
+    if (payload.designation !== undefined) user.designation = String(payload.designation || '').trim();
+    if (payload.department !== undefined) user.department = String(payload.department || '').trim();
     if (payload.role) user.role = payload.role;
 
     if (user.role === 'Staff') {

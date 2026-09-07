@@ -73,4 +73,19 @@
 
 ---
 
+## 📦 5. Commit, Versioning & Deployment Standards (`@rules:commit`)
+
+1. **Commit Message Format:**
+   - Standard commit messages must strictly follow the pattern: `NC-XXX(type): description`
+   - Example release / bump: `NC-156(release): bump Dashboard to v3.4.08 and fix React hooks crash`
+   - Standard types: `feat`, `fix`, `refactor`, `perf`, `docs`, `chore`, `release`.
+
+2. **Mandatory Task Completion Order:**
+   - **Step 1:** Version Bump — Increment version in relevant `package.json` (`dashboard`, `backend`, etc.).
+   - **Step 2:** Build Verification — Ensure local builds pass cleanly (`npm run build`).
+   - **Step 3:** Git Commit & Push — Stage all changes, commit using `NC-XXX(type): ...`, and push to `origin live`.
+   - **Step 4:** Live VPS Deploy — Trigger remote pull and container restart on VPS (`/opt/monsuralitravels` -> `make deploy`).
+
+---
+
 *Keep this instruction file updated whenever system-wide constraints or core business rules change.*

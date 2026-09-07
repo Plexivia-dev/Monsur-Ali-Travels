@@ -13,20 +13,23 @@ import {
   Activity,
   Share2,
   Phone,
-  Eye
+  Eye,
 } from 'lucide-react';
 import { apiClient } from '../../lib/api-client';
 import { DataTablePagination } from './DataTablePagination';
 import { toast } from 'sonner';
 import { formatToDdMmYyyy, printDocument } from '../../lib/utils';
 import { usePortal } from '../../context/PortalContext';
-import { ClientGuardianPreview, STATUS_OPTIONS, SERVICE_TYPES } from '@/shared/features/document-studio';
+import { ClientGuardianPreview, STATUS_OPTIONS, SERVICE_TYPES, getServiceLabel } from '@/shared/features/document-studio';
 import { ConfirmDeleteDialog } from '@/components/ui/confirm-delete-dialog';
 import { Button } from '@/components/ui/button';
 import { useTranslation } from 'react-i18next';
+import { useAuthStore } from '../../store/useAuthStore';
 
 export function ClientGuardianDataTable({ onEditItem }) {
   const { t, i18n } = useTranslation();
+  const user = useAuthStore((state) => state.user);
+  const isManager = String(user?.role || '').toLowerCase().trim() === 'manager';
   const { switchPortal } = usePortal();
   const [data, setData] = useState([]);
   const [pagination, setPagination] = useState({ page: 1, limit: 10, skip: 0, totalCount: 0, totalPages: 1 });
@@ -369,14 +372,16 @@ export function ClientGuardianDataTable({ onEditItem }) {
                           </button>
 
                           {/* Delete */}
-                          <button
-                            type="button"
-                            onClick={() => setDeleteTarget({ id: item._id, applicationNo: item.applicationNo })}
-                            className="p-1.5 text-muted-foreground hover:text-rose-600 bg-muted/60 hover:bg-rose-500/10 rounded-lg transition-colors cursor-pointer"
-                            title="Delete Record"
-                          >
-                            <Trash2 className="w-4 h-4" />
-                          </button>
+                          {!isManager && (
+                            <button
+                              type="button"
+                              onClick={() => setDeleteTarget({ id: item._id, applicationNo: item.applicationNo })}
+                              className="p-1.5 text-muted-foreground hover:text-rose-600 bg-muted/60 hover:bg-rose-500/10 rounded-lg transition-colors cursor-pointer"
+                              title="Delete Record"
+                            >
+                              <Trash2 className="w-4 h-4" />
+                            </button>
+                          )}
                         </div>
                       </td>
                     </tr>

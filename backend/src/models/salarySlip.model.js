@@ -114,6 +114,8 @@ const salarySlipSchema = new mongoose.Schema(
     authorizedSignatory: { type: String, default: "Managing Director" },
     remarks: { type: String, default: "" },
     isActive: { type: Boolean, default: true },
+    createdByDid: { type: String, default: null },
+    createdByName: { type: String, default: "" },
   },
   {
     timestamps: true,

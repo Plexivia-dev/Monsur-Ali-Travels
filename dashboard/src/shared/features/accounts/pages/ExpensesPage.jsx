@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { Link } from 'react-router-dom';
 import {
   Wallet,
   Receipt,
@@ -8,6 +9,8 @@ import {
   Clock,
   XCircle,
   FileSpreadsheet,
+  ArrowRight,
+  Plus,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { UnifiedDataTable } from '../../../components/tables/UnifiedDataTable';
@@ -202,6 +205,35 @@ export function ExpensesPage() {
             <Download className={`w-3.5 h-3.5 ${isExporting ? 'animate-bounce' : ''}`} />
             {isExporting ? 'Exporting...' : 'Export Expenses CSV'}
           </Button>
+        </div>
+      </div>
+
+      {/* Operational Unified Expense Notice & Action */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-4 rounded-2xl bg-black/[0.02] border border-black/10">
+        <div className="text-xs text-black/70 space-y-0.5">
+          <p className="font-bold text-black text-xs flex items-center gap-1.5">
+            <Receipt className="w-3.5 h-3.5 text-black" />
+            <span>Dual Operational Expense Architecture</span>
+          </p>
+          <p className="text-[11px] text-black/60">
+            Petty cash receipts and office voucher claims are listed here. For comprehensive company operational bills (rent, utility, vendor payables), manage and settle them in <strong>Bills &amp; Expenditures</strong>.
+          </p>
+        </div>
+        <div className="flex items-center gap-2 shrink-0">
+          <Link
+            to="/admin/accounts/bills"
+            className="inline-flex items-center gap-1 px-3 py-1.5 bg-black hover:bg-black/85 text-white rounded-xl text-xs font-bold transition cursor-pointer"
+          >
+            <span>Manage Company Bills</span>
+            <ArrowRight className="w-3 h-3" />
+          </Link>
+          <Link
+            to="/admin/docs/cash-voucher"
+            className="inline-flex items-center gap-1 px-3 py-1.5 bg-white border border-black/15 text-black hover:bg-black/5 rounded-xl text-xs font-bold transition cursor-pointer"
+          >
+            <Plus className="w-3 h-3" />
+            <span>New Cash Voucher</span>
+          </Link>
         </div>
       </div>
 

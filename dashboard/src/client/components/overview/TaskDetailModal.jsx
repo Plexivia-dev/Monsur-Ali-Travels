@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   X,
@@ -13,9 +13,7 @@ import {
   FileCheck2,
   UploadCloud,
   Loader2,
-  Plus,
   Trash2,
-  ExternalLink,
   Save,
   Sparkles,
   FileSignature,
@@ -23,18 +21,19 @@ import {
   Stamp,
   BookOpen,
   Receipt,
-  Layers,
   ChevronRight,
   CreditCard,
-  DollarSign,
+  Printer,
 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { apiClient } from '../../lib/api-client';
 import { usePortalStore } from '../../store/usePortalStore';
 import { toast } from 'sonner';
 import { FileViewerModal } from '@shared/components/common/FileViewerModal';
+import { MoneyReceiptModal } from '../docs/receipt/MoneyReceiptModal';
+import { InvoiceGenerateModal } from '../docs/invoice/InvoiceGenerateModal';
+import { printDocument } from '@shared/lib/utils';
 
 const DOCUMENT_NAME_PRESETS = [
   'National ID (NID Front & Back)',
@@ -153,6 +152,16 @@ export function TaskDetailModal({
   const [generateMoneyReceipt, setGenerateMoneyReceipt] = useState(true);
   const [isSubmittingDone, setIsSubmittingDone] = useState(false);
   const [isSavingProgress, setIsSavingProgress] = useState(false);
+
+  // In-Task Direct Receipt & Invoice Modal States
+  const [isReceiptModalOpen, setIsReceiptModalOpen] = useState(false);
+  const [isInvoiceModalOpen, setIsInvoiceModalOpen] = useState(false);
+  const [linkedReceipt, setLinkedReceipt] = useState(
+    task?.moneyReceiptNumber ? { receiptNo: task.moneyReceiptNumber, did: task.moneyReceiptDid } : null
+  );
+  const [linkedInvoice, setLinkedInvoice] = useState(
+    task?.invoiceNumber ? { invoiceNo: task.invoiceNumber, did: task.invoiceDid } : null
+  );
 
   // Compute strictly the assigned forms / sub-types for this task
   const assignedFormOptions = useMemo(() => {
@@ -313,23 +322,23 @@ export function TaskDetailModal({
     ];
 
     if (/photo|2x2|picture/i.test(titleLower)) {
-      const photoDoc = vault.find((d) => /photo|picture|2x2|ছবি|image|portrait/i.test(d.documentName || d.fileName || ''));
+      const photoDoc = vault.find((d) => /photo|picture|2x2|image|portrait/i.test(d.documentName || d.fileName || ''));
       if (photoDoc) return photoDoc;
     }
     if (/electricity|utility|bill/i.test(titleLower)) {
-      const billDoc = vault.find((d) => /electricity|utility|bill|current|বিদ্যুৎ|gas|wasa/i.test(d.documentName || d.fileName || ''));
+      const billDoc = vault.find((d) => /electricity|utility|bill|current|gas|wasa/i.test(d.documentName || d.fileName || ''));
       if (billDoc) return billDoc;
     }
     if (/nid|national\s*id/i.test(titleLower)) {
-      const nidDoc = vault.find((d) => /nid|national\s*id|voter|এনআইডি|পরিচয়পত্র/i.test(d.documentName || d.fileName || ''));
+      const nidDoc = vault.find((d) => /nid|national\s*id|voter/i.test(d.documentName || d.fileName || ''));
       if (nidDoc) return nidDoc;
     }
     if (/passport/i.test(titleLower)) {
-      const passDoc = vault.find((d) => /passport|bio-page|পাসপোর্ট/i.test(d.documentName || d.fileName || ''));
+      const passDoc = vault.find((d) => /passport|bio-page/i.test(d.documentName || d.fileName || ''));
       if (passDoc) return passDoc;
     }
     if (/agreement|contract/i.test(titleLower)) {
-      const agrDoc = vault.find((d) => /agreement|contract|চুক্তি/i.test(d.documentName || d.fileName || ''));
+      const agrDoc = vault.find((d) => /agreement|contract/i.test(d.documentName || d.fileName || ''));
       if (agrDoc) return agrDoc;
     }
 
@@ -339,14 +348,33 @@ export function TaskDetailModal({
     }) || null;
   }, [uploadedDocsList, task, caseVaultDocs]);
 
-  // Sync state if task changes
-  useEffect(() => {
+  // Sync state if task changes (React pattern: adjust state during render on prop change)
+  const taskId = task?.did || task?._id || null;
+  const [prevTaskId, setPrevTaskId] = useState(taskId);
+
+  if (taskId !== prevTaskId) {
+    setPrevTaskId(taskId);
     if (task) {
       setCompletionNotes(task.completionNotes || '');
-      if (task.requiresDocument === false) {
+      if (task.requiresPayment) {
+        setActiveTab('payment');
+      } else if (task.requiresDocument === false) {
         setActiveTab('notes');
       } else {
         setActiveTab('upload');
+      }
+
+      setPaymentCollected(task.paymentCollectedAmount || task.paymentAmount || '');
+      setPaymentMethod(task.paymentMethod || 'Cash');
+      if (task.moneyReceiptNumber) {
+        setLinkedReceipt({ receiptNo: task.moneyReceiptNumber, did: task.moneyReceiptDid });
+      } else {
+        setLinkedReceipt(null);
+      }
+      if (task.invoiceNumber) {
+        setLinkedInvoice({ invoiceNo: task.invoiceNumber, did: task.invoiceDid });
+      } else {
+        setLinkedInvoice(null);
       }
 
       if (task.taskTypeNames && Array.isArray(task.taskTypeNames) && task.taskTypeNames.length > 0) {
@@ -376,9 +404,13 @@ export function TaskDetailModal({
             accessLevel: 'Restricted',
           }))
         );
+      } else {
+        setUploadRows([
+          { id: 'row-1', title: '', file: null, accessLevel: 'Restricted' },
+        ]);
       }
     }
-  }, [task, assignedFormOptions]);
+  }
 
   // File Preview Modal State (View only, no download)
   const [viewingFile, setViewingFile] = useState(null);
@@ -386,35 +418,24 @@ export function TaskDetailModal({
   if (!isOpen || !task) return null;
 
   const permittedDocs = [...(task.permittedDocs || []), ...uploadedDocsList];
-  const isCompleted = task.status === 'Done' || task.status === 'Approved';
+  const isCompleted =
+    task.status === 'Done' ||
+    task.status === 'Completed' ||
+    task.status === 'Approved' ||
+    Boolean(task.completedAt);
 
   const statusVariant = {
     Pending: 'pending',
     In_Progress: 'in_progress',
     'In Progress': 'in_progress',
     Done: 'done',
+    Completed: 'done',
     Approved: 'approved',
     Rejected: 'rejected',
   }[task.status] || 'default';
 
-  // Multi-row management
-  const handleAddRow = () => {
-    const newId = `row-${Date.now()}-${Math.random().toString(36).substring(2, 5)}`;
-    setUploadRows((prev) => [
-      ...prev,
-      { id: newId, title: '', file: null, accessLevel: 'Restricted' },
-    ]);
-  };
-
-  const handleRemoveRow = (id) => {
-    if (uploadRows.length <= 1) {
-      setUploadRows([{ id: 'row-1', title: '', file: null, accessLevel: 'Restricted' }]);
-      return;
-    }
-    setUploadRows((prev) => prev.filter((r) => r.id !== id));
-  };
-
   const handleUpdateRow = (id, field, value) => {
+    if (isCompleted) return;
     setUploadRows((prev) =>
       prev.map((r) => {
         if (r.id !== id) return r;
@@ -430,6 +451,10 @@ export function TaskDetailModal({
 
   // Batch Upload All Rows with files
   const handleBatchUpload = async () => {
+    if (isCompleted) {
+      toast.info('This task is already completed. No further uploads allowed.');
+      return;
+    }
     const validRows = uploadRows.filter((r) => r.file && r.title.trim());
     if (validRows.length === 0) {
       toast.error('Please select at least one file and document title to upload.');
@@ -505,6 +530,10 @@ export function TaskDetailModal({
 
   // Save Progress / Notes (Without completing the task)
   const handleSaveProgress = async () => {
+    if (isCompleted) {
+      toast.info('This task is already completed and cannot be edited.');
+      return;
+    }
     setIsSavingProgress(true);
     try {
       if (task.did || task._id) {
@@ -515,7 +544,7 @@ export function TaskDetailModal({
       }
       toast.success('Task progress & notes saved successfully.');
       if (onRefreshTasks) onRefreshTasks();
-    } catch (err) {
+    } catch (_err) {
       // If direct patch endpoint is not exposed, fallback gracefully
       toast.success('Progress saved locally.');
     } finally {
@@ -525,6 +554,10 @@ export function TaskDetailModal({
 
   // Separate explicit action: Mark Task as Completed
   const handleMarkAsDone = async () => {
+    if (isCompleted) {
+      toast.info('This task is already completed and cannot be resubmitted.');
+      return;
+    }
     const isDocTask = task.requiresDocument !== false && assignedFormOptions.length > 0;
 
     // 1. Work Notes Validation (Mandatory ONLY for tasks without file uploads):
@@ -631,7 +664,11 @@ export function TaskDetailModal({
         paymentCollectedAmount: collectedNum,
         paymentMethod,
         paymentSlipUrl: uploadedSlipUrl,
-        generateMoneyReceipt,
+        generateMoneyReceipt: !linkedReceipt && generateMoneyReceipt,
+        moneyReceiptNumber: linkedReceipt?.receiptNo || task.moneyReceiptNumber || '',
+        moneyReceiptDid: linkedReceipt?.did || task.moneyReceiptDid || '',
+        invoiceNumber: linkedInvoice?.invoiceNo || task.invoiceNumber || '',
+        invoiceDid: linkedInvoice?.did || task.invoiceDid || '',
       });
 
       toast.success(`Task "${task.title}" marked as Completed!`);
@@ -651,17 +688,21 @@ export function TaskDetailModal({
     const caseRef = task?.caseDid || task?.caseId || task?.caseDetails?.did || task?.caseDetails?._id || '';
     const clientRef = task?.clientDid || task?.clientId || task?.clientInfo?.did || task?.clientInfo?._id || '';
     const caseNum = task?.caseNumber || task?.caseDetails?.caseNumber || '';
+    const targetAmt = paymentCollected || task?.paymentAmount || task?.paymentCollectedAmount || '';
 
     const queryParams = new URLSearchParams();
     if (caseRef) queryParams.set('caseDid', caseRef);
     if (clientRef) queryParams.set('clientDid', clientRef);
     if (caseNum) queryParams.set('caseNumber', caseNum);
+    if (task?.did || task?._id) queryParams.set('taskId', task?.did || task?._id);
+    if (targetAmt) queryParams.set('amount', String(targetAmt));
+    queryParams.set('isLocked', 'true');
     queryParams.set('returnUrl', '/dashboard/overview/tasks');
 
     const searchStr = queryParams.toString() ? `?${queryParams.toString()}` : '';
     switchPortal('docs', generatorId);
     navigate(`/dashboard/docs/${generatorId}${searchStr}`);
-    toast.info(`Opened ${generatorId} with prefilled client particulars.`);
+    toast.info(`Opened ${generatorId} with prefilled client particulars & amount.`);
   };
 
   return (
@@ -694,7 +735,7 @@ export function TaskDetailModal({
                 {task.requiresPayment && (
                   <span className="text-[10px] font-bold px-2 py-0.5 rounded-full border bg-emerald-500/10 text-emerald-600 border-emerald-500/20 flex items-center gap-1">
                     <CreditCard className="w-3 h-3" />
-                    Payment: ৳{Number(task.paymentAmount || 0).toLocaleString()}
+                    Payment: BDT {Number(task.paymentAmount || 0).toLocaleString()}
                   </span>
                 )}
 
@@ -760,6 +801,24 @@ export function TaskDetailModal({
           {/* 2. Scrollable Body Container (Guaranteed within 90vh) */}
           <div className="flex-1 min-h-0 overflow-y-auto p-4 sm:p-5 space-y-5">
             
+            {/* Completed Task Banner Notice */}
+            {isCompleted && (
+              <div className="p-3.5 bg-emerald-500/10 border border-emerald-500/30 rounded-2xl flex items-center justify-between gap-3 text-xs text-emerald-950 animate-in fade-in">
+                <div className="flex items-center gap-2.5 min-w-0">
+                  <div className="p-2 rounded-xl bg-emerald-600 text-white shrink-0">
+                    <CheckCircle2 className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <h4 className="font-bold text-xs">Task Step Completed &amp; Locked</h4>
+                    <p className="text-[11px] text-emerald-800">
+                      This task has already been completed and submitted. All attached records are locked and cannot be resubmitted.
+                    </p>
+                  </div>
+                </div>
+                <Badge className="bg-emerald-600 text-white font-bold text-xs shrink-0">Completed ✓</Badge>
+              </div>
+            )}
+
             {/* Payment & Invoice Overview Banner (if payment required) */}
             {(task.requiresPayment || task.paymentAmount > 0) && (
               <div className="p-3.5 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 text-xs space-y-2">
@@ -769,7 +828,7 @@ export function TaskDetailModal({
                     Payment Collection Requirement
                   </span>
                   <span className="font-mono font-bold text-base text-emerald-600">
-                    ৳ {Number(task.paymentAmount || 0).toLocaleString()} {task.paymentCurrency || 'BDT'}
+                    BDT {Number(task.paymentAmount || 0).toLocaleString()} {task.paymentCurrency || 'BDT'}
                   </span>
                 </div>
                 <div className="flex items-center justify-between text-[11px] text-muted-foreground pt-1 border-t border-emerald-500/20 flex-wrap gap-2">
@@ -819,7 +878,7 @@ export function TaskDetailModal({
                 }`}
               >
                 <UploadCloud className="w-4 h-4 text-primary" />
-                <span>Upload Documents</span>
+                <span>{isCompleted ? 'Attached Documents' : 'Upload Documents'}</span>
               </button>
 
               {(task.requiresPayment || task.paymentAmount > 0) && (
@@ -828,7 +887,7 @@ export function TaskDetailModal({
                   onClick={() => setActiveTab('payment')}
                   className={`flex-1 py-1.5 px-3 rounded-lg font-bold flex items-center justify-center gap-1.5 transition-all cursor-pointer ${
                     activeTab === 'payment'
-                      ? 'bg-card text-emerald-600 dark:text-emerald-400 shadow-xs'
+                      ? 'bg-card text-emerald-600 shadow-xs'
                       : 'text-muted-foreground hover:text-foreground'
                   }`}
                 >
@@ -871,13 +930,27 @@ export function TaskDetailModal({
                   <div>
                     <h4 className="text-xs font-bold text-foreground flex items-center gap-1.5 uppercase tracking-wider">
                       <UploadCloud className="w-4 h-4 text-primary" />
-                      Assigned Document Intake
+                      {isCompleted ? 'Submitted Task Documents' : 'Assigned Document Intake'}
                     </h4>
                     <p className="text-[11px] text-muted-foreground mt-0.5">
-                      Upload the required documents for this task step directly into Case Vault.
+                      {isCompleted
+                        ? 'All verified and registered documents attached to this completed step.'
+                        : 'Upload the required documents for this task step directly into Case Vault.'}
                     </p>
                   </div>
+                  {isCompleted && (
+                    <span className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-emerald-500/15 text-emerald-800 border border-emerald-500/30">
+                      Read-Only (Completed)
+                    </span>
+                  )}
                 </div>
+
+                {!isCompleted && uploadRows.every((r) => findAlreadyUploadedDoc(r.title)) && (
+                  <div className="p-3 bg-emerald-500/10 border border-emerald-500/25 rounded-xl text-xs text-emerald-900 flex items-center gap-2">
+                    <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+                    <span>All assigned required documents are already present in Case Vault. You do not need to re-upload them.</span>
+                  </div>
+                )}
 
                 {/* Rows List */}
                 <div className="space-y-2.5 pt-1">
@@ -949,6 +1022,10 @@ export function TaskDetailModal({
                               </Button>
                             )}
                           </div>
+                        ) : isCompleted ? (
+                          <div className="flex-1 min-w-[180px] p-2 text-muted-foreground text-center italic text-xs">
+                            Not attached prior to completion
+                          </div>
                         ) : (
                           <>
                             {/* File Selector */}
@@ -1000,31 +1077,33 @@ export function TaskDetailModal({
                 </div>
 
                 {/* Batch Upload Action */}
-                <div className="flex items-center justify-between pt-2 border-t border-border/80">
-                  <span className="text-[11px] text-muted-foreground">
-                    Ready to upload: {uploadRows.filter((r) => r.file && r.title.trim()).length} file(s)
-                  </span>
+                {!isCompleted && (
+                  <div className="flex items-center justify-between pt-2 border-t border-border/80">
+                    <span className="text-[11px] text-muted-foreground">
+                      Ready to upload: {uploadRows.filter((r) => r.file && r.title.trim()).length} file(s)
+                    </span>
 
-                  <Button
-                    type="button"
-                    size="sm"
-                    onClick={handleBatchUpload}
-                    disabled={isBatchUploading || uploadRows.every((r) => !r.file)}
-                    className="h-8 px-4 text-xs font-bold bg-primary text-primary-foreground hover:bg-primary/90 flex items-center gap-1.5 shadow-xs cursor-pointer"
-                  >
-                    {isBatchUploading ? (
-                      <>
-                        <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                        Uploading to Vault...
-                      </>
-                    ) : (
-                      <>
-                        <UploadCloud className="w-3.5 h-3.5" />
-                        Upload All to Case Vault
-                      </>
-                    )}
-                  </Button>
-                </div>
+                    <Button
+                      type="button"
+                      size="sm"
+                      onClick={handleBatchUpload}
+                      disabled={isBatchUploading || uploadRows.every((r) => !r.file)}
+                      className="h-8 px-4 text-xs font-bold bg-primary text-primary-foreground hover:bg-primary/90 flex items-center gap-1.5 shadow-xs cursor-pointer"
+                    >
+                      {isBatchUploading ? (
+                        <>
+                          <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                          Uploading to Vault...
+                        </>
+                      ) : (
+                        <>
+                          <UploadCloud className="w-3.5 h-3.5" />
+                          Upload All to Case Vault
+                        </>
+                      )}
+                    </Button>
+                  </div>
+                )}
               </div>
             )}
 
@@ -1035,124 +1114,256 @@ export function TaskDetailModal({
                   <div>
                     <h4 className="text-xs font-bold text-emerald-700 flex items-center gap-1.5 uppercase tracking-wider">
                       <CreditCard className="w-4 h-4 text-emerald-600" />
-                      Client Payment Intake & Money Receipt / Pay Slip
+                      Client Payment Intake &amp; Money Receipt / Pay Slip
                     </h4>
                     <p className="text-[11px] text-muted-foreground mt-0.5">
-                      Record collected payment and automatically generate official Money Receipt / Pay Slip for this step.
+                      {isCompleted
+                        ? 'Recorded payment details and issued Money Receipt for this completed step.'
+                        : 'Record collected payment, attach physical slip, or directly generate official Money Receipt or Invoice.'}
                     </p>
                   </div>
-                </div>
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
-                  <div>
-                    <label className="block font-semibold text-foreground mb-1 text-xs">
-                      Amount Collected (৳ BDT) *
-                    </label>
-                    <input
-                      type="number"
-                      min="0"
-                      step="1"
-                      placeholder="e.g. 50000"
-                      value={paymentCollected}
-                      onChange={(e) => setPaymentCollected(e.target.value)}
-                      className="w-full px-3 py-2 bg-card border border-emerald-500/40 rounded-xl text-foreground font-bold focus:outline-none focus:border-emerald-500 text-xs"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block font-semibold text-foreground mb-1 text-xs">
-                      Payment Method
-                    </label>
-                    <select
-                      value={paymentMethod}
-                      onChange={(e) => setPaymentMethod(e.target.value)}
-                      className="w-full px-3 py-2 bg-card border border-border rounded-xl text-foreground focus:outline-none focus:border-primary text-xs cursor-pointer"
-                    >
-                      <option value="Cash">Cash Payment</option>
-                      <option value="Bank Transfer">Bank Transfer (Deposit / EFT / RTGS)</option>
-                      <option value="bKash">bKash Mobile Banking</option>
-                      <option value="Nagad">Nagad Mobile Banking</option>
-                      <option value="Cheque">Cheque Payment</option>
-                    </select>
-                  </div>
-                </div>
-
-                <div className="space-y-2 pt-1 border-t border-border/80">
-                  <label className="flex items-center gap-2 text-foreground font-medium text-xs cursor-pointer">
-                    <input
-                      type="checkbox"
-                      checked={generateMoneyReceipt}
-                      onChange={(e) => setGenerateMoneyReceipt(e.target.checked)}
-                      className="rounded border-border text-emerald-600 h-3.5 w-3.5 accent-emerald-600 cursor-pointer"
-                    />
-                    <span className="flex items-center gap-1.5">
-                      <Receipt className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
-                      Auto-issue official <strong>Money Receipt / Pay Slip (MA#####)</strong> on marking this step Completed
+                  {isCompleted ? (
+                    <span className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-emerald-500/15 text-emerald-800 border border-emerald-500/30">
+                      Paid &amp; Recorded ✓
                     </span>
-                  </label>
+                  ) : task.paymentAmount > 0 ? (
+                    <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-md bg-emerald-600 text-white shadow-2xs">
+                      Target: BDT {Number(task.paymentAmount).toLocaleString()}
+                    </span>
+                  ) : null}
+                </div>
 
-                  {!generateMoneyReceipt && (
-                    <div className="p-3 bg-card border border-amber-500/30 rounded-xl space-y-2 animate-in fade-in">
-                      <div className="flex items-center justify-between">
-                        <label className="block text-[11px] font-bold text-amber-800 uppercase tracking-wider">
-                          Attach Physical Payment Receipt / Bank Deposit Slip *
-                        </label>
-                        <span className="text-[10px] text-muted-foreground">Required if not auto-issuing</span>
-                      </div>
-                      <input
-                        type="file"
-                        id="manual-slip-input"
-                        onChange={(e) => {
-                          const file = e.target.files?.[0];
-                          if (file) setManualSlipFile(file);
-                        }}
-                        accept=".pdf,.png,.jpg,.jpeg,.webp"
-                        className="hidden"
-                      />
-                      <label
-                        htmlFor="manual-slip-input"
-                        className={`w-full h-11 border border-dashed rounded-lg px-3 flex items-center justify-center gap-2 cursor-pointer transition-colors text-xs text-center ${
-                          manualSlipFile
-                            ? 'border-emerald-500/50 bg-emerald-500/5 text-emerald-700 font-semibold'
-                            : 'border-border hover:border-amber-500 bg-muted/20 text-muted-foreground hover:text-foreground'
-                        }`}
-                      >
-                        {manualSlipFile ? (
-                          <span className="truncate max-w-[240px]">
-                            ✓ {manualSlipFile.name} ({((manualSlipFile.size) / (1024 * 1024)).toFixed(2)} MB)
-                          </span>
-                        ) : (
-                          <span className="text-[11px] font-medium">📎 Attach Scanned Pay Slip / Voucher File</span>
-                        )}
-                      </label>
+                {/* If already completed, show read-only payment summary */}
+                {isCompleted ? (
+                  <div className="p-3.5 bg-card border border-emerald-500/20 rounded-xl space-y-2 text-xs">
+                    <div className="flex items-center justify-between">
+                      <span className="font-bold text-muted-foreground">Collected Amount:</span>
+                      <span className="font-mono font-bold text-emerald-700 text-sm">
+                        BDT {Number(task.paymentCollectedAmount || task.paymentAmount || paymentCollected || 0).toLocaleString()} BDT
+                      </span>
                     </div>
-                  )}
-                </div>
+                    <div className="flex items-center justify-between">
+                      <span className="font-bold text-muted-foreground">Payment Method:</span>
+                      <span className="font-semibold text-foreground">{task.paymentMethod || paymentMethod || 'Cash'}</span>
+                    </div>
+                    {task.moneyReceiptNumber && (
+                      <div className="flex items-center justify-between">
+                        <span className="font-bold text-muted-foreground">Money Receipt:</span>
+                        <div className="flex items-center gap-2">
+                          <span className="font-mono font-bold text-emerald-600">#{task.moneyReceiptNumber}</span>
+                          <Button
+                            type="button"
+                            size="sm"
+                            variant="outline"
+                            onClick={() => printDocument({ docId: task.moneyReceiptNumber, docType: 'Money_Receipt', clientName: task.applicantName || 'Client' })}
+                            className="h-6 px-2 text-[10px] font-bold border-emerald-500/40 text-emerald-800 hover:bg-emerald-500/20 flex items-center gap-1 cursor-pointer"
+                          >
+                            <Printer className="w-3 h-3" />
+                            <span>Print Slip</span>
+                          </Button>
+                        </div>
+                      </div>
+                    )}
+                    {task.invoiceNumber && (
+                      <div className="flex items-center justify-between">
+                        <span className="font-bold text-muted-foreground">Client Invoice:</span>
+                        <div className="flex items-center gap-2">
+                          <span className="font-mono font-bold text-indigo-600">#{task.invoiceNumber}</span>
+                          <Button
+                            type="button"
+                            size="sm"
+                            variant="outline"
+                            onClick={() => printDocument({ docId: task.invoiceNumber, docType: 'Invoice', clientName: task.applicantName || 'Client', elementId: 'printable-invoice-canvas' })}
+                            className="h-6 px-2 text-[10px] font-bold border-indigo-500/40 text-indigo-800 hover:bg-indigo-500/20 flex items-center gap-1 cursor-pointer"
+                          >
+                            <Printer className="w-3 h-3" />
+                            <span>Print Invoice</span>
+                          </Button>
+                        </div>
+                      </div>
+                    )}
+                    {task.paymentSlipUrl && (
+                      <div className="flex items-center justify-between pt-1 border-t border-border/60">
+                        <span className="font-bold text-muted-foreground">Attached Physical Slip:</span>
+                        <a
+                          href={task.paymentSlipUrl}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="font-bold text-primary hover:underline text-xs flex items-center gap-1"
+                        >
+                          View Uploaded Slip ↗
+                        </a>
+                      </div>
+                    )}
+                  </div>
+                ) : (
+                  <>
+                    {/* Linked Receipts or Invoices Status Banners */}
+                    {linkedReceipt && (
+                      <div className="p-3 bg-emerald-500/10 border border-emerald-500/30 rounded-xl flex items-center justify-between animate-in fade-in">
+                        <div className="flex items-center gap-2 min-w-0">
+                          <Receipt className="w-4 h-4 text-emerald-600 shrink-0" />
+                          <div className="truncate">
+                            <p className="text-xs font-bold text-emerald-950">Official Money Receipt Linked ✓</p>
+                            <p className="text-[11px] font-mono text-emerald-700">Receipt #{linkedReceipt.receiptNo}</p>
+                          </div>
+                        </div>
+                        <Button
+                          type="button"
+                          size="sm"
+                          variant="outline"
+                          onClick={() => printDocument({ docId: linkedReceipt.receiptNo, docType: 'Money_Receipt', clientName: task.applicantName || 'Client' })}
+                          className="h-7 px-2.5 text-xs font-bold border-emerald-500/40 text-emerald-800 hover:bg-emerald-500/20 flex items-center gap-1 cursor-pointer shrink-0"
+                        >
+                          <Printer className="w-3.5 h-3.5" />
+                          <span>Print Pay Slip</span>
+                        </Button>
+                      </div>
+                    )}
 
-                {/* Direct Studio Launch Buttons */}
-                <div className="pt-2 flex flex-wrap gap-2 border-t border-border/80">
-                  <Button
-                    type="button"
-                    size="sm"
-                    variant="outline"
-                    onClick={() => handleLaunchGenerator('money-receipt')}
-                    className="h-8 text-xs px-3 font-semibold border-emerald-500/30 hover:bg-emerald-500/10 text-emerald-700 flex items-center gap-1.5 cursor-pointer"
-                  >
-                    <Receipt className="w-3.5 h-3.5 text-emerald-600" />
-                    <span>Open Money Receipt Studio</span>
-                  </Button>
+                    {linkedInvoice && (
+                      <div className="p-3 bg-indigo-500/10 border border-indigo-500/30 rounded-xl flex items-center justify-between animate-in fade-in">
+                        <div className="flex items-center gap-2 min-w-0">
+                          <FileText className="w-4 h-4 text-indigo-600 shrink-0" />
+                          <div className="truncate">
+                            <p className="text-xs font-bold text-indigo-950">Official Client Invoice Linked ✓</p>
+                            <p className="text-[11px] font-mono text-indigo-700">Invoice #{linkedInvoice.invoiceNo}</p>
+                          </div>
+                        </div>
+                        <Button
+                          type="button"
+                          size="sm"
+                          variant="outline"
+                          onClick={() => printDocument({ docId: linkedInvoice.invoiceNo, docType: 'Invoice', clientName: task.applicantName || 'Client', elementId: 'printable-invoice-canvas' })}
+                          className="h-7 px-2.5 text-xs font-bold border-indigo-500/40 text-indigo-800 hover:bg-indigo-500/20 flex items-center gap-1 cursor-pointer shrink-0"
+                        >
+                          <Printer className="w-3.5 h-3.5" />
+                          <span>Print Invoice</span>
+                        </Button>
+                      </div>
+                    )}
 
-                  <Button
-                    type="button"
-                    size="sm"
-                    variant="outline"
-                    onClick={() => handleLaunchGenerator('invoice')}
-                    className="h-8 text-xs px-3 font-semibold border-indigo-500/30 hover:bg-indigo-500/10 text-indigo-700 flex items-center gap-1.5 cursor-pointer"
-                  >
-                    <FileText className="w-3.5 h-3.5 text-indigo-600" />
-                    <span>Open Client Invoice Studio</span>
-                  </Button>
-                </div>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
+                      <div>
+                        <div className="flex items-center justify-between mb-1">
+                          <label className="font-semibold text-foreground text-xs">
+                            Amount Collected (BDT) *
+                          </label>
+                          {task.paymentAmount > 0 && (
+                            <span className="text-[10px] text-muted-foreground">
+                              Target: <strong>BDT {Number(task.paymentAmount).toLocaleString()}</strong>
+                            </span>
+                          )}
+                        </div>
+                        <input
+                          type="number"
+                          min="0"
+                          step="1"
+                          placeholder="e.g. 50000"
+                          value={paymentCollected}
+                          onChange={(e) => setPaymentCollected(e.target.value)}
+                          className="w-full px-3 py-2 bg-card border border-emerald-500/40 rounded-xl text-foreground font-bold focus:outline-none focus:border-emerald-500 text-xs"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block font-semibold text-foreground mb-1 text-xs">
+                          Payment Method
+                        </label>
+                        <select
+                          value={paymentMethod}
+                          onChange={(e) => setPaymentMethod(e.target.value)}
+                          className="w-full px-3 py-2 bg-card border border-border rounded-xl text-foreground focus:outline-none focus:border-primary text-xs cursor-pointer font-medium"
+                        >
+                          <option value="Cash">Cash Payment</option>
+                          <option value="Bank Transfer">Bank Transfer (Deposit / EFT / RTGS)</option>
+                          <option value="bKash">bKash Mobile Banking</option>
+                          <option value="Nagad">Nagad Mobile Banking</option>
+                          <option value="Cheque">Cheque Payment</option>
+                        </select>
+                      </div>
+                    </div>
+
+                    {/* 1-Click Direct Generation Buttons */}
+                    <div className="p-3 bg-card border border-border rounded-xl space-y-2">
+                      <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground block">
+                        Direct In-Task Generation Actions
+                      </span>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                        <Button
+                          type="button"
+                          size="sm"
+                          onClick={() => setIsReceiptModalOpen(true)}
+                          className="h-9 px-3 text-xs font-bold bg-emerald-600 hover:bg-emerald-700 text-white flex items-center justify-center gap-1.5 cursor-pointer shadow-xs"
+                        >
+                          <Receipt className="w-3.5 h-3.5" />
+                          <span>{linkedReceipt ? 'Re-issue / Edit Pay Slip' : 'Issue Pay Slip / Money Receipt'}</span>
+                        </Button>
+
+                        <Button
+                          type="button"
+                          size="sm"
+                          onClick={() => setIsInvoiceModalOpen(true)}
+                          className="h-9 px-3 text-xs font-bold bg-indigo-600 hover:bg-indigo-700 text-white flex items-center justify-center gap-1.5 cursor-pointer shadow-xs"
+                        >
+                          <FileText className="w-3.5 h-3.5" />
+                          <span>{linkedInvoice ? 'Re-issue / Edit Invoice' : 'Generate Client Invoice'}</span>
+                        </Button>
+                      </div>
+                    </div>
+
+                    <div className="space-y-2 pt-1 border-t border-border/80">
+                      <label className="flex items-center gap-2 text-foreground font-medium text-xs cursor-pointer">
+                        <input
+                          type="checkbox"
+                          checked={generateMoneyReceipt}
+                          onChange={(e) => setGenerateMoneyReceipt(e.target.checked)}
+                          className="rounded border-border text-emerald-600 h-3.5 w-3.5 accent-emerald-600 cursor-pointer"
+                        />
+                        <span className="flex items-center gap-1.5">
+                          <Receipt className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+                          Auto-issue official <strong>Money Receipt / Pay Slip (MA#####)</strong> on completing task
+                        </span>
+                      </label>
+
+                      {/* Manual Slip Attachment */}
+                      <div className="p-3 bg-card border border-border rounded-xl space-y-2">
+                        <div className="flex items-center justify-between">
+                          <label className="block text-[11px] font-bold text-foreground uppercase tracking-wider">
+                            Attach Physical Bank Deposit Slip / Voucher Photo
+                          </label>
+                          <span className="text-[10px] text-muted-foreground">Optional file proof</span>
+                        </div>
+                        <input
+                          type="file"
+                          id="manual-slip-input"
+                          onChange={(e) => {
+                            const file = e.target.files?.[0];
+                            if (file) setManualSlipFile(file);
+                          }}
+                          accept=".pdf,.png,.jpg,.jpeg,.webp"
+                          className="hidden"
+                        />
+                        <label
+                          htmlFor="manual-slip-input"
+                          className={`w-full h-10 border border-dashed rounded-lg px-3 flex items-center justify-center gap-2 cursor-pointer transition-colors text-xs text-center ${
+                            manualSlipFile
+                              ? 'border-emerald-500/50 bg-emerald-500/5 text-emerald-700 font-semibold'
+                              : 'border-border hover:border-emerald-500 bg-muted/20 text-muted-foreground hover:text-foreground'
+                          }`}
+                        >
+                          {manualSlipFile ? (
+                            <span className="truncate max-w-[240px]">
+                              ✓ {manualSlipFile.name} ({((manualSlipFile.size) / (1024 * 1024)).toFixed(2)} MB)
+                            </span>
+                          ) : (
+                            <span className="text-[11px] font-medium">📎 Attach Scanned Pay Slip / Voucher File</span>
+                          )}
+                        </label>
+                      </div>
+                    </div>
+                  </>
+                )}
               </div>
             )}
 
@@ -1214,24 +1425,36 @@ export function TaskDetailModal({
               <div className="space-y-2 bg-muted/30 border border-border rounded-xl p-3.5 sm:p-4">
                 <label className="text-xs font-bold text-foreground uppercase tracking-wider flex items-center gap-1.5">
                   <FileCheck2 className="w-4 h-4 text-emerald-500" />
-                  Staff Progress & Work Notes {task?.requiresDocument === false || assignedFormOptions.length === 0 ? '* (Mandatory)' : '(Optional)'}
+                  Staff Progress &amp; Work Notes
                 </label>
-                <p className="text-[11px] text-muted-foreground">
-                  {task?.requiresDocument === false || assignedFormOptions.length === 0
-                    ? 'Mandatory: Describe the actions completed, client consultation details, or verification findings.'
-                    : 'Optional: Add any supplementary work notes, client remarks, or additional observations for this task.'}
-                </p>
-                <textarea
-                  rows={4}
-                  value={completionNotes}
-                  onChange={(e) => setCompletionNotes(e.target.value)}
-                  placeholder={
-                    task?.requiresDocument === false || assignedFormOptions.length === 0
-                      ? 'Enter required work details and remarks before completing this step (Mandatory)...'
-                      : 'Enter any additional work notes or remarks (Optional)...'
-                  }
-                  className="w-full px-3 py-2 text-xs bg-card border border-border rounded-xl text-foreground focus:outline-none focus:border-primary resize-none placeholder:text-muted-foreground/60 font-normal"
-                />
+                {isCompleted ? (
+                  <div className="p-3 bg-card border border-border rounded-xl text-xs text-foreground">
+                    {task.completionNotes || completionNotes ? (
+                      <p className="whitespace-pre-line leading-relaxed">{task.completionNotes || completionNotes}</p>
+                    ) : (
+                      <p className="text-muted-foreground italic">No completion notes submitted.</p>
+                    )}
+                  </div>
+                ) : (
+                  <>
+                    <p className="text-[11px] text-muted-foreground">
+                      {task?.requiresDocument === false || assignedFormOptions.length === 0
+                        ? 'Mandatory: Describe the actions completed, client consultation details, or verification findings.'
+                        : 'Optional: Add any supplementary work notes, client remarks, or additional observations for this task.'}
+                    </p>
+                    <textarea
+                      rows={4}
+                      value={completionNotes}
+                      onChange={(e) => setCompletionNotes(e.target.value)}
+                      placeholder={
+                        task?.requiresDocument === false || assignedFormOptions.length === 0
+                          ? 'Enter required work details and remarks before completing this step (Mandatory)...'
+                          : 'Enter any additional work notes or remarks (Optional)...'
+                      }
+                      className="w-full px-3 py-2 text-xs bg-card border border-border rounded-xl text-foreground focus:outline-none focus:border-primary resize-none placeholder:text-muted-foreground/60 font-normal"
+                    />
+                  </>
+                )}
               </div>
             )}
 
@@ -1319,7 +1542,7 @@ export function TaskDetailModal({
 
               {task.completedAt && (
                 <div className="p-2 rounded-xl bg-muted/40 border border-border col-span-2 sm:col-span-1">
-                  <span className="text-[10px] uppercase tracking-wider text-emerald-600 dark:text-emerald-400 font-semibold flex items-center gap-1 mb-0.5">
+                  <span className="text-[10px] uppercase tracking-wider text-emerald-600 font-semibold flex items-center gap-1 mb-0.5">
                     <CheckCircle2 className="w-3 h-3" /> Completed At
                   </span>
                   <span className="font-semibold text-foreground">
@@ -1337,60 +1560,146 @@ export function TaskDetailModal({
               variant="outline"
               size="sm"
               onClick={onClose}
-              className="w-full sm:w-auto text-xs font-semibold px-4 h-9 border-red-500/30 text-red-600 dark:text-red-400 hover:bg-red-500/10 hover:border-red-500/50 cursor-pointer"
+              className="w-full sm:w-auto text-xs font-semibold px-4 h-9 border-red-500/30 text-red-600 hover:bg-red-500/10 hover:border-red-500/50 cursor-pointer"
             >
               Close
             </Button>
 
             <div className="flex items-center gap-2 w-full sm:w-auto justify-end flex-wrap">
-              {/* Save Progress Button */}
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                disabled={isSavingProgress}
-                onClick={handleSaveProgress}
-                className="w-full sm:w-auto text-xs font-semibold px-4 h-9 bg-primary/10 text-primary border-primary/30 hover:bg-primary/20 hover:border-primary/50 flex items-center justify-center gap-1.5 cursor-pointer"
-              >
-                {isSavingProgress ? (
-                  <>
-                    <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                    Saving...
-                  </>
-                ) : (
-                  <>
-                    <Save className="w-3.5 h-3.5 text-primary" />
-                    Save Progress / Notes
-                  </>
-                )}
-              </Button>
+              {isCompleted ? (
+                <span className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-emerald-500/10 text-emerald-800 border border-emerald-500/25 text-xs font-bold">
+                  <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+                  Task Step Completed &amp; Locked
+                </span>
+              ) : (
+                <>
+                  {/* Save Progress Button */}
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    disabled={isSavingProgress}
+                    onClick={handleSaveProgress}
+                    className="w-full sm:w-auto text-xs font-semibold px-4 h-9 bg-primary/10 text-primary border-primary/30 hover:bg-primary/20 hover:border-primary/50 flex items-center justify-center gap-1.5 cursor-pointer"
+                  >
+                    {isSavingProgress ? (
+                      <>
+                        <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                        Saving...
+                      </>
+                    ) : (
+                      <>
+                        <Save className="w-3.5 h-3.5 text-primary" />
+                        Save Progress / Notes
+                      </>
+                    )}
+                  </Button>
 
-              {/* Mark Completed Button */}
-              {!isCompleted && (
-                <Button
-                  type="button"
-                  size="sm"
-                  disabled={isSubmittingDone}
-                  onClick={handleMarkAsDone}
-                  className="w-full sm:w-auto bg-primary text-primary-foreground hover:bg-primary/90 font-bold text-xs h-9 px-5 flex items-center justify-center gap-1.5 shadow-sm cursor-pointer"
-                >
-                  {isSubmittingDone ? (
-                    <>
-                      <Loader2 className="w-4 h-4 animate-spin" />
-                      Completing...
-                    </>
-                  ) : (
-                    <>
-                      <CheckCircle2 className="w-4 h-4" />
-                      Mark Task as Completed
-                    </>
-                  )}
-                </Button>
+                  {/* Mark Completed Button */}
+                  <Button
+                    type="button"
+                    size="sm"
+                    disabled={isSubmittingDone}
+                    onClick={handleMarkAsDone}
+                    className="w-full sm:w-auto bg-primary text-primary-foreground hover:bg-primary/90 font-bold text-xs h-9 px-5 flex items-center justify-center gap-1.5 shadow-sm cursor-pointer"
+                  >
+                    {isSubmittingDone ? (
+                      <>
+                        <Loader2 className="w-4 h-4 animate-spin" />
+                        Completing...
+                      </>
+                    ) : (
+                      <>
+                        <CheckCircle2 className="w-4 h-4" />
+                        Mark Task as Completed
+                      </>
+                    )}
+                  </Button>
+                </>
               )}
             </div>
           </div>
         </div>
       </div>
+
+      {/* Direct In-Task Money Receipt Modal */}
+      {isReceiptModalOpen && (
+        <MoneyReceiptModal
+          isOpen={isReceiptModalOpen}
+          onClose={() => setIsReceiptModalOpen(false)}
+          initialData={{
+            clientName:
+              task.caseDetails?.applicantName ||
+              task.caseDetails?.clientInfo?.fullName ||
+              task.applicantName ||
+              task.clientName ||
+              'Valued Client',
+            clientPhone:
+              task.caseDetails?.phone ||
+              task.caseDetails?.clientInfo?.phone ||
+              task.phone ||
+              '',
+            passportNumber:
+              task.caseDetails?.passportNumber ||
+              task.passportNumber ||
+              '',
+            amount: paymentCollected || task.paymentAmount || '',
+            paymentMethod: paymentMethod,
+            purpose: task.paymentPurpose || task.title || 'Case Processing Fee',
+            serviceType: task.caseDetails?.destinationCountry
+              ? `${task.caseDetails.destinationCountry} Visa Processing`
+              : 'Visa Processing Service',
+            clientId: task.clientDid || task.caseDetails?.clientDid || task.caseDid,
+            serviceRef: {
+              modelName: 'CaseFile',
+              trackingId: task.caseNumber || task.caseDid,
+            },
+          }}
+          onCreated={(receipt) => {
+            setLinkedReceipt(receipt);
+            if (receipt.amount) setPaymentCollected(String(receipt.amount));
+            if (receipt.paymentMethod) setPaymentMethod(receipt.paymentMethod);
+            toast.success(`Money Receipt #${receipt.receiptNo} linked to this task!`);
+          }}
+        />
+      )}
+
+      {/* Direct In-Task Client Invoice Modal */}
+      {isInvoiceModalOpen && (
+        <InvoiceGenerateModal
+          isOpen={isInvoiceModalOpen}
+          onClose={() => setIsInvoiceModalOpen(false)}
+          initialData={{
+            clientName:
+              task.caseDetails?.applicantName ||
+              task.caseDetails?.clientInfo?.fullName ||
+              task.applicantName ||
+              task.clientName ||
+              'Valued Client',
+            clientPhone:
+              task.caseDetails?.phone ||
+              task.caseDetails?.clientInfo?.phone ||
+              task.phone ||
+              '',
+            clientAddress: task.caseDetails?.destinationCountry
+              ? `Destination: ${task.caseDetails.destinationCountry}`
+              : '',
+            passportNumber:
+              task.caseDetails?.passportNumber ||
+              task.passportNumber ||
+              '',
+            amount: paymentCollected || task.paymentAmount || '',
+            paymentMethod: paymentMethod,
+            purpose: task.paymentPurpose || task.title || 'Visa Processing & Case Handling Service',
+            caseNumber: task.caseNumber || task.caseDid || '',
+          }}
+          onCreated={(invoice) => {
+            setLinkedInvoice(invoice);
+            if (invoice.grandTotal) setPaymentCollected(String(invoice.grandTotal));
+            toast.success(`Invoice #${invoice.invoiceNo} linked to this task!`);
+          }}
+        />
+      )}
 
       {/* Embedded File Viewer Modal (View Only) */}
       {viewingFile && (

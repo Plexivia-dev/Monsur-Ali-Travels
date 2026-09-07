@@ -42,6 +42,7 @@ export const Sidebar = () => {
       onItemSelect={handleItemSelect}
       brandTitle="Monsur Ali Travels"
       brandSubtitle={`Smart ERP v${APP_VERSION}`}
+      brandPath="/dashboard"
       logo={logoImg}
       user={user}
       onLogout={logout}

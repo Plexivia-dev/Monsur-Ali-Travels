@@ -96,7 +96,7 @@ export function sendOrderEmailsAsynchronously(order) {
       const items = Array.isArray(order.items) ? order.items.map(item => {
         const quantity = Number(item.quantity || 1);
         const price = Number(item.unitPrice ?? item.price ?? 0);
-        const subtotal = Number(item.subtotal ?? item.total ?? (price * quantity) ?? 0);
+        const subtotal = Number(item.subtotal ?? item.total ?? (price * quantity || 0));
         const finalPrice = price || (subtotal / quantity) || 0;
         const finalSubtotal = subtotal || (finalPrice * quantity) || 0;
 

@@ -2,6 +2,7 @@ import mongoose from "mongoose";
 import { IndianVisaSubmissionModel } from "../../models/indianVisaSubmission.model.js";
 import { syncClientProfile } from "../../helper/clientSyncHelper.js";
 import { NotificationModel } from "../../models/notification.model.js";
+import { checkManagerCanDelete, checkManagerCanUpdate } from "../../helper/managerRbacHelper.js";
 
 // Helper to query visa application by either MongoDB _id, did, or trackingNo
 const findVisaByIdOrDid = async (id, extraQuery = {}) => {
@@ -177,6 +178,10 @@ export class IndianVisaController {
         });
       }
 
+      if (!checkManagerCanUpdate(req, res, doc, "Indian visa submission")) {
+        return;
+      }
+
       if (status) {
         doc.status = status;
       }
@@ -244,6 +249,10 @@ export class IndianVisaController {
         });
       }
 
+      if (!checkManagerCanUpdate(req, res, existing, "Indian visa submission")) {
+        return;
+      }
+
       const updatedDoc = await IndianVisaSubmissionModel.findOneAndUpdate(
         { _id: existing._id },
         req.body,
@@ -269,6 +278,10 @@ export class IndianVisaController {
   // DELETE /api/v1/docs/indian-visas/:id
   static async delete(req, res) {
     try {
+      if (!checkManagerCanDelete(req, res, "Indian visa submission")) {
+        return;
+      }
+
       const existing = await findVisaByIdOrDid(req.params.id);
       if (!existing) {
         return res.status(404).json({

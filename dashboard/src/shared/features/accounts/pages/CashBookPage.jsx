@@ -137,7 +137,7 @@ export function CashBookPage() {
           <p className="text-2xl font-black text-rose-600 font-mono">
             BDT {Number(summary.totalCashOut || 0).toLocaleString('en-BD')}
           </p>
-          <p className="text-[11px] text-muted-foreground">{summary.vouchersCount || 0} Cash Vouchers</p>
+          <p className="text-[11px] text-muted-foreground">{(summary.vouchersCount || 0) + (summary.billsCount || 0)} Vouchers & Bills</p>
         </div>
 
         {/* Net Cash Balance */}
@@ -158,7 +158,7 @@ export function CashBookPage() {
             <span className="text-xs font-bold uppercase tracking-wider">Export to VPS</span>
             <Download className="w-4 h-4 text-primary" />
           </div>
-          <p className="text-xs text-muted-foreground mt-1">Export full cash ledger to CSV</p>
+          <p className="text-xs text-muted-foreground mt-1">Export full cash book to CSV</p>
           <Button
             size="sm"
             onClick={handleExportCsv}
@@ -171,13 +171,13 @@ export function CashBookPage() {
         </div>
       </div>
 
-      {/* Chronological Cash Transactions Ledger */}
+      {/* Cash Register Timeline Table */}
       <div className="bg-card border border-border rounded-2xl p-5 shadow-xs space-y-4">
         <div className="flex items-center justify-between">
           <div>
-            <h3 className="text-base font-bold text-foreground">Cash Transactions Statement</h3>
+            <h3 className="text-base font-bold text-foreground">Cash Transaction Register</h3>
             <p className="text-xs text-muted-foreground">
-              All physical cash movements recorded for the selected time period.
+              Combined cash receipts, office petty cash vouchers, and cash bill payments.
             </p>
           </div>
           <span className="text-xs font-mono font-semibold text-muted-foreground">
@@ -190,12 +190,12 @@ export function CashBookPage() {
             <thead className="bg-muted/50 border-b border-border text-[11px] font-bold text-muted-foreground uppercase">
               <tr>
                 <th className="py-3 px-3">Date</th>
-                <th className="py-3 px-3">Ref No</th>
+                <th className="py-3 px-3">Ref / Voucher #</th>
                 <th className="py-3 px-3">Type</th>
-                <th className="py-3 px-3">Party / Payee</th>
+                <th className="py-3 px-3">Party / Received By</th>
                 <th className="py-3 px-3">Description</th>
-                <th className="py-3 px-3 text-right">Cash In (BDT)</th>
-                <th className="py-3 px-3 text-right">Cash Out (BDT)</th>
+                <th className="py-3 px-3 text-right">Inflow (BDT)</th>
+                <th className="py-3 px-3 text-right">Outflow (BDT)</th>
                 <th className="py-3 px-3 text-center">Status</th>
               </tr>
             </thead>
@@ -224,11 +224,11 @@ export function CashBookPage() {
                     <td className="py-2.5 px-3">
                       {t.type === 'INFLOW' ? (
                         <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/10 text-emerald-600 border border-emerald-500/20">
-                          <ArrowDownLeft className="w-3 h-3" /> Cash In
+                          <ArrowDownLeft className="w-3 h-3" /> {t.category || 'Cash In'}
                         </span>
                       ) : (
                         <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-rose-500/10 text-rose-600 border border-rose-500/20">
-                          <ArrowUpRight className="w-3 h-3" /> Cash Out
+                          <ArrowUpRight className="w-3 h-3" /> {t.category || 'Cash Out'}
                         </span>
                       )}
                     </td>

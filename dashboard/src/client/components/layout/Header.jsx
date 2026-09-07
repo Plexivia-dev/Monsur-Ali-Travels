@@ -7,7 +7,6 @@ import { useSocketNotification } from '../../hooks/useSocketNotification';
 import { Button } from '@/components/ui/button';
 import { SidebarTrigger } from '@/components/ui/sidebar';
 import ModeToggle from './ModeToggle';
-import LanguageToggle from './LanguageToggle';
 
 export const Header = () => {
   const { t } = useTranslation();
@@ -112,9 +111,6 @@ export const Header = () => {
           >
             <Search className="w-4 h-4 text-white" />
           </Button>
-
-          {/* Language Switcher Toggle */}
-          <LanguageToggle />
 
           {/* Real-time Notifications Popover Trigger */}
           <div className="relative" ref={notifRef}>

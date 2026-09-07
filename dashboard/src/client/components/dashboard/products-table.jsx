@@ -77,6 +77,15 @@ export function ProductsTable({
 
   const [deleteTarget, setDeleteTarget] = useState(null);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [stockTarget, setStockTarget] = useState(null);
+  const [targetStockStatus, setTargetStockStatus] = useState('instock');
+  const [isUpdatingStock, setIsUpdatingStock] = useState(false);
+
+  useEffect(() => {
+    if (stockTarget) {
+      setTargetStockStatus(stockTarget.status === 'In Stock' ? 'instock' : 'outofstock');
+    }
+  }, [stockTarget]);
 
   const handleDeleteProduct = async () => {
     if (!deleteTarget) return;
@@ -93,16 +102,6 @@ export function ProductsTable({
       setIsDeleting(false);
     }
   };
-
-  const [stockTarget, setStockTarget] = useState(null);
-  const [targetStockStatus, setTargetStockStatus] = useState('instock');
-  const [isUpdatingStock, setIsUpdatingStock] = useState(false);
-
-  useEffect(() => {
-    if (stockTarget) {
-      setTargetStockStatus(stockTarget.status === 'In Stock' ? 'instock' : 'outofstock');
-    }
-  }, [stockTarget]);
 
   const handleUpdateStockStatus = async () => {
     if (!stockTarget) return;

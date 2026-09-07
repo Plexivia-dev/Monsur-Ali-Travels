@@ -114,6 +114,14 @@ const employmentAgreementSchema = new Schema(
       type: Boolean,
       default: true,
     },
+    createdByDid: {
+      type: String,
+      default: null,
+    },
+    createdByName: {
+      type: String,
+      default: "",
+    },
   },
   {
     timestamps: true,
@@ -132,3 +140,5 @@ employmentAgreementSchema.pre("save", function (next) {
 export const EmploymentAgreementModel =
   models.EmploymentAgreement ||
   model("EmploymentAgreement", employmentAgreementSchema, "employment-agreement");
+
+export default EmploymentAgreementModel;

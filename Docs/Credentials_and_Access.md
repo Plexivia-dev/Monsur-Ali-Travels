@@ -12,20 +12,18 @@
 | **IP**      | `144.79.218.241`       |
 | **User**    | `root`                 |
 | **Port**    | `22`                   |
-| **SSH Key** | `~/.ssh/id_ed25519_ikramul` (`C:\Users\dev\.ssh\id_ed25519_ikramul`) |
+| **SSH Key** | `~/.ssh/id_rsa` (`C:\Users\mdikr\.ssh\id_rsa`) |
 | **Project Path** | `/opt/monsuralitravels` |
 
 ### SSH Connect Command
-Direct access (configured in `~/.ssh/config`):
+Direct access:
 ```bash
 ssh root@144.79.218.241
-# or simply:
-ssh mat-vps
 ```
 
 Explicit key command:
 ```bash
-ssh -i C:\Users\dev\.ssh\id_ed25519_ikramul root@144.79.218.241
+ssh -i C:\Users\mdikr\.ssh\id_rsa root@144.79.218.241
 ```
 
 ### Deploy / Update Production
@@ -81,6 +79,33 @@ SMTP_FROM_NAME=Monsur Ali Travels
 
 ---
 
+## 3.1. SMTP Email Credentials (Development — Plexivia)
+
+| Field              | Value                                    |
+| :----------------- | :--------------------------------------- |
+| **Email Address**  | `info@plexivia.com`                      |
+| **SMTP Host**      | `roxy.us.webxlogin.com`                  |
+| **SMTP Port**      | `465` (SSL) / `587` (TLS)                |
+| **SMTP User**      | `info@plexivia.com`                      |
+| **SMTP Password**  | `[REDACTED_FOR_SECURITY]`                |
+| **Encryption**     | `SSL`                                    |
+| **From Name**      | `Monsur Ali Travels (Dev)`               |
+| **Webmail URL**    | `https://roxy.us.webxlogin.com:2096/...` |
+| **Reference File** | `G:\My Drive\MAT\DEV_EMAIL_CREDENTIALS_AND_CONFIG.md` |
+
+### Backend DEV `.env` SMTP Block (`/dev-env/opt/monsuralitravels/backend/.env`)
+```env
+SMTP_HOST=roxy.us.webxlogin.com
+SMTP_PORT=465
+SMTP_ENCRYPTION=SSL
+SMTP_USER=info@plexivia.com
+SMTP_PASSWORD=[REDACTED_FOR_SECURITY]
+SMTP_FROM_NAME=Monsur Ali Travels (Dev)
+SMTP_FROM=info@plexivia.com
+```
+
+---
+
 ## 4. MongoDB (Production — Docker Internal)
 
 | Field          | Value                            |
@@ -122,29 +147,24 @@ SMTP_FROM_NAME=Monsur Ali Travels
 
 | Field    | Value                                          |
 | :------- | :--------------------------------------------- |
-| **Repo** | `https://github.com/ikram3031/Smart_ERP`       |
+| **Repo** | `https://github.com/Plexivia-dev/Monsur-Ali-Travels.git`       |
 | **Live Branch** | `live`                                  |
 
 ---
 
-## 8. Quick Reference — Common AI Agent Tasks
+## 8. Quick Reference — Common Maintenance Tasks
 
 ### ▶ VPS-এ Build ও Deploy দিতে হলে
 ```bash
-ssh -i C:\Users\mdikr\.ssh\id_ed25519_ikramul root@144.79.218.241 "cd /opt/monsuralitravels && chmod +x ./prod-update.sh && ./prod-update.sh"
+ssh -i C:\Users\mdikr\.ssh\id_rsa root@144.79.218.241 "cd /opt/monsuralitravels && make deploy"
 ```
 
 ### ▶ শুধু Backend রিস্টার্ট করতে হলে
 ```bash
-ssh -i C:\Users\mdikr\.ssh\id_ed25519_ikramul root@144.79.218.241 "cd /opt/monsuralitravels && docker compose -f docker-compose.prod.yml restart backend"
-```
-
-### ▶ শুধু Dashboard রিস্টার্ট করতে হলে
-```bash
-ssh -i C:\Users\mdikr\.ssh\id_ed25519_ikramul root@144.79.218.241 "cd /opt/monsuralitravels && docker compose -f docker-compose.prod.yml restart dashboard"
+ssh -i C:\Users\mdikr\.ssh\id_rsa root@144.79.218.241 "cd /opt/monsuralitravels && make restart-bg"
 ```
 
 ### ▶ Backend Logs দেখতে হলে
 ```bash
-ssh -i C:\Users\mdikr\.ssh\id_ed25519_ikramul root@144.79.218.241 "cd /opt/monsuralitravels && docker compose -f docker-compose.prod.yml logs -f backend"
+ssh -i C:\Users\mdikr\.ssh\id_rsa root@144.79.218.241 "cd /opt/monsuralitravels && make logs-bg"
 ```

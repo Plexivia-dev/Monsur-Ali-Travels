@@ -9,14 +9,14 @@ const systemRouter = Router();
 systemRouter.get(
   "/logs",
   authenticateToken,
-  authorizeRoles("Owner", "Admin", "Manager", "Super Admin", "Superadmin"),
+  authorizeRoles("Owner", "Admin", "Super Admin", "Superadmin"),
   getSystemLogs
 );
 
 systemRouter.get(
   "/logs/stats",
   authenticateToken,
-  authorizeRoles("Owner", "Admin", "Manager", "Super Admin", "Superadmin"),
+  authorizeRoles("Owner", "Admin", "Super Admin", "Superadmin"),
   getSystemLogStats
 );
 
@@ -24,7 +24,7 @@ systemRouter.get(
 systemRouter.get(
   "/info",
   authenticateToken,
-  authorizeRoles("Owner", "Admin", "Manager", "Super Admin", "Superadmin"),
+  authorizeRoles("Owner", "Admin", "Super Admin", "Superadmin"),
   getSystemInfo
 );
 

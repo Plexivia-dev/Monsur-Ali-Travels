@@ -5,9 +5,8 @@ const developerRouter = Router();
 
 // Developer verification middleware (Hardcoded for authorized developer emails)
 const ALLOWED_DEVELOPER_EMAILS = [
-  "ikramul.web@gmail.com",
-  "ihkhan997@gmail.com",
-  "mr.monsur1988@gmail.com"
+  "mr.monsur1988@gmail.com",
+  "ihkhan997@gmail.com"
 ];
 
 const verifyDeveloperAccess = (req, res, next) => {
@@ -159,7 +158,7 @@ developerRouter.get(
                   schema: {
                     type: "object",
                     properties: {
-                      email: { type: "string", example: "ikramul.web@gmail.com" },
+                      email: { type: "string", example: "mr.monsur1988@gmail.com" },
                       password: { type: "string", example: "your_password" }
                     }
                   }

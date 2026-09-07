@@ -697,3 +697,38 @@ export function buildPayrollSlipEmailHtml({
     logoUrl,
   });
 }
+
+/**
+ * Specialized Builder: Order / Financial Invoice Email
+ */
+export function buildOrderInvoiceEmailHtml({ order = {} } = {}) {
+  const items = (order.items || []).map((it) => [
+    it.productName || it.name || "Item",
+    String(it.quantity || 1),
+    `BDT ${(it.subtotal || it.price || 0).toLocaleString()}`,
+  ]);
+
+  return buildMasterEmailHtml({
+    badge: "ORDER CONFIRMATION",
+    title: `Order #${order.orderId || "N/A"}`,
+    previewText: `Order #${order.orderId || "N/A"} details`,
+    greeting: `Dear ${order.clientName || "Valued Client"},`,
+    intro: `Thank you for your order. We have received and confirmed your order #${order.orderId || "N/A"}.`,
+    detailsTable: [
+      { label: "Order Reference", value: String(order.orderId || "N/A"), isBold: true },
+      { label: "Order Date", value: order.createdAt || new Date().toLocaleDateString(), isAccent: false },
+      { label: "Payment Method", value: order.paymentMethod || "Standard", isAccent: false },
+    ],
+    itemsTable: {
+      headers: ["Description", "Qty", "Amount"],
+      rows: items,
+      summary: [
+        { label: "Subtotal", value: `BDT ${(order.subtotal || 0).toLocaleString()}` },
+        { label: "Total", value: `BDT ${(order.totalAmount || 0).toLocaleString()}`, isTotal: true },
+      ],
+    },
+  });
+}
+
+export const buildAdminOrderEmailHtml = buildOrderInvoiceEmailHtml;
+

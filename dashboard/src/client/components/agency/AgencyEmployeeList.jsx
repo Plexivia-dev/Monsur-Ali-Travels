@@ -7,12 +7,13 @@ import {
   X,
   Phone,
   Mail,
-  Shield,
   Calendar,
   Lock,
+  Briefcase,
 } from 'lucide-react';
 import { apiClient } from '@/lib/api-client';
 import { toast } from 'sonner';
+import { HeaderTitle } from '@shared/components/common/HeaderTitle';
 
 export function AgencyEmployeeList() {
   const [employees, setEmployees] = useState([]);
@@ -82,40 +83,28 @@ export function AgencyEmployeeList() {
   return (
     <div className="space-y-6">
       {/* Header Banner */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-card border border-border p-5 sm:p-6 rounded-2xl shadow-xs text-foreground">
-        <div className="space-y-1">
-          <div className="flex items-center gap-3">
-            <div className="size-10 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center shrink-0">
-              <UserCheck className="size-5 text-primary" />
+      <HeaderTitle
+        title="Employee & Staff Directory"
+        subtitle="Official staff directory and organizational roster (Read-Only Access)"
+        icon={UserCheck}
+        actions={
+          <>
+            <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/10 border border-white/20 text-[11px] font-semibold text-white">
+              <Lock className="size-3.5" />
+              <span>Read Only</span>
             </div>
-            <div>
-              <h1 className="text-xl font-bold tracking-tight text-foreground">
-                Employee & Staff Directory
-              </h1>
-              <p className="text-xs text-muted-foreground font-medium mt-0.5">
-                Official staff directory and organizational roster (Read-Only Access)
-              </p>
-            </div>
-          </div>
-        </div>
-
-        <div className="flex items-center gap-3">
-          <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-muted/60 border border-border text-[11px] font-semibold text-muted-foreground">
-            <Lock className="size-3.5 text-muted-foreground" />
-            <span>Read Only</span>
-          </div>
-
-          <button
-            type="button"
-            onClick={fetchEmployees}
-            disabled={isLoading}
-            className="flex items-center gap-2 px-4 py-2 bg-card hover:bg-muted/80 border border-border text-xs font-semibold rounded-xl text-foreground transition-colors cursor-pointer shadow-2xs disabled:opacity-50"
-          >
-            <RefreshCw className={`size-3.5 ${isLoading ? 'animate-spin' : ''}`} />
-            <span>{isLoading ? 'Reloading...' : 'Reload Staff'}</span>
-          </button>
-        </div>
-      </div>
+            <button
+              type="button"
+              onClick={fetchEmployees}
+              disabled={isLoading}
+              className="flex items-center gap-2 px-4 py-2 bg-white/10 hover:bg-white/20 border border-white/20 text-xs font-semibold rounded-xl text-white transition-colors cursor-pointer disabled:opacity-50"
+            >
+              <RefreshCw className={`size-3.5 ${isLoading ? 'animate-spin' : ''}`} />
+              <span>{isLoading ? 'Reloading...' : 'Reload Staff'}</span>
+            </button>
+          </>
+        }
+      />
 
       {/* Filter and Search Bar */}
       <div className="flex flex-col sm:flex-row items-center justify-between gap-3 bg-card border border-border p-3.5 sm:p-4 rounded-xl shadow-2xs">

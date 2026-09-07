@@ -49,6 +49,10 @@ export const markTaskDone = async (req, res) => {
       paymentMethod,
       paymentSlipUrl,
       generateMoneyReceipt,
+      moneyReceiptNumber,
+      moneyReceiptDid,
+      invoiceNumber,
+      invoiceDid,
     } = req.body || {};
     const userDid = req.user?.did;
 
@@ -60,6 +64,13 @@ export const markTaskDone = async (req, res) => {
       return res.status(404).json({ status: "error", message: "Task not found" });
     }
 
+    if (task.status === "Done" || task.status === "Completed") {
+      return res.status(400).json({
+        status: "error",
+        message: "This task has already been completed and cannot be submitted again.",
+      });
+    }
+
     if (task.assignedToDid !== userDid && req.user?.role !== "Admin" && req.user?.role !== "Owner") {
       return res.status(403).json({ status: "error", message: "You are not assigned to this task" });
     }
@@ -68,6 +79,12 @@ export const markTaskDone = async (req, res) => {
     task.completedAt = new Date();
     if (completionNotes) task.completionNotes = completionNotes;
     task.updatedByDid = userDid;
+
+    // Attach pre-generated invoice or money receipt if passed
+    if (invoiceNumber) task.invoiceNumber = invoiceNumber;
+    if (invoiceDid) task.invoiceDid = invoiceDid;
+    if (moneyReceiptNumber) task.moneyReceiptNumber = moneyReceiptNumber;
+    if (moneyReceiptDid) task.moneyReceiptDid = moneyReceiptDid;
 
     // Handle Payment Collection & Pay Slip / Money Receipt Creation
     const collected = Number(paymentCollectedAmount) || (task.requiresPayment ? Number(task.paymentAmount) : 0);
@@ -80,9 +97,10 @@ export const markTaskDone = async (req, res) => {
       const isCaseMongoId = mongoose.isValidObjectId(task.caseDid);
       const caseConditions = [{ did: task.caseDid }, { caseNumber: task.caseDid }];
       if (isCaseMongoId) caseConditions.push({ _id: task.caseDid });
-      const caseDoc = await CaseFile.findOne({ $or: caseConditions });
+      let caseDoc = await CaseFile.findOne({ $or: caseConditions });
 
-      if (generateMoneyReceipt || task.requirePaySlip || collected > 0) {
+      // If no receipt is linked yet, but auto-issuing is requested
+      if (!task.moneyReceiptNumber && (generateMoneyReceipt || task.requirePaySlip)) {
         try {
           const receiptNo = generateReceiptTokenNo();
           const clientName = caseDoc ? (caseDoc.applicantName || caseDoc.clientInfo?.fullName || "Client") : "Client";
@@ -123,7 +141,7 @@ export const markTaskDone = async (req, res) => {
             accessLevel: "Public",
           });
 
-          // Attach to caseDoc vaultDocuments & update payment ledger
+          // Attach to caseDoc vaultDocuments
           if (caseDoc) {
             if (!Array.isArray(caseDoc.vaultDocuments)) caseDoc.vaultDocuments = [];
             caseDoc.vaultDocuments.push({
@@ -137,29 +155,33 @@ export const markTaskDone = async (req, res) => {
               uploadedBy: req.user?.name || "Staff",
               uploadedAt: new Date(),
             });
-
-            // Update Case Financial Ledger
-            if (!caseDoc.paymentLedger) caseDoc.paymentLedger = {};
-            const stepNum = task.stepNumber || 1;
-            if (stepNum === 1) {
-              caseDoc.paymentLedger.step1_advance = (Number(caseDoc.paymentLedger.step1_advance) || 0) + collected;
-              caseDoc.initialPaidAmount = caseDoc.paymentLedger.step1_advance;
-            } else if (stepNum === 2) {
-              caseDoc.paymentLedger.step2_offerApproval = (Number(caseDoc.paymentLedger.step2_offerApproval) || 0) + collected;
-            } else if (stepNum === 3) {
-              caseDoc.paymentLedger.step3_delivery = (Number(caseDoc.paymentLedger.step3_delivery) || 0) + collected;
-            }
-
-            const currentTotalPaid = (Number(caseDoc.totalPaidAmount) || 0) + collected;
-            caseDoc.paymentLedger.totalPaidAmount = currentTotalPaid;
-            caseDoc.totalPaidAmount = currentTotalPaid;
-            const agreed = Number(caseDoc.paymentLedger.totalAgreedAmount || caseDoc.totalAgreedAmount) || 0;
-            caseDoc.dueAmount = Math.max(0, agreed - currentTotalPaid);
-            caseDoc.paymentLedger.dueAmount = caseDoc.dueAmount;
           }
         } catch (receiptErr) {
           console.warn("[markTaskDone] Auto Money Receipt generation notice:", receiptErr.message);
         }
+      }
+
+      // Update Case Financial Ledger whenever money was collected
+      if (caseDoc) {
+        if (!caseDoc.paymentLedger) caseDoc.paymentLedger = {};
+        const stepNum = task.stepNumber || 1;
+        if (stepNum === 1) {
+          caseDoc.paymentLedger.step1_advance = (Number(caseDoc.paymentLedger.step1_advance) || 0) + collected;
+          caseDoc.initialPaidAmount = caseDoc.paymentLedger.step1_advance;
+        } else if (stepNum === 2) {
+          caseDoc.paymentLedger.step2_offerApproval = (Number(caseDoc.paymentLedger.step2_offerApproval) || 0) + collected;
+        } else if (stepNum === 3) {
+          caseDoc.paymentLedger.step3_delivery = (Number(caseDoc.paymentLedger.step3_delivery) || 0) + collected;
+        }
+
+        const currentTotalPaid = (Number(caseDoc.paymentLedger.totalPaidAmount || caseDoc.totalPaidAmount) || 0) + collected;
+        caseDoc.paymentLedger.totalPaidAmount = currentTotalPaid;
+        caseDoc.totalPaidAmount = currentTotalPaid;
+        const agreed = Number(caseDoc.paymentLedger.totalAgreedAmount || caseDoc.totalAgreedAmount) || 0;
+        caseDoc.dueAmount = Math.max(0, agreed - currentTotalPaid);
+        caseDoc.paymentLedger.dueAmount = caseDoc.dueAmount;
+        caseDoc.paymentLedger.isFullyPaid = caseDoc.dueAmount <= 0;
+        await caseDoc.save();
       }
     }
 
@@ -181,12 +203,19 @@ export const markTaskDone = async (req, res) => {
         caseDoc.assignedToName = "";
         caseDoc.assignedOfficer = "";
 
+        if (task.paymentCollectedAmount) {
+          if (!caseDoc.paymentLedger) caseDoc.paymentLedger = {};
+          const currentTotalPaid = (Number(caseDoc.totalPaidAmount) || 0);
+          const agreed = Number(caseDoc.paymentLedger.totalAgreedAmount || caseDoc.totalAgreedAmount) || 0;
+          caseDoc.dueAmount = Math.max(0, agreed - currentTotalPaid);
+        }
+
         if (!Array.isArray(caseDoc.statusHistory)) {
           caseDoc.statusHistory = [];
         }
 
         const paymentNote = task.paymentCollectedAmount
-          ? ` [Collected: ৳${task.paymentCollectedAmount.toLocaleString()} (${task.paymentMethod || "Cash"})${task.moneyReceiptNumber ? ` • Receipt #${task.moneyReceiptNumber}` : ""}]`
+          ? ` [Collected: BDT ${task.paymentCollectedAmount.toLocaleString()} (${task.paymentMethod || "Cash"})${task.moneyReceiptNumber ? ` • Receipt #${task.moneyReceiptNumber}` : ""}]`
           : "";
 
         caseDoc.statusHistory.push({
@@ -207,7 +236,7 @@ export const markTaskDone = async (req, res) => {
     // Trigger Admin notification (targeted to Admin/Owner only)
     await NotificationModel.create({
       title: "Task Marked as Done",
-      message: `Task "${task.title}" for Case ${task.caseDid} was marked Done by ${req.user?.name || "Staff"}.${task.paymentCollectedAmount ? ` (Payment Collected: ৳${task.paymentCollectedAmount})` : ""}`,
+      message: `Task "${task.title}" for Case ${task.caseDid} was marked Done by ${req.user?.name || "Staff"}.${task.paymentCollectedAmount ? ` (Payment Collected: BDT ${task.paymentCollectedAmount})` : ""}`,
       module: "visa",
       type: "success",
       recipientRole: "Admin",

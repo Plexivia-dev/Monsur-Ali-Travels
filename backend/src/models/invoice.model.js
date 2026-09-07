@@ -75,6 +75,8 @@ const invoiceSchema = new mongoose.Schema(
     grandTotal: { type: Number, default: 0 },
     qrCode: { type: String, default: "" },
     isActive: { type: Boolean, default: true },
+    createdByDid: { type: String, default: null },
+    createdByName: { type: String, default: "" },
   },
   {
     timestamps: true,
@@ -90,3 +92,4 @@ invoiceSchema.pre("save", function (next) {
 });
 
 export const InvoiceModel = mongoose.models.Invoice || mongoose.model("Invoice", invoiceSchema);
+export default InvoiceModel;

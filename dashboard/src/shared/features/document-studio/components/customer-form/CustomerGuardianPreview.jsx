@@ -542,3 +542,7 @@ export function ClientGuardianPreview({ data }) {
     </div>
   );
 }
+
+export { ClientGuardianPreview as CustomerGuardianPreview };
+export default ClientGuardianPreview;
+

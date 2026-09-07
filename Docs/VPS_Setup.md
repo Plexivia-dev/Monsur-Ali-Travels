@@ -6,10 +6,8 @@ Run this command directly in your Windows Terminal / PowerShell to log in to the
 
 ```bash
 ssh root@144.79.218.241
-# or
-ssh mat-vps
-# or
-ssh -i C:\Users\dev\.ssh\id_ed25519_ikramul root@144.79.218.241
+# or with explicit key
+ssh -i C:\Users\mdikr\.ssh\id_rsa root@144.79.218.241
 ```
 
 ---
@@ -19,11 +17,11 @@ ssh -i C:\Users\dev\.ssh\id_ed25519_ikramul root@144.79.218.241
 - **Host / IP Address:** `144.79.218.241`
 - **SSH Port:** `22`
 - **User:** `root`
-- **OS:** Ubuntu 22.04 / 24.04 LTS
+- **OS:** `Ubuntu 24.04.3 LTS (Noble Numbat)`
 - **Live Path:** `/opt/monsuralitravels`
 - **Uploads Storage:** `/var/www/uploads`
 - **Documents Storage:** `/var/www/documents`
-- **SSH Key Path:** `~/.ssh/id_ed25519_ikramul` (`C:\Users\dev\.ssh\id_ed25519_ikramul`)
+- **SSH Key Path (Local):** `~/.ssh/id_rsa` (`C:\Users\mdikr\.ssh\id_rsa`)
 
 ---
 

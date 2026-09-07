@@ -190,7 +190,7 @@ export function ReportsPage() {
       </div>
 
       {/* KPI Financial Overview Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
         {/* Total Income */}
         <div className="bg-card border border-border p-5 rounded-2xl shadow-xs space-y-1">
           <div className="flex items-center justify-between text-muted-foreground">
@@ -201,46 +201,60 @@ export function ReportsPage() {
             BDT {Number(financials.totalIncome || 0).toLocaleString('en-BD')}
           </p>
           <p className="text-[11px] text-muted-foreground">
-            From {financials.receiptsCount || 0} Money Receipts
+            From {financials.receiptsCount || 0} Money Receipts (Inflows)
           </p>
         </div>
 
-        {/* Total Billed */}
+        {/* Total Outflows / Expenses */}
         <div className="bg-card border border-border p-5 rounded-2xl shadow-xs space-y-1">
           <div className="flex items-center justify-between text-muted-foreground">
-            <span className="text-xs font-bold uppercase tracking-wider">Total Billed</span>
-            <Receipt className="w-4 h-4 text-primary" />
-          </div>
-          <p className="text-2xl font-black text-foreground font-mono">
-            BDT {Number(financials.totalBilled || 0).toLocaleString('en-BD')}
-          </p>
-          <p className="text-[11px] text-muted-foreground">
-            From {financials.invoicesCount || 0} Invoices / Bills
-          </p>
-        </div>
-
-        {/* Outstanding Receivables */}
-        <div className="bg-card border border-border p-5 rounded-2xl shadow-xs space-y-1">
-          <div className="flex items-center justify-between text-muted-foreground">
-            <span className="text-xs font-bold uppercase tracking-wider">Outstanding Due</span>
-            <AlertTriangle className="w-4 h-4 text-rose-500" />
+            <span className="text-xs font-bold uppercase tracking-wider">Total Expenses</span>
+            <Receipt className="w-4 h-4 text-rose-500" />
           </div>
           <p className="text-2xl font-black text-rose-600 font-mono">
-            BDT {Number(financials.totalDueOnBills || 0).toLocaleString('en-BD')}
+            BDT {Number(financials.totalOutflow ?? ((financials.totalExpenses || 0) + (financials.totalSalaries || 0))).toLocaleString('en-BD')}
           </p>
-          <p className="text-[11px] text-muted-foreground">Uncollected bill balances</p>
+          <p className="text-[11px] text-muted-foreground">
+            Paid Bills, Salaries &amp; Vouchers
+          </p>
         </div>
 
-        {/* Net Operational Position */}
+        {/* Net Operational Margin */}
         <div className="bg-card border border-border p-5 rounded-2xl shadow-xs space-y-1">
           <div className="flex items-center justify-between text-muted-foreground">
-            <span className="text-xs font-bold uppercase tracking-wider">Settled on Bills</span>
-            <CheckCircle2 className="w-4 h-4 text-sky-500" />
+            <span className="text-xs font-bold uppercase tracking-wider">Net Cash Flow</span>
+            <TrendingUp className="w-4 h-4 text-sky-500" />
           </div>
-          <p className="text-2xl font-black text-sky-600 font-mono">
-            BDT {Number(financials.totalPaidOnBills || 0).toLocaleString('en-BD')}
+          <p className={`text-2xl font-black font-mono ${Number(financials.netPosition || 0) >= 0 ? 'text-sky-600' : 'text-rose-600'}`}>
+            BDT {Number(financials.netPosition || 0).toLocaleString('en-BD')}
           </p>
-          <p className="text-[11px] text-muted-foreground">Directly settled payments</p>
+          <p className="text-[11px] text-muted-foreground">
+            Inflows minus Outflows
+          </p>
+        </div>
+
+        {/* Accounts Receivable (Client Invoices Due) */}
+        <div className="bg-card border border-border p-5 rounded-2xl shadow-xs space-y-1">
+          <div className="flex items-center justify-between text-muted-foreground">
+            <span className="text-xs font-bold uppercase tracking-wider">Receivables (Due)</span>
+            <AlertTriangle className="w-4 h-4 text-amber-500" />
+          </div>
+          <p className="text-2xl font-black text-amber-600 font-mono">
+            BDT {Number(financials.accountsReceivable ?? financials.totalDueOnInvoices ?? 0).toLocaleString('en-BD')}
+          </p>
+          <p className="text-[11px] text-muted-foreground">Client Invoice balances</p>
+        </div>
+
+        {/* Accounts Payable (Company Bills Due) */}
+        <div className="bg-card border border-border p-5 rounded-2xl shadow-xs space-y-1">
+          <div className="flex items-center justify-between text-muted-foreground">
+            <span className="text-xs font-bold uppercase tracking-wider">Payables (Due)</span>
+            <CheckCircle2 className="w-4 h-4 text-rose-500" />
+          </div>
+          <p className="text-2xl font-black text-rose-600 font-mono">
+            BDT {Number(financials.accountsPayable ?? financials.totalDueOnBills ?? 0).toLocaleString('en-BD')}
+          </p>
+          <p className="text-[11px] text-muted-foreground">Unpaid Company Bills</p>
         </div>
       </div>
 

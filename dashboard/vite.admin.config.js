@@ -41,6 +41,10 @@ function adminAliasPlugin() {
         const found = findFile(path.resolve(__dirname, 'src/admin'), source.slice(7));
         if (found) return found;
       }
+      if (source.startsWith('@client/')) {
+        const found = findFile(path.resolve(__dirname, 'src/client'), source.slice(8));
+        if (found) return found;
+      }
       return null;
     },
   };
@@ -81,6 +85,7 @@ export default defineConfig({
     alias: {
       '@shared': path.resolve(__dirname, './src/shared'),
       '@admin': path.resolve(__dirname, './src/admin'),
+      '@client': path.resolve(__dirname, './src/client'),
     },
   },
   optimizeDeps: {
@@ -126,12 +131,12 @@ export default defineConfig({
     open: false,
     proxy: {
       '/uploads': {
-        target: 'https://api.monsuralitravels.com',
+        target: 'https://server.plexivia.online',
         changeOrigin: true,
         secure: false,
       },
       '/documents': {
-        target: 'https://api.monsuralitravels.com',
+        target: 'https://server.plexivia.online',
         changeOrigin: true,
         secure: false,
       },

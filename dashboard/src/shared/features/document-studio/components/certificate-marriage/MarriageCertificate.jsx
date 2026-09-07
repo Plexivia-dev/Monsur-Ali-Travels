@@ -2,16 +2,19 @@ import React, { useState, useEffect } from 'react';
 import { MarriageCertificateForm } from './MarriageCertificateForm';
 import { MarriageCertificatePreview } from './MarriageCertificatePreview';
 import { SAMPLE_MARRIAGE_CERTIFICATE } from './sampleData';
-import { Download, RefreshCw, Heart, Printer } from 'lucide-react';
+import { Download, RefreshCw, Heart, Printer, Save } from 'lucide-react';
+import { apiClient } from '@shared/lib/api-client';
+import { toast } from 'sonner';
 import { printDocument } from '@shared/lib/utils';
 import { HeaderTitle } from '@shared/components/common/HeaderTitle';
 import { StudioFloatingViewSwitcher } from '../common/StudioFloatingViewSwitcher';
 
 export function MarriageCertificate({ initialData = null, isLocked = false, onSavedSuccess = null }) {
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [data, setData] = useState(() => ({
     ...SAMPLE_MARRIAGE_CERTIFICATE,
     ...(initialData || {}),
-    groomName: initialData?.groomName || initialData?.clientName || SAMPLE_MARRIAGE_CERTIFICATE.groomName,
+    groomName: initialData?.groomName || initialData?.groom?.name || initialData?.clientName || SAMPLE_MARRIAGE_CERTIFICATE.groom?.name,
   }));
   const [viewMode, setViewMode] = useState('edit');
 
@@ -20,7 +23,7 @@ export function MarriageCertificate({ initialData = null, isLocked = false, onSa
       setData((prev) => ({
         ...prev,
         ...initialData,
-        groomName: initialData.groomName || initialData.clientName || prev.groomName,
+        groomName: initialData.groomName || initialData.groom?.name || initialData.clientName || prev.groomName,
       }));
     }
   }, [initialData]);
@@ -29,11 +32,50 @@ export function MarriageCertificate({ initialData = null, isLocked = false, onSa
     setData(SAMPLE_MARRIAGE_CERTIFICATE);
   };
 
+  const handleSave = async () => {
+    const groomName = data.groom?.name || data.groomName;
+    const brideName = data.bride?.name || data.brideName;
+    if (!groomName || !brideName) {
+      toast.error('Groom Name and Bride Name are required to save.');
+      return;
+    }
+
+    try {
+      setIsSubmitting(true);
+      const isEdit = Boolean(data._id);
+      const res = isEdit
+        ? await apiClient.put(`/api/v1/client/docs/marriage-certificates/${data._id}`, data)
+        : await apiClient.post('/api/v1/client/docs/marriage-certificates', data);
+
+      const savedDoc = res.data?.data;
+      if (savedDoc) {
+        setData((prev) => ({
+          ...prev,
+          _id: savedDoc._id,
+          certificateNo: savedDoc.certificateNo,
+        }));
+        toast.success(
+          isEdit
+            ? `Marriage certificate updated successfully! (${savedDoc.certificateNo})`
+            : `Marriage certificate saved successfully! (${savedDoc.certificateNo})`
+        );
+        setViewMode('preview');
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        if (onSavedSuccess) onSavedSuccess(savedDoc);
+      }
+    } catch (err) {
+      console.warn('Save error:', err);
+      toast.error(err.response?.data?.message || 'Failed to save marriage certificate to database.');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   const handlePrint = () => {
     printDocument({
       docId: data.certificateNo,
       docType: 'Marriage_Certificate',
-      clientName: data.groomName ? `${data.groomName}_and_${data.brideName || ''}` : 'Marriage',
+      clientName: data.groom?.name ? `${data.groom.name}_and_${data.bride?.name || ''}` : 'Marriage',
       elementId: 'marriage-certificate-canvas',
     });
   };
@@ -54,6 +96,15 @@ export function MarriageCertificate({ initialData = null, isLocked = false, onSa
             >
               <RefreshCw className="w-3.5 h-3.5 text-sky-300" />
               <span>Reset</span>
+            </button>
+
+            <button
+              onClick={handleSave}
+              disabled={isSubmitting}
+              className="flex items-center space-x-1.5 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold px-4 py-1.5 rounded-xl shadow-md transition-colors cursor-pointer disabled:opacity-50"
+            >
+              <Save className="w-3.5 h-3.5" />
+              <span>{isSubmitting ? 'Saving...' : 'Save & Store'}</span>
             </button>
 
             <button

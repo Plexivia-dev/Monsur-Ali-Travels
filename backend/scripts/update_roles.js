@@ -7,37 +7,37 @@ async function run() {
   try {
     await connectDatabase();
 
-    // 1. Demote ihkhan2027@gmail.com to Admin
-    const ihkhan = await UserModel.findOneAndUpdate(
-      { email: 'ihkhan2027@gmail.com' },
-      { $set: { role: 'Admin' } },
-      { new: true }
-    );
-    console.log('Demoted ihkhan2027:', ihkhan?.email, '-> Role:', ihkhan?.role);
+    // 1. Remove ikramul.web@gmail.com from database
+    const deleteIkram = await UserModel.deleteMany({ email: 'ikramul.web@gmail.com' });
+    console.log('Removed ikramul.web@gmail.com count:', deleteIkram.deletedCount);
 
-    // 2. Create or Update ikramul.web@gmail.com as Owner
+    // 2. Create or Update mr.monsur1988@gmail.com as Owner
     const passwordHash = await hashPassword('11223345');
-    let ikram = await UserModel.findOne({ email: 'ikramul.web@gmail.com' });
-    if (ikram) {
-      ikram.name = 'MD Ikram';
-      ikram.passwordHash = passwordHash;
-      ikram.role = 'Owner';
-      ikram.isActive = true;
-      ikram.status = 'Active';
-      await ikram.save();
-      console.log('Updated existing user to Owner:', ikram.email, '-> Role:', ikram.role);
+    let monsur = await UserModel.findOne({ email: 'mr.monsur1988@gmail.com' });
+    if (monsur) {
+      monsur.name = 'MD MONSUR ALI';
+      monsur.passwordHash = passwordHash;
+      monsur.role = 'Owner';
+      monsur.isActive = true;
+      monsur.status = 'Active';
+      monsur.department = 'Management';
+      monsur.designation = 'Managing Director & Owner';
+      await monsur.save();
+      console.log('Updated existing user to Owner:', monsur.email, '-> Role:', monsur.role);
     } else {
-      ikram = await UserModel.create({
-        name: 'MD Ikram',
-        email: 'ikramul.web@gmail.com',
+      monsur = await UserModel.create({
+        name: 'MD MONSUR ALI',
+        email: 'mr.monsur1988@gmail.com',
         passwordHash: passwordHash,
-        phone: '+8801700000000',
+        phone: '+8801345579534',
         role: 'Owner',
         isActive: true,
         status: 'Active',
+        department: 'Management',
+        designation: 'Managing Director & Owner',
         did: generateDid(),
       });
-      console.log('Created new Owner user:', ikram.email, '-> Role:', ikram.role, 'DID:', ikram.did);
+      console.log('Created new Owner user:', monsur.email, '-> Role:', monsur.role, 'DID:', monsur.did);
     }
   } catch (err) {
     console.error('Error during role update:', err);

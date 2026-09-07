@@ -501,7 +501,7 @@ export function SettingsPage() {
               <input
                 type="text"
                 disabled
-                value="BDT (Bangladeshi Taka - ৳)"
+                value="BDT (Bangladeshi Taka)"
                 className="w-full px-3.5 py-2.5 bg-muted/40 border border-border rounded-xl text-foreground font-semibold"
               />
             </div>

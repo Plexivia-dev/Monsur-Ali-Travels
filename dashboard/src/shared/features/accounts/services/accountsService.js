@@ -10,9 +10,34 @@ export const accountsService = {
     return res.data;
   },
 
-  // ── 2. Bills ────────────────────────────────────────────────────────────────
+  // ── 2. Company Expense Bills ────────────────────────────────────────────────
   async getBills(params = {}) {
     const res = await apiClient.get('/api/v1/accounts/bills', { params });
+    return res.data;
+  },
+
+  async getBillById(id) {
+    const res = await apiClient.get(`/api/v1/accounts/bills/${id}`);
+    return res.data;
+  },
+
+  async createBill(payload) {
+    const res = await apiClient.post('/api/v1/accounts/bills', payload);
+    return res.data;
+  },
+
+  async updateBill(id, payload) {
+    const res = await apiClient.put(`/api/v1/accounts/bills/${id}`, payload);
+    return res.data;
+  },
+
+  async deleteBill(id) {
+    const res = await apiClient.delete(`/api/v1/accounts/bills/${id}`);
+    return res.data;
+  },
+
+  async settleBillPayment(id, payload) {
+    const res = await apiClient.post(`/api/v1/accounts/bills/${id}/settle`, payload);
     return res.data;
   },
 

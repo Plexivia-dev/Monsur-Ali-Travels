@@ -2,6 +2,7 @@ import React from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/store/useAuthStore';
 import { UnifiedSidebar } from '@shared/components/layout/UnifiedSidebar';
+import { APP_VERSION } from '@shared/configs/appConfig';
 import adminMenuConfig from '@/configs/adminSidebarMenu.json';
 import logoImg from '@/assets/logo.png';
 
@@ -30,7 +31,8 @@ export function AdminSidebar({ lang = 'EN', onOpenLogoutConfirm }) {
       activeChecker={activeChecker}
       onItemSelect={handleItemSelect}
       brandTitle="Monsur Ali Travels"
-      brandSubtitle="Admin Panel v3.4.04"
+      brandSubtitle={`Admin Panel v${APP_VERSION}`}
+      brandPath="/admin"
       logo={logoImg}
       user={user}
       onLogout={onOpenLogoutConfirm}

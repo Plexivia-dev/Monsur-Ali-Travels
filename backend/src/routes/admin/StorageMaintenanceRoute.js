@@ -4,10 +4,10 @@ import { authenticateToken, authorizeRoles } from '../../middlewares/auth.middle
 
 const storageMaintenanceRouter = Router();
 
-// Protect all maintenance routes for Owner, Admin, Manager, Superadmin
+// Protect all maintenance routes for Owner, Admin, Super Admin, Superadmin
 storageMaintenanceRouter.use(
   authenticateToken,
-  authorizeRoles('Owner', 'Admin', 'Manager', 'Super Admin', 'Superadmin')
+  authorizeRoles('Owner', 'Admin', 'Super Admin', 'Superadmin')
 );
 
 // 1. Get Storage Overview & Health

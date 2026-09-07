@@ -179,6 +179,8 @@ docsRouter
   .patch(ClientGuardianController.updateStatus);
 
 import { JobVerificationController } from "../../controllers/client/JobVerificationController.js";
+import { MarriageCertificateController } from "../../controllers/client/MarriageCertificateController.js";
+import { CharacterCertificateController } from "../../controllers/client/CharacterCertificateController.js";
 
 // /api/v1/docs/job-verifications
 docsRouter
@@ -191,6 +193,30 @@ docsRouter
   .get(JobVerificationController.getById)
   .put(JobVerificationController.update)
   .delete(JobVerificationController.delete);
+
+// /api/v1/docs/marriage-certificates
+docsRouter
+  .route(["/marriage-certificates", "/marriage-certificate"])
+  .get(MarriageCertificateController.getAll)
+  .post(MarriageCertificateController.create);
+
+docsRouter
+  .route(["/marriage-certificates/:id", "/marriage-certificate/:id"])
+  .get(MarriageCertificateController.getById)
+  .put(MarriageCertificateController.update)
+  .delete(MarriageCertificateController.delete);
+
+// /api/v1/docs/character-certificates
+docsRouter
+  .route(["/character-certificates", "/character-certificate"])
+  .get(CharacterCertificateController.getAll)
+  .post(CharacterCertificateController.create);
+
+docsRouter
+  .route(["/character-certificates/:id", "/character-certificate/:id"])
+  .get(CharacterCertificateController.getById)
+  .put(CharacterCertificateController.update)
+  .delete(CharacterCertificateController.delete);
 
 // /api/v1/docs/cash-vouchers
 docsRouter

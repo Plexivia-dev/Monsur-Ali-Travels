@@ -115,3 +115,4 @@ jobVerificationSchema.index({ "clientInfo.clientName": "text", "clientInfo.clien
 
 export const JobVerificationModel =
   models.JobVerification || model("JobVerification", jobVerificationSchema);
+export default JobVerificationModel;

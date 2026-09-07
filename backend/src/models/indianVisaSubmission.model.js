@@ -175,3 +175,4 @@ indianVisaSubmissionSchema.pre("save", function (next) {
 export const IndianVisaSubmissionModel =
   mongoose.models.IndianVisaSubmission ||
   mongoose.model("IndianVisaSubmission", indianVisaSubmissionSchema);
+export default IndianVisaSubmissionModel;

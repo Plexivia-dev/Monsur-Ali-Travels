@@ -6,3 +6,6 @@ export { CashBookPage } from './pages/CashBookPage';
 export { BankLedgerPage } from './pages/BankLedgerPage';
 export { ReportsPage } from './pages/ReportsPage';
 export { accountsService } from './services/accountsService';
+export { CreateBillModal } from './components/CreateBillModal';
+export { InvoicePreviewModal } from './components/InvoicePreviewModal';
+

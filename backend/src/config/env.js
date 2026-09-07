@@ -30,6 +30,8 @@ const envSchema = z.object({
   R2_BUCKET_NAME: z.string().default("monsuralitravels-erp-docs"),
   R2_ENDPOINT: z.string().optional(),
   R2_PUBLIC_DOMAIN: z.string().optional(),
+  UPLOAD_PATH: z.string().optional(),
+  DOCUMENT_PATH: z.string().optional(),
 });
 
 const parsed = envSchema.safeParse(process.env);

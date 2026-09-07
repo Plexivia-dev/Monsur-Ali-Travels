@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
 import Client from "../../models/client.model.js";
+import { checkManagerCanDelete, checkManagerCanUpdate } from "../../helper/managerRbacHelper.js";
 
 const isObjectId = (id) => typeof id === "string" && /^[0-9a-fA-F]{24}$/.test(id);
 const buildIdQuery = (id) => {
@@ -158,6 +159,19 @@ class ClientController {
   async update(req, res) {
     try {
       const query = buildIdQuery(req.params.id);
+      const existing = await Client.findOne(query);
+      if (!existing) {
+        return res.status(404).json({
+          status: "fail",
+          success: false,
+          message: "Client not found.",
+        });
+      }
+
+      if (!checkManagerCanUpdate(req, res, existing, "client profile")) {
+        return;
+      }
+
       const updateData = {
         ...req.body,
         updatedByDid: req.user?.did || null,
@@ -175,14 +189,6 @@ class ClientController {
         updateData,
         { new: true, runValidators: true }
       );
-
-      if (!client) {
-        return res.status(404).json({
-          status: "fail",
-          success: false,
-          message: "Client not found.",
-        });
-      }
 
       return res.status(200).json({
         status: "success",
@@ -213,6 +219,19 @@ class ClientController {
       }
 
       const query = buildIdQuery(req.params.id);
+      const existing = await Client.findOne(query);
+      if (!existing) {
+        return res.status(404).json({
+          status: "fail",
+          success: false,
+          message: "Client not found.",
+        });
+      }
+
+      if (!checkManagerCanUpdate(req, res, existing, "client status")) {
+        return;
+      }
+
       const client = await Client.findOneAndUpdate(
         query,
         {
@@ -221,14 +240,6 @@ class ClientController {
         },
         { new: true, runValidators: true }
       );
-
-      if (!client) {
-        return res.status(404).json({
-          status: "fail",
-          success: false,
-          message: "Client not found.",
-        });
-      }
 
       return res.status(200).json({
         status: "success",
@@ -249,6 +260,10 @@ class ClientController {
   // DELETE /api/v1/clients/:id
   async delete(req, res) {
     try {
+      if (!checkManagerCanDelete(req, res, "client profile")) {
+        return;
+      }
+
       const query = buildIdQuery(req.params.id);
       const client = await Client.findOneAndUpdate(
         query,

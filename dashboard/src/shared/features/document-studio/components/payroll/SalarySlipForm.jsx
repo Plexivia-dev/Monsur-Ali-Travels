@@ -387,7 +387,7 @@ export function SalarySlipForm({ formData, setFormData, onSubmit, onReset, isSub
       </div>
 
       {/* Section 4: Net Salary Payable Card */}
-      <div className="bg-gradient-to-br from-sky-50 via-white to-sky-100/50 dark:from-sky-950/30 dark:via-background dark:to-slate-900/40 border border-sky-300 dark:border-sky-800/50 p-5 rounded-2xl shadow-xs space-y-3">
+      <div className="bg-gradient-to-br from-sky-50 via-white to-sky-100/50 border border-sky-300 p-5 rounded-2xl shadow-xs space-y-3">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div>
             <span className="font-bold text-xs uppercase tracking-wider text-muted-foreground block">
@@ -402,7 +402,7 @@ export function SalarySlipForm({ formData, setFormData, onSubmit, onReset, isSub
             <span className="text-[11px] font-semibold text-muted-foreground block">
               Gross: BDT {Number(formData.grossEarnings || 0).toLocaleString('en-BD')} | Deductions: -BDT {Number(formData.totalDeduction || 0).toLocaleString('en-BD')}
             </span>
-            <span className="text-xs font-bold text-sky-700 dark:text-sky-300 mt-1 inline-block">
+            <span className="text-xs font-bold text-sky-700 mt-1 inline-block">
               {formData.netSalaryInWords || 'Zero Taka Only'}
             </span>
           </div>
@@ -447,7 +447,7 @@ export function SalarySlipForm({ formData, setFormData, onSubmit, onReset, isSub
             <button
               type="button"
               onClick={() => setResetDialogOpen(false)}
-              className="px-4 py-2 rounded-xl text-xs font-semibold bg-red-500/10 text-red-600 dark:text-red-400 border border-red-500/30 hover:bg-red-500/20 hover:border-red-500/50 transition-colors cursor-pointer"
+              className="px-4 py-2 rounded-xl text-xs font-semibold bg-red-500/10 text-red-600 border border-red-500/30 hover:bg-red-500/20 hover:border-red-500/50 transition-colors cursor-pointer"
             >
               Cancel
             </button>

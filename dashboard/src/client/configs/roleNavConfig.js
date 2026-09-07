@@ -248,6 +248,14 @@ export const MASTER_ITEMS = {
     submodule: 'passports',
     href: '/dashboard/data/passports',
   },
+  dataCashVouchers: {
+    icon: 'Wallet',
+    label: 'Cash Voucher Records',
+    key: 'nav.cashVouchers',
+    portal: 'data',
+    submodule: 'cash-vouchers',
+    href: '/dashboard/data/cash-vouchers',
+  },
 };
 
 /**
@@ -585,6 +593,7 @@ export const ROLE_NAVIGATION_PRESETS = {
           MASTER_ITEMS.dataClientApplications,
           MASTER_ITEMS.dataIndianVisas,
           MASTER_ITEMS.dataPassports,
+          MASTER_ITEMS.dataCashVouchers,
         ],
       },
     ],

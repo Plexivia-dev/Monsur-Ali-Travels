@@ -38,6 +38,9 @@
     "invoiceRecords": "ইনভয়েস রেকর্ড",
     "moneyReceiptRecords": "মানি রিসিট রেকর্ড",
     "agreementRecords": "চুক্তিপত্র রেকর্ড",
+    "jobVerificationRecords": "জব ভেরিফিকেশন রেকর্ড",
+    "marriageCertificateRecords": "বিবাহ সনদ রেকর্ড",
+    "characterCertificateRecords": "চারিত্রিক সনদ রেকর্ড",
     "systemUsers": "সিস্টেম ব্যবহারকারী",
     "auditLogs": "অডিট ও ডেটাবেজ লগ",
     "globalSettings": "গ্লোবাল সেটিংস"
@@ -630,5 +633,20 @@
     "submitted_to_bsf": "গ্লোবাল বিএসএফ সেন্টারে সাবমিট করা হয়েছে",
     "interview_scheduled": "ইন্টারভিউ নির্ধারিত",
     "complete_process": "প্রক্রিয়া সম্পন্ন"
+  },
+  "jobVerification": {
+    "title": "জব ভেরিফিকেশন রেকর্ড",
+    "subtitle": "অফিসিয়াল চাকরির প্রতিপাদন, অবস্থান সনদপত্র এবং স্পন্সর গ্যারান্টি রেকর্ড।",
+    "newForm": "+ নতুন জব ভেরিফিকেশন"
+  },
+  "marriageCertificate": {
+    "title": "বিবাহ সনদ রেকর্ড",
+    "subtitle": "অফিসিয়াল নিকাহনামা এক্সট্র্যাক্ট, বিবাহ প্রতিপাদন ও স্পাউস ভিসা রেকর্ড।",
+    "newForm": "+ নতুন বিবাহ সনদ"
+  },
+  "characterCertificate": {
+    "title": "চারিত্রিক সনদ ও প্রত্যায়নপত্র রেকর্ড",
+    "subtitle": "অফিসিয়াল চারিত্রিক সনদ, সুআচরণ প্রত্যায়ন এবং প্রাতিষ্ঠানিক সুপারিশপত্র রেকর্ড।",
+    "newForm": "+ নতুন চারিত্রিক সনদ"
   }
 }

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'motion/react';
 import { Send, CheckCircle, AlertCircle, Loader2 } from 'lucide-react';
+import { API_BASE_URL } from '../config/api';
 
 export function ContactForm() {
   const [mountTime, setMountTime] = useState(0);
@@ -26,10 +27,10 @@ export function ContactForm() {
       return;
     }
 
-    // 2. Timing check (prevent submission under 3 seconds from component mount)
+    // 2. Timing check (prevent instantaneous automated bot script submissions)
     const submitTime = Date.now();
-    if (submitTime - mountTime < 3000) {
-      setTimeout(() => setStatus('success'), 1000); // Fake success
+    if (submitTime - mountTime < 500 && !honeypotUrl && !honeypotPhone) {
+      setTimeout(() => setStatus('success'), 600); // Fake success for sub-500ms bot scripts
       return;
     }
 
@@ -42,7 +43,7 @@ export function ContactForm() {
     }
 
     // Real API Call to Backend
-    const apiBase = import.meta.env.VITE_API_URL || 'https://api.monsuralitravels.com';
+    const apiBase = API_BASE_URL;
     try {
       const payload = {
         name: formData.get('name'),

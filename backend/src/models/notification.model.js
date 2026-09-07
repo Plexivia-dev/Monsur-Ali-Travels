@@ -110,3 +110,4 @@ notificationSchema.post("save", function (doc) {
 export const NotificationModel =
   mongoose.models.Notification ||
   mongoose.model("Notification", notificationSchema);
+export default NotificationModel;

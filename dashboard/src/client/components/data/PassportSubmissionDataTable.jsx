@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Search, RefreshCw, ShieldCheck, Trash2, Printer, Download, X, Receipt, Edit3, Paperclip, Upload } from 'lucide-react';
+import { Search, RefreshCw, ShieldCheck, Trash2, Printer, Download, X, Receipt, Edit3, Paperclip, Upload, CheckCircle2 } from 'lucide-react';
 import { apiClient } from '../../lib/api-client';
 import { DataTablePagination } from './DataTablePagination';
 import { toast } from 'sonner';
@@ -9,6 +9,7 @@ import { PassportSubmissionPreview, MoneyReceiptModal } from '@/shared/features/
 import { ConfirmDeleteDialog } from '@/components/ui/confirm-delete-dialog';
 import { Button } from '@/components/ui/button';
 import { useTranslation } from 'react-i18next';
+import { useAuthStore } from '../../store/useAuthStore';
 
 const PASSPORT_STAGES = [
   { id: 'received', label: 'File Received', color: 'bg-amber-500/10 text-amber-600 border-amber-500/20' },
@@ -29,6 +30,8 @@ const PASSPORT_STAGES = [
 
 export function PassportSubmissionDataTable() {
   const { t } = useTranslation();
+  const user = useAuthStore((state) => state.user);
+  const isManager = String(user?.role || '').toLowerCase().trim() === 'manager';
   const { switchPortal } = usePortal();
   const [data, setData] = useState([]);
   const [pagination, setPagination] = useState({ page: 1, limit: 10, skip: 0, totalCount: 0, totalPages: 1 });
@@ -317,14 +320,16 @@ export function PassportSubmissionDataTable() {
                           <Download className="w-3.5 h-3.5" />
                           <span>Download / Print</span>
                         </button>
-                        <button
-                          type="button"
-                          onClick={() => setDeleteTarget({ id: item._id, trackingNo: item.trackingNo })}
-                          className="p-1.5 rounded hover:bg-rose-500/10 text-rose-500 transition-colors cursor-pointer"
-                          title="Delete Record"
-                        >
-                          <Trash2 className="w-3.5 h-3.5" />
-                        </button>
+                        {!isManager && (
+                          <button
+                            type="button"
+                            onClick={() => setDeleteTarget({ id: item._id, trackingNo: item.trackingNo })}
+                            className="p-1.5 rounded hover:bg-rose-500/10 text-rose-500 transition-colors cursor-pointer"
+                            title="Delete Record"
+                          >
+                            <Trash2 className="w-3.5 h-3.5" />
+                          </button>
+                        )}
                       </div>
                     </td>
                   </tr>

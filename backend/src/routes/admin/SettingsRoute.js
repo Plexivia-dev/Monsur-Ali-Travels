@@ -14,7 +14,7 @@ const settingsRouter = Router();
 settingsRouter.get(
   "/core-team",
   authenticateToken,
-  authorizeRoles("Owner", "Admin", "Manager", "Superadmin"),
+  authorizeRoles("Owner", "Admin", "Superadmin"),
   getCoreTeam
 );
 
@@ -22,7 +22,7 @@ settingsRouter.get(
 settingsRouter.get(
   "/staff-clients",
   authenticateToken,
-  authorizeRoles("Owner", "Admin", "Manager", "Superadmin"),
+  authorizeRoles("Owner", "Admin", "Superadmin"),
   getStaffClients
 );
 
@@ -30,7 +30,7 @@ settingsRouter.get(
 settingsRouter.post(
   "/core-team/assign",
   authenticateToken,
-  authorizeRoles("Owner", "Admin", "Manager", "Superadmin"),
+  authorizeRoles("Owner", "Admin", "Superadmin"),
   assignCoreTeamRole
 );
 
@@ -38,7 +38,7 @@ settingsRouter.post(
 settingsRouter.post(
   "/core-team/remove",
   authenticateToken,
-  authorizeRoles("Owner", "Admin", "Manager", "Superadmin"),
+  authorizeRoles("Owner", "Admin", "Superadmin"),
   removeCoreTeamRole
 );
 
@@ -46,7 +46,7 @@ settingsRouter.post(
 settingsRouter.post(
   "/core-team/invite",
   authenticateToken,
-  authorizeRoles("Owner", "Admin", "Manager", "Superadmin"),
+  authorizeRoles("Owner", "Admin", "Superadmin"),
   inviteCoreTeamUser
 );
 

@@ -16,21 +16,21 @@ taskTypeRouter.get("/", getTaskTypes);
 taskTypeRouter.post(
   "/",
   authenticateToken,
-  authorizeRoles("Owner", "Admin", "Manager", "Superadmin"),
+  authorizeRoles("Owner", "Admin", "Superadmin"),
   createTaskType
 );
 
 taskTypeRouter.put(
   "/:id",
   authenticateToken,
-  authorizeRoles("Owner", "Admin", "Manager", "Superadmin"),
+  authorizeRoles("Owner", "Admin", "Superadmin"),
   updateTaskType
 );
 
 taskTypeRouter.delete(
   "/:id",
   authenticateToken,
-  authorizeRoles("Owner", "Admin", "Manager", "Superadmin"),
+  authorizeRoles("Owner", "Admin", "Superadmin"),
   deleteTaskType
 );
 

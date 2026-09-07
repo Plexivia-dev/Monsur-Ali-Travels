@@ -28,6 +28,7 @@ export function MoneyReceiptModal({
   onClose,
   initialData = {},
   onSuccess,
+  onCreated,
 }) {
   const user = useAuth((state) => state.user);
   const [loading, setLoading] = useState(false);
@@ -144,9 +145,7 @@ export function MoneyReceiptModal({
         const receipt = res.data.data;
         setCreatedReceipt(receipt);
         toast.success(`Payment Token #${receipt.receiptNo} created successfully!`);
-        if (onCreated) {
-          onCreated(receipt);
-        }
+        (onCreated || onSuccess)?.(receipt);
       } else {
         toast.error(res.data?.message || 'Failed to create receipt token.');
       }
@@ -396,7 +395,7 @@ export function MoneyReceiptModal({
                 <button
                   type="button"
                   onClick={onClose}
-                  className="px-4 py-2 text-xs font-semibold rounded-lg border border-red-500/30 text-red-600 dark:text-red-400 hover:bg-red-500/10 hover:border-red-500/50 transition-colors cursor-pointer"
+                  className="px-4 py-2 text-xs font-semibold rounded-lg border border-red-500/30 text-red-600 hover:bg-red-500/10 hover:border-red-500/50 transition-colors cursor-pointer"
                 >
                   Cancel
                 </button>

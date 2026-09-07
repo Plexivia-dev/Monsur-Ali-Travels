@@ -16,8 +16,8 @@ const usersRouter = Router();
 usersRouter.use(authenticateToken);
 
 // Allow authorized roles to view staff/user roster
-usersRouter.get("/", authorizeRoles("Owner", "Admin", "Superadmin", "Accountant", "accounts", "Staff", "frontdesk"), listUsers);
-usersRouter.get("/:userId", authorizeRoles("Owner", "Admin", "Superadmin", "Accountant", "accounts", "Staff", "frontdesk"), getUserById);
+usersRouter.get("/", authorizeRoles("Owner", "Admin", "Superadmin", "Accountant", "accounts", "Staff", "frontdesk", "Manager"), listUsers);
+usersRouter.get("/:userId", authorizeRoles("Owner", "Admin", "Superadmin", "Accountant", "accounts", "Staff", "frontdesk", "Manager"), getUserById);
 usersRouter.post("/", authorizeRoles("Owner", "Admin"), createUser);
 usersRouter.put("/:userId", authorizeRoles("Owner", "Admin"), updateUser);
 usersRouter.patch("/:userId", authorizeRoles("Owner", "Admin"), updateUser);

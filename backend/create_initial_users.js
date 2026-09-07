@@ -14,42 +14,130 @@ const run = async () => {
     await mongoose.connect(uri);
     console.log("Connected to MongoDB.");
 
-    const passwordHash = await hashPassword("11223345");
+    const staffPassHash = await hashPassword("P@ss026##");
+    const ownerPassHash = await hashPassword("11223345");
 
     const usersToCreate = [
+      // 1. Existing Root Owners & Staff
       {
-        name: "Front Desk",
-        email: "mdikr4m01@gmail.com",
-        passwordHash,
+        name: "Md Ikram",
+        email: "md.ikr4m@gmail.com",
+        passwordHash: ownerPassHash,
+        role: "Owner",
+        designation: "System Architect / Founder",
+        department: "Executive Management",
+        phone: "01784220265",
+        status: "Active",
+        isActive: true,
+      },
+      {
+        name: "Monsur Ali",
+        email: "mr.monsur1988@gmail.com",
+        passwordHash: ownerPassHash,
+        role: "Owner",
+        designation: "Chairman & Founder",
+        department: "Executive Management",
+        phone: "01345678902",
+        status: "Active",
+        isActive: true,
+      },
+      {
+        name: "IH Khan",
+        email: "ihkhan2027@gmail.com",
+        passwordHash: ownerPassHash,
         role: "Staff",
         subRole: "Frontdesk",
-        phone: "01700000001"
+        designation: "Front Desk Officer",
+        department: "Front Desk",
+        phone: "01608098281",
+        status: "Active",
+        isActive: true,
+      },
+
+      // 2. The 6 Monsur Ali Travels Team Members
+      {
+        name: "Md Hakimul Islam Nasim",
+        email: "nasim@monsuralitravels.com",
+        passwordHash: staffPassHash,
+        role: "Manager",
+        designation: "Managing Director",
+        department: "Executive Management",
+        phone: "01700000001",
+        status: "Active",
+        isActive: true,
       },
       {
-        name: "Mr Accountant",
-        email: "md.ikr4m@gmail.com",
-        passwordHash,
+        name: "Koyes Ahmed",
+        email: "ahmed@monsuralitravels.com",
+        passwordHash: staffPassHash,
+        role: "Staff",
+        subRole: "Representative",
+        designation: "Project Manager / Representative",
+        department: "Project Management",
+        phone: "01700000002",
+        status: "Active",
+        isActive: true,
+      },
+      {
+        name: "Toiyoba Yeasmin Ruma",
+        email: "toiyoba@monsuralitravels.com",
+        passwordHash: staffPassHash,
+        role: "Staff",
+        subRole: "Visa_Processor",
+        designation: "Indian File Tracking",
+        department: "Visa Processing",
+        phone: "01700000003",
+        status: "Active",
+        isActive: true,
+      },
+      {
+        name: "Habiba Begum",
+        email: "habiba@monsuralitravels.com",
+        passwordHash: staffPassHash,
+        role: "Staff",
+        subRole: "Frontdesk",
+        designation: "Help desk or information",
+        department: "Frontdesk & Support",
+        phone: "01700000004",
+        status: "Active",
+        isActive: true,
+      },
+      {
+        name: "Mst Fatema Akter",
+        email: "fatema@monsuralitravels.com",
+        passwordHash: staffPassHash,
+        role: "Staff",
+        subRole: "ClientManager",
+        designation: "Work Permit Tracking / Client Manager",
+        department: "Client Operations",
+        phone: "01700000005",
+        status: "Active",
+        isActive: true,
+      },
+      {
+        name: "Mst Alpona Begum",
+        email: "alpona@monsuralitravels.com",
+        passwordHash: staffPassHash,
         role: "Staff",
         subRole: "Accountant",
-        phone: "01700000002"
+        designation: "Accountant & Financial",
+        department: "Accounts & Finance",
+        phone: "01700000006",
+        status: "Active",
+        isActive: true,
       },
-      {
-        name: "Mr Dev",
-        email: "ihkhan2027@gmail.com",
-        passwordHash,
-        role: "Owner",
-        phone: "01700000003"
-      }
     ];
 
     for (const u of usersToCreate) {
       await UserModel.deleteOne({ email: u.email });
       const user = new UserModel(u);
       await user.save();
-      console.log(`Created user: ${user.name} (${user.email}) -> Role: ${user.role} ${user.subRole || ""}`);
+      console.log(
+        `✓ Created user: ${user.name} (${user.email}) -> Role: [${user.role}] SubRole: [${user.subRole || "—"}] Designation: [${user.designation || "—"}]`
+      );
     }
 
-    console.log("All 3 users created successfully!");
+    console.log("\nAll 9 users created / synchronized successfully!");
   } catch (error) {
     console.error("Error creating users:", error);
   } finally {

@@ -84,10 +84,20 @@ const cashVoucherSchema = new Schema(
       default: () => new Date().toLocaleDateString("en-GB"), // DD/MM/YYYY
     },
 
-    // Prepared by / received by
+    // Prepared by / received by / paid to
     preparedBy: { type: String, default: "" },
     preparedByRole: { type: String, default: "" },
     receivedBy: { type: String, default: "" },
+    receivedFrom: { type: String, default: "" },
+    paidTo: { type: String, default: "" },
+    phone: { type: String, default: "" },
+    email: { type: String, default: "" },
+    purpose: { type: String, default: "" },
+    category: { type: String, default: "Office Expense" },
+    clientId: { type: String, default: null },
+    clientDid: { type: String, default: null },
+    linkedCaseId: { type: String, default: null },
+    linkedCaseDid: { type: String, default: null },
     accountsSignature: { type: String, default: "" },
     accountsDesignation: { type: String, default: "" },
 
@@ -113,7 +123,8 @@ const cashVoucherSchema = new Schema(
     },
 
     // Metadata
-    createdBy: { type: Schema.Types.ObjectId, ref: "User", default: null },
+    createdBy: { type: String, default: null },
+    createdByDid: { type: String, default: null },
     createdByName: { type: String, default: "" },
     notes: { type: String, default: "" },
     isActive: { type: Boolean, default: true, index: true },

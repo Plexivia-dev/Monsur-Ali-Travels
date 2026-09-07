@@ -1,6 +1,7 @@
 import mongoose from "mongoose";
 import { EmploymentAgreementModel, generateUniqueAgreementId } from "../../models/employmentAgreement.model.js";
 import { logger } from "../../config/logger.js";
+import { checkManagerCanDelete, checkManagerCanUpdate } from "../../helper/managerRbacHelper.js";
 
 // Helper to normalize payload into English Schema format
 function mapPayloadToEnglishSchema(body = {}) {
@@ -168,6 +169,8 @@ export const createEmploymentAgreement = async (req, res, next) => {
     }
 
     const mappedData = mapPayloadToEnglishSchema(body);
+    mappedData.createdByDid = req.user?.did || null;
+    mappedData.createdByName = req.user?.name || "";
     const agreement = await EmploymentAgreementModel.create(mappedData);
 
     logger.info({ agreementId: agreement.agreementId, _id: agreement._id, employeeName }, "Created Employment Agreement");
@@ -189,6 +192,10 @@ export const updateEmploymentAgreement = async (req, res, next) => {
     const existing = await findAgreementByIdOrCustomId(id);
     if (!existing) {
       return res.status(404).json({ status: "error", message: "Employment agreement not found" });
+    }
+
+    if (!checkManagerCanUpdate(req, res, existing, "employment agreement")) {
+      return;
     }
 
     const body = req.body ?? {};
@@ -216,13 +223,17 @@ export const updateEmploymentAgreement = async (req, res, next) => {
 // DELETE /api/v1/docs/employment-agreement/:id - Delete agreement
 export const deleteEmploymentAgreement = async (req, res, next) => {
   try {
+    if (!checkManagerCanDelete(req, res, "employment agreement")) {
+      return;
+    }
+
     const { id } = req.params;
     const existing = await findAgreementByIdOrCustomId(id);
     if (!existing) {
       return res.status(404).json({ status: "error", message: "Employment agreement not found" });
     }
 
-    const agreement = await EmploymentAgreementModel.findOneAndUpdate(
+    await EmploymentAgreementModel.findOneAndUpdate(
       { _id: existing._id },
       { isActive: false },
       { new: true }

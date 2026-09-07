@@ -1,0 +1,14 @@
+[Unit]
+Description=Monsur Ali Travels ERP DEV Docker Compose Services
+After=docker.service
+Requires=docker.service
+
+[Service]
+Type=oneshot
+WorkingDirectory=/dev-env/opt/monsuralitravels
+ExecStart=/usr/bin/docker compose -f docker-compose.dev.yml up -d
+ExecStop=/usr/bin/docker compose -f docker-compose.dev.yml down
+RemainAfterExit=yes
+
+[Install]
+WantedBy=multi-user.target

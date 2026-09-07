@@ -22,11 +22,15 @@ import { toast } from 'sonner';
 import { usePortal } from '../../context/PortalContext';
 import { MoneyReceiptModal } from '@/shared/features/document-studio';
 import { ConfirmDeleteDialog } from '@/components/ui/confirm-delete-dialog';
+import { CaseWorkspaceDrawer } from '../agency/CaseWorkspaceDrawer';
 import { Button } from '@/components/ui/button';
 import { useTranslation } from 'react-i18next';
+import { useAuthStore } from '../../store/useAuthStore';
 
 export function ClientDataTable({ activeSubmodule }) {
   const { t } = useTranslation();
+  const user = useAuthStore((state) => state.user);
+  const isManager = String(user?.role || '').toLowerCase().trim() === 'manager';
   const { switchPortal } = usePortal();
   const [data, setData] = useState([]);
   const [pagination, setPagination] = useState({
@@ -368,14 +372,16 @@ export function ClientDataTable({ activeSubmodule }) {
                           >
                             <Eye className="w-3.5 h-3.5" />
                           </button>
-                          <button
-                            type="button"
-                            onClick={() => setDeleteTarget({ id: item._id, clientCode: item.clientCode })}
-                            className="p-1.5 rounded hover:bg-rose-500/10 text-rose-500 transition-colors cursor-pointer"
-                            title="Delete"
-                          >
-                            <Trash2 className="w-3.5 h-3.5" />
-                          </button>
+                          {!isManager && (
+                            <button
+                              type="button"
+                              onClick={() => setDeleteTarget({ id: item._id, clientCode: item.clientCode })}
+                              className="p-1.5 rounded hover:bg-rose-500/10 text-rose-500 transition-colors cursor-pointer"
+                              title="Delete"
+                            >
+                              <Trash2 className="w-3.5 h-3.5" />
+                            </button>
+                          )}
                         </div>
                       </td>
                     </tr>

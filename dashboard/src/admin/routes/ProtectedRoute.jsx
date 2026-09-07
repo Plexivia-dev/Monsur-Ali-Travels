@@ -25,9 +25,11 @@ export function ProtectedRoute({ allowedRoles = ADMIN_ROLES }) {
   const hasAccess = normalizedAllowed.includes(roleStr)
 
   if (!hasAccess) {
-    // Standard staff / non-admin user -> redirect cleanly to client portal
-    window.location.replace('/client.html')
-    return null
+    // Non-admin session on admin portal -> clear unauthorized credentials and redirect cleanly to login
+    localStorage.removeItem('accessToken')
+    localStorage.removeItem('refreshToken')
+    localStorage.removeItem('user')
+    return <Navigate to="/login" replace />
   }
 
   return <Outlet />

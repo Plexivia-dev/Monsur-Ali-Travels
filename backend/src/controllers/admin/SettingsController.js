@@ -2,7 +2,6 @@ import { UserModel } from "../../models/user.model.js";
 import { EmployeeModel } from "../../models/employee.model.js";
 import { hashPassword } from "../../utils/password.js";
 import { generateDid } from "../../utils/generateDid.js";
-import { env } from "../../config/env.js";
 import { sendStaffInvitationEmail } from "../../services/emailService.js";
 
 

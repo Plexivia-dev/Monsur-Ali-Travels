@@ -1,6 +1,7 @@
 import { JobVerificationModel, generateUniqueJobVerificationId } from "../../models/jobVerification.model.js";
 import { syncClientProfile } from "../../helper/clientSyncHelper.js";
 import { logger } from "../../config/logger.js";
+import { checkManagerCanDelete, checkManagerCanUpdate } from "../../helper/managerRbacHelper.js";
 
 export class JobVerificationController {
   // GET /api/v1/client/docs/job-verifications
@@ -159,26 +160,32 @@ export class JobVerificationController {
   static async update(req, res) {
     try {
       const { id } = req.params;
-      const updateData = { ...req.body };
-      delete updateData._id;
-      delete updateData.id;
+      const existing = await JobVerificationModel.findOne({
+        $or: [{ _id: id.match(/^[0-9a-fA-F]{24}$/) ? id : null }, { did: id }, { verificationId: id }],
+        isActive: { $ne: false },
+      });
 
-      const doc = await JobVerificationModel.findOneAndUpdate(
-        {
-          $or: [{ _id: id.match(/^[0-9a-fA-F]{24}$/) ? id : null }, { did: id }, { verificationId: id }],
-          isActive: { $ne: false },
-        },
-        { $set: updateData },
-        { new: true, runValidators: true }
-      );
-
-      if (!doc) {
+      if (!existing) {
         return res.status(404).json({
           success: false,
           status: "error",
           message: "Job verification document not found",
         });
       }
+
+      if (!checkManagerCanUpdate(req, res, existing, "Job verification document")) {
+        return;
+      }
+
+      const updateData = { ...req.body };
+      delete updateData._id;
+      delete updateData.id;
+
+      const doc = await JobVerificationModel.findOneAndUpdate(
+        { _id: existing._id },
+        { $set: updateData },
+        { new: true, runValidators: true }
+      );
 
       return res.status(200).json({
         success: true,
@@ -199,6 +206,10 @@ export class JobVerificationController {
   // DELETE /api/v1/client/docs/job-verifications/:id
   static async delete(req, res) {
     try {
+      if (!checkManagerCanDelete(req, res, "Job verification document")) {
+        return;
+      }
+
       const { id } = req.params;
       const doc = await JobVerificationModel.findOneAndUpdate(
         {

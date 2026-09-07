@@ -87,10 +87,10 @@ export const getPaymentBadge = (status) => {
     case "paid":
       return <Badge className="bg-emerald-500 hover:bg-emerald-600 px-3 py-1 text-xs">Paid</Badge>;
     case "partial":
-      return <Badge variant="secondary" className="bg-amber-500/20 text-amber-600 hover:bg-amber-500/30 dark:text-amber-400 px-3 py-1 text-xs font-semibold">Partial</Badge>;
+      return <Badge variant="secondary" className="bg-amber-500/20 text-amber-600 hover:bg-amber-500/30 px-3 py-1 text-xs font-semibold">Partial</Badge>;
     case "pending":
     default:
-      return <Badge variant="secondary" className="bg-rose-500/20 text-rose-600 hover:bg-rose-500/30 dark:text-rose-400 px-3 py-1 text-xs">Pending</Badge>;
+      return <Badge variant="secondary" className="bg-rose-500/20 text-rose-600 hover:bg-rose-500/30 px-3 py-1 text-xs">Pending</Badge>;
   }
 };
 
@@ -100,7 +100,7 @@ export const getFulfillmentBadge = (status) => {
     case "shipped":
       return <Badge className="bg-emerald-500 hover:bg-emerald-600 px-3 py-1 text-xs">Shipped</Badge>;
     case "processing":
-      return <Badge variant="secondary" className="bg-blue-500/20 text-blue-600 hover:bg-blue-500/30 dark:text-blue-400 px-3 py-1 text-xs">Processing</Badge>;
+      return <Badge variant="secondary" className="bg-blue-500/20 text-blue-600 hover:bg-blue-500/30 px-3 py-1 text-xs">Processing</Badge>;
     case "cancelled":
       return <Badge variant="destructive" className="px-3 py-1 text-xs">Cancelled</Badge>;
     case "completed":

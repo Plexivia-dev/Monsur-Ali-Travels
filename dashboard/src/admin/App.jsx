@@ -19,6 +19,7 @@ import UsersPage from '@/pages/UsersPage'
 import EmployeesPage from '@/pages/EmployeesPage'
 import SettingsPage from '@/pages/SettingsPage'
 import DocumentStudioPage from '@/pages/DocumentStudioPage'
+import DocumentDataPage from '@/pages/DocumentDataPage'
 import NotFoundPage from '@/pages/NotFoundPage'
 import CashBook from '@/pages/accounting/CashBook'
 import BankLedger from '@/pages/accounting/BankLedger'
@@ -86,6 +87,9 @@ export default function App() {
               <Route path="accounts/cash-book" element={<CashBook />} />
               <Route path="accounts/bank-ledger" element={<BankLedger />} />
               <Route path="accounts/expenses" element={<Expenses />} />
+
+              <Route path="data" element={<DocumentDataPage />} />
+              <Route path="data/:submodule" element={<DocumentDataPage />} />
 
               <Route path="settings" element={<SettingsPage />} />
               <Route path="*" element={<NotFoundPage />} />

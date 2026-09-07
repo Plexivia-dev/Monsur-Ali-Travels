@@ -27,9 +27,12 @@ import { MoneyReceiptModal, ReceiptConfirmModal, MoneyReceiptPrintSlip } from '@
 import { ConfirmDeleteDialog } from '@/components/ui/confirm-delete-dialog';
 import { Button } from '@/components/ui/button';
 import { useTranslation } from 'react-i18next';
+import { useAuthStore } from '../../store/useAuthStore';
 
 export function MoneyReceiptDataTable() {
   const { t } = useTranslation();
+  const user = useAuthStore((state) => state.user);
+  const isManager = String(user?.role || '').toLowerCase().trim() === 'manager';
   const [data, setData] = useState([]);
   const [pagination, setPagination] = useState({ page: 1, limit: 10, skip: 0, totalCount: 0, totalPages: 1 });
   const [search, setSearch] = useState('');
@@ -475,13 +478,15 @@ export function MoneyReceiptDataTable() {
                           )}
 
                           {/* Delete Button */}
-                          <button
-                            onClick={() => setDeleteTarget({ id: item._id || item.id, receiptNo: item.receiptNo })}
-                            className="p-1.5 rounded-lg border border-border bg-background hover:bg-rose-50 text-muted-foreground hover:text-rose-600 transition-colors cursor-pointer"
-                            title="Delete"
-                          >
-                            <Trash2 className="w-3.5 h-3.5" />
-                          </button>
+                          {!isManager && (
+                            <button
+                              onClick={() => setDeleteTarget({ id: item._id || item.id, receiptNo: item.receiptNo })}
+                              className="p-1.5 rounded-lg border border-border bg-background hover:bg-rose-50 text-muted-foreground hover:text-rose-600 transition-colors cursor-pointer"
+                              title="Delete"
+                            >
+                              <Trash2 className="w-3.5 h-3.5" />
+                            </button>
+                          )}
 
                         </div>
                       </td>

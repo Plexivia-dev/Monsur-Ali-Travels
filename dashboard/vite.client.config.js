@@ -124,6 +124,18 @@ export default defineConfig({
     strictPort: false,
     host: '127.0.0.1',
     open: false,
+    proxy: {
+      '/uploads': {
+        target: 'https://server.plexivia.online',
+        changeOrigin: true,
+        secure: false,
+      },
+      '/documents': {
+        target: 'https://server.plexivia.online',
+        changeOrigin: true,
+        secure: false,
+      },
+    },
   },
   build: {
     outDir: 'dist/client',

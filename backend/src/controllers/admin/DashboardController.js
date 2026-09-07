@@ -6,6 +6,7 @@ import { SalarySlipModel } from '../../models/salarySlip.model.js';
 import { UserModel } from '../../models/user.model.js';
 import { ClientCaseFileModel } from '../../models/clientCaseFile.model.js';
 import { NotificationModel } from '../../models/notification.model.js';
+import { CashVoucherModel } from '../../models/cashVoucher.model.js';
 
 export const getErpOverviewStats = async (req, res, next) => {
   try {
@@ -157,12 +158,10 @@ export const getAccountingStats = async (req, res, next) => {
         { $match: { paymentStatus: { $in: ['Pending', 'Overdue'] } } },
         { $group: { _id: null, totalDues: { $sum: '$grandTotal' } } }
       ]),
-      import('../../models/cashVoucher.model.js').then(({ CashVoucherModel }) => 
-        CashVoucherModel.aggregate([
-          { $match: { status: 'confirmed' } },
-          { $group: { _id: null, totalExpenses: { $sum: '$grandTotal' } } }
-        ])
-      ),
+      CashVoucherModel.aggregate([
+        { $match: { status: 'confirmed' } },
+        { $group: { _id: null, totalExpenses: { $sum: '$grandTotal' } } }
+      ]),
       SalarySlipModel.aggregate([
         { $group: { _id: null, totalPayroll: { $sum: '$netSalaryPayable' } } }
       ]),

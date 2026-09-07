@@ -1,24 +1,32 @@
 import React, { useState, useEffect } from 'react';
 import { MoneyReceiptForm } from './MoneyReceiptForm';
 import { MoneyReceiptPreview } from './MoneyReceiptPreview';
-import { getDefaultMoneyReceiptData, generateReceiptNo } from './sampleData';
+import { getDefaultMoneyReceiptData, generateReceiptNo, numberToWords } from './sampleData';
 import { Download, RefreshCw, Share2, Printer, Receipt } from 'lucide-react';
 import { toast } from 'sonner';
 import { apiClient } from '@shared/lib/api-client';
-import { printDocument } from '@shared/lib/utils';
+import { printDocument, downloadDocumentDirect } from '@shared/lib/utils';
 import { HeaderTitle } from '@shared/components/common/HeaderTitle';
 import { StudioFloatingViewSwitcher } from '../common/StudioFloatingViewSwitcher';
 
 export function MoneyReceipt({ initialData = null, isLocked = false, onSavedSuccess }) {
-  const [data, setData] = useState(() => ({
-    ...getDefaultMoneyReceiptData(),
-    ...(initialData || {}),
-  }));
+  const [data, setData] = useState(() => {
+    const defaultData = getDefaultMoneyReceiptData();
+    const initAmt = initialData?.amount ? parseFloat(initialData.amount) : defaultData.amount;
+    return {
+      ...defaultData,
+      ...(initialData || {}),
+      amount: initAmt,
+      amountInWords: initAmt ? numberToWords(initAmt) : defaultData.amountInWords,
+    };
+  });
   const [viewMode, setViewMode] = useState('edit'); // 'edit' | 'split' | 'preview'
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isDownloading, setIsDownloading] = useState(false);
 
   useEffect(() => {
     if (initialData) {
+      const initAmt = initialData.amount ? parseFloat(initialData.amount) : undefined;
       setData((prev) => ({
         ...prev,
         ...initialData,
@@ -26,7 +34,8 @@ export function MoneyReceipt({ initialData = null, isLocked = false, onSavedSucc
         phone: initialData.phone || initialData.client?.phone || prev.phone,
         passportNumber: initialData.passportNumber || prev.passportNumber,
         purpose: initialData.purpose || prev.purpose,
-        amount: initialData.amount || prev.amount,
+        amount: initAmt !== undefined ? initAmt : prev.amount,
+        amountInWords: initAmt ? numberToWords(initAmt) : (prev.amount ? numberToWords(prev.amount) : prev.amountInWords),
       }));
     }
   }, [initialData]);
@@ -53,7 +62,9 @@ export function MoneyReceipt({ initialData = null, isLocked = false, onSavedSucc
         ...data,
         caseDid: initialData?.caseDid || data.caseDid,
         caseNumber: initialData?.caseNumber || data.caseNumber,
+        taskId: initialData?.taskId || data.taskId,
         amount: Number(data.amount),
+        amountInWords: data.amountInWords || numberToWords(Number(data.amount)),
       };
 
       const res = isEdit
@@ -100,6 +111,23 @@ export function MoneyReceipt({ initialData = null, isLocked = false, onSavedSucc
       toast.info(`Money receipt voucher preview ready! (#${data.receiptNo})`);
     } finally {
       setIsSubmitting(false);
+    }
+  };
+
+  const handleDownloadDirect = async () => {
+    setIsDownloading(true);
+    try {
+      await downloadDocumentDirect({
+        docId: data.receiptNo,
+        docType: 'Money_Receipt',
+        clientName: data.clientName,
+        elementId: 'printable-receipt-canvas',
+      });
+      toast.success(`Money Receipt #${data.receiptNo} downloaded successfully!`);
+    } catch (err) {
+      toast.error('Failed to download receipt image.');
+    } finally {
+      setIsDownloading(false);
     }
   };
 
@@ -163,6 +191,16 @@ export function MoneyReceipt({ initialData = null, isLocked = false, onSavedSucc
             </button>
 
             <button
+              onClick={handleDownloadDirect}
+              disabled={isDownloading}
+              className="flex items-center space-x-1.5 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold px-3.5 py-1.5 rounded-xl shadow-xs transition-colors cursor-pointer"
+              title="Direct Download Image/PDF"
+            >
+              <Download className={`w-3.5 h-3.5 ${isDownloading ? 'animate-bounce' : ''}`} />
+              <span>{isDownloading ? 'Downloading...' : 'Download'}</span>
+            </button>
+
+            <button
               onClick={handlePrint}
               className="flex items-center space-x-1.5 bg-sky-500 hover:bg-sky-400 text-white text-xs font-bold px-4 py-1.5 rounded-xl shadow-md transition-colors cursor-pointer"
               title="Export Printable A4 PDF"
@@ -184,6 +222,7 @@ export function MoneyReceipt({ initialData = null, isLocked = false, onSavedSucc
             onSave={handleFormSubmit}
             onPreview={() => setViewMode('preview')}
             isSubmitting={isSubmitting}
+            isLocked={Boolean(isLocked || initialData?.isLocked)}
           />
           {/* Always mount printable canvas for instant print in edit mode */}
           <div className="hidden print:block w-full">
@@ -208,6 +247,7 @@ export function MoneyReceipt({ initialData = null, isLocked = false, onSavedSucc
               onSave={handleFormSubmit}
               onPreview={() => setViewMode('preview')}
               isSubmitting={isSubmitting}
+              isLocked={Boolean(isLocked || initialData?.isLocked)}
             />
           </div>
           <div className="w-full bg-muted/30 border border-border rounded-xl p-3 overflow-y-auto max-h-[calc(100vh-140px)] flex justify-center">

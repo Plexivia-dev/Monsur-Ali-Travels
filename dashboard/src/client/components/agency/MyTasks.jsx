@@ -3,20 +3,10 @@ import {
   CheckSquare,
   Clock,
   CheckCircle2,
-  AlertCircle,
-  FolderOpen,
   Search,
   RefreshCw,
   Loader2,
-  User,
-  Calendar,
-  ChevronRight,
-  Send,
-  ExternalLink,
-  Filter,
   Check,
-  Building2,
-  FileText,
   Layers,
   Plus,
 } from 'lucide-react';
@@ -88,36 +78,6 @@ export function MyTasks() {
     fetchTasks();
   }, [fetchTasks]);
 
-  const handleMarkDone = async (e) => {
-    e.preventDefault();
-    if (!activeCompletingTask) return;
-    setSubmittingDone(true);
-    const taskId = activeCompletingTask.did || activeCompletingTask._id;
-    try {
-      await apiClient.patch(`/api/v1/client/tasks/${taskId}/done`, {
-        completionNotes: completionNotes.trim() || 'Completed by staff in My Tasks portal',
-      });
-      toast.success('Task marked as Done! Sent for Admin approval.');
-      setActiveCompletingTask(null);
-      setCompletionNotes('');
-      fetchTasks();
-    } catch (err) {
-      // Fallback local update
-      setTasks((prev) =>
-        prev.map((t) =>
-          (t.did === taskId || t._id === taskId)
-            ? { ...t, status: 'Done', completionNotes: completionNotes.trim() || 'Completed' }
-            : t
-        )
-      );
-      toast.success('Task marked as completed!');
-      setActiveCompletingTask(null);
-      setCompletionNotes('');
-    } finally {
-      setSubmittingDone(false);
-    }
-  };
-
   const handleOpenCaseDrawer = (caseId) => {
     if (!caseId) return;
     setSelectedCaseId(caseId);
@@ -155,10 +115,10 @@ export function MyTasks() {
           <div className="flex items-center gap-2">
             <button
               onClick={() => setIsCreateModalOpen(true)}
-              className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold shadow-md transition cursor-pointer"
+              className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-white text-xs font-bold shadow-md transition cursor-pointer"
             >
               <Plus className="size-3.5" />
-              <span>+ New Case Intake</span>
+              <span>New Case Intake</span>
             </button>
             <button
               onClick={fetchTasks}

@@ -59,7 +59,7 @@
             "nameBn": "",
             "path": "/admin/settings",
             "icon": "Settings",
-            "roles": ["owner", "superadmin", "admin", "manager"]
+            "roles": ["owner", "superadmin", "admin"]
           }
         ]
       }
@@ -230,6 +230,104 @@
             "nameBn": "",
             "path": "/admin/docs/idcard",
             "icon": "Contact"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "groupLabel": "Data Records Center",
+    "groupLabelBn": "",
+    "items": [
+      {
+        "id": "data-group",
+        "name": "Records Management",
+        "nameBn": "",
+        "icon": "Database",
+        "childItems": [
+          {
+            "id": "data-salary-slips",
+            "name": "Salary Slip Records",
+            "nameBn": "",
+            "path": "/admin/data/salary-slips",
+            "icon": "Banknote"
+          },
+          {
+            "id": "data-invoices",
+            "name": "Invoice Records",
+            "nameBn": "",
+            "path": "/admin/data/invoices",
+            "icon": "ReceiptText"
+          },
+          {
+            "id": "data-money-receipts",
+            "name": "Money Receipt Records",
+            "nameBn": "",
+            "path": "/admin/data/money-receipts",
+            "icon": "Receipt"
+          },
+          {
+            "id": "data-cash-vouchers",
+            "name": "Cash Voucher Records",
+            "nameBn": "",
+            "path": "/admin/data/cash-vouchers",
+            "icon": "Wallet"
+          },
+          {
+            "id": "data-agreements",
+            "name": "Agreement Records",
+            "nameBn": "",
+            "path": "/admin/data/agreements",
+            "icon": "FileSignature",
+            "excludeRoles": ["accountant", "accounts"]
+          },
+          {
+            "id": "data-applications",
+            "name": "Client Applications",
+            "nameBn": "",
+            "path": "/admin/data/client-applications",
+            "icon": "UserCheck",
+            "excludeRoles": ["accountant", "accounts"]
+          },
+          {
+            "id": "data-indian-visas",
+            "name": "Indian Visa Records",
+            "nameBn": "",
+            "path": "/admin/data/indian-visas",
+            "icon": "Stamp",
+            "excludeRoles": ["accountant", "accounts"]
+          },
+          {
+            "id": "data-passports",
+            "name": "Passport Submissions",
+            "nameBn": "",
+            "path": "/admin/data/passports",
+            "icon": "BookOpen",
+            "excludeRoles": ["accountant", "accounts"]
+          },
+          {
+            "id": "data-job-verifications",
+            "name": "Job Verification Records",
+            "nameBn": "",
+            "path": "/admin/data/job-verifications",
+            "icon": "FileCheck2",
+            "excludeRoles": ["accountant", "accounts"]
+          },
+          {
+            "id": "data-marriage-certificates",
+            "name": "Marriage Certificates",
+            "nameBn": "",
+            "path": "/admin/data/marriage-certificates",
+            "icon": "Heart",
+            "excludeRoles": ["accountant", "accounts"]
+          },
+          {
+            "id": "data-character-certificates",
+            "name": "Character Certificates",
+            "nameBn": "",
+            "path": "/admin/data/character-certificates",
+            "icon": "ShieldCheck",
+            "excludeRoles": ["accountant", "accounts"]
           }
         ]
       }

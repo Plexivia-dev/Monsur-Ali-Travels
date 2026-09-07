@@ -30,6 +30,7 @@ import {
   Shield,
   Briefcase,
   Share2,
+  Eye,
 } from 'lucide-react';
 import { apiClient } from '@/lib/api-client';
 import { toast } from 'sonner';
