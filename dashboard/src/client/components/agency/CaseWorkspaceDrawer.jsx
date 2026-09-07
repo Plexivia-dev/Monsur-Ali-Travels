@@ -32,6 +32,7 @@ import {
   Lock,
   FilePlus2,
   ChevronRight,
+  ChevronDown,
   Sparkles,
 } from 'lucide-react';
 import { apiClient } from '../../lib/api-client';
@@ -39,22 +40,10 @@ import { toast } from 'sonner';
 import { useAuthStore } from '../../store/useAuthStore';
 import { usePortalStore } from '../../store/usePortalStore';
 import { FileViewerModal } from '@shared/components/common/FileViewerModal';
+import { CASE_PIPELINE_STAGES, getCanonicalStage, getStageConfig } from '@/shared/constants/caseStages';
+import { StageChangeConfirmModal } from '@shared/components/common/StageChangeConfirmModal';
 
-const PIPELINE_STAGES = [
-  { id: 'INTAKE', title: '1. File Intake' },
-  { id: 'UNDER_PROCESS', title: '2. Under Process' },
-  { id: 'OFFER_LETTER', title: '3. Offer Letter' },
-  { id: 'COMPLETED', title: '4. Completed' },
-];
-
-const getCanonicalStage = (status) => {
-  const st = String(status || '').toUpperCase();
-  if (st === 'ENTRY' || st === 'INTAKE') return 'INTAKE';
-  if (st === 'PROCESSING' || st === 'UNDER_PROCESS' || st === 'SUBMITTED_EMBASSY_BSF') return 'UNDER_PROCESS';
-  if (st === 'APPROVED_OFFER_LETTER' || st === 'OFFER_LETTER' || st === 'FLIGHT_BOOKED') return 'OFFER_LETTER';
-  if (st === 'COMPLETED_DELIVERED' || st === 'COMPLETED') return 'COMPLETED';
-  return 'INTAKE';
-};
+const PIPELINE_STAGES = CASE_PIPELINE_STAGES;
 
 const ALL_STUDIO_GENERATORS = [
   {
@@ -224,6 +213,11 @@ export function CaseWorkspaceDrawer({ caseId, isOpen, onClose, onRefresh }) {
   // Task execution
   const [completingTaskId, setCompletingTaskId] = useState(null);
 
+  // Stage Change Confirmation Dialog State
+  const [isConfirmStageModalOpen, setIsConfirmStageModalOpen] = useState(false);
+  const [pendingStage, setPendingStage] = useState(null);
+  const [stageUpdating, setStageUpdating] = useState(false);
+
   // Filter permitted studio generators for currently logged-in staff role
   const userRole = String(user?.role || '').toLowerCase();
   const userSubRole = String(user?.subRole || user?.sub_role || user?.designation || '').toLowerCase();
@@ -305,21 +299,36 @@ export function CaseWorkspaceDrawer({ caseId, isOpen, onClose, onRefresh }) {
 
   if (!isOpen) return null;
 
-  const handleStageChange = async (newStatus) => {
+  const handleInitiateStageChange = (newStatus) => {
     if (!isAdminOrOwner) {
       toast.error('Stage progression is restricted to Admin or Owner accounts.');
       return;
     }
+    const currentCanonical = getCanonicalStage(caseData?.status);
+    if (!newStatus || newStatus === currentCanonical) return;
+    setPendingStage(newStatus);
+    setIsConfirmStageModalOpen(true);
+  };
+
+  const handleConfirmStageChange = async (remarks) => {
+    if (!pendingStage) return;
+    setStageUpdating(true);
     try {
       await apiClient.patch(`/api/v1/client/cases/${caseId}/workflow`, {
-        status: newStatus,
-        remarks: `${user?.name || 'Admin'} updated status to ${newStatus}`,
+        status: pendingStage,
+        workflowStatus: pendingStage,
+        remarks: remarks || `${user?.name || 'Admin'} updated status to ${pendingStage}`,
       });
-      toast.success(`Case stage updated to ${newStatus.replace(/_/g, ' ')}`);
+      const stageObj = CASE_PIPELINE_STAGES.find((s) => s.id === pendingStage);
+      toast.success(`Case stage updated to "${stageObj?.title || pendingStage}"`);
+      setIsConfirmStageModalOpen(false);
+      setPendingStage(null);
       fetchCaseDetails();
       if (onRefresh) onRefresh();
     } catch (err) {
       toast.error('Failed to update stage.');
+    } finally {
+      setStageUpdating(false);
     }
   };
 
@@ -633,27 +642,33 @@ export function CaseWorkspaceDrawer({ caseId, isOpen, onClose, onRefresh }) {
         {/* Stage Status Selector Bar */}
         {caseData && (
           <div className="px-6 py-3 bg-muted/20 border-b border-border flex flex-wrap items-center justify-between gap-3">
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2.5">
               <span className="text-xs font-bold text-muted-foreground uppercase">Processing Stage:</span>
               {isAdminOrOwner ? (
-                <select
-                  value={getCanonicalStage(caseData.status)}
-                  onChange={(e) => handleStageChange(e.target.value)}
-                  className="px-2.5 py-1 text-xs font-bold rounded-xl bg-primary/10 text-primary border border-primary/20 outline-hidden cursor-pointer"
-                >
-                  {PIPELINE_STAGES.map((st) => (
-                    <option key={st.id} value={st.id} className="bg-background text-foreground">
-                      {st.title}
-                    </option>
-                  ))}
-                </select>
+                <div className="relative">
+                  <select
+                    value={getCanonicalStage(caseData.status)}
+                    onChange={(e) => handleInitiateStageChange(e.target.value)}
+                    className={`appearance-none pl-3 pr-8 py-1.5 text-xs font-black rounded-xl border transition-all shrink-0 cursor-pointer focus:outline-none ${getStageConfig(caseData.status).solidClass}`}
+                    title="Click to change case status / stage"
+                  >
+                    {CASE_PIPELINE_STAGES.map((st) => (
+                      <option key={st.id} value={st.id} className="bg-white text-zinc-950 font-bold py-1">
+                        {st.title} {st.id === getCanonicalStage(caseData.status) ? '✓' : ''}
+                      </option>
+                    ))}
+                  </select>
+                  <div className="absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none text-white">
+                    <ChevronDown className="w-3.5 h-3.5 stroke-[2.5]" />
+                  </div>
+                </div>
               ) : (
                 <span
-                  className="inline-flex items-center gap-1.5 px-3 py-1 text-xs font-bold rounded-xl bg-muted text-muted-foreground border border-border"
+                  className={`inline-flex items-center gap-1.5 px-3 py-1 text-xs font-bold rounded-xl border ${getStageConfig(caseData.status).badgeClass}`}
                   title="Stage advancement is restricted to Admin/Owner authority"
                 >
-                  <Lock className="size-3 text-muted-foreground" />
-                  {PIPELINE_STAGES.find((st) => st.id === getCanonicalStage(caseData.status))?.title || caseData.status || '1. File Intake'}
+                  <Lock className="size-3 text-white" />
+                  {getStageConfig(caseData.status).title}
                 </span>
               )}
             </div>
@@ -1417,6 +1432,20 @@ export function CaseWorkspaceDrawer({ caseId, isOpen, onClose, onRefresh }) {
           </div>
         </div>
       )}
+
+      {/* STAGE CHANGE CONFIRMATION MODAL */}
+      <StageChangeConfirmModal
+        isOpen={isConfirmStageModalOpen}
+        onClose={() => {
+          setIsConfirmStageModalOpen(false);
+          setPendingStage(null);
+        }}
+        currentStage={getCanonicalStage(caseData?.status)}
+        targetStage={pendingStage || getCanonicalStage(caseData?.status)}
+        caseData={caseData || {}}
+        onConfirm={handleConfirmStageChange}
+        loading={stageUpdating}
+      />
 
       {/* FILE VIEWER MODAL */}
       <FileViewerModal

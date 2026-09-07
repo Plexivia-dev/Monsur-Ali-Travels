@@ -2,6 +2,10 @@ import mongoose from "mongoose";
 import CaseFile from "../../models/caseFile.model.js";
 import TaskModel from "../../models/task.model.js";
 import DocumentVaultModel from "../../models/documentVault.model.js";
+import MoneyReceiptModel, {
+  generateReceiptTokenNo,
+  generateReceiptQrCode,
+} from "../../models/moneyReceipt.model.js";
 import { InvoiceModel, generateUniqueInvoiceNo } from "../../models/invoice.model.js";
 import { NotificationModel } from "../../models/notification.model.js";
 import { UserModel } from "../../models/user.model.js";
@@ -75,8 +79,13 @@ export const getCaseFullDetails = async (req, res) => {
 
     // Merge Document Vault records
     let clientDocs = [];
-    if (caseDoc.clientDid) {
-      clientDocs = await DocumentVaultModel.find({ clientDid: caseDoc.clientDid }).lean();
+    if (caseDoc.did || caseDoc.clientDid) {
+      clientDocs = await DocumentVaultModel.find({
+        $or: [
+          ...(caseDoc.did ? [{ caseDid: caseDoc.did }] : []),
+          ...(caseDoc.clientDid ? [{ clientDid: caseDoc.clientDid }] : []),
+        ],
+      }).sort({ createdAt: -1 }).lean();
     }
 
     const mergedDocs = [...(caseDoc.vaultDocuments || [])];
@@ -87,6 +96,27 @@ export const getCaseFullDetails = async (req, res) => {
       }
     }
     caseDoc.vaultDocuments = mergedDocs;
+
+    // Merge Financial Receipts (Money Receipts)
+    let directReceipts = [];
+    if (caseDoc.did || caseDoc.clientDid) {
+      directReceipts = await MoneyReceiptModel.find({
+        $or: [
+          ...(caseDoc.did ? [{ caseDid: caseDoc.did }] : []),
+          ...(caseDoc.clientDid ? [{ clientDid: caseDoc.clientDid }] : []),
+        ],
+        isActive: { $ne: false },
+      }).sort({ createdAt: -1 }).lean();
+    }
+
+    const mergedReceipts = [...(caseDoc.financialReceipts || [])];
+    const existingReceiptDids = new Set(mergedReceipts.map((r) => r.did || r.receiptNo || r._id?.toString()));
+    for (const r of directReceipts) {
+      if (!existingReceiptDids.has(r.did || r.receiptNo || r._id?.toString())) {
+        mergedReceipts.push(r);
+      }
+    }
+    caseDoc.financialReceipts = mergedReceipts;
 
     return res.status(200).json({
       status: "success",
@@ -418,7 +448,48 @@ export const addPayment = async (req, res) => {
       date: new Date(),
     });
 
-    // TODO: Create actual Financial Receipt document if needed, but for now caseDoc tracking is primary
+    // Generate official Money Receipt and link to DocumentVault
+    let receiptDoc = null;
+    try {
+      const receiptNo = generateReceiptTokenNo();
+      const qrCode = await generateReceiptQrCode(receiptNo);
+      receiptDoc = await MoneyReceiptModel.create({
+        receiptNo,
+        qrCode,
+        clientDid: caseDoc.clientDid,
+        caseDid: caseDoc.did,
+        clientName: caseDoc.applicantName || caseDoc.clientInfo?.fullName || "Valued Client",
+        clientPhone: caseDoc.phone || caseDoc.clientInfo?.phone || "",
+        passportNumber: caseDoc.passportNumber || caseDoc.clientInfo?.passportNumber || "",
+        amount: paymentAmount,
+        currency: "BDT",
+        paymentMethod: paymentMethod || "Cash",
+        serviceType: "Visa Processing & Case Handling",
+        purpose: notes || `Payment for Case #${caseDoc.caseNumber || caseDoc.did} (${paymentType})`,
+        receiptDate: new Date().toISOString().split("T")[0],
+        status: "confirmed",
+        createdByDid: adminDid,
+        createdByName: req.user?.name || "Admin",
+        receivedBy: req.user?.name || "Accounts Officer",
+        notes: notes || `Payment recorded via Case File #${caseDoc.caseNumber || caseDoc.did}`,
+      });
+
+      // Link Money Receipt PDF to caseDoc DocumentVault
+      await DocumentVaultModel.create({
+        clientDid: caseDoc.clientDid,
+        caseDid: caseDoc.did,
+        documentName: `Money Receipt #${receiptDoc.receiptNo}`,
+        fileName: `Receipt-${receiptDoc.receiptNo}.pdf`,
+        fileUrl: `/admin/docs/money-receipt?receiptNo=${receiptDoc.receiptNo}&autoPrint=true`,
+        fileType: "application/pdf",
+        fileSize: "125 KB",
+        accessLevel: "Public",
+        uploadedByDid: adminDid,
+        uploadedByName: req.user?.name || "Admin",
+      });
+    } catch (receiptErr) {
+      console.error("[addPayment] Error generating MoneyReceipt / DocumentVault:", receiptErr.message);
+    }
     
     await caseDoc.save();
 
@@ -444,8 +515,15 @@ export const addPayment = async (req, res) => {
 
     return res.status(200).json({
       status: "success",
-      message: "Payment recorded successfully",
-      data: caseDoc.paymentLedger,
+      message: "Payment recorded and Money Receipt generated successfully",
+      data: {
+        paymentLedger: caseDoc.paymentLedger,
+        receipt: receiptDoc,
+        receiptNo: receiptDoc?.receiptNo,
+        totalPaidAmount: caseDoc.paymentLedger?.totalPaidAmount,
+        dueAmount: caseDoc.paymentLedger?.dueAmount,
+        totalAgreedAmount: caseDoc.paymentLedger?.totalAgreedAmount,
+      },
     });
   } catch (error) {
     return res.status(500).json({

@@ -31,6 +31,7 @@ import {
   User,
   ExternalLink,
   X,
+  XCircle,
   Maximize2,
 } from 'lucide-react';
 import { toast } from 'sonner';
@@ -43,16 +44,17 @@ import CreateClientModal from '@/components/clients/CreateClientModal';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { PageTitle } from '@shared/components/layout/PageTitle';
+import { CASE_PIPELINE_STAGES, getCanonicalStage, getStageConfig } from '@/shared/constants/caseStages';
 
 const STAGES = [
   {
     id: 'INTAKE',
-    title: '1. File Intake',
-    titleBn: 'File Intake',
-    stageName: '1. File Intake',
-    badgeColor: 'bg-black/[0.04] text-black border-black/15',
-    headerBg: 'bg-black/[0.02] border-black/10',
-    accentColor: 'text-black/70',
+    title: '1. Intake',
+    titleBn: 'Intake',
+    stageName: '1. Intake',
+    badgeColor: 'bg-orange-500 text-white font-bold border-orange-600',
+    headerBg: 'bg-orange-500/10 border-orange-200 dark:border-orange-900/40',
+    accentColor: 'text-orange-600',
     stepNumber: 1,
     icon: FolderOpen,
   },
@@ -61,33 +63,44 @@ const STAGES = [
     title: '2. Under Process',
     titleBn: 'Under Process',
     stageName: '2. Under Process',
-    badgeColor: 'bg-sky-500/10 text-sky-700 border-sky-300',
-    headerBg: 'bg-sky-50/50 border-sky-200',
-    accentColor: 'text-sky-600',
+    badgeColor: 'bg-purple-600 text-white font-bold border-purple-700',
+    headerBg: 'bg-purple-500/10 border-purple-200 dark:border-purple-900/40',
+    accentColor: 'text-purple-600',
     stepNumber: 2,
     icon: Layers,
   },
   {
     id: 'OFFER_LETTER',
-    title: '3. Offer Letter Approved',
+    title: '3. Offer Letter',
     titleBn: 'Offer Letter',
     stageName: '3. Offer Letter',
-    badgeColor: 'bg-indigo-500/10 text-indigo-700 border-indigo-300',
-    headerBg: 'bg-indigo-50/50 border-indigo-200',
-    accentColor: 'text-indigo-600',
+    badgeColor: 'bg-blue-600 text-white font-bold border-blue-700',
+    headerBg: 'bg-blue-500/10 border-blue-200 dark:border-blue-900/40',
+    accentColor: 'text-blue-600',
     stepNumber: 3,
     icon: Award,
   },
   {
-    id: 'COMPLETED',
+    id: 'VISA_DELIVERED',
     title: '4. Visa Delivered',
     titleBn: 'Visa Delivered',
     stageName: '4. Visa Delivered',
-    badgeColor: 'bg-emerald-500/10 text-emerald-700 border-emerald-300',
-    headerBg: 'bg-emerald-50/50 border-emerald-200',
+    badgeColor: 'bg-emerald-600 text-white font-bold border-emerald-700',
+    headerBg: 'bg-emerald-500/10 border-emerald-200 dark:border-emerald-900/40',
     accentColor: 'text-emerald-600',
     stepNumber: 4,
     icon: Plane,
+  },
+  {
+    id: 'CANCELLED',
+    title: '5. Cancelled',
+    titleBn: 'Cancelled',
+    stageName: '5. Cancelled',
+    badgeColor: 'bg-red-600 text-white font-bold border-red-700',
+    headerBg: 'bg-red-500/10 border-red-200 dark:border-red-900/40',
+    accentColor: 'text-red-600',
+    stepNumber: 5,
+    icon: XCircle,
   },
 ];
 
@@ -155,23 +168,11 @@ function getDestinationChip(c) {
 
 // Helper: Formats Stage Badge
 function getStageBadge(status, workflowStatus) {
-  const st = String(status || workflowStatus || 'INTAKE').toUpperCase();
-  if (st === 'ENTRY' || st === 'INTAKE' || st === 'NEW') {
-    return { label: '1. File Intake', color: 'bg-black/[0.04] text-black border-black/15' };
-  }
-  if (st === 'PROCESSING' || st === 'UNDER_PROCESS') {
-    return { label: '2. Under Process', color: 'bg-sky-500/10 text-sky-700 border-sky-300' };
-  }
-  if (st === 'APPROVED_OFFER_LETTER' || st === 'OFFER_LETTER' || st === 'FLIGHT_BOOKED') {
-    return { label: '3. Offer Letter', color: 'bg-indigo-500/10 text-indigo-700 border-indigo-300' };
-  }
-  if (st === 'COMPLETED_DELIVERED' || st === 'COMPLETED') {
-    return { label: '4. Visa Delivered', color: 'bg-emerald-500/10 text-emerald-700 border-emerald-300' };
-  }
-  if (st === 'SUBMITTED_EMBASSY_BSF' || st === 'VISA_SUBMITTED') {
-    return { label: 'Embassy / VFS', color: 'bg-amber-500/10 text-amber-700 border-amber-300' };
-  }
-  return { label: status || workflowStatus || 'Active', color: 'bg-muted text-muted-foreground border-border' };
+  const cfg = getStageConfig(status || workflowStatus);
+  return {
+    label: cfg.title,
+    color: cfg.badgeClass,
+  };
 }
 
 // Helper: Formats Date and Time
@@ -377,19 +378,11 @@ export default function CaseWorkflow() {
         matchesDest = dest.includes(destinationFilter.toLowerCase());
       }
 
-      // Stage Filter (Strictly checks c.status as requested)
+      // Stage Filter (uses canonical stage)
       let matchesStage = true;
       if (activeStageFilter !== 'all') {
-        const st = String(c.status || 'INTAKE').toUpperCase();
-        if (activeStageFilter === 'INTAKE' || activeStageFilter === 'ENTRY') {
-          matchesStage = st === 'ENTRY' || st === 'INTAKE' || st === 'NEW';
-        } else if (activeStageFilter === 'UNDER_PROCESS' || activeStageFilter === 'PROCESSING') {
-          matchesStage = st === 'PROCESSING' || st === 'UNDER_PROCESS';
-        } else if (activeStageFilter === 'OFFER_LETTER' || activeStageFilter === 'APPROVED_OFFER_LETTER') {
-          matchesStage = st === 'APPROVED_OFFER_LETTER' || st === 'OFFER_LETTER' || st === 'FLIGHT_BOOKED';
-        } else if (activeStageFilter === 'COMPLETED' || activeStageFilter === 'COMPLETED_DELIVERED') {
-          matchesStage = st === 'COMPLETED_DELIVERED' || st === 'COMPLETED';
-        }
+        const canonical = getCanonicalStage(c.status || c.workflowStatus || 'INTAKE');
+        matchesStage = canonical === activeStageFilter;
       }
 
       return matchesSearch && matchesDest && matchesStage;
@@ -554,12 +547,8 @@ export default function CaseWorkflow() {
 
           {STAGES.map((s) => {
             const count = cases.filter((c) => {
-              const st = String(c.status || 'INTAKE').toUpperCase();
-              if (s.id === 'INTAKE') return st === 'ENTRY' || st === 'INTAKE' || st === 'NEW';
-              if (s.id === 'UNDER_PROCESS') return st === 'PROCESSING' || st === 'UNDER_PROCESS';
-              if (s.id === 'OFFER_LETTER') return st === 'APPROVED_OFFER_LETTER' || st === 'OFFER_LETTER' || st === 'FLIGHT_BOOKED';
-              if (s.id === 'COMPLETED') return st === 'COMPLETED_DELIVERED' || st === 'COMPLETED';
-              return false;
+              const canonical = getCanonicalStage(c.status || c.workflowStatus || 'INTAKE');
+              return canonical === s.id;
             }).length;
 
             const isActive = activeStageFilter === s.id;
