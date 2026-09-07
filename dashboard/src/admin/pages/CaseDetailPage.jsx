@@ -36,6 +36,7 @@ import {
   UserCheck,
   MapPin,
   ArrowUpRight,
+  ChevronDown,
 } from 'lucide-react';
 import { apiClient } from '@/lib/api-client';
 import { toast } from 'sonner';
@@ -293,15 +294,18 @@ export default function CaseDetailPage() {
   }, [fetchCaseDetails]);
 
   const handleStageChange = async (newStatus) => {
+    const targetCaseId = caseData?.did || caseData?._id || id;
+    if (!targetCaseId) return;
     try {
-      await apiClient.patch(`/api/v1/client/cases/${caseData.did || caseData._id}/workflow`, {
+      await apiClient.patch(`/api/v1/client/cases/${targetCaseId}/workflow`, {
         status: newStatus,
+        workflowStatus: newStatus,
         remarks: `Stage updated to ${newStatus} by ${user?.name || 'Admin'}`,
       });
       toast.success(`Case stage updated to ${newStatus.replace(/_/g, ' ')}`);
       fetchCaseDetails();
     } catch (err) {
-      toast.error('Failed to update stage.');
+      toast.error(err.response?.data?.message || 'Failed to update stage.');
     }
   };
 
@@ -765,6 +769,15 @@ export default function CaseDetailPage() {
   const activeHandlerName = pendingOrActiveTask ? (pendingOrActiveTask.assignedToName || pendingOrActiveTask.assignedTo?.name || caseData.assignedToName || caseData.assignedTo?.name || caseData.assignedOfficer) : null;
   const activeTaskStatusCfg = activeTask ? getTaskStatusConfig(activeTask.status) : null;
 
+  const currentStageId = (() => {
+    const raw = String(caseData?.status || caseData?.workflowStatus || 'ENTRY').toUpperCase();
+    if (raw === 'INTAKE' || raw === 'NEW') return 'ENTRY';
+    if (raw === 'UNDER_PROCESS') return 'PROCESSING';
+    if (raw === 'OFFER_LETTER' || raw === 'FLIGHT_BOOKED') return 'APPROVED_OFFER_LETTER';
+    if (raw === 'COMPLETED') return 'COMPLETED_DELIVERED';
+    return raw;
+  })();
+
   const client = caseData.clientInfo || caseData.clientId || {};
   const clientDid = client.did || caseData.clientDid;
   const clientCode = client.clientCode || (clientDid ? `CLNT-${clientDid.slice(0, 8)}` : '—');
@@ -946,31 +959,37 @@ export default function CaseDetailPage() {
             )}
           </div>
 
-          {/* Current Processing Stage Dropdown - commented out */}
-          {false && (
-            <div className="flex items-center gap-3 bg-muted/40 p-2.5 rounded-xl border border-border shrink-0 max-w-full lg:max-w-md w-full lg:w-auto justify-between lg:justify-end">
-              <div className="text-left lg:text-right min-w-0 flex-1">
-                <span className="text-[10px] font-bold uppercase text-muted-foreground block">Processing Stage</span>
-                <span
-                  className="text-xs font-black text-primary block truncate max-w-[200px] sm:max-w-[280px]"
-                  title={caseData.workflowStatus || caseData.status}
-                >
-                  {caseData.workflowStatus || caseData.status}
-                </span>
-              </div>
+          {/* Current Processing Stage Dropdown */}
+          <div className="flex items-center gap-3 bg-muted/40 px-3.5 py-2.5 rounded-2xl border border-border shrink-0 self-start lg:self-center shadow-2xs min-w-[240px]">
+            <div className="text-left sm:text-right min-w-0 flex-1">
+              <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground block">
+                Processing Stage
+              </span>
+              <span
+                className="text-xs font-black text-primary block truncate max-w-[180px]"
+                title={PIPELINE_STAGES.find((s) => s.id === currentStageId)?.title || caseData.workflowStatus || caseData.status}
+              >
+                {PIPELINE_STAGES.find((s) => s.id === currentStageId)?.title || caseData.workflowStatus || caseData.status || '1. File Intake'}
+              </span>
+            </div>
+            <div className="relative">
               <select
-                value={caseData.status || 'ENTRY'}
+                value={currentStageId}
                 onChange={(e) => handleStageChange(e.target.value)}
-                className="px-3 py-1.5 text-xs font-bold rounded-lg border border-input bg-background text-foreground focus:outline-none cursor-pointer shrink-0 min-w-[140px] max-w-[170px]"
+                className="appearance-none pl-3 pr-8 py-2 text-xs font-bold rounded-xl border border-primary/40 bg-card hover:bg-muted/50 text-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 cursor-pointer shadow-xs transition-all shrink-0 min-w-[150px]"
+                title="Click to change case status / stage"
               >
                 {PIPELINE_STAGES.map((st) => (
-                  <option key={st.id} value={st.id}>
-                    {st.title}
+                  <option key={st.id} value={st.id} className="bg-popover text-popover-foreground py-1 font-medium">
+                    {st.title} {st.id === currentStageId ? '✓' : ''}
                   </option>
                 ))}
               </select>
+              <div className="absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none text-muted-foreground">
+                <ChevronDown className="w-3.5 h-3.5" />
+              </div>
             </div>
-          )}
+          </div>
         </div>
 
         {/* Creator Audit Strip */}
