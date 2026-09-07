@@ -851,6 +851,8 @@ export function CaseDetailDrawer({ caseDid, isOpen, onClose, onRefresh }) {
             if (onRefresh) onRefresh();
           }}
         />
+      )}
+
       {/* Stage Change Confirmation Modal */}
       <StageChangeConfirmModal
         isOpen={isConfirmStageModalOpen}

@@ -877,7 +877,6 @@ export default function CaseDetailPage() {
                 </span>
               </div>
             )}
-          </div>
 
             {/* Active Handler & Current Task Status Pill Bar - commented out */}
             {false && (
