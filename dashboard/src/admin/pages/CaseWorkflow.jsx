@@ -396,27 +396,6 @@ export default function CaseWorkflow() {
     });
   }, [cases, search, destinationFilter, activeStageFilter]);
 
-  // Master Counter Metrics (Immutable, strictly based on c.status)
-  const totalCases = cases.length;
-  const intakeCount = useMemo(() => cases.filter((c) => {
-    const st = String(c.status || 'INTAKE').toUpperCase();
-    return st === 'ENTRY' || st === 'INTAKE' || st === 'NEW';
-  }).length, [cases]);
-
-  const underProcessCount = useMemo(() => cases.filter((c) => {
-    const st = String(c.status || '').toUpperCase();
-    return st === 'PROCESSING' || st === 'UNDER_PROCESS';
-  }).length, [cases]);
-
-  const offerLetterCount = useMemo(() => cases.filter((c) => {
-    const st = String(c.status || '').toUpperCase();
-    return st === 'APPROVED_OFFER_LETTER' || st === 'OFFER_LETTER' || st === 'FLIGHT_BOOKED';
-  }).length, [cases]);
-
-  const deliveredCount = useMemo(() => cases.filter((c) => {
-    const st = String(c.status || '').toUpperCase();
-    return st === 'COMPLETED_DELIVERED' || st === 'COMPLETED';
-  }).length, [cases]);
 
   const handleExportCsv = () => {
     if (filteredCases.length === 0) {
