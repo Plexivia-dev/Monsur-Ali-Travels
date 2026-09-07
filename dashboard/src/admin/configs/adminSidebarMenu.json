@@ -59,7 +59,7 @@
             "nameBn": "",
             "path": "/admin/settings",
             "icon": "Settings",
-            "roles": ["owner", "superadmin", "admin", "manager"]
+            "roles": ["owner", "superadmin", "admin"]
           }
         ]
       }
@@ -269,7 +269,7 @@
           {
             "id": "data-cash-vouchers",
             "name": "Cash Voucher Records",
-            "nameBn": "ক্যাশ ভাউচার রেকর্ড",
+            "nameBn": "",
             "path": "/admin/data/cash-vouchers",
             "icon": "Wallet"
           },
@@ -308,7 +308,7 @@
           {
             "id": "data-job-verifications",
             "name": "Job Verification Records",
-            "nameBn": "জব ভেরিফিকেশন রেকর্ড",
+            "nameBn": "",
             "path": "/admin/data/job-verifications",
             "icon": "FileCheck2",
             "excludeRoles": ["accountant", "accounts"]
@@ -316,7 +316,7 @@
           {
             "id": "data-marriage-certificates",
             "name": "Marriage Certificates",
-            "nameBn": "বিবাহ সনদ রেকর্ড",
+            "nameBn": "",
             "path": "/admin/data/marriage-certificates",
             "icon": "Heart",
             "excludeRoles": ["accountant", "accounts"]
@@ -324,7 +324,7 @@
           {
             "id": "data-character-certificates",
             "name": "Character Certificates",
-            "nameBn": "চারিত্রিক সনদ রেকর্ড",
+            "nameBn": "",
             "path": "/admin/data/character-certificates",
             "icon": "ShieldCheck",
             "excludeRoles": ["accountant", "accounts"]

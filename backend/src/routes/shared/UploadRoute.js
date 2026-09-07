@@ -36,6 +36,11 @@ uploadRouter.post('/document', handleSingleUpload, (req, res) => {
   UploadController.uploadSingleFile(req, res);
 });
 
+// Dedicated Intelligent Passport OCR Reader: POST /api/v1/upload/read-passport
+uploadRouter.post('/read-passport', handleSingleUpload, (req, res) => {
+  UploadController.readPassport(req, res);
+});
+
 // 2. Multiple Files Upload (field name: 'files', max 20 files)
 // POST /api/v1/upload/multiple?folder=documents
 uploadRouter.post('/multiple', commonMulter.array('files', 20), (req, res) => {

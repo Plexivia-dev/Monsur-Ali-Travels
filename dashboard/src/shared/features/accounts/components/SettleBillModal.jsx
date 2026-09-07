@@ -59,7 +59,7 @@ export function SettleBillModal({ isOpen, onClose, bill, onSuccess }) {
     }
 
     if (payNum > remainingDue) {
-      toast.error(`Payment amount (৳${payNum}) exceeds remaining due (৳${remainingDue})!`);
+      toast.error(`Payment amount (BDT ${payNum}) exceeds remaining due (BDT ${remainingDue})!`);
       return;
     }
 
@@ -74,7 +74,7 @@ export function SettleBillModal({ isOpen, onClose, bill, onSuccess }) {
         notes: formData.notes,
       });
 
-      toast.success(`Payment of ৳${payNum.toLocaleString('en-BD')} recorded successfully for Bill ${bill.billNumber || ''}!`);
+      toast.success(`Payment of BDT ${payNum.toLocaleString('en-BD')} recorded successfully for Bill ${bill.billNumber || ''}!`);
       if (onSuccess) onSuccess();
       if (onClose) onClose();
     } catch (err) {
@@ -114,7 +114,7 @@ export function SettleBillModal({ isOpen, onClose, bill, onSuccess }) {
               <div className="text-right">
                 <span className="text-[10px] font-bold uppercase text-black/50 block">Remaining Due</span>
                 <span className="text-base font-black font-mono text-red-600">
-                  ৳ {remainingDue.toLocaleString('en-BD')}
+                  BDT {remainingDue.toLocaleString('en-BD')}
                 </span>
               </div>
             </div>
@@ -122,11 +122,11 @@ export function SettleBillModal({ isOpen, onClose, bill, onSuccess }) {
             <div className="grid grid-cols-3 gap-2 pt-2 border-t border-black/10 text-[11px]">
               <div>
                 <span className="text-black/50 block">Total Bill</span>
-                <span className="font-mono font-bold text-black">৳ {totalAmount.toLocaleString('en-BD')}</span>
+                <span className="font-mono font-bold text-black">BDT {totalAmount.toLocaleString('en-BD')}</span>
               </div>
               <div>
                 <span className="text-black/50 block">Already Paid</span>
-                <span className="font-mono font-bold text-emerald-600">৳ {alreadyPaid.toLocaleString('en-BD')}</span>
+                <span className="font-mono font-bold text-emerald-600">BDT {alreadyPaid.toLocaleString('en-BD')}</span>
               </div>
               <div>
                 <span className="text-black/50 block">Status</span>
@@ -148,11 +148,11 @@ export function SettleBillModal({ isOpen, onClose, bill, onSuccess }) {
                   onClick={() => setFormData({ ...formData, amount: remainingDue })}
                   className="text-[11px] font-bold text-emerald-600 hover:text-emerald-700 underline cursor-pointer"
                 >
-                  Pay Full Due (৳{remainingDue.toLocaleString('en-BD')})
+                  Pay Full Due (BDT {remainingDue.toLocaleString('en-BD')})
                 </button>
               </div>
               <div className="relative">
-                <span className="absolute left-3 top-2.5 text-xs font-bold text-black/40">৳</span>
+                <span className="absolute left-3 top-2.5 text-xs font-bold text-black/40">BDT</span>
                 <input
                   type="number"
                   min="1"
@@ -161,14 +161,14 @@ export function SettleBillModal({ isOpen, onClose, bill, onSuccess }) {
                   value={formData.amount}
                   onChange={(e) => setFormData({ ...formData, amount: e.target.value })}
                   placeholder="0.00"
-                  className="w-full pl-7 pr-3 py-2 bg-white border border-black/15 rounded-xl text-black font-bold font-mono text-sm focus:ring-2 focus:ring-black/10 outline-none"
+                  className="w-full pl-11 pr-3 py-2 bg-white border border-black/15 rounded-xl text-black font-bold font-mono text-sm focus:ring-2 focus:ring-black/10 outline-none"
                   required
                 />
               </div>
               {Number(formData.amount) < remainingDue && Number(formData.amount) > 0 && (
                 <p className="text-[11px] text-amber-600 mt-1 font-semibold flex items-center gap-1">
                   <AlertCircle className="w-3 h-3" />
-                  Partial payment: ৳{(remainingDue - Number(formData.amount)).toLocaleString('en-BD')} will remain due.
+                  Partial payment: BDT {(remainingDue - Number(formData.amount)).toLocaleString('en-BD')} will remain due.
                 </p>
               )}
             </div>
@@ -184,11 +184,11 @@ export function SettleBillModal({ isOpen, onClose, bill, onSuccess }) {
                   onChange={(e) => setFormData({ ...formData, paymentMethod: e.target.value })}
                   className="w-full px-3 py-2 bg-white border border-black/15 rounded-xl text-black font-semibold text-xs focus:ring-2 focus:ring-black/10 outline-none cursor-pointer"
                 >
-                  <option value="Cash">Cash (অফিস নগদ)</option>
-                  <option value="Bank Transfer">Bank Transfer (ব্যাংক ট্রান্সফার)</option>
-                  <option value="bKash">bKash (বিকাশ)</option>
-                  <option value="Nagad">Nagad (নগদ)</option>
-                  <option value="Cheque">Cheque (চেক)</option>
+                  <option value="Cash">Cash</option>
+                  <option value="Bank Transfer">Bank Transfer</option>
+                  <option value="bKash">bKash</option>
+                  <option value="Nagad">Nagad</option>
+                  <option value="Cheque">Cheque</option>
                   <option value="Other">Other Electronic</option>
                 </select>
               </div>
@@ -247,7 +247,7 @@ export function SettleBillModal({ isOpen, onClose, bill, onSuccess }) {
         <UnifiedModalFooter
           onClose={onClose}
           onSubmit={handleSubmit}
-          submitLabel={isSubmitting ? 'Recording Payment...' : `Confirm Payment (৳${Number(formData.amount || 0).toLocaleString('en-BD')})`}
+          submitLabel={isSubmitting ? 'Recording Payment...' : `Confirm Payment (BDT ${Number(formData.amount || 0).toLocaleString('en-BD')})`}
           isLoading={isSubmitting}
         />
       </div>

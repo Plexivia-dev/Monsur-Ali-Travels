@@ -8,6 +8,8 @@ import { usePortal } from '../../context/PortalContext';
 import { IndianVisaPreview, MoneyReceiptModal } from '@/shared/features/document-studio';
 import { ConfirmDeleteDialog } from '@/components/ui/confirm-delete-dialog';
 import { Button } from '@/components/ui/button';
+import { useTranslation } from 'react-i18next';
+import { useAuthStore } from '../../store/useAuthStore';
 
 const VISA_STAGES = [
   { id: 'received', label: 'File Received', color: 'bg-amber-500/10 text-amber-600 border-amber-500/20' },
@@ -26,10 +28,10 @@ const VISA_STAGES = [
   { id: 'complete_process', label: 'Complete Process', color: 'bg-emerald-600/10 text-emerald-700 border-emerald-600/20' },
 ];
 
-import { useTranslation } from 'react-i18next';
-
 export function IndianVisaDataTable() {
   const { t } = useTranslation();
+  const user = useAuthStore((state) => state.user);
+  const isManager = String(user?.role || '').toLowerCase().trim() === 'manager';
   const { switchPortal } = usePortal();
   const [data, setData] = useState([]);
   const [pagination, setPagination] = useState({ page: 1, limit: 10, skip: 0, totalCount: 0, totalPages: 1 });
@@ -333,14 +335,16 @@ export function IndianVisaDataTable() {
                             <Download className="w-3.5 h-3.5" />
                             <span>{t('common.downloadPrint', 'Download / Print')}</span>
                           </button>
-                          <button
-                            type="button"
-                            onClick={() => setDeleteTarget({ id: item._id, trackingNo: item.trackingNo })}
-                            className="p-1.5 rounded hover:bg-rose-500/10 text-rose-500 transition-colors cursor-pointer"
-                            title={t('common.delete', 'Delete Record')}
-                          >
-                            <Trash2 className="w-3.5 h-3.5" />
-                          </button>
+                          {!isManager && (
+                            <button
+                              type="button"
+                              onClick={() => setDeleteTarget({ id: item._id, trackingNo: item.trackingNo })}
+                              className="p-1.5 rounded hover:bg-rose-500/10 text-rose-500 transition-colors cursor-pointer"
+                              title={t('common.delete', 'Delete Record')}
+                            >
+                              <Trash2 className="w-3.5 h-3.5" />
+                            </button>
+                          )}
                         </div>
                       </td>
                   </tr>

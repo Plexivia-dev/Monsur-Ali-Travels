@@ -71,4 +71,5 @@ networks:
 
 volumes:
   mongodb-dev-data:
-    driver: local
+    name: monsuralitravels_mongodb-dev-data
+    external: true

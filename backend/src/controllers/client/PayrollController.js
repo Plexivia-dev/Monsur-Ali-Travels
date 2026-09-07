@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
 import { SalarySlip } from "../../models/salarySlip.model.js";
+import { checkManagerCanDelete, checkManagerCanUpdate } from "../../helper/managerRbacHelper.js";
 
 const findSalarySlipByIdOrCustomId = async (id, extraQuery = {}) => {
   if (!id) return null;
@@ -90,7 +91,12 @@ export const getSalarySlipById = async (req, res, next) => {
 // @route   POST /api/v1/docs/payrolls
 export const createSalarySlip = async (req, res, next) => {
   try {
-    const newSlip = await SalarySlip.create(req.body);
+    const payload = {
+      ...req.body,
+      createdByDid: req.user?.did || null,
+      createdByName: req.user?.name || "Staff",
+    };
+    const newSlip = await SalarySlip.create(payload);
 
     return res.status(201).json({
       success: true,
@@ -116,6 +122,10 @@ export const updateSalarySlip = async (req, res, next) => {
       });
     }
 
+    if (!checkManagerCanUpdate(req, res, existing, "Salary slip")) {
+      return;
+    }
+
     const updatedSlip = await SalarySlip.findOneAndUpdate(
       { _id: existing._id },
       req.body,
@@ -137,6 +147,10 @@ export const updateSalarySlip = async (req, res, next) => {
 // @route   DELETE /api/v1/docs/payrolls/:id
 export const deleteSalarySlip = async (req, res, next) => {
   try {
+    if (!checkManagerCanDelete(req, res, "Salary slip")) {
+      return;
+    }
+
     const existing = await findSalarySlipByIdOrCustomId(req.params.id);
     if (!existing) {
       return res.status(404).json({

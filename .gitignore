@@ -63,3 +63,6 @@ backups/
 # Frontend split repository folder
 .agents
 ref/
+
+# OCR language models / cache
+*.traineddata

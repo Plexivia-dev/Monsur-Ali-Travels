@@ -149,7 +149,7 @@ export function BillsPage() {
       header: 'Total Amount (BDT)',
       cell: ({ row }) => (
         <span className="font-mono font-bold text-xs text-black">
-          ৳ {Number(row.amount || 0).toLocaleString('en-BD')}
+          BDT {Number(row.amount || 0).toLocaleString('en-BD')}
         </span>
       ),
     },
@@ -280,7 +280,7 @@ export function BillsPage() {
             </div>
           </div>
           <p className="text-xl font-bold font-mono text-black">
-            ৳ {Number(meta.totalAmount || 0).toLocaleString('en-BD')}
+            BDT {Number(meta.totalAmount || 0).toLocaleString('en-BD')}
           </p>
           <span className="text-[11px] text-black/50">Overall recorded company expenses</span>
         </div>
@@ -293,7 +293,7 @@ export function BillsPage() {
             </div>
           </div>
           <p className="text-xl font-bold font-mono text-emerald-700">
-            ৳ {Number(meta.totalPaid || 0).toLocaleString('en-BD')}
+            BDT {Number(meta.totalPaid || 0).toLocaleString('en-BD')}
           </p>
           <span className="text-[11px] text-emerald-800/60">Disbursed &amp; settled vouchers</span>
         </div>
@@ -306,7 +306,7 @@ export function BillsPage() {
             </div>
           </div>
           <p className="text-xl font-bold font-mono text-red-700">
-            ৳ {Number(meta.totalDue || 0).toLocaleString('en-BD')}
+            BDT {Number(meta.totalDue || 0).toLocaleString('en-BD')}
           </p>
           <span className="text-[11px] text-red-800/60">Pending company payables</span>
         </div>

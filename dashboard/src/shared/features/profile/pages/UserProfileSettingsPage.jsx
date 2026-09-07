@@ -290,7 +290,7 @@ export function UserProfileSettingsPage({ initialTab = 'profile', onProfileUpdat
                 </Badge>
               </div>
               <p className="text-xs text-muted-foreground mt-0.5">{formData.email}</p>
-              {formData.designation && (
+              {formData.designation && !['owner', 'admin', 'superadmin'].includes((formData.role || '').toLowerCase()) && (
                 <p className="text-[11px] font-medium text-foreground/80 mt-0.5">
                   {formData.designation} {formData.department ? `• ${formData.department}` : ''}
                 </p>

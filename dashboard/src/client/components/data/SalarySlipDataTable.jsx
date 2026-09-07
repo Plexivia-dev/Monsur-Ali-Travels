@@ -8,9 +8,12 @@ import { usePortal } from '../../context/PortalContext';
 import { SalarySlipPreview } from '@/shared/features/document-studio';
 import { ConfirmDeleteDialog } from '@/components/ui/confirm-delete-dialog';
 import { useTranslation } from 'react-i18next';
+import { useAuthStore } from '../../store/useAuthStore';
 
 export function SalarySlipDataTable() {
   const { t } = useTranslation();
+  const user = useAuthStore((state) => state.user);
+  const isManager = String(user?.role || '').toLowerCase().trim() === 'manager';
   const { switchPortal } = usePortal();
   const [data, setData] = useState([]);
   const [pagination, setPagination] = useState({ page: 1, limit: 10, skip: 0, totalCount: 0, totalPages: 1 });
@@ -198,14 +201,16 @@ export function SalarySlipDataTable() {
                           <Download className="w-3.5 h-3.5" />
                           <span>Download / Print</span>
                         </button>
-                        <button
-                          type="button"
-                          onClick={() => setDeleteTarget({ id: item._id, slipNo: item.slipNo })}
-                          className="p-1.5 rounded hover:bg-rose-500/10 text-rose-500 transition-colors cursor-pointer"
-                          title="Delete Record"
-                        >
-                          <Trash2 className="w-3.5 h-3.5" />
-                        </button>
+                        {!isManager && (
+                          <button
+                            type="button"
+                            onClick={() => setDeleteTarget({ id: item._id, slipNo: item.slipNo })}
+                            className="p-1.5 rounded hover:bg-rose-500/10 text-rose-500 transition-colors cursor-pointer"
+                            title="Delete Record"
+                          >
+                            <Trash2 className="w-3.5 h-3.5" />
+                          </button>
+                        )}
                       </div>
                     </td>
                   </tr>

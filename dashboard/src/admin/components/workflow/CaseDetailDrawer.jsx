@@ -86,6 +86,7 @@ export function CaseDetailDrawer({ caseDid, isOpen, onClose, onRefresh }) {
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('overview'); // 'overview' | 'workflow' | 'financials' | 'documents'
   const [assignModalOpen, setAssignModalOpen] = useState(false);
+  const [assignPaymentMode, setAssignPaymentMode] = useState(false);
   const [paymentModalOpen, setPaymentModalOpen] = useState(false);
   const [updatingStatus, setUpdatingStatus] = useState(false);
   const [approvingTaskId, setApprovingTaskId] = useState(null);
@@ -188,7 +189,7 @@ export function CaseDetailDrawer({ caseDid, isOpen, onClose, onRefresh }) {
         matchedDoc = { name: 'Applicant 2x2 Photo', url: clientAttachments.photo };
       } else {
         const found = vaultDocs.find((d) =>
-          /photo|picture|2x2|ছবি|image|portrait/i.test(d.documentName || d.fileName || '')
+          /photo|picture|2x2|image|portrait/i.test(d.documentName || d.fileName || '')
         );
         if (found) {
           isUploaded = true;
@@ -197,7 +198,7 @@ export function CaseDetailDrawer({ caseDid, isOpen, onClose, onRefresh }) {
       }
     } else if (key === 'electricityBill') {
       const found = vaultDocs.find((d) =>
-        /electricity|utility|bill|current|বিদ্যুৎ|gas|electric|wasa/i.test(d.documentName || d.fileName || '')
+        /electricity|utility|bill|current|gas|electric|wasa/i.test(d.documentName || d.fileName || '')
       );
       if (found) {
         isUploaded = true;
@@ -216,7 +217,7 @@ export function CaseDetailDrawer({ caseDid, isOpen, onClose, onRefresh }) {
         matchedDoc = { name: 'National ID (NID) Scan', url: clientAttachments.nidScan };
       } else {
         const found = vaultDocs.find((d) =>
-          /nid|national\s*id|voter|এনআইডি|পরিচয়পত্র|identity\s*card/i.test(d.documentName || d.fileName || '')
+          /nid|national\s*id|voter|identity\s*card/i.test(d.documentName || d.fileName || '')
         );
         if (found) {
           isUploaded = true;
@@ -225,7 +226,7 @@ export function CaseDetailDrawer({ caseDid, isOpen, onClose, onRefresh }) {
       }
     } else if (key === 'landDocuments') {
       const found = vaultDocs.find((d) =>
-        /land|property|দলিল|খতিয়ান|khatian|porcha|deed|jamabandi|mutation|namjari/i.test(d.documentName || d.fileName || '')
+        /land|property|khatian|porcha|deed|jamabandi|mutation|namjari/i.test(d.documentName || d.fileName || '')
       );
       if (found) {
         isUploaded = true;
@@ -372,7 +373,22 @@ export function CaseDetailDrawer({ caseDid, isOpen, onClose, onRefresh }) {
               </button>
 
               <button
-                onClick={() => setAssignModalOpen(true)}
+                onClick={() => {
+                  setAssignPaymentMode(true);
+                  setAssignModalOpen(true);
+                }}
+                className="flex items-center gap-1 px-3.5 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-lg transition-all cursor-pointer shadow-xs"
+                title="Directly assign a payment collection task to an accountant or staff member"
+              >
+                <Receipt className="size-3.5" />
+                <span>Assign Payment Task</span>
+              </button>
+
+              <button
+                onClick={() => {
+                  setAssignPaymentMode(false);
+                  setAssignModalOpen(true);
+                }}
                 className="flex items-center gap-1 px-3.5 py-1.5 bg-primary hover:bg-primary/90 text-primary-foreground font-bold text-xs rounded-lg transition-all cursor-pointer shadow-xs"
               >
                 <Send className="size-3.5" />
@@ -564,13 +580,28 @@ export function CaseDetailDrawer({ caseDid, isOpen, onClose, onRefresh }) {
                       <Layers className="size-4 text-primary" />
                       <span>Assigned Workflow Step Tasks</span>
                     </h3>
-                    <button
-                      onClick={() => setAssignModalOpen(true)}
-                      className="inline-flex items-center gap-1 px-3 py-1.5 text-xs font-bold rounded-lg bg-primary text-primary-foreground hover:bg-primary/90 transition-all cursor-pointer shadow-xs"
-                    >
-                      <Plus className="size-3.5" />
-                      <span>Assign Next Step</span>
-                    </button>
+                    <div className="flex items-center gap-2">
+                      <button
+                        onClick={() => {
+                          setAssignPaymentMode(true);
+                          setAssignModalOpen(true);
+                        }}
+                        className="inline-flex items-center gap-1 px-3 py-1.5 text-xs font-bold rounded-lg bg-emerald-600 text-white hover:bg-emerald-700 transition-all cursor-pointer shadow-xs"
+                      >
+                        <Receipt className="size-3.5" />
+                        <span>Assign Payment</span>
+                      </button>
+                      <button
+                        onClick={() => {
+                          setAssignPaymentMode(false);
+                          setAssignModalOpen(true);
+                        }}
+                        className="inline-flex items-center gap-1 px-3 py-1.5 text-xs font-bold rounded-lg bg-primary text-primary-foreground hover:bg-primary/90 transition-all cursor-pointer shadow-xs"
+                      >
+                        <Plus className="size-3.5" />
+                        <span>Assign Next Step</span>
+                      </button>
+                    </div>
                   </div>
 
                   {(caseData.workflowTasks || []).length === 0 ? (
@@ -781,7 +812,11 @@ export function CaseDetailDrawer({ caseDid, isOpen, onClose, onRefresh }) {
       {assignModalOpen && (
         <StepAssignModal
           caseDoc={caseData}
-          onClose={() => setAssignModalOpen(false)}
+          initialPaymentMode={assignPaymentMode}
+          onClose={() => {
+            setAssignModalOpen(false);
+            setAssignPaymentMode(false);
+          }}
           onSuccess={() => {
             fetchDetails();
             if (onRefresh) onRefresh();

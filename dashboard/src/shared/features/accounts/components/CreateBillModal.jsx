@@ -244,10 +244,10 @@ export function CreateBillModal({ isOpen, onClose, onSuccess }) {
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
               <div>
                 <label className="block font-bold text-black mb-1">
-                  Total Bill Amount (৳ BDT) <span className="text-red-500">*</span>
+                  Total Bill Amount (BDT) <span className="text-red-500">*</span>
                 </label>
                 <div className="relative">
-                  <span className="absolute left-3 top-2 font-bold text-black/50 text-xs">৳</span>
+                  <span className="absolute left-3 top-2.5 font-bold text-black/50 text-[11px]">BDT</span>
                   <input
                     type="number"
                     min="0"
@@ -255,7 +255,7 @@ export function CreateBillModal({ isOpen, onClose, onSuccess }) {
                     placeholder="0.00"
                     value={formData.amount}
                     onChange={(e) => setFormData({ ...formData, amount: e.target.value })}
-                    className="w-full pl-8 pr-3 py-2 bg-white border border-black/15 rounded-xl text-black font-mono font-bold text-sm focus:ring-2 focus:ring-black/10 outline-none placeholder:text-black/40"
+                    className="w-full pl-12 pr-3 py-2 bg-white border border-black/15 rounded-xl text-black font-mono font-bold text-sm focus:ring-2 focus:ring-black/10 outline-none placeholder:text-black/40"
                     required
                   />
                 </div>

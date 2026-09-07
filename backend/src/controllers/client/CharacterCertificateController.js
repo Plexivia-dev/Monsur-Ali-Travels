@@ -1,6 +1,7 @@
 import { CharacterCertificateModel, generateUniqueCharacterCertificateNo } from "../../models/characterCertificate.model.js";
 import { syncClientProfile } from "../../helper/clientSyncHelper.js";
 import { logger } from "../../config/logger.js";
+import { checkManagerCanDelete, checkManagerCanUpdate } from "../../helper/managerRbacHelper.js";
 
 export class CharacterCertificateController {
   // GET /api/v1/client/docs/character-certificates
@@ -157,30 +158,36 @@ export class CharacterCertificateController {
   static async update(req, res) {
     try {
       const { id } = req.params;
-      const updateData = { ...req.body };
-      delete updateData._id;
-      delete updateData.id;
+      const existing = await CharacterCertificateModel.findOne({
+        $or: [
+          { _id: id.match(/^[0-9a-fA-F]{24}$/) ? id : null },
+          { did: id },
+          { certificateNo: id },
+        ],
+        isActive: { $ne: false },
+      });
 
-      const doc = await CharacterCertificateModel.findOneAndUpdate(
-        {
-          $or: [
-            { _id: id.match(/^[0-9a-fA-F]{24}$/) ? id : null },
-            { did: id },
-            { certificateNo: id },
-          ],
-          isActive: { $ne: false },
-        },
-        { $set: updateData },
-        { new: true, runValidators: true }
-      );
-
-      if (!doc) {
+      if (!existing) {
         return res.status(404).json({
           success: false,
           status: "error",
           message: "Character certificate document not found",
         });
       }
+
+      if (!checkManagerCanUpdate(req, res, existing, "Character certificate")) {
+        return;
+      }
+
+      const updateData = { ...req.body };
+      delete updateData._id;
+      delete updateData.id;
+
+      const doc = await CharacterCertificateModel.findOneAndUpdate(
+        { _id: existing._id },
+        { $set: updateData },
+        { new: true, runValidators: true }
+      );
 
       return res.status(200).json({
         success: true,
@@ -201,6 +208,10 @@ export class CharacterCertificateController {
   // DELETE /api/v1/client/docs/character-certificates/:id
   static async delete(req, res) {
     try {
+      if (!checkManagerCanDelete(req, res, "Character certificate")) {
+        return;
+      }
+
       const { id } = req.params;
       const doc = await CharacterCertificateModel.findOneAndUpdate(
         {

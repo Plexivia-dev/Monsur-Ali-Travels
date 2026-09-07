@@ -23,14 +23,17 @@ import {
   Receipt,
   ChevronRight,
   CreditCard,
+  Printer,
 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { apiClient } from '../../lib/api-client';
 import { usePortalStore } from '../../store/usePortalStore';
 import { toast } from 'sonner';
 import { FileViewerModal } from '@shared/components/common/FileViewerModal';
+import { MoneyReceiptModal } from '../docs/receipt/MoneyReceiptModal';
+import { InvoiceGenerateModal } from '../docs/invoice/InvoiceGenerateModal';
+import { printDocument } from '@shared/lib/utils';
 
 const DOCUMENT_NAME_PRESETS = [
   'National ID (NID Front & Back)',
@@ -149,6 +152,16 @@ export function TaskDetailModal({
   const [generateMoneyReceipt, setGenerateMoneyReceipt] = useState(true);
   const [isSubmittingDone, setIsSubmittingDone] = useState(false);
   const [isSavingProgress, setIsSavingProgress] = useState(false);
+
+  // In-Task Direct Receipt & Invoice Modal States
+  const [isReceiptModalOpen, setIsReceiptModalOpen] = useState(false);
+  const [isInvoiceModalOpen, setIsInvoiceModalOpen] = useState(false);
+  const [linkedReceipt, setLinkedReceipt] = useState(
+    task?.moneyReceiptNumber ? { receiptNo: task.moneyReceiptNumber, did: task.moneyReceiptDid } : null
+  );
+  const [linkedInvoice, setLinkedInvoice] = useState(
+    task?.invoiceNumber ? { invoiceNo: task.invoiceNumber, did: task.invoiceDid } : null
+  );
 
   // Compute strictly the assigned forms / sub-types for this task
   const assignedFormOptions = useMemo(() => {
@@ -309,23 +322,23 @@ export function TaskDetailModal({
     ];
 
     if (/photo|2x2|picture/i.test(titleLower)) {
-      const photoDoc = vault.find((d) => /photo|picture|2x2|ছবি|image|portrait/i.test(d.documentName || d.fileName || ''));
+      const photoDoc = vault.find((d) => /photo|picture|2x2|image|portrait/i.test(d.documentName || d.fileName || ''));
       if (photoDoc) return photoDoc;
     }
     if (/electricity|utility|bill/i.test(titleLower)) {
-      const billDoc = vault.find((d) => /electricity|utility|bill|current|বিদ্যুৎ|gas|wasa/i.test(d.documentName || d.fileName || ''));
+      const billDoc = vault.find((d) => /electricity|utility|bill|current|gas|wasa/i.test(d.documentName || d.fileName || ''));
       if (billDoc) return billDoc;
     }
     if (/nid|national\s*id/i.test(titleLower)) {
-      const nidDoc = vault.find((d) => /nid|national\s*id|voter|এনআইডি|পরিচয়পত্র/i.test(d.documentName || d.fileName || ''));
+      const nidDoc = vault.find((d) => /nid|national\s*id|voter/i.test(d.documentName || d.fileName || ''));
       if (nidDoc) return nidDoc;
     }
     if (/passport/i.test(titleLower)) {
-      const passDoc = vault.find((d) => /passport|bio-page|পাসপোর্ট/i.test(d.documentName || d.fileName || ''));
+      const passDoc = vault.find((d) => /passport|bio-page/i.test(d.documentName || d.fileName || ''));
       if (passDoc) return passDoc;
     }
     if (/agreement|contract/i.test(titleLower)) {
-      const agrDoc = vault.find((d) => /agreement|contract|চুক্তি/i.test(d.documentName || d.fileName || ''));
+      const agrDoc = vault.find((d) => /agreement|contract/i.test(d.documentName || d.fileName || ''));
       if (agrDoc) return agrDoc;
     }
 
@@ -335,14 +348,33 @@ export function TaskDetailModal({
     }) || null;
   }, [uploadedDocsList, task, caseVaultDocs]);
 
-  // Sync state if task changes
-  useEffect(() => {
+  // Sync state if task changes (React pattern: adjust state during render on prop change)
+  const taskId = task?.did || task?._id || null;
+  const [prevTaskId, setPrevTaskId] = useState(taskId);
+
+  if (taskId !== prevTaskId) {
+    setPrevTaskId(taskId);
     if (task) {
       setCompletionNotes(task.completionNotes || '');
-      if (task.requiresDocument === false) {
+      if (task.requiresPayment) {
+        setActiveTab('payment');
+      } else if (task.requiresDocument === false) {
         setActiveTab('notes');
       } else {
         setActiveTab('upload');
+      }
+
+      setPaymentCollected(task.paymentCollectedAmount || task.paymentAmount || '');
+      setPaymentMethod(task.paymentMethod || 'Cash');
+      if (task.moneyReceiptNumber) {
+        setLinkedReceipt({ receiptNo: task.moneyReceiptNumber, did: task.moneyReceiptDid });
+      } else {
+        setLinkedReceipt(null);
+      }
+      if (task.invoiceNumber) {
+        setLinkedInvoice({ invoiceNo: task.invoiceNumber, did: task.invoiceDid });
+      } else {
+        setLinkedInvoice(null);
       }
 
       if (task.taskTypeNames && Array.isArray(task.taskTypeNames) && task.taskTypeNames.length > 0) {
@@ -372,9 +404,13 @@ export function TaskDetailModal({
             accessLevel: 'Restricted',
           }))
         );
+      } else {
+        setUploadRows([
+          { id: 'row-1', title: '', file: null, accessLevel: 'Restricted' },
+        ]);
       }
     }
-  }, [task, assignedFormOptions]);
+  }
 
   // File Preview Modal State (View only, no download)
   const [viewingFile, setViewingFile] = useState(null);
@@ -397,25 +433,6 @@ export function TaskDetailModal({
     Approved: 'approved',
     Rejected: 'rejected',
   }[task.status] || 'default';
-
-  // Multi-row management
-  const handleAddRow = () => {
-    if (isCompleted) return;
-    const newId = `row-${Date.now()}-${Math.random().toString(36).substring(2, 5)}`;
-    setUploadRows((prev) => [
-      ...prev,
-      { id: newId, title: '', file: null, accessLevel: 'Restricted' },
-    ]);
-  };
-
-  const handleRemoveRow = (id) => {
-    if (isCompleted) return;
-    if (uploadRows.length <= 1) {
-      setUploadRows([{ id: 'row-1', title: '', file: null, accessLevel: 'Restricted' }]);
-      return;
-    }
-    setUploadRows((prev) => prev.filter((r) => r.id !== id));
-  };
 
   const handleUpdateRow = (id, field, value) => {
     if (isCompleted) return;
@@ -527,7 +544,7 @@ export function TaskDetailModal({
       }
       toast.success('Task progress & notes saved successfully.');
       if (onRefreshTasks) onRefreshTasks();
-    } catch (err) {
+    } catch (_err) {
       // If direct patch endpoint is not exposed, fallback gracefully
       toast.success('Progress saved locally.');
     } finally {
@@ -647,7 +664,11 @@ export function TaskDetailModal({
         paymentCollectedAmount: collectedNum,
         paymentMethod,
         paymentSlipUrl: uploadedSlipUrl,
-        generateMoneyReceipt,
+        generateMoneyReceipt: !linkedReceipt && generateMoneyReceipt,
+        moneyReceiptNumber: linkedReceipt?.receiptNo || task.moneyReceiptNumber || '',
+        moneyReceiptDid: linkedReceipt?.did || task.moneyReceiptDid || '',
+        invoiceNumber: linkedInvoice?.invoiceNo || task.invoiceNumber || '',
+        invoiceDid: linkedInvoice?.did || task.invoiceDid || '',
       });
 
       toast.success(`Task "${task.title}" marked as Completed!`);
@@ -714,7 +735,7 @@ export function TaskDetailModal({
                 {task.requiresPayment && (
                   <span className="text-[10px] font-bold px-2 py-0.5 rounded-full border bg-emerald-500/10 text-emerald-600 border-emerald-500/20 flex items-center gap-1">
                     <CreditCard className="w-3 h-3" />
-                    Payment: ৳{Number(task.paymentAmount || 0).toLocaleString()}
+                    Payment: BDT {Number(task.paymentAmount || 0).toLocaleString()}
                   </span>
                 )}
 
@@ -807,7 +828,7 @@ export function TaskDetailModal({
                     Payment Collection Requirement
                   </span>
                   <span className="font-mono font-bold text-base text-emerald-600">
-                    ৳ {Number(task.paymentAmount || 0).toLocaleString()} {task.paymentCurrency || 'BDT'}
+                    BDT {Number(task.paymentAmount || 0).toLocaleString()} {task.paymentCurrency || 'BDT'}
                   </span>
                 </div>
                 <div className="flex items-center justify-between text-[11px] text-muted-foreground pt-1 border-t border-emerald-500/20 flex-wrap gap-2">
@@ -1098,14 +1119,18 @@ export function TaskDetailModal({
                     <p className="text-[11px] text-muted-foreground mt-0.5">
                       {isCompleted
                         ? 'Recorded payment details and issued Money Receipt for this completed step.'
-                        : 'Record collected payment and automatically generate official Money Receipt / Pay Slip for this step.'}
+                        : 'Record collected payment, attach physical slip, or directly generate official Money Receipt or Invoice.'}
                     </p>
                   </div>
-                  {isCompleted && (
+                  {isCompleted ? (
                     <span className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-emerald-500/15 text-emerald-800 border border-emerald-500/30">
                       Paid &amp; Recorded ✓
                     </span>
-                  )}
+                  ) : task.paymentAmount > 0 ? (
+                    <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-md bg-emerald-600 text-white shadow-2xs">
+                      Target: BDT {Number(task.paymentAmount).toLocaleString()}
+                    </span>
+                  ) : null}
                 </div>
 
                 {/* If already completed, show read-only payment summary */}
@@ -1114,7 +1139,7 @@ export function TaskDetailModal({
                     <div className="flex items-center justify-between">
                       <span className="font-bold text-muted-foreground">Collected Amount:</span>
                       <span className="font-mono font-bold text-emerald-700 text-sm">
-                        ৳ {Number(task.paymentCollectedAmount || task.paymentAmount || paymentCollected || 0).toLocaleString()} BDT
+                        BDT {Number(task.paymentCollectedAmount || task.paymentAmount || paymentCollected || 0).toLocaleString()} BDT
                       </span>
                     </div>
                     <div className="flex items-center justify-between">
@@ -1124,17 +1149,112 @@ export function TaskDetailModal({
                     {task.moneyReceiptNumber && (
                       <div className="flex items-center justify-between">
                         <span className="font-bold text-muted-foreground">Money Receipt:</span>
-                        <span className="font-mono font-bold text-emerald-600">#{task.moneyReceiptNumber}</span>
+                        <div className="flex items-center gap-2">
+                          <span className="font-mono font-bold text-emerald-600">#{task.moneyReceiptNumber}</span>
+                          <Button
+                            type="button"
+                            size="sm"
+                            variant="outline"
+                            onClick={() => printDocument({ docId: task.moneyReceiptNumber, docType: 'Money_Receipt', clientName: task.applicantName || 'Client' })}
+                            className="h-6 px-2 text-[10px] font-bold border-emerald-500/40 text-emerald-800 hover:bg-emerald-500/20 flex items-center gap-1 cursor-pointer"
+                          >
+                            <Printer className="w-3 h-3" />
+                            <span>Print Slip</span>
+                          </Button>
+                        </div>
+                      </div>
+                    )}
+                    {task.invoiceNumber && (
+                      <div className="flex items-center justify-between">
+                        <span className="font-bold text-muted-foreground">Client Invoice:</span>
+                        <div className="flex items-center gap-2">
+                          <span className="font-mono font-bold text-indigo-600">#{task.invoiceNumber}</span>
+                          <Button
+                            type="button"
+                            size="sm"
+                            variant="outline"
+                            onClick={() => printDocument({ docId: task.invoiceNumber, docType: 'Invoice', clientName: task.applicantName || 'Client', elementId: 'printable-invoice-canvas' })}
+                            className="h-6 px-2 text-[10px] font-bold border-indigo-500/40 text-indigo-800 hover:bg-indigo-500/20 flex items-center gap-1 cursor-pointer"
+                          >
+                            <Printer className="w-3 h-3" />
+                            <span>Print Invoice</span>
+                          </Button>
+                        </div>
+                      </div>
+                    )}
+                    {task.paymentSlipUrl && (
+                      <div className="flex items-center justify-between pt-1 border-t border-border/60">
+                        <span className="font-bold text-muted-foreground">Attached Physical Slip:</span>
+                        <a
+                          href={task.paymentSlipUrl}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="font-bold text-primary hover:underline text-xs flex items-center gap-1"
+                        >
+                          View Uploaded Slip ↗
+                        </a>
                       </div>
                     )}
                   </div>
                 ) : (
                   <>
+                    {/* Linked Receipts or Invoices Status Banners */}
+                    {linkedReceipt && (
+                      <div className="p-3 bg-emerald-500/10 border border-emerald-500/30 rounded-xl flex items-center justify-between animate-in fade-in">
+                        <div className="flex items-center gap-2 min-w-0">
+                          <Receipt className="w-4 h-4 text-emerald-600 shrink-0" />
+                          <div className="truncate">
+                            <p className="text-xs font-bold text-emerald-950">Official Money Receipt Linked ✓</p>
+                            <p className="text-[11px] font-mono text-emerald-700">Receipt #{linkedReceipt.receiptNo}</p>
+                          </div>
+                        </div>
+                        <Button
+                          type="button"
+                          size="sm"
+                          variant="outline"
+                          onClick={() => printDocument({ docId: linkedReceipt.receiptNo, docType: 'Money_Receipt', clientName: task.applicantName || 'Client' })}
+                          className="h-7 px-2.5 text-xs font-bold border-emerald-500/40 text-emerald-800 hover:bg-emerald-500/20 flex items-center gap-1 cursor-pointer shrink-0"
+                        >
+                          <Printer className="w-3.5 h-3.5" />
+                          <span>Print Pay Slip</span>
+                        </Button>
+                      </div>
+                    )}
+
+                    {linkedInvoice && (
+                      <div className="p-3 bg-indigo-500/10 border border-indigo-500/30 rounded-xl flex items-center justify-between animate-in fade-in">
+                        <div className="flex items-center gap-2 min-w-0">
+                          <FileText className="w-4 h-4 text-indigo-600 shrink-0" />
+                          <div className="truncate">
+                            <p className="text-xs font-bold text-indigo-950">Official Client Invoice Linked ✓</p>
+                            <p className="text-[11px] font-mono text-indigo-700">Invoice #{linkedInvoice.invoiceNo}</p>
+                          </div>
+                        </div>
+                        <Button
+                          type="button"
+                          size="sm"
+                          variant="outline"
+                          onClick={() => printDocument({ docId: linkedInvoice.invoiceNo, docType: 'Invoice', clientName: task.applicantName || 'Client', elementId: 'printable-invoice-canvas' })}
+                          className="h-7 px-2.5 text-xs font-bold border-indigo-500/40 text-indigo-800 hover:bg-indigo-500/20 flex items-center gap-1 cursor-pointer shrink-0"
+                        >
+                          <Printer className="w-3.5 h-3.5" />
+                          <span>Print Invoice</span>
+                        </Button>
+                      </div>
+                    )}
+
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
                       <div>
-                        <label className="block font-semibold text-foreground mb-1 text-xs">
-                          Amount Collected (৳ BDT) *
-                        </label>
+                        <div className="flex items-center justify-between mb-1">
+                          <label className="font-semibold text-foreground text-xs">
+                            Amount Collected (BDT) *
+                          </label>
+                          {task.paymentAmount > 0 && (
+                            <span className="text-[10px] text-muted-foreground">
+                              Target: <strong>BDT {Number(task.paymentAmount).toLocaleString()}</strong>
+                            </span>
+                          )}
+                        </div>
                         <input
                           type="number"
                           min="0"
@@ -1153,7 +1273,7 @@ export function TaskDetailModal({
                         <select
                           value={paymentMethod}
                           onChange={(e) => setPaymentMethod(e.target.value)}
-                          className="w-full px-3 py-2 bg-card border border-border rounded-xl text-foreground focus:outline-none focus:border-primary text-xs cursor-pointer"
+                          className="w-full px-3 py-2 bg-card border border-border rounded-xl text-foreground focus:outline-none focus:border-primary text-xs cursor-pointer font-medium"
                         >
                           <option value="Cash">Cash Payment</option>
                           <option value="Bank Transfer">Bank Transfer (Deposit / EFT / RTGS)</option>
@@ -1161,6 +1281,34 @@ export function TaskDetailModal({
                           <option value="Nagad">Nagad Mobile Banking</option>
                           <option value="Cheque">Cheque Payment</option>
                         </select>
+                      </div>
+                    </div>
+
+                    {/* 1-Click Direct Generation Buttons */}
+                    <div className="p-3 bg-card border border-border rounded-xl space-y-2">
+                      <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground block">
+                        Direct In-Task Generation Actions
+                      </span>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                        <Button
+                          type="button"
+                          size="sm"
+                          onClick={() => setIsReceiptModalOpen(true)}
+                          className="h-9 px-3 text-xs font-bold bg-emerald-600 hover:bg-emerald-700 text-white flex items-center justify-center gap-1.5 cursor-pointer shadow-xs"
+                        >
+                          <Receipt className="w-3.5 h-3.5" />
+                          <span>{linkedReceipt ? 'Re-issue / Edit Pay Slip' : 'Issue Pay Slip / Money Receipt'}</span>
+                        </Button>
+
+                        <Button
+                          type="button"
+                          size="sm"
+                          onClick={() => setIsInvoiceModalOpen(true)}
+                          className="h-9 px-3 text-xs font-bold bg-indigo-600 hover:bg-indigo-700 text-white flex items-center justify-center gap-1.5 cursor-pointer shadow-xs"
+                        >
+                          <FileText className="w-3.5 h-3.5" />
+                          <span>{linkedInvoice ? 'Re-issue / Edit Invoice' : 'Generate Client Invoice'}</span>
+                        </Button>
                       </div>
                     </div>
 
@@ -1174,71 +1322,45 @@ export function TaskDetailModal({
                         />
                         <span className="flex items-center gap-1.5">
                           <Receipt className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
-                          Auto-issue official <strong>Money Receipt / Pay Slip (MA#####)</strong> on marking this step Completed
+                          Auto-issue official <strong>Money Receipt / Pay Slip (MA#####)</strong> on completing task
                         </span>
                       </label>
 
-                      {!generateMoneyReceipt && (
-                        <div className="p-3 bg-card border border-amber-500/30 rounded-xl space-y-2 animate-in fade-in">
-                          <div className="flex items-center justify-between">
-                            <label className="block text-[11px] font-bold text-amber-800 uppercase tracking-wider">
-                              Attach Physical Payment Receipt / Bank Deposit Slip *
-                            </label>
-                            <span className="text-[10px] text-muted-foreground">Required if not auto-issuing</span>
-                          </div>
-                          <input
-                            type="file"
-                            id="manual-slip-input"
-                            onChange={(e) => {
-                              const file = e.target.files?.[0];
-                              if (file) setManualSlipFile(file);
-                            }}
-                            accept=".pdf,.png,.jpg,.jpeg,.webp"
-                            className="hidden"
-                          />
-                          <label
-                            htmlFor="manual-slip-input"
-                            className={`w-full h-11 border border-dashed rounded-lg px-3 flex items-center justify-center gap-2 cursor-pointer transition-colors text-xs text-center ${
-                              manualSlipFile
-                                ? 'border-emerald-500/50 bg-emerald-500/5 text-emerald-700 font-semibold'
-                                : 'border-border hover:border-amber-500 bg-muted/20 text-muted-foreground hover:text-foreground'
-                            }`}
-                          >
-                            {manualSlipFile ? (
-                              <span className="truncate max-w-[240px]">
-                                ✓ {manualSlipFile.name} ({((manualSlipFile.size) / (1024 * 1024)).toFixed(2)} MB)
-                              </span>
-                            ) : (
-                              <span className="text-[11px] font-medium">📎 Attach Scanned Pay Slip / Voucher File</span>
-                            )}
+                      {/* Manual Slip Attachment */}
+                      <div className="p-3 bg-card border border-border rounded-xl space-y-2">
+                        <div className="flex items-center justify-between">
+                          <label className="block text-[11px] font-bold text-foreground uppercase tracking-wider">
+                            Attach Physical Bank Deposit Slip / Voucher Photo
                           </label>
+                          <span className="text-[10px] text-muted-foreground">Optional file proof</span>
                         </div>
-                      )}
-                    </div>
-
-                    {/* Direct Studio Launch Buttons */}
-                    <div className="pt-2 flex flex-wrap gap-2 border-t border-border/80">
-                      <Button
-                        type="button"
-                        size="sm"
-                        variant="outline"
-                        onClick={() => handleLaunchGenerator('money-receipt')}
-                        className="h-8 text-xs px-3 font-semibold border-emerald-500/30 hover:bg-emerald-500/10 text-emerald-700 flex items-center gap-1.5 cursor-pointer"
-                      >
-                        <Receipt className="w-3.5 h-3.5 text-emerald-600" />
-                        <span>Open Money Receipt Studio</span>
-                      </Button>
-
-                      <Button
-                        type="button"
-                        size="sm"
-                        variant="outline"
-                        onClick={() => handleLaunchGenerator('invoice')}
-                        className="h-8 text-xs px-3 font-semibold border-indigo-500/30 hover:bg-indigo-500/10 text-indigo-700 flex items-center gap-1.5 cursor-pointer"
-                      >
-                        <FileText className="w-3.5 h-3.5 text-indigo-600" />
-                        <span>Open Client Invoice Studio</span>
-                      </Button>
+                        <input
+                          type="file"
+                          id="manual-slip-input"
+                          onChange={(e) => {
+                            const file = e.target.files?.[0];
+                            if (file) setManualSlipFile(file);
+                          }}
+                          accept=".pdf,.png,.jpg,.jpeg,.webp"
+                          className="hidden"
+                        />
+                        <label
+                          htmlFor="manual-slip-input"
+                          className={`w-full h-10 border border-dashed rounded-lg px-3 flex items-center justify-center gap-2 cursor-pointer transition-colors text-xs text-center ${
+                            manualSlipFile
+                              ? 'border-emerald-500/50 bg-emerald-500/5 text-emerald-700 font-semibold'
+                              : 'border-border hover:border-emerald-500 bg-muted/20 text-muted-foreground hover:text-foreground'
+                          }`}
+                        >
+                          {manualSlipFile ? (
+                            <span className="truncate max-w-[240px]">
+                              ✓ {manualSlipFile.name} ({((manualSlipFile.size) / (1024 * 1024)).toFixed(2)} MB)
+                            </span>
+                          ) : (
+                            <span className="text-[11px] font-medium">📎 Attach Scanned Pay Slip / Voucher File</span>
+                          )}
+                        </label>
+                      </div>
                     </div>
                   </>
                 )}
@@ -1499,6 +1621,85 @@ export function TaskDetailModal({
           </div>
         </div>
       </div>
+
+      {/* Direct In-Task Money Receipt Modal */}
+      {isReceiptModalOpen && (
+        <MoneyReceiptModal
+          isOpen={isReceiptModalOpen}
+          onClose={() => setIsReceiptModalOpen(false)}
+          initialData={{
+            clientName:
+              task.caseDetails?.applicantName ||
+              task.caseDetails?.clientInfo?.fullName ||
+              task.applicantName ||
+              task.clientName ||
+              'Valued Client',
+            clientPhone:
+              task.caseDetails?.phone ||
+              task.caseDetails?.clientInfo?.phone ||
+              task.phone ||
+              '',
+            passportNumber:
+              task.caseDetails?.passportNumber ||
+              task.passportNumber ||
+              '',
+            amount: paymentCollected || task.paymentAmount || '',
+            paymentMethod: paymentMethod,
+            purpose: task.paymentPurpose || task.title || 'Case Processing Fee',
+            serviceType: task.caseDetails?.destinationCountry
+              ? `${task.caseDetails.destinationCountry} Visa Processing`
+              : 'Visa Processing Service',
+            clientId: task.clientDid || task.caseDetails?.clientDid || task.caseDid,
+            serviceRef: {
+              modelName: 'CaseFile',
+              trackingId: task.caseNumber || task.caseDid,
+            },
+          }}
+          onCreated={(receipt) => {
+            setLinkedReceipt(receipt);
+            if (receipt.amount) setPaymentCollected(String(receipt.amount));
+            if (receipt.paymentMethod) setPaymentMethod(receipt.paymentMethod);
+            toast.success(`Money Receipt #${receipt.receiptNo} linked to this task!`);
+          }}
+        />
+      )}
+
+      {/* Direct In-Task Client Invoice Modal */}
+      {isInvoiceModalOpen && (
+        <InvoiceGenerateModal
+          isOpen={isInvoiceModalOpen}
+          onClose={() => setIsInvoiceModalOpen(false)}
+          initialData={{
+            clientName:
+              task.caseDetails?.applicantName ||
+              task.caseDetails?.clientInfo?.fullName ||
+              task.applicantName ||
+              task.clientName ||
+              'Valued Client',
+            clientPhone:
+              task.caseDetails?.phone ||
+              task.caseDetails?.clientInfo?.phone ||
+              task.phone ||
+              '',
+            clientAddress: task.caseDetails?.destinationCountry
+              ? `Destination: ${task.caseDetails.destinationCountry}`
+              : '',
+            passportNumber:
+              task.caseDetails?.passportNumber ||
+              task.passportNumber ||
+              '',
+            amount: paymentCollected || task.paymentAmount || '',
+            paymentMethod: paymentMethod,
+            purpose: task.paymentPurpose || task.title || 'Visa Processing & Case Handling Service',
+            caseNumber: task.caseNumber || task.caseDid || '',
+          }}
+          onCreated={(invoice) => {
+            setLinkedInvoice(invoice);
+            if (invoice.grandTotal) setPaymentCollected(String(invoice.grandTotal));
+            toast.success(`Invoice #${invoice.invoiceNo} linked to this task!`);
+          }}
+        />
+      )}
 
       {/* Embedded File Viewer Modal (View Only) */}
       {viewingFile && (

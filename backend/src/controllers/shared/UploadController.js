@@ -1,6 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 import { processUploadedImage } from '../../middlewares/commonUpload.middleware.js';
+import { readPassportDocument } from '../../services/passportReader.service.js';
 import {
   isR2Configured,
   uploadToR2,
@@ -55,6 +56,22 @@ class UploadController {
         }
       }
 
+      // Check if passport OCR should be performed
+      let passportData = null;
+      const isPassportDoc =
+        /passport/i.test(req.body.documentType || '') ||
+        /passport/i.test(req.query.documentType || '') ||
+        req.body.readPassport === 'true' ||
+        req.query.readPassport === 'true';
+
+      if (isPassportDoc && req.file.path && fs.existsSync(req.file.path)) {
+        try {
+          passportData = await readPassportDocument(req.file.path);
+        } catch (ocrErr) {
+          console.warn('[UploadController] Passport OCR notice:', ocrErr.message);
+        }
+      }
+
       const fileData = {
         name: req.file.filename,
         originalName: req.file.originalname,
@@ -66,7 +83,8 @@ class UploadController {
         mimeType: req.file.mimetype,
         size: req.file.size,
         extension: path.extname(req.file.originalname),
-        uploadedAt: new Date()
+        uploadedAt: new Date(),
+        passportData: passportData || undefined,
       };
 
       return res.status(200).json({
@@ -81,6 +99,75 @@ class UploadController {
         success: false,
         status: 'error',
         message: error.message || 'Failed to upload file.'
+      });
+    }
+  }
+
+  /**
+   * Upload and extract Bangladeshi / International Passport data via intelligent OCR
+   * Endpoint: POST /api/v1/upload/read-passport
+   */
+  async readPassport(req, res) {
+    try {
+      const file = req.file || (req.files && (Array.isArray(req.files) ? req.files[0] : (req.files.file?.[0] || req.files.image?.[0])));
+      if (!file) {
+        return res.status(400).json({
+          success: false,
+          status: 'error',
+          message: 'No passport file provided in request.'
+        });
+      }
+      req.file = file;
+      await processUploadedImage(req.file);
+
+      // Perform OCR
+      const passportData = await readPassportDocument(req.file.path);
+
+      const relativeUrl = `${req.uploadRelativePath || '/uploads/documents'}/${req.file.filename}`;
+      const host = req.get('host');
+      const protocol = req.protocol || 'http';
+      const fullUrl = `${protocol}://${host}${relativeUrl}`;
+
+      let r2Data = null;
+      if (isR2Configured() && req.file.path && fs.existsSync(req.file.path)) {
+        try {
+          const fileBuffer = await fs.promises.readFile(req.file.path);
+          const subPath = req.uploadSubPath || (req.uploadRelativePath || '').replace(/^\/+uploads\/+/, '').replace(/^\/+documents\/+/, '');
+          const r2Key = `${subPath}/${req.file.filename}`;
+
+          r2Data = await uploadToR2({
+            fileBuffer,
+            key: r2Key,
+            contentType: req.file.mimetype,
+            metadata: {
+              originalName: encodeURIComponent(req.file.originalname),
+            },
+          });
+        } catch (r2Err) {
+          console.warn('R2 sync warning:', r2Err.message);
+        }
+      }
+
+      return res.status(200).json({
+        success: true,
+        status: 'success',
+        message: 'Passport scanned and read successfully.',
+        data: {
+          name: req.file.filename,
+          originalName: req.file.originalname,
+          url: r2Data?.publicUrl || relativeUrl,
+          fullUrl: r2Data?.publicUrl || fullUrl,
+          mimeType: req.file.mimetype,
+          size: req.file.size,
+          passportData,
+        }
+      });
+    } catch (error) {
+      console.error('Read passport error:', error);
+      return res.status(500).json({
+        success: false,
+        status: 'error',
+        message: error.message || 'Failed to read passport document.'
       });
     }
   }

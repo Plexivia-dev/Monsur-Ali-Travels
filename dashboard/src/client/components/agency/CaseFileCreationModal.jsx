@@ -878,11 +878,11 @@ export function CaseFileCreationModal({ isOpen, onClose, onSuccess }) {
                         onChange={(e) => setClientData({ ...clientData, guardianRelationship: e.target.value })}
                         className="w-full px-3 py-2 text-xs bg-white border border-black/15 rounded-lg focus:border-primary outline-hidden"
                       >
-                        <option value="Father">Father (পিতা)</option>
-                        <option value="Mother">Mother (মাতা)</option>
-                        <option value="Brother">Brother (ভাই)</option>
-                        <option value="Uncle">Uncle (চাচা / মামা)</option>
-                        <option value="Spouse">Spouse (স্ত্রী / স্বামী)</option>
+                        <option value="Father">Father</option>
+                        <option value="Mother">Mother</option>
+                        <option value="Brother">Brother</option>
+                        <option value="Uncle">Uncle</option>
+                        <option value="Spouse">Spouse</option>
                         <option value="Other">Other Legal Guardian</option>
                       </select>
                     </div>
@@ -1181,7 +1181,7 @@ export function CaseFileCreationModal({ isOpen, onClose, onSuccess }) {
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
                   <div>
                     <label className="text-[11px] font-bold text-muted-foreground block mb-1">
-                      Total Agreed Package Amount (BDT ৳)
+                      Total Agreed Package Amount (BDT)
                     </label>
                     <input
                       type="number"
@@ -1194,7 +1194,7 @@ export function CaseFileCreationModal({ isOpen, onClose, onSuccess }) {
 
                   <div>
                     <label className="text-[11px] font-bold text-muted-foreground block mb-1">
-                      Initial Advance Deposit Received (BDT ৳)
+                      Initial Advance Deposit Received (BDT)
                     </label>
                     <input
                       type="number"
@@ -1214,8 +1214,8 @@ export function CaseFileCreationModal({ isOpen, onClose, onSuccess }) {
                       onChange={(e) => setPaymentData({ ...paymentData, paymentMethod: e.target.value })}
                       className="w-full px-3 py-2 text-xs bg-background border border-border rounded-lg focus:border-primary outline-hidden"
                     >
-                      <option value="Cash">Cash in Hand (অফিস ক্যাশ)</option>
-                      <option value="Bank Transfer">Bank Transfer (ব্যাংক একাউন্ট)</option>
+                      <option value="Cash">Cash in Hand (Office Cash)</option>
+                      <option value="Bank Transfer">Bank Transfer (Bank Account)</option>
                       <option value="bKash">bKash Merchant</option>
                       <option value="Nagad">Nagad</option>
                     </select>
@@ -1225,7 +1225,7 @@ export function CaseFileCreationModal({ isOpen, onClose, onSuccess }) {
                   <div className="bg-muted/40 border border-border p-3 rounded-xl flex flex-col justify-center">
                     <span className="text-[10px] font-bold text-muted-foreground uppercase">Remaining Due Balance</span>
                     <span className="text-base font-black text-foreground">
-                      BDT ৳{remainingDue.toLocaleString()}
+                      BDT {remainingDue.toLocaleString()}
                     </span>
                   </div>
                 </div>
@@ -1239,7 +1239,7 @@ export function CaseFileCreationModal({ isOpen, onClose, onSuccess }) {
                       className="size-4 rounded text-primary focus:ring-primary"
                     />
                     <span>
-                      Generate official <strong>Money Receipt Voucher ({paymentData.advanceAmount ? `৳${Number(paymentData.advanceAmount).toLocaleString()}` : '৳0'})</strong> with dual-copy printable slip upon submission.
+                      Generate official <strong>Money Receipt Voucher ({paymentData.advanceAmount ? `BDT ${Number(paymentData.advanceAmount).toLocaleString()}` : 'BDT 0'})</strong> with dual-copy printable slip upon submission.
                     </span>
                   </label>
                 </div>
@@ -1320,15 +1320,15 @@ export function CaseFileCreationModal({ isOpen, onClose, onSuccess }) {
                   <div className="border-t border-black/10 pt-2 grid grid-cols-3 gap-2 text-xs">
                     <div>
                       <span className="text-black/60 text-[10px]">Total Package:</span>
-                      <p className="font-bold text-black">৳{totalPkg.toLocaleString()}</p>
+                      <p className="font-bold text-black">BDT {totalPkg.toLocaleString()}</p>
                     </div>
                     <div>
                       <span className="text-black/60 text-[10px]">Advance Deposit:</span>
-                      <p className="font-bold text-emerald-600">৳{advPaid.toLocaleString()}</p>
+                      <p className="font-bold text-emerald-600">BDT {advPaid.toLocaleString()}</p>
                     </div>
                     <div>
                       <span className="text-black/60 text-[10px]">Remaining Due:</span>
-                      <p className="font-bold text-black">৳{remainingDue.toLocaleString()}</p>
+                      <p className="font-bold text-black">BDT {remainingDue.toLocaleString()}</p>
                     </div>
                   </div>
                 </div>

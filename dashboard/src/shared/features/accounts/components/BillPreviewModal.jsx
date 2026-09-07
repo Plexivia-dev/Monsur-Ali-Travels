@@ -121,14 +121,14 @@ export function BillPreviewModal({ isOpen, onClose, bill }) {
               <div className="flex justify-between items-center">
                 <span className="font-bold text-black">Total Bill Amount:</span>
                 <span className="font-mono font-bold text-base text-black">
-                  ৳ {Number(bill.amount || 0).toLocaleString('en-BD')} BDT
+                  BDT {Number(bill.amount || 0).toLocaleString('en-BD')}
                 </span>
               </div>
 
               <div className="flex justify-between items-center pt-1 border-t border-black/10 text-emerald-800">
                 <span className="font-semibold">Paid Amount:</span>
                 <span className="font-mono font-bold">
-                  ৳ {Number(bill.paidAmount || 0).toLocaleString('en-BD')} BDT
+                  BDT {Number(bill.paidAmount || 0).toLocaleString('en-BD')}
                 </span>
               </div>
 
@@ -136,7 +136,7 @@ export function BillPreviewModal({ isOpen, onClose, bill }) {
                 <div className="flex justify-between items-center pt-1 border-t border-black/10 text-red-700">
                   <span className="font-semibold">Remaining Due:</span>
                   <span className="font-mono font-bold">
-                    ৳ {Number(bill.dueAmount || 0).toLocaleString('en-BD')} BDT
+                    BDT {Number(bill.dueAmount || 0).toLocaleString('en-BD')}
                   </span>
                 </div>
               )}
@@ -178,7 +178,7 @@ export function BillPreviewModal({ isOpen, onClose, bill }) {
                             {p.recordedBy || 'Accounts'}
                           </td>
                           <td className="py-2 px-2.5 text-right font-mono font-bold text-emerald-700">
-                            ৳ {Number(p.amount || 0).toLocaleString('en-BD')}
+                            BDT {Number(p.amount || 0).toLocaleString('en-BD')}
                           </td>
                         </tr>
                       ))}

@@ -14,6 +14,7 @@ import {
 import { apiClient } from '@/lib/api-client';
 import { toast } from 'sonner';
 import { CaseFileCreationModal } from './CaseFileCreationModal';
+import { HeaderTitle } from '@shared/components/common/HeaderTitle';
 
 export function AgencyClientList({ autoOpenCreate = false }) {
   const [clients, setClients] = useState([]);
@@ -78,43 +79,32 @@ export function AgencyClientList({ autoOpenCreate = false }) {
   return (
     <div className="space-y-6">
       {/* Header Banner */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-card border border-border p-5 sm:p-6 rounded-2xl shadow-xs text-foreground">
-        <div className="space-y-1">
-          <div className="flex items-center gap-3">
-            <div className="size-10 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center shrink-0">
-              <Users className="size-5 text-primary" />
-            </div>
-            <div>
-              <h1 className="text-xl font-bold tracking-tight text-foreground">
-                Client Directory
-              </h1>
-              <p className="text-xs text-muted-foreground font-medium mt-0.5">
-                Comprehensive roster of registered agency clients and candidate dossiers
-              </p>
-            </div>
-          </div>
-        </div>
-
-        <div className="flex items-center gap-3">
-          <button
-            type="button"
-            onClick={() => setIsCreateModalOpen(true)}
-            className="flex items-center gap-2 px-4 py-2 bg-primary hover:bg-primary/90 text-xs font-bold rounded-xl text-primary-foreground transition-colors cursor-pointer shadow-xs"
-          >
-            <Plus className="size-3.5" />
-            <span>+ New Case / Intake</span>
-          </button>
-          <button
-            type="button"
-            onClick={fetchClients}
-            disabled={isLoading}
-            className="flex items-center gap-2 px-4 py-2 bg-card hover:bg-muted/80 border border-border text-xs font-semibold rounded-xl text-foreground transition-colors cursor-pointer shadow-2xs disabled:opacity-50"
-          >
-            <RefreshCw className={`size-3.5 ${isLoading ? 'animate-spin' : ''}`} />
-            <span>{isLoading ? 'Reloading...' : 'Reload Data'}</span>
-          </button>
-        </div>
-      </div>
+      <HeaderTitle
+        title="Client Directory"
+        subtitle="Comprehensive roster of registered agency clients and candidate dossiers"
+        icon={Users}
+        actions={
+          <>
+            <button
+              type="button"
+              onClick={() => setIsCreateModalOpen(true)}
+              className="flex items-center gap-2 px-4 py-2 bg-emerald-500 hover:bg-emerald-400 border border-emerald-400 text-xs font-bold rounded-xl text-white transition-colors cursor-pointer shadow-xs"
+            >
+              <Plus className="size-3.5" />
+              <span>New Case / Intake</span>
+            </button>
+            <button
+              type="button"
+              onClick={fetchClients}
+              disabled={isLoading}
+              className="flex items-center gap-2 px-4 py-2 bg-white/10 hover:bg-white/20 border border-white/20 text-xs font-semibold rounded-xl text-white transition-colors cursor-pointer disabled:opacity-50"
+            >
+              <RefreshCw className={`size-3.5 ${isLoading ? 'animate-spin' : ''}`} />
+              <span>{isLoading ? 'Reloading...' : 'Reload Data'}</span>
+            </button>
+          </>
+        }
+      />
 
       {/* Filter and Search Bar */}
       <div className="flex flex-col sm:flex-row items-center justify-between gap-3 bg-card border border-border p-3.5 sm:p-4 rounded-xl shadow-2xs">

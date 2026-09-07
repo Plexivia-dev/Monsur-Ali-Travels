@@ -33,7 +33,7 @@ export function CertificateForm({ data, onChange }) {
               data.language === 'bn' ? 'bg-primary text-primary-foreground' : 'bg-muted text-muted-foreground'
             }`}
           >
-            বাংলা
+            Bengali
           </button>
           <button
             onClick={() => onChange({ ...data, language: 'en' })}

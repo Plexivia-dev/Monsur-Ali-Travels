@@ -1,6 +1,7 @@
 import mongoose from "mongoose";
 import { ClientCaseFileModel } from "../../models/clientCaseFile.model.js";
 import { logger } from "../../config/logger.js";
+import { checkManagerCanDelete, checkManagerCanUpdate } from "../../helper/managerRbacHelper.js";
 
 // GET /clients - List all client case files
 export const getClients = async (req, res, next) => {
@@ -121,6 +122,8 @@ export const createClient = async (req, res, next) => {
       casePriority: body.casePriority || "normal",
       expectedDeploymentDate: body.expectedDeploymentDate || "2026-10-01",
       internalNotes: body.internalNotes || "Newly created client file.",
+      createdByDid: req.user?.did || null,
+      createdByName: req.user?.name || "Staff",
     });
 
     logger.info({ clientId: client._id, fileNumber: client.fileNumber }, "Created Client Case File");
@@ -145,20 +148,29 @@ export const createClient = async (req, res, next) => {
 export const updateClient = async (req, res, next) => {
   try {
     const { id } = req.params;
+    const existing = await ClientCaseFileModel.findOne({
+      $or: [{ _id: mongoose.isValidObjectId(id) ? id : null }, { did: id }, { fileNumber: id }],
+      isActive: true,
+    });
+
+    if (!existing) {
+      return res.status(404).json({ status: "error", message: "Client Case File not found" });
+    }
+
+    if (!checkManagerCanUpdate(req, res, existing, "Client Case File")) {
+      return;
+    }
+
     const body = req.body ?? {};
 
     const client = await ClientCaseFileModel.findOneAndUpdate(
-      { $or: [{ _id: mongoose.isValidObjectId(id) ? id : null }, { did: id }, { fileNumber: id }] },
+      { _id: existing._id },
       body,
       {
         new: true,
         runValidators: true,
       }
     );
-
-    if (!client) {
-      return res.status(404).json({ status: "error", message: "Client Case File not found" });
-    }
 
     res.json({
       status: "success",
@@ -173,6 +185,10 @@ export const updateClient = async (req, res, next) => {
 // DELETE /clients/:id - Delete client case file (soft delete)
 export const deleteClient = async (req, res, next) => {
   try {
+    if (!checkManagerCanDelete(req, res, "Client Case File")) {
+      return;
+    }
+
     const { id } = req.params;
 
     const client = await ClientCaseFileModel.findOneAndUpdate(
@@ -198,17 +214,26 @@ export const deleteClient = async (req, res, next) => {
 export const updateClientStatus = async (req, res, next) => {
   try {
     const { id } = req.params;
+    const existing = await ClientCaseFileModel.findOne({
+      $or: [{ _id: mongoose.isValidObjectId(id) ? id : null }, { did: id }, { fileNumber: id }],
+      isActive: true,
+    });
+
+    if (!existing) {
+      return res.status(404).json({ status: "error", message: "Client not found" });
+    }
+
+    if (!checkManagerCanUpdate(req, res, existing, "Client Case File")) {
+      return;
+    }
+
     const { status } = req.body;
 
     const client = await ClientCaseFileModel.findOneAndUpdate(
-      { $or: [{ _id: mongoose.isValidObjectId(id) ? id : null }, { did: id }, { fileNumber: id }] },
+      { _id: existing._id },
       { status },
       { new: true, runValidators: true }
     );
-
-    if (!client) {
-      return res.status(404).json({ status: "error", message: "Client not found" });
-    }
 
     res.json({
       status: "success",

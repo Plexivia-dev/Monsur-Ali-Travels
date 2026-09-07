@@ -24,9 +24,12 @@ import { CashVoucherPreview } from '@/shared/features/document-studio';
 import { ConfirmDeleteDialog } from '@/components/ui/confirm-delete-dialog';
 import { Button } from '@/components/ui/button';
 import { useTranslation } from 'react-i18next';
+import { useAuthStore } from '../../store/useAuthStore';
 
 export function CashVoucherDataTable() {
   const { t } = useTranslation();
+  const user = useAuthStore((state) => state.user);
+  const isManager = String(user?.role || '').toLowerCase().trim() === 'manager';
   const { switchPortal } = usePortal();
   const [data, setData] = useState([]);
   const [pagination, setPagination] = useState({ page: 1, limit: 10, skip: 0, totalCount: 0, totalPages: 1 });
@@ -215,7 +218,7 @@ export function CashVoucherDataTable() {
           <div>
             <span className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground">Disbursed Total</span>
             <div className="text-2xl font-black text-indigo-600 mt-0.5">
-              ৳ {stats.totalDisbursedBDT.toLocaleString('en-IN')}
+              BDT {stats.totalDisbursedBDT.toLocaleString('en-IN')}
             </div>
           </div>
           <div className="size-10 rounded-xl bg-indigo-500/10 text-indigo-600 flex items-center justify-center">
@@ -356,7 +359,7 @@ export function CashVoucherDataTable() {
                       {/* Grand Total */}
                       <td className="py-3 px-4">
                         <span className="font-black text-xs text-indigo-600 dark:text-indigo-400 font-mono">
-                          ৳ {total.toLocaleString('en-IN')}
+                          BDT {total.toLocaleString('en-IN')}
                         </span>
                       </td>
 
@@ -403,14 +406,16 @@ export function CashVoucherDataTable() {
                           </button>
 
                           {/* Delete Action */}
-                          <button
-                            type="button"
-                            onClick={() => setDeleteTarget(item)}
-                            className="p-1.5 rounded-lg bg-rose-500/10 hover:bg-rose-500/20 text-rose-600 transition-colors cursor-pointer"
-                            title="Delete Record"
-                          >
-                            <Trash2 className="w-3.5 h-3.5" />
-                          </button>
+                          {!isManager && (
+                            <button
+                              type="button"
+                              onClick={() => setDeleteTarget(item)}
+                              className="p-1.5 rounded-lg bg-rose-500/10 hover:bg-rose-500/20 text-rose-600 transition-colors cursor-pointer"
+                              title="Delete Record"
+                            >
+                              <Trash2 className="w-3.5 h-3.5" />
+                            </button>
+                          )}
                         </div>
                       </td>
                     </tr>

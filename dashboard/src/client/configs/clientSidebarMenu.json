@@ -1,12 +1,12 @@
 [
   {
     "groupLabel": "Overview",
-    "groupLabelBn": "ওভারভিউ",
+    "groupLabelBn": "",
     "items": [
       {
         "id": "overview-tasks",
         "name": "Overview & Tasks",
-        "nameBn": "টাস্ক ওভারভিউ",
+        "nameBn": "",
         "portal": "overview",
         "submodule": "tasks",
         "path": "/dashboard/overview",
@@ -298,7 +298,7 @@
           {
             "id": "data-cash-vouchers",
             "name": "Cash Voucher Records",
-            "nameBn": "ক্যাশ ভাউচার রেকর্ড",
+            "nameBn": "",
             "portal": "data",
             "submodule": "cash-vouchers",
             "path": "/dashboard/data/cash-vouchers",
@@ -347,7 +347,7 @@
           {
             "id": "data-job-verifications",
             "name": "Job Verification Records",
-            "nameBn": "জব ভেরিফিকেশন রেকর্ড",
+            "nameBn": "",
             "portal": "data",
             "submodule": "job-verifications",
             "path": "/dashboard/data/job-verifications",
@@ -357,7 +357,7 @@
           {
             "id": "data-marriage-certificates",
             "name": "Marriage Certificates",
-            "nameBn": "বিবাহ সনদ রেকর্ড",
+            "nameBn": "",
             "portal": "data",
             "submodule": "marriage-certificates",
             "path": "/dashboard/data/marriage-certificates",
@@ -367,7 +367,7 @@
           {
             "id": "data-character-certificates",
             "name": "Character Certificates",
-            "nameBn": "চারিত্রিক সনদ রেকর্ড",
+            "nameBn": "",
             "portal": "data",
             "submodule": "character-certificates",
             "path": "/dashboard/data/character-certificates",

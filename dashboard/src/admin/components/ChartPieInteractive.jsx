@@ -193,3 +193,5 @@ export function ChartPieInteractive() {
     </Card>
   )
 }
+
+export default ChartPieInteractive
