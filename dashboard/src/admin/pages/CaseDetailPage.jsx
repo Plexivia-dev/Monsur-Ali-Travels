@@ -960,34 +960,21 @@ export default function CaseDetailPage() {
           </div>
 
           {/* Current Processing Stage Dropdown */}
-          <div className="flex items-center gap-3 bg-muted/40 px-3.5 py-2.5 rounded-2xl border border-border shrink-0 self-start lg:self-center shadow-2xs min-w-[240px]">
-            <div className="text-left sm:text-right min-w-0 flex-1">
-              <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground block">
-                Processing Stage
-              </span>
-              <span
-                className="text-xs font-black text-primary block truncate max-w-[180px]"
-                title={PIPELINE_STAGES.find((s) => s.id === currentStageId)?.title || caseData.workflowStatus || caseData.status}
-              >
-                {PIPELINE_STAGES.find((s) => s.id === currentStageId)?.title || caseData.workflowStatus || caseData.status || '1. File Intake'}
-              </span>
-            </div>
-            <div className="relative">
-              <select
-                value={currentStageId}
-                onChange={(e) => handleStageChange(e.target.value)}
-                className="appearance-none pl-3 pr-8 py-2 text-xs font-bold rounded-xl border border-primary/40 bg-card hover:bg-muted/50 text-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 cursor-pointer shadow-xs transition-all shrink-0 min-w-[150px]"
-                title="Click to change case status / stage"
-              >
-                {PIPELINE_STAGES.map((st) => (
-                  <option key={st.id} value={st.id} className="bg-popover text-popover-foreground py-1 font-medium">
-                    {st.title} {st.id === currentStageId ? '✓' : ''}
-                  </option>
-                ))}
-              </select>
-              <div className="absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none text-muted-foreground">
-                <ChevronDown className="w-3.5 h-3.5" />
-              </div>
+          <div className="relative shrink-0 self-start lg:self-center">
+            <select
+              value={currentStageId}
+              onChange={(e) => handleStageChange(e.target.value)}
+              className="appearance-none pl-3.5 pr-8 py-2 text-xs font-bold rounded-xl border border-primary/40 bg-card hover:bg-muted/50 text-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 cursor-pointer shadow-xs transition-all shrink-0 min-w-[160px]"
+              title="Click to change case status / stage"
+            >
+              {PIPELINE_STAGES.map((st) => (
+                <option key={st.id} value={st.id} className="bg-popover text-popover-foreground py-1 font-medium">
+                  {st.title} {st.id === currentStageId ? '✓' : ''}
+                </option>
+              ))}
+            </select>
+            <div className="absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none text-muted-foreground">
+              <ChevronDown className="w-3.5 h-3.5" />
             </div>
           </div>
         </div>
