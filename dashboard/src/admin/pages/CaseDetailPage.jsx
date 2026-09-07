@@ -834,13 +834,6 @@ export default function CaseDetailPage() {
               <span>Upload Document</span>
             </button>
 
-            <button
-              onClick={handleTriggerIndianVisa}
-              className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-amber-600 hover:bg-amber-500 text-white text-xs font-bold shadow-xs transition cursor-pointer"
-            >
-              <Globe2 className="w-3.5 h-3.5" />
-              <span>🇮🇳 Indian Visa Pipeline</span>
-            </button>
 
             <button
               onClick={() => setIsPaymentModalOpen(true)}
