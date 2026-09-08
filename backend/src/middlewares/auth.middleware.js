@@ -35,6 +35,7 @@ export const authenticateToken = async (req, res, next) => {
       name: user.name,
       email: user.email,
       role: user.role,
+      subRole: user.subRole || "",
     };
     return next();
   } catch (error) {
@@ -48,10 +49,11 @@ export const authorizeRoles = (...allowedRoles) => (req, res, next) => {
   }
 
   const currentRole = typeof req.user.role === "string" ? req.user.role.toLowerCase() : "";
+  const currentSubRole = typeof req.user.subRole === "string" ? req.user.subRole.toLowerCase() : "";
   const normalizedAllowedRoles = allowedRoles.map((role) => role.toLowerCase());
 
-  if (!normalizedAllowedRoles.includes(currentRole)) {
-    return res.status(403).json({ status: "error", message: "Forbidden" });
+  if (!normalizedAllowedRoles.includes(currentRole) && !normalizedAllowedRoles.includes(currentSubRole)) {
+    return res.status(403).json({ status: "error", message: "Forbidden: insufficient permissions" });
   }
 
   return next();

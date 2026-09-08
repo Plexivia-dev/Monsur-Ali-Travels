@@ -130,6 +130,11 @@ export default defineConfig({
     host: '127.0.0.1',
     open: false,
     proxy: {
+      '/api': {
+        target: 'https://server.plexivia.online',
+        changeOrigin: true,
+        secure: false,
+      },
       '/uploads': {
         target: 'https://server.plexivia.online',
         changeOrigin: true,

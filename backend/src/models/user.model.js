@@ -3,7 +3,7 @@ import { generateDid } from "../utils/generateDid.js";
 
 const { models } = mongoose;
 
-export const USER_ROLES = ["Owner", "Admin", "Manager", "Staff"];
+export const USER_ROLES = ["Owner", "Admin", "Manager", "Staff", "Accountant"];
 export const USER_SUB_ROLES = ["Frontdesk", "Visa_Processor", "Accountant", "Representative", "ClientManager"];
 
 const userSchema = new Schema(
@@ -73,7 +73,7 @@ const userSchema = new Schema(
 );
 
 userSchema.pre('save', function(next) {
-    if (this.role !== 'Staff' && this.subRole) {
+    if (this.role !== 'Staff' && this.role !== 'Accountant' && this.subRole) {
         this.subRole = undefined;
     }
     next();

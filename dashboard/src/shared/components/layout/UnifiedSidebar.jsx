@@ -126,6 +126,20 @@ export function UnifiedSidebar({
   const userRole = String(user?.role || '').toLowerCase();
   const userSubRole = String(user?.subRole || user?.sub_role || user?.designation || '').toLowerCase();
 
+  const checkAccess = (target) => {
+    if (!target) return true;
+    if (target.roles && target.roles.length > 0) {
+      const hasRole = target.roles.includes(userRole) || (userSubRole && target.roles.includes(userSubRole));
+      if (!hasRole) return false;
+    }
+    if (target.excludeRoles && target.excludeRoles.length > 0) {
+      if (userSubRole && target.excludeRoles.includes(userSubRole)) return false;
+      const isSubRoleWhitelisted = target.roles && target.roles.length > 0 && userSubRole && target.roles.includes(userSubRole);
+      if (target.excludeRoles.includes(userRole) && !isSubRoleWhitelisted) return false;
+    }
+    return true;
+  };
+
   return (
     <SidebarPrimitive
       collapsible="icon"
@@ -200,14 +214,7 @@ export function UnifiedSidebar({
       <SidebarContent className="p-2 space-y-4">
         {menuGroups.map((group, groupIdx) => {
           // Role filtering for groups
-          if (group.roles && group.roles.length > 0) {
-            const hasRole = group.roles.includes(userRole) || group.roles.includes(userSubRole);
-            if (!hasRole) return null;
-          }
-          if (group.excludeRoles && group.excludeRoles.length > 0) {
-            const isExcluded = group.excludeRoles.includes(userRole) || group.excludeRoles.includes(userSubRole);
-            if (isExcluded) return null;
-          }
+          if (!checkAccess(group)) return null;
 
           const groupLabel = lang === 'BN' ? (group.groupLabelBn || group.groupLabel) : group.groupLabel;
 
@@ -223,14 +230,7 @@ export function UnifiedSidebar({
                 <SidebarMenu className="space-y-3">
                   {group.items.map((item, itemIdx) => {
                     // Role filtering for items
-                    if (item.roles && item.roles.length > 0) {
-                      const hasRole = item.roles.includes(userRole) || item.roles.includes(userSubRole);
-                      if (!hasRole) return null;
-                    }
-                    if (item.excludeRoles && item.excludeRoles.length > 0) {
-                      const isExcluded = item.excludeRoles.includes(userRole) || item.excludeRoles.includes(userSubRole);
-                      if (isExcluded) return null;
-                    }
+                    if (!checkAccess(item)) return null;
 
                     const hasChildren = Array.isArray(item.childItems) && item.childItems.length > 0;
                     const itemLabel = lang === 'BN' ? (item.nameBn || item.name || item.label) : (item.name || item.label);
@@ -287,14 +287,7 @@ export function UnifiedSidebar({
                               {/* Submenu with space-y-2 */}
                               <SidebarMenuSub className="ml-5 border-l-2 border-sky-400/30 pl-3 my-2 space-y-2">
                                 {item.childItems.map((subItem, subIdx) => {
-                                  if (subItem.roles && subItem.roles.length > 0) {
-                                    const hasRole = subItem.roles.includes(userRole) || subItem.roles.includes(userSubRole);
-                                    if (!hasRole) return null;
-                                  }
-                                  if (subItem.excludeRoles && subItem.excludeRoles.length > 0) {
-                                    const isExcluded = subItem.excludeRoles.includes(userRole) || subItem.excludeRoles.includes(userSubRole);
-                                    if (isExcluded) return null;
-                                  }
+                                  if (!checkAccess(subItem)) return null;
                                   const isSubActive = activeChecker ? activeChecker(subItem) : false;
                                   const subLabel = lang === 'BN' ? (subItem.nameBn || subItem.name || subItem.label) : (subItem.name || subItem.label);
 

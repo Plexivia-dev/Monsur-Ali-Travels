@@ -58,10 +58,10 @@
     ]
   },
   {
-    "groupLabel": "Accounts",
+    "groupLabel": "Accounts & Ledger",
     "groupLabelBn": "",
-    "roles": ["admin", "owner", "superadmin", "manager", "accountant", "accounts"],
-    "excludeRoles": ["staff", "frontdesk", "visa_processor", "lawyer", "representative"],
+    "roles": ["owner", "superadmin", "accountant", "accounts"],
+    "excludeRoles": ["manager", "frontdesk", "visa_processor", "lawyer", "representative"],
     "items": [
       {
         "id": "accounts-group",
@@ -104,6 +104,24 @@
             "submodule": "expenses",
             "path": "/dashboard/accounts/expenses",
             "icon": "Receipt"
+          },
+          {
+            "id": "acc-cash-book",
+            "name": "Cash Book",
+            "nameBn": "",
+            "portal": "accounts",
+            "submodule": "cash-book",
+            "path": "/dashboard/accounts/cash-book",
+            "icon": "BookOpen"
+          },
+          {
+            "id": "acc-bank-ledger",
+            "name": "Bank Ledger",
+            "nameBn": "",
+            "portal": "accounts",
+            "submodule": "bank-ledger",
+            "path": "/dashboard/accounts/bank-ledger",
+            "icon": "Building2"
           },
           {
             "id": "acc-reports",

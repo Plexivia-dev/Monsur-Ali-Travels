@@ -1,0 +1,14 @@
+{
+  "name": "smart-erp",
+  "version": "03.04.18",
+  "private": true,
+  "scripts": {
+    "dev": "npm --prefix dashboard run dev",
+    "dev:dash": "npm --prefix dashboard run dev",
+    "dev:admin": "npm --prefix dashboard run dev:admin",
+    "dev:client": "npm --prefix dashboard run dev:client",
+    "build": "npm --prefix dashboard run build",
+    "build:admin": "npm --prefix dashboard run build:admin",
+    "build:client": "npm --prefix dashboard run build:client"
+  }
+}

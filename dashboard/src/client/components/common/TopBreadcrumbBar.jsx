@@ -53,6 +53,10 @@ const SUBMODULE_LABELS = {
   'clients-add': 'Add New Client',
   bills: 'Billing & Invoices',
   payments: 'Wages & Payments',
+  salaries: 'Salary Slips',
+  expenses: 'Expense Tracking',
+  'cash-book': 'Cash Book',
+  'bank-ledger': 'Bank Ledger',
   reports: 'Reports & Analytics',
   employees: 'Staff & Worker Roster',
 
