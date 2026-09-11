@@ -2,21 +2,31 @@
 
 ## 🔑 SSH Login Command
 ```bash
-ssh root@144.79.218.241
+ssh root@35.200.130.118
 # or with explicit key:
-ssh -i C:\Users\mdikr\.ssh\id_rsa root@144.79.218.241
+ssh -i C:\Users\mdikr\.ssh\id_rsa root@35.200.130.118
+# or with alias:
+ssh mat-server
 ```
 
 ---
 
-## 1. Monsur Ali Travels Production Host
+## 1. Monsur Ali Travels Production Host (Google Cloud)
 
-- **Host IP:** `144.79.218.241`
+- **Provider:** Google Cloud Platform (GCP)
+- **Project ID:** `project-9213af41-1469-4afa-b21`
+- **Instance Name:** `mat-server`
+- **Host IP (Static):** `35.200.130.118`
 - **SSH User:** `root`
 - **SSH Port:** `22`
-- **OS:** `Ubuntu 24.04.3 LTS (Noble Numbat)`
+- **Region / Zone:** `asia-south1-a` (Mumbai, India)
+- **Machine Type:** `e2-standard-2` (8 GB RAM, 80 GB Balanced SSD)
+- **OS:** `Ubuntu 24.04.1 LTS (Noble Numbat)`
 - **Project Directory:** `/opt/monsuralitravels`
 - **GitHub Repository:** `git@github.com:Plexivia-dev/Monsur-Ali-Travels.git` (Branch: `live`)
+- **GCS Document Bucket:** `gs://mat-document-storage-9213af41`
+- **GCS Backup Bucket:** `gs://mat-backup-storage-9213af41`
+- **Snapshot Schedule:** `mat-daily-snapshot` (Daily 03:00 UTC, 14-day retention)
 
 ### Container Architecture & Live Routing
 | Container Name | Service / App | Host Port | Local Dev Port | Routing Domain | SSL Status |

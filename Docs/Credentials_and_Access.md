@@ -5,41 +5,60 @@
 
 ---
 
-## 1. VPS Server (Production)
+## 1. Google Cloud Production Server (Live)
+
+| Field       | Value                  |
+| :---------- | :--------------------- |
+| **Provider**| Google Cloud Platform (GCP) |
+| **Project ID** | `project-9213af41-1469-4afa-b21` |
+| **Instance Name** | `mat-server` |
+| **IP (Static)** | `35.200.130.118` |
+| **User**    | `root`                 |
+| **Port**    | `22`                   |
+| **Region / Zone** | `asia-south1-a` (Mumbai, ~35ms) |
+| **Machine Type** | `e2-standard-2` (8 GB RAM, 80 GB Balanced SSD) |
+| **SSH Key** | `~/.ssh/id_rsa` (`C:\Users\mdikr\.ssh\id_rsa`) |
+| **Project Path** | `/opt/monsuralitravels` |
+| **GCS Documents** | `gs://mat-document-storage-9213af41` |
+| **GCS Backups** | `gs://mat-backup-storage-9213af41` |
+| **Snapshot Policy** | `mat-daily-snapshot` (Daily at 03:00 UTC, 14-day retention) |
+
+### SSH Connect Command
+Direct access:
+```bash
+ssh root@35.200.130.118
+# or with explicit key:
+ssh -i C:\Users\mdikr\.ssh\id_rsa root@35.200.130.118
+# or with configured alias:
+ssh mat-server
+```
+
+### Deploy / Update Live Production
+```bash
+ssh mat-server "cd /opt/monsuralitravels && make deploy"
+```
+
+### View Live Logs
+```bash
+ssh mat-server "cd /opt/monsuralitravels && make logs"
+```
+
+### Container Status
+```bash
+ssh mat-server "cd /opt/monsuralitravels && make status"
+```
+
+---
+
+## 1.1. Previous VPS Server (Backup Standby)
 
 | Field       | Value                  |
 | :---------- | :--------------------- |
 | **IP**      | `144.79.218.241`       |
 | **User**    | `root`                 |
 | **Port**    | `22`                   |
-| **SSH Key** | `~/.ssh/id_rsa` (`C:\Users\mdikr\.ssh\id_rsa`) |
+| **SSH Shortcut** | `ssh mat-old-vps` |
 | **Project Path** | `/opt/monsuralitravels` |
-
-### SSH Connect Command
-Direct access:
-```bash
-ssh root@144.79.218.241
-```
-
-Explicit key command:
-```bash
-ssh -i C:\Users\mdikr\.ssh\id_rsa root@144.79.218.241
-```
-
-### Deploy / Update Production
-```bash
-ssh mat-vps "cd /opt/monsuralitravels && make deploy"
-```
-
-### View Logs
-```bash
-ssh mat-vps "cd /opt/monsuralitravels && make logs"
-```
-
-### Container Status
-```bash
-ssh mat-vps "cd /opt/monsuralitravels && make status"
-```
 
 ---
 
