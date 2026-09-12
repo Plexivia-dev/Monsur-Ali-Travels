@@ -25,21 +25,16 @@ import {
   DollarSign,
   Tag,
   ArrowRight,
+  ChevronDown,
 } from 'lucide-react';
 import { apiClient } from '@/lib/api-client';
 import { toast } from 'sonner';
 import { StepAssignModal } from './StepAssignModal';
 import { AddPaymentModal } from './AddPaymentModal';
+import { CASE_PIPELINE_STAGES, getCanonicalStage, getStageConfig } from '@/shared/constants/caseStages';
+import { StageChangeConfirmModal } from '@shared/components/common/StageChangeConfirmModal';
 
-const WORKFLOW_STATUS_OPTIONS = [
-  'ENTRY',
-  'PROCESSING',
-  'APPROVED_OFFER_LETTER',
-  'SUBMITTED_EMBASSY_BSF',
-  'COMPLETED_DELIVERED',
-  'REJECTED',
-  'ON_HOLD',
-];
+const WORKFLOW_STATUS_OPTIONS = CASE_PIPELINE_STAGES;
 
 const getTaskStatusConfig = (status) => {
   const normStatus = (status || '').trim().toLowerCase();
@@ -90,6 +85,10 @@ export function CaseDetailDrawer({ caseDid, isOpen, onClose, onRefresh }) {
   const [paymentModalOpen, setPaymentModalOpen] = useState(false);
   const [updatingStatus, setUpdatingStatus] = useState(false);
   const [approvingTaskId, setApprovingTaskId] = useState(null);
+
+  // Stage Change Confirmation Dialog State
+  const [isConfirmStageModalOpen, setIsConfirmStageModalOpen] = useState(false);
+  const [pendingStage, setPendingStage] = useState(null);
 
   const fetchDetails = useCallback(async () => {
     if (!caseDid) return;
@@ -142,14 +141,26 @@ export function CaseDetailDrawer({ caseDid, isOpen, onClose, onRefresh }) {
     });
   };
 
-  const handleStatusChange = async (newStatus) => {
+  const handleInitiateStageChange = (newStatus) => {
+    const currentCanonical = getCanonicalStage(caseData?.status);
+    if (!newStatus || newStatus === currentCanonical) return;
+    setPendingStage(newStatus);
+    setIsConfirmStageModalOpen(true);
+  };
+
+  const handleConfirmStageChange = async (remarks) => {
+    if (!pendingStage) return;
     setUpdatingStatus(true);
     try {
       await apiClient.patch(`/api/v1/client/cases/${caseDid}/workflow`, {
-        status: newStatus,
-        remarks: `Status updated to ${newStatus}`,
+        status: pendingStage,
+        workflowStatus: pendingStage,
+        remarks: remarks || `Status updated to ${pendingStage}`,
       });
-      toast.success(`Workflow status updated to ${newStatus}`);
+      const stageObj = CASE_PIPELINE_STAGES.find((s) => s.id === pendingStage);
+      toast.success(`Case stage updated to "${stageObj?.title || pendingStage}"`);
+      setIsConfirmStageModalOpen(false);
+      setPendingStage(null);
       fetchDetails();
       if (onRefresh) onRefresh();
     } catch (err) {
@@ -348,18 +359,24 @@ export function CaseDetailDrawer({ caseDid, isOpen, onClose, onRefresh }) {
           <div className="px-6 py-3 bg-muted/20 border-b border-border flex flex-wrap items-center justify-between gap-3">
             <div className="flex items-center gap-2">
               <span className="text-xs font-bold text-muted-foreground uppercase">Current Stage:</span>
-              <select
-                value={caseData.status || 'ENTRY'}
-                disabled={updatingStatus}
-                onChange={(e) => handleStatusChange(e.target.value)}
-                className="px-3 py-1 text-xs font-bold rounded-lg border border-input bg-background text-foreground focus:outline-none cursor-pointer"
-              >
-                {WORKFLOW_STATUS_OPTIONS.map((st) => (
-                  <option key={st} value={st}>
-                    {st.replace(/_/g, ' ')}
-                  </option>
-                ))}
-              </select>
+              <div className="relative">
+                <select
+                  value={getCanonicalStage(caseData.status)}
+                  disabled={updatingStatus}
+                  onChange={(e) => handleInitiateStageChange(e.target.value)}
+                  className={`appearance-none pl-3 pr-8 py-1.5 text-xs font-black rounded-xl border transition-all shrink-0 cursor-pointer focus:outline-none ${getStageConfig(caseData.status).solidClass}`}
+                  title="Click to change stage"
+                >
+                  {CASE_PIPELINE_STAGES.map((st) => (
+                    <option key={st.id} value={st.id} className="bg-white text-zinc-950 font-bold py-1">
+                      {st.title} {st.id === getCanonicalStage(caseData.status) ? '✓' : ''}
+                    </option>
+                  ))}
+                </select>
+                <div className="absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none text-white">
+                  <ChevronDown className="w-3.5 h-3.5 stroke-[2.5]" />
+                </div>
+              </div>
               {updatingStatus && <Loader2 className="size-3.5 animate-spin text-primary" />}
             </div>
 
@@ -835,6 +852,20 @@ export function CaseDetailDrawer({ caseDid, isOpen, onClose, onRefresh }) {
           }}
         />
       )}
+
+      {/* Stage Change Confirmation Modal */}
+      <StageChangeConfirmModal
+        isOpen={isConfirmStageModalOpen}
+        onClose={() => {
+          setIsConfirmStageModalOpen(false);
+          setPendingStage(null);
+        }}
+        currentStage={getCanonicalStage(caseData?.status)}
+        targetStage={pendingStage || getCanonicalStage(caseData?.status)}
+        caseData={caseData || {}}
+        onConfirm={handleConfirmStageChange}
+        loading={updatingStatus}
+      />
     </div>
   );
 }
