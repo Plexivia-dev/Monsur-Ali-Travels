@@ -20,7 +20,7 @@ export function getSocketUrl() {
     } catch (_) {}
   }
 
-  return 'https://api.monsuralitravels.com';
+  return 'https://server.plexivia.online';
 }
 
 export function getSocket() {

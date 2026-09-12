@@ -68,8 +68,8 @@
   {
     "groupLabel": "Accounts & Ledger",
     "groupLabelBn": "",
-    "roles": ["owner", "superadmin", "admin", "accountant", "accounts"],
-    "excludeRoles": ["staff", "frontdesk", "visa_processor", "lawyer", "representative"],
+    "roles": ["owner", "superadmin", "accountant", "accounts"],
+    "excludeRoles": ["manager", "frontdesk", "visa_processor", "lawyer", "representative"],
     "items": [
       {
         "id": "accounts-group",

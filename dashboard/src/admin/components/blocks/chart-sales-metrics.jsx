@@ -1,11 +1,8 @@
-import { Bar, BarChart, Label, Pie, PieChart } from 'recharts'
 import {
   TrendingUpIcon,
-  BadgePercentIcon,
-  DollarSignIcon,
-  ShoppingBagIcon,
-  ChartNoAxesCombinedIcon,
-  CirclePercentIcon
+  ReceiptTextIcon,
+  UsersIcon,
+  BriefcaseIcon,
 } from 'lucide-react'
 
 import React, { useState, useEffect } from 'react'
@@ -15,140 +12,169 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { apiClient } from '@/lib/api-client'
 import logo from '@/assets/logo.png'
 
-const ACTION_COLORS = {
-  CREATE: 'bg-green-500',
-  UPDATE: 'bg-blue-500',
-  SOFT_DELETE: 'bg-red-500',
-  AUTH_LOGIN: 'bg-sky-500',
-  STATUS_TRANSITION: 'bg-indigo-500',
+const STAGE_LABELS = {
+  INTAKE: 'Intake / New',
+  ENTRY: 'Entry',
+  PROCESSING: 'Processing',
+  UNDER_PROCESS: 'Under Process',
+  OFFER_LETTER: 'Offer Letter Approved',
+  APPROVED_OFFER_LETTER: 'Offer Letter Approved',
+  SUBMITTED_EMBASSY_BSF: 'Submitted (Embassy/BSF)',
+  COMPLETED_DELIVERED: 'Delivered',
+  COMPLETED: 'Completed',
+  REJECTED: 'Rejected',
+  ON_HOLD: 'On Hold',
 }
 
 export const SalesMetricsCard = ({ className }) => {
-  const [liveLogs, setLiveLogs] = useState([])
   const [metrics, setMetrics] = useState({
     received: 0,
     bills: 0,
     newClients: 0,
-    filesRemaining: 0
+    filesRemaining: 0,
   })
-  const [clientUpdates, setClientUpdates] = useState([])
+  const [caseUpdates, setCaseUpdates] = useState([])
+  const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
+    let isMounted = true
     async function loadData() {
       try {
-        const [logsRes, overviewRes, casesRes] = await Promise.all([
-          apiClient.get('/api/v1/admin/system/logs?limit=6').catch(() => ({ data: { data: [] } })),
-          apiClient.get('/api/v1/admin/dashboard/overview').catch(() => ({ data: { data: {} } })),
-          apiClient.get('/api/v1/admin/cases?limit=4').catch(() => ({ data: { data: [] } }))
-        ])
-        
-        if (logsRes.data?.data) setLiveLogs(logsRes.data.data)
-        
+        const overviewRes = await apiClient.get('/api/v1/admin/dashboard/overview')
+        if (!isMounted) return
+
         const overview = overviewRes.data?.data || {}
         setMetrics({
-          received: overview.billing?.totalPaid || 0,
-          bills: overview.billing?.totalBilled || 0,
-          newClients: overview.totalClients || 0,
-          filesRemaining: overview.totalVisas || 0 // Assuming visas or similar
+          received: overview.totalReceived ?? overview.billing?.totalPaid ?? 0,
+          bills: overview.totalBilled ?? overview.billing?.totalBilled ?? 0,
+          newClients: overview.totalClients ?? 0,
+          filesRemaining: overview.filesRemaining ?? 0,
         })
 
-        if (casesRes.data?.data) {
-          setClientUpdates(casesRes.data.data.slice(0, 4))
+        if (overview.latestUpdates && Array.isArray(overview.latestUpdates)) {
+          setCaseUpdates(overview.latestUpdates)
         }
       } catch (err) {
-        // silent fallback
+        console.error('Failed to load overview data', err)
+      } finally {
+        if (isMounted) setIsLoading(false)
       }
     }
     loadData()
+    return () => {
+      isMounted = false
+    }
   }, [])
 
-  const formatTime = (dateStr) => {
+  const formatDate = (dateStr) => {
     if (!dateStr) return 'Recent'
     const d = new Date(dateStr)
-    return d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+    return d.toLocaleDateString([], { month: 'short', day: 'numeric' })
   }
 
   const dynamicMetricsData = [
     {
-      icons: <TrendingUpIcon className='size-5' />,
-      title: 'Received',
-      value: `${metrics.received.toLocaleString()} BDT`
+      icons: <TrendingUpIcon className="size-5" />,
+      title: 'Total Received',
+      value: `${metrics.received.toLocaleString()} BDT`,
+      accent: 'text-emerald-600 bg-emerald-50',
     },
     {
-      icons: <BadgePercentIcon className='size-5' />,
-      title: 'Bills',
-      value: `${metrics.bills.toLocaleString()} BDT`
+      icons: <ReceiptTextIcon className="size-5" />,
+      title: 'Total Bills',
+      value: `${metrics.bills.toLocaleString()} BDT`,
+      accent: 'text-rose-600 bg-rose-50',
     },
     {
-      icons: <DollarSignIcon className='size-5' />,
-      title: 'New client',
-      value: metrics.newClients.toLocaleString()
+      icons: <UsersIcon className="size-5" />,
+      title: 'Total Clients',
+      value: metrics.newClients.toLocaleString(),
+      accent: 'text-blue-600 bg-blue-50',
     },
     {
-      icons: <ShoppingBagIcon className='size-5' />,
-      title: 'Files Remaining',
-      value: metrics.filesRemaining.toLocaleString()
-    }
+      icons: <BriefcaseIcon className="size-5" />,
+      title: 'Files In-Process',
+      value: metrics.filesRemaining.toLocaleString(),
+      accent: 'text-amber-600 bg-amber-50',
+    },
   ]
 
   return (
-    <Card className={`bg-white border border-black/10 shadow-md ${className ?? ''}`}>
+    <Card className={`bg-white border border-black/10 shadow-sm ${className ?? ''}`}>
       <CardContent className="pt-6">
-        <div className='grid gap-6 lg:grid-cols-5'>
-          <div className='flex flex-col justify-between gap-7 lg:col-span-3'>
-            <span className='text-lg font-semibold text-black'>Sales metrics</span>
-            <div className='flex items-center gap-3'>
-              <img src={logo} alt="Logo" className="size-10.5 p-1 bg-white rounded-full object-contain shadow-sm shrink-0 border border-black/10" />
-              <div className='flex flex-col gap-0.5'>
-                <span className='text-xl font-bold text-black'>Monsur Ali Travels</span>
+        <div className="grid gap-6 lg:grid-cols-5">
+          {/* Left Column: Agency Branding & 4 Primary KPI Cards */}
+          <div className="flex flex-col justify-between gap-6 lg:col-span-3">
+            <div className="flex items-center gap-3">
+              <img
+                src={logo}
+                alt="Logo"
+                className="size-11 p-1 bg-white rounded-xl object-contain shadow-xs shrink-0 border border-black/10"
+              />
+              <div className="flex flex-col">
+                <span className="text-xl font-bold text-black tracking-tight">Monsur Ali Travels</span>
+                <span className="text-xs text-black/50 font-medium">Enterprise Management & Operations</span>
               </div>
             </div>
 
-            <div className='grid gap-4 sm:grid-cols-2'>
+            <div className="grid gap-4 sm:grid-cols-2">
               {dynamicMetricsData.map((metric, index) => (
-                <Card key={index} className='bg-white border border-black/10 shadow-sm hover:shadow-md transition-shadow py-2'>
-                  <CardContent className='flex items-center gap-3 px-4 py-2'>
-                    <Avatar className='rounded-sm'>
-                      <AvatarFallback className='bg-primary/10 text-primary shrink-0 rounded-sm'>
+                <Card
+                  key={index}
+                  className="bg-white border border-black/10 shadow-xs hover:border-black/20 hover:shadow-sm transition-all py-1.5"
+                >
+                  <CardContent className="flex items-center gap-3.5 px-4 py-3">
+                    <Avatar className="rounded-lg h-10 w-10">
+                      <AvatarFallback className={`${metric.accent} shrink-0 rounded-lg`}>
                         {metric.icons}
                       </AvatarFallback>
                     </Avatar>
-                    <div className='flex flex-col gap-0.5'>
-                      <span className='text-black/60 text-sm font-medium'>{metric.title}</span>
-                      <span className='text-lg font-bold text-black'>{metric.value}</span>
+                    <div className="flex flex-col min-w-0">
+                      <span className="text-black/60 text-xs font-medium truncate">{metric.title}</span>
+                      <span className="text-lg font-bold text-black tracking-tight truncate">
+                        {isLoading ? '-' : metric.value}
+                      </span>
                     </div>
                   </CardContent>
                 </Card>
               ))}
             </div>
           </div>
-          <Card className='bg-white border border-black/10 shadow-sm flex flex-col gap-2 lg:col-span-2'>
-            <CardHeader className='gap-1 flex flex-row items-center justify-between pb-2'>
-              <CardTitle className='text-base font-semibold text-black'>Latest Updates</CardTitle>
+
+          {/* Right Column: Latest Updates for Case Files */}
+          <Card className="bg-white border border-black/10 shadow-xs flex flex-col lg:col-span-2">
+            <CardHeader className="gap-1 flex flex-row items-center justify-between pb-3 px-5 pt-4 border-b border-black/5">
+              <CardTitle className="text-sm font-semibold text-black">Latest Updates</CardTitle>
               <Link
                 to="/admin/cases"
                 className="text-xs font-medium text-primary hover:underline shrink-0"
               >
-                View More →
+                View All Files →
               </Link>
             </CardHeader>
-            <CardContent className='flex flex-col divide-y divide-black/5 px-4 pb-4'>
-              {clientUpdates.length === 0 ? (
-                <p className="text-xs text-black/60 italic py-2">No updates recorded yet.</p>
+            <CardContent className="flex flex-col divide-y divide-black/5 px-5 py-2">
+              {caseUpdates.length === 0 ? (
+                <p className="text-xs text-black/50 italic py-4 text-center">
+                  {isLoading ? 'Loading updates...' : 'No case files recorded yet.'}
+                </p>
               ) : (
-                clientUpdates.map((item) => (
-                  <div key={item._id || item.id} className='flex items-start justify-between py-3 gap-3'>
-                    <div className='flex flex-col gap-0.5 min-w-0'>
-                      <span className='text-sm font-semibold text-black truncate'>
-                        {item.clientId?.name || item.client || 'Unknown'}
+                caseUpdates.map((item) => (
+                  <div key={item._id || item.did || item.id} className="flex items-start justify-between py-2.5 gap-3">
+                    <div className="flex flex-col min-w-0">
+                      <span className="text-sm font-medium text-black truncate">
+                        {item.applicantName || item.caseNumber || 'Unnamed Case'}
                       </span>
-                      <span className='text-xs text-black/60 truncate'>{item.status || item.workflowStatus}</span>
+                      <span className="text-[11px] text-black/50 truncate">
+                        {item.caseNumber} · {STAGE_LABELS[item.status] || item.status || 'INTAKE'}
+                      </span>
                     </div>
-                    <div className='flex flex-col items-end gap-0.5 shrink-0'>
-                      <span className='text-[11px] font-medium bg-primary/10 text-primary rounded-full px-2 py-0.5 whitespace-nowrap'>
-                        {item.country || 'N/A'}
+                    <div className="flex flex-col items-end gap-1 shrink-0">
+                      <span className="text-[10px] font-semibold uppercase tracking-wider bg-black/[0.05] text-black/80 rounded-md px-2 py-0.5 whitespace-nowrap">
+                        {item.caseType || 'GENERAL'}
                       </span>
-                      <span className='text-[11px] text-black/60 whitespace-nowrap'>{formatTime(item.updatedAt || item.time)}</span>
+                      <span className="text-[10px] text-black/40 whitespace-nowrap">
+                        {formatDate(item.updatedAt || item.createdAt)}
+                      </span>
                     </div>
                   </div>
                 ))
@@ -157,42 +183,9 @@ export const SalesMetricsCard = ({ className }) => {
           </Card>
         </div>
       </CardContent>
-      <CardContent>
-        <Card className='bg-white border border-black/10 shadow-sm'>
-          <CardContent className='pt-5 pb-5 px-5'>
-            <div className='flex items-center justify-between mb-4'>
-              <span className='text-base font-semibold text-black'>Live System Activity Logs</span>
-              <Link
-                to="/admin/activity-logs"
-                className="text-xs font-medium text-primary hover:underline"
-              >
-                View More →
-              </Link>
-            </div>
-            <div className='grid gap-3 sm:grid-cols-2'>
-              {liveLogs.length === 0 ? (
-                <p className="text-xs text-black/60 italic col-span-2 py-2">No activity recorded yet.</p>
-              ) : (
-                liveLogs.map((log) => (
-                  <div key={log.did || log._id} className='flex items-start gap-3 p-3 rounded-lg bg-black/[0.02] border border-black/5 hover:bg-black/[0.04] transition-colors'>
-                    <div className={`size-2 rounded-full mt-1.5 shrink-0 ${ACTION_COLORS[log.action] || 'bg-primary'}`} />
-                    <div className='flex flex-col gap-0.5 min-w-0'>
-                      <span className='text-sm font-medium text-black truncate'>
-                        {log.action} on {log.targetCollection}
-                      </span>
-                      <span className='text-xs text-black/60 truncate'>
-                        {log.actionDetails?.name} ({log.actionDetails?.role}) · {formatTime(log.createdAt)}
-                      </span>
-                    </div>
-                  </div>
-                ))
-              )}
-            </div>
-          </CardContent>
-        </Card>
-      </CardContent>
     </Card>
   )
 }
 
 export default SalesMetricsCard
+

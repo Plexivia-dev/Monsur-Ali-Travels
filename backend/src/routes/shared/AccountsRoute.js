@@ -1,4 +1,5 @@
 import { Router } from "express";
+import { authorizeRoles } from "../../middlewares/auth.middleware.js";
 import {
   getPayments,
   getBills,
@@ -18,6 +19,9 @@ import {
 } from "../../controllers/shared/AccountsController.js";
 
 const accountsRouter = Router();
+
+// Strict RBAC: Only Owner and Accountant (and Superadmin) can access accounts & ledger functions
+accountsRouter.use(authorizeRoles("Owner", "Superadmin", "Accountant", "Accounts"));
 
 // Accounts Data Endpoints
 accountsRouter.get("/payments", getPayments);
