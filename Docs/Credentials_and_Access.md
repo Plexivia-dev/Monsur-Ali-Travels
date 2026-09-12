@@ -50,7 +50,39 @@ ssh mat-server "cd /opt/monsuralitravels && make status"
 
 ---
 
-## 1.1. Previous VPS Server (Backup Standby)
+## 1.1. Ops & Deployment cPanel (Developer Control Panel)
+
+> 🛡️ **Zero Client Credentials Needed:** ক্লায়েন্টের গুগল ক্লাউড কনসোল বা রুট এসএসএইচ কি ছাড়াই ডেভেলপার এই প্যানেল থেকে সিস্টেম মনিটর, গিট পুল এবং বিল্ড/ডিপ্লয় করতে পারবেন।
+
+| Field | Value |
+| :--- | :--- |
+| **Primary cPanel URL** | **`https://server.monsuralitravels.com/cpanel/`** |
+| **Mirror / Alt URL** | **`https://admin.monsuralitravels.com/cpanel/`** |
+| **Developer Username** | `developer` |
+| **Developer Password** | `matOps2026!#deploy` |
+| **Internal Port** | `8090` (Reverse-proxied via Nginx SSL) |
+| **Systemd Service** | `mat-ops-panel.service` (Auto-restart on boot) |
+| **Path on Server** | `/opt/mat-ops-panel` |
+
+### 🛠️ cPanel Features:
+1. **System Health & Resources:** CPU Usage (%), 1m/5m/15m Load Average, RAM Usage (Used / Total), Root SSD Disk Space, Uploads & Documents Directory Sizes.
+2. **Docker Containers Health:** All 5 live containers status (Backend, MongoDB, Client Dashboard, Admin Dashboard, Frontend) with 1-click **Restart** button.
+3. **1-Click Git Controls:** `git status`, `git fetch`, `git pull`, and `Force Pull (Sync)` (`git reset --hard origin/live && git clean -fd`).
+4. **1-Click Build & Deploy:**
+   - Full Production Deploy: `make deploy`
+   - Backend Deploy: `make build-bg`
+   - Client Dashboard: `make build-client`
+   - Admin Dashboard: `make build-admin`
+   - Frontend: `make build-front`
+   - Manual GCS Backup: `/usr/local/bin/mat-daily-backup.sh`
+   - Custom shell command execution bar.
+5. **Live Real-time Terminal Viewer:** Real-time Server-Sent Events (SSE) streaming output, ANSI color rendering, Abort / Kill running task button, Auto-scroll, and Copy output.
+6. **UI Theme:** Monsur Ali Travels Dashboard Emerald Green (`#10b981`) & Dark Slate (`#090d16`) theme.
+7. **Security:** Protected by password hashing, session tokens, brute-force rate limiter, and in-app password update.
+
+---
+
+## 1.2. Previous VPS Server (Backup Standby)
 
 | Field       | Value                  |
 | :---------- | :--------------------- |
