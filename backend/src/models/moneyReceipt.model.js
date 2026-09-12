@@ -71,6 +71,12 @@ const moneyReceiptSchema = new Schema(
       default: null,
       index: true,
     },
+    // Case File reference if generated from Case Workflow
+    caseDid: {
+      type: String,
+      default: null,
+      index: true,
+    },
     // Source document linking (e.g. Indian Visa, Passport, CaseFile, Invoice)
     serviceRef: {
       modelName: { type: String, default: "" },

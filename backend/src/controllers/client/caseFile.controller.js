@@ -66,14 +66,17 @@ function buildGenericCaseQuery(queryParams) {
   // 2. Generic Status filter ($in support for multiple statuses and canonical stage aliases)
   if (status && status !== "all") {
     const statusMap = {
-      INTAKE: ["ENTRY", "INTAKE"],
-      ENTRY: ["ENTRY", "INTAKE"],
+      INTAKE: ["ENTRY", "INTAKE", "NEW"],
+      ENTRY: ["ENTRY", "INTAKE", "NEW"],
       UNDER_PROCESS: ["PROCESSING", "UNDER_PROCESS", "SUBMITTED_EMBASSY_BSF"],
       PROCESSING: ["PROCESSING", "UNDER_PROCESS", "SUBMITTED_EMBASSY_BSF"],
       OFFER_LETTER: ["APPROVED_OFFER_LETTER", "OFFER_LETTER"],
       APPROVED_OFFER_LETTER: ["APPROVED_OFFER_LETTER", "OFFER_LETTER"],
-      COMPLETED: ["COMPLETED_DELIVERED", "COMPLETED"],
-      COMPLETED_DELIVERED: ["COMPLETED_DELIVERED", "COMPLETED"],
+      COMPLETED: ["COMPLETED_DELIVERED", "COMPLETED", "VISA_DELIVERED"],
+      COMPLETED_DELIVERED: ["COMPLETED_DELIVERED", "COMPLETED", "VISA_DELIVERED"],
+      VISA_DELIVERED: ["COMPLETED_DELIVERED", "COMPLETED", "VISA_DELIVERED"],
+      CANCELLED: ["CANCELLED", "REJECTED", "CANCEL"],
+      REJECTED: ["CANCELLED", "REJECTED", "CANCEL"],
     };
 
     const statusesArray = String(status)

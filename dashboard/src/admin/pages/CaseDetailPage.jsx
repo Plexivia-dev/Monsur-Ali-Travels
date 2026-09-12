@@ -45,6 +45,8 @@ import { StepAssignModal } from '@/components/workflow/StepAssignModal';
 import { AddPaymentModal } from '@/components/workflow/AddPaymentModal';
 import { PageTitle } from '@shared/components/layout/PageTitle';
 import { FileViewerModal } from '@shared/components/common/FileViewerModal';
+import { CASE_PIPELINE_STAGES, getCanonicalStage, getStageConfig } from '@/shared/constants/caseStages';
+import { StageChangeConfirmModal } from '@shared/components/common/StageChangeConfirmModal';
 
 const DOCUMENT_STUDIO_TEMPLATES = [
   {
@@ -137,15 +139,7 @@ const DOCUMENT_STUDIO_TEMPLATES = [
   },
 ];
 
-const PIPELINE_STAGES = [
-  { id: 'ENTRY', title: '1. File Intake', color: 'bg-black/[0.04] text-black' },
-  { id: 'PROCESSING', title: '2. Embassy Processing', color: 'bg-sky-500/10 text-sky-700' },
-  { id: 'APPROVED_OFFER_LETTER', title: '3. Approved Offer', color: 'bg-indigo-500/10 text-indigo-700' },
-  { id: 'SUBMITTED_EMBASSY_BSF', title: '4. Submitted Embassy', color: 'bg-purple-500/10 text-purple-700' },
-  { id: 'COMPLETED_DELIVERED', title: '5. Delivered', color: 'bg-emerald-500/10 text-emerald-700' },
-  { id: 'REJECTED', title: 'Rejected', color: 'bg-rose-500/10 text-rose-700' },
-  { id: 'ON_HOLD', title: 'On Hold', color: 'bg-amber-500/10 text-amber-700' },
-];
+const PIPELINE_STAGES = CASE_PIPELINE_STAGES;
 
 const getTaskStatusConfig = (status) => {
   const normStatus = (status || '').trim().toLowerCase();
@@ -216,6 +210,11 @@ export default function CaseDetailPage() {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [savingEdit, setSavingEdit] = useState(false);
 
+  // Stage Change Confirmation Dialog State
+  const [isConfirmStageModalOpen, setIsConfirmStageModalOpen] = useState(false);
+  const [pendingStage, setPendingStage] = useState(null);
+  const [stageUpdating, setStageUpdating] = useState(false);
+
   // Rename document inline
   const [renamingDocDid, setRenamingDocDid] = useState(null);
   const [renameValue, setRenameValue] = useState('');
@@ -248,9 +247,9 @@ export default function CaseDetailPage() {
   const [newMessage, setNewMessage] = useState('');
   const [sendingMsg, setSendingMsg] = useState(false);
 
-  const fetchCaseDetails = useCallback(async () => {
+  const fetchCaseDetails = useCallback(async (isInitial = false) => {
     if (!id) return;
-    setLoading(true);
+    if (isInitial) setLoading(true);
     try {
       // 1. Try admin full-details endpoint
       let loadedData = null;
@@ -290,22 +289,36 @@ export default function CaseDetailPage() {
   }, [id]);
 
   useEffect(() => {
-    fetchCaseDetails();
+    fetchCaseDetails(true);
   }, [fetchCaseDetails]);
 
-  const handleStageChange = async (newStatus) => {
+  const handleInitiateStageChange = (newStatus) => {
+    if (!newStatus || newStatus === currentStageId) return;
+    setPendingStage(newStatus);
+    setIsConfirmStageModalOpen(true);
+  };
+
+  const handleConfirmStageChange = async (remarks) => {
+    if (!pendingStage) return;
     const targetCaseId = caseData?.did || caseData?._id || id;
     if (!targetCaseId) return;
+
+    setStageUpdating(true);
     try {
       await apiClient.patch(`/api/v1/client/cases/${targetCaseId}/workflow`, {
-        status: newStatus,
-        workflowStatus: newStatus,
-        remarks: `Stage updated to ${newStatus} by ${user?.name || 'Admin'}`,
+        status: pendingStage,
+        workflowStatus: pendingStage,
+        remarks: remarks || `Stage updated to ${pendingStage} by ${user?.name || 'Admin'}`,
       });
-      toast.success(`Case stage updated to ${newStatus.replace(/_/g, ' ')}`);
+      const stageObj = CASE_PIPELINE_STAGES.find((s) => s.id === pendingStage);
+      toast.success(`Case stage updated to "${stageObj?.title || pendingStage}"`);
+      setIsConfirmStageModalOpen(false);
+      setPendingStage(null);
       fetchCaseDetails();
     } catch (err) {
       toast.error(err.response?.data?.message || 'Failed to update stage.');
+    } finally {
+      setStageUpdating(false);
     }
   };
 
@@ -770,13 +783,9 @@ export default function CaseDetailPage() {
   const activeTaskStatusCfg = activeTask ? getTaskStatusConfig(activeTask.status) : null;
 
   const currentStageId = (() => {
-    const raw = String(caseData?.status || caseData?.workflowStatus || 'ENTRY').toUpperCase();
-    if (raw === 'INTAKE' || raw === 'NEW') return 'ENTRY';
-    if (raw === 'UNDER_PROCESS') return 'PROCESSING';
-    if (raw === 'OFFER_LETTER' || raw === 'FLIGHT_BOOKED') return 'APPROVED_OFFER_LETTER';
-    if (raw === 'COMPLETED') return 'COMPLETED_DELIVERED';
-    return raw;
+    return getCanonicalStage(caseData?.status || caseData?.workflowStatus || 'INTAKE');
   })();
+  const currentStageCfg = getStageConfig(currentStageId);
 
   const client = caseData.clientInfo || caseData.clientId || {};
   const clientDid = client.did || caseData.clientDid;
@@ -807,7 +816,7 @@ export default function CaseDetailPage() {
         title={caseData.applicantName || caseData.clientInfo?.fullName || 'Applicant File'}
         subtitle={`Case File #${caseData.caseNumber || 'CASE-FILE'} • Destination: ${caseData.destinationCountry || caseData.caseType?.toUpperCase() || 'Overseas'} • Trade: ${caseData.tradeSkill || 'General Worker'}`}
         icon={FolderOpen}
-        badge={caseData.workflowStatus || caseData.status || 'ACTIVE'}
+        badge={currentStageCfg.title}
         actions={
           <>
             <button
@@ -834,13 +843,6 @@ export default function CaseDetailPage() {
               <span>Upload Document</span>
             </button>
 
-            <button
-              onClick={handleTriggerIndianVisa}
-              className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-amber-600 hover:bg-amber-500 text-white text-xs font-bold shadow-xs transition cursor-pointer"
-            >
-              <Globe2 className="w-3.5 h-3.5" />
-              <span>🇮🇳 Indian Visa Pipeline</span>
-            </button>
 
             <button
               onClick={() => setIsPaymentModalOpen(true)}
@@ -864,18 +866,17 @@ export default function CaseDetailPage() {
       {/* Case Identity & Creator Banner */}
       <div className="bg-card border border-border rounded-2xl p-5 sm:p-6 shadow-xs space-y-4">
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 border-b border-border pb-4">
-          <div className="space-y-2 min-w-0 flex-1">
-            <div className="flex flex-wrap items-center gap-2.5">
-              <span className="text-xl font-black text-foreground">
-                {caseData.applicantName || caseData.clientInfo?.fullName}
-              </span>
-              <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-sky-500/10 text-sky-600 border border-sky-500/20">
-                Destination: {caseData.destinationCountry || caseData.caseType?.toUpperCase()}
-              </span>
-              <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-purple-500/10 text-purple-600 border border-purple-500/20">
-                Trade: {caseData.tradeSkill || 'General Worker'}
-              </span>
+          <div className="space-y-1.5 min-w-0 flex-1">
+            <div className="text-xl font-black text-foreground">
+              {caseData.applicantName || caseData.clientInfo?.fullName}
             </div>
+            {(caseData.destinationCountry || caseData.caseType) && (
+              <div className="flex items-center gap-2">
+                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-sky-500/10 text-sky-600 border border-sky-500/20">
+                  {caseData.destinationCountry || caseData.caseType?.toUpperCase()}
+                </span>
+              </div>
+            )}
 
             {/* Active Handler & Current Task Status Pill Bar - commented out */}
             {false && (
@@ -960,34 +961,25 @@ export default function CaseDetailPage() {
           </div>
 
           {/* Current Processing Stage Dropdown */}
-          <div className="flex items-center gap-3 bg-muted/40 px-3.5 py-2.5 rounded-2xl border border-border shrink-0 self-start lg:self-center shadow-2xs min-w-[240px]">
-            <div className="text-left sm:text-right min-w-0 flex-1">
-              <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground block">
-                Processing Stage
-              </span>
-              <span
-                className="text-xs font-black text-primary block truncate max-w-[180px]"
-                title={PIPELINE_STAGES.find((s) => s.id === currentStageId)?.title || caseData.workflowStatus || caseData.status}
-              >
-                {PIPELINE_STAGES.find((s) => s.id === currentStageId)?.title || caseData.workflowStatus || caseData.status || '1. File Intake'}
-              </span>
-            </div>
-            <div className="relative">
-              <select
-                value={currentStageId}
-                onChange={(e) => handleStageChange(e.target.value)}
-                className="appearance-none pl-3 pr-8 py-2 text-xs font-bold rounded-xl border border-primary/40 bg-card hover:bg-muted/50 text-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 cursor-pointer shadow-xs transition-all shrink-0 min-w-[150px]"
-                title="Click to change case status / stage"
-              >
-                {PIPELINE_STAGES.map((st) => (
-                  <option key={st.id} value={st.id} className="bg-popover text-popover-foreground py-1 font-medium">
-                    {st.title} {st.id === currentStageId ? '✓' : ''}
-                  </option>
-                ))}
-              </select>
-              <div className="absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none text-muted-foreground">
-                <ChevronDown className="w-3.5 h-3.5" />
-              </div>
+          <div className="relative shrink-0 self-start lg:self-center">
+            <select
+              value={currentStageId}
+              onChange={(e) => handleInitiateStageChange(e.target.value)}
+              className={`appearance-none pl-3.5 pr-8 py-2 text-xs font-black rounded-xl border transition-all shrink-0 cursor-pointer focus:outline-none focus:ring-2 focus:ring-offset-1 ${currentStageCfg.solidClass}`}
+              title="Click to change case status / stage"
+            >
+              {CASE_PIPELINE_STAGES.map((st) => (
+                <option
+                  key={st.id}
+                  value={st.id}
+                  className="bg-white text-zinc-950 font-bold py-1.5"
+                >
+                  {st.title} {st.id === currentStageId ? '✓' : ''}
+                </option>
+              ))}
+            </select>
+            <div className="absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none text-white">
+              <ChevronDown className="w-3.5 h-3.5 stroke-[2.5]" />
             </div>
           </div>
         </div>
@@ -1573,31 +1565,44 @@ export default function CaseDetailPage() {
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-border">
-                    {caseData.financialReceipts.map((r, idx) => (
-                      <tr key={r.did || r._id || idx} className="hover:bg-muted/20">
-                        <td className="px-4 py-3 font-mono font-bold text-primary">
-                          {r.receiptNumber || `MR-00${idx + 1}`}
-                        </td>
-                        <td className="px-4 py-3 text-muted-foreground">
-                          {new Date(r.paymentDate || r.createdAt).toLocaleDateString()}
-                        </td>
-                        <td className="px-4 py-3 font-semibold">{r.paymentMethod || 'Cash'}</td>
-                        <td className="px-4 py-3 font-black text-emerald-600">
-                          BDT {Number(r.amount || 0).toLocaleString('en-IN')}
-                        </td>
-                        <td className="px-4 py-3 text-muted-foreground">
-                          {r.receivedByName || r.createdBy || 'Accountant'}
-                        </td>
-                        <td className="px-4 py-3 text-right">
-                          <button
-                            onClick={() => toast.success(`Printing receipt ${r.receiptNumber}...`)}
-                            className="px-2.5 py-1 rounded bg-muted hover:bg-muted/80 text-foreground font-bold cursor-pointer"
-                          >
-                            Print Receipt
-                          </button>
-                        </td>
-                      </tr>
-                    ))}
+                    {(caseData.financialReceipts || []).map((r, idx) => {
+                      const receiptNumber = r.receiptNo || r.receiptNumber || `MR-00${idx + 1}`;
+                      const receiptDate = r.receiptDate || r.paymentDate || r.createdAt;
+                      const staffName = r.receivedBy || r.receivedByName || r.createdByName || r.createdBy || 'Staff';
+                      return (
+                        <tr key={r.did || r._id || idx} className="hover:bg-muted/20">
+                          <td className="px-4 py-3 font-mono font-bold text-primary">
+                            {receiptNumber}
+                          </td>
+                          <td className="px-4 py-3 text-muted-foreground">
+                            {receiptDate ? new Date(receiptDate).toLocaleDateString() : '—'}
+                          </td>
+                          <td className="px-4 py-3 font-semibold">{r.paymentMethod || 'Cash'}</td>
+                          <td className="px-4 py-3 font-black text-emerald-600">
+                            BDT {Number(r.amount || 0).toLocaleString('en-IN')}
+                          </td>
+                          <td className="px-4 py-3 text-muted-foreground">
+                            {staffName}
+                          </td>
+                          <td className="px-4 py-3 text-right">
+                            <button
+                              type="button"
+                              onClick={() => {
+                                const targetNo = r.receiptNo || r.receiptNumber;
+                                if (targetNo) {
+                                  window.open(`/admin/docs/money-receipt?receiptNo=${targetNo}&autoPrint=true`, '_blank');
+                                } else {
+                                  toast.info('Printing receipt...');
+                                }
+                              }}
+                              className="px-2.5 py-1 rounded bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 font-bold cursor-pointer transition shadow-2xs text-[11px]"
+                            >
+                              Print Receipt
+                            </button>
+                          </td>
+                        </tr>
+                      );
+                    })}
                   </tbody>
                 </table>
               </div>
@@ -1872,7 +1877,7 @@ export default function CaseDetailPage() {
           caseNumber={caseData?.caseNumber}
           applicantName={caseData?.applicantName}
           dueAmount={totalDue}
-          onSuccess={fetchCaseDetails}
+          onSuccess={() => fetchCaseDetails(false)}
         />
       )}
 
@@ -2095,11 +2100,11 @@ export default function CaseDetailPage() {
               <div>
                 <label className="block font-bold text-black/80 mb-1">Current Processing Stage</label>
                 <select
-                  value={editForm.status}
+                  value={getCanonicalStage(editForm.status)}
                   onChange={(e) => setEditForm({ ...editForm, status: e.target.value })}
-                  className="w-full px-3 py-2 bg-white border border-black/15 rounded-xl text-black focus:outline-none focus:border-primary text-xs"
+                  className="w-full px-3 py-2 bg-white border border-black/15 rounded-xl text-black focus:outline-none focus:border-primary text-xs font-semibold"
                 >
-                  {PIPELINE_STAGES.map((st) => (
+                  {CASE_PIPELINE_STAGES.map((st) => (
                     <option key={st.id} value={st.id}>
                       {st.title}
                     </option>
@@ -2278,6 +2283,20 @@ export default function CaseDetailPage() {
           </div>
         </div>
       )}
+
+      {/* STAGE CHANGE CONFIRMATION MODAL */}
+      <StageChangeConfirmModal
+        isOpen={isConfirmStageModalOpen}
+        onClose={() => {
+          setIsConfirmStageModalOpen(false);
+          setPendingStage(null);
+        }}
+        currentStage={currentStageId}
+        targetStage={pendingStage || currentStageId}
+        caseData={caseData || {}}
+        onConfirm={handleConfirmStageChange}
+        loading={stageUpdating}
+      />
 
       {/* FILE VIEWER MODAL */}
       <FileViewerModal

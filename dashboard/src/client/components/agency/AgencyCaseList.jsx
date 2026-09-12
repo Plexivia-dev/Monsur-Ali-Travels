@@ -20,13 +20,15 @@ import { CaseWorkspaceDrawer } from './CaseWorkspaceDrawer';
 import { ConfirmDeleteDialog } from '@/components/ui/confirm-delete-dialog';
 import { HeaderTitle } from '@shared/components/common/HeaderTitle';
 import { useAuthStore } from '@/store/useAuthStore';
+import { CASE_PIPELINE_STAGES, getCanonicalStage, getStageConfig } from '@/shared/constants/caseStages';
 
 const STAGE_FILTERS = [
   { id: 'all', label: 'All Files' },
-  { id: 'INTAKE', label: '1. File Intake' },
+  { id: 'INTAKE', label: '1. Intake' },
   { id: 'UNDER_PROCESS', label: '2. Under Process' },
   { id: 'OFFER_LETTER', label: '3. Offer Letter' },
-  { id: 'COMPLETED', label: '4. Completed' },
+  { id: 'VISA_DELIVERED', label: '4. Visa Delivered' },
+  { id: 'CANCELLED', label: '5. Cancelled' },
 ];
 
 // Helper: Extracts Candidate Triad Identity
@@ -189,20 +191,10 @@ export function AgencyCaseList({ autoOpenCreate = false }) {
         country.includes(q);
 
       // Stage Filter (Canonical & legacy alias support)
-      const currentStage = String(c.status || c.currentStage || 'INTAKE').toUpperCase();
       let matchesStage = stageFilter === 'all';
       if (!matchesStage) {
-        if (stageFilter === 'INTAKE') {
-          matchesStage = currentStage === 'ENTRY' || currentStage === 'INTAKE' || currentStage === 'PENDING' || currentStage === 'NEW';
-        } else if (stageFilter === 'UNDER_PROCESS') {
-          matchesStage = currentStage === 'UNDER_PROCESS' || currentStage === 'PROCESSING' || currentStage === 'IN_PROGRESS';
-        } else if (stageFilter === 'OFFER_LETTER') {
-          matchesStage = currentStage === 'OFFER_LETTER' || currentStage === 'APPROVED_OFFER_LETTER' || currentStage === 'FLIGHT_BOOKED';
-        } else if (stageFilter === 'COMPLETED') {
-          matchesStage = currentStage === 'COMPLETED' || currentStage === 'COMPLETED_DELIVERED' || currentStage === 'STAMPED' || currentStage === 'VISA_STAMPED';
-        } else {
-          matchesStage = currentStage === stageFilter.toUpperCase();
-        }
+        const canonical = getCanonicalStage(c.status || c.currentStage || 'INTAKE');
+        matchesStage = canonical === stageFilter;
       }
 
       // Pipeline Switcher: Overseas Cases vs Indian Visa Processing
@@ -229,31 +221,28 @@ export function AgencyCaseList({ autoOpenCreate = false }) {
 
   // Summary Metrics
   const metrics = useMemo(() => {
-    let total = cases.length;
     let intake = 0;
     let underProcess = 0;
     let offerLetter = 0;
-    let completed = 0;
+    let visaDelivered = 0;
+    let cancelled = 0;
     let totalDues = 0;
 
     cases.forEach((c) => {
-      const st = String(c.status || c.currentStage || '').toUpperCase();
-      if (st === 'ENTRY' || st === 'INTAKE' || st === 'PENDING' || st === 'NEW') {
-        intake++;
-      } else if (st === 'UNDER_PROCESS' || st === 'PROCESSING' || st === 'IN_PROGRESS') {
-        underProcess++;
-      } else if (st === 'OFFER_LETTER' || st === 'APPROVED_OFFER_LETTER' || st === 'FLIGHT_BOOKED') {
-        offerLetter++;
-      } else if (st === 'COMPLETED' || st === 'COMPLETED_DELIVERED' || st === 'STAMPED' || st === 'VISA_STAMPED') {
-        completed++;
-      }
+      const canonical = getCanonicalStage(c.status || c.currentStage || 'INTAKE');
+      if (canonical === 'INTAKE') intake++;
+      else if (canonical === 'UNDER_PROCESS') underProcess++;
+      else if (canonical === 'OFFER_LETTER') offerLetter++;
+      else if (canonical === 'VISA_DELIVERED') visaDelivered++;
+      else if (canonical === 'CANCELLED') cancelled++;
+
       const due = Number(c.financials?.dueAmount ?? c.dueAmount ?? 0);
       if (!isNaN(due) && due > 0) {
         totalDues += due;
       }
     });
 
-    return { total, intake, underProcess, offerLetter, completed, totalDues };
+    return { total, intake, underProcess, offerLetter, completed: visaDelivered, visaDelivered, cancelled, totalDues };
   }, [cases]);
 
   const handleDeleteCase = async () => {
@@ -272,23 +261,12 @@ export function AgencyCaseList({ autoOpenCreate = false }) {
   };
 
   const getStageBadge = (stage) => {
-    const s = String(stage || 'INTAKE').toUpperCase();
-    if (s === 'INTAKE' || s === 'ENTRY' || s === 'PENDING' || s === 'NEW') {
-      return <span className="px-2 py-0.5 rounded-md bg-black/[0.04] text-black border border-black/15 font-bold text-[10px]">1. File Intake</span>;
-    }
-    if (s === 'UNDER_PROCESS' || s === 'PROCESSING' || s === 'IN_PROGRESS') {
-      return <span className="px-2 py-0.5 rounded-md bg-sky-500/10 text-sky-800 border border-sky-300 font-bold text-[10px]">2. Under Process</span>;
-    }
-    if (s === 'OFFER_LETTER' || s === 'APPROVED_OFFER_LETTER' || s === 'FLIGHT_BOOKED') {
-      return <span className="px-2 py-0.5 rounded-md bg-indigo-500/10 text-indigo-800 border border-indigo-300 font-bold text-[10px]">3. Offer Letter</span>;
-    }
-    if (s === 'COMPLETED' || s === 'COMPLETED_DELIVERED' || s === 'STAMPED' || s === 'VISA_STAMPED') {
-      return <span className="px-2 py-0.5 rounded-md bg-emerald-600 text-white font-bold text-[10px]">4. Completed ✓</span>;
-    }
-    if (s === 'REJECTED') {
-      return <span className="px-2 py-0.5 rounded-md bg-red-50 text-red-800 border border-red-200 font-bold text-[10px]">Rejected</span>;
-    }
-    return <span className="px-2 py-0.5 rounded-md bg-black/[0.04] text-black font-semibold text-[10px]">{stage || 'Intake'}</span>;
+    const cfg = getStageConfig(stage);
+    return (
+      <span className={`px-2.5 py-1 rounded-lg font-bold text-[10px] shadow-2xs ${cfg.badgeClass}`}>
+        {cfg.title}
+      </span>
+    );
   };
 
   return (
