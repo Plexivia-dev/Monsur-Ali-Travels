@@ -249,7 +249,81 @@ app.post("/api/change-password", requireAuth, (req, res) => {
     console.error("Failed to update .env", e);
   }
 
-  res.json({ success: true, message: "Password changed successfully." });
+  res.json({ success: true, message: "Password updated successfully." });
+});
+
+// -------------------------------------------------------------
+// Local Backup & Download Endpoints
+// -------------------------------------------------------------
+const BACKUP_DIR = "/var/backups/downloads";
+
+function formatBytes(bytes) {
+  if (!bytes || bytes === 0) return "0 B";
+  const k = 1024;
+  const sizes = ["B", "KB", "MB", "GB", "TB"];
+  const i = Math.floor(Math.log(bytes) / Math.log(k));
+  return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + " " + sizes[i];
+}
+
+// List generated backup archives
+app.get("/api/backup/archives", requireAuth, (req, res) => {
+  try {
+    if (!fs.existsSync(BACKUP_DIR)) {
+      fs.mkdirSync(BACKUP_DIR, { recursive: true });
+    }
+    const files = fs.readdirSync(BACKUP_DIR);
+    const archives = files
+      .filter((f) => f.startsWith("mat-") && (f.endsWith(".tar.gz") || f.endsWith(".gz")))
+      .map((filename) => {
+        const fullPath = path.join(BACKUP_DIR, filename);
+        const stat = fs.statSync(fullPath);
+        let type = "full";
+        if (filename.includes("-db-")) type = "db";
+        else if (filename.includes("-uploads-")) type = "uploads";
+        return {
+          filename,
+          type,
+          sizeBytes: stat.size,
+          sizeFormatted: formatBytes(stat.size),
+          createdAt: stat.mtime
+        };
+      })
+      .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+
+    res.json({ archives });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Download an archive
+app.get("/api/backup/download/:filename", requireAuth, (req, res) => {
+  try {
+    const filename = path.basename(req.params.filename);
+    const fullPath = path.join(BACKUP_DIR, filename);
+    if (!fs.existsSync(fullPath)) {
+      return res.status(404).json({ error: "Backup archive not found." });
+    }
+    res.download(fullPath, filename);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Delete an archive
+app.delete("/api/backup/delete/:filename", requireAuth, (req, res) => {
+  try {
+    const filename = path.basename(req.params.filename);
+    const fullPath = path.join(BACKUP_DIR, filename);
+    if (fs.existsSync(fullPath)) {
+      fs.unlinkSync(fullPath);
+      appendLog("info", `[BACKUP] Deleted archive: ${filename}`);
+      return res.json({ success: true, message: `Archive ${filename} deleted.` });
+    }
+    res.status(404).json({ error: "File not found" });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 });
 
 // Real-time System Metrics API
@@ -467,6 +541,9 @@ const PREDEFINED_COMMANDS = {
   "build-admin": { cmd: "make", args: ["build-admin"], desc: "Build & Restart Admin Dashboard" },
   "build-front": { cmd: "make", args: ["build-front"], desc: "Build & Restart Frontend" },
   "backup-gcs": { cmd: "/usr/local/bin/mat-daily-backup.sh", args: [], desc: "Daily GCS Backup Script" },
+  "backup-full-download": { cmd: "/opt/mat-ops-panel/create-backup.sh", args: ["full"], desc: "Generate Full Backup (DB + Uploads + Documents)" },
+  "backup-db-download": { cmd: "/opt/mat-ops-panel/create-backup.sh", args: ["db"], desc: "Generate Database Only Dump (.gz)" },
+  "backup-uploads-download": { cmd: "/opt/mat-ops-panel/create-backup.sh", args: ["uploads"], desc: "Generate Uploads & Documents (.tar.gz)" },
   "docker-status": { cmd: "docker", args: ["compose", "-f", "docker-compose.prod.yml", "ps"], desc: "Docker Containers Status" }
 };
 
