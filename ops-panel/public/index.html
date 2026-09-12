@@ -365,7 +365,122 @@
 
     </div>
 
-    <!-- 4. LIVE TERMINAL VIEWER -->
+    <!-- 4. LOCAL BACKUP & DOWNLOAD CENTER -->
+    <div class="bg-slate-900/90 border border-slate-800 rounded-xl p-5 shadow-sm space-y-5">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-800 pb-4">
+        <div class="flex items-start sm:items-center gap-3">
+          <div class="w-10 h-10 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center shrink-0">
+            <svg class="w-5 h-5 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+            </svg>
+          </div>
+          <div>
+            <div class="flex items-center gap-2">
+              <h2 class="text-sm font-bold text-white tracking-tight">Local Backup & Download Center</h2>
+              <span class="px-2 py-0.5 text-[10px] font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 rounded">One-Click Snapshots</span>
+            </div>
+            <p class="text-xs text-slate-400 mt-0.5">
+              Generate full production snapshots (MongoDB live dump + Uploads + Documents) and download directly to your local PC. Zero cloud credentials required.
+            </p>
+          </div>
+        </div>
+        <button onclick="fetchBackupArchives()" class="self-start sm:self-auto px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold rounded-lg border border-slate-700/80 transition-colors flex items-center gap-1.5 cursor-pointer">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+          </svg>
+          <span>Refresh Archives</span>
+        </button>
+      </div>
+
+      <!-- Backup Generator Action Cards -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+        
+        <!-- 1. Full Backup (DB + Uploads + Documents) -->
+        <div class="p-4 bg-slate-950/60 border border-emerald-500/30 rounded-xl flex flex-col justify-between space-y-3 relative overflow-hidden group hover:border-emerald-500/50 transition-all">
+          <div class="absolute top-0 right-0 w-24 h-24 bg-emerald-500/5 rounded-bl-full pointer-events-none"></div>
+          <div>
+            <div class="flex items-center justify-between">
+              <span class="px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider bg-emerald-500/20 text-emerald-300 rounded border border-emerald-500/30">Recommended</span>
+              <span class="text-[11px] text-slate-400 font-mono">.tar.gz</span>
+            </div>
+            <h3 class="text-sm font-bold text-white mt-2 flex items-center gap-1.5">
+              <span>Full Local Snapshot</span>
+            </h3>
+            <p class="text-xs text-slate-400 mt-1">
+              Complete production package: piped live MongoDB dump + <code class="text-slate-300">/var/www/uploads</code> + <code class="text-slate-300">/var/www/documents</code>.
+            </p>
+          </div>
+          <button onclick="triggerAction('backup-full-download')" class="w-full py-2.5 px-3 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold rounded-lg shadow-md shadow-emerald-600/20 transition-all flex items-center justify-center gap-2 cursor-pointer">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+            </svg>
+            <span>Generate Full Backup</span>
+          </button>
+        </div>
+
+        <!-- 2. MongoDB Only Dump -->
+        <div class="p-4 bg-slate-950/60 border border-slate-800 rounded-xl flex flex-col justify-between space-y-3 group hover:border-blue-500/40 transition-all">
+          <div>
+            <div class="flex items-center justify-between">
+              <span class="px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider bg-blue-500/10 text-blue-300 rounded border border-blue-500/20">DB Only</span>
+              <span class="text-[11px] text-slate-400 font-mono">.gz</span>
+            </div>
+            <h3 class="text-sm font-bold text-white mt-2 flex items-center gap-1.5">
+              <span>MongoDB BSON Dump</span>
+            </h3>
+            <p class="text-xs text-slate-400 mt-1">
+              Direct streamed <code class="text-slate-300">mongodump</code> of all live collections with gzip compression (~250 KB).
+            </p>
+          </div>
+          <button onclick="triggerAction('backup-db-download')" class="w-full py-2.5 px-3 bg-slate-800 hover:bg-slate-700 text-blue-300 border border-blue-500/30 text-xs font-bold rounded-lg transition-all flex items-center justify-center gap-2 cursor-pointer">
+            <svg class="w-4 h-4 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4"/>
+            </svg>
+            <span>Generate DB Dump</span>
+          </button>
+        </div>
+
+        <!-- 3. Uploads & Documents Only -->
+        <div class="p-4 bg-slate-950/60 border border-slate-800 rounded-xl flex flex-col justify-between space-y-3 group hover:border-purple-500/40 transition-all">
+          <div>
+            <div class="flex items-center justify-between">
+              <span class="px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider bg-purple-500/10 text-purple-300 rounded border border-purple-500/20">Assets Only</span>
+              <span class="text-[11px] text-slate-400 font-mono">.tar.gz</span>
+            </div>
+            <h3 class="text-sm font-bold text-white mt-2 flex items-center gap-1.5">
+              <span>Media & Documents</span>
+            </h3>
+            <p class="text-xs text-slate-400 mt-1">
+              Archives all client uploaded photos, passport copies, tickets, and vouchers in <code class="text-slate-300">/var/www/uploads</code> (~39 MB).
+            </p>
+          </div>
+          <button onclick="triggerAction('backup-uploads-download')" class="w-full py-2.5 px-3 bg-slate-800 hover:bg-slate-700 text-purple-300 border border-purple-500/30 text-xs font-bold rounded-lg transition-all flex items-center justify-center gap-2 cursor-pointer">
+            <svg class="w-4 h-4 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"/>
+            </svg>
+            <span>Generate Uploads Archive</span>
+          </button>
+        </div>
+
+      </div>
+
+      <!-- Available Archives List -->
+      <div class="space-y-2">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-2">
+            <span class="text-xs font-semibold text-slate-300 uppercase tracking-wider">Available Archives on Server</span>
+            <span id="backupArchivesCountBadge" class="px-2 py-0.5 text-[10px] font-mono bg-slate-800 text-slate-400 rounded-full">0 files</span>
+          </div>
+          <span class="text-[11px] text-slate-500 font-mono">Path: /var/backups/downloads</span>
+        </div>
+
+        <div id="backupArchivesContainer" class="divide-y divide-slate-800 border border-slate-800 rounded-xl bg-slate-950/40 overflow-hidden">
+          <div class="p-6 text-center text-xs text-slate-500">Loading available backup archives...</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 5. LIVE TERMINAL VIEWER -->
     <div class="bg-slate-950 border border-slate-800 rounded-xl shadow-2xl overflow-hidden">
       <!-- Terminal Header -->
       <div class="bg-slate-900/90 border-b border-slate-800 px-4 py-3 flex items-center justify-between">
@@ -527,6 +642,7 @@
             setExecutingState(false);
             fetchSystemStats();
             fetchGitInfo();
+            fetchBackupArchives();
           }
         } catch (err) {
           console.error(err);
@@ -757,6 +873,115 @@
       }
     });
 
+    // Backup & Download Center Functions
+    async function fetchBackupArchives() {
+      const container = document.getElementById('backupArchivesContainer');
+      const countBadge = document.getElementById('backupArchivesCountBadge');
+      try {
+        const res = await fetch(`${API_BASE}/api/backup/archives`);
+        if (!res.ok) {
+          if (res.status === 401) window.location.href = `${API_BASE}/login`;
+          return;
+        }
+        const data = await res.json();
+        const archives = data.archives || [];
+        countBadge.textContent = `${archives.length} file${archives.length === 1 ? '' : 's'}`;
+
+        if (archives.length === 0) {
+          container.innerHTML = `
+            <div class="p-8 text-center">
+              <div class="w-12 h-12 rounded-full bg-slate-800/80 mx-auto flex items-center justify-center text-slate-500 mb-3">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"/>
+                </svg>
+              </div>
+              <div class="text-xs font-semibold text-slate-300">No backup archives found on server</div>
+              <div class="text-[11px] text-slate-500 mt-1 max-w-sm mx-auto">
+                Click one of the buttons above to generate a new snapshot archive. Once generated, it will appear here ready for direct download to your PC.
+              </div>
+            </div>
+          `;
+          return;
+        }
+
+        container.innerHTML = archives.map(a => {
+          let badgeClass = 'bg-emerald-500/15 text-emerald-400 border-emerald-500/30';
+          let badgeText = 'FULL SNAPSHOT';
+          let iconSvg = `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />`;
+          
+          if (a.type === 'db') {
+            badgeClass = 'bg-blue-500/15 text-blue-400 border-blue-500/30';
+            badgeText = 'DATABASE DUMP';
+            iconSvg = `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4"/>`;
+          } else if (a.type === 'uploads') {
+            badgeClass = 'bg-purple-500/15 text-purple-400 border-purple-500/30';
+            badgeText = 'UPLOADS ARCHIVE';
+            iconSvg = `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"/>`;
+          }
+
+          const dateStr = new Date(a.createdAt).toLocaleString();
+
+          return `
+            <div class="p-3.5 flex flex-col sm:flex-row sm:items-center justify-between gap-3 hover:bg-slate-900/60 transition-colors">
+              <div class="flex items-center gap-3 min-w-0">
+                <div class="w-9 h-9 rounded-lg bg-slate-800 border border-slate-700/80 flex items-center justify-center shrink-0 text-slate-300">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    ${iconSvg}
+                  </svg>
+                </div>
+                <div class="min-w-0">
+                  <div class="flex items-center gap-2 flex-wrap">
+                    <span class="font-mono text-xs font-bold text-white truncate max-w-xs md:max-w-md" title="${a.filename}">${a.filename}</span>
+                    <span class="px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider rounded border ${badgeClass}">${badgeText}</span>
+                  </div>
+                  <div class="text-[11px] text-slate-400 mt-0.5 flex items-center gap-3">
+                    <span class="text-emerald-400 font-mono font-semibold">${a.sizeFormatted}</span>
+                    <span>&bull;</span>
+                    <span>Created: ${dateStr}</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="flex items-center gap-2 self-end sm:self-auto shrink-0">
+                <a href="${API_BASE}/api/backup/download/${encodeURIComponent(a.filename)}" download class="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold rounded-lg shadow-sm transition-colors flex items-center gap-1.5 cursor-pointer text-decoration-none">
+                  <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+                  </svg>
+                  <span>Download to PC</span>
+                </a>
+                <button onclick="deleteBackupArchive('${a.filename}')" class="p-1.5 bg-slate-800/80 hover:bg-red-500/20 hover:text-red-400 hover:border-red-500/30 text-slate-400 border border-slate-700/80 rounded-lg transition-colors cursor-pointer" title="Delete from server">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                  </svg>
+                </button>
+              </div>
+            </div>
+          `;
+        }).join('');
+      } catch (err) {
+        console.error('Failed to fetch backup archives', err);
+      }
+    }
+
+    async function deleteBackupArchive(filename) {
+      if (confirm(`Are you sure you want to permanently delete archive "${filename}" from server disk?`)) {
+        try {
+          const res = await fetch(`${API_BASE}/api/backup/delete/${encodeURIComponent(filename)}`, {
+            method: 'DELETE'
+          });
+          const data = await res.json();
+          if (res.ok) {
+            fetchBackupArchives();
+            fetchSystemStats();
+          } else {
+            alert(data.error || 'Failed to delete archive');
+          }
+        } catch (err) {
+          alert('Failed to connect to server to delete archive');
+        }
+      }
+    }
+
     // Logout
     async function handleLogout() {
       await fetch(`${API_BASE}/api/logout`, { method: 'POST' });
@@ -767,6 +992,7 @@
     connectSSE();
     fetchSystemStats();
     fetchGitInfo();
+    fetchBackupArchives();
     setInterval(fetchSystemStats, 5000);
     setInterval(fetchGitInfo, 15000);
   </script>
