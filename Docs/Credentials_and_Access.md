@@ -56,8 +56,7 @@ ssh mat-server "cd /opt/monsuralitravels && make status"
 
 | Field | Value |
 | :--- | :--- |
-| **Primary cPanel URL** | **`https://server.monsuralitravels.com/cpanel/`** |
-| **Mirror / Alt URL** | **`https://admin.monsuralitravels.com/cpanel/`** |
+| **Dedicated cPanel URL** | **`https://cpanel.monsuralitravels.com`** |
 | **Developer Username** | `developer` |
 | **Developer Password** | `matOps2026!#deploy` |
 | **Internal Port** | `8090` (Reverse-proxied via Nginx SSL) |
