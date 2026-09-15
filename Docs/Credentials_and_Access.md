@@ -104,26 +104,27 @@ ssh mat-server "cd /opt/monsuralitravels && make status"
 
 ---
 
-## 3. SMTP Email Credentials (Production)
+## 3. SMTP Email Credentials (Production — Google Workspace)
 
-| Field              | Value                        |
-| :----------------- | :--------------------------- |
-| **Email Address**  | `info@monsuralitravels.com`  |
-| **SMTP Host**      | `aberi.us.svlogins.com`      |
-| **SMTP Port**      | `587` (TLS)                  |
-| **SMTP User**      | `info@monsuralitravels.com`  |
-| **SMTP Password**  | `[REDACTED_FOR_SECURITY]`    |
-| **Encryption**     | `TLS`                        |
-| **From Name**      | `Monsur Ali Travels`         |
+| Field              | Value                                    |
+| :----------------- | :--------------------------------------- |
+| **Email Address**  | `travels12@monsuralitours-travels.net`   |
+| **SMTP Host**      | `smtp.gmail.com`                         |
+| **SMTP Port**      | `465` (SSL)                              |
+| **SMTP User**      | `travels12@monsuralitours-travels.net`   |
+| **SMTP Password**  | `xojriesdcvsxbvke` (App Password: MAT_ERP)|
+| **Encryption**     | `SSL`                                    |
+| **From Name**      | `Monsur Ali Tours & Travels`             |
 
-### Backend `.env.production` SMTP Block
+### Backend `.env` SMTP Block (`/opt/monsuralitravels/backend/.env`)
 ```env
-SMTP_HOST=aberi.us.svlogins.com
-SMTP_PORT=587
-SMTP_ENCRYPTION=TLS
-SMTP_USER=info@monsuralitravels.com
-SMTP_PASSWORD=[REDACTED_FOR_SECURITY]
-SMTP_FROM_NAME=Monsur Ali Travels
+SMTP_HOST=smtp.gmail.com
+SMTP_PORT=465
+SMTP_ENCRYPTION=SSL
+SMTP_USER=travels12@monsuralitours-travels.net
+SMTP_PASSWORD=xojriesdcvsxbvke
+SMTP_FROM_NAME=Monsur Ali Tours & Travels
+SMTP_FROM=travels12@monsuralitours-travels.net
 ```
 
 
