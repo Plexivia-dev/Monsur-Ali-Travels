@@ -115,6 +115,8 @@ ssh mat-server "cd /opt/monsuralitravels && make status"
 | **SMTP Password**  | `xojriesdcvsxbvke` (App Password: MAT_ERP)|
 | **Encryption**     | `SSL`                                    |
 | **From Name**      | `Monsur Ali Tours & Travels`             |
+| **From Email**     | `info@monsuralitravels.com`              |
+| **Reply-To Email** | `admin@monsuralitravels.com`             |
 
 ### Backend `.env` SMTP Block (`/opt/monsuralitravels/backend/.env`)
 ```env
@@ -124,7 +126,8 @@ SMTP_ENCRYPTION=SSL
 SMTP_USER=travels12@monsuralitours-travels.net
 SMTP_PASSWORD=xojriesdcvsxbvke
 SMTP_FROM_NAME=Monsur Ali Tours & Travels
-SMTP_FROM=travels12@monsuralitours-travels.net
+SMTP_FROM=info@monsuralitravels.com
+SMTP_REPLY_TO=admin@monsuralitravels.com
 ```
 
 

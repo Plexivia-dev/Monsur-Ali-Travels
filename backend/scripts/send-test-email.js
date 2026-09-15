@@ -27,9 +27,11 @@ const sendTestEmail = async () => {
 
   await transporter.verify();
 
+  const fromAddress = `"${process.env.SMTP_FROM_NAME || 'Monsur Ali Tours & Travels'}" <${process.env.SMTP_FROM || process.env.SMTP_USER}>`;
   const info = await transporter.sendMail({
-    from: process.env.SMTP_USER,
+    from: fromAddress,
     to: recipient,
+    replyTo: process.env.SMTP_REPLY_TO || "admin@monsuralitravels.com",
     subject: "Test email from Monsur Ali Travels backend",
     text: "This is a test email from the backend.",
     html: "<p>This is a test email from the backend.</p>",

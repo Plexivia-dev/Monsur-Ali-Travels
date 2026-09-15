@@ -53,6 +53,7 @@ export async function sendEmail({
   attachments = [],
   fromName = env.SMTP_FROM_NAME || BRAND_CONFIG.name,
   fromEmail = env.SMTP_FROM || env.SMTP_USER,
+  replyTo = env.SMTP_REPLY_TO || "admin@monsuralitravels.com",
 }) {
   if (!env.SMTP_USER || !env.SMTP_PASSWORD) {
     const msg = "SMTP credentials are not configured in the environment";
@@ -68,14 +69,20 @@ export async function sendEmail({
   const fromAddress = `"${fromName}" <${fromEmail}>`;
 
   try {
-    const info = await transport.sendMail({
+    const mailOptions = {
       from: fromAddress,
       to: to.trim().toLowerCase(),
       subject,
       text: text || subject,
       html,
       attachments,
-    });
+    };
+
+    if (replyTo) {
+      mailOptions.replyTo = replyTo;
+    }
+
+    const info = await transport.sendMail(mailOptions);
 
     logger?.info?.({ to, subject, messageId: info.messageId }, "Email dispatched successfully");
     return { delivered: true, messageId: info.messageId, response: info.response };

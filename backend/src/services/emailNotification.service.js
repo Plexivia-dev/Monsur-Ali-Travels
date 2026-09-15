@@ -1,4 +1,4 @@
-﻿import nodemailer from "nodemailer";
+import nodemailer from "nodemailer";
 import { env } from "../config/env.js";
 import { UserModel } from "../models/user.model.js";
 
@@ -37,6 +37,7 @@ export async function sendEmail({ to, subject, html, text }) {
     const info = await activeTransporter.sendMail({
       from: `"${fromName}" <${fromEmail}>`,
       to: Array.isArray(to) ? to.join(", ") : to,
+      replyTo: env.SMTP_REPLY_TO || "admin@monsuralitravels.com",
       subject,
       text: text || subject,
       html,

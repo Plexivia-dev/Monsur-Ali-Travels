@@ -24,6 +24,7 @@ const envSchema = z.object({
   SMTP_PASSWORD: z.string().default(""),
   SMTP_FROM_NAME: z.string().default("Monsur Ali Travels"),
   SMTP_FROM: z.string().optional(),
+  SMTP_REPLY_TO: z.string().default("admin@monsuralitravels.com"),
   R2_ACCOUNT_ID: z.string().optional(),
   R2_ACCESS_KEY_ID: z.string().optional(),
   R2_SECRET_ACCESS_KEY: z.string().optional(),

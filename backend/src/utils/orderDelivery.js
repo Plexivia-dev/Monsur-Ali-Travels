@@ -140,6 +140,7 @@ export function sendOrderEmailsAsynchronously(order) {
           await activeTransport.sendMail({
             from: fromAddress,
             to: clientEmail,
+            replyTo: env.SMTP_REPLY_TO || "admin@monsuralitravels.com",
             subject: `Monsur Ali Travels BD: Order Confirmation - #${orderId}`,
             html: clientHtml
           });
