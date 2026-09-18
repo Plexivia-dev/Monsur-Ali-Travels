@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { X, Loader2, CheckCircle2, ChevronLeft } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import Button from '@/components/ui/button';
@@ -23,7 +23,7 @@ export function UnifiedModalHeader({
   return (
     <div
       className={cn(
-        'px-6 py-4 border-b border-black/10 bg-white flex items-center justify-between shrink-0 select-none',
+        'px-6 py-4 border-b border-black/10 bg-white flex items-center justify-between shrink-0 select-none relative z-10',
         className
       )}
     >
@@ -222,6 +222,8 @@ export function UnifiedModal({
   bodyClassName = '',
   footerClassName = '',
 }) {
+  const bodyRef = useRef(null);
+
   useEffect(() => {
     const handleKeyDown = (e) => {
       if (e.key === 'Escape' && isOpen && onClose) {
@@ -231,6 +233,9 @@ export function UnifiedModal({
     if (isOpen) {
       window.addEventListener('keydown', handleKeyDown);
       document.body.style.overflow = 'hidden';
+      if (bodyRef.current) {
+        bodyRef.current.scrollTop = 0;
+      }
     }
     return () => {
       window.removeEventListener('keydown', handleKeyDown);
@@ -265,7 +270,7 @@ export function UnifiedModal({
         {stepper && <div className="shrink-0">{stepper}</div>}
 
         {/* Internal Scrollable Content Body */}
-        <div className={cn('flex-1 min-h-0 overflow-y-auto p-6 space-y-4 text-black', bodyClassName)}>
+        <div ref={bodyRef} className={cn('flex-1 min-h-0 overflow-y-auto p-6 space-y-4 text-black', bodyClassName)}>
           {children}
         </div>
 

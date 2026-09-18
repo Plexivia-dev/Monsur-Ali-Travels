@@ -1,0 +1,16 @@
+﻿[Unit]
+Description=Plexivia Telemetry Node Agent Daemon (Monsur Ali Travels)
+After=network.target docker.service
+Requires=docker.service
+
+[Service]
+Type=simple
+User=root
+WorkingDirectory=/opt/monsuralitravels/telemetry-agent
+ExecStart=/usr/bin/node dist/index.js
+Restart=always
+RestartSec=5
+Environment=NODE_ENV=production
+
+[Install]
+WantedBy=multi-user.target

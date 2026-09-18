@@ -541,9 +541,9 @@ const PREDEFINED_COMMANDS = {
   "build-admin": { cmd: "make", args: ["build-admin"], desc: "Build & Restart Admin Dashboard" },
   "build-front": { cmd: "make", args: ["build-front"], desc: "Build & Restart Frontend" },
   "backup-gcs": { cmd: "/usr/local/bin/mat-daily-backup.sh", args: [], desc: "Daily GCS Backup Script" },
-  "backup-full-download": { cmd: "/opt/mat-ops-panel/create-backup.sh", args: ["full"], desc: "Generate Full Backup (DB + Uploads + Documents)" },
-  "backup-db-download": { cmd: "/opt/mat-ops-panel/create-backup.sh", args: ["db"], desc: "Generate Database Only Dump (.gz)" },
-  "backup-uploads-download": { cmd: "/opt/mat-ops-panel/create-backup.sh", args: ["uploads"], desc: "Generate Uploads & Documents (.tar.gz)" },
+  "backup-full-download": { cmd: "bash", args: [`${APP_ROOT}/ops-panel/create-backup.sh`, "full"], desc: "Generate Full Backup (DB + Uploads + Documents)" },
+  "backup-db-download": { cmd: "bash", args: [`${APP_ROOT}/ops-panel/create-backup.sh`, "db"], desc: "Generate Database Only Dump (.gz)" },
+  "backup-uploads-download": { cmd: "bash", args: [`${APP_ROOT}/ops-panel/create-backup.sh`, "uploads"], desc: "Generate Uploads & Documents (.tar.gz)" },
   "docker-status": { cmd: "docker", args: ["compose", "-f", "docker-compose.prod.yml", "ps"], desc: "Docker Containers Status" }
 };
 

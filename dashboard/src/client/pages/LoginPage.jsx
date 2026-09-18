@@ -1,6 +1,6 @@
 import React from 'react';
 import { SharedLoginPage } from '@shared/components/auth/SharedLoginPage';
-import { useAuth } from '@/lib/auth-context';
+import { useAuth } from '../store/useAuthStore';
 import logo from '../assets/logo.png';
 
 export function LoginPage() {

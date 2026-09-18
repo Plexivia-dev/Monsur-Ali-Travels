@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { motion } from 'motion/react';
 import { LogIn, Mail, Lock, Eye, EyeOff, Shield, QrCode, ArrowLeft } from 'lucide-react';
-import { useAuth } from '@/lib/auth-context';
+import { useAuth } from '../../store/useAuthStore';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
@@ -10,6 +10,7 @@ import { handleGlobalError } from '@/lib/error-handler';
 import { toast } from 'sonner';
 import { MonsurAliTravelsLogo } from '@/components/MonsurAliTravelsLogo';
 import { apiClient } from '@/lib/api-client';
+import { APP_VERSION } from '@shared/configs/appConfig';
 
 
 const LoginPage = () => {
@@ -282,7 +283,7 @@ const LoginPage = () => {
       </motion.div>
       {/* Fixed version label at bottom of page */}
       <p className="fixed bottom-4 left-1/2 -translate-x-1/2 text-[10px] text-muted-foreground/80 font-mono z-20 select-none">
-        v{__APP_VERSION__}
+        v{APP_VERSION}
       </p>
     </div>
   );

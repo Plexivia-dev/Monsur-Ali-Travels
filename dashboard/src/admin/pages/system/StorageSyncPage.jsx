@@ -661,22 +661,35 @@ const StorageSyncPage = () => {
             </div>
           }
         >
-          <div className="space-y-2">
-            {selectedBatch.orphanFiles?.map((file, idx) => (
-              <div
-                key={idx}
-                className="p-3 rounded-xl bg-black/[0.02] border border-black/10 flex items-center justify-between text-xs gap-3"
-              >
-                <div className="overflow-hidden">
-                  <div className="font-semibold text-black truncate">{file.fileName}</div>
-                  <div className="font-mono text-black/50 text-[11px] truncate">{file.localPath}</div>
+          <div className="space-y-2.5 pt-1 pb-2">
+            {selectedBatch.orphanFiles?.map((file, idx) => {
+              const displayName = file.fileName || (file.localPath ? file.localPath.split('/').pop() : 'Unreferenced File');
+              return (
+                <div
+                  key={idx}
+                  className="p-3.5 rounded-xl bg-black/[0.02] border border-black/10 flex items-center justify-between text-xs gap-3.5 hover:bg-black/[0.04] transition-colors"
+                >
+                  <div className="overflow-hidden min-w-0 flex-1">
+                    <div className="font-bold text-black truncate text-xs leading-snug">
+                      {displayName}
+                    </div>
+                    {file.localPath && (
+                      <div className="font-mono text-black/60 text-[11px] truncate mt-1">
+                        {file.localPath}
+                      </div>
+                    )}
+                  </div>
+                  <div className="text-right shrink-0">
+                    <span className="font-bold text-black text-xs block">
+                      {formatBytes(file.sizeBytes || 0)}
+                    </span>
+                    <span className="text-[10px] font-semibold px-2 py-0.5 rounded-md bg-amber-500/10 text-amber-700 dark:text-amber-600 border border-amber-500/20 inline-block mt-1">
+                      Unreferenced
+                    </span>
+                  </div>
                 </div>
-                <div className="text-right shrink-0">
-                  <span className="font-bold text-black">{formatBytes(file.sizeBytes)}</span>
-                  <div className="text-[11px] text-amber-600 font-semibold">Unreferenced</div>
-                </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </UnifiedModal>
       )}
